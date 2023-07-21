@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="riseSubSolicitOpinion" name="有生部门意见征集" isExecutable="true">
+    <extensionElements>
+      <activiti:executionListener event="start" class="net.risesoft.listener.executionListener.ExecutionListener4NanHai"></activiti:executionListener>
+    </extensionElements>
+    <startEvent id="startevent1" name="开始"></startEvent>
+    <userTask id="contacts" name="部门收发员" activiti:assignee="${user}" activiti:candidateUsers="${users}"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="contacts"></sequenceFlow>
+    <userTask id="employee" name="员工" activiti:assignee="${elementUuser}">
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${users}" activiti:elementVariable="elementUser"></multiInstanceLoopCharacteristics>
+    </userTask>
+    <sequenceFlow id="flow2" sourceRef="contacts" targetRef="employee"></sequenceFlow>
+    <userTask id="divisionManager" name="部门经理" activiti:assignee="${user}" activiti:candidateUsers="${users}"></userTask>
+    <sequenceFlow id="flow3" sourceRef="employee" targetRef="divisionManager"></sequenceFlow>
+    <endEvent id="endevent1" name="办结"></endEvent>
+    <sequenceFlow id="flow4" sourceRef="divisionManager" targetRef="endevent1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_riseSubSolicitOpinion">
+    <bpmndi:BPMNPlane bpmnElement="riseSubSolicitOpinion" id="BPMNPlane_riseSubSolicitOpinion">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="150.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="contacts" id="BPMNShape_contacts">
+        <omgdc:Bounds height="55.0" width="105.0" x="230.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="employee" id="BPMNShape_employee">
+        <omgdc:Bounds height="55.0" width="105.0" x="380.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="divisionManager" id="BPMNShape_divisionManager">
+        <omgdc:Bounds height="55.0" width="105.0" x="530.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="680.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="185.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="230.0" y="247.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="335.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="380.0" y="247.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="485.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="247.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="635.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="680.0" y="247.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

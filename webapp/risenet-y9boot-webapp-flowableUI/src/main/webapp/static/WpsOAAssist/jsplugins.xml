@@ -1,0 +1,18 @@
+<!-- WPS加载项配置信息，在线和离线只有一个生效，不可同时存在 -->
+<!-- WPS加载项：在线模式配置	Start -->
+
+<!-- https://kdocs.cn/l/cBk8tsBIf [金山文档] jsplugins.xml配置文档.docx -->
+<jsplugins>
+	<jspluginonline name="EtOAAssist" type="et" url="http://127.0.0.1:7056/plugin/et"/>
+	<jspluginonline name="WpsOAAssist" type="wps" url="http://127.0.0.1:7056/flowableUI/static/WpsOAAssist"/>
+	<jspluginonline name="WppOAAssist" type="wpp" url="http://127.0.0.1:7056/plugin/wpp"/>
+</jsplugins>
+<!-- WPS加载项：在线模式配置	End -->
+
+<!-- WPS加载项：离线模式配置	Start -->
+<!-- <jsplugins>
+	<jsplugin name="EtOAAssist" type="et" url="http://127.0.0.1:3888/plugins/v0.1/EtOAAssist.7z" version="0.1" />
+	<jsplugin name="WpsOAAssist" type="wps" url="http://127.0.0.1:3888/plugins/v0.1/WpsOAAssist.7z" version="0.1" />
+	<jsplugin name="WppOAAssist" type="wpp" url="http://127.0.0.1:3888/plugins/v0.1/WppOAAssist.7z" version="0.1" />
+</jsplugins> -->
+<!-- WPS加载项：离线模式配置	End -->

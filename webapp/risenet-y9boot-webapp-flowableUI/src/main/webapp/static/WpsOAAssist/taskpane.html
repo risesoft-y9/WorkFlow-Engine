@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>操作书签</title>
+    <style type="text/css">
+        .content {
+            font-size: 15px;
+            color: darkslategray;
+            margin: 5px;
+        }
+
+        .content_red {
+            font-weight: bold;
+            color: red;
+        }
+
+        .li {
+            cursor: pointer;
+            color: blueviolet;
+            margin: 10px;
+        }
+
+        .def_control {
+            height: 100%;
+            width: 100%;
+            font-size: 18px;
+        }
+
+        .btn_box {
+            float: left;
+            line-height: 3.3em;
+            margin-left: 2%;
+        }
+    </style>
+</head>
+
+<body onload="bookMarkList()">
+    <script type="text/javascript" src='js/main.js'></script>
+    <div class="content">这是一个网页，按f12可以打开调试器</div>
+    <div class="content">书签列表如下:</div>
+    <div id="bookMarkDiv">
+
+    </div>
+    <div id="repleaseBookMarkDiv" class="content">
+        <div class="content">选择的书签是：</div>
+        <div class="content_red" id="selectBookMarkId"></div>
+        <div class="content">替换的内容是：</div>
+        <div class="content">
+            <textarea id="repleaseBookMarkContent" style="margin: 0px; width: 220px; height: 90px;"></textarea></div>
+        <div class="btn_box">
+            <button class="def_control" type="button" id="repleaseBookMarkButton"
+                onclick="repleaseBookMarkClick()">书签内容替换</button>
+        </div>
+        <div class="btn_box">
+            <button class="def_control" type="button" id="insertLocalFileButton"
+                onclick="insertLocalFileClick()">本地文件替换已选择书签</button>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    wps.ApiEvent.AddApiEventListener("WindowActivate", onDocActiveChange) //当前文档切换后的事件回调通知
+
+    //当前文档切换到其它文档时，重新获取新的文档的书签列表
+    function onDocActiveChange(doc, docwin){
+        bookMarkList()
+        clearSelectionBookmark()
+    }
+    //获取文档中的书签列表并定义列表项的点击事件
+    function bookMarkList(){
+        let doc = wps.WpsApplication().ActiveDocument
+        if (!doc)
+            return
+
+        document.getElementById('bookMarkDiv').innerHTML = ""
+        let innerHtml = ""
+        let bookMarkCount = doc.Bookmarks.Count
+        for (let i = 1; i <= bookMarkCount; ++i) {
+            let bookMakrItem = doc.Bookmarks.Item(i)
+            let bookMarkName = bookMakrItem.Name
+            innerHtml = innerHtml + "<li class='li' onclick=\"bookMarkClick('" + bookMarkName + "')\">" + bookMarkName +
+                "</li>"
+        }
+
+        document.getElementById('bookMarkDiv').innerHTML = innerHtml
+    }
+    //书签列表项的点击事件
+    function bookMarkClick(bookMarkName) {
+        let doc = wps.WpsApplication().ActiveDocument
+        document.getElementById('selectBookMarkId').innerHTML = bookMarkName
+        if (!doc)
+            return
+        let bookMark = doc.Bookmarks.Item(bookMarkName)
+        if (bookMark)
+            bookMark.Range.Select()
+    }
+    //书签内容替换按钮点击事件
+    function repleaseBookMarkClick() {
+       getPositionInsert('text')
+    }
+    //本地文件替换已选择书签点击事件
+    function insertLocalFileClick() {
+        getPositionInsert('file')
+    }
+    //定位到选择的书签位置的最末，插入文本内容或本地文件
+    function getPositionInsert(textOrFile) {
+        let doc = wps.WpsApplication().ActiveDocument
+        let bookMarks = doc.Bookmarks
+        let selectBookMarkId = document.getElementById("selectBookMarkId").innerHTML
+        let textareaStr = document.getElementById("repleaseBookMarkContent").value
+        if (!doc)
+            return
+        if (selectBookMarkId.length == 0) {
+            alert('请选择需要替换的书签')
+            return
+        } else {
+            let bookMarkItem = bookMarks.Item(selectBookMarkId)
+            if (bookMarkItem) {
+                let bookMarkName = bookMarkItem.Name
+                let bookMarkRange = bookMarkItem.Range
+                if (textOrFile == 'text') {
+                    bookMarkRange.Text = textareaStr
+                    bookMarkRange.Select()  //内容替换后不会刷新，让wps作一次刷新，这可能是wps的bug
+                } else {
+                    OpenLocalFile()
+                }
+                //检测一下bookmark是不是失效了
+                if (!bookMarks.Item(bookMarkName)){
+                    bookMarks.Add(bookMarkName, bookMarkRange)
+                }
+                bookMarkList()  //执行完内容替换后刷新任务窗格的书签列表
+            }
+        }
+    }
+    //清空选择的书签
+    function clearSelectionBookmark(){
+        document.getElementById('selectBookMarkId').innerHTML = ''
+    }
+</script>

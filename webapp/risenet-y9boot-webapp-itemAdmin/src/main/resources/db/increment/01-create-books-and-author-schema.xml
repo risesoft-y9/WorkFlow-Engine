@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<changeSet id="01" author="hhimanshu">
+		<createTable tableName="books" remarks="A table to contain all books">
+			<column name="id" type="int">
+				<constraints nullable="false" unique="true" primaryKey="true" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" unique="true" />
+			</column>
+			<column name="author" type="int">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<createTable tableName="authors"
+			remarks="A table to contain all the authors">
+			<column name="id" type="int">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="name" type="varchar(100)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<addForeignKeyConstraint baseTableName="books"
+			baseColumnNames="author" constraintName="author_fk"
+			referencedTableName="authors" referencedColumnNames="id" />
+	</changeSet>
+</databaseChangeLog>

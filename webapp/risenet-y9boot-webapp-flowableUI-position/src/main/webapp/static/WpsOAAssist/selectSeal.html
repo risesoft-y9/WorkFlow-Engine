@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>印章页面</title>
+    <script type="text/javascript" src='js/main.js'></script>
+    <script type="text/javascript" src="otherslib/lib/vue.min.js"></script>
+    <style type="text/css">
+        * {
+            box-sizing: border-box;
+        }
+
+        /*清除浮动*/
+        .clear:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        html,
+        body,
+        #seal {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .row {
+            width: 100%;
+            border-top: 2px solid #e7e7e7;
+        }
+
+        .row>div {
+            height: 100%;
+        }
+
+        #seal_name,
+        #seal_password {
+            width: 38%;
+            float: left;
+            margin-left: 15px;
+        }
+
+        .seal_control {
+            height: 60%;
+            font-size: 16px;
+        }
+
+        #seal_load {
+            width: 13%;
+            float: right;
+            margin-right: 35px;
+        }
+
+        #seal_load>button {
+            width: 100%;
+        }
+
+        #btnBox {
+            padding-left: 75%;
+            line-height: 4em;
+        }
+
+        #btnBox>div {
+            display: inline-block;
+            width: 47%;
+        }
+
+        #btnBox button {
+            height: 60%;
+            width: 90%;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="seal">
+        <div class="row clear" style="height: 15%;padding-top: 2%;">
+            <div id="seal_name">
+                <span>印章名称：</span>
+                <select class="seal_control" v-model="sealItem" style="width: 60%;" @change="vm.loadSeal()">
+                    <option value="-1">请选择印章</option>
+                    <option v-for="(item,index) in seals" :key="index" :value="item.signatureID">{{item.MarkName}}</option>
+                </select>
+            </div>
+            <!-- <div id="seal_password">
+                <span>密码：</span>
+                <input class="seal_control" type="password" v-model="sealPassword" placeholder="请输入密码" />
+            </div>
+            <div id="seal_load">
+                <button class="seal_control" @click="vm.loadSeal()">盖章</button>
+            </div> -->
+        </div>
+        <div id="seal_preview" class="row" style="height: 70%;padding-top: 5%;overflow: auto;">
+            <img :src="seal" v-if="visible" style="width: 50%;height: 85%;" draggable="false">
+        </div>
+        <div id="btnBox" class="row" style="height: 15%;">
+            <div>
+                <button type="button" @click="vm.doSeal()">确定</button>
+            </div>
+            <div>
+                <button type="button" @click="vm.cancle()">取消</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    var vm = new Vue({
+        el: "#seal",
+        data: {
+            seals: [], //印章下拉框数据
+            sealItem: -1,      // 选中的印章
+            sealPassword: "",   // 印章密码
+            seal: "",           // 中间区域显示的印章图片路径
+            visible: false,     // 是否显示中间区域的印章图片
+            picPath: ""         // 印章图片路径(插入文档使用)
+        },
+        methods: {
+            // 取消按钮
+            cancle: function () {
+                window.close();     // 大概率引发WPS程序窗口最小化
+                wps.OAAssist.ShellExecute("ksowebstartupwps://");   // 将WPS程序置前
+            },
+            // 获取印章下拉框数据
+            getAllSeal: function () {
+                var l_doc = wps.WpsApplication().ActiveDocument;
+                var l_sealData = GetDocParamsValue(l_doc, "sealData");
+                if (typeof (l_sealData) == undefined || l_sealData == null || l_sealData == "") {
+                    // alert("未传入有效的印章数据,下拉框加载失败!");
+                    // return;
+                    l_sealData=[{
+                        MarkName:"测试印章1",
+                        signatureID:1
+                    },{
+                        MarkName:"测试印章2",
+                        signatureID:2
+                    }]
+                }
+                this.seals = l_sealData;
+                console.log("数据：",l_sealData);
+            },
+            loadSeal: function () {
+                if (this.sealItem == "" || this.sealItem == -1) {
+                    this.visible = false;
+                    this.picPath = "";
+                    this.seal = "";
+                    alert("请选择印章!");
+                    return;
+                }
+
+                //静态印章
+                this.visible = true;
+                this.picPath = getHtmlURL("template/OA模板公章.png");
+                this.seal = getHtmlURL("template/OA模板公章.png");
+                //后台获取 印章
+                // if (this.sealPassword == "") {
+                //     alert("请输入密码!");
+                //     return;
+                // }
+                // var doc = wps.WpsApplication().ActiveDocument;
+                // var url = GetDocParamsValue(doc, "validatePath");//印章验证接口
+                
+                // if (url == "") {
+                //     alert("未传入有效的印章验证URL,盖章失败!");
+                //     return;
+                // }
+                // url += "&signatureID=" + this.sealItem + "&passwd=" + this.sealPassword;
+                // this.$http.get(url).then(function (res) {
+                //     var data = res.body;
+                //     if (data.code == "0") {
+                //         this.visible = true;
+                //         this.picPath = data.url;
+                //         this.seal = this.picPath;
+                //     } else {
+                //         this.picPath = "";
+                //         this.$Message.error(data.message);
+                //     }
+                // }, function () {
+                //     console.log("获取响应失败");
+                // });
+            },
+            doSeal: function () {
+                var l_doc = wps.WpsApplication().ActiveDocument;
+                if (!l_doc) {
+                    return;
+                }
+                OnInsertPicToDoc(l_doc, this.picPath, 95, 95,()=>{
+                    window.opener = null;
+                    window.open('', '_self', '');
+                    window.close();
+                });  // 调用插入图片函数
+                
+            }
+        },
+        mounted: function () {
+            this.getAllSeal();
+        }
+    });
+</script>

@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Title",
+        "text": "填充模板测试，这是填充到书签名称为Title",
+        "type": "text"
+    },
+    {
+        "name": "Content",
+        "text": "正文内容模拟填充，这是填充到书签名称为Content",
+        "type": "text"
+    },
+    {
+        "name": "Number",
+        "text": "2020-3-13，这是填充到书签名称为Number",
+        "type": "text"
+    },
+    {
+        "name": "Other",
+        "text": "其他内容，这是填充到书签名称为Other",
+        "type": "text"
+    }
+]

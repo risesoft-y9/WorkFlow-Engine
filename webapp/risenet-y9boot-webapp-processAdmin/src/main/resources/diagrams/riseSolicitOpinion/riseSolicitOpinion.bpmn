@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="riseSolicitOpinion" name="有生意见征集" isExecutable="true">
+    <startEvent id="startevent1" name="开始"></startEvent>
+    <userTask id="draft" name="起草" activiti:assignee="${user}" activiti:candidateUsers="${users}"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="draft"></sequenceFlow>
+    <endEvent id="endevent1" name="办结"></endEvent>
+    <callActivity id="sendToEachDepartment" name="部门办理" calledElement="riseSubSolicitOpinion" activiti:inheritVariables="false">
+      <extensionElements>
+        <activiti:in source="elementUser" target="elementUser"></activiti:in>
+        <activiti:in sourceExpression="${taskSenderId}" target="taskSenderId"></activiti:in>
+        <activiti:in sourceExpression="${taskSender}" target="taskSender"></activiti:in>
+        <activiti:in sourceExpression="${documentTitle}" target="documentTitle"></activiti:in>
+        <activiti:in sourceExpression="${initDataMap}" target="initDataMap"></activiti:in>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${users}" activiti:elementVariable="elementUser"></multiInstanceLoopCharacteristics>
+    </callActivity>
+    <sequenceFlow id="flow7" sourceRef="draft" targetRef="sendToEachDepartment"></sequenceFlow>
+    <sequenceFlow id="flow8" sourceRef="sendToEachDepartment" targetRef="endevent1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_riseSolicitOpinion">
+    <bpmndi:BPMNPlane bpmnElement="riseSolicitOpinion" id="BPMNPlane_riseSolicitOpinion">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="92.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="draft" id="BPMNShape_draft">
+        <omgdc:Bounds height="55.0" width="105.0" x="172.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="490.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sendToEachDepartment" id="BPMNShape_sendToEachDepartment">
+        <omgdc:Bounds height="55.0" width="105.0" x="322.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="127.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="172.0" y="197.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="277.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="322.0" y="197.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="427.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="490.0" y="197.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

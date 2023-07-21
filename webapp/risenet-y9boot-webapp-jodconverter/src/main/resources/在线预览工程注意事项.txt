@@ -1,0 +1,4 @@
+1.需要在部署环境安装：openoffice,可在网上百度安装教程.
+2.需在配置文件修改office.home(openoffice安装路径),如office.home = C:/Program Files (x86)/OpenOffice 4
+3.如出现预览乱码(主要为linux),则需安装字体,可网上百度方法。
+4.Linux下安装openoffice，无需启动openoffice服务。否则启动工程报错。

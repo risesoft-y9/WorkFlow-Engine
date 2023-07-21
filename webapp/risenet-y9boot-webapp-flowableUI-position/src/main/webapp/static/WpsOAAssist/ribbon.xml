@@ -1,0 +1,148 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2006/01/customui" onLoad="OnWPSWorkTabLoad">
+    <ribbon startFromScratch="false">
+        
+        <tabs>
+            <!-- OA菜单开启显隐处理， insertBeforeMso表示要在WPS自身某个tab之前显示，insertAfterMso表示在某个WPS自身tab之后显示-->
+            <!--在如下的tab定义中，id是WPSWorkExtTab，显示标签是OA辅助，有控制显隐的事件设置getVisible，设置在「开始」(TabHome)页签之前-->
+            <tab id="WPSWorkExtTab" label="OA辅助" getVisible="OnGetVisible" insertBeforeMso="TabHome">
+                <group id="grpWPSClound" label="WPS云文档相关功能" getVisible="OnGetVisible">
+                    <box id="boxBoxCloud1" boxStyle="horizontal" visible="true">
+                        <button id="btnOpenWPSYUN" label="WPS云文档" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                    </box>
+                    <box id="boxBoxCloud1" boxStyle="horizontal" visible="true">
+                        <button id="btnOpenLocalWPSYUN" label="导入文件" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                    </box>
+                    <separator id="sepWPSClound"/>
+                </group>
+                <group id="grpWPSWork" label="OA助手文档操作功能组" getVisible="OnGetVisible">
+                    <button id="btnSaveToServer" label="保存到OA" onAction="OnAction" getEnabled="OnGetEnabled" getImage="GetImage" size="large"/>
+                    <button id="btnSaveAsFile" label="保存本地" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large" />
+                    <box id="boxWPSWorkEx" boxStyle="vertical" visible="true">
+                        <button id="btnChangeToPDF" label="转PDF上传" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                        <!-- <button id="btnChangeToUOT" label="转UOT上传" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/> -->
+                        <button id="btnChangeToOFD" label="转OFD上传" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                    </box>
+                    <separator id="sepWPSWork" getVisible="OnGetVisible" />
+                </group>
+                <group id="grpOAExtend" label="扩展功能组" getVisible="OnGetVisible">
+                    <button id="btnInsertRedHeader" label="套红头" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                    <button id="btnRevokeRedHeader" label="撤销红头" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                    <button id="btnInsertSeal" label="印章" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large" />
+                   <!--  <button id="btnUploadOABackup" label="备份正文" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                    <button id="btnClearRevDoc" label="清稿" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large" />
+                    <button id="btnInsertBookmark" label="导入书签" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large" />
+                    <button id="btnImportTemplate" label="导入模板" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/> -->
+                    <separator id="sepOAExtend" getVisible="OnGetVisible" />
+                </group>
+                <!-- <group id="grpRevision" label="OA修订功能按钮组" getVisible="OnGetVisible">
+                    <box id="boxRevsion1" boxStyle="horizontal" visible="true">
+                        <button id="btnOpenRevision" label="打开修订" onAction="OnAction" getLabel="OnGetLabel" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large" />
+                        <button id="btnCloseRevision" label="关闭修订" onAction="OnAction" getLabel="OnGetLabel" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large" />
+                    </box>
+                    <box id="boxRevsion2" boxStyle="horizontal" visible="true">
+                        <button id="btnAcceptAllRevisions" label="接收修订" getLabel="OnGetLabel" getEnabled="OnGetEnabled" getVisible="OnGetVisible" onAction="OnAction" getImage="GetImage" size="large" />
+                        <button id="btnRejectAllRevisions" label="拒绝修订" getLabel="OnGetLabel" getEnabled="OnGetEnabled" getVisible="OnGetVisible" onAction="OnAction" getImage="GetImage" size="large" />
+                    </box>
+                    <separator id="sepWPSRevision" getVisible="OnGetVisible" />
+                </group> -->
+                <!-- <group id="grpFreqUsed" label="常用功能组" getVisible="OnGetVisible">
+                    <box id="boxFreqUsed1" boxStyle="horizontal" visible="true">
+                        <button id="btnInsertPic" label="插入图片" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                        <button id="btnInsertDate" label="插入日期" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                        <button id="btnPageSetup" label="页面设置" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+
+                    </box>
+                    <box id="boxFreqUsed2" boxStyle="horizontal" visible="true">
+                        <button id="btnOpenScan" label="打开扫描仪" getLabel="OnGetLabel" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                        <button id="btnQRCode" label="二维码" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                        <button id="btnPrintDOC" label="打印设置" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                    </box>
+                    <separator id="sepWPSFreqUsed" getVisible="OnGetVisible" />
+                </group> -->
+                <group id="grpDocSource" label="文件来源" getVisible="OnGetVisible">
+                    <box id="boxFileSource" boxStyle="horizontal" visible="true">
+                        <labelControl id="lblDocSourceTitle" label="文件来源：" />
+                        <button id="lblDocSourceValue" label="ddddd" onAction="OnAction" getLabel="OnGetLabel" />
+                    </box>
+                    <labelControl id="lblDocLandMode" label="" getLabel="OnGetLabel" getVisible="OnGetVisible" />
+                    <box id="boxUserName" boxStyle="horizontal" visible="true">
+                        <labelControl id="lblUserName" label="用户" getLabel="OnGetLabel" />
+                        <button id="btnUserName" label="用户" onAction="OnAction" getLabel="OnGetLabel" />
+                    </box>
+                </group>
+                <group id="grpNotice" label="通知消息" getVisible="OnGetVisible">
+                    <!-- <box id="boxNotice" boxStyle="vertical" visible="true">
+                        <button id="btnSendMessage1" label="执行业务系统函数handleOaFunc1" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                        <button id="btnSendMessage2" label="执行业务系统函数handleOaFunc2" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                    </box> -->
+                    <button id="btnAddWebShape" label="插入活动对象" onAction="OnAction" getEnabled="OnGetEnabled" getVisible="OnGetVisible" getImage="GetImage" size="large"/>
+                </group>
+            </tab>
+            <!-- 在这里可以定义WPS自身的tab页签的一些行为，页签的getEnabled和getVisible等效，无onAction事件-->
+            <!-- 全集可以去open.wps.cn/docs/office的idMso列表查询-->
+            <!--WPS自身功能常见tab的idMso如下-->
+            <!--开始-->
+            <tab idMso="TabHome" getEnabled="OnGetEnabled"/>
+            <!--插入-->
+            <tab idMso="TabInsert" getEnabled="OnGetEnabled"/>
+            <!--页面布局-->
+            <tab idMso="TabPageLayoutWord" getEnabled="OnGetEnabled"/>
+            <!--引用-->
+            <tab idMso="TabReferences" getEnabled="OnGetEnabled"/>
+            <!--审阅-->
+            <tab idMso="TabReviewWord" getEnabled="OnGetEnabled"/>
+            <!--视图-->
+            <tab idMso="TabView" getEnabled="OnGetEnabled"/>
+            <!--章节 bug-->
+            <!-- <tab idMso="TabSection" getEnabled="OnGetEnabled"/> -->
+            <!--安全 bug-->
+            <!-- <tab idMso="TabSecurity" getEnabled="OnGetEnabled"/> -->
+            <!--开发工具-->
+            <tab idMso="TabDeveloper" getEnabled="OnGetEnabled"/>
+            <!--云服务 bug-->
+            <!-- <tab idMso="TabWorkSpace" getEnabled="OnGetEnabled"/> -->
+        </tabs>
+    </ribbon>
+    <commands>
+        <!-- idMso支持getEnabled和onAction，不支持visible属性和事件-->
+        <!-- 文档复制和剪切控制-->
+        <command idMso="Copy" getEnabled="OnGetEnabled" />
+        <command idMso="Cut" getEnabled="OnGetEnabled" />
+        <!-- 文档保存和另存控制-->
+        <command idMso="FileSave" getEnabled="OnGetEnabled" onAction="OnAction"/>
+        <command idMso="SaveAll" getEnabled="OnGetEnabled" />
+        <command idMso="FileSaveAsMenu" getEnabled="OnGetEnabled" onAction="OnAction"/>
+        <command idMso="FileSaveAs" getEnabled="OnGetEnabled" onAction="OnAction"/>
+        <command idMso="FileSaveAsPicture" getEnabled="OnGetEnabled" />
+        <command idMso="SaveAsPicture" getEnabled="OnGetEnabled" />
+        <command idMso="FileMenuSendMail" getEnabled="OnGetEnabled" />
+        <!-- 输出PDF控制-->
+        <command idMso="SaveAsPDF" getEnabled="OnGetEnabled"/>
+        <command idMso="FileSaveAsPDF" getEnabled="OnGetEnabled"/>
+        <command idMso="ExportToPDF" getEnabled="OnGetEnabled"/>
+        <command idMso="FileSaveAsPdfOrXps" getEnabled="OnGetEnabled"/>
+        <!-- 输出OFD控制-->
+        <command idMso="SaveAsOfd" getEnabled="OnGetEnabled"/>
+        <command idMso="FileSaveAsOfd" getEnabled="OnGetEnabled"/>
+        <!--文档打印控制-->
+        <command idMso="FilePrint" getEnabled="OnGetEnabled"/>
+        <command idMso="FilePrintMenu" getEnabled="OnGetEnabled"/>
+        <command idMso="FilePrintPreview" getEnabled="OnGetEnabled"/>
+        <!--文档修订控制-->
+        <command idMso="ReviewTrackChangesMenu" getEnabled="OnGetEnabled"/>
+        <command idMso="ReviewRejectChangeMenu" getEnabled="OnGetEnabled"/>
+        <command idMso="ReviewAcceptChangeMenu" getEnabled="OnGetEnabled"/>
+        <!--文档新建控制-->
+        <command idMso="FileNewMenu" getEnabled="OnGetEnabled" onAction="OnAction"/>
+        <command idMso="FileNew" getEnabled="OnGetEnabled" onAction="OnAction"/>
+        <command idMso="WindowNew" getEnabled="OnGetEnabled" onAction="OnAction"/>
+        <command idMso="FileNewBlankDocument" getEnabled="OnGetEnabled" onAction="OnAction"/>
+    </commands>
+    <contextMenus>
+        <contextMenu idMso="ContextMenuText">
+            <menu id="Menu_ContextMenuText" label="测试右键" visible="true">
+                <button id="ShowAlert_ContextMenuText" label="弹出一个警告框" onAction="OnAction" getImage="GetImage" visible="true"/>
+            </menu>
+        </contextMenu>
+    </contextMenus>
+</customUI>

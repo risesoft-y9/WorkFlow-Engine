@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>自定义书签</title>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src='js/main.js'></script>
+    <script type="text/javascript" src="otherslib/lib/vue.min.js"></script>
+    <style type="text/css">
+        * {
+            box-sizing: border-box;
+        }
+
+        /*清除浮动*/
+        .clear:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        html,
+        body,
+        #bookmark {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .row {
+            width: 100%;
+            border-top: 2px solid #e7e7e7;
+        }
+
+        .row>div {
+            height: 100%;
+        }
+
+        #bk_select {
+            width: 100%;
+            padding-left: 5%;
+        }
+
+        .def_control {
+            height: 65%;
+            width: 100%;
+            font-size: 18px;
+        }
+
+        .btn_box {
+            width: 12%;
+            float: left;
+            line-height: 3.3em;
+            margin-left: 2%;
+        }
+
+        .btn_box:last-of-type {
+            float: right;
+            margin-right: 2%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="bookmark">
+        <div class="row" style="height:20%;padding-top: 3%;">
+            <div id="bk_select">
+                <span>书签名称：</span>
+                <select class="def_control" style="width: 80%;" v-model="bookItem" @change="vm.getBookMark()">
+                    <option value="-1">请选择书签</option>
+                    <option v-for="(item,index) in bookmarks" :value="index" :key="index">{{item.bookmarkname}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="row" style="height: 65%;padding-top: 3%;">
+            <p id="showResult">请先从上方的下拉列表中选择指定书签后，再进行添加或删除操作！</p>
+        </div>
+        <div class="row clear" style="height: 15%;">
+            <div class="btn_box">
+                <button class="def_control" type="button" disabled="disabled" id="add" @click="vm.addBookMark()">添加</button>
+            </div>
+            <div class="btn_box">
+                <button class="def_control" type="button" disabled="disabled" id="del" @click="vm.delBookMark()">删除</button>
+            </div>
+            <div class="btn_box">
+                <button class="def_control" type="button" @click="vm.cancel()">取消</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+<script>
+    var vm = new Vue({
+        el: "#bookmark",
+        data: {
+            bookmarks: [],      // 书签下拉框数据
+            bookItem: -1,      // 选中的书签下标
+            bookmarksign: "",   // 书签对象
+            bookmarkname: "",   // 书签名称
+        },
+        methods: {
+            cancel: function () {  // 取消按钮
+                window.close();
+                wps.OAAssist.ShellExecute("ksowebstartupwps://");   // 将WPS程序置前
+            },
+            getAllBookMark: function () {  // 加载下拉框数据
+                var doc = wps.WpsApplication().ActiveDocument;
+                var bookmarkData = GetDocParamsValue(doc, "bookmarkData");
+                if (typeof (bookmarkData) == undefined || bookmarkData == null || bookmarkData == "") {
+                    // alert("未传入有效的书签数据,下拉框加载失败!");
+                    // return;
+                    bookmarkData=[{
+                        bookmarksign:'bookmark1',
+                        bookmarkname:"我是测试书签1"
+                    },{
+                        bookmarksign:'bookmark2',
+                        bookmarkname:"我是测试书签2"
+                    }]
+                }
+                this.bookmarks = bookmarkData;    // 书签列表赋值
+                console.log("数据：" + vm.bookmarks);
+            },
+            getBookMark: function () {  // 获取选中书签的信息并保存在vue中
+                // var _this = this;
+                var bookmarkindex = vm.bookItem;    // 获取选中下拉框的坐标
+                if (bookmarkindex == -1) {
+                    $("#showResult").html("请先从上方的下拉列表中选择指定书签后，再进行添加或删除操作！");
+                    $("#add").attr('disabled', true);
+                    $("#del").attr('disabled', true);
+                    return;
+                }
+                vm.bookmarksign = vm.bookmarks[bookmarkindex].bookmarksign; // 选中书签对象的书签名
+                vm.bookmarkname = vm.bookmarks[bookmarkindex].bookmarkname; // 选中书签对象的内容
+                $("#showResult").html(""); // 隐藏文本
+                if (vm.bookmarksign != "" || vm.bookmarkname != "") {   // 打开添加及删除按钮
+                    $("#add").attr('disabled', false);
+                    $("#del").attr('disabled', false);
+                }
+            },
+            addBookMark: function () {   // 添加书签到文档中
+                if (vm.bookmarksign == "" || vm.bookmarkname == "") {
+                    alert("书签不存在,操作失败");
+                    return;
+                }
+                // 插入文字型窗体域
+                var wpsApp = wps.WpsApplication();
+                var doc = wpsApp.ActiveDocument;
+                var selection = wpsApp.ActiveWindow.Selection;
+                var range = selection.Range;
+                var fields = doc.FormFields;
+                fields.Shaded = true; // 显示底纹
+
+                var formField = fields.Add(range, wps.Enum&&wps.Enum.wdFieldFormTextInput||70);//枚举值兼容性写法，70为枚举表中wps.Enum.wdFieldFormTextInput的值
+                formField.Name = vm.bookmarksign; // 书签名称设置
+                formField.Result = vm.bookmarkname; // 窗体域的显示结果设置
+                //选中，主动触发刷新
+                wps.WpsApplication().ActiveDocument.Range(selection.Start,selection.Start).Select()
+                // 添加成功给予提示
+                $("#showResult").html("书签【" + vm.bookmarksign + "】添加成功！");
+            },
+            delBookMark: function () {   // 删除书签
+                if (vm.bookmarksign == "") {
+                    alert("书签标记不存在,操作失误");
+                    return;
+                }
+                // 删除指定窗体域
+                var doc = wps.WpsApplication().ActiveDocument;
+                var fields = doc.FormFields;
+                var flag = false;
+                if (fields.Count > 0) {
+                    for (var i = 1; i <= fields.Count; i++) {
+                        var formField = fields.Item(i);
+                        if (formField.Name == vm.bookmarksign) {
+                            flag = true;
+                            formField.Delete();
+                            //选中，主动触发刷新
+                            wps.WpsApplication().ActiveDocument.Range(selection.Start,selection.Start).Select()
+                        }
+                    }
+                }
+                if (flag) {
+                    $("#showResult").html("书签【" + vm.bookmarksign + "】删除成功！");
+                } else {
+                    alert("此书签不存在，请重新选择要删除的书签！");
+                }
+            }
+        },
+        created: function () {
+            this.getAllBookMark();
+        }
+    });
+</script>

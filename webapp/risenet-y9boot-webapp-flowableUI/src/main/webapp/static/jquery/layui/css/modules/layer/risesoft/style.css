@@ -1,0 +1,44 @@
+﻿/** 
+ 
+ @Name: layer's style
+ @Date: 2012.09.15
+ @Author: yishen
+ @blog： sentsin.com
+ 
+**/
+
+/*  
+通过body前缀，是为了确保你皮肤的优先级
+你可以通过调试工具重置更多样式 
+*/
+body .layer-msg-risesoft-success {
+	 border:1px solid #1a6eae;
+	 background:#1a6eae;
+	 text-align: center;
+	 display: table-cell; 
+	 vertical-align:middle; 
+	 color:white;
+	/*  z-index: 99999; */
+	 padding-bottom: 1vh;
+	 /* margin-bottom: 1vh;  */
+}
+
+body .layer-msg-risesoft-error {
+	 border:1px solid #ff0000;
+	 background:#ff0000;
+	 text-align: center;
+	 display: table-cell; 
+	 vertical-align:middle; 
+	 color:white;
+	/*  z-index: 99999; */
+	 padding-bottom: 1.5vh;
+	 /*  margin-bottom: 1vh;  */
+}
+
+body .layer-msg-risesoft-center{
+	text-align: center;
+	 display: table-cell; 
+	 vertical-align:middle; 
+}
+
+

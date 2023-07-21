@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jaxws="http://cxf.apache.org/jaxws" 
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+		http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+	
+	<bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider">
+		<property name="mapper">
+			<bean class="com.fasterxml.jackson.databind.ObjectMapper">
+				<property name="dateFormat">
+					<bean class="java.text.SimpleDateFormat">
+							<constructor-arg value="yyyy-MM-dd HH:mm:ss" />
+					</bean>
+				</property>
+			</bean>
+		</property>
+	</bean> 
+	
+	<import resource="classpath:META-INF/cxf/cxf.xml"/>
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+	
+	<!-- TodoTaskManager -->
+	<!-- <jaxws:server id="declareinfoManagerWS" serviceClass="net.risesoft.fileflow.api.DeclareinfoManager" address="/ws/declareinfo">
+		<jaxws:serviceBean>
+			<ref bean="declareinfoManager" />
+		</jaxws:serviceBean>
+	</jaxws:server>
+	
+	<jaxws:server id="calendarManagerWS" serviceClass="net.risesoft.fileflow.api.CalendarManager" address="/ws/calendar">
+		<jaxws:serviceBean>
+			<ref bean="calendarManager" />
+		</jaxws:serviceBean>
+	</jaxws:server> -->
+    
+	
+	<!-- <jaxrs:server id="restServices" address="/rest">
+		<jaxrs:serviceBeans>
+			<ref bean="declareinfoManager" />
+			<ref bean="calendarManager" />
+		</jaxrs:serviceBeans>	
+		
+		<jaxrs:extensionMappings>
+			<entry key="json" value="application/json" />
+			<entry key="xml" value="application/xml" />
+		</jaxrs:extensionMappings>
+		<jaxrs:providers>
+			<ref bean="jsonProvider" />
+		</jaxrs:providers>
+	</jaxrs:server> -->
+	
+</beans>

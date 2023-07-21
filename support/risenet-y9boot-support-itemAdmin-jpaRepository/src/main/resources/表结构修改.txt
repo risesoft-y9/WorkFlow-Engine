@@ -1,0 +1,18 @@
+ChaoSong            FF_ChaoSong        添加     PROCESSSERIALNUMBER,TASKID,opinionState,opinionContent,opinionGroup字段
+
+DraftEntity         FF_DraftEntity     添加     NEIBU字段
+
+Opinion             FF_Opinion         添加    POSITIONID字段
+
+TransactionFile     FF_ATTACHMENT      添加  FULLPATH,REALFILENAME字段
+
+
+
+7-17
+SpeakInfo           FF_SpeakInfo       添加READUSERID字段
+添加表                          WorkOrderEntity    y9_form_workorder
+
+8-10
+添加表                          TaskVariable    FF_TASKVARIABLE
+
+添加表                          ErrorLog    FF_ERRORLOG

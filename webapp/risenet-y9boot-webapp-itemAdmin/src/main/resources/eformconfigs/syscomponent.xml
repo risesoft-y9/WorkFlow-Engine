@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<Components>
+  <Component type="11" name="简单数据列表" id="smList" class="net.business.engine.control.SimpleDataList" icon="slist.gif">
+      <tableName type="1" isMustInput="true" url="AssisSelectTable.pfm,425,315">数据库表</tableName>
+      <fieldList type="1" isMustInput="true" url="AssisSelectField.pfm?count=2,425,465">列表字段</fieldList>
+      <filter type="1" url="AssisSelectItem.pfm?para=ItemId,300,335">条件过滤</filter>
+	  <sortField type="1" url="AssisSelectField.pfm?method=1,425,465">排序字段</sortField>
+      <showPage type="1" url="AssisSelectTemplate.pfm,445,443">内容显示页</showPage>
+	  <parameter type="1">调用参数</parameter>
+      <listParam type="1" url="assisprog/listformat.jsp,350,270" readonly="true">显示格式</listParam>
+	  <listIcon type="1" url="AssisSelectResMain.pfm?method=1,470,420">列表小图标</listIcon>
+	  <title type="1" url="AssisSelectResMain.pfm?method=1,470,420">标题/图片</title>
+	  <scrollParam type="1" url="assisprog/marquee.htm,365,270" readonly="true">滚动参数</scrollParam>
+      <more type="1" url="assisprog/morePara.htm,365,280">更多链接</more>
+	  <cssStyle type="1" url="showcss">区域Css</cssStyle>
+	  <mainStyle type="1" url="showcss">主标题Css</mainStyle>
+      <listStyle type="1" url="showcss">列表Css</listStyle>
+      <comment>查询分页设置</comment>
+      <queryField type="1" url="setqueryfield.jsp,500,395" readonly="true">查询字段</queryField>
+      <pagePara type="1">分页样式</pagePara>
+	  <comment>多区域参数</comment>
+	  <factoryClass type="1" defaultValue="net.business.engine.external.ResourceFactory2" regExp="^[A-Za-z_][A-Za-z_0-9]*(\.[A-Za-z_][A-Za-z_0-9]*)*$">节点工厂类</factoryClass>
+      <nodId type="1" url="AssisSelectItem.pfm,300,338">节点标识符</nodId>
+	  <itemMarkId type="1" regExp="^[A-Za-z][A-Za-z_0-9]*">标识符参数</itemMarkId>
+      <areaField type="1" url="AssisSelectField.pfm,425,468">分区字段</areaField>
+      <rows type="1" enum="1,2,3,4,5,6,7,8,不限">行数</rows>
+	  <columns type="1" enum="1,2,3,4,5,6,7,8">列数</columns>
+  </Component>
+  <Component type="11" name="查询数据列表" id="dList" class="net.business.engine.control.DataListComponent" validUrl="showcreatesql.jsp,485,480" icon="qlist.gif">
+      <listId type="1" isMustInput="true" url="../SelectQueryList.pfm,445,445" readonly="true">查询列表</listId>
+	  <format type="1" url="formater.htm,600,455" readonly="true">显示格式</format>
+	  <floatValue type="1" enum="不补零,补零">小数位显示</floatValue>
+	  <unitId type="1" url="../htmlunit/SelectHtmlUnit.pfm?type=1,485,490" readonly="true">数据列表单元</unitId>
+	  <dataItem type="1" url="listdataitem.htm,600,520" readonly="true">数据明细处理</dataItem>
+	  <filter type="1" url="AssisSelectItem.pfm?para=ItemId,300,335">条件过滤</filter>
+	  <actionClass type="1">关联Action</actionClass>
+      <comment>查询分页设置</comment>
+      <queryField type="1" url="setqueryfield1.jsp,520,395" readonly="true">查询字段</queryField>
+      <pagePara type="1" url="../htmlunit/SelectHtmlUnit.pfm?type=2,485,490" readonly="true">分页样式</pagePara>
+      <comment>多区域参数</comment>
+	  <factoryClass type="1" defaultValue="net.business.engine.external.ResourceFactory2" regExp="^[A-Za-z_][A-Za-z_0-9]*(\.[A-Za-z_][A-Za-z_0-9]*)*$">节点工厂类</factoryClass>
+      <nodId type="1" url="AssisSelectItem.pfm,300,340">节点标识符</nodId>
+	  <itemMarkId type="1" regExp="^[A-Za-z][A-Za-z_0-9]*">标识符参数</itemMarkId>
+      <areaField type="1" url="AssisSelectField.pfm?method=a,425,465">分区字段</areaField>
+      <rows type="1" enum="1,2,3,4,5,6,7,8,不限">行数</rows>
+	  <columns type="1" enum="1,2,3,4,5,6,7,8">列数</columns>
+  </Component>
+  <Component type="11" name="图文显示" id="pt" class="net.business.engine.control.PicTextManager" icon="ptmn.gif">
+      <tableName type="1" isMustInput="true" url="AssisSelectTable.pfm,425,315">数据库表</tableName>
+      <picFieldList type="1" isMustInput="true" url="AssisSelectField.pfm?count=2,425,465">图片字段</picFieldList>
+	  <picAlign type="1" enum="左对齐,右对齐,顶边对齐,水平居中,基线">图片布局</picAlign>
+	  <pictureAttr type="1" url="showcss">图片样式</pictureAttr>
+	  <titleField type="1" url="AssisSelectField.pfm?count=2,425,468">标题/内容</titleField>
+	  <titleCss type="1" url="showcss">标题样式</titleCss>
+      <filter type="1">条件过滤</filter>
+	  <sortField type="1" url="AssisSelectField.pfm?method=1,425,468">排序字段</sortField>
+      <showPage type="1" url="AssisSelectTemplate.pfm,445,445">内容显示页</showPage>
+	  <parameter type="1">调用参数</parameter>
+      <listParam type="1" url="assisprog/listformat.jsp?method=1,350,275" readonly="true">显示格式</listParam>
+	  <title type="1" url="AssisSelectResMain.pfm?method=1,470,420">标题/图片</title>
+	  <scrollParam type="1" url="assisprog/marquee.htm,365,275" readonly="true">滚动参数</scrollParam>
+      <more type="1">更多链接</more>
+	  <cssStyle type="1" url="showcss">区域Css</cssStyle>
+	  <mainStyle type="1" url="showcss">主标题Css</mainStyle>
+	  <listStyle type="1" url="showcss">列表Css</listStyle>
+      <comment>查询分页设置</comment>
+      <queryField type="1" url="setqueryfield.jsp,500,395" readonly="true">查询字段</queryField>
+      <pagePara type="1">分页样式</pagePara>
+  </Component>
+  <Component type="11" name="内容包含" permit="1" id="cinc" class="net.business.engine.control.ContentInclude" icon="cinc.gif">
+    <includeUrl type="1" isMustInput="true" url="AssisSelectResMain.pfm,470,423">包含资源</includeUrl>
+	<appendPara type="1" defaultValue="1" enum="是,否">追加链接参数</appendPara>
+	<contentFilter type="1" >过滤条件</contentFilter>
+    <isCache type="1" defaultValue="1" enum="是,否">是否缓存</isCache>
+  </Component>
+  <Component type="33" name="执行部件" id="exec" permit="0" class="net.business.engine.control.ExecComponent" icon="exec.gif">
+    <className type="1" isMustInput="true">类名称</className>
+    <paraValue type="1">所需参数值</paraValue>
+	<needConn type="1" defaultValue="1" enum="需要,不需要">数据库操作</needConn>
+  </Component>
+  <Component type="11" name="模板引用" id="nest" class="net.business.engine.control.TemplateInclude" icon="nest.gif">
+    <tempId type="1" url="AssisSelectTemplate.pfm?type=v&amp;method=1,445,443" readonly="true" isMustInput="true">模板ID</tempId>
+  </Component>
+  <Component type="11" name="栏目列表" id="imenu" class="net.business.engine.control.ItemList" icon="imenu.gif">
+    <factoryClass type="1" isMustInput="true" defaultValue="net.business.engine.external.ResourceFactory2" regExp="^[A-Za-z_][A-Za-z_0-9]*(\.[A-Za-z_][A-Za-z_0-9]*)*$">节点工厂类</factoryClass>
+    <nodId type="1" url="AssisSelectItem.pfm,300,335">节点标识符</nodId>
+	<itemMarkId type="1" regExp="^[A-Za-z][A-Za-z_0-9]*">标识符参数</itemMarkId>
+	<right type="1" regExp="(^[0-9]*$)">权限类型位值</right>
+    <listStyle type="1" isMustInput="true" enum="下拉菜单,目录树,自定义格式,栏目路径">显示模式</listStyle>
+	<unitId type="1" url="../htmlunit/SelectHtmlUnit.pfm?type=4,485,490" readonly="true">栏目列表单元</unitId>
+	<isCache type="1" defaultValue="1" enum="是,否">是否缓存</isCache>
+    <comment>非自定义格式参数</comment>
+    <level type="1" enum="1,2,3,4,5">最高层次</level>
+    <openWin type="1">链接目标</openWin>
+	<cssStyle type="1" url="showcss">主菜单Css</cssStyle>
+	<dropMenu type="1" url="dropmenusetting.htm,280,165" readonly="true">下拉菜单参数</dropMenu>
+  </Component>
+  <Component type="11" name="格式化编辑" id="clist" permit="0" class="net.business.engine.control.CodeEditListComponent" validUrl="showcreatesql.jsp?type=1,485,480" icon="clist.gif">
+    <listId type="1" isMustInput="true" url="mselect.jsp,500,465" readonly="true">查询/代码</listId>   
+    <nameField type="1" isMustInput="true" menu="allfieldselect.jsp?type=2&amp;field=no,132,120,3" readonly="true">名称字段</nameField>
+	<valueField type="1" isMustInput="true" menu="allfieldselect.jsp?type=2&amp;field=no,132,120,3" readonly="true">数值字段</valueField>
+    <editStyle type="1" isMustInput="true" enum="单选,复选,下拉选择,目录树,显示,复选显示,下拉选择与输入">使用方式</editStyle>
+	<hierarchy type="1" menu="allfieldselect.jsp?type=1,132,120,3" readonly="true">层次码字段</hierarchy>
+	<column type="1" enum="1,2,3,4,5,6,7,8,9,10">单多选列数</column>
+	<formField type="1" isMustInput="true" readonly="true" url="selecttemplatefield.jsp?type=1/2/3,480,460">关联表单字段</formField>
+    <queryField type="1" url="setqueryfield1.jsp?type=s,530,400" readonly="true">行条件/附值</queryField>
+	<listStyle type="1" url="showcss">元素css样式</listStyle>
+  </Component>
+  <Component type="33" name="不定长数据编辑" id="unFt" class="net.business.engine.control.UnFixedTable" validUrl="showcreatesql.jsp?type=1,485,480" icon="unfixtab.gif" templateType="e">
+    <listId type="1" isMustInput="true" url="../SelectQueryList.pfm,445,445" readonly="true">查询列表</listId>   
+    <sysFieldList type="1" isMustInput="true" menu="sysfieldselect.jsp?type=1&amp;field=styleDefine,132,120,7" readonly="true">系统字段</sysFieldList>
+	<sequenceField type="1" isMustInput="true" menu="sysfieldselect.jsp?type=2&amp;field=styleDefine,132,120,7" readonly="true">序号字段</sequenceField>
+    <styleDefine type="1" isMustInput="true" url="unfixtabformat.htm,740,460" readonly="true">样式定义</styleDefine>
+	<dataItem type="1" url="listunfdataitem.htm,600,520" readonly="true">计算公式</dataItem>
+	<unitId type="1" url="../htmlunit/SelectHtmlUnit.pfm?type=3,485,490" readonly="true">行编辑单元</unitId>
+	<floatValue type="1" enum="不补零,补零">小数位显示</floatValue>
+	<isNeedTitle type="1" enum="是,否" defaultValue="0">显示列标题</isNeedTitle>
+    <queryField type="1" url="setqueryfield1.jsp?type=s,520,400" readonly="true">行条件/附值</queryField>
+	<sortField type="1" url="AssisSelectField.pfm?method=1,425,465">排序字段</sortField>
+    <limitCount type="1" enum="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20">最少显示行数</limitCount>
+    <actionClass type="1">关联Action</actionClass>
+  </Component>
+  <Component type="33" name="在线编辑部件" hidden="true" id="edit" permit="0" class="net.business.engine.control.WebEditComponent" icon="edit.gif">
+    <editCssStyle type="1">样式文件</editCssStyle>
+	<previewPage type="1">预览页面</previewPage>
+	<blankNum type="1" enum="1,2,3,4,5,6,7,8">段首空格数</blankNum>
+	<width type="1" regExp="^[1-9][0-9]{0,2}%?$">显示宽度</width>
+    <height type="1" regExp="^[1-9][0-9]{0,2}%?$">显示高度</height>
+    <saveField type="1" isMustInput="true" url="AssisSelectField.pfm?count=1&amp;method=m,425,468" readonly="true">内容存储字段</saveField>
+	<formField type="1" readonly="true" url="selecttemplatefield.jsp?type=2&amp;ftype=hidden,460,445">图片链接字段</formField>
+	<relation type="1" url="assisprog/setrelation.htm">系统字段映射</relation>
+	<method type="1" isMustInput="true" enum="内容编辑,内容显示" defaultValue="0">使用模式</method>
+	<valid type="1" enum="空,非空">内容校验</valid>
+  </Component>
+  <Component type="33" name="在线编辑部件" id="ckedit" permit="0" class="net.business.engine.control.CkEditComponent" icon="edit.gif">
+	<previewPage type="1">预览页面</previewPage>
+	<width type="1" regExp="^[1-9][0-9]{0,2}%?$">显示宽度</width>
+    <height type="1" regExp="^[1-9][0-9]{0,2}%?$">显示高度</height>
+    <saveField type="1" isMustInput="true" url="AssisSelectField.pfm?count=1&amp;method=m,425,468" readonly="true">内容存储字段</saveField>
+	<formField type="1" readonly="true" url="selecttemplatefield.jsp?type=2&amp;ftype=hidden,460,445">图片链接字段</formField>
+	<method type="1" isMustInput="true" enum="内容编辑,内容显示" defaultValue="0">使用模式</method>
+	<valid type="1" enum="空,非空">内容校验</valid>
+  </Component>
+  <Component type="33" name="工作流管理" id="wflow" class="net.business.engine.control.WorkFlowComponent" templateType="e" icon="wflow.gif">
+    <interfaceClass type="1" isMustInput="true" defaultValue="net.jbpm.external.WorkFlowSmartForm" regExp="^[A-Za-z_][A-Za-z_0-9]*(\.[A-Za-z_][A-Za-z_0-9]*)*$">接口实现类</interfaceClass>
+	<instanceField type="1" isMustInput="true" url="selecttemplatefield.jsp?type=2&amp;ftype=hidden,460,445" readonly="true">实例表单字段</instanceField>
+	<description type="1" url="setwfdescription.jsp,480,525" readonly="true">任务描述字段</description>
+	<workFlowId type="1" isMustInput="true" defaultValue="processID" regExp="^[A-Za-z_][A-Za-z_]+$">工作流Id参数</workFlowId>
+	<instanceId type="1" isMustInput="true" defaultValue="insid" regExp="^[A-Za-z_][A-Za-z_]+$">实例Id参数</instanceId>
+	<selectUserUrl type="1" isMustInput="true" defaultValue="/sysplat/common/selectuserbytasknode.jsp?id=">用户选择Url</selectUserUrl>
+	<selectWin type="1" defaultValue="520,530">选择窗口大小</selectWin>
+	<unitId type="1" url="../htmlunit/SelectHtmlUnit.pfm?type=5,485,490" readonly="true">HTML样式单元</unitId>
+	<wfId type="1" isMustInput="true" url="selectjbpmworkflow.jsp,400,420" readonly="true">指定的工作流</wfId>
+	<viewUrl type="1" url="setmsgurl.jsp,480,510" readonly="true">数据查看</viewUrl>
+	<saveButton type="1" defaultValue="暂存">暂存按钮名称</saveButton>
+  </Component>
+  <Component type="32" name="消息提醒部件" id="msg" permit="0" class="net.business.engine.control.MessageComponent" icon="login.gif">
+    <method type="1" isMustInput="true" menu="messagegmethod.jsp?type=11,132,120,6" readonly="true">提醒方式</method>
+	<description type="1" isMustInput="true" url="setmsgdescription.jsp,480,525" readonly="true">提醒内容</description>
+	<messageFactory type="1" isMustInput="true" defaultValue="net.chysoft.common.MessageProcess">消息处理类</messageFactory>
+	<msgType type="1" regExp="^[0-9]{0,5}%?$">消息编号</msgType>
+	<alertObject type="1" defaultValue="net.chysoft.ext.JbpmAlertObject">提醒对象</alertObject>
+	<selectUserUrl type="1" isMustInput="true" defaultValue="/sysplat/common/selectusers.jsp">用户选择Url</selectUserUrl>
+	<selectWin type="1" defaultValue="595,550">选择窗口大小</selectWin>
+    <processNodeTask type="1" url="selectjbpmtask.jsp,650,510" readonly="true">流程节点任务</processNodeTask>
+    <transName type="1">流程操作限制</transName>
+	<viewUrl type="1" url="setmsgurl.jsp,480,510" readonly="true">信息查看</viewUrl>
+  </Component>
+  <Component type="33" name="表单签名" id="sign" class="net.business.engine.control.SignComponent" icon="issue.gif">
+    <listView type="1" isMustInput="true" url="selectsignfield.jsp,460,445" readonly="true" defaultValue="1;5;2;4,0,yyyy-MM-dd">签名显示内容</listView>
+    <unitId type="1" url="../htmlunit/SelectHtmlUnit.pfm?type=1,485,490" defaultValue="126" readonly="true">签名显示格式</unitId>
+    <singInput type="1" defaultValue="txyj,请填写意见内容,127">签名输入框</singInput>
+	<instanceId type="1" url="selecttemplatefield.jsp?ftype=hidden,460,445" readonly="true">实例表单字段</instanceId>
+	<showmenu type="1" enum="不使用,使用">辅助输入</showmenu>
+	<processNodeTask type="1" url="selectjbpmtask.jsp,650,510" readonly="true">流程节点任务</processNodeTask>
+	<useWebSign type="1" url="selectsignfields.jsp?ftype=textarea,460,445" readonly="true">页面签章</useWebSign>
+	<copyto type="1" regExp="^[A-Za-z][A-Za-z0-9]+$">抄送阅读参数</copyto>
+	<blankfile defaultValue="/WEB-INF/inc/cp.txt">空白填充文件</blankfile>
+  </Component>
+  <Component type="11" name="Office文档控件" id="off" permit="0" class="net.business.engine.control.OfficeControl" icon="rlist.gif">
+      <mguid type="1" isMustInput="true" url="selecttemplatefield.jsp?ftype=hidden,460,445" readonly="true">主表guid</mguid> 
+	  <listView type="1" isMustInput="true" url="selectofficefield.jsp,460,445" readonly="true" defaultValue="1;2;3;4,1,yyyy-MM-dd HH:mm;5">列表显示内容</listView>
+	  <unitId type="1" isMustInput="true" url="../htmlunit/SelectHtmlUnit.pfm?type=1,485,490" readonly="true">列表显示格式</unitId>
+      <method type="1" enum="浏览,修改删除,修改创建人删除,普通显示,普通显示创建人删除" defaultValue="1">使用方式</method>
+  </Component>  
+  <Component type="31" name="静态发布查询" id="issue" class="net.business.engine.control.PublishComponent" templateType="q" icon="issue.gif">
+	<sysFieldId type="1" isMustInput="true" menu="issuedefine.jsp?type=-1,132,140,7" readonly="true">链接字段</sysFieldId>
+	<itemField type="1" isMustInput="true" menu="issuedefine.jsp?type=-1,132,140,7" readonly="true">栏目字段</itemField>
+  </Component>
+  <Component type="33" name="附件管理部件" id="attach" class="net.business.engine.control.AttachmentComponent" icon="attach.gif">
+      <relation type="1" isMustInput="true" url="AssisSelectField.pfm?count=1&amp;method=m,425,468">主表字段</relation>
+	  <tableId type="1" isMustInput="true" regExp="^[0-9]+$">主表数字Id</tableId>
+	  <attachmentTable type="1" isMustInput="true" defaultValue="Attachment_User">附件存储表</attachmentTable>
+	  <width type="1" regExp="^[1-9][0-9]{0,2}%?$">显示宽度</width>
+      <limitCount type="1" enum="1,2,3,4,5,6,7,8,9,不限">附件个数限制</limitCount>
+	  <eachCount type="1" enum="1,2,3,4,5,6,7,8,9">每次上载个数</eachCount> 
+      <method type="1" isMustInput="true" enum="附件显示,附件上载">使用模式</method>
+      <attachUrl type="1" isMustInput="true" regExp="^\/([A-Za-z0-9_\.]+\/*)+$">附件存储URL</attachUrl>
+	  <saveMethod type="1" enum="文件,字段,文件及字段">存储方式</saveMethod>
+	  <prefixUrl type="1">URL前缀</prefixUrl> 
+      <showSize type="1" defaultValue="1" isMustInput="true" enum="是,否">显示附件大小</showSize>
+	  <style type="1" url="showcss">显示样式Css</style>
+  </Component>
+  <!--Component type="32" name="密码修改" id="mdps" class="net.business.engine.control.ChangePassword" icon="mpass.gif">
+      <tableName type="1" isMustInput="true">数据库表</tableName>
+      <loginId type="1" isMustInput="true">帐号字段</loginId>
+      <password type="1" isMustInput="true">密码字段</password>
+      <target type="1" length="20" isMustInput="false">提交窗体</target>
+  </Component-->
+  <!--Component type="11" name="资源列表显示" id="rs" class="net.business.engine.control.ResourceList" icon="rlist.gif">
+      <varaible type="1" isMustInput="true">资源ID变量</varaible>
+      <style type="1" isMustInput="true" enum="1,2,3,4" defaultValue="2">显示样式</style>
+      <target type="1" length="20" isMustInput="false">链接目标</target>
+  </Component-->
+</Components>

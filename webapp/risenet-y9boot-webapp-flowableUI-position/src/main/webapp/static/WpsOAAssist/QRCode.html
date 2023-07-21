@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>二维码生成</title>
+    <script  type="text/javascript" src="./otherslib/lib/qrcode.min.js"></script>
+    <script type="text/javascript" src="./otherslib/lib/jquery.min.js"></script>
+    <style>
+        .box {
+            width: 110px;
+            height: 110px;
+            border: 1px solid #999;
+        }
+        #qrcode {
+            width: 100px;
+            height: 100px;
+            margin: 5px auto;
+        }
+        #tip{
+            font-size: 13px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div id="qrcode">
+    </div>
+    <img src="" id="imgData"></img>
+</div>2+66
+
+
+<input type="text" id="text" value="二维码文字"> &nbsp;<span id="tip"></span> <br>
+<input type="button" id="btnMakeQRCode" value="生成二维码">
+<input type="button" id="btnInsert" value="插入文档中">
+</body>
+
+<script>
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+            width : 100,//设置宽高
+            height : 100
+        });
+
+    document.getElementById('btnMakeQRCode').onclick = function () {
+        makeCode();
+    }
+
+    document.getElementById('btnInsert').onclick = function() {
+        let l_canvasImg = $("#qrcode").find("canvas")[0]; 
+        let l_DataURL = l_canvasImg.toDataURL("image/png");
+        //wps.WpsApplication().Selection.Goto();
+        let l_shapeQR=wps.WpsApplication().ActiveDocument.Shapes.AddBase64Picture(l_DataURL);
+        //l_shapeQR.Left = 
+        l_shapeQR.Visible = true;
+        l_shapeQR.Select();
+    }
+
+    $("#text").on("blur", function () {
+		makeCode();
+	}).on("keydown", function (e) {
+		if (e.keyCode == 13) {
+			makeCode();
+		}
+	});
+
+    /**
+     */
+    function makeCode () {		
+        let elText = document.getElementById("text");
+        if (!elText.value) {
+            $("#tip").text("请输入二维码文字");
+            elText.focus();
+            return;
+        }
+        $("#tip").text("");
+	    qrcode.makeCode(elText.value);
+    }
+
+    
+
+</script>
+</html>
