@@ -26,7 +26,7 @@ spring:
     cloud:
         nacos:
             config:
-                enabled: true
+                enabled: false
                 group: DEFAULT_GROUP
                 namespace: vue
                 server-addr: https://vue.youshengyun.com:443
