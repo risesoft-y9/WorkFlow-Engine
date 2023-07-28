@@ -47,7 +47,7 @@ spring:
                     slow-sql-millis: 1000
             y9-public:
                 driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://localhost:3306/y9_kernal?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false
+                url: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false
                 username: root
                 #driver-class-name: oracle.jdbc.OracleDriver
                 #url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
