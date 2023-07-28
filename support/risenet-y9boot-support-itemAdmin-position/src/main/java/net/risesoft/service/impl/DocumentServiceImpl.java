@@ -1332,7 +1332,7 @@ public class DocumentServiceImpl implements DocumentService {
             processParam.setProcessInstanceId(task.getProcessInstanceId());
             processParam.setStartor(Y9LoginUserHolder.getPositionId());
             processParam.setStartorName(Y9LoginUserHolder.getPosition().getName());
-
+            processParam.setSended("true");
             // 保存流程信息到ES
             process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getPosition());
 
@@ -1377,7 +1377,7 @@ public class DocumentServiceImpl implements DocumentService {
             processParam.setProcessInstanceId(task.getProcessInstanceId());
             processParam.setStartor(Y9LoginUserHolder.getPositionId());
             processParam.setStartorName(Y9LoginUserHolder.getPosition().getName());
-
+            processParam.setSended("true");
             // 保存流程信息到ES
             process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getPosition());
 
@@ -1420,7 +1420,7 @@ public class DocumentServiceImpl implements DocumentService {
             processParam.setProcessInstanceId(task.getProcessInstanceId());
             processParam.setStartor(Y9LoginUserHolder.getPositionId());
             processParam.setStartorName(Y9LoginUserHolder.getPosition().getName());
-
+            processParam.setSended("true");
             // 保存流程信息到ES
             process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getPosition());
 
