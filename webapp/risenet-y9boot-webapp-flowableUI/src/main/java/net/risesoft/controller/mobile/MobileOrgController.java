@@ -218,7 +218,7 @@ public class MobileOrgController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPersonById(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId);
             OrgUnit orgUnit = personApi.getBureau(tenantId, userId);
             OrgUnit orgUnit1 = personApi.getParent(tenantId, userId);
             Y9LoginUserHolder.setPerson(person);

@@ -71,7 +71,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
     @Override
     @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE)
     public SignaturePictureModel saveOrUpdate(String tenantId, String userId, String spJson) {
-        Person person = personManager.getPersonById(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
 

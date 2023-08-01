@@ -240,7 +240,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                         if (orgUnit.getId().equals(orgUnit1.getId()) && !receivePerson.getDeptId().equals(deptId)) {
                             isAdd = false;
                             // 同一个委办局，不能设置一个人为两个单位的收文员
-                            Person person = personManager.getPersonById(Y9LoginUserHolder.getTenantId(), userId);
+                            Person person = personManager.getPerson(Y9LoginUserHolder.getTenantId(), userId);
                             msg += "[" + person.getName() + "已是" + receivePerson.getDeptName() + "部门的收发员]<br>";
                         }
                     }

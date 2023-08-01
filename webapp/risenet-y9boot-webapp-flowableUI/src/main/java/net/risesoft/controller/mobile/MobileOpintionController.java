@@ -165,7 +165,7 @@ public class MobileOpintionController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPersonById(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId);
             Y9LoginUserHolder.setPerson(person);
             listMap = opinionManager.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
             map.put("opinionList", listMap);

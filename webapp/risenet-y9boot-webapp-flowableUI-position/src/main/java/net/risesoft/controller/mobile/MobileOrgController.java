@@ -250,7 +250,7 @@ public class MobileOrgController {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Position position = positionApi.getPosition(tenantId, positionId);
-            Person person = personManager.getPersonById(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId);
             OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, positionId);
             OrgUnit orgUnit1 = orgUnitManager.getParent(tenantId, positionId);
             Y9LoginUserHolder.setPerson(person);

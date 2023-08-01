@@ -122,8 +122,8 @@ public class EntrustApiImpl implements EntrustApi {
         EntrustModel entrustModel = null;
         Entrust entrust = entrustService.findOneByOwnerIdAndItemId(ownerId, itemId);
         if (null != entrust) {
-            Person assignee = personManager.getPersonById(tenantId, entrust.getAssigneeId());
-            Person owner = personManager.getPersonById(tenantId, entrust.getOwnerId());
+            Person assignee = personManager.getPerson(tenantId, entrust.getAssigneeId());
+            Person owner = personManager.getPerson(tenantId, entrust.getOwnerId());
 
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             ItemModel itemModel = new ItemModel();
@@ -290,7 +290,7 @@ public class EntrustApiImpl implements EntrustApi {
     @Override
     @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveOrUpdate(String tenantId, String userId, @RequestBody EntrustModel entrustModel) throws Exception {
-        Person person = personManager.getPersonById(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
 

@@ -42,7 +42,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
 	@Override
 	@PostMapping(value = "/deleteById", produces = MediaType.APPLICATION_JSON_VALUE)
 	public void deleteById(String tenantId, String userId, String id) throws Exception {
-		Person person = personManager.getPersonById(tenantId, userId);
+		Person person = personManager.getPerson(tenantId, userId);
 		Y9LoginUserHolder.setTenantId(tenantId);
 		Y9LoginUserHolder.setPerson(person);
 		processTrackService.deleteById(id);
