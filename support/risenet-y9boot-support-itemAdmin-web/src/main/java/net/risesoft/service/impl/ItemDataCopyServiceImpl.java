@@ -92,7 +92,7 @@ import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.sqlddl.DbColumn;
 
-import y9.client.platform.system.SystemApiClient;
+import y9.client.platform.resource.SystemApiClient;
 import y9.client.rest.processadmin.RepositoryApiClient;
 
 /**
