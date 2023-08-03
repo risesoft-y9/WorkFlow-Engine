@@ -31,7 +31,7 @@ public class DataCenterApiImpl implements DataCenterApi {
     @PostMapping(value = "/saveToDateCenter", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean saveToDateCenter(String processInstanceId, String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPersonById(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
         boolean b = dataCenterService.saveToDateCenter(processInstanceId);
         return b;

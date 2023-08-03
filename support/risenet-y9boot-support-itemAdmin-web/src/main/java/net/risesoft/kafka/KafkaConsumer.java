@@ -57,7 +57,7 @@ public class KafkaConsumer {
                 tenantId = targetTenantId;
                 String itemId = (String)map.get("itemId");
                 String personId = (String)map.get("personId");
-                Person person = personManager.getPersonById(targetTenantId, personId);
+                Person person = personManager.getPerson(targetTenantId, personId);
                 Y9LoginUserHolder.setPerson(person);
                 itemDataCopyService.dataCopy(sourceTenantId, targetTenantId, itemId);
 
@@ -68,7 +68,7 @@ public class KafkaConsumer {
                 tenantId = targetTenantId;
                 String systemName = (String)map.get("systemName");
                 String personId = (String)map.get("personId");
-                Person person = personManager.getPersonById(targetTenantId, personId);
+                Person person = personManager.getPerson(targetTenantId, personId);
                 Y9LoginUserHolder.setPerson(person);
                 itemDataCopyService.dataCopy4System(sourceTenantId, targetTenantId, systemName);
             }
