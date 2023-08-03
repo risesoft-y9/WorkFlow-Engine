@@ -1,37 +1,37 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<!-- <groupId>net.risesoft</groupId> -->
-	<artifactId>y9-flowable</artifactId>
-	<packaging>pom</packaging>
-	<!-- <version>v9.6.3-SNAPSHOT</version> -->
-	
-	<parent>
-		<groupId>net.risesoft</groupId>
-		<artifactId>y9-digitalbase-pro</artifactId>
-		<version>v9.6.3-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+    <modelVersion>4.0.0</modelVersion>
+    <!-- <groupId>net.risesoft</groupId> -->
+    <artifactId>y9-flowable</artifactId>
+    <packaging>pom</packaging>
+    <!-- <version>v9.6.3-SNAPSHOT</version> -->
 
-	<modules>
-		<module>rest/risenet-y9boot-rest-interface-itemAdmin</module>
-		<module>rest/risenet-y9boot-rest-interface-processAdmin</module>
-		<module>rest/risenet-y9boot-rest-feignClient-itemAdmin</module>
-		<module>rest/risenet-y9boot-rest-feignClient-processAdmin</module>
-		
-		<module>support/risenet-y9boot-support-itemAdmin-jpaRepository</module>
-		<module>support/risenet-y9boot-support-itemAdmin-position</module>
-		<module>support/risenet-y9boot-support-itemAdmin-web</module>
-		<module>support/risenet-y9boot-support-jodconverter</module>
-		<module>support/risenet-y9boot-support-processAdmin</module>
-		
-		<module>webapp/risenet-y9boot-webapp-flowableUI</module>
-		<module>webapp/risenet-y9boot-webapp-flowableUI-position</module>
-		<module>webapp/risenet-y9boot-webapp-itemAdmin</module>
-		<module>webapp/risenet-y9boot-webapp-jodconverter</module>
-		<module>webapp/risenet-y9boot-webapp-processAdmin</module>
-	</modules>
+    <parent>
+        <groupId>net.risesoft</groupId>
+        <artifactId>y9-digitalbase-pro</artifactId>
+        <version>v9.6.3-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modules>
+        <module>rest/risenet-y9boot-rest-interface-itemAdmin</module>
+        <module>rest/risenet-y9boot-rest-interface-processAdmin</module>
+        <module>rest/risenet-y9boot-rest-feignClient-itemAdmin</module>
+        <module>rest/risenet-y9boot-rest-feignClient-processAdmin</module>
+
+        <module>support/risenet-y9boot-support-itemAdmin-jpaRepository</module>
+        <module>support/risenet-y9boot-support-itemAdmin-position</module>
+        <module>support/risenet-y9boot-support-itemAdmin-web</module>
+        <module>support/risenet-y9boot-support-jodconverter</module>
+        <module>support/risenet-y9boot-support-processAdmin</module>
+
+        <module>webapp/risenet-y9boot-webapp-flowableUI</module>
+        <module>webapp/risenet-y9boot-webapp-flowableUI-position</module>
+        <module>webapp/risenet-y9boot-webapp-itemAdmin</module>
+        <module>webapp/risenet-y9boot-webapp-jodconverter</module>
+        <module>webapp/risenet-y9boot-webapp-processAdmin</module>
+    </modules>
 
 </project>

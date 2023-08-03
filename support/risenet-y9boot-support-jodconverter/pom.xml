@@ -1,26 +1,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.risesoft</groupId>
     <artifactId>risenet-y9boot-support-jodconverter</artifactId>
     <version>v9.6.3-SNAPSHOT</version>
     <packaging>jar</packaging>
-    
+
     <parent>
-		<groupId>net.risesoft</groupId>
-		<artifactId>y9-flowable</artifactId>
-		<version>v9.6.3-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
-	</parent>
-	
+        <groupId>net.risesoft</groupId>
+        <artifactId>y9-flowable</artifactId>
+        <version>v9.6.3-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-		<maven.javadoc.skip>true</maven.javadoc.skip>
-		<java.version>1.8</java.version>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <java.version>1.8</java.version>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>commons-io</groupId>
@@ -69,10 +69,10 @@
     </dependencies>
 
     <build>
-     <plugins>
+        <plugins>
             <!--   要将源码放上去，需要加入这个插件    -->
             <plugin>
-            	<groupId>org.apache.maven.plugins</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
             </plugin>
             <plugin>
@@ -128,5 +128,5 @@
             </plugin>
         </plugins>
     </reporting>
-    
+
 </project>

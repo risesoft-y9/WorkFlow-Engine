@@ -1,18 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.risesoft</groupId>
     <artifactId>risenet-y9boot-webapp-jodconverter</artifactId>
     <version>v9.6.3-SNAPSHOT</version>
-	<packaging>war</packaging>
-	
-	<parent>
-		<groupId>net.risesoft</groupId>
-		<artifactId>y9-flowable</artifactId>
-		<version>v9.6.3-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
-	</parent>
+    <packaging>war</packaging>
+
+    <parent>
+        <groupId>net.risesoft</groupId>
+        <artifactId>y9-flowable</artifactId>
+        <version>v9.6.3-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,27 +22,27 @@
         <appName>file-preview</appName>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
-    
-    <dependencies>
-    	<dependency>
-			<groupId>net.risesoft</groupId>
-			<artifactId>risenet-y9boot-support-fileService-FTP</artifactId>
-			<version>v9.6.3-SNAPSHOT</version>
-		</dependency>
 
-		<dependency>
-			<groupId>net.risesoft</groupId>
-			<artifactId>risenet-y9boot-starter-web</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-        
+    <dependencies>
         <dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-jasper</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		
-		<!-- <dependency>
+            <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-support-fileService-FTP</artifactId>
+            <version>v9.6.3-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-starter-web</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- <dependency>
             <groupId>org.jodconverter</groupId>
             <artifactId>jodconverter-core</artifactId>
             <version>4.3.0</version>
@@ -59,7 +59,7 @@
             <artifactId>jodconverter-spring-boot-starter</artifactId>
             <version>4.3.0</version>
         </dependency> -->
-		
+
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
@@ -125,7 +125,7 @@
             <version>1.9</version>
         </dependency>
         <!-- 解压(rar)-->
-        
+
         <dependency>
             <groupId>com.github.junrar</groupId>
             <artifactId>junrar</artifactId>
@@ -169,48 +169,48 @@
             <version>19.0</version>
         </dependency>
         <dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-		</dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+        </dependency>
     </dependencies>
     <build>
-    	<finalName>jodconverter</finalName>
-       <!--  <resources>
-           <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-                ！注意！：此处如果设置为true，表明该路径下的文件在拷贝的工程中需要过滤其中的ER表达式，及替换其中的表达式为配置的值 ，破坏了静态资源文件的原始编码格式 
-                <filtering>false</filtering>
-            </resource> 
-        </resources> -->
-		
-      	<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
+        <finalName>jodconverter</finalName>
+        <!--  <resources>
+            <resource>
+                 <directory>src/main/resources</directory>
+                 <includes>
+                     <include>**/*</include>
+                 </includes>
+                 ！注意！：此处如果设置为true，表明该路径下的文件在拷贝的工程中需要过滤其中的ER表达式，及替换其中的表达式为配置的值 ，破坏了静态资源文件的原始编码格式 
+                 <filtering>false</filtering>
+             </resource> 
+         </resources> -->
 
-	</build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+
+    </build>
 </project>
