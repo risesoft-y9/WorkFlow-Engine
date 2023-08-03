@@ -31,7 +31,8 @@ public interface ChaoSongRepository extends JpaRepository<ChaoSong, String>, Jpa
 
     Page<ChaoSong> findByProcessInstanceIdOrderByCreateTimeDesc(String processInstanceId, Pageable pageable);
 
-    Page<ChaoSong> findBySenderIdAndProcessInstanceIdOrderByCreateTimeDesc(String senderId, String processInstanceId, Pageable pageable);
+    Page<ChaoSong> findBySenderIdAndProcessInstanceIdOrderByCreateTimeDesc(String senderId, String processInstanceId,
+        Pageable pageable);
 
     List<ChaoSong> findByTaskId(String taskId, Sort sort);
 
@@ -114,7 +115,8 @@ public interface ChaoSongRepository extends JpaRepository<ChaoSong, String>, Jpa
     Page<ChaoSong> getTodoListByUserIdAndSystemName(String userId, String systemName, Pageable pageable);
 
     @Query("from ChaoSong t where t.userId=?1 and t.systemName=?2 and t.status =2  and t.title like ?3")
-    Page<ChaoSong> getTodoListByUserIdAndSystemNameAndTitle(String userId, String systemName, String title, Pageable pageable);
+    Page<ChaoSong> getTodoListByUserIdAndSystemNameAndTitle(String userId, String systemName, String title,
+        Pageable pageable);
 
     @Query("from ChaoSong t where t.processInstanceId=?1 and t.status =1 order by t.readTime desc")
     List<ChaoSong> listAllByProcessInstanceIdOrderByReadTime(String processInstanceId);

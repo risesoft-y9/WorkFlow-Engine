@@ -25,20 +25,25 @@ public class CustomHistoricActivityServiceImpl implements CustomHistoricActivity
 
     @Override
     public List<HistoricActivityInstance> getByProcessInstanceId(String processInstanceId) {
-        return historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId).orderByHistoricActivityInstanceStartTime().asc().list();
+        return historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId)
+            .orderByHistoricActivityInstanceStartTime().asc().list();
     }
 
     @Override
-    public List<HistoricActivityInstance> getByProcessInstanceIdAndActivityType(String processInstanceId, String activityType) {
-        return historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId).activityType(activityType).list();
+    public List<HistoricActivityInstance> getByProcessInstanceIdAndActivityType(String processInstanceId,
+        String activityType) {
+        return historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId)
+            .activityType(activityType).list();
     }
 
     @Override
     public List<HistoricActivityInstance> getByProcessInstanceIdAndYear(String processInstanceId, String year) {
         if (StringUtils.isBlank(year)) {
-            return historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId).orderByHistoricActivityInstanceStartTime().asc().list();
+            return historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId)
+                .orderByHistoricActivityInstanceStartTime().asc().list();
         } else {
-            String sql = "select RES.* from ACT_HI_ACTINST_" + year + " RES WHERE RES.PROC_INST_ID_ = '" + processInstanceId + "' order by START_TIME_ asc";
+            String sql = "select RES.* from ACT_HI_ACTINST_" + year + " RES WHERE RES.PROC_INST_ID_ = '"
+                + processInstanceId + "' order by START_TIME_ asc";
             return historyService.createNativeHistoricActivityInstanceQuery().sql(sql).list();
         }
     }

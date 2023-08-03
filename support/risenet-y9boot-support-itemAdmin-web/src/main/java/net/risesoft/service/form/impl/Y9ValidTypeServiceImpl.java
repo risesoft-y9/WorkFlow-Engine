@@ -75,9 +75,11 @@ public class Y9ValidTypeServiceImpl implements Y9ValidTypeService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             List<Y9ValidType> list = new ArrayList<Y9ValidType>();
             if (StringUtils.isBlank(validType)) {
-                list = y9ValidTypeRepository.findByValidCnNameLike(StringUtils.isNotBlank(validCnName) ? "%" + validCnName + "%" : "%%");
+                list = y9ValidTypeRepository
+                    .findByValidCnNameLike(StringUtils.isNotBlank(validCnName) ? "%" + validCnName + "%" : "%%");
             } else {
-                list = y9ValidTypeRepository.findByValidTypeAndValidCnNameLike(validType, StringUtils.isNotBlank(validCnName) ? "%" + validCnName + "%" : "%%");
+                list = y9ValidTypeRepository.findByValidTypeAndValidCnNameLike(validType,
+                    StringUtils.isNotBlank(validCnName) ? "%" + validCnName + "%" : "%%");
             }
             for (Y9ValidType y9VlidType : list) {
                 Map<String, Object> m = new HashMap<String, Object>(16);

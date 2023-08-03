@@ -41,7 +41,7 @@ public class ItemMultiTenantListener implements ApplicationListener<Y9EventCommo
 
     /** 事项id */
     public static final String ITEM_ID = "11111111-1111-1111-1111-111111111111";
-    
+
     @Autowired
     @Qualifier("jdbcTemplate4Public")
     private JdbcTemplate jdbcTemplate;
@@ -75,8 +75,11 @@ public class ItemMultiTenantListener implements ApplicationListener<Y9EventCommo
             if (null != y9System) {
                 App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian");
                 if (null == app) {
-                    String sql = "INSERT INTO y9_common_app_store (ID,NAME, TAB_INDEX, URL, CHECKED, OPEN_TYPE,SYSTEM_ID,CREATE_TIME,CUSTOM_ID,TYPE,INHERIT,RESOURCE_TYPE,SHOW_NUMBER,ENABLED,HIDDEN) VALUES ('" + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "','办件', 0, '"
-                        + y9Config.getCommon().getFlowableBaseUrl() + "?itemId=" + ITEM_ID + "', 1, 1,'" + y9System.getId() + "','" + sdf.format(new Date()) + "','banjian',2,0,0,0,1,0)";
+                    String sql =
+                        "INSERT INTO y9_common_app_store (ID,NAME, TAB_INDEX, URL, CHECKED, OPEN_TYPE,SYSTEM_ID,CREATE_TIME,CUSTOM_ID,TYPE,INHERIT,RESOURCE_TYPE,SHOW_NUMBER,ENABLED,HIDDEN) VALUES ('"
+                            + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "','办件', 0, '"
+                            + y9Config.getCommon().getFlowableBaseUrl() + "?itemId=" + ITEM_ID + "', 1, 1,'"
+                            + y9System.getId() + "','" + sdf.format(new Date()) + "','banjian',2,0,0,0,1,0)";
                     jdbcTemplate.execute(sql);
                 }
             }
@@ -91,11 +94,16 @@ public class ItemMultiTenantListener implements ApplicationListener<Y9EventCommo
         if (null != y9System) {
             App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian");
             if (null != app) {
-                String sql = "select ID from y9_common_tenant_app where TENANT_ID = '" + tenant.getId() + "' and APP_ID = '" + app.getId() + "'";
+                String sql = "select ID from y9_common_tenant_app where TENANT_ID = '" + tenant.getId()
+                    + "' and APP_ID = '" + app.getId() + "'";
                 List<Map<String, Object>> qlist = jdbcTemplate.queryForList(sql);
                 if (qlist.size() == 0) {
-                    String sql1 = "INSERT INTO y9_common_tenant_app (ID, TENANT_ID, TENANT_NAME, SYSTEM_ID, APP_ID,APP_NAME,CREATE_TIME,APPLY_NAME,APPLY_ID,APPLY_REASON,VERIFY_STATUS,TENANCY) VALUES ('" + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', '" + tenant.getId() + "', '" + tenant.getName()
-                        + "', '" + y9System.getId() + "', '" + app.getId() + "','" + app.getName() + "','" + sdf.format(new Date()) + "','系统管理员','" + DefaultIdConsts.SYSTEM_MANAGER_ID + "','微内核默认租用',1,1)";
+                    String sql1 =
+                        "INSERT INTO y9_common_tenant_app (ID, TENANT_ID, TENANT_NAME, SYSTEM_ID, APP_ID,APP_NAME,CREATE_TIME,APPLY_NAME,APPLY_ID,APPLY_REASON,VERIFY_STATUS,TENANCY) VALUES ('"
+                            + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', '" + tenant.getId() + "', '"
+                            + tenant.getName() + "', '" + y9System.getId() + "', '" + app.getId() + "','"
+                            + app.getName() + "','" + sdf.format(new Date()) + "','系统管理员','"
+                            + DefaultIdConsts.SYSTEM_MANAGER_ID + "','微内核默认租用',1,1)";
                     jdbcTemplate.execute(sql1);
                 }
             }

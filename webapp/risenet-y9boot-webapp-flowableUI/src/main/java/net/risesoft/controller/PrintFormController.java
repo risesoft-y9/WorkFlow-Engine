@@ -62,8 +62,11 @@ public class PrintFormController {
     @SuppressWarnings({"resource"})
     @RequestMapping(value = "/formToImg")
     @ResponseBody
-    public Map<String, Object> formToImg(@RequestParam(required = false) String activitiUser, @RequestParam(required = false) String taskDefKey, @RequestParam(required = false, name = "temp_Id") String tempId, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String guid, @RequestParam(required = false) String itemId, HttpServletRequest request) {
+    public Map<String, Object> formToImg(@RequestParam(required = false) String activitiUser,
+        @RequestParam(required = false) String taskDefKey,
+        @RequestParam(required = false, name = "temp_Id") String tempId, @RequestParam(required = false) String taskId,
+        @RequestParam(required = false) String guid, @RequestParam(required = false) String itemId,
+        HttpServletRequest request) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
@@ -72,10 +75,14 @@ public class PrintFormController {
             Date date = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
             String time = sdf.format(date);
-            String str2 = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "screenshot.js";
-            String str3 = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "formToImg" + File.separator + "img" + tempId + "-" + time + ".png";
-            String url = y9Config.getCommon().getFlowableBaseUrl() + "/eform/engine/getTemplate?temp_Id=" + tempId + "&edittype=1" + "&guid=" + guid + "&taskDefKey=" + taskDefKey + "&activitiUser=" + activitiUser + "&itemId=" + itemId + "&formToPDF=formToPDF" + "&ctx="
-                + y9Config.getCommon().getFlowableBaseUrl() + "&tenantId=" + Y9LoginUserHolder.getTenantId() + "&userId=" + userInfo.getPersonId();
+            String str2 =
+                request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "screenshot.js";
+            String str3 = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator
+                + "formToImg" + File.separator + "img" + tempId + "-" + time + ".png";
+            String url = y9Config.getCommon().getFlowableBaseUrl() + "/eform/engine/getTemplate?temp_Id=" + tempId
+                + "&edittype=1" + "&guid=" + guid + "&taskDefKey=" + taskDefKey + "&activitiUser=" + activitiUser
+                + "&itemId=" + itemId + "&formToPDF=formToPDF" + "&ctx=" + y9Config.getCommon().getFlowableBaseUrl()
+                + "&tenantId=" + Y9LoginUserHolder.getTenantId() + "&userId=" + userInfo.getPersonId();
             Process process = Runtime.getRuntime().exec(str1 + blank + str2 + blank + url + blank + str3);
             process.getInputStream();
             InputStream input = new FileInputStream(str3);
@@ -108,13 +115,15 @@ public class PrintFormController {
      */
     @ResponseBody
     @RequestMapping(value = "/formToPDF")
-    public Map<String, Object> formToPdf(@RequestParam(required = false) String formId, @RequestParam(required = false) String printUrl, HttpServletRequest request, HttpServletResponse response) {
+    public Map<String, Object> formToPdf(@RequestParam(required = false) String formId,
+        @RequestParam(required = false) String printUrl, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Process process = null;
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String time = sdf.format(date);
-        String str3 = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "formToPDF" + File.separator + "pdf_" + formId + "_" + time + ".pdf";
+        String str3 = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator
+            + "formToPDF" + File.separator + "pdf_" + formId + "_" + time + ".pdf";
         try {
             String[] json = printUrl.split("jsonData=");
             Map<String, Object> jsonMap = Y9JsonUtil.readHashMap(json[1]);
@@ -125,23 +134,28 @@ public class PrintFormController {
             String itemId = (String)jsonMap.get("itemId");
             String activitiUser = (String)jsonMap.get("activitiUser");
             String processInstanceId = (String)jsonMap.get("processInstanceId");
-            printUrl += "formId=" + formId + "&processSerialNumber=" + processSerialNumber + "&processDefinitionId=" + processDefinitionId + "&taskDefKey=" + taskDefKey + "&itemId=" + itemId + "&activitiUser=" + activitiUser + "&processInstanceId=" + processInstanceId;
+            printUrl += "formId=" + formId + "&processSerialNumber=" + processSerialNumber + "&processDefinitionId="
+                + processDefinitionId + "&taskDefKey=" + taskDefKey + "&itemId=" + itemId + "&activitiUser="
+                + activitiUser + "&processInstanceId=" + processInstanceId;
             LOGGER.debug("printUrl:{}", printUrl);
             String blank = "  ";
-            String str1 = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "phantomjs" + File.separator + "bin" + File.separator + "phantomjs.exe";
+            String str1 = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator
+                + "phantomjs" + File.separator + "bin" + File.separator + "phantomjs.exe";
             String os = System.getProperty("os.name");
             // window
             boolean win = os != null && os.toLowerCase().indexOf("win") > -1;
             boolean lin = os != null && os.toLowerCase().indexOf("linux") > -1;
             if (win) {
                 // 根据phantomjs.exe的路径而定，如“C:\Users\Think\Desktop\phantomjs-2.1.1-windows\bin\phantomjs.exe”
-                str1 = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "phantomjs" + File.separator + "bin" + File.separator + "phantomjs.exe";
+                str1 = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator
+                    + "phantomjs" + File.separator + "bin" + File.separator + "phantomjs.exe";
             } else if (lin) {
                 // linux
                 // 根据phantomjs的安装路径而定，当前是安装在“/root”目录下
                 str1 = "phantomjs";
             }
-            String str2 = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "screenshot.js";
+            String str2 =
+                request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "screenshot.js";
             process = Runtime.getRuntime().exec(str1 + blank + str2 + blank + printUrl + blank + str3);
             map.put("fileName", "");
         } catch (Exception e) {
@@ -190,10 +204,12 @@ public class PrintFormController {
 
     @ResponseBody
     @RequestMapping(value = "/mobile/personCommentList")
-    public List<Map<String, Object>> personCommentList(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processSerialNumber, @RequestParam String opinionFrameMark) {
+    public List<Map<String, Object>> personCommentList(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processSerialNumber, @RequestParam String opinionFrameMark) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         try {
-            listMap = opinionManager.personCommentList(tenantId, userId, processSerialNumber, "", ItemBoxTypeEnum.DONE.getValue(), opinionFrameMark, "", "", "");
+            listMap = opinionManager.personCommentList(tenantId, userId, processSerialNumber, "",
+                ItemBoxTypeEnum.DONE.getValue(), opinionFrameMark, "", "", "");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -209,7 +225,8 @@ public class PrintFormController {
      * @return {@link String}
      */
     @RequestMapping(value = "/show")
-    public String show(@RequestParam(required = false) String formId, @RequestParam(required = false) String printUrl, Model model) {
+    public String show(@RequestParam(required = false) String formId, @RequestParam(required = false) String printUrl,
+        Model model) {
         model.addAttribute("printUrl", printUrl);
         model.addAttribute("formId", formId);
         return "intranet/printPDF";

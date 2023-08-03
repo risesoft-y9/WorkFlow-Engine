@@ -35,7 +35,8 @@ public interface ItemPermissionService {
      * @param taskDefKey
      * @return
      */
-    List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId, String taskDefKey);
+    List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
+        String taskDefKey);
 
     /**
      * 根据事项Id,流程定义Id,任务节点Key,角色Id查找授权
@@ -46,7 +47,8 @@ public interface ItemPermissionService {
      * @param roleId
      * @return
      */
-    ItemPermission findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(String itemId, String processDefinitionId, String taskdefKey, String roleId);
+    ItemPermission findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(String itemId, String processDefinitionId,
+        String taskdefKey, String roleId);
 
     /**
      * 根据事项Id，流程定义Id,和任务节点Key查找授权,如果任务节点key没有绑定权限，则查找流程节点绑定的权限
@@ -56,7 +58,8 @@ public interface ItemPermissionService {
      * @param taskDefKey
      * @return
      */
-    List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(String itemId, String processDefinitionId, String taskDefKey);
+    List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(String itemId, String processDefinitionId,
+        String taskDefKey);
 
     /**
      * Description: 判断当前taskDefKey所拥有的权限角色主体是否包含人员、部门、角色、岗位
@@ -67,7 +70,8 @@ public interface ItemPermissionService {
      * @param processInstanceId
      * @return
      */
-    Map<String, Object> getTabMap(String itemId, String processDefinitionId, String taskDefKey, String processInstanceId);
+    Map<String, Object> getTabMap(String itemId, String processDefinitionId, String taskDefKey,
+        String processInstanceId);
 
     /**
      * Description: 判断当前taskDefKey所拥有的权限角色主体是否包含人员、部门、角色、岗位
@@ -78,7 +82,8 @@ public interface ItemPermissionService {
      * @param processInstanceId
      * @return
      */
-    Map<String, Object> getTabMap4Position(String itemId, String processDefinitionId, String taskDefKey, String processInstanceId);
+    Map<String, Object> getTabMap4Position(String itemId, String processDefinitionId, String taskDefKey,
+        String processInstanceId);
 
     /**
      * Description: 删除当前事项绑定的流程对应的最新流程定义的所有权限

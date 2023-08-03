@@ -42,7 +42,8 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
     private OrgUnitApi orgUnitManager;
 
     @Override
-    public List<Map<String, Object>> contentList(String processSerialNumber, String taskId, String itembox, String category) {
+    public List<Map<String, Object>> contentList(String processSerialNumber, String taskId, String itembox,
+        String category) {
         List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
         Map<String, Object> addableMap = new HashMap<String, Object>(16);
         addableMap.put("addable", true);
@@ -50,7 +51,9 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             List<ExtendedContent> list = extendedContentRepository.findByPsnAndCategory(processSerialNumber, category);
-            if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.ADD.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue())) {
+            if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())
+                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.ADD.getValue())
+                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue())) {
                 if (list != null && list.size() > 0) {
                     for (ExtendedContent content : list) {
                         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -64,7 +67,8 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
                         resList.add(map);
                     }
                 }
-            } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())) {
+            } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())
+                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())) {
                 addableMap.put("addable", false);
                 if (list.size() > 0) {
                     for (ExtendedContent content : list) {
@@ -147,7 +151,8 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
 
     @Override
     @Transactional(readOnly = false)
-    public Model newOrModifyContent(String processSerialNumber, String taskId, String category, String id, Model model) {
+    public Model newOrModifyContent(String processSerialNumber, String taskId, String category, String id,
+        Model model) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         try {
             ExtendedContent extendedContent = new ExtendedContent();

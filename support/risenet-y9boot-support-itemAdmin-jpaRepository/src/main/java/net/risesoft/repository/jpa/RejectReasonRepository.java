@@ -12,6 +12,7 @@ import net.risesoft.entity.RejectReason;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-public interface RejectReasonRepository extends JpaRepository<RejectReason, Serializable>, JpaSpecificationExecutor<RejectReason> {
+public interface RejectReasonRepository
+    extends JpaRepository<RejectReason, Serializable>, JpaSpecificationExecutor<RejectReason> {
     RejectReason findByTaskIdAndAction(String taskId, Integer action);
 }

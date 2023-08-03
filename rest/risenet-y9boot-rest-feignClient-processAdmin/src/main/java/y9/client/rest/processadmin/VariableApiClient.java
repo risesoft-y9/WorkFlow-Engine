@@ -18,7 +18,8 @@ import net.risesoft.api.processadmin.VariableApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "VariableApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}", path = "/services/rest/variable")
+@FeignClient(contextId = "VariableApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
+    path = "/services/rest/variable")
 public interface VariableApiClient extends VariableApi {
 
     /**
@@ -30,7 +31,8 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping("/deleteVariable")
-    void deleteVariable(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("key") String key);
+    void deleteVariable(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+        @RequestParam("key") String key);
 
     /***
      * 删除任务变量
@@ -41,7 +43,8 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping("/deleteVariableLocal")
-    void deleteVariableLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("key") String key);
+    void deleteVariableLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+        @RequestParam("key") String key);
 
     /**
      * 获取流程变量
@@ -53,7 +56,8 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @GetMapping("/getVariable")
-    String getVariable(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("key") String key);
+    String getVariable(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+        @RequestParam("key") String key);
 
     /**
      * 获取流程变量
@@ -65,7 +69,8 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @GetMapping("/getVariableByProcessInstanceId")
-    String getVariableByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("key") String key);
+    String getVariableByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("key") String key);
 
     /**
      * 获取任务变量
@@ -77,7 +82,8 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @GetMapping("/getVariableLocal")
-    String getVariableLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("key") String key);
+    String getVariableLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+        @RequestParam("key") String key);
 
     /**
      * 获取多个流程变量
@@ -101,7 +107,8 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @RequestMapping(value = "/getVariablesByProcessInstanceId", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Map<String, Object> getVariablesByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestBody Collection<String> keys);
+    Map<String, Object> getVariablesByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestBody Collection<String> keys);
 
     /**
      * 获取所有任务变量
@@ -112,7 +119,8 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @GetMapping("/getVariablesLocal")
-    Map<String, Object> getVariablesLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+    Map<String, Object> getVariablesLocal(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId);
 
     /**
      * 设置流程变量
@@ -124,7 +132,8 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping(value = "/setVariable", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariable(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("key") String key, @RequestBody Map<String, Object> map);
+    void setVariable(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+        @RequestParam("key") String key, @RequestBody Map<String, Object> map);
 
     /**
      *
@@ -137,7 +146,9 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping(value = "/setVariableByProcessInstanceId", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariableByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("key") String key, @RequestBody Map<String, Object> map);
+    void setVariableByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("key") String key,
+        @RequestBody Map<String, Object> map);
 
     /**
      * 设置任务变量
@@ -149,7 +160,8 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping(value = "/setVariableLocal", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariableLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("key") String key, @RequestBody Map<String, Object> map);
+    void setVariableLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+        @RequestParam("key") String key, @RequestBody Map<String, Object> map);
 
     /**
      * 这只多个流程变量
@@ -160,7 +172,8 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping(value = "/setVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariables(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestBody Map<String, Object> map);
+    void setVariables(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+        @RequestBody Map<String, Object> map);
 
     /**
      * 设置多个任务变量
@@ -171,5 +184,6 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping(value = "/setVariablesLocal", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariablesLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestBody Map<String, Object> map);
+    void setVariablesLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+        @RequestBody Map<String, Object> map);
 }

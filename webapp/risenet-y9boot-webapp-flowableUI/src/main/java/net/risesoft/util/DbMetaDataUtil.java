@@ -222,7 +222,8 @@ public class DbMetaDataUtil {
         }
     }
 
-    public static List<DynaBean> listAllTables(DataSource dataSource, String catalog, String schemaPattern, String tableNamePattern, String types[]) throws Exception {
+    public static List<DynaBean> listAllTables(DataSource dataSource, String catalog, String schemaPattern,
+        String tableNamePattern, String types[]) throws Exception {
         Connection connection = null;
         ResultSet rs = null;
         try {
@@ -332,7 +333,8 @@ public class DbMetaDataUtil {
     }
 
     @SuppressWarnings({"resource"})
-    public List<DbColumn> listAllColumns(DataSource dataSource, String tableName, String columnNamePatten) throws Exception {
+    public List<DbColumn> listAllColumns(DataSource dataSource, String tableName, String columnNamePatten)
+        throws Exception {
         Connection connection = null;
         String tableSchema = null;
         String databaseName = null;

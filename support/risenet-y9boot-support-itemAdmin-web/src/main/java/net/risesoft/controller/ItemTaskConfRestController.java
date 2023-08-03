@@ -42,7 +42,8 @@ public class ItemTaskConfRestController {
      * @return
      */
     @RequestMapping(value = "/copyTaskConfig", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyTaskConfig(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> copyTaskConfig(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String processDefinitionId) {
         taskConfService.copyTaskConf(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }
@@ -55,18 +56,21 @@ public class ItemTaskConfRestController {
      * @return
      */
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String processDefinitionId) {
         List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
         for (Map<String, Object> map : list) {
-            if (map.get(SysVariables.MULTIINSTANCE) != null && ((String)map.get(SysVariables.MULTIINSTANCE)).equals(SysVariables.COMMON)) {
+            if (map.get(SysVariables.MULTIINSTANCE) != null
+                && ((String)map.get(SysVariables.MULTIINSTANCE)).equals(SysVariables.COMMON)) {
                 // 单人节点才处理
                 map.put("id", "");
                 map.put("signTask", false);
                 String taskDefKey = (String)map.get("taskDefKey");
-                ItemTaskConf confTemp = taskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
+                ItemTaskConf confTemp = taskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId,
+                    processDefinitionId, taskDefKey);
                 if (null != confTemp) {
                     map.put("id", confTemp.getId());
                     map.put("signTask", confTemp.getSignTask());

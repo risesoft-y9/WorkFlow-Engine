@@ -62,7 +62,8 @@ public class MobileChaoSongController {
      */
     @ResponseBody
     @RequestMapping(value = "/deleteList")
-    public void deleteList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, String ids, String processInstanceId, HttpServletResponse response) {
+    public void deleteList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        String ids, String processInstanceId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
@@ -92,7 +93,9 @@ public class MobileChaoSongController {
      */
     @RequestMapping(value = "/detail")
     @ResponseBody
-    public void detail(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String id, @RequestParam(required = false) String processInstanceId, Integer status, HttpServletResponse response) {
+    public void detail(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestParam(required = false) String id, @RequestParam(required = false) String processInstanceId,
+        Integer status, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
@@ -103,7 +106,8 @@ public class MobileChaoSongController {
             Integer fileNum = attachmentManager.fileCounts(tenantId, userId, processSerialNumber);
             int docNum = 0;
             // 是否正文正常
-            Map<String, Object> wordMap = transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
+            Map<String, Object> wordMap =
+                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
             if (!wordMap.isEmpty() && wordMap.size() > 0) {
                 docNum = 1;
             }
@@ -131,14 +135,17 @@ public class MobileChaoSongController {
      */
     @RequestMapping(value = "/findCsUser")
     @ResponseBody
-    public void findCsUserBureau(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String id, @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId,
+    public void findCsUserBureau(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String id,
+        @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         try {
-            item = itemRoleManager.findCsUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), id, principalType, processInstanceId);
+            item = itemRoleManager.findCsUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), id,
+                principalType, processInstanceId);
         } catch (Exception e) {
             log.error("手机端跟踪获取抄送选人");
             e.printStackTrace();
@@ -159,7 +166,9 @@ public class MobileChaoSongController {
      */
     @RequestMapping(value = "/findCsUserSearch")
     @ResponseBody
-    public void findCsUserSearch(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String name, @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId,
+    public void findCsUserSearch(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String name,
+        @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
@@ -188,7 +197,8 @@ public class MobileChaoSongController {
      */
     @ResponseBody
     @RequestMapping(value = "/list")
-    public void list(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, String type, String processInstanceId, int rows, int page, HttpServletResponse response) {
+    public void list(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        String type, String processInstanceId, int rows, int page, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -197,7 +207,8 @@ public class MobileChaoSongController {
             String senderId = person.getId();
             boolean b = "my".equals(type);
             if (b) {
-                map = chaoSongInfoManager.getListBySenderIdAndProcessInstanceId(tenantId, senderId, processInstanceId, "", rows, page);
+                map = chaoSongInfoManager.getListBySenderIdAndProcessInstanceId(tenantId, senderId, processInstanceId,
+                    "", rows, page);
             } else {
                 map = chaoSongInfoManager.getListByProcessInstanceId(tenantId, processInstanceId, "", rows, page);
             }
@@ -222,7 +233,9 @@ public class MobileChaoSongController {
      */
     @RequestMapping(value = "/search")
     @ResponseBody
-    public void search(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String year, @RequestParam(required = false) String documentTitle, Integer status, int rows, int page, HttpServletResponse response) {
+    public void search(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestParam(required = false) String year, @RequestParam(required = false) String documentTitle,
+        Integer status, int rows, int page, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
@@ -257,14 +270,17 @@ public class MobileChaoSongController {
      */
     @RequestMapping(value = "/send")
     @ResponseBody
-    public void send(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String users, @RequestParam(required = false) String isSendSms,
-        @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent, HttpServletResponse response) {
+    public void send(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String users,
+        @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing,
+        @RequestParam(required = false) String smsContent, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<>(1);
         try {
-            map = chaoSongInfoManager.save(tenantId, userId, processInstanceId, users, isSendSms, isShuMing, smsContent, "");
+            map = chaoSongInfoManager.save(tenantId, userId, processInstanceId, users, isSendSms, isShuMing, smsContent,
+                "");
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             log.error("手机端跟踪查看抄送件发送");

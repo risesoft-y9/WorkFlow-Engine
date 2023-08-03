@@ -70,7 +70,8 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/getDoingListByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getDoingListByProcessDefinitionKey(String tenantId, String processDefinitionKey, Integer page, Integer rows) {
+    public Map<String, Object> getDoingListByProcessDefinitionKey(String tenantId, String processDefinitionKey,
+        Integer page, Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customMonitorService.getDoingListByProcessDefinitionKey(processDefinitionKey, page, rows);
     }
@@ -86,7 +87,8 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/getDoingListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getDoingListBySystemName(String tenantId, String systemName, Integer page, Integer rows) {
+    public Map<String, Object> getDoingListBySystemName(String tenantId, String systemName, Integer page,
+        Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customMonitorService.getDoingListBySystemName(systemName, page, rows);
     }
@@ -132,7 +134,8 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/getDoneListByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getDoneListByProcessDefinitionKey(String tenantId, String processDefinitionKey, Integer page, Integer rows) {
+    public Map<String, Object> getDoneListByProcessDefinitionKey(String tenantId, String processDefinitionKey,
+        Integer page, Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customMonitorService.getDoneListByProcessDefinitionKey(processDefinitionKey, page, rows);
     }
@@ -192,7 +195,8 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/getRecycleCountByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public long getRecycleCountByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey) {
+    public long getRecycleCountByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customRecycleService.getRecycleCountByUserIdAndProcessDefinitionKey(userId, processDefinitionKey);
     }
@@ -223,7 +227,8 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/getRecycleListByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getRecycleListByProcessDefinitionKey(String tenantId, String processDefinitionKey, Integer page, Integer rows) {
+    public Map<String, Object> getRecycleListByProcessDefinitionKey(String tenantId, String processDefinitionKey,
+        Integer page, Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customRecycleService.getRecycleListByProcessDefinitionKey(processDefinitionKey, page, rows);
     }
@@ -239,7 +244,8 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/getRecycleListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getRecycleListBySystemName(String tenantId, String systemName, Integer page, Integer rows) {
+    public Map<String, Object> getRecycleListBySystemName(String tenantId, String systemName, Integer page,
+        Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customRecycleService.getRecycleListBySystemName(systemName, page, rows);
     }
@@ -256,9 +262,11 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/getRecycleListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getRecycleListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, Integer page, Integer rows) {
+    public Map<String, Object> getRecycleListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey, Integer page, Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customRecycleService.getRecycleListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, page, rows);
+        return customRecycleService.getRecycleListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, page,
+            rows);
     }
 
     /**
@@ -273,7 +281,8 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/getRecycleListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getRecycleListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page, Integer rows) {
+    public Map<String, Object> getRecycleListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        Integer page, Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customRecycleService.getRecycleListByUserIdAndSystemName(userId, systemName, page, rows);
     }
@@ -291,7 +300,8 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/searchDoingListByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchDoingListByProcessDefinitionKey(String tenantId, String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchDoingListByProcessDefinitionKey(String tenantId, String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(processDefinitionKey)) {
             throw new Exception("tenantId or processDefinitionKey is null !");
         }
@@ -312,7 +322,8 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/searchDoingListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchDoingListBySystemName(String tenantId, String systemName, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchDoingListBySystemName(String tenantId, String systemName, String searchTerm,
+        Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(systemName)) {
             throw new Exception("tenantId or systemName is null !");
         }
@@ -333,7 +344,8 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/searchDoneListByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchDoneListByProcessDefinitionKey(String tenantId, String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchDoneListByProcessDefinitionKey(String tenantId, String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(processDefinitionKey)) {
             throw new Exception("tenantId or processDefinitionKey is null !");
         }
@@ -354,7 +366,8 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/searchDoneListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchDoneListBySystemName(String tenantId, String systemName, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchDoneListBySystemName(String tenantId, String systemName, String searchTerm,
+        Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(systemName)) {
             throw new Exception("tenantId or systemName is null !");
         }
@@ -375,12 +388,14 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/searchRecycleListByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchRecycleListByProcessDefinitionKey(String tenantId, String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchRecycleListByProcessDefinitionKey(String tenantId, String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(processDefinitionKey)) {
             throw new Exception("tenantId or processDefinitionKey is null !");
         }
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customRecycleService.searchRecycleListByProcessDefinitionKey(processDefinitionKey, searchTerm, page, rows);
+        return customRecycleService.searchRecycleListByProcessDefinitionKey(processDefinitionKey, searchTerm, page,
+            rows);
     }
 
     /**
@@ -396,7 +411,8 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/searchRecycleListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchRecycleListBySystemName(String tenantId, String systemName, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchRecycleListBySystemName(String tenantId, String systemName, String searchTerm,
+        Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(systemName)) {
             throw new Exception("tenantId or systemName is null !");
         }
@@ -417,13 +433,16 @@ public class MonitorApiImpl implements MonitorApi {
      * @throws Exception Exception
      */
     @Override
-    @GetMapping(value = "/searchRecycleListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchRecycleListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception {
+    @GetMapping(value = "/searchRecycleListByUserIdAndProcessDefinitionKey",
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> searchRecycleListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId) || StringUtils.isEmpty(processDefinitionKey)) {
             throw new Exception("tenantId or userId or processDefinitionKey is null !");
         }
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customRecycleService.searchRecycleListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, searchTerm, page, rows);
+        return customRecycleService.searchRecycleListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey,
+            searchTerm, page, rows);
     }
 
     /**
@@ -440,7 +459,8 @@ public class MonitorApiImpl implements MonitorApi {
      */
     @Override
     @GetMapping(value = "/searchRecycleListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchRecycleListByUserIdAndSystemName(String tenantId, String userId, String systemName, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchRecycleListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        String searchTerm, Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId) || StringUtils.isEmpty(systemName)) {
             throw new Exception("tenantId or userId or systemName is null !");
         }

@@ -46,7 +46,8 @@ public interface DocumentService {
      * @param map
      * @return
      */
-    public Map<String, Object> docUserAndRoutaskChoise(String itemId, String processDefinitionKey, String processDefinitionId, String taskId, Map<String, Object> map);
+    public Map<String, Object> docUserAndRoutaskChoise(String itemId, String processDefinitionKey,
+        String processDefinitionId, String taskId, Map<String, Object> map);
 
     /**
      * Description: 发送对象获取（单个串行-并行节点）
@@ -59,7 +60,8 @@ public interface DocumentService {
      * @param processInstanceId
      * @return
      */
-    public Map<String, Object> docUserChoise(String itemId, String processDefinitionKey, String processDefinitionId, String taskId, String routeToTask, String processInstanceId);
+    public Map<String, Object> docUserChoise(String itemId, String processDefinitionKey, String processDefinitionId,
+        String taskId, String routeToTask, String processInstanceId);
 
     /**
      * Description: 办件办理
@@ -71,7 +73,8 @@ public interface DocumentService {
      * @param mobile
      * @return
      */
-    public Map<String, Object> edit(String itembox, String taskId, String processInstanceId, String itemId, boolean mobile);
+    public Map<String, Object> edit(String itembox, String taskId, String processInstanceId, String itemId,
+        boolean mobile);
 
     /**
      * Description: 发送
@@ -83,7 +86,8 @@ public interface DocumentService {
      * @param sponsorGuid
      * @return
      */
-    public Map<String, Object> forwarding(String taskId, String sponsorHandle, String userChoice, String routeToTaskId, String sponsorGuid);
+    public Map<String, Object> forwarding(String taskId, String sponsorHandle, String userChoice, String routeToTaskId,
+        String sponsorGuid);
 
     /**
      * 发送对象获取(多个串行-并行节点)
@@ -107,7 +111,8 @@ public interface DocumentService {
      * @param map
      * @return
      */
-    Map<String, Object> genDocumentModel(String itemId, String processDefinitionKey, String processDefinitionId, String taskDefinitionKey, boolean mobile, Map<String, Object> map);
+    Map<String, Object> genDocumentModel(String itemId, String processDefinitionKey, String processDefinitionId,
+        String taskDefinitionKey, boolean mobile, Map<String, Object> map);
 
     /**
      * 获取首个事项id
@@ -150,7 +155,8 @@ public interface DocumentService {
      * @param itembox
      * @return
      */
-    Map<String, Object> menuControl(String itemId, String processDefinitionId, String taskDefKey, String taskId, Map<String, Object> map, String itembox);
+    Map<String, Object> menuControl(String itemId, String processDefinitionId, String taskDefKey, String taskId,
+        Map<String, Object> map, String itembox);
 
     /**
      * Description: 解析工作流发送时用户选取的人员
@@ -181,7 +187,8 @@ public interface DocumentService {
      * @param variables
      * @return
      */
-    Map<String, Object> saveAndForwarding(String itemId, String processSerialNumber, String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId, Map<String, Object> variables);
+    Map<String, Object> saveAndForwarding(String itemId, String processSerialNumber, String processDefinitionKey,
+        String userChoice, String sponsorGuid, String routeToTaskId, Map<String, Object> variables);
 
     /**
      * Description: 启动流程并发送(指定)
@@ -196,7 +203,9 @@ public interface DocumentService {
      * @param variables
      * @return
      */
-    public Map<String, Object> saveAndForwardingByTaskKey(String itemId, String processSerialNumber, String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId, String startRouteToTaskId, Map<String, Object> variables);
+    public Map<String, Object> saveAndForwardingByTaskKey(String itemId, String processSerialNumber,
+        String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId,
+        String startRouteToTaskId, Map<String, Object> variables);
 
     /**
      * 获取签收任务配置
@@ -207,7 +216,8 @@ public interface DocumentService {
      * @param processSerialNumber
      * @return
      */
-    public Map<String, Object> signTaskConfig(String itemId, String processDefinitionId, String taskDefinitionKey, String processSerialNumber);
+    public Map<String, Object> signTaskConfig(String itemId, String processDefinitionId, String taskDefinitionKey,
+        String processSerialNumber);
 
     /**
      * 特殊办结
@@ -236,7 +246,8 @@ public interface DocumentService {
      * @param userIds
      * @return
      */
-    public Map<String, Object> startProcess(String itemId, String processSerialNumber, String processDefinitionKey, String userIds);
+    public Map<String, Object> startProcess(String itemId, String processSerialNumber, String processDefinitionKey,
+        String userIds);
 
     /**
      * 启动流程，指定任务节点
@@ -247,6 +258,7 @@ public interface DocumentService {
      * @param startRouteToTaskId
      * @return
      */
-    public Map<String, Object> startProcessByTaskKey(String itemId, String processSerialNumber, String processDefinitionKey, String startRouteToTaskId);
+    public Map<String, Object> startProcessByTaskKey(String itemId, String processSerialNumber,
+        String processDefinitionKey, String startRouteToTaskId);
 
 }

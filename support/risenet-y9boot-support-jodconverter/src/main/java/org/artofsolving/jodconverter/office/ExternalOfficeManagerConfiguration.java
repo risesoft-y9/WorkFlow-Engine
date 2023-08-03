@@ -25,7 +25,8 @@ public class ExternalOfficeManagerConfiguration {
     private boolean connectOnStart = true;
 
     public OfficeManager buildOfficeManager() {
-        UnoUrl unoUrl = connectionProtocol == OfficeConnectionProtocol.SOCKET ? UnoUrl.socket(portNumber) : UnoUrl.pipe(pipeName);
+        UnoUrl unoUrl =
+            connectionProtocol == OfficeConnectionProtocol.SOCKET ? UnoUrl.socket(portNumber) : UnoUrl.pipe(pipeName);
         return new ExternalOfficeManager(unoUrl, connectOnStart);
     }
 

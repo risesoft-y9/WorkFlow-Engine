@@ -16,7 +16,8 @@ public interface MultiInstanceService {
      * @param elementUser
      * @throws Exception
      */
-    void addMultiInstanceExecution(String activityId, String parentExecutionId, String taskId, String elementUser) throws Exception;
+    void addMultiInstanceExecution(String activityId, String parentExecutionId, String taskId, String elementUser)
+        throws Exception;
 
     /**
      * Description: 减签

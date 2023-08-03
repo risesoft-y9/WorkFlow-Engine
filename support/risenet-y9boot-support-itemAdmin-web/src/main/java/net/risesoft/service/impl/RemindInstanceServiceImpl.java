@@ -39,41 +39,52 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
     }
 
     @Override
-    public List<RemindInstance> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(String processInstanceId, String taskKey) {
-        return remindInstanceRepository.findByProcessInstanceIdAndArriveTaskKeyLike(processInstanceId, "%" + taskKey + "%");
+    public List<RemindInstance> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(String processInstanceId,
+        String taskKey) {
+        return remindInstanceRepository.findByProcessInstanceIdAndArriveTaskKeyLike(processInstanceId,
+            "%" + taskKey + "%");
     }
 
     @Override
-    public List<RemindInstance> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(String processInstanceId, String taskKey) {
-        return remindInstanceRepository.findByProcessInstanceIdAndCompleteTaskKeyLike(processInstanceId, "%" + taskKey + "%");
+    public List<RemindInstance> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(String processInstanceId,
+        String taskKey) {
+        return remindInstanceRepository.findByProcessInstanceIdAndCompleteTaskKeyLike(processInstanceId,
+            "%" + taskKey + "%");
     }
 
     @Override
-    public List<RemindInstance> findRemindInstanceByProcessInstanceIdAndRemindType(String processInstanceId, String remindType) {
-        return remindInstanceRepository.findByProcessInstanceIdAndRemindTypeLike(processInstanceId, "%" + remindType + "%");
+    public List<RemindInstance> findRemindInstanceByProcessInstanceIdAndRemindType(String processInstanceId,
+        String remindType) {
+        return remindInstanceRepository.findByProcessInstanceIdAndRemindTypeLike(processInstanceId,
+            "%" + remindType + "%");
     }
 
     @Override
-    public List<RemindInstance> findRemindInstanceByProcessInstanceIdAndTaskId(String processInstanceId, String taskId) {
+    public List<RemindInstance> findRemindInstanceByProcessInstanceIdAndTaskId(String processInstanceId,
+        String taskId) {
         return remindInstanceRepository.findByProcessInstanceIdAndTaskId(processInstanceId, taskId);
     }
 
     @Override
     public RemindInstance getRemindInstance(String processInstanceId) {
-        return remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId, Y9LoginUserHolder.getPersonId());
+        return remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId,
+            Y9LoginUserHolder.getPersonId());
     }
 
     @Override
     @Transactional(readOnly = false)
-    public Map<String, Object> saveRemindInstance(String processInstanceId, String taskIds, Boolean process, String arriveTaskKey, String completeTaskKey) {
+    public Map<String, Object> saveRemindInstance(String processInstanceId, String taskIds, Boolean process,
+        String arriveTaskKey, String completeTaskKey) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         retMap.put("msg", "保存失败");
         retMap.put(UtilConsts.SUCCESS, false);
         try {
             String userId = Y9LoginUserHolder.getPersonId();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            RemindInstance remindInstance = remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId, userId);
-            if (StringUtils.isBlank(taskIds) && !process && StringUtils.isBlank(arriveTaskKey) && StringUtils.isBlank(completeTaskKey)) {
+            RemindInstance remindInstance =
+                remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId, userId);
+            if (StringUtils.isBlank(taskIds) && !process && StringUtils.isBlank(arriveTaskKey)
+                && StringUtils.isBlank(completeTaskKey)) {
                 if (remindInstance != null) {
                     remindInstanceRepository.delete(remindInstance);
                 }

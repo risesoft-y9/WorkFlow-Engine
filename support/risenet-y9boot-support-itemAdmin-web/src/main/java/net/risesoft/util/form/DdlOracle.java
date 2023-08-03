@@ -58,7 +58,8 @@ public class DdlOracle {
                     sb.append(" ADD " + dbc.getColumnName() + " ");
                     add = true;
                 } else {
-                    if (columnName.equalsIgnoreCase(dbc.getColumnNameOld()) || org.apache.commons.lang3.StringUtils.isBlank(dbc.getColumnNameOld())) {
+                    if (columnName.equalsIgnoreCase(dbc.getColumnNameOld())
+                        || org.apache.commons.lang3.StringUtils.isBlank(dbc.getColumnNameOld())) {
                         // 存在旧字段，字段名称没有改变则修改属性
                         sb.append(" MODIFY " + dbc.getColumnName() + " ");
                     } else {
@@ -66,7 +67,9 @@ public class DdlOracle {
                         try {
                             StringBuilder sb1 = new StringBuilder();
                             sb1.append("ALTER TABLE \"" + tableName + "\"");
-                            dbMetaDataUtil.executeDdl(connection, sb1.append(" RENAME COLUMN " + dbc.getColumnNameOld() + " TO " + dbc.getColumnName()).toString());
+                            dbMetaDataUtil.executeDdl(connection,
+                                sb1.append(" RENAME COLUMN " + dbc.getColumnNameOld() + " TO " + dbc.getColumnName())
+                                    .toString());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -75,9 +78,11 @@ public class DdlOracle {
                     }
                 }
                 String sType = dbc.getTypeName().toUpperCase();
-                if ("CHAR".equals(sType) || "NCHAR".equals(sType) || "VARCHAR2".equals(sType) || "NVARCHAR2".equals(sType) || "RAW".equals(sType)) {
+                if ("CHAR".equals(sType) || "NCHAR".equals(sType) || "VARCHAR2".equals(sType)
+                    || "NVARCHAR2".equals(sType) || "RAW".equals(sType)) {
                     sb.append(sType + "(" + dbc.getDataLength() + ")");
-                } else if ("DECIMAL".equalsIgnoreCase(sType) || "NUMERIC".equalsIgnoreCase(sType) || "NUMBER".equalsIgnoreCase(sType)) {
+                } else if ("DECIMAL".equalsIgnoreCase(sType) || "NUMERIC".equalsIgnoreCase(sType)
+                    || "NUMBER".equalsIgnoreCase(sType)) {
                     if (dbc.getDataScale() == null) {
                         sb.append(sType + "(" + dbc.getDataLength() + ")");
                     } else {
@@ -104,7 +109,8 @@ public class DdlOracle {
 
                 dbMetaDataUtil.executeDdl(connection, sb.toString());
                 if (StringUtils.hasText(dbc.getComment())) {
-                    dbMetaDataUtil.executeDdl(connection, "COMMENT ON COLUMN \"" + tableName + "\"." + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'");
+                    dbMetaDataUtil.executeDdl(connection, "COMMENT ON COLUMN \"" + tableName + "\"."
+                        + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'");
                 }
                 y9TableFieldRepository.updateOldFieldName(dbc.getTableName(), dbc.getColumnName());
             }
@@ -117,7 +123,8 @@ public class DdlOracle {
             throw new Exception("数据库中不存在这个表：" + tableName);
         }
 
-        DbColumn[] dbcs = Y9JsonUtil.objectMapper.readValue(jsonDbColumns, TypeFactory.defaultInstance().constructArrayType(DbColumn.class));
+        DbColumn[] dbcs = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
+            TypeFactory.defaultInstance().constructArrayType(DbColumn.class));
         for (DbColumn dbc : dbcs) {
             if (StringUtils.hasText(dbc.getColumnNameOld())) {
                 StringBuilder sb = new StringBuilder();
@@ -125,16 +132,20 @@ public class DdlOracle {
                 // 字段名称有改变
                 if (!dbc.getColumnName().equalsIgnoreCase(dbc.getColumnNameOld())) {
                     try {
-                        dbMetaDataUtil.executeDdl(connection, sb.append(" RENAME COLUMN " + dbc.getColumnNameOld() + " TO " + dbc.getColumnName()).toString());
+                        dbMetaDataUtil.executeDdl(connection,
+                            sb.append(" RENAME COLUMN " + dbc.getColumnNameOld() + " TO " + dbc.getColumnName())
+                                .toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
                 sb.append(" MODIFY " + dbc.getColumnName() + " ");
                 String sType = dbc.getTypeName().toUpperCase();
-                if ("CHAR".equals(sType) || "NCHAR".equals(sType) || "VARCHAR2".equals(sType) || "NVARCHAR2".equals(sType) || "RAW".equals(sType)) {
+                if ("CHAR".equals(sType) || "NCHAR".equals(sType) || "VARCHAR2".equals(sType)
+                    || "NVARCHAR2".equals(sType) || "RAW".equals(sType)) {
                     sb.append(sType + "(" + dbc.getDataLength() + ")");
-                } else if ("DECIMAL".equalsIgnoreCase(sType) || "NUMERIC".equalsIgnoreCase(sType) || "NUMBER".equalsIgnoreCase(sType)) {
+                } else if ("DECIMAL".equalsIgnoreCase(sType) || "NUMERIC".equalsIgnoreCase(sType)
+                    || "NUMBER".equalsIgnoreCase(sType)) {
                     if (dbc.getDataScale() == null) {
                         sb.append(sType + "(" + dbc.getDataLength() + ")");
                     } else {
@@ -157,7 +168,8 @@ public class DdlOracle {
                 dbMetaDataUtil.executeDdl(connection, sb.toString());
                 if (StringUtils.hasText(dbc.getComment())) {
                     if (!list.get(0).getComment().equals(dbc.getComment())) {
-                        dbMetaDataUtil.executeDdl(connection, "COMMENT ON COLUMN \"" + tableName + "\"." + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'");
+                        dbMetaDataUtil.executeDdl(connection, "COMMENT ON COLUMN \"" + tableName + "\"."
+                            + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'");
                     }
                 }
             }
@@ -166,7 +178,8 @@ public class DdlOracle {
 
     public void createTable(Connection connection, String tableName, String jsonDbColumns) throws Exception {
         StringBuilder sb = new StringBuilder();
-        DbColumn[] dbcs = Y9JsonUtil.objectMapper.readValue(jsonDbColumns, TypeFactory.defaultInstance().constructArrayType(DbColumn.class));
+        DbColumn[] dbcs = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
+            TypeFactory.defaultInstance().constructArrayType(DbColumn.class));
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
         //@formatter:off
 		sb.append("CREATE TABLE \"" + tableName + "\" (\r\n").append("GUID varchar2(38) NOT NULL, \r\n").append("PROCESSINSTANCEID nvarchar2(64) NOT NULL, \r\n");

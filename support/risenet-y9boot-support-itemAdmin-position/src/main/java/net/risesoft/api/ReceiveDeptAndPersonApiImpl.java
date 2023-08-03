@@ -245,7 +245,8 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
                     continue;
                 }
                 map.put("deptId", receivePerson.getDeptId());
-                map.put("deptName", department != null ? department.getName() : receivePerson.getDeptName() + "(该部门已不存在)");
+                map.put("deptName",
+                    department != null ? department.getName() : receivePerson.getDeptName() + "(该部门已不存在)");
                 listMap.add(map);
             }
         }

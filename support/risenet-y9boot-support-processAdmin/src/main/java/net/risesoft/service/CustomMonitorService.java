@@ -90,7 +90,8 @@ public interface CustomMonitorService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchDoingListByProcessDefinitionKey(String processDefinitionKey, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchDoingListByProcessDefinitionKey(String processDefinitionKey, String searchTerm,
+        Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -112,7 +113,8 @@ public interface CustomMonitorService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchDoneListByProcessDefinitionKey(String processDefinitionKey, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchDoneListByProcessDefinitionKey(String processDefinitionKey, String searchTerm,
+        Integer page, Integer rows);
 
     /**
      * 条件搜索在办件

@@ -64,7 +64,8 @@ public class ProcessInstanceVueController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> delete(@RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String type, @RequestParam(required = false) String reason) {
+    public Y9Result<String> delete(@RequestParam(required = true) String processInstanceId,
+        @RequestParam(required = true) String type, @RequestParam(required = false) String reason) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         // 删除人不一定是当前正在处理流程的人员
         String assignee = userInfo.getPersonId();
@@ -100,17 +101,20 @@ public class ProcessInstanceVueController {
      */
     @RequestMapping(value = "/runningList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Page<Map<String, Object>> runningList(@RequestParam(required = false) String processInstanceId, @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
+    public Y9Page<Map<String, Object>> runningList(@RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         long totalCount = 0;
         List<ProcessInstance> processInstanceList = null;
         if (StringUtils.isBlank(processInstanceId)) {
             totalCount = runtimeService.createProcessInstanceQuery().count();
-            processInstanceList = runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
+            processInstanceList =
+                runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
         } else {
             totalCount = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).count();
-            processInstanceList = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).orderByStartTime().desc().listPage((page - 1) * rows, rows);
+            processInstanceList = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId)
+                .orderByStartTime().desc().listPage((page - 1) * rows, rows);
         }
         Position position = null;
         OrgUnit orgUnit = null;
@@ -121,9 +125,12 @@ public class ProcessInstanceVueController {
             map.put("processInstanceId", processInstanceId);
             map.put("processDefinitionId", processInstance.getProcessDefinitionId());
             map.put("processDefinitionName", processInstance.getProcessDefinitionName());
-            map.put("startTime", processInstance.getStartTime() == null ? "" : sdf.format(processInstance.getStartTime()));
+            map.put("startTime",
+                processInstance.getStartTime() == null ? "" : sdf.format(processInstance.getStartTime()));
             try {
-                map.put("activityName", runtimeService.createActivityInstanceQuery().processInstanceId(processInstanceId).orderByActivityInstanceStartTime().desc().list().get(0).getActivityName());
+                map.put("activityName",
+                    runtimeService.createActivityInstanceQuery().processInstanceId(processInstanceId)
+                        .orderByActivityInstanceStartTime().desc().list().get(0).getActivityName());
                 map.put("suspended", processInstance.isSuspended());
                 map.put("startUserName", "无");
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
@@ -138,7 +145,8 @@ public class ProcessInstanceVueController {
                         position = positionApi.getPosition(tenantId, userIdAndDeptId[0]);
                         if (null != position) {
                             orgUnitManager.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1]);
-                            orgUnit = orgUnitManager.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1]);
+                            orgUnit =
+                                orgUnitManager.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1]);
                             if (null == orgUnit) {
                                 map.put("startUserName", position.getName());
                             } else {
@@ -165,7 +173,8 @@ public class ProcessInstanceVueController {
      */
     @RequestMapping(value = "/switchSuspendOrActive", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> switchSuspendOrActive(@RequestParam(required = true) String state, @RequestParam(required = true) String processInstanceId) {
+    public Y9Result<String> switchSuspendOrActive(@RequestParam(required = true) String state,
+        @RequestParam(required = true) String processInstanceId) {
         if (ItemProcessStateTypeEnum.ACTIVE.equals(state)) {
             runtimeService.activateProcessInstanceById(processInstanceId);
             return Y9Result.successMsg("已激活ID为[" + processInstanceId + "]的流程实例。");

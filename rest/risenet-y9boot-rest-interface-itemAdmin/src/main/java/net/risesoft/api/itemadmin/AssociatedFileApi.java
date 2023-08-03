@@ -71,5 +71,6 @@ public interface AssociatedFileApi {
      * @param processInstanceIds 关联的流程实例ids
      * @return boolean 是否保存成功
      */
-    public boolean saveAssociatedFile(String tenantId, String userId, String processSerialNumber, String processInstanceIds);
+    public boolean saveAssociatedFile(String tenantId, String userId, String processSerialNumber,
+        String processInstanceIds);
 }

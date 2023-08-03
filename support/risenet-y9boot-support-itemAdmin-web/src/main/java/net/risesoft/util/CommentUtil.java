@@ -28,6 +28,7 @@ public class CommentUtil {
 
     /**
      * Description: unicode转中文
+     * 
      * @param unicodeStr
      * @return
      */
@@ -39,7 +40,8 @@ public class CommentUtil {
         int maxLoop = unicodeStr.length();
         for (int i = 0; i < maxLoop; i++) {
             if (unicodeStr.charAt(i) == '\\') {
-                boolean b = (i < maxLoop - 5) && ((unicodeStr.charAt(i + 1) == 'u') || (unicodeStr.charAt(i + 1) == 'U'));
+                boolean b =
+                    (i < maxLoop - 5) && ((unicodeStr.charAt(i + 1) == 'u') || (unicodeStr.charAt(i + 1) == 'U'));
                 if (b) {
                     try {
                         retBuf.append((char)Integer.parseInt(unicodeStr.substring(i + 2, i + 6), 16));

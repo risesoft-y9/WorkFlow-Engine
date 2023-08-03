@@ -47,11 +47,11 @@ public class KafkaConsumer {
             LOGGER.info("****************开始消费topic:{},value:{}******************", topic, msg);
             if (topic.equals(Y9TopicConst.Y9_DATACOPY_MESSAGE)) {
                 HashMap<String, Object> map = Y9JsonUtil.readHashMap(msg);
-                String sourceTenantId = (String) map.get("sourceTenantId");
-                String targetTenantId = (String) map.get("targetTenantId");
+                String sourceTenantId = (String)map.get("sourceTenantId");
+                String targetTenantId = (String)map.get("targetTenantId");
                 tenantId = targetTenantId;
-                String itemId = (String) map.get("itemId");
-                String personId = (String) map.get("personId");
+                String itemId = (String)map.get("itemId");
+                String personId = (String)map.get("personId");
                 OrgUnit orgUnit = orgUnitApi.getOrgUnit(targetTenantId, personId);
                 UserInfo userInfo = new UserInfo();
                 userInfo.setPersonId(orgUnit.getId());
@@ -64,11 +64,11 @@ public class KafkaConsumer {
 
             } else if (topic.equals(Y9TopicConst.Y9_DATACOPY4SYSTEM_MESSAGE)) {
                 HashMap<String, Object> map = Y9JsonUtil.readHashMap(msg);
-                String sourceTenantId = (String) map.get("sourceTenantId");
-                String targetTenantId = (String) map.get("targetTenantId");
+                String sourceTenantId = (String)map.get("sourceTenantId");
+                String targetTenantId = (String)map.get("targetTenantId");
                 tenantId = targetTenantId;
-                String systemName = (String) map.get("systemName");
-                String personId = (String) map.get("personId");
+                String systemName = (String)map.get("systemName");
+                String personId = (String)map.get("personId");
                 OrgUnit orgUnit = orgUnitApi.getOrgUnit(targetTenantId, personId);
                 UserInfo userInfo = new UserInfo();
                 userInfo.setPersonId(orgUnit.getId());

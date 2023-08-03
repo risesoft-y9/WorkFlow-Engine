@@ -14,10 +14,12 @@ import net.risesoft.entity.OpinionHistory;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface OpinionHistoryRepository extends JpaRepository<OpinionHistory, String>, JpaSpecificationExecutor<OpinionHistory> {
+public interface OpinionHistoryRepository
+    extends JpaRepository<OpinionHistory, String>, JpaSpecificationExecutor<OpinionHistory> {
 
     int countByProcessSerialNumberAndOpinionFrameMark(String processSerialNumber, String opinionFrameMark);
 
-    List<OpinionHistory> findByProcessSerialNumberAndOpinionFrameMark(String processSerialNumber, String opinionFrameMark);
+    List<OpinionHistory> findByProcessSerialNumberAndOpinionFrameMark(String processSerialNumber,
+        String opinionFrameMark);
 
 }

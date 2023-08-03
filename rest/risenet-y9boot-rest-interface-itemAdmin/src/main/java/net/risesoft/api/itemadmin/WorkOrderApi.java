@@ -20,7 +20,8 @@ public interface WorkOrderApi {
      * @param resultFeedback
      * @return
      */
-    Map<String, Object> changeWorkOrderState(String processSerialNumber, String state, String processInstanceId, String resultFeedback);
+    Map<String, Object> changeWorkOrderState(String processSerialNumber, String state, String processInstanceId,
+        String resultFeedback);
 
     /**
      * 删除草稿

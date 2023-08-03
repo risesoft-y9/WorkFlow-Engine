@@ -42,7 +42,8 @@ public interface RoleService {
     List<Map<String, Object>> findCsUserSearch(String name, Integer principalType, String processInstanceId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
@@ -51,10 +52,12 @@ public interface RoleService {
      * @param processInstanceId
      * @return
      */
-    List<Map<String, Object>> findPermUser(String itemId, String processDefinitionId, String taskDefKey, Integer principalType, String id, String processInstanceId);
+    List<Map<String, Object>> findPermUser(String itemId, String processDefinitionId, String taskDefKey,
+        Integer principalType, String id, String processInstanceId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param processDefinitionId
      * @param taskDefKey
      * @param principalType
@@ -62,10 +65,12 @@ public interface RoleService {
      * @param name
      * @return
      */
-    List<Map<String, Object>> findPermUserByName(String processDefinitionId, String taskDefKey, Integer principalType, String id, String name);
+    List<Map<String, Object>> findPermUserByName(String processDefinitionId, String taskDefKey, Integer principalType,
+        String id, String name);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param name
      * @param itemId
      * @param processDefinitionId
@@ -74,17 +79,20 @@ public interface RoleService {
      * @param processInstanceId
      * @return
      */
-    List<Map<String, Object>> findPermUserByName(String name, String itemId, String processDefinitionId, String taskDefKey, Integer principalType, String processInstanceId);
+    List<Map<String, Object>> findPermUserByName(String name, String itemId, String processDefinitionId,
+        String taskDefKey, Integer principalType, String processInstanceId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param id
      * @return
      */
     List<Map<String, Object>> findPermUserSendReceive(String id);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param tenantId
      * @param parentId
      * @return
@@ -92,7 +100,8 @@ public interface RoleService {
     OrgUnit getParent(String tenantId, String parentId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param tenantId
      * @param nodeId
      * @param parentId
@@ -101,7 +110,8 @@ public interface RoleService {
     OrgUnit getParent(String tenantId, String nodeId, String parentId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param tenantId
      * @param nodeId
      * @param parentId

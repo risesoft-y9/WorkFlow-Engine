@@ -55,7 +55,8 @@ public class ItemAdminConfiguraton implements WebMvcConfigurer {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Bean
     public FilterRegistrationBean checkItemAdminUserLoginFilter() {
-        log.debug("****************************************************************************init CheckUserLoginFilter4ItemAdmin ...");
+        log.debug(
+            "****************************************************************************init CheckUserLoginFilter4ItemAdmin ...");
         FilterRegistrationBean filterBean = new FilterRegistrationBean();
         filterBean.setFilter(new CheckUserLoginFilter4ItemAdmin());
         filterBean.setAsyncSupported(false);

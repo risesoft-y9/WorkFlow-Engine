@@ -32,7 +32,8 @@ public class BookMarkBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/deleteBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteBind(@RequestParam(required = true) String wordTemplateId, @RequestParam(required = true) String bookMarkName) {
+    public Y9Result<String> deleteBind(@RequestParam(required = true) String wordTemplateId,
+        @RequestParam(required = true) String bookMarkName) {
         bookMarkBindService.deleteBind(wordTemplateId, bookMarkName);
         return Y9Result.successMsg("删除成功");
     }

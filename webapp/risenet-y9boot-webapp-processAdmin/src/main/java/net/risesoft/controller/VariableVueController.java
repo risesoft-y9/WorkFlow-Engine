@@ -62,7 +62,8 @@ public class VariableVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/deleteProcessVar", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteProcessVar(@RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String key) {
+    public Y9Result<String> deleteProcessVar(@RequestParam(required = true) String processInstanceId,
+        @RequestParam(required = true) String key) {
         runtimeService.removeVariable(processInstanceId, key);
         return Y9Result.successMsg("删除成功");
     }
@@ -76,7 +77,8 @@ public class VariableVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/deleteTaskVar", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteTaskVar(@RequestParam(required = true) String taskId, @RequestParam(required = true) String key) {
+    public Y9Result<String> deleteTaskVar(@RequestParam(required = true) String taskId,
+        @RequestParam(required = true) String key) {
         customVariableService.removeVariableLocal(taskId, key);
         return Y9Result.successMsg("删除成功");
     }
@@ -91,17 +93,20 @@ public class VariableVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/getAllVariable", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getAllVariable(@RequestParam(required = false) String processInstanceId, @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
+    public Y9Page<Map<String, Object>> getAllVariable(@RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         long totalCount = 0;
         List<ProcessInstance> list = null;
         if (StringUtils.isBlank(processInstanceId)) {
             totalCount = runtimeService.createProcessInstanceQuery().count();
-            list = runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
+            list =
+                runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
         } else {
             totalCount = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).count();
-            list = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).orderByStartTime().desc().listPage((page - 1) * rows, rows);
+            list = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).orderByStartTime()
+                .desc().listPage((page - 1) * rows, rows);
         }
         Position position = null;
         OrgUnit orgUnit = null;
@@ -151,7 +156,8 @@ public class VariableVueController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/getProcessVariable", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Object> getProcessVariable(@RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String key) {
+    public Y9Result<Object> getProcessVariable(@RequestParam(required = true) String processInstanceId,
+        @RequestParam(required = true) String key) {
         Object obj = runtimeService.getVariable(processInstanceId, key);
         if (SysVariables.USERS.equals(key)) {
             List<String> userList = (List<String>)obj;
@@ -208,7 +214,8 @@ public class VariableVueController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/getTaskVariable", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Object> getTaskVariable(@RequestParam(required = true) String taskId, @RequestParam(required = true) String key) {
+    public Y9Result<Object> getTaskVariable(@RequestParam(required = true) String taskId,
+        @RequestParam(required = true) String key) {
         Object obj = customVariableService.getVariableLocal(taskId, key);
         if (SysVariables.USERS.equals(key)) {
             List<String> userList = (List<String>)obj;
@@ -259,7 +266,9 @@ public class VariableVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveProcessVariable", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveProcessVariable(@RequestParam(required = true) String type, @RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String key, @RequestParam(required = false) String value) {
+    public Y9Result<String> saveProcessVariable(@RequestParam(required = true) String type,
+        @RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String key,
+        @RequestParam(required = false) String value) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (ItemBoxTypeEnum.ADD.getValue().equals(type)) {
             Object obj = runtimeService.getVariable(processInstanceId, key);
@@ -312,7 +321,9 @@ public class VariableVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveTaskVariable", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveTaskVariable(@RequestParam(required = true) String type, @RequestParam(required = true) String taskId, @RequestParam(required = true) String key, @RequestParam(required = false) String value) {
+    public Y9Result<String> saveTaskVariable(@RequestParam(required = true) String type,
+        @RequestParam(required = true) String taskId, @RequestParam(required = true) String key,
+        @RequestParam(required = false) String value) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (ItemBoxTypeEnum.ADD.getValue().equals(type)) {
             Object obj = customVariableService.getVariableLocal(taskId, key);

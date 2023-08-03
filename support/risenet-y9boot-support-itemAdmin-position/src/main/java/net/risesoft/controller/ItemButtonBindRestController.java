@@ -58,7 +58,8 @@ public class ItemButtonBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyBind(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> copyBind(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String processDefinitionId) {
         itemButtonBindService.copyBind(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }
@@ -74,8 +75,11 @@ public class ItemButtonBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemButtonBind>> getBindList(@RequestParam(required = true) String itemId, @RequestParam(required = true) Integer buttonType, @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
-        List<ItemButtonBind> list = itemButtonBindService.findListContainRole(itemId, buttonType, processDefinitionId, taskDefKey);
+    public Y9Result<List<ItemButtonBind>> getBindList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) Integer buttonType, @RequestParam(required = true) String processDefinitionId,
+        @RequestParam(required = false) String taskDefKey) {
+        List<ItemButtonBind> list =
+            itemButtonBindService.findListContainRole(itemId, buttonType, processDefinitionId, taskDefKey);
         return Y9Result.success(list, "获取成功");
     }
 
@@ -98,14 +102,16 @@ public class ItemButtonBindRestController {
 
             String taskDefName = "整个流程";
             if (StringUtils.isNotEmpty(bind.getTaskDefKey())) {
-                List<Map<String, Object>> list = processDefinitionManager.getNodes(tenantId, bind.getProcessDefinitionId(), false);
+                List<Map<String, Object>> list =
+                    processDefinitionManager.getNodes(tenantId, bind.getProcessDefinitionId(), false);
                 for (Map<String, Object> mapTemp : list) {
                     if (mapTemp.get("taskDefKey").equals(bind.getTaskDefKey())) {
                         taskDefName = (String)mapTemp.get("taskDefName");
                     }
                 }
             }
-            map.put("taskDefKey", taskDefName + (StringUtils.isEmpty(bind.getTaskDefKey()) ? "" : "(" + bind.getTaskDefKey() + ")"));
+            map.put("taskDefKey",
+                taskDefName + (StringUtils.isEmpty(bind.getTaskDefKey()) ? "" : "(" + bind.getTaskDefKey() + ")"));
             bindList.add(map);
         }
         return Y9Result.success(bindList, "获取成功");
@@ -120,7 +126,8 @@ public class ItemButtonBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String processDefinitionId) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -130,8 +137,10 @@ public class ItemButtonBindRestController {
         for (Map<String, Object> map : list) {
             String commonButtonNames = "";
             String sendButtonNames = "";
-            cbList = itemButtonBindService.findListContainRole(itemId, ItemButtonTypeEnum.COMMON.getValue(), processDefinitionId, (String)map.get("taskDefKey"));
-            sbList = itemButtonBindService.findListContainRole(itemId, ItemButtonTypeEnum.SEND.getValue(), processDefinitionId, (String)map.get("taskDefKey"));
+            cbList = itemButtonBindService.findListContainRole(itemId, ItemButtonTypeEnum.COMMON.getValue(),
+                processDefinitionId, (String)map.get("taskDefKey"));
+            sbList = itemButtonBindService.findListContainRole(itemId, ItemButtonTypeEnum.SEND.getValue(),
+                processDefinitionId, (String)map.get("taskDefKey"));
             for (ItemButtonBind cb : cbList) {
                 if (StringUtils.isEmpty(commonButtonNames)) {
                     commonButtonNames = cb.getButtonName();
@@ -164,9 +173,12 @@ public class ItemButtonBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getButtonList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getButtonList(@RequestParam(required = true) String itemId, @RequestParam(required = true) Integer buttonType, @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
+    public Y9Result<Map<String, Object>> getButtonList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) Integer buttonType, @RequestParam(required = true) String processDefinitionId,
+        @RequestParam(required = false) String taskDefKey) {
         Map<String, Object> map = new HashMap<String, Object>(16);
-        List<ItemButtonBind> buttonItemBindList = itemButtonBindService.findList(itemId, buttonType, processDefinitionId, taskDefKey);
+        List<ItemButtonBind> buttonItemBindList =
+            itemButtonBindService.findList(itemId, buttonType, processDefinitionId, taskDefKey);
         if (1 == buttonType) {
             List<CommonButton> cbList = commonButtonService.findAll();
             List<CommonButton> cbListTemp = new ArrayList<>();
@@ -222,7 +234,9 @@ public class ItemButtonBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getButtonOrderList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemButtonBind>> getButtonOrderList(@RequestParam(required = true) String itemId, @RequestParam(required = true) Integer buttonType, @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
+    public Y9Result<List<ItemButtonBind>> getButtonOrderList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) Integer buttonType, @RequestParam(required = true) String processDefinitionId,
+        @RequestParam(required = false) String taskDefKey) {
         List<ItemButtonBind> list = itemButtonBindService.findList(itemId, buttonType, processDefinitionId, taskDefKey);
         return Y9Result.success(list, "获取成功");
     }
@@ -252,7 +266,9 @@ public class ItemButtonBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveBindButton", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveBindButton(@RequestParam(required = true) String buttonId, @RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId, @RequestParam(required = true) Integer buttonType, @RequestParam(required = false) String taskDefKey) {
+    public Y9Result<String> saveBindButton(@RequestParam(required = true) String buttonId,
+        @RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId,
+        @RequestParam(required = true) Integer buttonType, @RequestParam(required = false) String taskDefKey) {
         itemButtonBindService.bindButton(itemId, buttonId, processDefinitionId, taskDefKey, buttonType);
         return Y9Result.successMsg("绑定成功");
     }

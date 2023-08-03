@@ -21,7 +21,8 @@ public interface SpecialOperationApi {
      * @param sponsorGuid 主办人id
      * @throws Exception Exception
      */
-    void reposition(String tenantId, String userId, String taskId, String targetTaskDefineKey, List<String> users, String reason, String sponsorGuid) throws Exception;
+    void reposition(String tenantId, String userId, String taskId, String targetTaskDefineKey, List<String> users,
+        String reason, String sponsorGuid) throws Exception;
 
     /**
      * 重定向(岗位)
@@ -35,7 +36,8 @@ public interface SpecialOperationApi {
      * @param sponsorGuid 主办人id
      * @throws Exception Exception
      */
-    void reposition4Position(String tenantId, String positionId, String taskId, String repositionToTaskId, List<String> userChoice, String reason, String sponsorGuid) throws Exception;
+    void reposition4Position(String tenantId, String positionId, String taskId, String repositionToTaskId,
+        List<String> userChoice, String reason, String sponsorGuid) throws Exception;
 
     /**
      * 退回办件

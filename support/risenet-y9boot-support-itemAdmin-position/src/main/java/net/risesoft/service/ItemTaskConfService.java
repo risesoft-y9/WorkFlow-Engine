@@ -40,7 +40,8 @@ public interface ItemTaskConfService {
      * @param taskDefKey
      * @return
      */
-    ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId, String taskDefKey);
+    ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
+        String taskDefKey);
 
     /**
      * 只查当前任务节点的配置，当前任务节点没有配置则返回null
@@ -50,7 +51,8 @@ public interface ItemTaskConfService {
      * @param taskDefKey
      * @return
      */
-    ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(String itemId, String processDefinitionId, String taskDefKey);
+    ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(String itemId, String processDefinitionId,
+        String taskDefKey);
 
     /**
      * 查询是否具有主协办状态

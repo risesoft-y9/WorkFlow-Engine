@@ -68,7 +68,8 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
         try {
             String tenantId = (String)map.get("tenantId");
             String processSerialNumber = (String)map.get(SysVariables.PROCESSSERIALNUMBER);
-            ProcessParamModel processParamModel = processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             String documentTitle = processParamModel.getTitle();
             String itemId = processParamModel.getItemId();
             String itemName = processParamModel.getItemName();
@@ -99,7 +100,8 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
                         method.addParameter("taskSender", position.getName());
                         method.addParameter("taskName", itemName + "-" + task.getName());
                         method.addParameter("processSerialNumber", processSerialNumber);
-                        method.addParameter("processDefinitionKey", task.getProcessDefinitionId().split(SysVariables.COLON)[0]);
+                        method.addParameter("processDefinitionKey",
+                            task.getProcessDefinitionId().split(SysVariables.COLON)[0]);
                         method.addParameter("processInstanceId", task.getProcessInstanceId());
                         method.addParameter("taskId", task.getId());
                         method.addParameter("itemId", itemId);

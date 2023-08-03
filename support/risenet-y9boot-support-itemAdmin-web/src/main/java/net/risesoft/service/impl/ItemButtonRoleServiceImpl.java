@@ -23,53 +23,53 @@ import net.risesoft.service.ItemButtonRoleService;
 @Service(value = "itemButtonRoleService")
 public class ItemButtonRoleServiceImpl implements ItemButtonRoleService {
 
-	@Autowired
-	private ItemButtonRoleRepository itemButtonRoleRepository;
+    @Autowired
+    private ItemButtonRoleRepository itemButtonRoleRepository;
 
-	@Autowired
-	private RoleApi roleManager;
+    @Autowired
+    private RoleApi roleManager;
 
-	@Override
-	@Transactional(readOnly = false)
-	public void deleteByItemButtonId(String itemButtonId) {
-		List<ItemButtonRole> roleList = itemButtonRoleRepository.findByItemButtonId(itemButtonId);
-		itemButtonRoleRepository.deleteAll(roleList);
-	}
+    @Override
+    @Transactional(readOnly = false)
+    public void deleteByItemButtonId(String itemButtonId) {
+        List<ItemButtonRole> roleList = itemButtonRoleRepository.findByItemButtonId(itemButtonId);
+        itemButtonRoleRepository.deleteAll(roleList);
+    }
 
-	@Override
-	public List<ItemButtonRole> findByItemButtonId(String itemButtonId) {
-		return itemButtonRoleRepository.findByItemButtonId(itemButtonId);
-	}
+    @Override
+    public List<ItemButtonRole> findByItemButtonId(String itemButtonId) {
+        return itemButtonRoleRepository.findByItemButtonId(itemButtonId);
+    }
 
-	@Override
-	public List<ItemButtonRole> findByItemButtonIdContainRoleName(String itemButtonId) {
-		List<ItemButtonRole> roleList = itemButtonRoleRepository.findByItemButtonId(itemButtonId);
-		for (ItemButtonRole role : roleList) {
-			Role r = roleManager.getRole(role.getRoleId());
-			role.setRoleName(r == null ? "角色已删除" : r.getName());
-		}
-		return roleList;
-	}
+    @Override
+    public List<ItemButtonRole> findByItemButtonIdContainRoleName(String itemButtonId) {
+        List<ItemButtonRole> roleList = itemButtonRoleRepository.findByItemButtonId(itemButtonId);
+        for (ItemButtonRole role : roleList) {
+            Role r = roleManager.getRole(role.getRoleId());
+            role.setRoleName(r == null ? "角色已删除" : r.getName());
+        }
+        return roleList;
+    }
 
-	@Override
-	@Transactional(readOnly = false)
-	public void remove(String[] ids) {
-		for (String id : ids) {
-			itemButtonRoleRepository.deleteById(id);
-		}
-	}
+    @Override
+    @Transactional(readOnly = false)
+    public void remove(String[] ids) {
+        for (String id : ids) {
+            itemButtonRoleRepository.deleteById(id);
+        }
+    }
 
-	@Override
-	@Transactional(readOnly = false)
-	public void saveOrUpdate(String itemButtonId, String roleId) {
-		ItemButtonRole role = itemButtonRoleRepository.findByItemButtonIdAndRoleId(itemButtonId, roleId);
-		if (null == role) {
-			role = new ItemButtonRole();
-			role.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-			role.setItemButtonId(itemButtonId);
-			role.setRoleId(roleId);
+    @Override
+    @Transactional(readOnly = false)
+    public void saveOrUpdate(String itemButtonId, String roleId) {
+        ItemButtonRole role = itemButtonRoleRepository.findByItemButtonIdAndRoleId(itemButtonId, roleId);
+        if (null == role) {
+            role = new ItemButtonRole();
+            role.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            role.setItemButtonId(itemButtonId);
+            role.setRoleId(roleId);
 
-			itemButtonRoleRepository.save(role);
-		}
-	}
+            itemButtonRoleRepository.save(role);
+        }
+    }
 }

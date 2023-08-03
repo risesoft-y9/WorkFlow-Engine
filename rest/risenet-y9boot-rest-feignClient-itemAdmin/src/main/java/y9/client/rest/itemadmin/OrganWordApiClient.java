@@ -14,7 +14,8 @@ import net.risesoft.api.itemadmin.OrganWordApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "OrganWordApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/organWord")
+@FeignClient(contextId = "OrganWordApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/organWord")
 public interface OrganWordApiClient extends OrganWordApi {
 
     /**
@@ -34,8 +35,11 @@ public interface OrganWordApiClient extends OrganWordApi {
      */
     @Override
     @GetMapping("/checkNumberStr")
-    public Integer checkNumberStr(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("characterValue") String characterValue, @RequestParam("custom") String custom, @RequestParam("year") Integer year, @RequestParam("numberTemp") Integer numberTemp,
-        @RequestParam("itemId") String itemId, @RequestParam("common") Integer common, @RequestParam("processSerialNumber") String processSerialNumber) throws Exception;
+    public Integer checkNumberStr(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("characterValue") String characterValue, @RequestParam("custom") String custom,
+        @RequestParam("year") Integer year, @RequestParam("numberTemp") Integer numberTemp,
+        @RequestParam("itemId") String itemId, @RequestParam("common") Integer common,
+        @RequestParam("processSerialNumber") String processSerialNumber) throws Exception;
 
     /**
      * 判断机构代字custom在某个流程实例中是否已经编号,没有编号的话就查找有权限的编号的机关代字
@@ -52,8 +56,10 @@ public interface OrganWordApiClient extends OrganWordApi {
      */
     @Override
     @GetMapping("/exist")
-    public Map<String, Object> exist(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("custom") String custom, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("itembox") String itembox) throws Exception;
+    public Map<String, Object> exist(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("custom") String custom, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("itembox") String itembox)
+        throws Exception;
 
     /**
      * 
@@ -70,7 +76,9 @@ public interface OrganWordApiClient extends OrganWordApi {
      */
     @Override
     @GetMapping("/findByCustom")
-    public List<Map<String, Object>> findByCustom(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("custom") String custom, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
+    public List<Map<String, Object>> findByCustom(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("custom") String custom,
+        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
         @RequestParam("taskDefKey") String taskDefKey) throws Exception;
 
     /**
@@ -88,8 +96,10 @@ public interface OrganWordApiClient extends OrganWordApi {
      */
     @Override
     @GetMapping("/getNumber")
-    public Map<String, Object> getNumber(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("custom") String custom, @RequestParam("characterValue") String characterValue, @RequestParam("year") Integer year, @RequestParam("common") Integer common,
-        @RequestParam("itemId") String itemId) throws Exception;
+    public Map<String, Object> getNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("custom") String custom,
+        @RequestParam("characterValue") String characterValue, @RequestParam("year") Integer year,
+        @RequestParam("common") Integer common, @RequestParam("itemId") String itemId) throws Exception;
 
     /**
      * 获取编号的数字
@@ -106,7 +116,9 @@ public interface OrganWordApiClient extends OrganWordApi {
      */
     @Override
     @GetMapping("/getNumberOnly")
-    public Integer getNumberOnly(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("custom") String custom, @RequestParam("characterValue") String characterValue, @RequestParam("year") Integer year, @RequestParam("common") Integer common,
+    public Integer getNumberOnly(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("custom") String custom, @RequestParam("characterValue") String characterValue,
+        @RequestParam("year") Integer year, @RequestParam("common") Integer common,
         @RequestParam("itemId") String itemId) throws Exception;
 
 }

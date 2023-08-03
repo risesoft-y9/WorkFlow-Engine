@@ -181,7 +181,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             Iterator<FlowElement> sListIterator = activitieList.iterator();
             while (sListIterator.hasNext()) {
                 FlowElement e = sListIterator.next();
-                if (e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent || e instanceof SequenceFlow) {
+                if (e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
+                    || e instanceof SequenceFlow) {
                     sListIterator.remove();
                 }
             }
@@ -398,7 +399,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
 
     @Override
     public String getStartNodeKeyByProcessDefinitionKey(String processDefinitionKey) {
-        String processDefinitionId = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).latestVersion().singleResult().getId();
+        String processDefinitionId = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey(processDefinitionKey).latestVersion().singleResult().getId();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         Collection<FlowElement> flowElements = process.getFlowElements();
@@ -473,7 +475,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                         Map<String, String> map = new HashMap<String, String>(16);
                         String conditionText = tr.getConditionExpression();
                         FlowElement fe = tr.getTargetFlowElement();
-                        if (StringUtils.isNotBlank(conditionText) && !(fe instanceof EndEvent) && !(fe instanceof ParallelGateway)) {
+                        if (StringUtils.isNotBlank(conditionText) && !(fe instanceof EndEvent)
+                            && !(fe instanceof ParallelGateway)) {
                             String name = tr.getName();
                             if (StringUtils.isNotBlank(name) && "skip".equals(name)) {
                                 // 忽略
@@ -590,7 +593,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                                             UserTask userTask = (UserTask)fe;
                                             if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
                                                 map.put(SysVariables.MULTIINSTANCE, SysVariables.SEQUENTIAL);
-                                            } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                                            } else if (userTask
+                                                .getBehavior() instanceof ParallelMultiInstanceBehavior) {
                                                 map.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
                                             }
                                         }
@@ -599,7 +603,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                                     nameListTemp.add(name);
                                 } else {
                                     UserTask userTask = (UserTask)fe;
-                                    if (!(fe instanceof EndEvent) && userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                                    if (!(fe instanceof EndEvent)
+                                        && userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
                                         for (int j = 0; j < targetNodes.size(); j++) {
                                             // 当节点名称相同时，默认选择并行节点
                                             if (targetNodes.get(j).get("taskDefName").equals(name)) {
@@ -651,7 +656,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
-    public List<Map<String, String>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey, Boolean isContainEndNode) {
+    public List<Map<String, String>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey,
+        Boolean isContainEndNode) {
         List<Map<String, String>> targetNodes = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);

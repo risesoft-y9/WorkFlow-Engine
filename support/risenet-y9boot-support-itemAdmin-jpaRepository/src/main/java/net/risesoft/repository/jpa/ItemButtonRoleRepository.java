@@ -14,7 +14,8 @@ import net.risesoft.entity.ItemButtonRole;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemButtonRoleRepository extends JpaRepository<ItemButtonRole, String>, JpaSpecificationExecutor<ItemButtonRole> {
+public interface ItemButtonRoleRepository
+    extends JpaRepository<ItemButtonRole, String>, JpaSpecificationExecutor<ItemButtonRole> {
 
     List<ItemButtonRole> findByItemButtonId(String itemButtonId);
 

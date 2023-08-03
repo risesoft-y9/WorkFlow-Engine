@@ -22,15 +22,15 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/services/rest/calendarConfig")
 public class CalendarConfigApiImpl implements CalendarConfigApi {
 
-	@Autowired
-	private CalendarConfigService calendarConfigService;
+    @Autowired
+    private CalendarConfigService calendarConfigService;
 
-	@Override
-	@GetMapping(value = "/findByYear", produces = MediaType.APPLICATION_JSON_VALUE)
-	public CalendarConfigModel findByYear(String tenantId, String year) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		CalendarConfig calendarConfig = calendarConfigService.findByYear(year);
-		return ItemAdminModelConvertUtil.calendarConfig2CalendarConfigModel(calendarConfig);
-	}
+    @Override
+    @GetMapping(value = "/findByYear", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CalendarConfigModel findByYear(String tenantId, String year) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        CalendarConfig calendarConfig = calendarConfigService.findByYear(year);
+        return ItemAdminModelConvertUtil.calendarConfig2CalendarConfigModel(calendarConfig);
+    }
 
 }

@@ -15,13 +15,16 @@ package org.artofsolving.jodconverter.office;
 /**
  * Encapsulates the UNO Interprocess Connection type and parameters.
  * <p>
- * OpenOffice.org supports two connection types: TCP sockets and named pipes. Named pipes are marginally faster and do not take up a TCP port, but they require native libraries, which means setting <em>java.library.path</em> when starting Java. E.g. on Linux
+ * OpenOffice.org supports two connection types: TCP sockets and named pipes. Named pipes are marginally faster and do
+ * not take up a TCP port, but they require native libraries, which means setting <em>java.library.path</em> when
+ * starting Java. E.g. on Linux
  * 
  * <pre>
  * java -Djava.library.path=/opt/openoffice.org/ure/lib ...
  * </pre>
  * <p>
- * See <a href="http://wiki.services.openoffice.org/wiki/Documentation/DevGuide/ProUNO/Opening_a_Connection">Opening a Connection</a> in the OpenOffice.org Developer's Guide for more details.
+ * See <a href="http://wiki.services.openoffice.org/wiki/Documentation/DevGuide/ProUNO/Opening_a_Connection">Opening a
+ * Connection</a> in the OpenOffice.org Developer's Guide for more details.
  */
 class UnoUrl {
 
@@ -29,6 +32,7 @@ class UnoUrl {
         String pipeString = "pipe,name=" + pipeName;
         return new UnoUrl(pipeString, pipeString);
     }
+
     public static UnoUrl socket(int port) {
         String socketString = "socket,host=0.0.0.0,port=" + port;
         return new UnoUrl(socketString, socketString + ",tcpNoDelay=1");

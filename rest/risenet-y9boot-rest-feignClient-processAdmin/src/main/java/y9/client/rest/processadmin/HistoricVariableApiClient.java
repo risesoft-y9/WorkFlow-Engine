@@ -18,7 +18,8 @@ import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "HistoricVariableApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}", path = "/services/rest/historicVariable")
+@FeignClient(contextId = "HistoricVariableApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
+    path = "/services/rest/historicVariable")
 public interface HistoricVariableApiClient extends HistoricVariableApi {
 
     /**
@@ -30,7 +31,8 @@ public interface HistoricVariableApiClient extends HistoricVariableApi {
      */
     @Override
     @GetMapping("/getByProcessInstanceId")
-    List<HistoricVariableInstanceModel> getByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    List<HistoricVariableInstanceModel> getByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 
@@ -44,7 +46,9 @@ public interface HistoricVariableApiClient extends HistoricVariableApi {
      */
     @Override
     @GetMapping("/getByProcessInstanceIdAndVariableName")
-    HistoricVariableInstanceModel getByProcessInstanceIdAndVariableName(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("variableName") String variableName, @RequestParam("year") String year);
+    HistoricVariableInstanceModel getByProcessInstanceIdAndVariableName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("variableName") String variableName,
+        @RequestParam("year") String year);
 
     /**
      * 根据流程实例Id,获取历史任务变量的值集合
@@ -55,7 +59,8 @@ public interface HistoricVariableApiClient extends HistoricVariableApi {
      */
     @Override
     @GetMapping("/getByTaskId")
-    List<HistoricVariableInstanceModel> getByTaskId(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+    List<HistoricVariableInstanceModel> getByTaskId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId);
 
     /**
      * 
@@ -69,7 +74,9 @@ public interface HistoricVariableApiClient extends HistoricVariableApi {
      */
     @Override
     @GetMapping("/getByTaskIdAndVariableName")
-    HistoricVariableInstanceModel getByTaskIdAndVariableName(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("variableName") String variableName, @RequestParam("year") String year);
+    HistoricVariableInstanceModel getByTaskIdAndVariableName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId, @RequestParam("variableName") String variableName,
+        @RequestParam("year") String year);
 
     /**
      * 根据流程实例Id,获取指定的流程变量
@@ -81,5 +88,6 @@ public interface HistoricVariableApiClient extends HistoricVariableApi {
      */
     @Override
     @GetMapping(value = "/getVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Map<String, Object> getVariables(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestBody Collection<String> keys);
+    Map<String, Object> getVariables(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestBody Collection<String> keys);
 }

@@ -46,13 +46,15 @@ public class ItemTodoApiImpl implements ItemTodoApi {
 
     @Override
     @GetMapping(value = "/findByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ItemPage<ActRuDetailModel> findByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page, Integer rows) throws Exception {
+    public ItemPage<ActRuDetailModel> findByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId) || StringUtils.isEmpty(systemName)) {
             throw new Exception("tenantId or userId or systemName is null !");
         }
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        Page<ActRuDetail> ardPage = actRuDetailService.findBySystemNameAndAssigneeAndStatus(systemName, userId, 0, rows, page, sort);
+        Page<ActRuDetail> ardPage =
+            actRuDetailService.findBySystemNameAndAssigneeAndStatus(systemName, userId, 0, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();
         ActRuDetailModel actRuDetailModel = null;
         List<ActRuDetailModel> modelList = new ArrayList<>();
@@ -61,13 +63,15 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             Y9BeanUtil.copyProperties(actRuDetail, actRuDetailModel);
             modelList.add(actRuDetailModel);
         }
-        ItemPage<ActRuDetailModel> pageList = ItemPage.<ActRuDetailModel>builder().rows(modelList).currpage(page).size(rows).totalpages(ardPage.getTotalPages()).total(ardPage.getTotalElements()).build();
+        ItemPage<ActRuDetailModel> pageList = ItemPage.<ActRuDetailModel>builder().rows(modelList).currpage(page)
+            .size(rows).totalpages(ardPage.getTotalPages()).total(ardPage.getTotalElements()).build();
         return pageList;
     }
 
     @Override
     @GetMapping(value = "/searchByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(String tenantId, String userId, String systemName, String tableName, String searchMapStr, Integer page, Integer rows) throws Exception {
+    public ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        String tableName, String searchMapStr, Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId) || StringUtils.isEmpty(systemName)) {
             throw new Exception("tenantId or userId or systemName is null !");
         }
@@ -80,12 +84,15 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         }
 
         String orderBy = "T.CREATETIME DESC";
-        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + sql1 + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? ORDER BY " + orderBy;
-        String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.SYSTEMNAME= ? AND T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1;
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + sql1
+            + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? ORDER BY " + orderBy;
+        String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + sql0
+            + " WHERE T.SYSTEMNAME= ? AND T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1;
         Object[] args = new Object[2];
         args[0] = systemName;
         args[1] = userId;
-        ItemPage<ActRuDetailModel> pageList = itemPageService.page(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        ItemPage<ActRuDetailModel> pageList = itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return pageList;
     }
 

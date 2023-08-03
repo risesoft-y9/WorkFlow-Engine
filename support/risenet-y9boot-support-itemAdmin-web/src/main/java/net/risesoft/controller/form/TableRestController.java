@@ -50,7 +50,8 @@ public class TableRestController {
      */
     @RequestMapping(value = "/addDataBaseTable", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> addDataBaseTable(@RequestParam(required = true) String tableName, @RequestParam(required = true) String systemName, @RequestParam(required = true) String systemCnName) {
+    public Y9Result<String> addDataBaseTable(@RequestParam(required = true) String tableName,
+        @RequestParam(required = true) String systemName, @RequestParam(required = true) String systemCnName) {
         Map<String, Object> map = y9TableService.addDataBaseTable(tableName, systemName, systemCnName);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -67,7 +68,8 @@ public class TableRestController {
      */
     @RequestMapping(value = "/buildTable", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> buildTable(@RequestParam(required = true) String tables, @RequestParam(required = true) String fields) {
+    public Y9Result<String> buildTable(@RequestParam(required = true) String tables,
+        @RequestParam(required = true) String fields) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Y9Table table = Y9JsonUtil.readValue(tables, Y9Table.class);
         List<Map<String, Object>> listMap = Y9JsonUtil.readListOfMap(fields, String.class, Object.class);
@@ -146,10 +148,12 @@ public class TableRestController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getTables", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Page<Y9Table> getTables(@RequestParam(required = false) String systemName, @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
+    public Y9Page<Y9Table> getTables(@RequestParam(required = false) String systemName,
+        @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
         Map<String, Object> map = y9TableService.getTables(systemName, page, rows);
         List<Y9Table> list = (List<Y9Table>)map.get("rows");
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), list, "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
+            Integer.parseInt(map.get("total").toString()), list, "获取列表成功");
     }
 
     /**
@@ -214,7 +218,8 @@ public class TableRestController {
      */
     @RequestMapping(value = "/saveTable", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> saveTable(@RequestParam(required = false) String tables, @RequestParam(required = false) String fields) {
+    public Y9Result<String> saveTable(@RequestParam(required = false) String tables,
+        @RequestParam(required = false) String fields) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         List<Map<String, Object>> listMap = Y9JsonUtil.readListOfMap(fields, String.class, Object.class);
         Y9Table table = Y9JsonUtil.readValue(tables, Y9Table.class);
@@ -234,7 +239,8 @@ public class TableRestController {
      */
     @RequestMapping(value = "/updateTable", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> updateTable(@RequestParam(required = true) String tables, @RequestParam(required = true) String fields) {
+    public Y9Result<String> updateTable(@RequestParam(required = true) String tables,
+        @RequestParam(required = true) String fields) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Y9Table table = Y9JsonUtil.readValue(tables, Y9Table.class);
         List<Map<String, Object>> listMap = Y9JsonUtil.readListOfMap(fields, String.class, Object.class);

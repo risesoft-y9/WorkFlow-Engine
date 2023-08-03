@@ -13,7 +13,8 @@ import net.risesoft.entity.ItemPrintTemplateBind;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface PrintTemplateItemBindRepository extends JpaRepository<ItemPrintTemplateBind, String>, JpaSpecificationExecutor<ItemPrintTemplateBind> {
+public interface PrintTemplateItemBindRepository
+    extends JpaRepository<ItemPrintTemplateBind, String>, JpaSpecificationExecutor<ItemPrintTemplateBind> {
 
     @Query(" from ItemPrintTemplateBind p where p.itemId=?1")
     public ItemPrintTemplateBind findByItemId(String itemId);

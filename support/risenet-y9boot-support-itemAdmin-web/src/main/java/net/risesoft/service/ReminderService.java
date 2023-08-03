@@ -40,14 +40,16 @@ public interface ReminderService {
     List<Reminder> findAllByTaskIdsAndSenderId(Collection<String> taskIds, String senderId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param id
      * @return
      */
     Reminder findById(String id);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param processInstanceId
      * @param page
      * @param rows
@@ -56,14 +58,16 @@ public interface ReminderService {
     Map<String, Object> findByProcessInstanceId(String processInstanceId, int page, int rows);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param senderId
      * @param processInstanceId
      * @param page
      * @param rows
      * @return
      */
-    Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId, int page, int rows);
+    Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId, int page,
+        int rows);
 
     /**
      * 根据taskId查找是否存在催办
@@ -74,7 +78,8 @@ public interface ReminderService {
     Reminder findByTaskId(String taskId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param taskId
      * @param page
      * @param rows
@@ -92,7 +97,8 @@ public interface ReminderService {
     Reminder findByTaskIdAndSenderId(String taskId, String senderId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param taskId
      * @param reminderSendType
      * @return
@@ -100,7 +106,8 @@ public interface ReminderService {
     List<Reminder> findByTastIdAndReminderSendType(String taskId, String reminderSendType);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param msgContent
      * @param procInstId
      * @param reminderAutomatic
@@ -110,7 +117,8 @@ public interface ReminderService {
      * @param documentTitle
      * @return
      */
-    String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType, String taskId, String taskAssigneeId, String documentTitle);
+    String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType,
+        String taskId, String taskAssigneeId, String documentTitle);
 
     /**
      * 保存或者编辑催办
@@ -135,7 +143,8 @@ public interface ReminderService {
     void saveReminder(Reminder reminder);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param readTime
      * @param taskId
      * @param type
@@ -143,7 +152,8 @@ public interface ReminderService {
     void setReadTime(Date readTime, String taskId, String type);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param ids
      */
     void setReadTime(String[] ids);

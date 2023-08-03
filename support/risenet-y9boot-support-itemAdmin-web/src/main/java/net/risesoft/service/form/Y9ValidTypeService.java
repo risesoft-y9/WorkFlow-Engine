@@ -21,13 +21,15 @@ public interface Y9ValidTypeService {
     Map<String, Object> delValidType(String ids);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @return
      */
     List<Y9ValidType> findAll();
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param id
      * @return
      */

@@ -10,24 +10,28 @@ import net.risesoft.entity.OrganWordDetail;
 public interface OrganWordDetailService {
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param custom
      * @param characterValue
      * @param year
      * @param itemId
      * @return
      */
-    OrganWordDetail findByCustomAndCharacterValueAndYearAndItemId(String custom, String characterValue, Integer year, String itemId);
+    OrganWordDetail findByCustomAndCharacterValueAndYearAndItemId(String custom, String characterValue, Integer year,
+        String itemId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param organWordDetail
      * @return
      */
     OrganWordDetail save(OrganWordDetail organWordDetail);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param organWordDetail
      * @return
      */

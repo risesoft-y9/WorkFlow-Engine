@@ -23,7 +23,8 @@ public interface SearchService {
      * @param title
      * @return
      */
-    Y9Page<Map<String, Object>> getEmailList(Integer page, Integer rows, String startDateStr, String endDateStr, Integer fileType, String userName, String title);
+    Y9Page<Map<String, Object>> getEmailList(Integer page, Integer rows, String startDateStr, String endDateStr,
+        Integer fileType, String userName, String title);
 
     /**
      * Description: 个人所有件
@@ -37,7 +38,8 @@ public interface SearchService {
      * @param rows
      * @return
      */
-    Y9Page<Map<String, Object>> getSearchList(String searchTerm, String itemName, String userName, String state, String year, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> getSearchList(String searchTerm, String itemName, String userName, String state,
+        String year, Integer page, Integer rows);
 
     /**
      * 
@@ -52,6 +54,7 @@ public interface SearchService {
      * @param rows
      * @return
      */
-    Y9Page<Map<String, Object>> getYuejianList(String searchName, String itemName, String userName, String state, String year, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> getYuejianList(String searchName, String itemName, String userName, String state,
+        String year, Integer page, Integer rows);
 
 }

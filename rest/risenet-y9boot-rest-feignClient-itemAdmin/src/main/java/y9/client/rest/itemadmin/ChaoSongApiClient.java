@@ -16,7 +16,8 @@ import net.risesoft.api.itemadmin.ChaoSongApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ChaoSongApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/chaoSong")
+@FeignClient(contextId = "ChaoSongApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/chaoSong")
 public interface ChaoSongApiClient extends ChaoSongApi {
 
     /**
@@ -28,7 +29,8 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @PostMapping("/changeChaoSongState")
-    public void changeChaoSongState(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id, @RequestParam("type") String type);
+    public void changeChaoSongState(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id,
+        @RequestParam("type") String type);
 
     /**
      * 抄送件状态设为已阅
@@ -39,7 +41,8 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @PostMapping(value = "/changeStatus", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Override
-    public void changeStatus(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestBody String[] ids);
+    public void changeStatus(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestBody String[] ids);
 
     /**
      * 根据抄送ID修改状态
@@ -49,7 +52,8 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @PostMapping("/changeStatus2read")
-    public void changeStatus2read(@RequestParam("tenantId") String tenantId, @RequestParam("chaoSongId") String chaoSongId);
+    public void changeStatus2read(@RequestParam("tenantId") String tenantId,
+        @RequestParam("chaoSongId") String chaoSongId);
 
     /**
      * 
@@ -62,7 +66,8 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/countByProcessInstanceId")
-    public int countByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
+    public int countByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程实例id统计当前人是否有抄送件
@@ -74,7 +79,8 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/countByUserIdAndProcessInstanceId")
-    public int countByUserIdAndProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
+    public int countByUserIdAndProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程实例id删除抄送件
@@ -86,7 +92,8 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @PostMapping("/deleteByProcessInstanceId")
-    public boolean deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("year") String year);
+    public boolean deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("year") String year);
 
     /**
      * 
@@ -98,7 +105,8 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @PostMapping(value = "/deleteList", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteList(@RequestParam("tenantId") String tenantId, @RequestBody String[] ids, @RequestParam("processInstanceId") String processInstanceId);
+    public void deleteList(@RequestParam("tenantId") String tenantId, @RequestBody String[] ids,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 展开抄送件 Description:
@@ -113,7 +121,9 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/detail")
-    public Map<String, Object> detail(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("id") String id, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("status") Integer status, @RequestParam("mobile") boolean mobile);
+    public Map<String, Object> detail(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("id") String id, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("status") Integer status, @RequestParam("mobile") boolean mobile);
 
     /**
      * 获取批阅件计数
@@ -124,7 +134,8 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getDone4OpinionCountByUserId")
-    public int getDone4OpinionCountByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
+    public int getDone4OpinionCountByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId);
 
     /**
      * 根据人员id获取抄送未阅件统计
@@ -147,7 +158,8 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getDoneCountByUserIdAndItemId")
-    public int getDoneCountByUserIdAndItemId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId);
+    public int getDoneCountByUserIdAndItemId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId);
 
     /**
      * Description: 根据人员id获取抄送未阅件统计
@@ -159,7 +171,8 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getDoneCountByUserIdAndSystemName")
-    public int getDoneCountByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName);
+    public int getDoneCountByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName);
 
     /**
      * Description: 获取抄送已阅件列表
@@ -174,7 +187,10 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getDoneListByUserId")
-    public Map<String, Object> getDoneListByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("year") String year, @RequestParam("documentTitle") String documentTitle, @RequestParam("rows") int rows, @RequestParam("page") int page);
+    public Map<String, Object> getDoneListByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("year") String year,
+        @RequestParam("documentTitle") String documentTitle, @RequestParam("rows") int rows,
+        @RequestParam("page") int page);
 
     /**
      * 
@@ -189,7 +205,9 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getDoneListByUserIdAndItemId")
-    public Map<String, Object> getDoneListByUserIdAndItemId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("rows") int rows, @RequestParam("page") int page);
+    public Map<String, Object> getDoneListByUserIdAndItemId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("rows") int rows,
+        @RequestParam("page") int page);
 
     /**
      * 获取抄送已阅件列表
@@ -204,7 +222,9 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getDoneListByUserIdAndSystemName")
-    public Map<String, Object> getDoneListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName, @RequestParam("rows") int rows, @RequestParam("page") int page);
+    public Map<String, Object> getDoneListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("rows") int rows, @RequestParam("page") int page);
 
     /**
      * 
@@ -219,7 +239,9 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getListByProcessInstanceId")
-    public Map<String, Object> getListByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("userName") String userName, @RequestParam("rows") int rows, @RequestParam("page") int page);
+    public Map<String, Object> getListByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("userName") String userName,
+        @RequestParam("rows") int rows, @RequestParam("page") int page);
 
     /**
      * Description: 根据流程实例获取当前人的抄送件
@@ -234,8 +256,9 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getListBySenderIdAndProcessInstanceId")
-    public Map<String, Object> getListBySenderIdAndProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("senderId") String senderId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("userName") String userName, @RequestParam("rows") int rows,
-        @RequestParam("page") int page);
+    public Map<String, Object> getListBySenderIdAndProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("senderId") String senderId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("userName") String userName, @RequestParam("rows") int rows, @RequestParam("page") int page);
 
     /**
      * Description: 批阅件
@@ -250,7 +273,10 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getOpinionChaosongByUserId")
-    public Map<String, Object> getOpinionChaosongByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("year") String year, @RequestParam("documentTitle") String documentTitle, @RequestParam("rows") int rows, @RequestParam("page") int page);
+    public Map<String, Object> getOpinionChaosongByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("year") String year,
+        @RequestParam("documentTitle") String documentTitle, @RequestParam("rows") int rows,
+        @RequestParam("page") int page);
 
     /**
      * 根据人员id获取抄送已阅件统计
@@ -274,7 +300,8 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getTodoCountByUserIdAndItemId")
-    public int getTodoCountByUserIdAndItemId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId);
+    public int getTodoCountByUserIdAndItemId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId);
 
     /**
      * 根据人员id获取抄送已阅件统计
@@ -287,7 +314,8 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getTodoCountByUserIdAndSystemName")
-    public int getTodoCountByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName);
+    public int getTodoCountByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName);
 
     /**
      * 
@@ -302,7 +330,9 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getTodoListByUserId")
-    public Map<String, Object> getTodoListByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("documentTitle") String documentTitle, @RequestParam("rows") int rows, @RequestParam("page") int page);
+    public Map<String, Object> getTodoListByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("documentTitle") String documentTitle,
+        @RequestParam("rows") int rows, @RequestParam("page") int page);
 
     /**
      * 
@@ -317,7 +347,9 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getTodoListByUserIdAndItemId")
-    public Map<String, Object> getTodoListByUserIdAndItemId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("rows") int rows, @RequestParam("page") int page);
+    public Map<String, Object> getTodoListByUserIdAndItemId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("rows") int rows,
+        @RequestParam("page") int page);
 
     /**
      * 获取抄送未阅件列表
@@ -333,7 +365,9 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @GetMapping("/getTodoListByUserIdAndSystemName")
-    public Map<String, Object> getTodoListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName, @RequestParam("title") String title, @RequestParam("rows") int rows, @RequestParam("page") int page);
+    public Map<String, Object> getTodoListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("title") String title, @RequestParam("rows") int rows, @RequestParam("page") int page);
 
     /**
      * 
@@ -351,8 +385,10 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @PostMapping("/save")
-    public Map<String, Object> save(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("users") String users, @RequestParam("isSendSms") String isSendSms,
-        @RequestParam("isShuMing") String isShuMing, @RequestParam("smsContent") String smsContent, @RequestParam("smsPersonId") String smsPersonId);
+    public Map<String, Object> save(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("users") String users,
+        @RequestParam("isSendSms") String isSendSms, @RequestParam("isShuMing") String isShuMing,
+        @RequestParam("smsContent") String smsContent, @RequestParam("smsPersonId") String smsPersonId);
 
     /**
      * 更新抄送件标题
@@ -363,5 +399,7 @@ public interface ChaoSongApiClient extends ChaoSongApi {
      */
     @Override
     @PostMapping("/updateTitle")
-    public void updateTitle(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("documentTitle") String documentTitle);
+    public void updateTitle(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("documentTitle") String documentTitle);
 }

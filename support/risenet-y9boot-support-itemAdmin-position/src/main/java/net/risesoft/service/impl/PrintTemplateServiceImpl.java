@@ -138,7 +138,8 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
 
     @Transactional(readOnly = false)
     @Override
-    public Map<String, Object> saveBindTemplate(String itemId, String templateId, String templateName, String templateUrl, String templateType) {
+    public Map<String, Object> saveBindTemplate(String itemId, String templateId, String templateName,
+        String templateUrl, String templateType) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             ItemPrintTemplateBind printTemplateItemBind = printTemplateItemBindRepository.findByItemId(itemId);
@@ -174,7 +175,8 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     @Transactional(readOnly = false)
     public void saveOrUpdate(PrintTemplate printTemplate) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String personId = person.getPersonId(), personName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
+        String personId = person.getPersonId(), personName = person.getName(),
+            tenantId = Y9LoginUserHolder.getTenantId();
         String id = printTemplate.getId();
         if (StringUtils.isNotEmpty(id)) {
             PrintTemplate oldPrint = printTemplateRepository.findById(id).orElse(null);

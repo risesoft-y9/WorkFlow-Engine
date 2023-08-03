@@ -47,7 +47,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
 
     @Autowired
     private ChaoSongInfoApi chaoSongInfoManager;
-    
+
     /**
      * 删除流程实例，在办件设为暂停，办结件加删除标识
      *
@@ -132,11 +132,14 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      */
     @Override
     @GetMapping(value = "/getBySuperProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoricProcessInstanceModel> getBySuperProcessInstanceId(String tenantId, String superProcessInstanceId) {
+    public List<HistoricProcessInstanceModel> getBySuperProcessInstanceId(String tenantId,
+        String superProcessInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<HistoricProcessInstance> hpiList = customHistoricProcessService.getBySuperProcessInstanceId(superProcessInstanceId);
-        List<HistoricProcessInstanceModel> hpiMoldelList = FlowableModelConvertUtil.historicProcessInstanceList2ModelList(hpiList);
+        List<HistoricProcessInstance> hpiList =
+            customHistoricProcessService.getBySuperProcessInstanceId(superProcessInstanceId);
+        List<HistoricProcessInstanceModel> hpiMoldelList =
+            FlowableModelConvertUtil.historicProcessInstanceList2ModelList(hpiList);
         return hpiMoldelList;
     }
 

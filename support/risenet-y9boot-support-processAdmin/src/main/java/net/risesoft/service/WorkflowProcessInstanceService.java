@@ -71,7 +71,8 @@ public class WorkflowProcessInstanceService {
         ProcessInstance processInstance = null;
         if (StringUtils.isNotBlank(processInstanceId)) {
             try {
-                processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+                processInstance =
+                    runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
                 if (processInstance == null) {
 
                     throw new Exception("流程实例未找到!");
@@ -212,7 +213,8 @@ public class WorkflowProcessInstanceService {
      * @return
      */
     public String getProcessDefinitionId(String processDefinitionKey) {
-        ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery().latestVersion().orderByProcessDefinitionKey().asc();
+        ProcessDefinitionQuery processDefinitionQuery =
+            repositoryService.createProcessDefinitionQuery().latestVersion().orderByProcessDefinitionKey().asc();
         String processDefinitionId = "";
         List<ProcessDefinition> processDefinitionList = processDefinitionQuery.list();
         for (ProcessDefinition processDefinition : processDefinitionList) {
@@ -431,7 +433,8 @@ public class WorkflowProcessInstanceService {
 
     public List<Map<String, String>> getStartTaskTargets(String processDefinitionKey) {
         List<Map<String, String>> targetTasks = new ArrayList<Map<String, String>>();
-        ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery().latestVersion().orderByProcessDefinitionKey().asc();
+        ProcessDefinitionQuery processDefinitionQuery =
+            repositoryService.createProcessDefinitionQuery().latestVersion().orderByProcessDefinitionKey().asc();
         String processDefinitionId = "";
         List<ProcessDefinition> processDefinitionList = processDefinitionQuery.list();
         for (ProcessDefinition processDefinition : processDefinitionList) {

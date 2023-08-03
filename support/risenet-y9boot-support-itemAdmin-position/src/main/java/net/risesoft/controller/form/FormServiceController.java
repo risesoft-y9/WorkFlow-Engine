@@ -44,7 +44,8 @@ public class FormServiceController {
      */
     @PostMapping(value = "/save")
     @ResponseBody
-    public Map<String, Object> formSave(@RequestParam String formdata, HttpServletResponse response, HttpServletRequest request) {
+    public Map<String, Object> formSave(@RequestParam String formdata, HttpServletResponse response,
+        HttpServletRequest request) {
         String tenantId = request.getParameter("y9Form_TenantId");
         String userId = request.getParameter("y9Form_UerId");
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -64,7 +65,8 @@ public class FormServiceController {
      */
     @PostMapping(value = "/getData")
     @ResponseBody
-    public Map<String, Object> getData(@RequestParam(required = false) String guid, String formId, HttpServletResponse response, HttpServletRequest request) {
+    public Map<String, Object> getData(@RequestParam(required = false) String guid, String formId,
+        HttpServletResponse response, HttpServletRequest request) {
         String tenantId = request.getParameter("y9Form_TenantId");
         String userId = request.getParameter("y9Form_UerId");
         Y9LoginUserHolder.setTenantId(tenantId);

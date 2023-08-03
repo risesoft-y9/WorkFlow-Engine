@@ -25,7 +25,8 @@ public class WorkflowHistoryTaskService {
     public HistoricTaskInstance getTaskByProcessInstanceId(String processInstanceId) {
         HistoricTaskInstance historicTaskInstance = null;
         if (StringUtils.isNotBlank(processInstanceId)) {
-            historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId).orderByTaskCreateTime().desc().list().get(0);
+            historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId)
+                .orderByTaskCreateTime().desc().list().get(0);
         }
         return historicTaskInstance;
     }
@@ -33,7 +34,8 @@ public class WorkflowHistoryTaskService {
     public List<HistoricTaskInstance> getTaskListByProcessInstanceId(String processInstanceId) {
         List<HistoricTaskInstance> listTask = new ArrayList<HistoricTaskInstance>();
         if (StringUtils.isNotBlank(processInstanceId)) {
-            listTask = historyService.createHistoricTaskInstanceQuery().orderByTaskCreateTime().desc().processInstanceId(processInstanceId).list();
+            listTask = historyService.createHistoricTaskInstanceQuery().orderByTaskCreateTime().desc()
+                .processInstanceId(processInstanceId).list();
         }
         return listTask;
     }

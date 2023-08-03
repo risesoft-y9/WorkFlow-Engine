@@ -14,7 +14,8 @@ import net.risesoft.api.itemadmin.position.Reminder4PositionApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "Reminder4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/reminder4Position")
+@FeignClient(contextId = "Reminder4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/reminder4Position")
 public interface Reminder4PositionApiClient extends Reminder4PositionApi {
 
     /**
@@ -28,7 +29,9 @@ public interface Reminder4PositionApiClient extends Reminder4PositionApi {
      */
     @Override
     @GetMapping("/getReminder")
-    public Map<String, Object> getReminder(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("taskId") String taskId, @RequestParam("type") String type);
+    public Map<String, Object> getReminder(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("taskId") String taskId,
+        @RequestParam("type") String type);
 
     /**
      * 获取待办的提醒页面的数据
@@ -40,7 +43,8 @@ public interface Reminder4PositionApiClient extends Reminder4PositionApi {
      */
     @Override
     @GetMapping("/getReminderList")
-    public Map<String, Object> getReminderList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("taskId") String taskId);
+    public Map<String, Object> getReminderList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("taskId") String taskId);
 
     /**
      * 保存催办信息
@@ -54,7 +58,9 @@ public interface Reminder4PositionApiClient extends Reminder4PositionApi {
      */
     @Override
     @PostMapping("/saveReminder")
-    public Map<String, Object> saveReminder(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("reminderId") String reminderId, @RequestParam("taskIds") String taskIds, @RequestParam("msgContent") String msgContent);
+    public Map<String, Object> saveReminder(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("reminderId") String reminderId,
+        @RequestParam("taskIds") String taskIds, @RequestParam("msgContent") String msgContent);
 
     /**
      * 发送催办信息
@@ -72,8 +78,11 @@ public interface Reminder4PositionApiClient extends Reminder4PositionApi {
      */
     @Override
     @PostMapping("/sendReminderMessage")
-    public Map<String, Object> sendReminderMessage(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("remType") String remType, @RequestParam("procInstId") String procInstId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("documentTitle") String documentTitle, @RequestParam("taskId") String taskId, @RequestParam("taskAssigneeId") String taskAssigneeId, @RequestParam("msgContent") String msgContent);
+    public Map<String, Object> sendReminderMessage(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("remType") String remType,
+        @RequestParam("procInstId") String procInstId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("documentTitle") String documentTitle, @RequestParam("taskId") String taskId,
+        @RequestParam("taskAssigneeId") String taskAssigneeId, @RequestParam("msgContent") String msgContent);
 
     /**
      * 更新催办信息
@@ -87,6 +96,8 @@ public interface Reminder4PositionApiClient extends Reminder4PositionApi {
      */
     @Override
     @PostMapping("/updateReminder")
-    public Map<String, Object> updateReminder(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("reminderId") String reminderId, @RequestParam("taskIds") String taskIds, @RequestParam("msgContent") String msgContent);
+    public Map<String, Object> updateReminder(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("reminderId") String reminderId,
+        @RequestParam("taskIds") String taskIds, @RequestParam("msgContent") String msgContent);
 
 }

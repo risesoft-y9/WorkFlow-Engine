@@ -48,7 +48,7 @@ public class ItemApiImpl implements ItemApi {
 
     @Autowired
     private ItemMappingConfRepository itemMappingConfRepository;
-    
+
     @Override
     @GetMapping(value = "/findAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemModel> findAll(String tenantId, String userId, String systemName) {
@@ -212,7 +212,8 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/getItemMappingConf", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemMappingConfModel> getItemMappingConf(String tenantId, String itemId, String mappingId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ItemMappingConf> list = itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
+        List<ItemMappingConf> list =
+            itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
         List<ItemMappingConfModel> itemList = new ArrayList<ItemMappingConfModel>();
         for (ItemMappingConf item : list) {
             ItemMappingConfModel itemModel = new ItemMappingConfModel();

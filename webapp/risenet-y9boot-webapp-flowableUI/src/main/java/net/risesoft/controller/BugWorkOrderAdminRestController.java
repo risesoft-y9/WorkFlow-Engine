@@ -77,9 +77,14 @@ public class BugWorkOrderAdminRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/forwarding", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> forwarding(@RequestParam(required = true) String itemId, @RequestParam(required = false) String processInstanceId, @RequestParam(required = true) String processDefinitionKey, @RequestParam(required = true) String processSerialNumber,
-        @RequestParam(required = true) String userChoice, @RequestParam(required = false) String sponsorGuid, @RequestParam(required = true) String routeToTaskId, @RequestParam(required = false) String level, @RequestParam(required = false) String number,
-        @RequestParam(required = false) String documentTitle, @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
+    public Y9Result<String> forwarding(@RequestParam(required = true) String itemId,
+        @RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = true) String processDefinitionKey,
+        @RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String userChoice,
+        @RequestParam(required = false) String sponsorGuid, @RequestParam(required = true) String routeToTaskId,
+        @RequestParam(required = false) String level, @RequestParam(required = false) String number,
+        @RequestParam(required = false) String documentTitle, @RequestParam(required = false) String isSendSms,
+        @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
         try {
             WorkOrderModel workOrderModel = workOrderManager.findByProcessSerialNumber(processSerialNumber);
             if (!WorkOrderHandleTypeEnum.UNHANDLE.getValue().equals(workOrderModel.getHandleType())) {
@@ -88,7 +93,8 @@ public class BugWorkOrderAdminRestController {
             Map<String, Object> variables = new HashMap<String, Object>(16);
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemManager.getByItemId(tenantId, itemId);
-            ProcessParamModel processParamModel = processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             ProcessParamModel pp = new ProcessParamModel();
             pp.setIsSendSms(isSendSms);
             pp.setIsShuMing(isShuMing);
@@ -111,10 +117,14 @@ public class BugWorkOrderAdminRestController {
             pp.setStartorName(processParamModel != null ? processParamModel.getStartorName() : "");
             pp.setTodoTaskUrlPrefix(item.getTodoTaskUrlPrefix());
             StringBuffer searchTerm = new StringBuffer();
-            searchTerm.append(documentTitle).append("|").append(number).append("|").append(level).append("|").append(item.getName());
+            searchTerm.append(documentTitle).append("|").append(number).append("|").append(level).append("|")
+                .append(item.getName());
             pp.setSearchTerm(searchTerm.toString());
             processParamManager.saveOrUpdate(Y9LoginUserHolder.getTenantId(), pp);
-            Map<String, Object> map = documentManager.saveAndForwarding(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), processInstanceId, "", "", itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
+            Map<String,
+                Object> map = documentManager.saveAndForwarding(Y9LoginUserHolder.getTenantId(),
+                    Y9LoginUserHolder.getPersonId(), processInstanceId, "", "", itemId, processSerialNumber,
+                    processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
             if ((boolean)map.get(UtilConsts.SUCCESS)) {
                 processInstanceId = (String)map.get("processInstanceId");
                 workOrderManager.changeWorkOrderState(processSerialNumber, "2", processInstanceId, "");
@@ -139,7 +149,8 @@ public class BugWorkOrderAdminRestController {
      * @return
      */
     @RequestMapping(value = "/todoIndex")
-    public String todoIndex(@RequestParam(required = false) String itemId, @RequestParam(required = false) String processSerialNumber, Model model) {
+    public String todoIndex(@RequestParam(required = false) String itemId,
+        @RequestParam(required = false) String processSerialNumber, Model model) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId();
         model.addAttribute("tenantId", tenantId);
@@ -168,7 +179,8 @@ public class BugWorkOrderAdminRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/workOrderFinish", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> workOrderFinish(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String resultFeedback) {
+    public Y9Result<String> workOrderFinish(@RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String resultFeedback) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         try {
             WorkOrderModel workOrderModel = workOrderManager.findByProcessSerialNumber(processSerialNumber);

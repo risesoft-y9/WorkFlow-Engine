@@ -16,13 +16,16 @@ import net.risesoft.entity.ItemOrganWordBind;
  */
 @Repository
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemOrganWordBindRepository extends JpaRepository<ItemOrganWordBind, String>, JpaSpecificationExecutor<ItemOrganWordBind> {
+public interface ItemOrganWordBindRepository
+    extends JpaRepository<ItemOrganWordBind, String>, JpaSpecificationExecutor<ItemOrganWordBind> {
 
     List<ItemOrganWordBind> findByItemId(String itemId);
 
     List<ItemOrganWordBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
-    List<ItemOrganWordBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId, String taskDefKey);
+    List<ItemOrganWordBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
+        String taskDefKey);
 
-    ItemOrganWordBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(String itemId, String processDefinitionId, String taskDefKey, String custom);
+    ItemOrganWordBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(String itemId,
+        String processDefinitionId, String taskDefKey, String custom);
 }

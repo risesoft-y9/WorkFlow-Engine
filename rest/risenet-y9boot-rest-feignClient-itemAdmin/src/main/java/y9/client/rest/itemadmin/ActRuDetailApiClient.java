@@ -17,7 +17,8 @@ import net.risesoft.model.itemadmin.ActRuDetailModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ActRuDetailApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/actRuDetail")
+@FeignClient(contextId = "ActRuDetailApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/actRuDetail")
 public interface ActRuDetailApiClient extends ActRuDetailApi {
 
     /**
@@ -29,7 +30,8 @@ public interface ActRuDetailApiClient extends ActRuDetailApi {
      */
     @Override
     @PostMapping("/endByProcessInstanceId")
-    boolean endByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    boolean endByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 标记流程为办结
@@ -40,7 +42,8 @@ public interface ActRuDetailApiClient extends ActRuDetailApi {
      */
     @Override
     @PostMapping("/endByProcessSerialNumber")
-    boolean endByProcessSerialNumber(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
+    boolean endByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 根据流程实例和状态查找正在办理的人员信息
@@ -52,7 +55,8 @@ public interface ActRuDetailApiClient extends ActRuDetailApi {
      */
     @Override
     @GetMapping("/findByProcessInstanceIdAndStatus")
-    List<ActRuDetailModel> findByProcessInstanceIdAndStatus(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("status") int status);
+    List<ActRuDetailModel> findByProcessInstanceIdAndStatus(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("status") int status);
 
     /**
      * 根据流程序列号查找正在办理的人员信息
@@ -63,7 +67,8 @@ public interface ActRuDetailApiClient extends ActRuDetailApi {
      */
     @Override
     @GetMapping("/findByProcessSerialNumber")
-    List<ActRuDetailModel> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
+    List<ActRuDetailModel> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 根据流程序列号查找正在办理的人员信息
@@ -75,7 +80,8 @@ public interface ActRuDetailApiClient extends ActRuDetailApi {
      */
     @Override
     @GetMapping("/findByProcessSerialNumberAndAssignee")
-    ActRuDetailModel findByProcessSerialNumberAndAssignee(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("assignee") String assignee);
+    ActRuDetailModel findByProcessSerialNumberAndAssignee(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("assignee") String assignee);
 
     /**
      * 根据流程序列号查找正在办理的人员信息
@@ -87,7 +93,8 @@ public interface ActRuDetailApiClient extends ActRuDetailApi {
      */
     @Override
     @GetMapping("/findByProcessSerialNumberAndStatus")
-    List<ActRuDetailModel> findByProcessSerialNumberAndStatus(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("status") int status);
+    List<ActRuDetailModel> findByProcessSerialNumberAndStatus(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("status") int status);
 
     /**
      * 恢复整个流程的办件详情
@@ -98,7 +105,8 @@ public interface ActRuDetailApiClient extends ActRuDetailApi {
      */
     @Override
     @PostMapping("/recoveryByProcessInstanceId")
-    boolean recoveryByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    boolean recoveryByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 删除整个流程的办件详情
@@ -109,7 +117,8 @@ public interface ActRuDetailApiClient extends ActRuDetailApi {
      */
     @Override
     @PostMapping("/removeByProcessInstanceId")
-    boolean removeByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    boolean removeByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 删除整个流程的办件详情
@@ -120,7 +129,8 @@ public interface ActRuDetailApiClient extends ActRuDetailApi {
      */
     @Override
     @PostMapping("/removeByProcessSerialNumber")
-    boolean removeByProcessSerialNumber(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
+    boolean removeByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 
@@ -133,7 +143,8 @@ public interface ActRuDetailApiClient extends ActRuDetailApi {
      */
     @Override
     @PostMapping("/removeByProcessSerialNumberAndAssignee")
-    boolean removeByProcessSerialNumberAndAssignee(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("assignee") String assignee);
+    boolean removeByProcessSerialNumberAndAssignee(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("assignee") String assignee);
 
     /**
      * 保存或者更新
@@ -155,5 +166,6 @@ public interface ActRuDetailApiClient extends ActRuDetailApi {
      */
     @Override
     @PostMapping("/syncByProcessInstanceId")
-    boolean syncByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    boolean syncByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 }

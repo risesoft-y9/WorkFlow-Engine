@@ -54,12 +54,14 @@ public class OfficeUtils {
             if (programFiles == null) {
                 programFiles = System.getenv("ProgramFiles");
             }
-            return findOfficeHome(programFiles + File.separator + "OpenOffice 4", programFiles + File.separator + "LibreOffice 4");
+            return findOfficeHome(programFiles + File.separator + "OpenOffice 4",
+                programFiles + File.separator + "LibreOffice 4");
         } else if (PlatformUtils.isMac()) {
             return findOfficeHome("/Applications/OpenOffice.app/Contents", "/Applications/LibreOffice.app/Contents");
         } else {
             // Linux or other *nix variants
-            return findOfficeHome("/opt/openoffice.org3", "/opt/libreoffice", "/usr/lib/openoffice", "/usr/lib/libreoffice", "/opt/openoffice4");
+            return findOfficeHome("/opt/openoffice.org3", "/opt/libreoffice", "/usr/lib/openoffice",
+                "/usr/lib/libreoffice", "/opt/openoffice4");
         }
     }
 

@@ -71,7 +71,8 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
     }
 
     @Override
-    @PostMapping(value = "/saveOfficeDone", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/saveOfficeDone", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveOfficeDone(String tenantId, @RequestBody OfficeDoneInfoModel info) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         OfficeDoneInfo officeInfo = new OfficeDoneInfo();
@@ -81,35 +82,40 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfoApi {
 
     @Override
     @GetMapping(value = "/searchAllByDeptId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchAllByDeptId(String tenantId, String deptId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllByDeptId(String tenantId, String deptId, String title, String itemId,
+        String userName, String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchAllByDeptId(deptId, title, itemId, userName, state, year, page, rows);
     }
 
     @Override
     @GetMapping(value = "/searchAllByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchAllByUserId(String tenantId, String userId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllByUserId(String tenantId, String userId, String title, String itemId,
+        String userName, String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchAllByUserId(userId, title, itemId, userName, state, year, page, rows);
     }
 
     @Override
     @GetMapping(value = "/searchAllList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String userName,
+        String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchAllList(searchName, itemId, userName, state, year, page, rows);
     }
 
     @Override
     @GetMapping(value = "/searchByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchByItemId(String tenantId, String title, String itemId, String state, String startdate, String enddate, Integer page, Integer rows) {
+    public Map<String, Object> searchByItemId(String tenantId, String title, String itemId, String state,
+        String startdate, String enddate, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchByItemId(title, itemId, state, startdate, enddate, page, rows);
     }
 
     @Override
     @GetMapping(value = "/searchByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchByUserId(String tenantId, String userId, String title, String itemId, String startdate, String enddate, Integer page, Integer rows) {
+    public Map<String, Object> searchByUserId(String tenantId, String userId, String title, String itemId,
+        String startdate, String enddate, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchByUserId(userId, title, itemId, startdate, enddate, page, rows);
     }

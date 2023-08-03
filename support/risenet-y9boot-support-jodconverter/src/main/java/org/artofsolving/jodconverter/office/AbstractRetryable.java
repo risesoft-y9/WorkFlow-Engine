@@ -19,7 +19,8 @@ abstract class AbstractRetryable {
      * @throws Exception for all other error conditions
      */
     /**
-     * Description: 
+     * Description:
+     * 
      * @throws TemporaryException
      * @throws Exception
      */

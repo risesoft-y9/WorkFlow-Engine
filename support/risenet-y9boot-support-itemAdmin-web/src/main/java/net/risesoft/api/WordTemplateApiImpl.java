@@ -19,18 +19,18 @@ import net.risesoft.service.WordTemplateService;
 @RequestMapping(value = "/services/rest/wordTemplate")
 public class WordTemplateApiImpl implements WordTemplateApi {
 
-	@Autowired
-	private WordTemplateService wordTemplateService;
+    @Autowired
+    private WordTemplateService wordTemplateService;
 
-	@Override
-	@GetMapping(value = "/getFilePathById", produces = MediaType.APPLICATION_JSON_VALUE)
-	public String getFilePathById(String id) {
-		String y9FilePathId = "";
-		WordTemplate wordTemplate = wordTemplateService.findById(id);
-		if (null != wordTemplate) {
-			y9FilePathId = wordTemplate.getFilePath();
-		}
-		return y9FilePathId;
-	}
+    @Override
+    @GetMapping(value = "/getFilePathById", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getFilePathById(String id) {
+        String y9FilePathId = "";
+        WordTemplate wordTemplate = wordTemplateService.findById(id);
+        if (null != wordTemplate) {
+            y9FilePathId = wordTemplate.getFilePath();
+        }
+        return y9FilePathId;
+    }
 
 }

@@ -13,7 +13,8 @@ import net.risesoft.entity.WordTemplate;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-public interface WordTemplateRepository extends JpaRepository<WordTemplate, String>, JpaSpecificationExecutor<WordTemplate> {
+public interface WordTemplateRepository
+    extends JpaRepository<WordTemplate, String>, JpaSpecificationExecutor<WordTemplate> {
     @Override
     @Query("from WordTemplate t order by t.uploadTime desc")
     List<WordTemplate> findAll();

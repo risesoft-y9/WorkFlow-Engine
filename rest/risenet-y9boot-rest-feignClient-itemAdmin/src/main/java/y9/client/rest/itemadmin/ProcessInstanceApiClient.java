@@ -18,7 +18,8 @@ import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
  * @author zhangchongjie
  * @date 2023/02/06
  */
-@FeignClient(contextId = "ProcessInstanceApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/processInstance")
+@FeignClient(contextId = "ProcessInstanceApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/processInstance")
 public interface ProcessInstanceApiClient extends ProcessInstanceApi {
 
     /**
@@ -30,7 +31,8 @@ public interface ProcessInstanceApiClient extends ProcessInstanceApi {
      */
     @Override
     @PostMapping("/deleteProcessInstance")
-    public boolean deleteProcessInstance(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    public boolean deleteProcessInstance(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取协作状态列表
@@ -44,7 +46,9 @@ public interface ProcessInstanceApiClient extends ProcessInstanceApi {
      */
     @Override
     @GetMapping("/processInstanceList")
-    Map<String, Object> processInstanceList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("title") String title, @RequestParam("page") int page, @RequestParam("rows") int rows);
+    Map<String, Object> processInstanceList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("title") String title, @RequestParam("page") int page,
+        @RequestParam("rows") int rows);
 
     /**
      * 保存协作状态详情
@@ -55,7 +59,8 @@ public interface ProcessInstanceApiClient extends ProcessInstanceApi {
      */
     @Override
     @PostMapping(value = "/saveProcessInstanceDetails", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public boolean saveProcessInstanceDetails(@RequestParam("tenantId") String tenantId, @RequestBody ProcessInstanceDetailsModel model);
+    public boolean saveProcessInstanceDetails(@RequestParam("tenantId") String tenantId,
+        @RequestBody ProcessInstanceDetailsModel model);
 
     /**
      * 更新协作状态详情
@@ -70,6 +75,8 @@ public interface ProcessInstanceApiClient extends ProcessInstanceApi {
      */
     @Override
     @PostMapping("/updateProcessInstanceDetails")
-    boolean updateProcessInstanceDetails(@RequestParam("tenantId") String tenantId, @RequestParam("assigneeId") String assigneeId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId, @RequestParam("itembox") String itembox,
+    boolean updateProcessInstanceDetails(@RequestParam("tenantId") String tenantId,
+        @RequestParam("assigneeId") String assigneeId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("taskId") String taskId, @RequestParam("itembox") String itembox,
         @RequestParam("endTime") Date endTime);
 }

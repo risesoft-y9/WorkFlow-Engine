@@ -14,32 +14,32 @@ import net.risesoft.service.ActRuDetailService;
 @RequestMapping(value = "/actRuDetail")
 public class ActRuDetailRestController {
 
-	@Resource(name = "actRuDetailService")
-	private ActRuDetailService actRuDetailService;
+    @Resource(name = "actRuDetailService")
+    private ActRuDetailService actRuDetailService;
 
-	/**
-	 * 办结
-	 *
-	 * @param processSerialNumber 流程序列号
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/complete")
-	public Y9Result<String> complete(@RequestParam String processSerialNumber) {
-		return actRuDetailService.complete(processSerialNumber);
-	}
+    /**
+     * 办结
+     *
+     * @param processSerialNumber 流程序列号
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/complete")
+    public Y9Result<String> complete(@RequestParam String processSerialNumber) {
+        return actRuDetailService.complete(processSerialNumber);
+    }
 
-	/**
-	 * 保存流程当前用户的参与人信息
-	 *
-	 * @param itemId              事项唯一标示
-	 * @param processSerialNumber 流程序列号
-	 * @param sponsorDeptId       主办处室id
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/saveOrUpdate")
-	public Y9Result<String> saveOrUpdate(@RequestParam String itemId, @RequestParam String processSerialNumber) {
-		return actRuDetailService.saveOrUpdate(itemId, processSerialNumber);
-	}
+    /**
+     * 保存流程当前用户的参与人信息
+     *
+     * @param itemId 事项唯一标示
+     * @param processSerialNumber 流程序列号
+     * @param sponsorDeptId 主办处室id
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/saveOrUpdate")
+    public Y9Result<String> saveOrUpdate(@RequestParam String itemId, @RequestParam String processSerialNumber) {
+        return actRuDetailService.saveOrUpdate(itemId, processSerialNumber);
+    }
 }

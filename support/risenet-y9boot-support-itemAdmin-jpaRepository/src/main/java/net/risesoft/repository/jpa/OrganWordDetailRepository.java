@@ -12,7 +12,9 @@ import net.risesoft.entity.OrganWordDetail;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface OrganWordDetailRepository extends JpaRepository<OrganWordDetail, String>, JpaSpecificationExecutor<OrganWordDetail> {
+public interface OrganWordDetailRepository
+    extends JpaRepository<OrganWordDetail, String>, JpaSpecificationExecutor<OrganWordDetail> {
 
-    OrganWordDetail findByCustomAndCharacterValueAndYearAndItemId(String custom, String characterValue, Integer year, String itemId);
+    OrganWordDetail findByCustomAndCharacterValueAndYearAndItemId(String custom, String characterValue, Integer year,
+        String itemId);
 }

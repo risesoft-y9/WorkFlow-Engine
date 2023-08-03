@@ -35,7 +35,8 @@ public class ErrorLogApiImpl implements ErrorLogApi {
      * @param errorLogModel 日志信息
      */
     @Override
-    @PostMapping(value = "/saveErrorLog", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/saveErrorLog", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveErrorLog(String tenantId, @RequestBody ErrorLogModel errorLogModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ErrorLog errorLog = new ErrorLog();

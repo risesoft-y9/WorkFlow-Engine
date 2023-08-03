@@ -130,7 +130,9 @@ public class DocumentFormat {
             return false;
         }
         DocumentFormat other = (DocumentFormat)obj;
-        return Objects.equals(extension, other.extension) && inputFamily == other.inputFamily && Objects.equals(loadProperties, other.loadProperties) && Objects.equals(mediaType, other.mediaType) && Objects.equals(name, other.name)
+        return Objects.equals(extension, other.extension) && inputFamily == other.inputFamily
+            && Objects.equals(loadProperties, other.loadProperties) && Objects.equals(mediaType, other.mediaType)
+            && Objects.equals(name, other.name)
             && Objects.equals(storePropertiesByFamily, other.storePropertiesByFamily);
     }
 

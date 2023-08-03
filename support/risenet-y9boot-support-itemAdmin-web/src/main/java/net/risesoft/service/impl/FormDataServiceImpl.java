@@ -33,6 +33,7 @@ import net.risesoft.service.form.Y9FormService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
+
 import y9.client.rest.processadmin.RepositoryApiClient;
 
 /**
@@ -93,7 +94,8 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
-    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber) throws Exception {
+    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber)
+        throws Exception {
         return y9FormService.getChildTableData(formId, tableId, processSerialNumber);
     }
 
@@ -103,8 +105,10 @@ public class FormDataServiceImpl implements FormDataService {
         try {
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
-            ProcessDefinitionModel processDefinition = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey);
-            List<Y9FormItemBind> formList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+            ProcessDefinitionModel processDefinition =
+                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey);
+            List<Y9FormItemBind> formList =
+                y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             List<Map<String, Object>> list = null;
             for (Y9FormItemBind bind : formList) {
                 String formId = bind.getFormId();
@@ -112,7 +116,8 @@ public class FormDataServiceImpl implements FormDataService {
                 for (String tableName : tableNameList) {
                     Y9Table y9Table = y9TableService.findByTableName(tableName);
                     if (y9Table.getTableType() == 1) {
-                        list = jdbcTemplate.queryForList("SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?", processSerialNumber);
+                        list = jdbcTemplate.queryForList("SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?",
+                            processSerialNumber);
                         if (list.size() > 0) {
                             retMap.putAll(list.get(0));
                         }
@@ -127,14 +132,16 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
-    public Map<String, Object> getFieldPerm(String formId, String fieldName, String taskDefKey, String processDefinitionId) {
+    public Map<String, Object> getFieldPerm(String formId, String fieldName, String taskDefKey,
+        String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         resMap.put("writePerm", false);
         resMap.put("fieldName", fieldName);
         try {
-            Y9FieldPerm y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(formId, fieldName, processDefinitionId, taskDefKey);
+            Y9FieldPerm y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(
+                formId, fieldName, processDefinitionId, taskDefKey);
             if (y9FieldPerm != null) {
                 resMap.putAll(getFieldPerm(y9FieldPerm));
             } else {
@@ -151,6 +158,7 @@ public class FormDataServiceImpl implements FormDataService {
 
     /**
      * Description: 解析权限
+     * 
      * @param y9FieldPerm
      * @return
      */
@@ -224,7 +232,8 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
-    public void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData) throws Exception {
+    public void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData)
+        throws Exception {
         try {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map = y9FormService.saveChildTableData(formId, tableId, processSerialNumber, jsonData);

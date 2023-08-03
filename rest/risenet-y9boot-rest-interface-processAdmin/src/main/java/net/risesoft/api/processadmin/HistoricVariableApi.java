@@ -31,7 +31,8 @@ public interface HistoricVariableApi {
      * @param year 年份
      * @return HistoricVariableInstanceModel
      */
-    HistoricVariableInstanceModel getByProcessInstanceIdAndVariableName(String tenantId, String processInstanceId, String variableName, String year);
+    HistoricVariableInstanceModel getByProcessInstanceIdAndVariableName(String tenantId, String processInstanceId,
+        String variableName, String year);
 
     /**
      * 根据流程实例Id,获取历史任务变量的值集合
@@ -51,7 +52,8 @@ public interface HistoricVariableApi {
      * @param year 年份
      * @return HistoricVariableInstanceModel
      */
-    HistoricVariableInstanceModel getByTaskIdAndVariableName(String tenantId, String taskId, String variableName, String year);
+    HistoricVariableInstanceModel getByTaskIdAndVariableName(String tenantId, String taskId, String variableName,
+        String year);
 
     /**
      * 根据流程实例Id,获取指定的流程变量

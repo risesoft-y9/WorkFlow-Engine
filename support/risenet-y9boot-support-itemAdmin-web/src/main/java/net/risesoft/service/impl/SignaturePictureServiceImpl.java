@@ -49,7 +49,8 @@ public class SignaturePictureServiceImpl implements SignaturePictureService {
     @Transactional(readOnly = false)
     public SignaturePicture saveOrUpdate(SignaturePicture sp) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId(), userName = userInfo.getName();
+        String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId(),
+            userName = userInfo.getName();
         SignaturePicture oldsp = this.findByUserId(userId);
         if (null != oldsp) {
             oldsp.setModifyDate(sdf.format(new Date()));

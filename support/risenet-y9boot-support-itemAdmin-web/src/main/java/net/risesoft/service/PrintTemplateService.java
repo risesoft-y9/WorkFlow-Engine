@@ -68,10 +68,12 @@ public interface PrintTemplateService {
      * @param templateType
      * @return
      */
-    public Map<String, Object> saveBindTemplate(String itemId, String templateId, String templateName, String templateUrl, String templateType);
+    public Map<String, Object> saveBindTemplate(String itemId, String templateId, String templateName,
+        String templateUrl, String templateType);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param printTemplate
      */
     void saveOrUpdate(PrintTemplate printTemplate);

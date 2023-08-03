@@ -93,16 +93,19 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     @Override
     public int countBySystemNameAndAssignee(String systemName, String assignee) {
-        return actRuDetailRepository.countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(systemName, assignee);
+        return actRuDetailRepository
+            .countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(systemName, assignee);
     }
 
     @Override
     public int countBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status) {
         int count = 0;
         if (0 == status) {
-            count = actRuDetailRepository.countBySystemNameAndAssigneeAndStatusAndDeletedFalse(systemName, assignee, status);
+            count = actRuDetailRepository.countBySystemNameAndAssigneeAndStatusAndDeletedFalse(systemName, assignee,
+                status);
         } else {
-            count = actRuDetailRepository.countBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(systemName, assignee, status);
+            count = actRuDetailRepository.countBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(systemName,
+                assignee, status);
         }
         return count;
     }
@@ -189,24 +192,30 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     @Override
     public List<ActRuDetail> findByProcessSerialNumberAndStatus(String processSerialNumber, int status) {
-        return actRuDetailRepository.findByProcessSerialNumberAndStatusOrderByCreateTimeAsc(processSerialNumber, status);
+        return actRuDetailRepository.findByProcessSerialNumberAndStatusOrderByCreateTimeAsc(processSerialNumber,
+            status);
     }
 
     @Override
-    public Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows, int page, Sort sort) {
+    public Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows,
+        int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        Page<ActRuDetail> pageList = actRuDetailRepository.findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(systemName, assignee, pageable);
+        Page<ActRuDetail> pageList = actRuDetailRepository
+            .findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(systemName, assignee, pageable);
         return pageList;
     }
 
     @Override
-    public Page<ActRuDetail> findBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status, int rows, int page, Sort sort) {
+    public Page<ActRuDetail> findBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status,
+        int rows, int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ActRuDetail> pageList = null;
         if (0 == status) {
-            pageList = actRuDetailRepository.findBySystemNameAndAssigneeAndStatusAndDeletedFalse(systemName, assignee, status, pageable);
+            pageList = actRuDetailRepository.findBySystemNameAndAssigneeAndStatusAndDeletedFalse(systemName, assignee,
+                status, pageable);
         } else {
-            pageList = actRuDetailRepository.findBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(systemName, assignee, status, pageable);
+            pageList = actRuDetailRepository.findBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(
+                systemName, assignee, status, pageable);
         }
         return pageList;
     }
@@ -304,7 +313,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     @Transactional(readOnly = false)
     public boolean removeByProcessSerialNumberAndAssignee(String processSerialNumber, String assignee) {
         try {
-            ActRuDetail actRuDetail = actRuDetailRepository.findByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
+            ActRuDetail actRuDetail =
+                actRuDetailRepository.findByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
             if (null != actRuDetail) {
                 actRuDetailRepository.delete(actRuDetail);
             }
@@ -397,7 +407,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         try {
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             String systemName = processParam.getSystemName(), tenantId = Y9LoginUserHolder.getTenantId();
-            List<HistoricTaskInstanceModel> htiList = historicTaskManager.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, "");
+            List<HistoricTaskInstanceModel> htiList =
+                historicTaskManager.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, "");
             ActRuDetail actRuDetail = null;
             String assignee = null;
             String owner = null;

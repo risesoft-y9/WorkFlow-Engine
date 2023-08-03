@@ -12,7 +12,8 @@ import net.risesoft.entity.ItemWordTemplateBind;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemWordTemplateBindRepository extends JpaRepository<ItemWordTemplateBind, String>, JpaSpecificationExecutor<ItemWordTemplateBind> {
+public interface ItemWordTemplateBindRepository
+    extends JpaRepository<ItemWordTemplateBind, String>, JpaSpecificationExecutor<ItemWordTemplateBind> {
 
     ItemWordTemplateBind findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 }

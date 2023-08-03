@@ -24,24 +24,25 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/services/rest/entrustHistory")
 public class EntrustHistoryApiImpl implements EntrustHistoryApi {
 
-	@Autowired
-	private EntrustHistoryService entrustHistoryService;
+    @Autowired
+    private EntrustHistoryService entrustHistoryService;
 
-	@Override
-	@GetMapping(value = "/findByOwnerIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<EntrustHistoryModel> findByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		List<EntrustHistory> ehList = entrustHistoryService.list(ownerId, itemId);
-		List<EntrustHistoryModel> ehModelList = ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);
-		return ehModelList;
-	}
+    @Override
+    @GetMapping(value = "/findByOwnerIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<EntrustHistoryModel> findByOwnerIdAndItemId(String tenantId, String userId, String ownerId,
+        String itemId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<EntrustHistory> ehList = entrustHistoryService.list(ownerId, itemId);
+        List<EntrustHistoryModel> ehModelList = ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);
+        return ehModelList;
+    }
 
-	@Override
-	@GetMapping(value = "/findOneByOwnerId", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<EntrustHistoryModel> findOneByOwnerId(String tenantId, String userId, String ownerId) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		List<EntrustHistory> ehList = entrustHistoryService.list(ownerId);
-		List<EntrustHistoryModel> ehModelList = ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);
-		return ehModelList;
-	}
+    @Override
+    @GetMapping(value = "/findOneByOwnerId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<EntrustHistoryModel> findOneByOwnerId(String tenantId, String userId, String ownerId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<EntrustHistory> ehList = entrustHistoryService.list(ownerId);
+        List<EntrustHistoryModel> ehModelList = ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);
+        return ehModelList;
+    }
 }

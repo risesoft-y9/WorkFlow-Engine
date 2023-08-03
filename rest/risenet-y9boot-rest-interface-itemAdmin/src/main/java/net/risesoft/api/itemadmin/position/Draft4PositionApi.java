@@ -59,7 +59,8 @@ public interface Draft4PositionApi {
      * @param delFlag 是否删除
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> getDraftList(String tenantId, String positionId, int page, int rows, String title, String itemId, boolean delFlag);
+    public Map<String, Object> getDraftList(String tenantId, String positionId, int page, int rows, String title,
+        String itemId, boolean delFlag);
 
     /**
      * 编辑草稿
@@ -71,7 +72,8 @@ public interface Draft4PositionApi {
      * @param mobile
      * @return
      */
-    public Map<String, Object> openDraft4Position(String tenantId, String positionId, String itemId, String processSerialNumber, boolean mobile);
+    public Map<String, Object> openDraft4Position(String tenantId, String positionId, String itemId,
+        String processSerialNumber, boolean mobile);
 
     /**
      * 还原草稿
@@ -104,6 +106,7 @@ public interface Draft4PositionApi {
      * @param title 标题
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String title);
+    public Map<String, Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber,
+        String processDefinitionKey, String number, String level, String title);
 
 }

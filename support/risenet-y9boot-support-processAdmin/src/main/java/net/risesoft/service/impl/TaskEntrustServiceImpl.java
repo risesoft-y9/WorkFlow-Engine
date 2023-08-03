@@ -52,13 +52,15 @@ public class TaskEntrustServiceImpl implements TaskEntrustService {
         try {
             Boolean entrustSwitch = y9Conf.getApp().getProcessAdmin().getEntrustSwitch();
             if (entrustSwitch == null || !entrustSwitch) {
-                LOGGER.info("######################出差委托开关已关闭,如需出差委托请更改配置文件:y9.app.processAdmin.entrustSwitch######################");
+                LOGGER.info(
+                    "######################出差委托开关已关闭,如需出差委托请更改配置文件:y9.app.processAdmin.entrustSwitch######################");
                 return task;
             }
             String tenantId = (String)vars.get("tenantId");
             String processSerialNumber = (String)vars.get("processSerialNumber");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            ProcessParamModel processParamModel = processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             String itemId = processParamModel.getItemId();
             String assigneeId = task.getAssignee();
             String taskId = task.getId();
@@ -96,7 +98,8 @@ public class TaskEntrustServiceImpl implements TaskEntrustService {
                         usersTemp.add(user);
                     }
                 }
-                entrustManager.saveEntrustDetail(tenantId, task.getProcessInstanceId(), taskId, assigneeId, entrustPersonId);
+                entrustManager.saveEntrustDetail(tenantId, task.getProcessInstanceId(), taskId, assigneeId,
+                    entrustPersonId);
                 taskService.setVariable(taskId, SysVariables.USERS, usersTemp);
                 taskService.setVariableLocal(taskId, SysVariables.USERS, usersTemp);
                 LOGGER.info("{}委托任务taskId[{}]给{}成功!", assigneeId, taskId, entrustPersonId);

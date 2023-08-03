@@ -13,7 +13,8 @@ import net.risesoft.model.itemadmin.ItemPage;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ItemDoingApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/itemDoing")
+@FeignClient(contextId = "ItemDoingApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/itemDoing")
 public interface ItemDoingApiClient extends ItemDoingApi {
 
     /**
@@ -27,7 +28,8 @@ public interface ItemDoingApiClient extends ItemDoingApi {
      */
     @Override
     @GetMapping("/countByUserIdAndSystemName")
-    int countByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName) throws Exception;
+    int countByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("systemName") String systemName) throws Exception;
 
     /**
      * 查询已办任务，以办理时间排序，即任务的结束时间(监控在办)
@@ -41,7 +43,9 @@ public interface ItemDoingApiClient extends ItemDoingApi {
      */
     @Override
     @GetMapping("/findBySystemName")
-    ItemPage<ActRuDetailModel> findBySystemName(@RequestParam("tenantId") String tenantId, @RequestParam("systemName") String systemName, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+    ItemPage<ActRuDetailModel> findBySystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("systemName") String systemName, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows) throws Exception;
 
     /**
      * 查询已办任务，以办理时间排序，即任务的结束时间(个人在办)
@@ -56,7 +60,9 @@ public interface ItemDoingApiClient extends ItemDoingApi {
      */
     @Override
     @GetMapping("/findByUserIdAndSystemName")
-    ItemPage<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+    ItemPage<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
     /**
      * 查询已办任务，以办理时间排序，即任务的结束时间(监控在办搜索)
@@ -70,7 +76,9 @@ public interface ItemDoingApiClient extends ItemDoingApi {
      */
     @Override
     @GetMapping("/searchBySystemName")
-    ItemPage<ActRuDetailModel> searchBySystemName(@RequestParam("tenantId") String tenantId, @RequestParam("systemName") String systemName, @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr, @RequestParam("page") Integer page,
+    ItemPage<ActRuDetailModel> searchBySystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("systemName") String systemName, @RequestParam("tableName") String tableName,
+        @RequestParam("searchMapStr") String searchMapStr, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows) throws Exception;
 
     /**
@@ -86,7 +94,9 @@ public interface ItemDoingApiClient extends ItemDoingApi {
      */
     @Override
     @GetMapping("/searchByUserIdAndSystemName")
-    ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName, @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr,
+    ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
 }

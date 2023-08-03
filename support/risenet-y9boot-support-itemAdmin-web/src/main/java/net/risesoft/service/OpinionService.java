@@ -34,7 +34,8 @@ public interface OpinionService {
      * @param newTaskId
      * @throws Exception
      */
-    void copy(String oldProcessSerialNumber, String oldOpinionFrameMark, String newProcessSerialNumber, String newOpinionFrameMark, String newProcessInstanceId, String newTaskId) throws Exception;
+    void copy(String oldProcessSerialNumber, String oldOpinionFrameMark, String newProcessSerialNumber,
+        String newOpinionFrameMark, String newProcessInstanceId, String newTaskId) throws Exception;
 
     /**
      * 获取意见历史记录数量
@@ -77,7 +78,8 @@ public interface OpinionService {
      * @param userId
      * @return
      */
-    Opinion findByPsnsAndTaskIdAndOfidAndUserId(String processSerialNumber, String taskId, String opinionFrameId, String userId);
+    Opinion findByPsnsAndTaskIdAndOfidAndUserId(String processSerialNumber, String taskId, String opinionFrameId,
+        String userId);
 
     /**
      * 根据任务id获取意见
@@ -163,7 +165,8 @@ public interface OpinionService {
      * @param activitiUser
      * @return
      */
-    List<Map<String, Object>> personCommentList(String processSerialNumber, String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser);
+    List<Map<String, Object>> personCommentList(String processSerialNumber, String taskId, String itembox,
+        String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser);
 
     /**
      * 保存多条意见

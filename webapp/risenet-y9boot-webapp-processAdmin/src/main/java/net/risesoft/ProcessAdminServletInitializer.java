@@ -19,24 +19,24 @@ import org.springframework.web.context.WebApplicationContext;
  */
 public class ProcessAdminServletInitializer extends SpringBootServletInitializer {
 
-	@Override
-	protected SpringApplicationBuilder configure(final SpringApplicationBuilder builder) {
-		return builder.sources(ProcessAdminApplication.class);
-	}
+    @Override
+    protected SpringApplicationBuilder configure(final SpringApplicationBuilder builder) {
+        return builder.sources(ProcessAdminApplication.class);
+    }
 
-	@Override
-	protected WebApplicationContext run(SpringApplication application) {
-		WebApplicationContext ctx = super.run(application);
-		Environment env = ctx.getEnvironment();
-		String sessionTimeout = env.getProperty("server.servlet.session.timeout", "300");
-		String cookieSecure = env.getProperty("server.servlet.session.cookie.secure", "false");
+    @Override
+    protected WebApplicationContext run(SpringApplication application) {
+        WebApplicationContext ctx = super.run(application);
+        Environment env = ctx.getEnvironment();
+        String sessionTimeout = env.getProperty("server.servlet.session.timeout", "300");
+        String cookieSecure = env.getProperty("server.servlet.session.cookie.secure", "false");
 
-		ServletContext servletContext = ctx.getServletContext();
-		servletContext.setSessionTrackingModes(Collections.singleton(SessionTrackingMode.COOKIE));
-		servletContext.setSessionTimeout(Integer.valueOf(sessionTimeout));
-		SessionCookieConfig sessionCookieConfig = servletContext.getSessionCookieConfig();
-		sessionCookieConfig.setHttpOnly(true);
-		sessionCookieConfig.setSecure(Boolean.valueOf(cookieSecure));
-		return ctx;
-	}
+        ServletContext servletContext = ctx.getServletContext();
+        servletContext.setSessionTrackingModes(Collections.singleton(SessionTrackingMode.COOKIE));
+        servletContext.setSessionTimeout(Integer.valueOf(sessionTimeout));
+        SessionCookieConfig sessionCookieConfig = servletContext.getSessionCookieConfig();
+        sessionCookieConfig.setHttpOnly(true);
+        sessionCookieConfig.setSecure(Boolean.valueOf(cookieSecure));
+        return ctx;
+    }
 }

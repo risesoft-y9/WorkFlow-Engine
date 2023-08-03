@@ -1,5 +1,17 @@
 package net.risesoft.service.form.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9ValidType;
@@ -10,17 +22,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.form.Y9ValidTypeRepository;
 import net.risesoft.service.form.Y9ValidTypeService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -74,9 +75,11 @@ public class Y9ValidTypeServiceImpl implements Y9ValidTypeService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             List<Y9ValidType> list = new ArrayList<Y9ValidType>();
             if (StringUtils.isBlank(validType)) {
-                list = y9ValidTypeRepository.findByValidCnNameLike(StringUtils.isNotBlank(validCnName) ? "%" + validCnName + "%" : "%%");
+                list = y9ValidTypeRepository
+                    .findByValidCnNameLike(StringUtils.isNotBlank(validCnName) ? "%" + validCnName + "%" : "%%");
             } else {
-                list = y9ValidTypeRepository.findByValidTypeAndValidCnNameLike(validType, StringUtils.isNotBlank(validCnName) ? "%" + validCnName + "%" : "%%");
+                list = y9ValidTypeRepository.findByValidTypeAndValidCnNameLike(validType,
+                    StringUtils.isNotBlank(validCnName) ? "%" + validCnName + "%" : "%%");
             }
             for (Y9ValidType y9VlidType : list) {
                 Map<String, Object> m = new HashMap<String, Object>(16);

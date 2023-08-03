@@ -32,7 +32,8 @@ public interface DoneApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, Integer page, Integer rows) throws Exception;
+    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey, Integer page, Integer rows) throws Exception;
 
     /**
      * 根据人员Id,系统标识获取用户的办结流程列表(分页,包含流程变量)
@@ -45,7 +46,8 @@ public interface DoneApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page, Integer rows) throws Exception;
+    Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page,
+        Integer rows) throws Exception;
 
     /**
      * 条件搜索办结件
@@ -58,7 +60,8 @@ public interface DoneApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page, Integer rows) throws Exception;
+    Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page,
+        Integer rows) throws Exception;
 
     /**
      * 条件搜索办结件
@@ -72,7 +75,8 @@ public interface DoneApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception;
+    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception;
 
     /**
      * 条件搜索办结件
@@ -86,5 +90,6 @@ public interface DoneApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName, String searchTerm, Integer page, Integer rows) throws Exception;
+    Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        String searchTerm, Integer page, Integer rows) throws Exception;
 }

@@ -24,7 +24,8 @@ public class CommonOpt {
      * @param multiInstance 串行、并行标志
      * @return
      */
-    public static Map<String, Object> setVariables(String taskSenderId, String taskSender, String routeToTaskId, List<String> users, String multiInstance) {
+    public static Map<String, Object> setVariables(String taskSenderId, String taskSender, String routeToTaskId,
+        List<String> users, String multiInstance) {
         if (users == null || users.size() == 0) {
             try {
                 throw new Exception("发送人不能为空");
@@ -58,7 +59,8 @@ public class CommonOpt {
      * @param multiInstance 串行、并行标志
      * @return
      */
-    public static Map<String, Object> setVariables(String taskSenderId, String taskSender, String routeToTaskId, List<String> users, String processSerialNumber, String multiInstance, Map<String, Object> map) {
+    public static Map<String, Object> setVariables(String taskSenderId, String taskSender, String routeToTaskId,
+        List<String> users, String processSerialNumber, String multiInstance, Map<String, Object> map) {
         map.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
         map.putAll(setVariables(taskSenderId, taskSender, routeToTaskId, users, multiInstance));
         return map;
@@ -75,7 +77,8 @@ public class CommonOpt {
      * @param multiInstance 串行、并行标志
      * @return
      */
-    public static Map<String, Object> setVariables4Dept(String taskSenderId, String taskSender, String routeToTaskId, List<List<String>> users, String documentTitle, String multiInstance) {
+    public static Map<String, Object> setVariables4Dept(String taskSenderId, String taskSender, String routeToTaskId,
+        List<List<String>> users, String documentTitle, String multiInstance) {
         if (users == null || users.size() == 0) {
             try {
                 throw new Exception("发送人不能为空");

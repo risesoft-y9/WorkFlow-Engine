@@ -15,13 +15,15 @@ import net.risesoft.entity.form.Y9FieldPerm;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface Y9FieldPermRepository extends JpaRepository<Y9FieldPerm, String>, JpaSpecificationExecutor<Y9FieldPerm> {
+public interface Y9FieldPermRepository
+    extends JpaRepository<Y9FieldPerm, String>, JpaSpecificationExecutor<Y9FieldPerm> {
 
     int countByFormIdAndFieldName(String formId, String fieldName);
 
     @Query("SELECT t.fieldName FROM Y9FieldPerm t where t.formId = ?1 GROUP BY t.fieldName")
     List<String> findByFormId(String formId);
 
-    Y9FieldPerm findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(String formId, String fieldName, String processDefinitionId, String taskDefKey);
+    Y9FieldPerm findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(String formId, String fieldName,
+        String processDefinitionId, String taskDefKey);
 
 }

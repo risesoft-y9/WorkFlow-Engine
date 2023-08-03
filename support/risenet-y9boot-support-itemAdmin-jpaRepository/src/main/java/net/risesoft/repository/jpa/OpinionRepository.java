@@ -71,7 +71,8 @@ public interface OpinionRepository extends JpaRepository<Opinion, String>, JpaSp
     List<Opinion> findByPsnsAndOfid(List<String> processSerialNumbers, String opinionFrameMark);
 
     @Query("from Opinion t where t.processSerialNumber = ?1 and t.taskId=?2 and t.opinionFrameMark=?3 and t.userId=?4 order by t.createDate ASC")
-    Opinion findByPsnsAndTaskIdAndOfidAndUserId(String processSerialNumber, String taskId, String opinionFrameMark, String userId);
+    Opinion findByPsnsAndTaskIdAndOfidAndUserId(String processSerialNumber, String taskId, String opinionFrameMark,
+        String userId);
 
     @Query("from Opinion t where t.taskId=?1 order by t.createDate desc")
     List<Opinion> findByTaskId(String taskId);

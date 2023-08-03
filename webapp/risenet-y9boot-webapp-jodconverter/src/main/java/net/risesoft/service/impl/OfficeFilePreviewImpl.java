@@ -46,7 +46,8 @@ public class OfficeFilePreviewImpl implements FilePreview {
         String decodedUrl = fileAttribute.getDecodedUrl();
         boolean isHtml = suffix.equalsIgnoreCase("xls") || suffix.equalsIgnoreCase("xlsx");
         String pdfName = fileName.substring(0, fileName.lastIndexOf(".") + 1) + (isHtml ? "html" : "pdf");
-        HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpServletRequest request =
+            ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
         String filePath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator;
         String sourcefile = filePath + "previewFile" + File.separator + fileName;
         if (!new File(sourcefile).exists()) {

@@ -58,7 +58,9 @@ public class MobileSystemDockingController {
 
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/forwarding")
-    public void forwarding(@RequestParam String tenantId, @RequestParam String itemId, @RequestParam String mappingId, @RequestParam String userId, @RequestParam String userChoice, @RequestParam String formJsonData, HttpServletResponse response) throws Exception {
+    public void forwarding(@RequestParam String tenantId, @RequestParam String itemId, @RequestParam String mappingId,
+        @RequestParam String userId, @RequestParam String userChoice, @RequestParam String formJsonData,
+        HttpServletResponse response) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "提交成功");
@@ -76,7 +78,8 @@ public class MobileSystemDockingController {
             String title = formMap.get("title").toString();
             String number = formMap.get("number").toString();
             String level = formMap.get("level").toString();
-            Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, formMap.get("guid").toString(), "", title, number, level, false);
+            Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, formMap.get("guid").toString(), "", title,
+                number, level, false);
             if (!map1.isSuccess()) {
                 map.put(UtilConsts.SUCCESS, false);
                 map.put("msg", "发生异常");
@@ -93,7 +96,8 @@ public class MobileSystemDockingController {
                     formDataManager.saveFormData(tenantId, formId, formJsonData);
                 }
             }
-            map = documentManager.startProcess(tenantId, userId, itemId, formMap.get("guid").toString(), item.getWorkflowGuid(), userChoice);
+            map = documentManager.startProcess(tenantId, userId, itemId, formMap.get("guid").toString(),
+                item.getWorkflowGuid(), userChoice);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "提交失败");

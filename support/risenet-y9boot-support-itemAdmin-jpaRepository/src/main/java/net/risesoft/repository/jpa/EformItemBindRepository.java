@@ -15,7 +15,8 @@ import net.risesoft.entity.EformItemBind;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface EformItemBindRepository extends JpaRepository<EformItemBind, String>, JpaSpecificationExecutor<EformItemBind> {
+public interface EformItemBindRepository
+    extends JpaRepository<EformItemBind, String>, JpaSpecificationExecutor<EformItemBind> {
 
     @Query("From EformItemBind t where t.formId in ?1")
     public List<EformItemBind> findByFormIdList(List<String> formIdList);
@@ -24,13 +25,16 @@ public interface EformItemBindRepository extends JpaRepository<EformItemBind, St
     public List<EformItemBind> findByItemIdAndProcDefId(String itemId, String procDefId);
 
     @Query("From EformItemBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.formId=?3 and (t.taskDefKey is null or length(trim(t.taskDefKey))=0) order by t.tabIndex asc")
-    public EformItemBind findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(String itemId, String procDefId, String formId);
+    public EformItemBind findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(String itemId, String procDefId,
+        String formId);
 
     @Query("From EformItemBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.taskDefKey=?3 order by t.tabIndex asc")
-    public List<EformItemBind> findByItemIdAndProcDefIdAndTaskDefKey(String itemId, String procDefId, String taskDefKey);
+    public List<EformItemBind> findByItemIdAndProcDefIdAndTaskDefKey(String itemId, String procDefId,
+        String taskDefKey);
 
     @Query("From EformItemBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.taskDefKey=?3 and t.formId=?4 order by t.tabIndex asc")
-    public EformItemBind findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(String itemId, String procDefId, String taskDefKey, String formId);
+    public EformItemBind findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(String itemId, String procDefId,
+        String taskDefKey, String formId);
 
     @Query("From EformItemBind t where t.itemId=?1 and t.processDefinitionId=?2 and (t.taskDefKey is null or length(trim(t.taskDefKey))=0) order by t.tabIndex asc")
     public List<EformItemBind> findByItemIdAndProcDefIdAndTaskDefKeyIsNull(String itemId, String procDefId);

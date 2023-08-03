@@ -89,11 +89,13 @@ public class AutoFormSequenceController {
      * @return
      */
     @RequestMapping(value = "/docSequence")
-    public String genDocSequence(@RequestParam String labelName, @RequestParam(required = false) String character, Model model) {
+    public String genDocSequence(@RequestParam String labelName, @RequestParam(required = false) String character,
+        Model model) {
         model.addAttribute("labelName", labelName);
         try {
             character = java.net.URLDecoder.decode(character, "UTF-8");
-            String sequence = autoFormSequenceService.genSequence(Y9LoginUserHolder.getTenantId(), labelName, character);
+            String sequence =
+                autoFormSequenceService.genSequence(Y9LoginUserHolder.getTenantId(), labelName, character);
             if (StringUtils.isBlank(sequence)) {
                 sequence = "0.0";
             }

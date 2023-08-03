@@ -35,9 +35,11 @@ public class FlowableMultiTenantListener implements ApplicationListener<Y9EventC
             Y9LoginUserHolder.setTenantId(tenantId);
             FlowableTenantInfoHolder.setTenantId(tenantId);
             try {
-                ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).latestVersion().singleResult();
+                ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+                    .processDefinitionKey(processDefinitionKey).latestVersion().singleResult();
                 if (null == processDefinition) {
-                    String xmlPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "processXml" + File.separator + "ziyouliucheng.bpmn";
+                    String xmlPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "processXml"
+                        + File.separator + "ziyouliucheng.bpmn";
                     File file = new File(xmlPath);
                     InputStream fileInputStream = new FileInputStream(file);
                     repositoryService.createDeployment().addInputStream("ziyouliucheng.bpmn", fileInputStream).deploy();

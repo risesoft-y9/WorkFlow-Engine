@@ -32,12 +32,15 @@ public class CustomHistoricVariableServiceImpl implements CustomHistoricVariable
     }
 
     @Override
-    public HistoricVariableInstance getByProcessInstanceIdAndVariableName(String processInstanceId, String variableName, String year) {
+    public HistoricVariableInstance getByProcessInstanceIdAndVariableName(String processInstanceId, String variableName,
+        String year) {
         if (StringUtils.isBlank(year)) {
-            List<HistoricVariableInstance> list = historyService.createHistoricVariableInstanceQuery().executionId(processInstanceId).variableName(variableName).list();
+            List<HistoricVariableInstance> list = historyService.createHistoricVariableInstanceQuery()
+                .executionId(processInstanceId).variableName(variableName).list();
             return (list != null && list.size() > 0) ? list.get(0) : null;
         } else {
-            String sql = "select RES.* from ACT_HI_VARINST_" + year + " RES WHERE RES.EXECUTION_ID_ = '" + processInstanceId + "' and RES.NAME_ = '" + variableName + "'";
+            String sql = "select RES.* from ACT_HI_VARINST_" + year + " RES WHERE RES.EXECUTION_ID_ = '"
+                + processInstanceId + "' and RES.NAME_ = '" + variableName + "'";
             return historyService.createNativeHistoricVariableInstanceQuery().sql(sql).singleResult();
         }
     }
@@ -50,16 +53,19 @@ public class CustomHistoricVariableServiceImpl implements CustomHistoricVariable
     @Override
     public HistoricVariableInstance getByTaskIdAndVariableName(String taskId, String variableName, String year) {
         if (StringUtils.isBlank(year)) {
-            return historyService.createHistoricVariableInstanceQuery().taskId(taskId).variableName(variableName).singleResult();
+            return historyService.createHistoricVariableInstanceQuery().taskId(taskId).variableName(variableName)
+                .singleResult();
         } else {
-            String sql = "select RES.* from ACT_HI_VARINST_" + year + " RES WHERE RES.TASK_ID_ = '" + taskId + "' and RES.NAME_ = '" + variableName + "'";
+            String sql = "select RES.* from ACT_HI_VARINST_" + year + " RES WHERE RES.TASK_ID_ = '" + taskId
+                + "' and RES.NAME_ = '" + variableName + "'";
             return historyService.createNativeHistoricVariableInstanceQuery().sql(sql).singleResult();
         }
     }
 
     @Override
     public Map<String, Object> getVariables(String tenantId, String processInstanceId, Collection<String> keys) {
-        List<HistoricVariableInstance> hviList = historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstanceId).excludeTaskVariables().list();
+        List<HistoricVariableInstance> hviList = historyService.createHistoricVariableInstanceQuery()
+            .processInstanceId(processInstanceId).excludeTaskVariables().list();
         Map<String, Object> map = new HashMap<String, Object>(16);
         for (HistoricVariableInstance hvi : hviList) {
             for (String key : keys) {

@@ -87,7 +87,9 @@ public interface Opinion4PositionApi {
      * @param activitiUser activitiUser
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    public List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber, String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser);
+    public List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber,
+        String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey,
+        String activitiUser);
 
     /**
      * 保存意见
@@ -109,5 +111,6 @@ public interface Opinion4PositionApi {
      * @return
      * @throws Exception
      */
-    public OpinionModel saveOrUpdate(String tenantId, String userId, String positionId, OpinionModel opinion) throws Exception;
+    public OpinionModel saveOrUpdate(String tenantId, String userId, String positionId, OpinionModel opinion)
+        throws Exception;
 }

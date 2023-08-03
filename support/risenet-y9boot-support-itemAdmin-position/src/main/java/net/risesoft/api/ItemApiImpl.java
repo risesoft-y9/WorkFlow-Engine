@@ -262,7 +262,8 @@ public class ItemApiImpl implements Item4PositionApi {
     @GetMapping(value = "/getItemMappingConf", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemMappingConfModel> getItemMappingConf(String tenantId, String itemId, String mappingId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ItemMappingConf> list = itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
+        List<ItemMappingConf> list =
+            itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
         List<ItemMappingConfModel> itemList = new ArrayList<ItemMappingConfModel>();
         for (ItemMappingConf item : list) {
             ItemMappingConfModel itemModel = new ItemMappingConfModel();

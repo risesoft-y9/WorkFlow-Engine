@@ -14,7 +14,8 @@ import net.risesoft.api.itemadmin.OptionClassApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "OptionClassApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/optionClass")
+@FeignClient(contextId = "OptionClassApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/optionClass")
 public interface OptionClassApiClient extends OptionClassApi {
 
     /**
@@ -26,6 +27,7 @@ public interface OptionClassApiClient extends OptionClassApi {
      */
     @Override
     @GetMapping("/getOptionValueList")
-    List<Map<String, Object>> getOptionValueList(@RequestParam("tenantId") String tenantId, @RequestParam("type") String type);
+    List<Map<String, Object>> getOptionValueList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("type") String type);
 
 }

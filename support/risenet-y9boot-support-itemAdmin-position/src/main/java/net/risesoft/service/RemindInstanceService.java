@@ -27,7 +27,8 @@ public interface RemindInstanceService {
      * @param taskKey
      * @return
      */
-    List<RemindInstance> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(String processInstanceId, String taskKey);
+    List<RemindInstance> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(String processInstanceId,
+        String taskKey);
 
     /**
      * 根据流程实例id和任务key获取消息提醒设置
@@ -36,7 +37,8 @@ public interface RemindInstanceService {
      * @param taskKey
      * @return
      */
-    List<RemindInstance> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(String processInstanceId, String taskKey);
+    List<RemindInstance> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(String processInstanceId,
+        String taskKey);
 
     /**
      * 根据流程实例id和提醒类型获取消息提醒设置
@@ -45,7 +47,8 @@ public interface RemindInstanceService {
      * @param remindType
      * @return
      */
-    List<RemindInstance> findRemindInstanceByProcessInstanceIdAndRemindType(String processInstanceId, String remindType);
+    List<RemindInstance> findRemindInstanceByProcessInstanceIdAndRemindType(String processInstanceId,
+        String remindType);
 
     /**
      * 根据流程实例id和任务id获取消息提醒设置
@@ -74,6 +77,7 @@ public interface RemindInstanceService {
      * @param completeTaskKey
      * @return
      */
-    Map<String, Object> saveRemindInstance(String processInstanceId, String taskIds, Boolean process, String arriveTaskKey, String completeTaskKey);
+    Map<String, Object> saveRemindInstance(String processInstanceId, String taskIds, Boolean process,
+        String arriveTaskKey, String completeTaskKey);
 
 }

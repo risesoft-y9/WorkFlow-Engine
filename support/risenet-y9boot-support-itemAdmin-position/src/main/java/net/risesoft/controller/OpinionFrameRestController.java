@@ -47,9 +47,11 @@ public class OpinionFrameRestController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Page<OpinionFrame> list(@RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<OpinionFrame> list(@RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows) {
         Page<OpinionFrame> pageList = opinionFrameService.findAll(page, rows);
-        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(), "获取列表成功");
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
+            "获取列表成功");
     }
 
     /**
@@ -64,9 +66,13 @@ public class OpinionFrameRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/list4NotUsed", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<OpinionFrame> list4NotUsed(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey, @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
-        Page<OpinionFrame> pageList = opinionFrameService.findAllNotUsed(itemId, processDefinitionId, taskDefKey, page, rows);
-        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(), "获取列表成功");
+    public Y9Page<OpinionFrame> list4NotUsed(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey,
+        @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
+        Page<OpinionFrame> pageList =
+            opinionFrameService.findAllNotUsed(itemId, processDefinitionId, taskDefKey, page, rows);
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
+            "获取列表成功");
     }
 
     /**
@@ -105,9 +111,11 @@ public class OpinionFrameRestController {
      */
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Page<OpinionFrame> search(@RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows, @RequestParam(required = false) String keyword) {
+    public Y9Page<OpinionFrame> search(@RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows, @RequestParam(required = false) String keyword) {
         Page<OpinionFrame> pageList = opinionFrameService.search(page, rows, keyword);
-        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(), "获取列表成功");
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
+            "获取列表成功");
     }
 
     /**
@@ -123,9 +131,13 @@ public class OpinionFrameRestController {
      */
     @RequestMapping(value = "/search4NotUsed", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Page<OpinionFrame> search4NotUsed(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey, @RequestParam(required = true) int page, @RequestParam(required = true) int rows,
+    public Y9Page<OpinionFrame> search4NotUsed(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey,
+        @RequestParam(required = true) int page, @RequestParam(required = true) int rows,
         @RequestParam(required = false) String keyword) {
-        Page<OpinionFrame> pageList = opinionFrameService.search4NotUsed(itemId, processDefinitionId, taskDefKey, page, rows, keyword);
-        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(), "获取列表成功");
+        Page<OpinionFrame> pageList =
+            opinionFrameService.search4NotUsed(itemId, processDefinitionId, taskDefKey, page, rows, keyword);
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
+            "获取列表成功");
     }
 }

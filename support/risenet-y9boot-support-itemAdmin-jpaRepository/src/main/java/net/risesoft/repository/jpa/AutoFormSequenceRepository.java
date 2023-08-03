@@ -14,7 +14,8 @@ import net.risesoft.entity.AutoFormSequence;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface AutoFormSequenceRepository extends JpaRepository<AutoFormSequence, String>, JpaSpecificationExecutor<AutoFormSequence> {
+public interface AutoFormSequenceRepository
+    extends JpaRepository<AutoFormSequence, String>, JpaSpecificationExecutor<AutoFormSequence> {
 
     @Query("from AutoFormSequence t where t.tenantId=?1 and t.labelName=?2 and t.characterValue=?3 and t.calendarYear=?4")
     public AutoFormSequence findOne(String tenantId, String labelName, String character, Integer calendarYear);

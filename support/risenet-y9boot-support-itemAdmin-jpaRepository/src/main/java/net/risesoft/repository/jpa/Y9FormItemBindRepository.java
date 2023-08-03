@@ -13,7 +13,8 @@ import net.risesoft.entity.Y9FormItemBind;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-public interface Y9FormItemBindRepository extends JpaRepository<Y9FormItemBind, String>, JpaSpecificationExecutor<Y9FormItemBind> {
+public interface Y9FormItemBindRepository
+    extends JpaRepository<Y9FormItemBind, String>, JpaSpecificationExecutor<Y9FormItemBind> {
 
     @Query("From Y9FormItemBind t where t.formId in ?1 order by t.processDefinitionId desc")
     public List<Y9FormItemBind> findByFormIdList(List<String> formIdList);
@@ -22,13 +23,16 @@ public interface Y9FormItemBindRepository extends JpaRepository<Y9FormItemBind, 
     public List<Y9FormItemBind> findByItemIdAndProcDefId(String itemId, String procDefId);
 
     @Query("From Y9FormItemBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.formId=?3 and (t.taskDefKey is null or length(trim(t.taskDefKey))=0) order by t.tabIndex asc")
-    public Y9FormItemBind findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(String itemId, String procDefId, String formId);
+    public Y9FormItemBind findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(String itemId, String procDefId,
+        String formId);
 
     @Query("From Y9FormItemBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.taskDefKey=?3 order by t.tabIndex asc")
-    public List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKey(String itemId, String procDefId, String taskDefKey);
+    public List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKey(String itemId, String procDefId,
+        String taskDefKey);
 
     @Query("From Y9FormItemBind t where t.itemId=?1 and t.processDefinitionId=?2 and t.taskDefKey=?3 and t.formId=?4 order by t.tabIndex asc")
-    public Y9FormItemBind findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(String itemId, String procDefId, String taskDefKey, String formId);
+    public Y9FormItemBind findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(String itemId, String procDefId,
+        String taskDefKey, String formId);
 
     @Query("From Y9FormItemBind t where t.itemId=?1 and t.processDefinitionId=?2 and (t.taskDefKey is null or length(trim(t.taskDefKey))=0) order by t.tabIndex asc")
     public List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKeyIsNull(String itemId, String procDefId);

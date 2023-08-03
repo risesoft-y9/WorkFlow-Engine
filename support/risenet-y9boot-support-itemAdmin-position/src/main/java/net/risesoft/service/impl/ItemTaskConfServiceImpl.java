@@ -46,7 +46,8 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
             if (latestpd.getVersion() > 1) {
-                ProcessDefinitionModel previouspd = repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
+                ProcessDefinitionModel previouspd =
+                    repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
                 previouspdId = previouspd.getId();
             }
         }
@@ -55,7 +56,8 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
             List<Map<String, Object>> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false);
             for (Map<String, Object> map : nodes) {
                 String currentTaskDefKey = (String)map.get("taskDefKey");
-                ItemTaskConf currentConf = this.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, latestpdId, currentTaskDefKey);
+                ItemTaskConf currentConf =
+                    this.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, latestpdId, currentTaskDefKey);
                 if (null == currentConf) {
                     for (ItemTaskConf conf : confList) {
                         String previousTaskDefKey = conf.getTaskDefKey();
@@ -103,26 +105,33 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     }
 
     @Override
-    public ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId, String taskDefKey) {
+    public ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
+        String taskDefKey) {
         ItemTaskConf conf = null;
         if (StringUtils.isEmpty(taskDefKey)) {
-            conf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId, processDefinitionId);
+            conf =
+                taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId, processDefinitionId);
         } else {
-            conf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            conf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
+                taskDefKey);
             if (null == conf) {
-                conf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId, processDefinitionId);
+                conf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId,
+                    processDefinitionId);
             }
         }
         return conf;
     }
 
     @Override
-    public ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(String itemId, String processDefinitionId, String taskDefKey) {
+    public ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(String itemId, String processDefinitionId,
+        String taskDefKey) {
         ItemTaskConf conf = null;
         if (StringUtils.isEmpty(taskDefKey)) {
-            conf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId, processDefinitionId);
+            conf =
+                taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId, processDefinitionId);
         } else {
-            conf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            conf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
+                taskDefKey);
         }
         return conf;
     }
@@ -132,9 +141,11 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
         boolean sponserStatus = false;
         ItemTaskConf conf = null;
         if (StringUtils.isEmpty(taskDefKey)) {
-            conf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId, processDefinitionId);
+            conf =
+                taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId, processDefinitionId);
         } else {
-            conf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            conf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
+                taskDefKey);
         }
         if (null != conf) {
             sponserStatus = conf.getSponsor();

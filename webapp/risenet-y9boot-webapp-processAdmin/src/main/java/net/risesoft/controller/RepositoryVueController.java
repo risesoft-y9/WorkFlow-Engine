@@ -93,8 +93,11 @@ public class RepositoryVueController {
      * @throws Exception
      */
     @RequestMapping(value = "/process-instance")
-    public void loadByProcessInstance(@RequestParam(required = true) String resourceType, @RequestParam(required = false) String processInstanceId, @RequestParam(required = true) String processDefinitionId, HttpServletResponse response) throws Exception {
-        InputStream resourceAsStream = customRepositoryService.getProcessInstance(resourceType, processInstanceId, processDefinitionId);
+    public void loadByProcessInstance(@RequestParam(required = true) String resourceType,
+        @RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = true) String processDefinitionId, HttpServletResponse response) throws Exception {
+        InputStream resourceAsStream =
+            customRepositoryService.getProcessInstance(resourceType, processInstanceId, processDefinitionId);
         int ii = 1024;
         byte[] b = new byte[1024];
         int len = -1;
@@ -112,7 +115,8 @@ public class RepositoryVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/switchSuspendOrActive", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> switchSuspendOrActive(@RequestParam(required = true) String state, @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> switchSuspendOrActive(@RequestParam(required = true) String state,
+        @RequestParam(required = true) String processDefinitionId) {
         Map<String, Object> map = customRepositoryService.switchSuspendOrActive(state, processDefinitionId);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -129,7 +133,8 @@ public class RepositoryVueController {
      */
     @RequestMapping(value = "/trace")
     @ResponseBody
-    public List<Map<String, Object>> traceProcess(@RequestParam("pid") String processInstanceId, @RequestParam("processDefinitionId") String processDefinitionId) throws Exception {
+    public List<Map<String, Object>> traceProcess(@RequestParam("pid") String processInstanceId,
+        @RequestParam("processDefinitionId") String processDefinitionId) throws Exception {
         List<Map<String, Object>> activityInfos = new ArrayList<Map<String, Object>>();
         if (StringUtils.isNotBlank(processInstanceId) || StringUtils.isNotBlank(processDefinitionId)) {
             if (StringUtils.isNotBlank(processInstanceId)) {

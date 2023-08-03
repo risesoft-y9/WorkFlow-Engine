@@ -38,7 +38,8 @@ public class FlowableUIConfiguraton implements WebMvcConfigurer {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Bean
     public FilterRegistrationBean checkUserLoginFilter4FlowableUI() {
-        log.debug("****************************************************************************init CheckUserLoginFilter4Flowable ...");
+        log.debug(
+            "****************************************************************************init CheckUserLoginFilter4Flowable ...");
         FilterRegistrationBean filterBean = new FilterRegistrationBean<>();
         filterBean.setFilter(new CheckUserLoginFilter4Flowable());
         filterBean.setAsyncSupported(false);

@@ -63,8 +63,10 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/addMultiInstanceExecution", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId, @RequestBody Map<String, Object> map) throws Exception {
+    @PostMapping(value = "/addMultiInstanceExecution", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId,
+        @RequestBody Map<String, Object> map) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customRuntimeService.addMultiInstanceExecution(activityId, parentExecutionId, map);
     }
@@ -80,7 +82,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @PostMapping(value = "/complete4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void complete4Position(String tenantId, String positionId, String processInstanceId, String taskId) throws Exception {
+    public void complete4Position(String tenantId, String positionId, String processInstanceId, String taskId)
+        throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId);
@@ -199,11 +202,14 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @GetMapping(value = "/getProcessInstancesByDefId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getProcessInstancesByDefId(String tenantId, String processDefinitionId, Integer page, Integer rows) {
+    public Map<String, Object> getProcessInstancesByDefId(String tenantId, String processDefinitionId, Integer page,
+        Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Map<String, Object> returnMap = new HashMap<String, Object>(16);
         long totalCount = runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinitionId).count();
-        List<ProcessInstance> list = runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinitionId).orderBy(HistoricProcessInstanceQueryProperty.START_TIME).desc().listPage((page - 1) * rows, rows);
+        List<ProcessInstance> list =
+            runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinitionId)
+                .orderBy(HistoricProcessInstanceQueryProperty.START_TIME).desc().listPage((page - 1) * rows, rows);
         List<ProcessInstanceModel> hpiModelList = FlowableModelConvertUtil.processInstanceList2ModelList(list);
         returnMap.put("currpage", page);
         returnMap.put("totalpages", (totalCount + rows - 1) / rows);
@@ -237,7 +243,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      */
     @Override
     @PostMapping(value = "/recovery4Completed", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void recovery4Completed(String tenantId, String userId, String processInstanceId, String year) throws Exception {
+    public void recovery4Completed(String tenantId, String userId, String processInstanceId, String year)
+        throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId);
@@ -290,8 +297,10 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/setVariable", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void setVariable(String tenantId, String processInstanceId, String key, @RequestBody Map<String, Object> map) throws Exception {
+    @PostMapping(value = "/setVariable", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void setVariable(String tenantId, String processInstanceId, String key, @RequestBody Map<String, Object> map)
+        throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         customRuntimeService.setVariable(processInstanceId, key, map.get("val"));
@@ -305,7 +314,8 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param map 变量map
      */
     @Override
-    @PostMapping(value = "/setVariables", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/setVariables", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void setVariables(String tenantId, String executionId, @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -323,8 +333,10 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @return ProcessInstanceModel
      */
     @Override
-    @PostMapping(value = "/startProcessInstanceByKey", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ProcessInstanceModel startProcessInstanceByKey(String tenantId, String userId, String processDefinitionKey, String systemName, @RequestBody Map<String, Object> map) {
+    @PostMapping(value = "/startProcessInstanceByKey", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ProcessInstanceModel startProcessInstanceByKey(String tenantId, String userId, String processDefinitionKey,
+        String systemName, @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId);
@@ -335,7 +347,8 @@ public class RuntimeApiImpl implements RuntimeApi {
             return piModel;
         } else {
             Y9LoginUserHolder.setPositionId(userId);
-            ProcessInstance pi = customRuntimeService.startProcessInstanceByKey4Position(processDefinitionKey, systemName, map);
+            ProcessInstance pi =
+                customRuntimeService.startProcessInstanceByKey4Position(processDefinitionKey, systemName, map);
             ProcessInstanceModel piModel = FlowableModelConvertUtil.processInstance2Model(pi);
             return piModel;
         }
@@ -352,7 +365,8 @@ public class RuntimeApiImpl implements RuntimeApi {
     @GetMapping(value = "/suspendedByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Boolean suspendedByProcessInstanceId(String tenantId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Boolean suspended = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult().isSuspended();
+        Boolean suspended = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId)
+            .singleResult().isSuspended();
         return suspended;
     }
 

@@ -90,13 +90,16 @@ public class ItemMappingConfRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getConfInfo", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getConfInfo(@RequestParam(required = false) String id, @RequestParam(required = true) String itemId, @RequestParam(required = false) String mappingItemId) {
+    public Y9Result<Map<String, Object>> getConfInfo(@RequestParam(required = false) String id,
+        @RequestParam(required = true) String itemId, @RequestParam(required = false) String mappingItemId) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
-        ProcessDefinitionModel processDefinition = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey);
-        List<Y9FormItemBind> formList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+        ProcessDefinitionModel processDefinition =
+            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey);
+        List<Y9FormItemBind> formList =
+            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         List<String> tableNameList = new ArrayList<>();
         List<Y9Table> tableList = new ArrayList<>();
         for (Y9FormItemBind bind : formList) {
@@ -113,8 +116,10 @@ public class ItemMappingConfRestController {
         if (StringUtils.isNotBlank(mappingItemId)) {
             SpmApproveItem item1 = spmApproveItemService.findById(mappingItemId);
             String processDefineKey1 = item1.getWorkflowGuid();
-            ProcessDefinitionModel processDefinition1 = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey1);
-            List<Y9FormItemBind> formList1 = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(mappingItemId, processDefinition1.getId());
+            ProcessDefinitionModel processDefinition1 =
+                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey1);
+            List<Y9FormItemBind> formList1 = y9FormItemBindService
+                .findByItemIdAndProcDefIdAndTaskDefKeyIsNull(mappingItemId, processDefinition1.getId());
             List<String> tableNameList1 = new ArrayList<>();
             List<Y9Table> tableList1 = new ArrayList<>();
             for (Y9FormItemBind bind : formList1) {
@@ -147,7 +152,8 @@ public class ItemMappingConfRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemMappingConf>> getList(@RequestParam(required = true) String itemId, @RequestParam(required = true) String mappingId) {
+    public Y9Result<List<ItemMappingConf>> getList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String mappingId) {
         List<ItemMappingConf> list = itemMappingConfService.getList(itemId, mappingId);
         return Y9Result.success(list, "获取成功");
     }

@@ -15,15 +15,19 @@ import net.risesoft.entity.ItemStartNodeRole;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemStartNodeRoleRepository extends JpaRepository<ItemStartNodeRole, String>, JpaSpecificationExecutor<ItemStartNodeRole> {
+public interface ItemStartNodeRoleRepository
+    extends JpaRepository<ItemStartNodeRole, String>, JpaSpecificationExecutor<ItemStartNodeRole> {
 
     List<ItemStartNodeRole> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
-    ItemStartNodeRole findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId, String taskDefKey);
+    ItemStartNodeRole findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
+        String taskDefKey);
 
-    List<ItemStartNodeRole> findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(String itemId, String processDefinitionId);
+    List<ItemStartNodeRole> findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(String itemId,
+        String processDefinitionId);
 
-    List<ItemStartNodeRole> findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(String itemId, String processDefinitionId);
+    List<ItemStartNodeRole> findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(String itemId,
+        String processDefinitionId);
 
     @Query("select max(tabIndex) from ItemStartNodeRole t where t.itemId=?1 and t.processDefinitionId=?2")
     Integer getMaxTabIndex(String itemId, String processDefinitionId);

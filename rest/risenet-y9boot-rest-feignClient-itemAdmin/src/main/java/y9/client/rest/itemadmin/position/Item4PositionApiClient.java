@@ -16,7 +16,8 @@ import net.risesoft.model.itemadmin.ItemModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "Item4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/item4Position")
+@FeignClient(contextId = "Item4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/item4Position")
 public interface Item4PositionApiClient extends Item4PositionApi {
 
     /**
@@ -29,7 +30,8 @@ public interface Item4PositionApiClient extends Item4PositionApi {
      */
     @Override
     @GetMapping("/findAll")
-    public List<ItemModel> findAll(@RequestParam("tenantId") String tenantId, @RequestParam("systemName") String systemName);
+    public List<ItemModel> findAll(@RequestParam("tenantId") String tenantId,
+        @RequestParam("systemName") String systemName);
 
     /**
      * 根据流程的定义Key查找对应的事项
@@ -40,7 +42,8 @@ public interface Item4PositionApiClient extends Item4PositionApi {
      */
     @Override
     @GetMapping("/findByProcessDefinitionKey")
-    public ItemModel findByProcessDefinitionKey(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionKey") String processDefinitionKey);
+    public ItemModel findByProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
      * 获取所有事项列表
@@ -94,7 +97,8 @@ public interface Item4PositionApiClient extends Item4PositionApi {
      */
     @Override
     @GetMapping("/getFormIdByItemId")
-    public String getFormIdByItemId(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionKey") String processDefinitionKey);
+    public String getFormIdByItemId(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
      * 获取新建事项列表
@@ -105,7 +109,8 @@ public interface Item4PositionApiClient extends Item4PositionApi {
      */
     @Override
     @GetMapping("/getItemList")
-    public List<Map<String, Object>> getItemList(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId);
+    public List<Map<String, Object>> getItemList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId);
 
     /**
      * 获取事项系统字段映射配置
@@ -117,7 +122,8 @@ public interface Item4PositionApiClient extends Item4PositionApi {
      */
     @Override
     @GetMapping("/getItemMappingConf")
-    public List<ItemMappingConfModel> getItemMappingConf(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId, @RequestParam("mappingId") String mappingId);
+    public List<ItemMappingConfModel> getItemMappingConf(@RequestParam("tenantId") String tenantId,
+        @RequestParam("itemId") String itemId, @RequestParam("mappingId") String mappingId);
 
     /**
      * 获取事项系统
@@ -138,7 +144,8 @@ public interface Item4PositionApiClient extends Item4PositionApi {
      */
     @Override
     @GetMapping("/getMyItemList")
-    public List<Map<String, Object>> getMyItemList(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId);
+    public List<Map<String, Object>> getMyItemList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId);
 
     /**
      * 判断该租户是否有流程定义
@@ -149,6 +156,7 @@ public interface Item4PositionApiClient extends Item4PositionApi {
      */
     @Override
     @GetMapping("/hasProcessDefinitionByKey")
-    public Boolean hasProcessDefinitionByKey(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionKey") String processDefinitionKey);
+    public Boolean hasProcessDefinitionByKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
 
 }

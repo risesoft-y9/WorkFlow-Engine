@@ -25,52 +25,55 @@ import net.risesoft.y9.Y9Context;
 @Service(value = "dynamicRoleMemberService")
 public class DynamicRoleMemberServiceImpl implements DynamicRoleMemberService {
 
-	@Autowired
-	private DynamicRoleService dynamicRoleService;
+    @Autowired
+    private DynamicRoleService dynamicRoleService;
 
-	@Override
-	public Department getDepartment(DynamicRole dynamicRole) {
-		Department department = new Department();
-		String classFullPath = dynamicRole.getClassPath();
-		ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) Y9Context.getAc();
-		DefaultListableBeanFactory beanFactory = BeanFactory.getBeanFactory(applicationContext);
+    @Override
+    public Department getDepartment(DynamicRole dynamicRole) {
+        Department department = new Department();
+        String classFullPath = dynamicRole.getClassPath();
+        ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext)Y9Context.getAc();
+        DefaultListableBeanFactory beanFactory = BeanFactory.getBeanFactory(applicationContext);
 
-		beanFactory = BeanFactory.addBean(beanFactory, classFullPath);
-		AbstractDynamicRoleMember dynamicRoleMemberService = (AbstractDynamicRoleMember) beanFactory.getBean(classFullPath);
-		department = dynamicRoleMemberService.getDepartment();
-		return department;
-	}
+        beanFactory = BeanFactory.addBean(beanFactory, classFullPath);
+        AbstractDynamicRoleMember dynamicRoleMemberService =
+            (AbstractDynamicRoleMember)beanFactory.getBean(classFullPath);
+        department = dynamicRoleMemberService.getDepartment();
+        return department;
+    }
 
-	@Override
-	public List<OrgUnit> getOrgUnitList(String dynamicRoleId) {
-		DynamicRole dynamicRole = dynamicRoleService.findOne(dynamicRoleId);
-		List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
-		String classFullPath = dynamicRole.getClassPath();
-		ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) Y9Context.getAc();
-		DefaultListableBeanFactory beanFactory = BeanFactory.getBeanFactory(applicationContext);
+    @Override
+    public List<OrgUnit> getOrgUnitList(String dynamicRoleId) {
+        DynamicRole dynamicRole = dynamicRoleService.findOne(dynamicRoleId);
+        List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
+        String classFullPath = dynamicRole.getClassPath();
+        ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext)Y9Context.getAc();
+        DefaultListableBeanFactory beanFactory = BeanFactory.getBeanFactory(applicationContext);
 
-		beanFactory = BeanFactory.addBean(beanFactory, classFullPath);
-		AbstractDynamicRoleMember dynamicRoleMemberService = (AbstractDynamicRoleMember) beanFactory.getBean(classFullPath);
-		orgUnitList = dynamicRoleMemberService.getOrgUnitList();
-		return orgUnitList;
-	}
+        beanFactory = BeanFactory.addBean(beanFactory, classFullPath);
+        AbstractDynamicRoleMember dynamicRoleMemberService =
+            (AbstractDynamicRoleMember)beanFactory.getBean(classFullPath);
+        orgUnitList = dynamicRoleMemberService.getOrgUnitList();
+        return orgUnitList;
+    }
 
-	@Override
-	public List<OrgUnit> getOrgUnitList(String dynamicRoleId, String processInstanceId) {
-		DynamicRole dynamicRole = dynamicRoleService.findOne(dynamicRoleId);
-		List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
-		String classFullPath = dynamicRole.getClassPath();
-		ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) Y9Context.getAc();
-		DefaultListableBeanFactory beanFactory = BeanFactory.getBeanFactory(applicationContext);
+    @Override
+    public List<OrgUnit> getOrgUnitList(String dynamicRoleId, String processInstanceId) {
+        DynamicRole dynamicRole = dynamicRoleService.findOne(dynamicRoleId);
+        List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
+        String classFullPath = dynamicRole.getClassPath();
+        ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext)Y9Context.getAc();
+        DefaultListableBeanFactory beanFactory = BeanFactory.getBeanFactory(applicationContext);
 
-		beanFactory = BeanFactory.addBean(beanFactory, classFullPath);
-		AbstractDynamicRoleMember dynamicRoleMemberService = (AbstractDynamicRoleMember) beanFactory.getBean(classFullPath);
-		if (dynamicRole.isUseProcessInstanceId()) {
-			orgUnitList = dynamicRoleMemberService.getOrgUnitList(processInstanceId);
-		} else {
-			orgUnitList = dynamicRoleMemberService.getOrgUnitList();
-		}
-		return orgUnitList;
-	}
+        beanFactory = BeanFactory.addBean(beanFactory, classFullPath);
+        AbstractDynamicRoleMember dynamicRoleMemberService =
+            (AbstractDynamicRoleMember)beanFactory.getBean(classFullPath);
+        if (dynamicRole.isUseProcessInstanceId()) {
+            orgUnitList = dynamicRoleMemberService.getOrgUnitList(processInstanceId);
+        } else {
+            orgUnitList = dynamicRoleMemberService.getOrgUnitList();
+        }
+        return orgUnitList;
+    }
 
 }

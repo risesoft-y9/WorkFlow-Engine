@@ -63,7 +63,8 @@ public class SendButtonServiceImpl implements SendButtonService {
     @Transactional(readOnly = false)
     public SendButton saveOrUpdate(SendButton sendButton) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        String userId = userInfo.getParentId(), userName = userInfo.getName(), tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = userInfo.getParentId(), userName = userInfo.getName(),
+            tenantId = Y9LoginUserHolder.getTenantId();
 
         String id = sendButton.getId();
         if (StringUtils.isNotEmpty(id)) {

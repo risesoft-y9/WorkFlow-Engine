@@ -16,7 +16,8 @@ import net.risesoft.entity.DynamicRole;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface DynamicRoleRepository extends JpaRepository<DynamicRole, String>, JpaSpecificationExecutor<DynamicRole> {
+public interface DynamicRoleRepository
+    extends JpaRepository<DynamicRole, String>, JpaSpecificationExecutor<DynamicRole> {
 
     /**
      * 查找当前租户的所有动态角色

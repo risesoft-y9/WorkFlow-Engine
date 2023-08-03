@@ -32,7 +32,8 @@ public class JumpSubProcessCommand implements Command<Void> {
 
     private List<String> users;
 
-    public JumpSubProcessCommand(String taskId, String positionId, Map<String, Object> vars, String targetNodeId, List<String> users) {
+    public JumpSubProcessCommand(String taskId, String positionId, Map<String, Object> vars, String targetNodeId,
+        List<String> users) {
         this.taskId = taskId;
         this.targetNodeId = targetNodeId;
         this.vars = vars;
@@ -42,7 +43,8 @@ public class JumpSubProcessCommand implements Command<Void> {
 
     @Override
     public Void execute(CommandContext commandContext) {
-        ExecutionEntityManager executionEntityManager = org.flowable.engine.impl.util.CommandContextUtil.getExecutionEntityManager();
+        ExecutionEntityManager executionEntityManager =
+            org.flowable.engine.impl.util.CommandContextUtil.getExecutionEntityManager();
         TaskService taskService = CommandContextUtil.getTaskService();
         TaskEntity parentTask = taskService.getTask(taskId);
         ExecutionEntity parentExcutionEntity = executionEntityManager.findById(parentTask.getExecutionId());

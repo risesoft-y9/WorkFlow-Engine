@@ -47,9 +47,11 @@ public class RoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> findAll(@RequestParam(required = false) String id, @RequestParam(required = true) String treeType, @RequestParam(required = false) String name) {
+    public Y9Result<List<Map<String, Object>>> findAll(@RequestParam(required = false) String id,
+        @RequestParam(required = true) String treeType, @RequestParam(required = false) String name) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        item = itemRoleManager.getOrgTree(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), id, treeType, name);
+        item = itemRoleManager.getOrgTree(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), id,
+            treeType, name);
         return Y9Result.success(item, "获取成功");
     }
 
@@ -63,9 +65,12 @@ public class RoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/findCsUser", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> findCsUser(@RequestParam(required = false) String id, @RequestParam(required = true) Integer principalType, @RequestParam(required = false) String processInstanceId) {
+    public Y9Result<List<Map<String, Object>>> findCsUser(@RequestParam(required = false) String id,
+        @RequestParam(required = true) Integer principalType,
+        @RequestParam(required = false) String processInstanceId) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        item = itemRoleManager.findCsUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), id, principalType, processInstanceId);
+        item = itemRoleManager.findCsUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+            Y9LoginUserHolder.getPositionId(), id, principalType, processInstanceId);
         return Y9Result.success(item, "获取成功");
     }
 
@@ -79,9 +84,12 @@ public class RoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/findCsUserSearch", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> findCsUserSearch(@RequestParam(required = false) String name, @RequestParam(required = true) Integer principalType, @RequestParam(required = false) String processInstanceId) {
+    public Y9Result<List<Map<String, Object>>> findCsUserSearch(@RequestParam(required = false) String name,
+        @RequestParam(required = true) Integer principalType,
+        @RequestParam(required = false) String processInstanceId) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        item = itemRoleManager.findCsUserSearch(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), name, principalType, processInstanceId);
+        item = itemRoleManager.findCsUserSearch(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+            Y9LoginUserHolder.getPositionId(), name, principalType, processInstanceId);
         return Y9Result.success(item, "获取成功");
     }
 
@@ -98,13 +106,17 @@ public class RoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/findAllPermUser", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> findPermUser(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey, @RequestParam(required = true) Integer principalType,
-        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String id) {
+    public Y9Result<List<Map<String, Object>>> findPermUser(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey,
+        @RequestParam(required = true) Integer principalType, @RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = false) String id) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(id)) {
             id = "";
         }
-        item = itemRoleManager.findPermUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
+        item = itemRoleManager.findPermUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+            Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId, taskDefKey, principalType, id,
+            processInstanceId);
         return Y9Result.success(item, "获取成功");
     }
 
@@ -121,11 +133,15 @@ public class RoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/findPermUserByName", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> findPermUserByName(@RequestParam(required = false) String name, @RequestParam(required = true) Integer principalType, @RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId,
-        @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String processInstanceId) {
+    public Y9Result<List<Map<String, Object>>> findPermUserByName(@RequestParam(required = false) String name,
+        @RequestParam(required = true) Integer principalType, @RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey,
+        @RequestParam(required = false) String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        item = itemRoleManager.findPermUserByName(tenantId, Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), name, principalType, itemId, processDefinitionId, taskDefKey, processInstanceId);
+        item = itemRoleManager.findPermUserByName(tenantId, Y9LoginUserHolder.getPersonId(),
+            Y9LoginUserHolder.getPositionId(), name, principalType, itemId, processDefinitionId, taskDefKey,
+            processInstanceId);
         return Y9Result.success(item, "获取成功");
     }
 

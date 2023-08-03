@@ -17,7 +17,8 @@ import net.risesoft.model.itemadmin.EntrustModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "EntrustApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/entrust")
+@FeignClient(contextId = "EntrustApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/entrust")
 public interface EntrustApiClient extends EntrustApi {
 
     /**
@@ -30,7 +31,8 @@ public interface EntrustApiClient extends EntrustApi {
      */
     @Override
     @PostMapping("/destroyEntrust")
-    public void destroyEntrust(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("ownerId") String ownerId) throws Exception;
+    public void destroyEntrust(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("ownerId") String ownerId) throws Exception;
 
     /**
      * 销假:根据唯一标示删除正在使用中的、或者已经过期的出差委托，并放入委托历史表
@@ -42,7 +44,8 @@ public interface EntrustApiClient extends EntrustApi {
      */
     @Override
     @PostMapping("/destroyEntrustById")
-    public void destroyEntrustById(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("id") String id) throws Exception;
+    public void destroyEntrustById(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("id") String id) throws Exception;
 
     /**
      * 销假:删除某个人的某个事项的正在使用中的、或者已经过期的出差委托，并放入委托历史表
@@ -55,7 +58,9 @@ public interface EntrustApiClient extends EntrustApi {
      */
     @Override
     @PostMapping("/destroyEntrustByOwnerIdAndItemId")
-    public void destroyEntrustByOwnerIdAndItemId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("ownerId") String ownerId, @RequestParam("itemId") String itemId) throws Exception;
+    public void destroyEntrustByOwnerIdAndItemId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("ownerId") String ownerId,
+        @RequestParam("itemId") String itemId) throws Exception;
 
     /**
      * 根据用户唯一标示和事项唯一标示查找委托对象
@@ -69,7 +74,9 @@ public interface EntrustApiClient extends EntrustApi {
      */
     @Override
     @GetMapping("/findOneByOwnerIdAndItemId")
-    public EntrustModel findOneByOwnerIdAndItemId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("ownerId") String ownerId, @RequestParam("itemId") String itemId) throws Exception;
+    public EntrustModel findOneByOwnerIdAndItemId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("ownerId") String ownerId,
+        @RequestParam("itemId") String itemId) throws Exception;
 
     /**
      * 根据用户唯一标示和事项唯一标示查找委托对象
@@ -84,7 +91,9 @@ public interface EntrustApiClient extends EntrustApi {
      */
     @Override
     @GetMapping("/findOneByOwnerIdAndItemIdAndTime")
-    public EntrustModel findOneByOwnerIdAndItemIdAndTime(@RequestParam("tenantId") String tenantId, @RequestParam("ownerId") String ownerId, @RequestParam("itemId") String itemId, @RequestParam("currentTime") String currentTime) throws Exception;
+    public EntrustModel findOneByOwnerIdAndItemIdAndTime(@RequestParam("tenantId") String tenantId,
+        @RequestParam("ownerId") String ownerId, @RequestParam("itemId") String itemId,
+        @RequestParam("currentTime") String currentTime) throws Exception;
 
     /**
      * 通过唯一标示获取委托对象
@@ -97,7 +106,8 @@ public interface EntrustApiClient extends EntrustApi {
      */
     @Override
     @GetMapping("/getById")
-    public EntrustModel getById(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("id") String id) throws Exception;
+    public EntrustModel getById(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("id") String id) throws Exception;
 
     /**
      * 获取任务委托人id
@@ -123,7 +133,9 @@ public interface EntrustApiClient extends EntrustApi {
      */
     @Override
     @GetMapping("/getItemList")
-    public Map<String, Object> getItemList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("ownerId") String ownerId, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+    public Map<String, Object> getItemList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("ownerId") String ownerId,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
     /**
      * 查询任务是否有委托
@@ -146,7 +158,8 @@ public interface EntrustApiClient extends EntrustApi {
      */
     @Override
     @PostMapping("/removeEntrust")
-    public void removeEntrust(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("id") String id) throws Exception;
+    public void removeEntrust(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("id") String id) throws Exception;
 
     /**
      * 保存委托详情
@@ -159,7 +172,9 @@ public interface EntrustApiClient extends EntrustApi {
      */
     @Override
     @PostMapping("/saveEntrustDetail")
-    void saveEntrustDetail(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId, @RequestParam("ownerId") String ownerId, @RequestParam("assigneeId") String assigneeId);
+    void saveEntrustDetail(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId,
+        @RequestParam("ownerId") String ownerId, @RequestParam("assigneeId") String assigneeId);
 
     /**
      * 保存或者更新委托对象
@@ -171,5 +186,6 @@ public interface EntrustApiClient extends EntrustApi {
      */
     @Override
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestBody EntrustModel entrustModel) throws Exception;
+    public void saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestBody EntrustModel entrustModel) throws Exception;
 }

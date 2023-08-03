@@ -114,7 +114,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         // 系统工单办结，修改工单处理状态
         try {
             if (taskModel.getProcessDefinitionId().contains(systemWorkOrderKey)) {
-                ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processParamModel =
+                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                 workOrderManager.changeWorkOrderState(processParamModel.getProcessSerialNumber(), "3", "", "");
             }
         } catch (Exception e) {
@@ -142,7 +143,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     public void resumeToDo(String processInstanceId, String desc) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        String userId = userInfo.getPersonId(), userName = userInfo.getName(), tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = userInfo.getPersonId(), userName = userInfo.getName(),
+            tenantId = Y9LoginUserHolder.getTenantId();
         String newDate = sdf.format(new Date());
         try {
             /**
@@ -150,15 +152,18 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
              */
 
             String year = "";
-            OfficeDoneInfoModel officeDoneInfoModel = officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+            OfficeDoneInfoModel officeDoneInfoModel =
+                officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
             if (officeDoneInfoModel != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
             } else {
-                ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processParamModel =
+                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                 year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
             }
 
-            HistoricTaskInstanceModel hisTaskModelTemp = historicTaskManager.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).get(0);
+            HistoricTaskInstanceModel hisTaskModelTemp =
+                historicTaskManager.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).get(0);
             runtimeManager.recovery4Completed(tenantId, userId, processInstanceId, year);
             /**
              * 2、添加流程的历程

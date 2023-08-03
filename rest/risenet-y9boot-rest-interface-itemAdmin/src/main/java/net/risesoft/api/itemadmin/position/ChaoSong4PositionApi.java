@@ -85,7 +85,8 @@ public interface ChaoSong4PositionApi {
      * @param mobile
      * @return
      */
-    public Map<String, Object> detail(String tenantId, String positionId, String id, String processInstanceId, Integer status, boolean mobile);
+    public Map<String, Object> detail(String tenantId, String positionId, String id, String processInstanceId,
+        Integer status, boolean mobile);
 
     /**
      * 获取批阅件计数
@@ -116,7 +117,8 @@ public interface ChaoSong4PositionApi {
      * @param page
      * @return
      */
-    public Map<String, Object> getDoneList(String tenantId, String positionId, String documentTitle, int rows, int page);
+    public Map<String, Object> getDoneList(String tenantId, String positionId, String documentTitle, int rows,
+        int page);
 
     /**
      *
@@ -130,7 +132,8 @@ public interface ChaoSong4PositionApi {
      * @param page
      * @return
      */
-    public Map<String, Object> getListByProcessInstanceId(String tenantId, String positionId, String processInstanceId, String userName, int rows, int page);
+    public Map<String, Object> getListByProcessInstanceId(String tenantId, String positionId, String processInstanceId,
+        String userName, int rows, int page);
 
     /**
      *
@@ -144,7 +147,8 @@ public interface ChaoSong4PositionApi {
      * @param page
      * @return
      */
-    public Map<String, Object> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId, String processInstanceId, String userName, int rows, int page);
+    public Map<String, Object> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId,
+        String processInstanceId, String userName, int rows, int page);
 
     /**
      * 批阅件
@@ -156,7 +160,8 @@ public interface ChaoSong4PositionApi {
      * @param page
      * @return
      */
-    public Map<String, Object> getOpinionChaosongByUserId(String tenantId, String positionId, String documentTitle, int rows, int page);
+    public Map<String, Object> getOpinionChaosongByUserId(String tenantId, String positionId, String documentTitle,
+        int rows, int page);
 
     /**
      * 根据人员id获取抄送已阅件统计
@@ -178,7 +183,8 @@ public interface ChaoSong4PositionApi {
      * @param page
      * @return
      */
-    public Map<String, Object> getTodoList(String tenantId, String positionId, String documentTitle, int rows, int page);
+    public Map<String, Object> getTodoList(String tenantId, String positionId, String documentTitle, int rows,
+        int page);
 
     /**
      *
@@ -195,7 +201,8 @@ public interface ChaoSong4PositionApi {
      * @param smsPersonId
      * @return
      */
-    public Map<String, Object> save(String tenantId, String userId, String positionId, String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId);
+    public Map<String, Object> save(String tenantId, String userId, String positionId, String processInstanceId,
+        String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId);
 
     /**
      *
@@ -212,7 +219,8 @@ public interface ChaoSong4PositionApi {
      * @param rows
      * @return
      */
-    public Map<String, Object> searchAllByUserId(String tenantId, String positionId, String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    public Map<String, Object> searchAllByUserId(String tenantId, String positionId, String searchName, String itemId,
+        String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 监控阅件列表
@@ -228,7 +236,8 @@ public interface ChaoSong4PositionApi {
      * @param rows
      * @return
      */
-    public Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows);
+    public Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String senderName,
+        String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 更新抄送件标题

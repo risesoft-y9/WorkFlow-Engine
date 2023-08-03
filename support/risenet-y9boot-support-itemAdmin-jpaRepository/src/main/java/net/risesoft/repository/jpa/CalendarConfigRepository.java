@@ -12,7 +12,8 @@ import net.risesoft.entity.CalendarConfig;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface CalendarConfigRepository extends JpaRepository<CalendarConfig, String>, JpaSpecificationExecutor<CalendarConfig> {
+public interface CalendarConfigRepository
+    extends JpaRepository<CalendarConfig, String>, JpaSpecificationExecutor<CalendarConfig> {
 
     CalendarConfig findByYear(String year);
 

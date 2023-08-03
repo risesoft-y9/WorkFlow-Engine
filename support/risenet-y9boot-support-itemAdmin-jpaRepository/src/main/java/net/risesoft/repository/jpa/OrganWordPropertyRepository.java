@@ -15,7 +15,8 @@ import net.risesoft.entity.OrganWordProperty;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-public interface OrganWordPropertyRepository extends JpaRepository<OrganWordProperty, String>, JpaSpecificationExecutor<OrganWordProperty> {
+public interface OrganWordPropertyRepository
+    extends JpaRepository<OrganWordProperty, String>, JpaSpecificationExecutor<OrganWordProperty> {
 
     OrganWordProperty findByOrganWordIdAndName(String organWordId, String name);
 

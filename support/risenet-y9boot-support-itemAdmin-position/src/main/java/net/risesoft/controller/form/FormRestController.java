@@ -56,10 +56,12 @@ public class FormRestController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getFormList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Page<Map<String, Object>> getFormList(@RequestParam(required = false) String systemName, @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
+    public Y9Page<Map<String, Object>> getFormList(@RequestParam(required = false) String systemName,
+        @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
         Map<String, Object> map = y9FormService.getFormList(systemName, page, rows);
         List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), list, "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
+            Integer.parseInt(map.get("total").toString()), list, "获取列表成功");
     }
 
     /**
@@ -103,7 +105,8 @@ public class FormRestController {
      */
     @RequestMapping(value = "/saveFormField", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> saveFormField(@RequestParam(required = true) String formId, @RequestParam(required = false) String fieldJson) {
+    public Y9Result<String> saveFormField(@RequestParam(required = true) String formId,
+        @RequestParam(required = false) String fieldJson) {
         Map<String, Object> map = y9FormService.saveFormField(formId, fieldJson);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -120,7 +123,8 @@ public class FormRestController {
      */
     @RequestMapping(value = "/saveFormJson", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> saveFormJson(@RequestParam(required = true) String id, @RequestParam(required = false) String formJson) {
+    public Y9Result<String> saveFormJson(@RequestParam(required = true) String id,
+        @RequestParam(required = false) String formJson) {
         Map<String, Object> map = y9FormService.saveFormJson(id, formJson);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));

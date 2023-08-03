@@ -16,7 +16,8 @@ import net.risesoft.entity.DocumentWps;
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 @Repository
-public interface DocumentWpsRepository extends JpaRepository<DocumentWps, String>, JpaSpecificationExecutor<DocumentWps> {
+public interface DocumentWpsRepository
+    extends JpaRepository<DocumentWps, String>, JpaSpecificationExecutor<DocumentWps> {
 
     DocumentWps findByProcessSerialNumber(String processSerialNumber);
 

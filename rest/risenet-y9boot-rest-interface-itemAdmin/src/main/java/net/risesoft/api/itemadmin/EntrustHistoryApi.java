@@ -20,7 +20,8 @@ public interface EntrustHistoryApi {
      * @param itemId 事项粒度
      * @return List&lt;EntrustHistoryModel&gt;
      */
-    public List<EntrustHistoryModel> findByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId);
+    public List<EntrustHistoryModel> findByOwnerIdAndItemId(String tenantId, String userId, String ownerId,
+        String itemId);
 
     /**
      * 获取某个用户的委托历史对象集合

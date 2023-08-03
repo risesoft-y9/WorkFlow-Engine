@@ -15,7 +15,8 @@ import net.risesoft.entity.CommonSentences;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface CommonSentencesRepository extends JpaRepository<CommonSentences, String>, JpaSpecificationExecutor<CommonSentences> {
+public interface CommonSentencesRepository
+    extends JpaRepository<CommonSentences, String>, JpaSpecificationExecutor<CommonSentences> {
 
     /**
      * 根据人员id获取常用语

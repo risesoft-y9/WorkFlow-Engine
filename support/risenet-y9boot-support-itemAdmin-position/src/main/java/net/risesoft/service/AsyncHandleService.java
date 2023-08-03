@@ -155,11 +155,13 @@ public class AsyncHandleService {
      * @return
      */
     @Async
-    public void forwarding(final String tenantId, final Position position, final String processInstanceId, final ProcessParam processParam, final String sponsorHandle, final String sponsorGuid, final String taskId, final String multiInstance, final Map<String, Object> variables,
-        final List<String> userAndDeptIdList) {
+    public void forwarding(final String tenantId, final Position position, final String processInstanceId,
+        final ProcessParam processParam, final String sponsorHandle, final String sponsorGuid, final String taskId,
+        final String multiInstance, final Map<String, Object> variables, final List<String> userAndDeptIdList) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            this.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid, taskId, multiInstance, variables, userAndDeptIdList);
+            this.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid, taskId, multiInstance,
+                variables, userAndDeptIdList);
         } catch (Exception e) {
             try {
                 final Writer result = new StringWriter();
@@ -196,7 +198,9 @@ public class AsyncHandleService {
         }
     }
 
-    public void forwarding4Task(String processInstanceId, ProcessParam processParam, String sponsorHandle, String sponsorGuid, String taskId, String multiInstance, Map<String, Object> variables, List<String> userList) throws Exception {
+    public void forwarding4Task(String processInstanceId, ProcessParam processParam, String sponsorHandle,
+        String sponsorGuid, String taskId, String multiInstance, Map<String, Object> variables, List<String> userList)
+        throws Exception {
         Position position = Y9LoginUserHolder.getPosition();
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = position.getId();
         // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
@@ -243,7 +247,8 @@ public class AsyncHandleService {
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
 
-        this.forwardingHandle(tenantId, positionId, taskId, processInstanceId, multiInstance, sponsorGuid, processParam);
+        this.forwardingHandle(tenantId, positionId, taskId, processInstanceId, multiInstance, sponsorGuid,
+            processParam);
     }
 
     /**
@@ -258,7 +263,9 @@ public class AsyncHandleService {
      * @param processParam
      */
     @Async
-    public void forwardingHandle(final String tenantId, final String positionId, final String taskId, final String processInstanceId, final String multiInstance, final String sponsorGuid, final ProcessParam processParam) {
+    public void forwardingHandle(final String tenantId, final String positionId, final String taskId,
+        final String processInstanceId, final String multiInstance, final String sponsorGuid,
+        final ProcessParam processParam) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -368,7 +375,9 @@ public class AsyncHandleService {
                 todo.setUrgency(urgency);
                 todo.setDocNumber(processParam.getCustomNumber());
                 todo.setProcessInstanceId(processInstanceId);
-                String url = todoTaskUrlPrefix.replace("index", "readIndex") + "?id=" + info.getId() + "&itemId=" + info.getItemId() + "&processInstanceId=" + info.getProcessInstanceId() + "&type=fromTodo&appName=chaoSong";
+                String url = todoTaskUrlPrefix.replace("index", "readIndex") + "?id=" + info.getId() + "&itemId="
+                    + info.getItemId() + "&processInstanceId=" + info.getProcessInstanceId()
+                    + "&type=fromTodo&appName=chaoSong";
                 todo.setUrl(url);
                 todo.setTaskId(id);
                 todo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -443,7 +452,8 @@ public class AsyncHandleService {
      * @param processSerialNumber
      */
     @Async
-    public void sendMsgRemind(final String tenantId, final String userId, final String processSerialNumber, final String content) {
+    public void sendMsgRemind(final String tenantId, final String userId, final String processSerialNumber,
+        final String content) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Position position = positionManager.getPosition(tenantId, userId);
@@ -454,12 +464,14 @@ public class AsyncHandleService {
                 String title = processParam.getTitle();
                 String itemId = processParam.getItemId();
                 String todoTaskUrlPrefix = processParam.getTodoTaskUrlPrefix();
-                String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processParam.getProcessInstanceId() + "&type=fromCplane";
+                String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId="
+                    + processParam.getProcessInstanceId() + "&type=fromCplane";
                 Date date = new Date();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String newPersonIds = "";
                 String[] ids = personIds.split(",");
-                OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processParam.getProcessInstanceId());
+                OfficeDoneInfo officeDoneInfo =
+                    officeDoneInfoService.findByProcessInstanceId(processParam.getProcessInstanceId());
                 for (String id : ids) {
                     /**
                      * 参与该件的人才提醒
@@ -503,7 +515,8 @@ public class AsyncHandleService {
      * @param searchTerm
      */
     @Async
-    public void startProcessHandle(final String tenantId, final String processSerialNumber, final String taskId, final String processInstanceId, final String searchTerm) {
+    public void startProcessHandle(final String tenantId, final String processSerialNumber, final String taskId,
+        final String processInstanceId, final String searchTerm) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             try {
@@ -532,7 +545,8 @@ public class AsyncHandleService {
      * @return
      */
     @Async
-    public void weiXinRemind(final String tenantId, final String userId, final String processSerialNumber, final List<ChaoSong> list) {
+    public void weiXinRemind(final String tenantId, final String userId, final String processSerialNumber,
+        final List<ChaoSong> list) {
         Boolean weiXinSwitch = y9Conf.getApp().getItemAdmin().getWeiXinSwitch();
         if (!weiXinSwitch) {
             LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
@@ -583,7 +597,8 @@ public class AsyncHandleService {
      * @return
      */
     @Async
-    public void weiXinRemind4ChaoSongInfo(final String tenantId, final String userId, final String processSerialNumber, final List<ChaoSongInfo> list) {
+    public void weiXinRemind4ChaoSongInfo(final String tenantId, final String userId, final String processSerialNumber,
+        final List<ChaoSongInfo> list) {
         Boolean weiXinSwitch = y9Conf.getApp().getItemAdmin().getWeiXinSwitch();
         if (!weiXinSwitch) {
             LOGGER.info("######################微信提醒开关已关闭,如需微信提醒请更改配置文件######################");
@@ -595,7 +610,8 @@ public class AsyncHandleService {
             String itemId = processParam.getItemId();
             String itemName = processParam.getItemName();
             Person person = personManager.getPerson(tenantId, userId);
-            OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(list.get(0).getProcessInstanceId());
+            OfficeDoneInfo officeDoneInfo =
+                officeDoneInfoService.findByProcessInstanceId(list.get(0).getProcessInstanceId());
             for (ChaoSongInfo cs : list) {
                 String assignee = cs.getUserId();
                 HttpClient client = new HttpClient();

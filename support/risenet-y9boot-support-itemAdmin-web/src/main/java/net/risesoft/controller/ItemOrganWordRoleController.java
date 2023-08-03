@@ -48,7 +48,8 @@ public class ItemOrganWordRoleController {
     @ResponseBody
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemOrganWordRole>> list(@RequestParam(required = true) String itemOrganWordBindId) {
-        List<ItemOrganWordRole> list = itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(itemOrganWordBindId);
+        List<ItemOrganWordRole> list =
+            itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(itemOrganWordBindId);
         return Y9Result.success(list, "获取成功");
     }
 

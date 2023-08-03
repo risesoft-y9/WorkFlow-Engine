@@ -159,7 +159,8 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             map.put("msg", "发布应用失败");
             System system = systemEntityManager.getByName(Y9Context.getSystemName());
             if (null == system) {
-                map.put("msg", "发布为系统[" + Y9Context.getSystemName() + "]的应用失败:没有找到英文名为[" + Y9Context.getSystemName() + "]的系统,请先创建系统后再发布");
+                map.put("msg", "发布为系统[" + Y9Context.getSystemName() + "]的应用失败:没有找到英文名为[" + Y9Context.getSystemName()
+                    + "]的系统,请先创建系统后再发布");
                 return map;
             }
             /**
@@ -207,17 +208,21 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
                 item.setTodoTaskUrlPrefix(item.getAppUrl().split("\\?")[0]);
             }
             spmApproveItemRepository.save(item);
-            ItemMappingConf itemMappingConf = itemMappingConfRepository.findTopByItemIdAndSysTypeOrderByCreateTimeDesc(item.getId(), "1");
+            ItemMappingConf itemMappingConf =
+                itemMappingConfRepository.findTopByItemIdAndSysTypeOrderByCreateTimeDesc(item.getId(), "1");
             // 删除事项映射字段
             if (itemMappingConf != null) {
-                if (StringUtils.isBlank(item.getDockingItemId()) || !item.getDockingItemId().equals(itemMappingConf.getMappingId())) {
+                if (StringUtils.isBlank(item.getDockingItemId())
+                    || !item.getDockingItemId().equals(itemMappingConf.getMappingId())) {
                     itemMappingConfRepository.deleteByMappingId(itemMappingConf.getMappingId());
                 }
             }
-            ItemMappingConf itemMappingConf1 = itemMappingConfRepository.findTopByItemIdAndSysTypeOrderByCreateTimeDesc(item.getId(), "2");
+            ItemMappingConf itemMappingConf1 =
+                itemMappingConfRepository.findTopByItemIdAndSysTypeOrderByCreateTimeDesc(item.getId(), "2");
             // 删除系统映射字段
             if (itemMappingConf1 != null) {
-                if (StringUtils.isBlank(item.getDockingSystem()) || !item.getDockingSystem().equals(itemMappingConf1.getMappingId())) {
+                if (StringUtils.isBlank(item.getDockingSystem())
+                    || !item.getDockingSystem().equals(itemMappingConf1.getMappingId())) {
                     itemMappingConfRepository.deleteByMappingId(itemMappingConf1.getMappingId());
                 }
             }

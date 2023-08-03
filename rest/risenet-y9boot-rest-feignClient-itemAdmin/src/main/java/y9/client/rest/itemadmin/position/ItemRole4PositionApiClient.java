@@ -14,7 +14,8 @@ import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ItemRole4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/itemRole4Position")
+@FeignClient(contextId = "ItemRole4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/itemRole4Position")
 public interface ItemRole4PositionApiClient extends ItemRole4PositionApi {
 
     /**
@@ -31,7 +32,9 @@ public interface ItemRole4PositionApiClient extends ItemRole4PositionApi {
      */
     @Override
     @GetMapping("/findCsUser")
-    public List<Map<String, Object>> findCsUser(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("positionId") String positionId, @RequestParam("id") String id, @RequestParam("principalType") Integer principalType,
+    public List<Map<String, Object>> findCsUser(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
+        @RequestParam("id") String id, @RequestParam("principalType") Integer principalType,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
@@ -46,7 +49,9 @@ public interface ItemRole4PositionApiClient extends ItemRole4PositionApi {
      */
     @Override
     @GetMapping("/findCsUserBureau")
-    public List<Map<String, Object>> findCsUserBureau(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("positionId") String positionId, @RequestParam("principalType") Integer principalType);
+    public List<Map<String, Object>> findCsUserBureau(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
+        @RequestParam("principalType") Integer principalType);
 
     /**
      * 
@@ -62,7 +67,9 @@ public interface ItemRole4PositionApiClient extends ItemRole4PositionApi {
      */
     @Override
     @GetMapping("/findCsUserSearch")
-    public List<Map<String, Object>> findCsUserSearch(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("positionId") String positionId, @RequestParam("name") String name, @RequestParam("principalType") Integer principalType,
+    public List<Map<String, Object>> findCsUserSearch(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
+        @RequestParam("name") String name, @RequestParam("principalType") Integer principalType,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
@@ -82,8 +89,11 @@ public interface ItemRole4PositionApiClient extends ItemRole4PositionApi {
      */
     @Override
     @GetMapping("/findPermUser")
-    public List<Map<String, Object>> findPermUser(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey, @RequestParam("principalType") Integer principalType, @RequestParam("id") String id, @RequestParam("processInstanceId") String processInstanceId);
+    public List<Map<String, Object>> findPermUser(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
+        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
+        @RequestParam("taskDefKey") String taskDefKey, @RequestParam("principalType") Integer principalType,
+        @RequestParam("id") String id, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 
@@ -102,8 +112,11 @@ public interface ItemRole4PositionApiClient extends ItemRole4PositionApi {
      */
     @Override
     @GetMapping("/findPermUserByName")
-    public List<Map<String, Object>> findPermUserByName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("positionId") String positionId, @RequestParam("name") String name, @RequestParam("principalType") Integer principalType,
-        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey, @RequestParam("processInstanceId") String processInstanceId);
+    public List<Map<String, Object>> findPermUserByName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
+        @RequestParam("name") String name, @RequestParam("principalType") Integer principalType,
+        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
+        @RequestParam("taskDefKey") String taskDefKey, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 
@@ -116,7 +129,8 @@ public interface ItemRole4PositionApiClient extends ItemRole4PositionApi {
      */
     @Override
     @GetMapping("/findPermUserSendReceive")
-    public List<Map<String, Object>> findPermUserSendReceive(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("id") String id);
+    public List<Map<String, Object>> findPermUserSendReceive(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("id") String id);
 
     /**
      * 获取组织机构树
@@ -132,5 +146,7 @@ public interface ItemRole4PositionApiClient extends ItemRole4PositionApi {
      */
     @Override
     @GetMapping("/getOrgTree")
-    public List<Map<String, Object>> getOrgTree(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("id") String id, @RequestParam("treeType") String treeType, @RequestParam("name") String name);
+    public List<Map<String, Object>> getOrgTree(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("id") String id,
+        @RequestParam("treeType") String treeType, @RequestParam("name") String name);
 }

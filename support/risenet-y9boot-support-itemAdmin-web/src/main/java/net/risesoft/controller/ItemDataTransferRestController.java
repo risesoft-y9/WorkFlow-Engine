@@ -32,7 +32,8 @@ public class ItemDataTransferRestController {
      * @return
      */
     @RequestMapping(value = "/dataTransfer", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> dataTransfer(@RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String processInstanceId) {
+    public Y9Result<String> dataTransfer(@RequestParam(required = true) String processDefinitionId,
+        @RequestParam(required = false) String processInstanceId) {
         return itemDataTransferService.dataTransfer(processDefinitionId, processInstanceId);
     }
 
@@ -46,7 +47,9 @@ public class ItemDataTransferRestController {
      * @return
      */
     @RequestMapping(value = "/getProcessInstanceList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getProcessInstanceList(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> getProcessInstanceList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows) {
         return itemDataTransferService.getProcessInstanceList(itemId, processDefinitionId, page, rows);
     }
 }

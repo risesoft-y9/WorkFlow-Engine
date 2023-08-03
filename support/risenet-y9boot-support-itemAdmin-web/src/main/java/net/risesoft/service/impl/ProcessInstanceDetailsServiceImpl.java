@@ -75,7 +75,8 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             PageRequest pageable = PageRequest.of(page - 1, rows, sort);
             Page<ProcessInstance> pageList = null;
             if (StringUtils.isNotBlank(title)) {
-                pageList = processInstanceRepository.findByUserIdAndTitle("%" + userId + "%", "%" + title + "%", pageable);
+                pageList =
+                    processInstanceRepository.findByUserIdAndTitle("%" + userId + "%", "%" + title + "%", pageable);
             } else {
                 pageList = processInstanceRepository.findByUserId("%" + userId + "%", pageable);
             }
@@ -83,7 +84,8 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             for (ProcessInstance obj : pageList.getContent()) {
                 Map<String, Object> mapData = new HashMap<String, Object>();
                 List<Map<String, Object>> listData = new ArrayList<Map<String, Object>>();
-                List<ProcessInstanceDetails> list = processInstanceDetailsRepository.findByProcessInstanceId(obj.getProcessInstanceId());
+                List<ProcessInstanceDetails> list =
+                    processInstanceDetailsRepository.findByProcessInstanceId(obj.getProcessInstanceId());
                 mapData.put("itembox", "done");
                 mapData.put("endTime", obj.getEndTime() != null ? sdf.format(obj.getEndTime()) : "");
                 for (ProcessInstanceDetails details : list) {
@@ -135,7 +137,8 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             ProcessInstanceDetails details = new ProcessInstanceDetails();
             Y9BeanUtil.copyProperties(model, details);
 
-            ProcessInstance processInstance = processInstanceRepository.findByProcessInstanceId(details.getProcessInstanceId());
+            ProcessInstance processInstance =
+                processInstanceRepository.findByProcessInstanceId(details.getProcessInstanceId());
             if (processInstance == null || processInstance.getId() == null) {
                 processInstance = new ProcessInstance();
                 processInstance.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -180,9 +183,11 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
     @Transactional(readOnly = false)
     public boolean updateProcessInstanceDetails(String processInstanceId, String taskId, String itembox, Date endTime) {
         try {
-            ProcessInstanceDetails details = processInstanceDetailsRepository.findByProcessInstanceIdAndTaskId(processInstanceId, taskId);
+            ProcessInstanceDetails details =
+                processInstanceDetailsRepository.findByProcessInstanceIdAndTaskId(processInstanceId, taskId);
             if (details != null && details.getId() != null) {
-                List<Opinion> opinion = opinionService.findByTaskIdAndUserIdAndProcessTrackIdIsNull(taskId, Y9LoginUserHolder.getPersonId());
+                List<Opinion> opinion = opinionService.findByTaskIdAndUserIdAndProcessTrackIdIsNull(taskId,
+                    Y9LoginUserHolder.getPersonId());
                 String opinionStr = opinion.size() > 0 ? opinion.get(0).getContent() : "";
                 details.setEndTime(endTime);
                 details.setItembox(itembox);

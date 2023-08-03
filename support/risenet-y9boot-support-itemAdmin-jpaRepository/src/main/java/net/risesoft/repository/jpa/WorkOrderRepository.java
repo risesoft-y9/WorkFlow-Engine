@@ -16,13 +16,18 @@ import net.risesoft.entity.WorkOrderEntity;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-public interface WorkOrderRepository extends JpaRepository<WorkOrderEntity, String>, JpaSpecificationExecutor<WorkOrderEntity> {
+public interface WorkOrderRepository
+    extends JpaRepository<WorkOrderEntity, String>, JpaSpecificationExecutor<WorkOrderEntity> {
 
-    @Query("SELECT" + "	count(DISTINCT w.guid) as num," + "	CASE WHEN w.handleType = '0' THEN 'draft'" + "		 WHEN w.handleType = '1' THEN 'todo'" + "		 WHEN w.handleType = '2' THEN 'doing'" + "		 WHEN w.handleType = '3' THEN 'done'" + "		 ELSE 'notexist' end as type" + " FROM"
+    @Query("SELECT" + "	count(DISTINCT w.guid) as num," + "	CASE WHEN w.handleType = '0' THEN 'draft'"
+        + "		 WHEN w.handleType = '1' THEN 'todo'" + "		 WHEN w.handleType = '2' THEN 'doing'"
+        + "		 WHEN w.handleType = '3' THEN 'done'" + "		 ELSE 'notexist' end as type" + " FROM"
         + "	WorkOrderEntity w" + " GROUP BY" + "	w.handleType")
     List<Map<String, Object>> countByAdmin();
 
-    @Query("SELECT" + "	count(DISTINCT w.guid) as num," + "	CASE WHEN w.handleType = '0' THEN 'draft'" + "		 WHEN w.handleType = '1' THEN 'todo'" + "		 WHEN w.handleType = '2' THEN 'doing'" + "		 WHEN w.handleType = '3' THEN 'done'" + "		 ELSE 'notexist' end as type" + " FROM"
+    @Query("SELECT" + "	count(DISTINCT w.guid) as num," + "	CASE WHEN w.handleType = '0' THEN 'draft'"
+        + "		 WHEN w.handleType = '1' THEN 'todo'" + "		 WHEN w.handleType = '2' THEN 'doing'"
+        + "		 WHEN w.handleType = '3' THEN 'done'" + "		 ELSE 'notexist' end as type" + " FROM"
         + "	WorkOrderEntity w" + " where w.userId = ?1 " + " GROUP BY" + "	w.handleType")
     List<Map<String, Object>> countByUserId(String userId);
 

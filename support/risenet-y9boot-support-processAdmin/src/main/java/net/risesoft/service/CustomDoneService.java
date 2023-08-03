@@ -54,7 +54,8 @@ public interface CustomDoneService {
      * @param rows
      * @return
      */
-    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, Integer page, Integer rows);
+    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, Integer page,
+        Integer rows);
 
     /**
      * Description: 根据人员Id获取用户的办结流程列表(分页,包含流程变量)
@@ -88,7 +89,8 @@ public interface CustomDoneService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows);
 
     /**
      * 条件搜索办结件
@@ -100,5 +102,6 @@ public interface CustomDoneService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
+        Integer page, Integer rows);
 }

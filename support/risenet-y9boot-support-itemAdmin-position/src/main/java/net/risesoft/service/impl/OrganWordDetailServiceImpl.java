@@ -21,8 +21,10 @@ public class OrganWordDetailServiceImpl implements OrganWordDetailService {
     private OrganWordDetailRepository organWordDetailRepository;
 
     @Override
-    public OrganWordDetail findByCustomAndCharacterValueAndYearAndItemId(String custom, String characterValue, Integer year, String itemId) {
-        return organWordDetailRepository.findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year, itemId);
+    public OrganWordDetail findByCustomAndCharacterValueAndYearAndItemId(String custom, String characterValue,
+        Integer year, String itemId) {
+        return organWordDetailRepository.findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year,
+            itemId);
     }
 
     @Override

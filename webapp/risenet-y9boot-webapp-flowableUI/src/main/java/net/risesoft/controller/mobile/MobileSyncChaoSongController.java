@@ -81,27 +81,40 @@ public class MobileSyncChaoSongController {
         for (String processInstanceId : list0) {
             try {
                 Y9LoginUserHolder.setTenantId(tenantId);
-                ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
-                String searchTerm = processParamModel.getTitle() + "|" + processParamModel.getCustomNumber() + "|" + processParamModel.getCustomLevel() + "|" + processParamModel.getItemName();
+                ProcessParamModel processParamModel =
+                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                String searchTerm = processParamModel.getTitle() + "|" + processParamModel.getCustomNumber() + "|"
+                    + processParamModel.getCustomLevel() + "|" + processParamModel.getItemName();
                 Date date = new Date();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String sql = "SELECT count(ID_) from act_hi_varinst where PROC_INST_ID_ = '" + processInstanceId + "' and NAME_ = 'searchTerm'";
+                String sql = "SELECT count(ID_) from act_hi_varinst where PROC_INST_ID_ = '" + processInstanceId
+                    + "' and NAME_ = 'searchTerm'";
 
                 int num = jdbcTemplate.queryForObject(sql, Integer.class);
 
-                sql = "INSERT INTO act_hi_varinst (" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_,"
-                    + "	CREATE_TIME_," + "	LAST_UPDATED_TIME_ " + " )" + " VALUES" + "	(" + "		'" + processInstanceId + "'," + "		0," + "		'" + processInstanceId + "'," + "		'" + processInstanceId + "'," + "		NULL," + "		'searchTerm'," + "		'string'," + "		NULL,"
-                    + "		NULL," + "		NULL," + "		NULL," + "		NULL," + "		NULL," + "		'" + searchTerm + "'," + "		NULL," + "		'" + sdf.format(date) + "'," + "		'" + sdf.format(date) + "'" + "	)";
+                sql = "INSERT INTO act_hi_varinst (" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	EXECUTION_ID_,"
+                    + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_,"
+                    + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_," + "	CREATE_TIME_,"
+                    + "	LAST_UPDATED_TIME_ " + " )" + " VALUES" + "	(" + "		'" + processInstanceId + "',"
+                    + "		0," + "		'" + processInstanceId + "'," + "		'" + processInstanceId + "',"
+                    + "		NULL," + "		'searchTerm'," + "		'string'," + "		NULL," + "		NULL,"
+                    + "		NULL," + "		NULL," + "		NULL," + "		NULL," + "		'" + searchTerm + "',"
+                    + "		NULL," + "		'" + sdf.format(date) + "'," + "		'" + sdf.format(date) + "'" + "	)";
                 if (num == 0) {
                     jdbcTemplate.execute(sql);
                 }
 
-                sql = "SELECT count(ID_) from act_ru_variable where PROC_INST_ID_ = '" + processInstanceId + "' and NAME_ = 'searchTerm'";
+                sql = "SELECT count(ID_) from act_ru_variable where PROC_INST_ID_ = '" + processInstanceId
+                    + "' and NAME_ = 'searchTerm'";
 
                 num = jdbcTemplate.queryForObject(sql, Integer.class);
 
-                sql = "INSERT INTO act_ru_variable (" + "	ID_," + "	REV_," + "	TYPE_," + "	NAME_," + "	EXECUTION_ID_," + "	PROC_INST_ID_," + "	TASK_ID_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_ " + " )"
-                    + " VALUES" + "	(" + "		'" + processInstanceId + "'," + "		1," + "		'string'," + "		'searchTerm'," + "		'" + processInstanceId + "'," + "		'" + processInstanceId + "'," + "		NULL," + "		NULL," + "		NULL," + "		NULL," + "		NULL,"
+                sql = "INSERT INTO act_ru_variable (" + "	ID_," + "	REV_," + "	TYPE_," + "	NAME_,"
+                    + "	EXECUTION_ID_," + "	PROC_INST_ID_," + "	TASK_ID_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_,"
+                    + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_ " + " )"
+                    + " VALUES" + "	(" + "		'" + processInstanceId + "'," + "		1," + "		'string',"
+                    + "		'searchTerm'," + "		'" + processInstanceId + "'," + "		'" + processInstanceId
+                    + "'," + "		NULL," + "		NULL," + "		NULL," + "		NULL," + "		NULL,"
                     + "		NULL," + "		NULL," + "		'" + searchTerm + "'," + "		NULL " + "	)";
                 if (num == 0) {
                     jdbcTemplate.execute(sql);
@@ -134,16 +147,29 @@ public class MobileSyncChaoSongController {
                     try {
                         String year0 = ((String)map.get("CREATETIME")).substring(0, 4);
                         String opinionState = map.get("opinionState") == null ? "" : map.get("opinionState").toString();
-                        String opinionContent = map.get("opinionContent") == null ? "" : map.get("opinionContent").toString();
+                        String opinionContent =
+                            map.get("opinionContent") == null ? "" : map.get("opinionContent").toString();
                         String opinionGroup = map.get("opinionGroup") == null ? "" : map.get("opinionGroup").toString();
-                        String processSerialNumber = map.get("PROCESSSERIALNUMBER") == null ? "" : map.get("PROCESSSERIALNUMBER").toString();
+                        String processSerialNumber =
+                            map.get("PROCESSSERIALNUMBER") == null ? "" : map.get("PROCESSSERIALNUMBER").toString();
                         String taskId = map.get("TASKID") == null ? "" : map.get("TASKID").toString();
-                        sql = "INSERT INTO FF_CHAOSONG_" + year0 + " (" + "	ID," + "	CREATETIME," + "	ITEMID," + "	ITEMNAME," + "	PROCESSINSTANCEID," + "	READTIME," + "	SENDDEPTID," + "	SENDDEPTNAME," + "	SENDERID," + "	SENDERNAME," + "	STATUS," + "	SYSTEMNAME," + "	TASKID,"
-                            + "	TENANTID," + "	TITLE," + "	USERID," + "	USERNAME," + "	USERDEPTID," + "	USERDEPTNAME," + "	opinionState," + "	opinionContent," + "	opinionGroup," + "	PROCESSSERIALNUMBER" + " )" + " VALUES" + "	(" + "		'" + map.get("ID") + "'," + "		'"
-                            + map.get("CREATETIME") + "'," + "		'" + map.get("ITEMID") + "'," + "		'" + map.get("ITEMNAME") + "'," + "		'" + map.get("PROCESSINSTANCEID") + "'," + "		'" + map.get("READTIME") + "'," + "		'" + map.get("SENDDEPTID") + "'," + "		'"
-                            + map.get("SENDDEPTNAME") + "'," + "		'" + map.get("SENDERID") + "'," + "		'" + map.get("SENDERNAME") + "'," + "		'1'," + "		'" + map.get("SYSTEMNAME") + "'," + "		'" + taskId + "'," + "		'" + map.get("TENANTID") + "'," + "		'"
-                            + map.get("TITLE") + "'," + "		'" + map.get("USERID") + "'," + "		'" + map.get("USERNAME") + "'," + "		'" + map.get("USERDEPTID") + "'," + "		'" + map.get("USERDEPTNAME") + "'," + "		'" + opinionState + "'," + "		'" + opinionContent + "',"
-                            + "		'" + opinionGroup + "'," + "		'" + processSerialNumber + "'" + "	)";
+                        sql = "INSERT INTO FF_CHAOSONG_" + year0 + " (" + "	ID," + "	CREATETIME," + "	ITEMID,"
+                            + "	ITEMNAME," + "	PROCESSINSTANCEID," + "	READTIME," + "	SENDDEPTID,"
+                            + "	SENDDEPTNAME," + "	SENDERID," + "	SENDERNAME," + "	STATUS," + "	SYSTEMNAME,"
+                            + "	TASKID," + "	TENANTID," + "	TITLE," + "	USERID," + "	USERNAME," + "	USERDEPTID,"
+                            + "	USERDEPTNAME," + "	opinionState," + "	opinionContent," + "	opinionGroup,"
+                            + "	PROCESSSERIALNUMBER" + " )" + " VALUES" + "	(" + "		'" + map.get("ID") + "',"
+                            + "		'" + map.get("CREATETIME") + "'," + "		'" + map.get("ITEMID") + "',"
+                            + "		'" + map.get("ITEMNAME") + "'," + "		'" + map.get("PROCESSINSTANCEID") + "',"
+                            + "		'" + map.get("READTIME") + "'," + "		'" + map.get("SENDDEPTID") + "',"
+                            + "		'" + map.get("SENDDEPTNAME") + "'," + "		'" + map.get("SENDERID") + "',"
+                            + "		'" + map.get("SENDERNAME") + "'," + "		'1'," + "		'"
+                            + map.get("SYSTEMNAME") + "'," + "		'" + taskId + "'," + "		'" + map.get("TENANTID")
+                            + "'," + "		'" + map.get("TITLE") + "'," + "		'" + map.get("USERID") + "',"
+                            + "		'" + map.get("USERNAME") + "'," + "		'" + map.get("USERDEPTID") + "',"
+                            + "		'" + map.get("USERDEPTNAME") + "'," + "		'" + opinionState + "'," + "		'"
+                            + opinionContent + "'," + "		'" + opinionGroup + "'," + "		'" + processSerialNumber
+                            + "'" + "	)";
                         jdbcTemplate.execute(sql);
                     } catch (Exception e) {
                         i += 1;

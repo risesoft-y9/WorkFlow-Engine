@@ -97,7 +97,9 @@ public class ProcessModelVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> create(@RequestParam(required = true) String name, @RequestParam(required = true) String key, @RequestParam(required = false) String description, HttpServletRequest request, HttpServletResponse response) {
+    public Y9Result<String> create(@RequestParam(required = true) String name,
+        @RequestParam(required = true) String key, @RequestParam(required = false) String description,
+        HttpServletRequest request, HttpServletResponse response) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String personName = userInfo.getName();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -205,7 +207,8 @@ public class ProcessModelVueController {
                 mapTemp.put("key", model.getKey());
                 mapTemp.put("name", model.getName());
                 mapTemp.put("version", 0);
-                processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey()).latestVersion().singleResult();
+                processDefinition = repositoryService.createProcessDefinitionQuery()
+                    .processDefinitionKey(model.getKey()).latestVersion().singleResult();
                 if (null != processDefinition) {
                     mapTemp.put("version", processDefinition.getVersion());
                 }
@@ -215,7 +218,8 @@ public class ProcessModelVueController {
             }
         } else {
             Map<String, Object> mapTemp = null;
-            List<Resource> resourceList = personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId);
+            List<Resource> resourceList =
+                personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId);
             for (AbstractModel model : list) {
                 for (Resource resource : resourceList) {
                     if (resource.getCustomId().equals(model.getKey())) {
@@ -224,7 +228,8 @@ public class ProcessModelVueController {
                         mapTemp.put("key", model.getKey());
                         mapTemp.put("name", model.getName());
                         mapTemp.put("version", 0);
-                        processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey()).latestVersion().singleResult();
+                        processDefinition = repositoryService.createProcessDefinitionQuery()
+                            .processDefinitionKey(model.getKey()).latestVersion().singleResult();
                         if (null != processDefinition) {
                             mapTemp.put("version", processDefinition.getVersion());
                         }
@@ -246,7 +251,8 @@ public class ProcessModelVueController {
      * @param response
      */
     @RequestMapping(value = "/editor/{modelId}")
-    public void gotoEditor(@PathVariable("modelId") String modelId, HttpServletRequest request, HttpServletResponse response) {
+    public void gotoEditor(@PathVariable("modelId") String modelId, HttpServletRequest request,
+        HttpServletResponse response) {
         try {
             response.sendRedirect(request.getContextPath() + "/modeler.html#/editor/" + modelId);
         } catch (IOException e) {

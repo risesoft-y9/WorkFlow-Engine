@@ -156,7 +156,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                                     startTime1 = officeDoneInfoModel.getStartTime();
                                 } else {
                                     String year = processParam.getCreateTime().substring(0, 4);
-                                    HistoricProcessInstanceModel hpi = historicProcessManager.getByIdAndYear(tenantId, id, year);
+                                    HistoricProcessInstanceModel hpi =
+                                        historicProcessManager.getByIdAndYear(tenantId, id, year);
                                     startTime = sdf.format(hpi.getStartTime());
                                     startTime1 = sdf1.format(hpi.getStartTime());
                                 }
@@ -165,7 +166,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                             String itemId = processParam.getItemId();
                             String itemName = processParam.getItemName();
                             String documentTitle = processParam.getTitle();
-                            String user4Complete = StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter();
+                            String user4Complete =
+                                StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter();
 
                             mapTemp.put("itemName", itemName);
                             mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber1);
@@ -253,7 +255,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                                     endTime = sdf.format(sdf1.parse(officeDoneInfoModel.getEndTime()));
                                 } else {
                                     String year = processParam.getCreateTime().substring(0, 4);
-                                    HistoricProcessInstanceModel hpi = historicProcessManager.getByIdAndYear(tenantId, id, year);
+                                    HistoricProcessInstanceModel hpi =
+                                        historicProcessManager.getByIdAndYear(tenantId, id, year);
                                     startTime = sdf.format(hpi.getStartTime());
                                     endTime1 = sdf1.format(hpi.getEndTime());
                                     endTime = sdf.format(hpi.getEndTime());
@@ -263,7 +266,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                             String itemId = processParam.getItemId();
                             String itemName = processParam.getItemName();
                             String documentTitle = processParam.getTitle();
-                            String user4Complete = StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter();
+                            String user4Complete =
+                                StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter();
                             mapTemp.put("itemName", itemName);
                             mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber1);
                             mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);

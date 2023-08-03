@@ -74,7 +74,8 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
     public List<SpeakInfo> findByProcessInstanceId(String processInstanceId) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String currentUserId = userInfo.getPersonId();
-        List<SpeakInfo> siList = speakInfoRepository.findByProcessInstanceIdAndDeletedFalseOrderByCreateTimeAsc(processInstanceId);
+        List<SpeakInfo> siList =
+            speakInfoRepository.findByProcessInstanceIdAndDeletedFalseOrderByCreateTimeAsc(processInstanceId);
         Date createDate = new Date();
         Date dateAfterCreateDate5Minute = new Date();
         Date currentDate = new Date();
@@ -107,7 +108,8 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
 
     @Override
     public int getNotReadCount(String processInstanceId, String userId) {
-        return speakInfoRepository.countByProcessInstanceIdAndDeletedFalseAndUserIdNotAndReadUserIdNotLike(processInstanceId, userId, "%" + userId + "%");
+        return speakInfoRepository.countByProcessInstanceIdAndDeletedFalseAndUserIdNotAndReadUserIdNotLike(
+            processInstanceId, userId, "%" + userId + "%");
     }
 
     @Override

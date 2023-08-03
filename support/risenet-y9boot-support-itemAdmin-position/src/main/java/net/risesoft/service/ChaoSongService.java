@@ -181,7 +181,8 @@ public interface ChaoSongService {
      * @param page
      * @return
      */
-    Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId, String userName, int rows, int page);
+    Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId,
+        String userName, int rows, int page);
 
     /**
      * Description: 批阅件列表
@@ -193,7 +194,8 @@ public interface ChaoSongService {
      * @param page
      * @return
      */
-    Map<String, Object> getOpinionChaosongByUserId(String userId, String year, String documentTitle, int rows, int page);
+    Map<String, Object> getOpinionChaosongByUserId(String userId, String year, String documentTitle, int rows,
+        int page);
 
     /**
      * 获取未查看的抄送件的数量
@@ -262,7 +264,8 @@ public interface ChaoSongService {
      * @param page
      * @return
      */
-    Map<String, Object> getTodoListByUserIdAndItemIdAndTitle(String userId, String itemId, String title, int rows, int page);
+    Map<String, Object> getTodoListByUserIdAndItemIdAndTitle(String userId, String itemId, String title, int rows,
+        int page);
 
     /**
      * 
@@ -287,7 +290,8 @@ public interface ChaoSongService {
      * @param page
      * @return
      */
-    Map<String, Object> getTodoListByUserIdAndSystemNameAndTitle(String userId, String systemName, String title, int rows, int page);
+    Map<String, Object> getTodoListByUserIdAndSystemNameAndTitle(String userId, String systemName, String title,
+        int rows, int page);
 
     /**
      * 保存抄送
@@ -316,7 +320,8 @@ public interface ChaoSongService {
      * @param smsPersonId
      * @return
      */
-    Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId);
+    Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
+        String smsContent, String smsPersonId);
 
     /**
      * 更新抄送件标题

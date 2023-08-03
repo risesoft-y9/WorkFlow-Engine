@@ -36,7 +36,8 @@ public class ProcessDefinitionCache {
     public static ProcessDefinition get(String processDefinitionId) {
         ProcessDefinition processDefinition = map.get(processDefinitionId);
         if (processDefinition == null) {
-            processDefinition = (ProcessDefinitionEntity)((RepositoryServiceImpl)repositoryService).getDeployedProcessDefinition(processDefinitionId);
+            processDefinition = (ProcessDefinitionEntity)((RepositoryServiceImpl)repositoryService)
+                .getDeployedProcessDefinition(processDefinitionId);
             if (processDefinition != null) {
                 put(processDefinitionId, processDefinition);
             }

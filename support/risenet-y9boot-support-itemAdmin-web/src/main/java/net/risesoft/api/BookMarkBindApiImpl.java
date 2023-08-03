@@ -28,31 +28,31 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/services/rest/bookMarkBind")
 public class BookMarkBindApiImpl implements BookMarkBindApi {
 
-	@Autowired
-	private BookMarkBindService bookMarkBindService;
+    @Autowired
+    private BookMarkBindService bookMarkBindService;
 
-	@Resource(name = "jdbcTemplate4Tenant")
-	private JdbcTemplate jdbcTemplate;
+    @Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
 
-	@Override
-	@GetMapping(value = "/getBookMarkData", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getBookMarkData(String tenantId, String wordTemplateId, String processSerialNumber) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		Map<String, Object> map = new HashMap<>(16);
-		List<BookMarkBind> bookMarkBindList = bookMarkBindService.findByWordTemplateId(wordTemplateId);
-		if (!bookMarkBindList.isEmpty()) {
-			String tableName = bookMarkBindList.get(0).getTableName();
-			String columnName = "";
-			for (BookMarkBind boorMark : bookMarkBindList) {
-				if (StringUtils.isBlank(columnName)) {
-					columnName = boorMark.getColumnName() + " AS " + boorMark.getBookMarkName();
-				} else {
-					columnName += "," + boorMark.getColumnName() + " AS " + boorMark.getBookMarkName();
-				}
-			}
-			String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE GUID='" + processSerialNumber + "'";
-			map = jdbcTemplate.queryForMap(sql);
-		}
-		return map;
-	}
+    @Override
+    @GetMapping(value = "/getBookMarkData", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getBookMarkData(String tenantId, String wordTemplateId, String processSerialNumber) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Map<String, Object> map = new HashMap<>(16);
+        List<BookMarkBind> bookMarkBindList = bookMarkBindService.findByWordTemplateId(wordTemplateId);
+        if (!bookMarkBindList.isEmpty()) {
+            String tableName = bookMarkBindList.get(0).getTableName();
+            String columnName = "";
+            for (BookMarkBind boorMark : bookMarkBindList) {
+                if (StringUtils.isBlank(columnName)) {
+                    columnName = boorMark.getColumnName() + " AS " + boorMark.getBookMarkName();
+                } else {
+                    columnName += "," + boorMark.getColumnName() + " AS " + boorMark.getBookMarkName();
+                }
+            }
+            String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE GUID='" + processSerialNumber + "'";
+            map = jdbcTemplate.queryForMap(sql);
+        }
+        return map;
+    }
 }

@@ -15,7 +15,8 @@ import net.risesoft.entity.ProcInstanceRelationship;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ProcInstanceRelationshipRepository extends JpaRepository<ProcInstanceRelationship, String>, JpaSpecificationExecutor<ProcInstanceRelationship> {
+public interface ProcInstanceRelationshipRepository
+    extends JpaRepository<ProcInstanceRelationship, String>, JpaSpecificationExecutor<ProcInstanceRelationship> {
 
     @Query("from ProcInstanceRelationship where parentProcInstanceId=?1")
     public List<ProcInstanceRelationship> findByParentProcInstanceId(String parentProcInstanceId);

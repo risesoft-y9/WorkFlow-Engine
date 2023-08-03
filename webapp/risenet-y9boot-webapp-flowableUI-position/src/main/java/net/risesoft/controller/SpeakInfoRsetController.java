@@ -58,7 +58,8 @@ public class SpeakInfoRsetController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrUpdate(@RequestParam(required = true) String content, @RequestParam(required = true) String processInstanceId) {
+    public Y9Result<String> saveOrUpdate(@RequestParam(required = true) String content,
+        @RequestParam(required = true) String processInstanceId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
         SpeakInfoModel speakInfoModel = new SpeakInfoModel();
@@ -79,7 +80,8 @@ public class SpeakInfoRsetController {
     public Y9Result<Map<String, Object>> speakInfoList(@RequestParam(required = true) String processInstanceId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = person.getTenantId();
-        List<SpeakInfoModel> siModelList = speakInfoManager.findByProcessInstanceId(tenantId, userId, processInstanceId);
+        List<SpeakInfoModel> siModelList =
+            speakInfoManager.findByProcessInstanceId(tenantId, userId, processInstanceId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("rows", siModelList);
         map.put("processInstanceId", processInstanceId);

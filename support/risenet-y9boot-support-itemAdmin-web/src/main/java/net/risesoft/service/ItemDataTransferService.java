@@ -13,7 +13,8 @@ import net.risesoft.pojo.Y9Result;
 public interface ItemDataTransferService {
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param processDefinitionId
      * @param processInstanceId
      * @return
@@ -21,13 +22,15 @@ public interface ItemDataTransferService {
     Y9Result<String> dataTransfer(String processDefinitionId, String processInstanceId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param itemId
      * @param processDefinitionId
      * @param page
      * @param rows
      * @return
      */
-    Y9Page<Map<String, Object>> getProcessInstanceList(String itemId, String processDefinitionId, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> getProcessInstanceList(String itemId, String processDefinitionId, Integer page,
+        Integer rows);
 
 }

@@ -54,7 +54,8 @@ public interface CustomDoingService {
      * @param rows
      * @return
      */
-    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, Integer page, Integer rows);
+    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, Integer page,
+        Integer rows);
 
     /**
      * Description:
@@ -88,7 +89,8 @@ public interface CustomDoingService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -100,6 +102,7 @@ public interface CustomDoingService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
+        Integer page, Integer rows);
 
 }

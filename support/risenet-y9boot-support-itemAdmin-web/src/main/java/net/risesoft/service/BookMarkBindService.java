@@ -12,28 +12,32 @@ import net.risesoft.entity.BookMarkBind;
 public interface BookMarkBindService {
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param wordTemplateId
      * @param bookMarkName
      */
     void deleteBind(String wordTemplateId, String bookMarkName);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param id
      * @return
      */
     BookMarkBind findById(String id);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param wordTemplateId
      * @return
      */
     List<BookMarkBind> findByWordTemplateId(String wordTemplateId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param wordTemplateId
      * @param bookMarkName
      * @return
@@ -41,7 +45,8 @@ public interface BookMarkBindService {
     BookMarkBind findByWordTemplateIdAndBookMarkName(String wordTemplateId, String bookMarkName);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param bookMarkBind
      */
     void saveOrUpdate(BookMarkBind bookMarkBind);

@@ -56,7 +56,8 @@ public interface Y9FormItemBindService {
      * @param taskDefinitionKey
      * @return
      */
-    List<Y9FormItemMobileBind> findByItemIdAndProcDefIdAndTaskDefKey4Mobile(String itemId, String processDefinitionId, String taskDefinitionKey);
+    List<Y9FormItemMobileBind> findByItemIdAndProcDefIdAndTaskDefKey4Mobile(String itemId, String processDefinitionId,
+        String taskDefinitionKey);
 
     /**
      * 查找指定事项id和流程定义Id和节点key对应的绑定表单
@@ -76,7 +77,8 @@ public interface Y9FormItemBindService {
      * @param taskDefKey
      * @return
      */
-    List<Y9FormItemMobileBind> findByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(String itemId, String procDefId, String taskDefKey);
+    List<Y9FormItemMobileBind> findByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(String itemId, String procDefId,
+        String taskDefKey);
 
     /**
      * 查找指定事项id和流程定义Id和节点key对应的绑定表单，如果当前节点没绑定表单，则查流程绑定的表单

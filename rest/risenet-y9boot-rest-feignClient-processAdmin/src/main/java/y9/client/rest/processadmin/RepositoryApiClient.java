@@ -16,7 +16,8 @@ import net.risesoft.model.processadmin.ProcessDefinitionModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "RepositoryApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}", path = "/services/rest/repository")
+@FeignClient(contextId = "RepositoryApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
+    path = "/services/rest/repository")
 public interface RepositoryApiClient extends RepositoryApi {
 
     /**
@@ -28,7 +29,8 @@ public interface RepositoryApiClient extends RepositoryApi {
      */
     @Override
     @PostMapping("/delete")
-    Map<String, Object> delete(@RequestParam("tenantId") String tenantId, @RequestParam("deploymentId") String deploymentId);
+    Map<String, Object> delete(@RequestParam("tenantId") String tenantId,
+        @RequestParam("deploymentId") String deploymentId);
 
     /**
      * 根据流程定义key获取最新部署的流程定义
@@ -39,7 +41,8 @@ public interface RepositoryApiClient extends RepositoryApi {
      */
     @Override
     @GetMapping("/getLatestProcessDefinitionByKey")
-    ProcessDefinitionModel getLatestProcessDefinitionByKey(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionKey") String processDefinitionKey);
+    ProcessDefinitionModel getLatestProcessDefinitionByKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
      * 获取所有流程定义最新版本的集合
@@ -60,7 +63,8 @@ public interface RepositoryApiClient extends RepositoryApi {
      */
     @Override
     @GetMapping("/getPreviousProcessDefinitionById")
-    ProcessDefinitionModel getPreviousProcessDefinitionById(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId);
+    ProcessDefinitionModel getPreviousProcessDefinitionById(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 根据流程定义Id获取流程定义
@@ -71,7 +75,8 @@ public interface RepositoryApiClient extends RepositoryApi {
      */
     @Override
     @GetMapping("/getProcessDefinitionById")
-    ProcessDefinitionModel getProcessDefinitionById(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId);
+    ProcessDefinitionModel getProcessDefinitionById(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 根据流程定义key获取最新部署的流程定义
@@ -82,7 +87,8 @@ public interface RepositoryApiClient extends RepositoryApi {
      */
     @Override
     @GetMapping("/getProcessDefinitionListByKey")
-    List<ProcessDefinitionModel> getProcessDefinitionListByKey(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionKey") String processDefinitionKey);
+    List<ProcessDefinitionModel> getProcessDefinitionListByKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
      * 激活/挂起流程的状态
@@ -94,6 +100,7 @@ public interface RepositoryApiClient extends RepositoryApi {
      */
     @Override
     @PostMapping("/switchSuspendOrActive")
-    Map<String, Object> switchSuspendOrActive(@RequestParam("tenantId") String tenantId, @RequestParam("state") String state, @RequestParam("processDefinitionId") String processDefinitionId);
+    Map<String, Object> switchSuspendOrActive(@RequestParam("tenantId") String tenantId,
+        @RequestParam("state") String state, @RequestParam("processDefinitionId") String processDefinitionId);
 
 }

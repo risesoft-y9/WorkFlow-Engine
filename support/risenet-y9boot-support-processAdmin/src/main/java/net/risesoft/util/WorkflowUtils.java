@@ -37,7 +37,8 @@ public class WorkflowUtils {
                 return null;
             }
 
-            InputStream resourceAsStream = repositoryService.getResourceAsStream(processDefinition.getDeploymentId(), diagramResourceName);
+            InputStream resourceAsStream =
+                repositoryService.getResourceAsStream(processDefinition.getDeploymentId(), diagramResourceName);
             byte[] b = new byte[resourceAsStream.available()];
             resourceAsStream.read(b, 0, b.length);
 

@@ -13,7 +13,8 @@ import net.risesoft.entity.TaoHongTemplate;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-public interface TaoHongTemplateRepository extends JpaRepository<TaoHongTemplate, String>, JpaSpecificationExecutor<TaoHongTemplate> {
+public interface TaoHongTemplateRepository
+    extends JpaRepository<TaoHongTemplate, String>, JpaSpecificationExecutor<TaoHongTemplate> {
     @Query("from TaoHongTemplate t where t.bureauGuid=?1 order by t.tabIndex asc")
     public List<TaoHongTemplate> findByBureauGuid(String bureauGuid);
 

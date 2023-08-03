@@ -13,7 +13,8 @@ import net.risesoft.api.itemadmin.BookMarkBindApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "BookMarkBindApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/bookMarkBind")
+@FeignClient(contextId = "BookMarkBindApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/bookMarkBind")
 public interface BookMarkBindApiClient extends BookMarkBindApi {
 
     /**
@@ -26,5 +27,7 @@ public interface BookMarkBindApiClient extends BookMarkBindApi {
      */
     @Override
     @GetMapping("/getBookMarkData")
-    Map<String, Object> getBookMarkData(@RequestParam("tenantId") String tenantId, @RequestParam("wordTemplateId") String wordTemplateId, @RequestParam("processSerialNumber") String processSerialNumber);
+    Map<String, Object> getBookMarkData(@RequestParam("tenantId") String tenantId,
+        @RequestParam("wordTemplateId") String wordTemplateId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 }

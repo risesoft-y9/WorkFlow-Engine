@@ -23,6 +23,7 @@ import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+
 import y9.client.rest.processadmin.ProcessDefinitionApiClient;
 import y9.client.rest.processadmin.RepositoryApiClient;
 
@@ -61,7 +62,8 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
             if (latestpd.getVersion() > 1) {
-                ProcessDefinitionModel previouspd = repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
+                ProcessDefinitionModel previouspd =
+                    repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
                 previouspdId = previouspd.getId();
             }
         }
@@ -74,7 +76,8 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         for (Y9FormItemBind eib : previouseibList) {
             String taskDefKey = eib.getTaskDefKey(), formId = eib.getFormId();
             if (StringUtils.isEmpty(taskDefKey)) {
-                Y9FormItemBind eibTemp = y9FormItemBindRepository.findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(itemId, latestpdId, formId);
+                Y9FormItemBind eibTemp = y9FormItemBindRepository
+                    .findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(itemId, latestpdId, formId);
                 if (null == eibTemp) {
                     eibTemp = new Y9FormItemBind();
                     eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -93,7 +96,8 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
             } else {
                 for (Map<String, Object> mapTemp : nodes) {
                     if (((String)mapTemp.get("taskDefKey")).equals(taskDefKey)) {
-                        Y9FormItemBind eibTemp = y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(itemId, latestpdId, taskDefKey, formId);
+                        Y9FormItemBind eibTemp = y9FormItemBindRepository
+                            .findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(itemId, latestpdId, taskDefKey, formId);
                         if (null == eibTemp) {
                             eibTemp = new Y9FormItemBind();
                             eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -120,7 +124,8 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                 String taskDefKeyTemp = eib.getTaskDefKey(), formId = eib.getFormId();
                 if (currentTaskDefKey.equals(taskDefKeyTemp)) {
                     if (StringUtils.isEmpty(currentTaskDefKey)) {
-                        Y9FormItemBind eibTemp = y9FormItemBindRepository.findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(itemId, latestpdId, formId);
+                        Y9FormItemBind eibTemp = y9FormItemBindRepository
+                            .findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(itemId, latestpdId, formId);
                         if (null == eibTemp) {
                             eibTemp = new Y9FormItemBind();
                             eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -137,7 +142,9 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                             y9FormItemBindRepository.save(eibTemp);
                         }
                     } else {
-                        Y9FormItemBind eibTemp = y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(itemId, latestpdId, currentTaskDefKey, formId);
+                        Y9FormItemBind eibTemp =
+                            y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(itemId, latestpdId,
+                                currentTaskDefKey, formId);
                         if (null == eibTemp) {
                             eibTemp = new Y9FormItemBind();
                             eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -180,7 +187,8 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         List<Y9FormItemBind> eformTaskBinds = new ArrayList<Y9FormItemBind>();
         try {
             if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(procDefId)) {
-                eformTaskBinds = y9FormItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, procDefId);
+                eformTaskBinds =
+                    y9FormItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, procDefId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -189,7 +197,8 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    public List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKey(String itemId, String procDefId, String taskDefKey) {
+    public List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKey(String itemId, String procDefId,
+        String taskDefKey) {
         List<Y9FormItemBind> eformTaskBinds = new ArrayList<Y9FormItemBind>();
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -201,10 +210,12 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                     list = processDefinitionManager.getNodes(tenantId, procDefId, false);
                     taskDefKey = (String)list.get(list.size() - 1).get("taskDefKey");
                 }
-                eformTaskBinds = y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
+                eformTaskBinds =
+                    y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
                 if (eformTaskBinds.size() == 0) {
                     // 再查找缺省的form。任务上没有设置表单，就用缺省表单。
-                    eformTaskBinds = y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
+                    eformTaskBinds =
+                        y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
                 }
             }
         } catch (Exception e) {
@@ -214,7 +225,8 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    public List<Y9FormItemMobileBind> findByItemIdAndProcDefIdAndTaskDefKey4Mobile(String itemId, String procDefId, String taskDefKey) {
+    public List<Y9FormItemMobileBind> findByItemIdAndProcDefIdAndTaskDefKey4Mobile(String itemId, String procDefId,
+        String taskDefKey) {
         List<Y9FormItemMobileBind> eformTaskBinds = new ArrayList<Y9FormItemMobileBind>();
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -226,10 +238,12 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                     list = processDefinitionManager.getNodes(tenantId, procDefId, false);
                     taskDefKey = (String)list.get(list.size() - 1).get("taskDefKey");
                 }
-                eformTaskBinds = y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
+                eformTaskBinds =
+                    y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
                 if (eformTaskBinds.size() == 0) {
                     // 再查找缺省的form。任务上没有设置表单，就用缺省表单。
-                    eformTaskBinds = y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
+                    eformTaskBinds =
+                        y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
                 }
             }
         } catch (Exception e) {
@@ -239,13 +253,16 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    public List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKey4Own(String itemId, String procDefId, String taskDefKey) {
+    public List<Y9FormItemBind> findByItemIdAndProcDefIdAndTaskDefKey4Own(String itemId, String procDefId,
+        String taskDefKey) {
         List<Y9FormItemBind> y9FormItemBinds = new ArrayList<Y9FormItemBind>();
         try {
             if (StringUtils.isNotEmpty(taskDefKey)) {
-                y9FormItemBinds = y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
+                y9FormItemBinds =
+                    y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
             } else {
-                y9FormItemBinds = y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
+                y9FormItemBinds =
+                    y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -254,13 +271,16 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    public List<Y9FormItemMobileBind> findByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(String itemId, String procDefId, String taskDefKey) {
+    public List<Y9FormItemMobileBind> findByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(String itemId, String procDefId,
+        String taskDefKey) {
         List<Y9FormItemMobileBind> y9FormItemBinds = new ArrayList<Y9FormItemMobileBind>();
         try {
             if (StringUtils.isNotEmpty(taskDefKey)) {
-                y9FormItemBinds = y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
+                y9FormItemBinds =
+                    y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
             } else {
-                y9FormItemBinds = y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
+                y9FormItemBinds =
+                    y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -273,7 +293,8 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         List<Y9FormItemBind> eformTaskBinds = new ArrayList<Y9FormItemBind>();
         try {
             if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(procDefId)) {
-                eformTaskBinds = y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
+                eformTaskBinds =
+                    y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
             }
         } catch (Exception e) {
             e.printStackTrace();

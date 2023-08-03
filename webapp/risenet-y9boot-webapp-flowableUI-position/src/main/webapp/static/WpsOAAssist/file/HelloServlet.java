@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -41,7 +43,8 @@ public class HelloServlet extends HttpServlet {
      * @throws IOException
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
         String filename = request.getParameter("name");
         if (filename == null || filename.isEmpty()) {
             out.print("please set file name ");
@@ -85,7 +88,8 @@ public class HelloServlet extends HttpServlet {
      * @throws IOException
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
         response.setContentType("text/html;charset=utf-8");
         System.out.println("添加任务");
@@ -104,7 +108,8 @@ public class HelloServlet extends HttpServlet {
             for (Object object : items) {
                 FileItem fileItem = (FileItem)object;
                 if (fileItem.isFormField()) {
-                    System.out.println(fileItem.getFieldName() + ":" + fileItem.getString("utf-8") + ", size:" + fileItem.getSize());
+                    System.out.println(
+                        fileItem.getFieldName() + ":" + fileItem.getString("utf-8") + ", size:" + fileItem.getSize());
                     param.put(fileItem.getFieldName(), fileItem.getString("utf-8"));
                     continue;
                 }

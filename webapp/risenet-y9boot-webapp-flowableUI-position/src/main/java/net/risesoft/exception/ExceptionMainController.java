@@ -12,17 +12,17 @@ import org.springframework.web.servlet.ModelAndView;
 @ControllerAdvice
 public class ExceptionMainController {
 
-	private static final Logger log = LoggerFactory.getLogger(ExceptionMainController.class);
+    private static final Logger log = LoggerFactory.getLogger(ExceptionMainController.class);
 
-	public ExceptionMainController() {
-		log.debug("ExceptionMainController init ……");
-	}
+    public ExceptionMainController() {
+        log.debug("ExceptionMainController init ……");
+    }
 
-	@ExceptionHandler(value = AccessManagerException.class)
-	public ModelAndView hasNoPermission(Model model, HttpServletRequest request, AccessManagerException e) {
-		log.error("检测到权限异常,异常为：{}", e.getMessage());
-		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("/error/403");
-		return modelAndView;
-	}
+    @ExceptionHandler(value = AccessManagerException.class)
+    public ModelAndView hasNoPermission(Model model, HttpServletRequest request, AccessManagerException e) {
+        log.error("检测到权限异常,异常为：{}", e.getMessage());
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/error/403");
+        return modelAndView;
+    }
 }

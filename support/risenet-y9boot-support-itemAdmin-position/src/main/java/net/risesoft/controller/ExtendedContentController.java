@@ -36,7 +36,8 @@ public class ExtendedContentController {
      */
     @ResponseBody
     @RequestMapping(value = "/checkSignContent")
-    public Map<String, Object> checkSignContent(@RequestParam(required = false) String taskId, @RequestParam(required = false) String category, @RequestParam(required = false) String processSerialNumber) {
+    public Map<String, Object> checkSignContent(@RequestParam(required = false) String taskId,
+        @RequestParam(required = false) String category, @RequestParam(required = false) String processSerialNumber) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             int count = 0;
@@ -63,8 +64,10 @@ public class ExtendedContentController {
      */
     @ResponseBody
     @RequestMapping(value = "/contentList")
-    public List<Map<String, Object>> contentList(@RequestParam String processSerialNumber, @RequestParam String itembox, @RequestParam String taskId, @RequestParam String category) {
-        List<Map<String, Object>> listMap = extendedContentService.contentList(processSerialNumber, taskId, itembox, category);
+    public List<Map<String, Object>> contentList(@RequestParam String processSerialNumber, @RequestParam String itembox,
+        @RequestParam String taskId, @RequestParam String category) {
+        List<Map<String, Object>> listMap =
+            extendedContentService.contentList(processSerialNumber, taskId, itembox, category);
         return listMap;
     }
 
@@ -93,7 +96,8 @@ public class ExtendedContentController {
      * @return
      */
     @RequestMapping(value = "/newOrModify/content")
-    public String newOrModifyContent(@RequestParam String processSerialNumber, @RequestParam String taskId, @RequestParam String category, @RequestParam String id, Model model) {
+    public String newOrModifyContent(@RequestParam String processSerialNumber, @RequestParam String taskId,
+        @RequestParam String category, @RequestParam String id, Model model) {
         model = extendedContentService.newOrModifyContent(processSerialNumber, taskId, category, id, model);
         return "opinion/extendedContent";
     }

@@ -11,7 +11,8 @@ import net.risesoft.api.itemadmin.RejectReasonApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "RejectReasonApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/rejectReason")
+@FeignClient(contextId = "RejectReasonApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/rejectReason")
 public interface RejectReasonApiClient extends RejectReasonApi {
 
     /**
@@ -25,5 +26,7 @@ public interface RejectReasonApiClient extends RejectReasonApi {
      */
     @Override
     @PostMapping("/save")
-    void save(@RequestParam("userId") String tenantId, @RequestParam("userId") String userId, @RequestParam("action") Integer action, @RequestParam("taskId") String taskId, @RequestParam("reason") String reason);
+    void save(@RequestParam("userId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("action") Integer action, @RequestParam("taskId") String taskId,
+        @RequestParam("reason") String reason);
 }

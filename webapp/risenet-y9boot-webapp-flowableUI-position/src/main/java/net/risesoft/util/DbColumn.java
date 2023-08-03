@@ -270,8 +270,10 @@ public class DbColumn implements Serializable {
 
     @Override
     public String toString() {
-        return "DbColumn [column_name=" + column_name + ", column_name_old=" + column_name_old + ", data_type=" + data_type + ", type_name=" + type_name + ", data_length=" + data_length + ", data_precision=" + data_precision + ", data_scale=" + data_scale + ", table_name=" + table_name
-            + ", primaryKey=" + primaryKey + ", nullable=" + nullable + ", comment=" + comment + "]";
+        return "DbColumn [column_name=" + column_name + ", column_name_old=" + column_name_old + ", data_type="
+            + data_type + ", type_name=" + type_name + ", data_length=" + data_length + ", data_precision="
+            + data_precision + ", data_scale=" + data_scale + ", table_name=" + table_name + ", primaryKey="
+            + primaryKey + ", nullable=" + nullable + ", comment=" + comment + "]";
     }
 
 }

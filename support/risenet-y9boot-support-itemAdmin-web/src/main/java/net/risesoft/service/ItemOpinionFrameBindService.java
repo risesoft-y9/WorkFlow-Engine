@@ -23,26 +23,30 @@ public interface ItemOpinionFrameBindService {
     void changeSignOpinion(String id, Boolean signOpinion);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param itemId
      * @param processDefinitionId
      */
     void copyBind(String itemId, String processDefinitionId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param id
      */
     void delete(String id);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param ids
      */
     void delete(String[] ids);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param page
      * @param rows
      * @return
@@ -50,14 +54,16 @@ public interface ItemOpinionFrameBindService {
     Page<ItemOpinionFrameBind> findAll(int page, int rows);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param itemId
      * @return
      */
     List<ItemOpinionFrameBind> findByItemId(String itemId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param itemId
      * @param processDefinitionId
      * @return
@@ -65,49 +71,58 @@ public interface ItemOpinionFrameBindService {
     List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
      * @return
      */
-    List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId, String taskDefKey);
+    List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
+        String processDefinitionId, String taskDefKey);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
      * @param opinionFrameMark
      * @return
      */
-    ItemOpinionFrameBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(String itemId, String processDefinitionId, String taskDefKey, String opinionFrameMark);
+    ItemOpinionFrameBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(String itemId,
+        String processDefinitionId, String taskDefKey, String opinionFrameMark);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
      * @return
      */
-    List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String itemId, String processDefinitionId, String taskDefKey);
+    List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String itemId,
+        String processDefinitionId, String taskDefKey);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param mark
      * @return
      */
     List<ItemOpinionFrameBind> findByMark(String mark);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param id
      * @return
      */
     ItemOpinionFrameBind findOne(String id);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param itemId
      * @param processDefinitionId
      * @return
@@ -115,14 +130,16 @@ public interface ItemOpinionFrameBindService {
     List<String> getBindOpinionFrame(String itemId, String processDefinitionId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param opinionFrameTaskRoleBind
      * @return
      */
     ItemOpinionFrameBind save(ItemOpinionFrameBind opinionFrameTaskRoleBind);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param opinionFrameNameAndMarks
      * @param itemId
      * @param processDefinitionId

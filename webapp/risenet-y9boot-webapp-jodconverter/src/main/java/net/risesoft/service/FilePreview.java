@@ -9,7 +9,8 @@ import org.springframework.ui.Model;
  */
 public interface FilePreview {
     /**
-     * Description: 
+     * Description:
+     * 
      * @param url
      * @param model
      * @return

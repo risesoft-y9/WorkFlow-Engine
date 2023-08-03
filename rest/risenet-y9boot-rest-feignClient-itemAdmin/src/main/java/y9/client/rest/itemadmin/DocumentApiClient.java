@@ -16,7 +16,8 @@ import net.risesoft.api.itemadmin.DocumentApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "DocumentApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/document")
+@FeignClient(contextId = "DocumentApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/document")
 public interface DocumentApiClient extends DocumentApi {
 
     /**
@@ -30,7 +31,8 @@ public interface DocumentApiClient extends DocumentApi {
      */
     @Override
     @GetMapping("/add")
-    public Map<String, Object> add(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("mobile") boolean mobile);
+    public Map<String, Object> add(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("itemId") String itemId, @RequestParam("mobile") boolean mobile);
 
     /**
      * 流程办结
@@ -42,7 +44,8 @@ public interface DocumentApiClient extends DocumentApi {
      */
     @Override
     @PostMapping("/complete")
-    public void complete(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("taskId") String taskId) throws Exception;
+    public void complete(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("taskId") String taskId) throws Exception;
 
     /**
      *
@@ -60,8 +63,11 @@ public interface DocumentApiClient extends DocumentApi {
      */
     @Override
     @GetMapping("/docUserChoise")
-    public Map<String, Object> docUserChoise(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskId") String taskId, @RequestParam("routeToTask") String routeToTask, @RequestParam("processInstanceId") String processInstanceId);
+    public Map<String, Object> docUserChoise(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskId") String taskId,
+        @RequestParam("routeToTask") String routeToTask, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      *
@@ -78,7 +84,9 @@ public interface DocumentApiClient extends DocumentApi {
      */
     @Override
     @GetMapping("/edit")
-    public Map<String, Object> edit(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itembox") String itembox, @RequestParam("taskId") String taskId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("itemId") String itemId,
+    public Map<String, Object> edit(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("itembox") String itembox, @RequestParam("taskId") String taskId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("itemId") String itemId,
         @RequestParam("mobile") boolean mobile);
 
     /**
@@ -95,7 +103,9 @@ public interface DocumentApiClient extends DocumentApi {
      */
     @Override
     @PostMapping(value = "/forwardingSendReceive", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> forwardingSendReceive(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("taskId") String taskId, @RequestParam("userChoice") String userChoice, @RequestParam("routeToTaskId") String routeToTaskId,
+    public Map<String, Object> forwardingSendReceive(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("taskId") String taskId,
+        @RequestParam("userChoice") String userChoice, @RequestParam("routeToTaskId") String routeToTaskId,
         @RequestBody Map<String, Object> variables);
 
     /**
@@ -117,8 +127,12 @@ public interface DocumentApiClient extends DocumentApi {
      */
     @Override
     @PostMapping(value = "/saveAndForwarding", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveAndForwarding(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId, @RequestParam("sponsorHandle") String sponsorHandle,
-        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("userChoice") String userChoice, @RequestParam("sponsorGuid") String sponsorGuid,
+    public Map<String, Object> saveAndForwarding(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("taskId") String taskId, @RequestParam("sponsorHandle") String sponsorHandle,
+        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("userChoice") String userChoice, @RequestParam("sponsorGuid") String sponsorGuid,
         @RequestParam("routeToTaskId") String routeToTaskId, @RequestBody Map<String, Object> variables);
 
     /**
@@ -142,9 +156,14 @@ public interface DocumentApiClient extends DocumentApi {
      */
     @Override
     @PostMapping(value = "/saveAndForwardingByTaskKey", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveAndForwardingByTaskKey(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId, @RequestParam("sponsorHandle") String sponsorHandle,
-        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("userChoice") String userChoice, @RequestParam("sponsorGuid") String sponsorGuid,
-        @RequestParam("routeToTaskId") String routeToTaskId, @RequestParam("startRouteToTaskId") String startRouteToTaskId, @RequestBody Map<String, Object> variables);
+    public Map<String, Object> saveAndForwardingByTaskKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("taskId") String taskId, @RequestParam("sponsorHandle") String sponsorHandle,
+        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("userChoice") String userChoice, @RequestParam("sponsorGuid") String sponsorGuid,
+        @RequestParam("routeToTaskId") String routeToTaskId,
+        @RequestParam("startRouteToTaskId") String startRouteToTaskId, @RequestBody Map<String, Object> variables);
 
     /**
      * 获取签收任务配置
@@ -159,7 +178,10 @@ public interface DocumentApiClient extends DocumentApi {
      */
     @Override
     @GetMapping("/signTaskConfig")
-    public Map<String, Object> signTaskConfig(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefinitionKey") String taskDefinitionKey,
+    public Map<String, Object> signTaskConfig(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId,
+        @RequestParam("processDefinitionId") String processDefinitionId,
+        @RequestParam("taskDefinitionKey") String taskDefinitionKey,
         @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
@@ -175,8 +197,10 @@ public interface DocumentApiClient extends DocumentApi {
      */
     @Override
     @PostMapping("/startProcess")
-    public Map<String, Object> startProcess(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processDefinitionKey") String processDefinitionKey)
-        throws Exception;
+    public Map<String, Object> startProcess(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processDefinitionKey") String processDefinitionKey) throws Exception;
 
     /**
      * 启动流程,多人
@@ -192,7 +216,10 @@ public interface DocumentApiClient extends DocumentApi {
      */
     @Override
     @PostMapping("/startProcess1")
-    public Map<String, Object> startProcess(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("userIds") String userIds) throws Exception;
+    public Map<String, Object> startProcess(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("userIds") String userIds)
+        throws Exception;
 
 }

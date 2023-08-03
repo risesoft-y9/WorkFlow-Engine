@@ -15,7 +15,8 @@ import net.risesoft.entity.CommonButton;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface CommonButtonRepository extends JpaRepository<CommonButton, String>, JpaSpecificationExecutor<CommonButton> {
+public interface CommonButtonRepository
+    extends JpaRepository<CommonButton, String>, JpaSpecificationExecutor<CommonButton> {
 
     @Override
     @Query("from CommonButton t order by t.createTime asc")

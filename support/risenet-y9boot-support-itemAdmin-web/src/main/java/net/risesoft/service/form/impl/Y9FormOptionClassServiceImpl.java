@@ -138,7 +138,8 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
             }
             if (y9FormOptionValue == null || y9FormOptionValue.getId() == null) {
                 y9FormOptionValue = new Y9FormOptionValue();
-                y9FormOptionValue.setId(StringUtils.isBlank(optionValue.getId()) ? Y9IdGenerator.genId(IdType.SNOWFLAKE) : optionValue.getId());
+                y9FormOptionValue.setId(StringUtils.isBlank(optionValue.getId()) ? Y9IdGenerator.genId(IdType.SNOWFLAKE)
+                    : optionValue.getId());
                 Integer tabIndex = y9FormOptionValueRepository.getMaxTabIndex(optionValue.getType());
                 y9FormOptionValue.setTabIndex((tabIndex == null || tabIndex == 0) ? 1 : tabIndex + 1);
                 if ((tabIndex == null || tabIndex == 0)) {
@@ -195,7 +196,8 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
         try {
             Y9FormOptionValue y9FormOptionValue = y9FormOptionValueRepository.findById(id).orElse(null);
             if (y9FormOptionValue != null) {
-                List<Y9FormOptionValue> list = y9FormOptionValueRepository.findByTypeOrderByTabIndexAsc(y9FormOptionValue.getType());
+                List<Y9FormOptionValue> list =
+                    y9FormOptionValueRepository.findByTypeOrderByTabIndexAsc(y9FormOptionValue.getType());
                 for (Y9FormOptionValue optionValue : list) {
                     if (optionValue.getId().equals(id)) {
                         optionValue.setDefaultSelected(1);

@@ -151,7 +151,9 @@ public class EntrustServiceImpl implements EntrustService {
                 startTime4Date = sdf2.parse(startTime);
                 endTime4Date = sdf2.parse(endTime);
                 currentDate = sdf2.parse(sdf2.format(new Date()));
-                boolean b = startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime() || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
+                boolean b =
+                    startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
+                        || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
                     entrust.setUsed(Entrust.USING);
                 } else if (currentDate.after(endTime4Date)) {
@@ -201,7 +203,9 @@ public class EntrustServiceImpl implements EntrustService {
                 startTime4Date = sdf2.parse(startTime);
                 endTime4Date = sdf2.parse(endTime);
                 currentDate = sdf2.parse(sdf2.format(new Date()));
-                boolean b = startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime() || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
+                boolean b =
+                    startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
+                        || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
                     entrust.setUsed(Entrust.USING);
                 } else if (currentDate.after(endTime4Date)) {
@@ -249,7 +253,9 @@ public class EntrustServiceImpl implements EntrustService {
                 startTime4Date = sdf2.parse(startTime);
                 endTime4Date = sdf2.parse(endTime);
                 currentDate = sdf2.parse(sdf2.format(new Date()));
-                boolean b = startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime() || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
+                boolean b =
+                    startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
+                        || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
                     entrust.setUsed(Entrust.USING);
                 } else if (currentDate.after(endTime4Date)) {
@@ -279,7 +285,9 @@ public class EntrustServiceImpl implements EntrustService {
                 startTime4Date = sdf2.parse(startTime);
                 endTime4Date = sdf2.parse(endTime);
                 currentDate = sdf2.parse(sdf2.format(new Date()));
-                boolean b = startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime() || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
+                boolean b =
+                    startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
+                        || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
                     entrust.setUsed(Entrust.USING);
                 } else if (currentDate.after(endTime4Date)) {
@@ -380,7 +388,9 @@ public class EntrustServiceImpl implements EntrustService {
                 startTime4Date = sdf2.parse(startTime);
                 endTime4Date = sdf2.parse(endTime);
                 currentDate = sdf2.parse(sdf2.format(new Date()));
-                boolean b = startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime() || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
+                boolean b =
+                    startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
+                        || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
                     entrust.setUsed(Entrust.USING);
                 } else if (currentDate.after(endTime4Date)) {

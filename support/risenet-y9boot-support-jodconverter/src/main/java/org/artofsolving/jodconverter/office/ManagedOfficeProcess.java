@@ -32,13 +32,15 @@ class ManagedOfficeProcess {
     private final OfficeProcess process;
     private final OfficeConnection connection;
 
-    ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(5, 20, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new NamedThreadFactory("OfficeProcessThread"));
+    ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(5, 20, 0L, TimeUnit.MILLISECONDS,
+        new LinkedBlockingQueue<Runnable>(), new NamedThreadFactory("OfficeProcessThread"));
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
     public ManagedOfficeProcess(ManagedOfficeProcessSettings settings) throws OfficeException {
         this.settings = settings;
-        process = new OfficeProcess(settings.getOfficeHome(), settings.getUnoUrl(), settings.getRunAsArgs(), settings.getTemplateProfileDir(), settings.getWorkDir(), settings.getProcessManager());
+        process = new OfficeProcess(settings.getOfficeHome(), settings.getUnoUrl(), settings.getRunAsArgs(),
+            settings.getTemplateProfileDir(), settings.getWorkDir(), settings.getProcessManager());
         connection = new OfficeConnection(settings.getUnoUrl());
     }
 

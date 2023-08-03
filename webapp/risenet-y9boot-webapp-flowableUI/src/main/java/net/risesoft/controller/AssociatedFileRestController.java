@@ -43,11 +43,13 @@ public class AssociatedFileRestController {
      */
     @RequestMapping(value = "/delAssociatedFile", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> delAssociatedFile(@RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String processInstanceIds) {
+    public Y9Result<String> delAssociatedFile(@RequestParam(required = true) String processSerialNumber,
+        @RequestParam(required = true) String processInstanceIds) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            boolean b = associatedFileManager.deleteAssociatedFile(tenantId, userId, processSerialNumber, processInstanceIds);
+            boolean b =
+                associatedFileManager.deleteAssociatedFile(tenantId, userId, processSerialNumber, processInstanceIds);
             if (b) {
                 return Y9Result.successMsg("删除成功");
             }
@@ -66,7 +68,8 @@ public class AssociatedFileRestController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getAssociatedFileList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Result<List<Map<String, Object>>> getAssociatedFileList(@RequestParam(required = true) String processSerialNumber) {
+    public Y9Result<List<Map<String, Object>>>
+        getAssociatedFileList(@RequestParam(required = true) String processSerialNumber) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -92,7 +95,9 @@ public class AssociatedFileRestController {
      */
     @RequestMapping(value = "/getDoneList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Page<Map<String, Object>> getDoneList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String title, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> getDoneList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = false) String title, @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows) {
         return doneService.list(itemId, title, page, rows);
     }
 
@@ -105,7 +110,8 @@ public class AssociatedFileRestController {
      */
     @RequestMapping(value = "/saveAssociatedFile", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> saveAssociatedFile(@RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String processInstanceIds) {
+    public Y9Result<String> saveAssociatedFile(@RequestParam(required = true) String processSerialNumber,
+        @RequestParam(required = true) String processInstanceIds) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         boolean b = associatedFileManager.saveAssociatedFile(tenantId, userId, processSerialNumber, processInstanceIds);

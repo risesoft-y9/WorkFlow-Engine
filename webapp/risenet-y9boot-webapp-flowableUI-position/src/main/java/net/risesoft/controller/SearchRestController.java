@@ -39,7 +39,9 @@ public class SearchRestController {
      * @return
      */
     @RequestMapping(value = "/getEmailList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getEmailList(@RequestParam(required = false) String title, @RequestParam(required = false) String userName, @RequestParam(required = false) Integer fileType, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
+    public Y9Page<Map<String, Object>> getEmailList(@RequestParam(required = false) String title,
+        @RequestParam(required = false) String userName, @RequestParam(required = false) Integer fileType,
+        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
         @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return searchService.getEmailList(page, rows, startDate, endDate, fileType, userName, title);
     }
@@ -72,7 +74,9 @@ public class SearchRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getSearchList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+    public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return searchService.getSearchList(searchName, itemId, userName, state, year, page, rows);
     }
@@ -91,7 +95,9 @@ public class SearchRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getYuejianList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getYuejianList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+    public Y9Page<Map<String, Object>> getYuejianList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return searchService.getYuejianList(searchName, itemId, userName, state, year, page, rows);
     }

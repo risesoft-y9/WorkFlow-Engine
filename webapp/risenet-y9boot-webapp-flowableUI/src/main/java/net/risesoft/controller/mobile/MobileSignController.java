@@ -134,7 +134,8 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/getAnnualLeaveDay")
     @ResponseBody
-    public void getAnnualLeaveDay(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
+    public void getAnnualLeaveDay(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
@@ -152,7 +153,8 @@ public class MobileSignController {
             map.put(UtilConsts.SUCCESS, true);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String nowDate = sdf.format(new Date());
-            Attendance attendance = attendanceApi.findAnnualLeaveDaysByPersonIdAndYear(tenantId, userId, nowDate.substring(0, 4));
+            Attendance attendance =
+                attendanceApi.findAnnualLeaveDaysByPersonIdAndYear(tenantId, userId, nowDate.substring(0, 4));
             if (attendance != null && StringUtils.isNotBlank(attendance.getId())) {
                 // 应休年假
                 map.put("actualAnnualLeave", attendance.getActualAnnualLeave());
@@ -184,7 +186,9 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/getDay")
     @ResponseBody
-    public void getDay(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public void getDay(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
+        HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -223,8 +227,11 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/lyToReturn")
     @ResponseBody
-    public void lyToReturn(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false, name = "lysp_bianhao") String bianhao, @RequestParam(required = false, name = "lysp_shifouzhanshi") String shifouzhanshi,
-        @RequestParam(required = false, name = "lysp_huifuneirong") String huifuneirong, HttpServletRequest request, HttpServletResponse response) {
+    public void lyToReturn(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestParam(required = false, name = "lysp_bianhao") String bianhao,
+        @RequestParam(required = false, name = "lysp_shifouzhanshi") String shifouzhanshi,
+        @RequestParam(required = false, name = "lysp_huifuneirong") String huifuneirong, HttpServletRequest request,
+        HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String methodUrl = "http://www.caghp.org.cn/index.php/Member/returnback.html";
         HttpURLConnection connection = null;
@@ -301,15 +308,18 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/saveToSign")
     @ResponseBody
-    public void saveToSign(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String username, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
-        @RequestParam(required = false) String type, @RequestParam(required = false) String leaveYear, HttpServletRequest request, HttpServletResponse response) {
+    public void saveToSign(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestParam(required = false) String username, @RequestParam(required = false) String startDate,
+        @RequestParam(required = false) String endDate, @RequestParam(required = false) String type,
+        @RequestParam(required = false) String leaveYear, HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
-            map = attendanceApi.saveLeaveList(Y9LoginUserHolder.getTenantId(), username, startDate, endDate, type, leaveYear);
+            map = attendanceApi.saveLeaveList(Y9LoginUserHolder.getTenantId(), username, startDate, endDate, type,
+                leaveYear);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             e.printStackTrace();

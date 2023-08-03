@@ -57,7 +57,9 @@ public class MonitorRestController {
      * @return
      */
     @RequestMapping(value = "/deptList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> deptList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchName, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+    public Y9Page<Map<String, Object>> deptList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = false) String searchName, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return monitorService.deptList(itemId, searchName, userName, state, year, page, rows);
     }
@@ -89,7 +91,9 @@ public class MonitorRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/monitorBanjianList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> monitorBanjianList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemName, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+    public Y9Page<Map<String, Object>> monitorBanjianList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemName, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return monitorService.monitorBanjianList(searchName, itemName, userName, state, year, page, rows);
     }
@@ -109,8 +113,11 @@ public class MonitorRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/monitorChaosongList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> monitorChaosongList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemName, @RequestParam(required = false) String senderName, @RequestParam(required = false) String userName,
-        @RequestParam(required = false) String state, @RequestParam(required = false) String year, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> monitorChaosongList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemName, @RequestParam(required = false) String senderName,
+        @RequestParam(required = false) String userName, @RequestParam(required = false) String state,
+        @RequestParam(required = false) String year, @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows) {
         return monitorService.monitorChaosongList(searchName, itemName, senderName, userName, state, year, page, rows);
     }
 
@@ -125,7 +132,9 @@ public class MonitorRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/monitorDoingList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows) {
         return monitorService.monitorDoingList(itemId, searchTerm, page, rows);
     }
 
@@ -140,7 +149,9 @@ public class MonitorRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/monitorDoneList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows) {
         return monitorService.monitorDoneList(itemId, searchTerm, page, rows);
     }
 

@@ -35,7 +35,8 @@ public interface OrganWordService {
      * @param processSerialNumber
      * @return
      */
-    Integer checkNumberStr(String characterValue, String custom, Integer year, Integer numberTemp, String itemId, Integer common, String processSerialNumber);
+    Integer checkNumberStr(String characterValue, String custom, Integer year, Integer numberTemp, String itemId,
+        Integer common, String processSerialNumber);
 
     /**
      * 检查部门编号是否存在 0:当前编号已被使用.1.当前编号没有被使用。2:当前编号不存在 3:发生异常
@@ -48,7 +49,8 @@ public interface OrganWordService {
      * @param processSerialNumber
      * @return
      */
-    Integer checkNumberStr4DeptName(String custom, Integer year, Integer numberTemp, String processDefineKey, Integer common, String processSerialNumber);
+    Integer checkNumberStr4DeptName(String custom, Integer year, Integer numberTemp, String processDefineKey,
+        Integer common, String processSerialNumber);
 
     /**
      * 判断机构代字custom在某个流程实例中是否已经编号,没有编号的话就查找有权限的编号的机关代字

@@ -36,7 +36,8 @@ public interface MonitorApi {
      * @param rows 行数
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getDoingListByProcessDefinitionKey(String tenantId, String processDefinitionKey, Integer page, Integer rows);
+    Map<String, Object> getDoingListByProcessDefinitionKey(String tenantId, String processDefinitionKey, Integer page,
+        Integer rows);
 
     /**
      * 根据系统名称获取监控在办件
@@ -76,7 +77,8 @@ public interface MonitorApi {
      * @param rows 行数
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getDoneListByProcessDefinitionKey(String tenantId, String processDefinitionKey, Integer page, Integer rows);
+    Map<String, Object> getDoneListByProcessDefinitionKey(String tenantId, String processDefinitionKey, Integer page,
+        Integer rows);
 
     /**
      * 根据事项id获取监控办结件
@@ -136,7 +138,8 @@ public interface MonitorApi {
      * @param rows 行数
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getRecycleListByProcessDefinitionKey(String tenantId, String processDefinitionKey, Integer page, Integer rows);
+    Map<String, Object> getRecycleListByProcessDefinitionKey(String tenantId, String processDefinitionKey, Integer page,
+        Integer rows);
 
     /**
      * 获取回收站列表
@@ -159,7 +162,8 @@ public interface MonitorApi {
      * @param rows 行数
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getRecycleListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, Integer page, Integer rows);
+    Map<String, Object> getRecycleListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey, Integer page, Integer rows);
 
     /**
      * 根据人员id获取回收站列表
@@ -171,7 +175,8 @@ public interface MonitorApi {
      * @param rows 总条数
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getRecycleListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page, Integer rows);
+    Map<String, Object> getRecycleListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -184,7 +189,8 @@ public interface MonitorApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchDoingListByProcessDefinitionKey(String tenantId, String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception;
+    Map<String, Object> searchDoingListByProcessDefinitionKey(String tenantId, String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows) throws Exception;
 
     /**
      * 条件搜索在办件
@@ -197,7 +203,8 @@ public interface MonitorApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchDoingListBySystemName(String tenantId, String systemName, String searchTerm, Integer page, Integer rows) throws Exception;
+    Map<String, Object> searchDoingListBySystemName(String tenantId, String systemName, String searchTerm, Integer page,
+        Integer rows) throws Exception;
 
     /**
      * 条件搜索在办件
@@ -210,7 +217,8 @@ public interface MonitorApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchDoneListByProcessDefinitionKey(String tenantId, String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception;
+    Map<String, Object> searchDoneListByProcessDefinitionKey(String tenantId, String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows) throws Exception;
 
     /**
      * 条件搜索在办件
@@ -223,7 +231,8 @@ public interface MonitorApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchDoneListBySystemName(String tenantId, String systemName, String searchTerm, Integer page, Integer rows) throws Exception;
+    Map<String, Object> searchDoneListBySystemName(String tenantId, String systemName, String searchTerm, Integer page,
+        Integer rows) throws Exception;
 
     /**
      * 条件搜索在办件
@@ -236,7 +245,8 @@ public interface MonitorApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchRecycleListByProcessDefinitionKey(String tenantId, String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception;
+    Map<String, Object> searchRecycleListByProcessDefinitionKey(String tenantId, String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows) throws Exception;
 
     /**
      * 条件搜索在办件
@@ -249,7 +259,8 @@ public interface MonitorApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchRecycleListBySystemName(String tenantId, String systemName, String searchTerm, Integer page, Integer rows) throws Exception;
+    Map<String, Object> searchRecycleListBySystemName(String tenantId, String systemName, String searchTerm,
+        Integer page, Integer rows) throws Exception;
 
     /**
      * 条件搜索在办件
@@ -263,7 +274,8 @@ public interface MonitorApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchRecycleListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception;
+    Map<String, Object> searchRecycleListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception;
 
     /**
      * 条件搜索在办件
@@ -277,5 +289,6 @@ public interface MonitorApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchRecycleListByUserIdAndSystemName(String tenantId, String userId, String systemName, String searchTerm, Integer page, Integer rows) throws Exception;
+    Map<String, Object> searchRecycleListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        String searchTerm, Integer page, Integer rows) throws Exception;
 }

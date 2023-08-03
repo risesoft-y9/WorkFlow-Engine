@@ -63,7 +63,8 @@ public class SmsRemindServiceImpl implements SmsRemindService {
                 return;
             }
             String processInstanceId = task.getProcessInstanceId();
-            ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+            ProcessParamModel processParamModel =
+                processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
             // 收回或者退回产生的任务不进行短信提醒，主要针对串行的收回或者退回，串行时的收回退回是办结所有串行任务，因此产生的新任务无需提醒
             if (local.get(SysVariables.TAKEBACK) != null) {
                 return;
@@ -77,7 +78,8 @@ public class SmsRemindServiceImpl implements SmsRemindService {
             Person user = personManager.getPerson(tenantId, userId);
             Person person = personManager.getPerson(tenantId, assignee);
             String mobile = person.getMobile();
-            Y9DzxhSendMsgUtil.sendMsgByphoneAndParams(mobile, person.getName(), "OA待办", user.getName(), processParamModel.getTitle());
+            Y9DzxhSendMsgUtil.sendMsgByphoneAndParams(mobile, person.getName(), "OA待办", user.getName(),
+                processParamModel.getTitle());
             return;
         } catch (Exception e) {
             LOGGER.warn("##########################短信提醒时发生异常-taskId:{}##########################", task.getId(), e);
@@ -99,7 +101,8 @@ public class SmsRemindServiceImpl implements SmsRemindService {
             String assignee = task.getAssignee();
             String tenantId = (String)map.get("tenantId");
             String processInstanceId = task.getProcessInstanceId();
-            ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+            ProcessParamModel processParamModel =
+                processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
             String isSendSms = processParamModel.getIsSendSms();
             String isShuMing = processParamModel.getIsShuMing();
             String smsContent = processParamModel.getSmsContent();

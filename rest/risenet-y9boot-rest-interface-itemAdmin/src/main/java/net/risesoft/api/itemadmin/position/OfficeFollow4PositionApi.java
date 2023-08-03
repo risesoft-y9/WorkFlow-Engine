@@ -58,7 +58,8 @@ public interface OfficeFollow4PositionApi {
      * @param rows
      * @return
      */
-    public Map<String, Object> getOfficeFollowList(String tenantId, String positionId, String searchName, int page, int rows);
+    public Map<String, Object> getOfficeFollowList(String tenantId, String positionId, String searchName, int page,
+        int rows);
 
     /**
      * 保存办件关注信息

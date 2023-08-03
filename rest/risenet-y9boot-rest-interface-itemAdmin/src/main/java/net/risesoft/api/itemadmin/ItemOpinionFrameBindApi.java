@@ -31,7 +31,8 @@ public interface ItemOpinionFrameBindApi {
      * @param taskDefKey
      * @return
      */
-    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String tenantId, String userId, String itemId, String processDefinitionId, String taskDefKey);
+    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String tenantId,
+        String userId, String itemId, String processDefinitionId, String taskDefKey);
 
     /**
      * 根据事项id和任务id获取绑定意见框（包含角色信息）
@@ -43,5 +44,6 @@ public interface ItemOpinionFrameBindApi {
      * @param taskDefKey
      * @return
      */
-    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String tenantId, String userId, String itemId, String processDefinitionId, String taskDefKey);
+    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String tenantId,
+        String userId, String itemId, String processDefinitionId, String taskDefKey);
 }

@@ -23,16 +23,17 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RequestMapping(value = "/services/rest/errorLog")
 public class ErrorLogApiImpl implements ErrorLogApi {
 
-	@Autowired
-	private ErrorLogService errorLogService;
+    @Autowired
+    private ErrorLogService errorLogService;
 
-	@Override
-	@PostMapping(value = "/saveErrorLog", produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void saveErrorLog(String tenantId,@RequestBody ErrorLogModel errorLogModel) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		ErrorLog errorLog = new ErrorLog();
-		Y9BeanUtil.copyProperties(errorLogModel, errorLog);
-		errorLogService.saveErrorLog(errorLog);
-	}
+    @Override
+    @PostMapping(value = "/saveErrorLog", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void saveErrorLog(String tenantId, @RequestBody ErrorLogModel errorLogModel) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        ErrorLog errorLog = new ErrorLog();
+        Y9BeanUtil.copyProperties(errorLogModel, errorLog);
+        errorLogService.saveErrorLog(errorLog);
+    }
 
 }

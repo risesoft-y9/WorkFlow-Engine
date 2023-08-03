@@ -90,7 +90,8 @@ public interface TransactionFileService {
      * @param fileSource
      * @return
      */
-    public List<TransactionFile> getListByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource);
+    public List<TransactionFile> getListByProcessSerialNumberAndFileSource(String processSerialNumber,
+        String fileSource);
 
     /**
      * 根据流程实例id、附件来源和文件类型获取附件数
@@ -109,7 +110,8 @@ public interface TransactionFileService {
      * @param processSerialNumber
      * @return
      */
-    public TransactionFile getUpFileInfoByTabIndexOrProcessSerialNumber(Integer nextTabIndex, String processSerialNumber);
+    public TransactionFile getUpFileInfoByTabIndexOrProcessSerialNumber(Integer nextTabIndex,
+        String processSerialNumber);
 
     /**
      * 
@@ -148,7 +150,8 @@ public interface TransactionFileService {
      * @param fileSource
      * @return
      */
-    public Map<String, Object> upload(MultipartFile filename, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource);
+    public Map<String, Object> upload(MultipartFile filename, String processInstanceId, String taskId,
+        String processSerialNumber, String describes, String fileSource);
 
     /**
      * Description: 上传附件
@@ -163,7 +166,8 @@ public interface TransactionFileService {
      * @param y9FileStoreId
      * @return
      */
-    public Map<String, Object> uploadRest(String fileName, String fileSize, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource, String y9FileStoreId);
+    public Map<String, Object> uploadRest(String fileName, String fileSize, String processInstanceId, String taskId,
+        String processSerialNumber, String describes, String fileSource, String y9FileStoreId);
 
     /**
      * Description: 上传附件

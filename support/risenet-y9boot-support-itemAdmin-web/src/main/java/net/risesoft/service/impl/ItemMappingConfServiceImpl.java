@@ -23,42 +23,42 @@ import net.risesoft.service.ItemMappingConfService;
 @Service(value = "itemMappingConfService")
 public class ItemMappingConfServiceImpl implements ItemMappingConfService {
 
-	@Autowired
-	private ItemMappingConfRepository itemMappingConfRepository;
+    @Autowired
+    private ItemMappingConfRepository itemMappingConfRepository;
 
-	@Override
-	@Transactional(readOnly = false)
-	public void delItemMappingConf(String[] ids) {
-		for (String id : ids) {
-			itemMappingConfRepository.deleteById(id);
-		}
-	}
+    @Override
+    @Transactional(readOnly = false)
+    public void delItemMappingConf(String[] ids) {
+        for (String id : ids) {
+            itemMappingConfRepository.deleteById(id);
+        }
+    }
 
-	@Override
-	public List<ItemMappingConf> getList(String itemId, String mappingId) {
-		return itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
-	}
+    @Override
+    public List<ItemMappingConf> getList(String itemId, String mappingId) {
+        return itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
+    }
 
-	@Override
-	@Transactional(readOnly = false)
-	public void saveItemMappingConf(ItemMappingConf itemMappingConf) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String id = itemMappingConf.getId();
-		if (StringUtils.isNotBlank(id)) {
-			ItemMappingConf oldConf = itemMappingConfRepository.findById(id).orElse(null);
-			if (null != oldConf) {
-				oldConf.setColumnName(itemMappingConf.getColumnName());
-				oldConf.setMappingName(itemMappingConf.getMappingName());
-				oldConf.setMappingTableName(itemMappingConf.getMappingTableName());
-				oldConf.setTableName(itemMappingConf.getTableName());
-				oldConf.setCreateTime(sdf.format(new Date()));
-				itemMappingConfRepository.save(oldConf);
-			}
-		} else {
-			itemMappingConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-			itemMappingConf.setCreateTime(sdf.format(new Date()));
-			itemMappingConfRepository.save(itemMappingConf);
-		}
-	}
+    @Override
+    @Transactional(readOnly = false)
+    public void saveItemMappingConf(ItemMappingConf itemMappingConf) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String id = itemMappingConf.getId();
+        if (StringUtils.isNotBlank(id)) {
+            ItemMappingConf oldConf = itemMappingConfRepository.findById(id).orElse(null);
+            if (null != oldConf) {
+                oldConf.setColumnName(itemMappingConf.getColumnName());
+                oldConf.setMappingName(itemMappingConf.getMappingName());
+                oldConf.setMappingTableName(itemMappingConf.getMappingTableName());
+                oldConf.setTableName(itemMappingConf.getTableName());
+                oldConf.setCreateTime(sdf.format(new Date()));
+                itemMappingConfRepository.save(oldConf);
+            }
+        } else {
+            itemMappingConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            itemMappingConf.setCreateTime(sdf.format(new Date()));
+            itemMappingConfRepository.save(itemMappingConf);
+        }
+    }
 
 }

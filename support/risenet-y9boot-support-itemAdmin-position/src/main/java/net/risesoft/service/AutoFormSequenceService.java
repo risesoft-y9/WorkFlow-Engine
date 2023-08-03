@@ -79,9 +79,11 @@ public class AutoFormSequenceService {
     @Transactional(readOnly = false)
     public Integer getSequence(String tenantId, String labelName, String character) {
         Integer sequence = 1;
-        if (StringUtils.isNotBlank(tenantId) && StringUtils.isNotBlank(labelName) && StringUtils.isNotBlank(character)) {
+        if (StringUtils.isNotBlank(tenantId) && StringUtils.isNotBlank(labelName)
+            && StringUtils.isNotBlank(character)) {
             DocumentNumberDetail yanl = documentNumberDetailService.findAll().get(0);
-            AutoFormSequence autoFormSequence = autoFormSequenceRepository.findOne(tenantId, labelName, character, yanl.getCalendarYear());
+            AutoFormSequence autoFormSequence =
+                autoFormSequenceRepository.findOne(tenantId, labelName, character, yanl.getCalendarYear());
             if (autoFormSequence != null && autoFormSequence.getSequenceValue() != null) {
                 sequence = autoFormSequence.getSequenceValue();
             } else {
@@ -108,7 +110,8 @@ public class AutoFormSequenceService {
      */
     @Transactional(readOnly = false)
     public void updateSequence(String tenantId, String labelName, String character) {
-        if (StringUtils.isNotBlank(tenantId) && StringUtils.isNotBlank(labelName) && StringUtils.isNotBlank(character)) {
+        if (StringUtils.isNotBlank(tenantId) && StringUtils.isNotBlank(labelName)
+            && StringUtils.isNotBlank(character)) {
             DocumentNumberDetail yanl = documentNumberDetailService.findAll().get(0);
             autoFormSequenceRepository.updateSequence(tenantId, labelName, character, yanl.getCalendarYear());
         }

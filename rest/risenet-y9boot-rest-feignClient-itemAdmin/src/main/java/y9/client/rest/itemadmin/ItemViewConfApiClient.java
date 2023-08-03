@@ -14,7 +14,8 @@ import net.risesoft.model.itemadmin.ItemViewConfModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ItemViewConfApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/itemViewConf")
+@FeignClient(contextId = "ItemViewConfApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/itemViewConf")
 public interface ItemViewConfApiClient extends ItemViewConfApi {
 
     /**
@@ -27,5 +28,6 @@ public interface ItemViewConfApiClient extends ItemViewConfApi {
      */
     @Override
     @GetMapping("/findByItemIdAndViewType")
-    List<ItemViewConfModel> findByItemIdAndViewType(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId, @RequestParam("viewType") String viewType);
+    List<ItemViewConfModel> findByItemIdAndViewType(@RequestParam("tenantId") String tenantId,
+        @RequestParam("itemId") String itemId, @RequestParam("viewType") String viewType);
 }

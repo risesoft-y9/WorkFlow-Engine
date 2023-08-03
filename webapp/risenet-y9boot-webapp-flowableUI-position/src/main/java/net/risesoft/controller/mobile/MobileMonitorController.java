@@ -52,7 +52,9 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/deleteProcessInstance")
-    public void deleteProcessInstance(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processInstanceId, HttpServletResponse response) {
+    public void deleteProcessInstance(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String processInstanceId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             boolean b = historicProcessManager.deleteProcessInstance(tenantId, processInstanceId);
@@ -75,7 +77,9 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/getRecycleCount")
-    public void getRecycleCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletResponse response) {
+    public void getRecycleCount(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String itemId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -103,7 +107,9 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/monitorDoingCount")
-    public void monitorDoingCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletResponse response) {
+    public void monitorDoingCount(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String itemId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -134,7 +140,9 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/monitorDoingList")
-    public void monitorDoingList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
+    public void monitorDoingList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
         HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -158,7 +166,9 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/monitorDoneCount")
-    public void monitorDoneCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletResponse response) {
+    public void monitorDoneCount(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String itemId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -189,7 +199,9 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/monitorDoneList")
-    public void monitorDoneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
+    public void monitorDoneList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
         HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -216,7 +228,9 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/monitorRecycleList")
-    public void monitorRecycleList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
+    public void monitorRecycleList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
         HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -240,7 +254,9 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/recoveryProcess")
-    public void recoveryProcess(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processInstanceId, HttpServletResponse response) {
+    public void recoveryProcess(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String processInstanceId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             boolean b = historicProcessManager.recoveryProcess(tenantId, userId, processInstanceId);
@@ -263,7 +279,9 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/removeProcess")
-    public void removeProcess(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processInstanceId, HttpServletResponse response) {
+    public void removeProcess(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String processInstanceId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             boolean b = historicProcessManager.removeProcess4Position(tenantId, processInstanceId);

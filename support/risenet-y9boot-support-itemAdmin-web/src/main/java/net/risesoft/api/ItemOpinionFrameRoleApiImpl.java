@@ -25,21 +25,21 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RequestMapping(value = "/services/rest/itemOpinionFrameRole")
 public class ItemOpinionFrameRoleApiImpl implements ItemOpinionFrameRoleApi {
 
-	@Autowired
-	private ItemOpinionFrameRoleService itemOpinionFrameRoleService;
+    @Autowired
+    private ItemOpinionFrameRoleService itemOpinionFrameRoleService;
 
-	@Override
-	@GetMapping(value = "/findByItemOpinionFrameId", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<ItemOpinionFrameRoleModel> findByItemOpinionFrameId(String tenantId, String itemOpinionFrameId) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		List<ItemOpinionFrameRoleModel> modelList = new ArrayList<>();
-		List<ItemOpinionFrameRole> list = itemOpinionFrameRoleService.findByItemOpinionFrameId(itemOpinionFrameId);
-		for (ItemOpinionFrameRole role : list) {
-			ItemOpinionFrameRoleModel model = new ItemOpinionFrameRoleModel();
-			Y9BeanUtil.copyProperties(role, model);
-			modelList.add(model);
-		}
-		return modelList;
-	}
+    @Override
+    @GetMapping(value = "/findByItemOpinionFrameId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ItemOpinionFrameRoleModel> findByItemOpinionFrameId(String tenantId, String itemOpinionFrameId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<ItemOpinionFrameRoleModel> modelList = new ArrayList<>();
+        List<ItemOpinionFrameRole> list = itemOpinionFrameRoleService.findByItemOpinionFrameId(itemOpinionFrameId);
+        for (ItemOpinionFrameRole role : list) {
+            ItemOpinionFrameRoleModel model = new ItemOpinionFrameRoleModel();
+            Y9BeanUtil.copyProperties(role, model);
+            modelList.add(model);
+        }
+        return modelList;
+    }
 
 }

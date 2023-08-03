@@ -25,26 +25,30 @@ package org.artofsolving.jodconverter.office;
 public interface OfficeManager {
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param task
      * @throws OfficeException
      */
     void execute(OfficeTask task) throws OfficeException;
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @return
      */
     boolean isRunning();
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @throws OfficeException
      */
     void start() throws OfficeException;
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @throws OfficeException
      */
     void stop() throws OfficeException;

@@ -18,7 +18,8 @@ import net.risesoft.model.itemadmin.ProcessTrackModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ProcessTrackApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/processTrack")
+@FeignClient(contextId = "ProcessTrackApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/processTrack")
 public interface ProcessTrackApiClient extends ProcessTrackApi {
 
     /**
@@ -31,7 +32,8 @@ public interface ProcessTrackApiClient extends ProcessTrackApi {
      */
     @Override
     @PostMapping("/deleteById")
-    public void deleteById(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("id") String id) throws Exception;
+    public void deleteById(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("id") String id) throws Exception;
 
     /**
      * 根据任务id获取自定义历程
@@ -42,7 +44,8 @@ public interface ProcessTrackApiClient extends ProcessTrackApi {
      */
     @Override
     @GetMapping("/findByTaskId")
-    public List<ProcessTrackModel> findByTaskId(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+    public List<ProcessTrackModel> findByTaskId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId);
 
     /**
      * 根据任务id获取自定义历程
@@ -54,7 +57,8 @@ public interface ProcessTrackApiClient extends ProcessTrackApi {
      */
     @Override
     @GetMapping("/findByTaskIdAsc")
-    public List<ProcessTrackModel> findByTaskIdAsc(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("taskId") String taskId);
+    public List<ProcessTrackModel> findByTaskIdAsc(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("taskId") String taskId);
 
     /**
      * 分页生成历程列表(包含每个任务节点的特殊操作的历程)
@@ -66,7 +70,8 @@ public interface ProcessTrackApiClient extends ProcessTrackApi {
      */
     @Override
     @GetMapping("/processTrackList")
-    public Map<String, Object> processTrackList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
+    public Map<String, Object> processTrackList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 分页生成历程列表(包含每个任务节点的特殊操作的历程)
@@ -78,7 +83,8 @@ public interface ProcessTrackApiClient extends ProcessTrackApi {
      */
     @Override
     @GetMapping("/processTrackList4Simple")
-    public Map<String, Object> processTrackList4Simple(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
+    public Map<String, Object> processTrackList4Simple(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 保存或更新历程
@@ -91,5 +97,6 @@ public interface ProcessTrackApiClient extends ProcessTrackApi {
      */
     @Override
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ProcessTrackModel saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestBody ProcessTrackModel processTrack) throws Exception;
+    public ProcessTrackModel saveOrUpdate(@RequestParam("tenantId") String tenantId,
+        @RequestBody ProcessTrackModel processTrack) throws Exception;
 }

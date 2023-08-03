@@ -12,7 +12,8 @@ import net.risesoft.model.itemadmin.CalendarConfigModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "CalendarConfigApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/calendarConfig")
+@FeignClient(contextId = "CalendarConfigApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/calendarConfig")
 public interface CalendarConfigApiClient extends CalendarConfigApi {
 
     /**

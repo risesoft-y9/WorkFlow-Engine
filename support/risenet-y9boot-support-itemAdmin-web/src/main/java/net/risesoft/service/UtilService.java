@@ -8,7 +8,8 @@ package net.risesoft.service;
 public interface UtilService {
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param taskId
      * @param targetTaskDefineKey
      */

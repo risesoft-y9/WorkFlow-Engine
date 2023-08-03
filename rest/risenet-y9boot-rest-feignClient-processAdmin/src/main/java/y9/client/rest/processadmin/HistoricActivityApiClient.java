@@ -14,7 +14,8 @@ import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "HistoricActivityApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}", path = "/services/rest/historicActivity")
+@FeignClient(contextId = "HistoricActivityApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
+    path = "/services/rest/historicActivity")
 public interface HistoricActivityApiClient extends HistoricActivityApi {
 
     /**
@@ -26,5 +27,6 @@ public interface HistoricActivityApiClient extends HistoricActivityApi {
      */
     @Override
     @GetMapping("/getByProcessInstanceId")
-    public List<HistoricActivityInstanceModel> getByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    public List<HistoricActivityInstanceModel> getByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 }

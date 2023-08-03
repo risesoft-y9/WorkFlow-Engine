@@ -36,7 +36,8 @@ public class CallActivityTaskListener implements TaskListener {
         delegateTask.setVariable(SysVariables.PROCESSSERIALNUMBER, parentProcessSerialNumber);
 
         String processDefinitionId = delegateTask.getProcessDefinitionId();
-        ItemModel itemModel = Y9Context.getBean(ItemApi.class).findByProcessDefinitionKey(Y9LoginUserHolder.getTenantId(), processDefinitionId.split(":")[0]);
+        ItemModel itemModel = Y9Context.getBean(ItemApi.class)
+            .findByProcessDefinitionKey(Y9LoginUserHolder.getTenantId(), processDefinitionId.split(":")[0]);
         if (null != itemModel) {
         }
         /**

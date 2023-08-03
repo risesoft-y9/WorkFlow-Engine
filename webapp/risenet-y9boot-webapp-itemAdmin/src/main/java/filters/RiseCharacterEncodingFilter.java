@@ -26,7 +26,8 @@ public class RiseCharacterEncodingFilter extends OncePerRequestFilter {
     private boolean forceEncoding = false;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+        throws ServletException, IOException {
         String url = request.getQueryString();
         Matcher m = null;
         if (url != null && (m = INPUTPATTERN.matcher(url)).matches()) {

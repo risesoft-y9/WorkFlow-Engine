@@ -43,7 +43,8 @@ public class ItemPageService {
         return content;
     }
 
-    public <T> ItemPage<T> page(String sql, Map<String, Object> sqlMap, RowMapper<T> rowMapper, String countSql, Map<String, Object> countSqlMap, int currPage, int size) {
+    public <T> ItemPage<T> page(String sql, Map<String, Object> sqlMap, RowMapper<T> rowMapper, String countSql,
+        Map<String, Object> countSqlMap, int currPage, int size) {
         if (currPage <= 0) {
             currPage = 1;
         }
@@ -60,7 +61,8 @@ public class ItemPageService {
         int limit = size;
         sql = sql + " limit " + limit + " offset " + offset;
         List<T> content = jdbc.query(sql, sqlMap, rowMapper);
-        return ItemPage.<T>builder().rows(content).total(totalSize).totalpages(totalPage).currpage(currPage).size(size).build();
+        return ItemPage.<T>builder().rows(content).total(totalSize).totalpages(totalPage).currpage(currPage).size(size)
+            .build();
     }
 
     /**
@@ -77,7 +79,8 @@ public class ItemPageService {
      * @return 分页对象
      */
     @SuppressWarnings("deprecation")
-    public <T> ItemPage<T> page(String sql, Object[] queryArgs, RowMapper<T> rowMapper, String countSql, Object[] countArgs, int currPage, int size) {
+    public <T> ItemPage<T> page(String sql, Object[] queryArgs, RowMapper<T> rowMapper, String countSql,
+        Object[] countArgs, int currPage, int size) {
         if (currPage <= 0) {
             currPage = 1;
         }
@@ -93,6 +96,7 @@ public class ItemPageService {
         int limit = size;
         sql = sql + " limit " + limit + " offset " + offset;
         List<T> content = jdbcTemplate.query(sql, queryArgs, rowMapper);
-        return ItemPage.<T>builder().rows(content).total(totalSize).totalpages(totalPage).currpage(currPage).size(size).build();
+        return ItemPage.<T>builder().rows(content).total(totalSize).totalpages(totalPage).currpage(currPage).size(size)
+            .build();
     }
 }

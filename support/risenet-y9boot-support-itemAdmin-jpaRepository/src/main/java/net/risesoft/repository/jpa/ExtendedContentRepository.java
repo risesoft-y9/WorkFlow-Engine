@@ -15,7 +15,8 @@ import net.risesoft.entity.ExtendedContent;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ExtendedContentRepository extends JpaRepository<ExtendedContent, String>, JpaSpecificationExecutor<ExtendedContent> {
+public interface ExtendedContentRepository
+    extends JpaRepository<ExtendedContent, String>, JpaSpecificationExecutor<ExtendedContent> {
 
     /**
      * 根据processSerialNumber获取统计

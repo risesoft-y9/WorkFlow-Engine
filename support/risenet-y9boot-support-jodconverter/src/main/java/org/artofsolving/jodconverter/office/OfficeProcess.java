@@ -63,7 +63,8 @@ class OfficeProcess {
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    public OfficeProcess(File officeHome, UnoUrl unoUrl, String[] runAsArgs, File templateProfileDir, File workDir, ProcessManager processManager) {
+    public OfficeProcess(File officeHome, UnoUrl unoUrl, String[] runAsArgs, File templateProfileDir, File workDir,
+        ProcessManager processManager) {
         this.officeHome = officeHome;
         this.unoUrl = unoUrl;
         this.runAsArgs = runAsArgs;
@@ -76,7 +77,8 @@ class OfficeProcess {
         // see http://wiki.services.openoffice.org/wiki/ODF_Toolkit/Efforts/Three-Layer_OOo
         File basisLink = new File(officeHome, "basis-link");
         if (!basisLink.isFile()) {
-            logger.fine("no %OFFICE_HOME%/basis-link found; assuming it's OOo 2.x and we don't need to append URE and Basic paths");
+            logger.fine(
+                "no %OFFICE_HOME%/basis-link found; assuming it's OOo 2.x and we don't need to append URE and Basic paths");
             return;
         }
         String basisLinkText = FileUtils.readFileToString(basisLink, StandardCharsets.UTF_8).trim();
@@ -105,9 +107,11 @@ class OfficeProcess {
             try {
                 FileUtils.deleteDirectory(instanceProfileDir);
             } catch (IOException ioException) {
-                File oldProfileDir = new File(instanceProfileDir.getParentFile(), instanceProfileDir.getName() + ".old." + System.currentTimeMillis());
+                File oldProfileDir = new File(instanceProfileDir.getParentFile(),
+                    instanceProfileDir.getName() + ".old." + System.currentTimeMillis());
                 if (instanceProfileDir.renameTo(oldProfileDir)) {
-                    logger.warning("could not delete profileDir: " + ioException.getMessage() + "; renamed it to " + oldProfileDir);
+                    logger.warning("could not delete profileDir: " + ioException.getMessage() + "; renamed it to "
+                        + oldProfileDir);
                 } else {
                     logger.severe("could not delete profileDir: " + ioException.getMessage());
                 }
@@ -116,7 +120,8 @@ class OfficeProcess {
     }
 
     public int forciblyTerminate(long retryInterval, long retryTimeout) throws IOException, RetryTimeoutException {
-        logger.info(String.format("trying to forcibly terminate process: '" + unoUrl + "'" + (pid != PID_UNKNOWN ? " (pid " + pid + ")" : "")));
+        logger.info(String.format("trying to forcibly terminate process: '" + unoUrl + "'"
+            + (pid != PID_UNKNOWN ? " (pid " + pid + ")" : "")));
         processManager.kill(process, pid);
         return getExitCode(retryInterval, retryTimeout);
     }
@@ -175,7 +180,8 @@ class OfficeProcess {
         ProcessQuery processQuery = new ProcessQuery("soffice.bin", unoUrl.getAcceptString());
         long existingPid = processManager.findPid(processQuery);
         if (!(existingPid == PID_NOT_FOUND || existingPid == PID_UNKNOWN)) {
-            throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %d", unoUrl.getAcceptString(), existingPid));
+            throw new IllegalStateException(String.format("a process with acceptString '%s' is already running; pid %d",
+                unoUrl.getAcceptString(), existingPid));
         }
         if (!restart) {
             prepareInstanceProfileDir();
@@ -199,11 +205,13 @@ class OfficeProcess {
         if (PlatformUtils.isWindows()) {
             addBasisAndUrePaths(processBuilder);
         }
-        logger.info(String.format("starting process with acceptString '%s' and profileDir '%s'", unoUrl, instanceProfileDir));
+        logger.info(
+            String.format("starting process with acceptString '%s' and profileDir '%s'", unoUrl, instanceProfileDir));
         process = processBuilder.start();
         pid = processManager.findPid(processQuery);
         if (pid == PID_NOT_FOUND) {
-            throw new IllegalStateException(String.format("process with acceptString '%s' started but its pid could not be found", unoUrl.getAcceptString()));
+            throw new IllegalStateException(String.format(
+                "process with acceptString '%s' started but its pid could not be found", unoUrl.getAcceptString()));
         }
         logger.info("started process" + (pid != PID_UNKNOWN ? "; pid = " + pid : ""));
     }

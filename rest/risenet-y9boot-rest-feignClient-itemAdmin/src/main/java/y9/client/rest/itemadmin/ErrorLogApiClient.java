@@ -14,7 +14,8 @@ import net.risesoft.model.itemadmin.ErrorLogModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ErrorLogApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/errorLog")
+@FeignClient(contextId = "ErrorLogApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/errorLog")
 public interface ErrorLogApiClient extends ErrorLogApi {
 
     /**

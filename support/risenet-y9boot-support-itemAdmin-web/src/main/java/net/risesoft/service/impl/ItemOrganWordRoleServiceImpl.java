@@ -23,59 +23,60 @@ import net.risesoft.service.ItemOrganWordRoleService;
 @Service(value = "itemOrganWordRoleService")
 public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
 
-	@Autowired
-	private ItemOrganWordRoleRepository itemOrganWordRoleRepository;
+    @Autowired
+    private ItemOrganWordRoleRepository itemOrganWordRoleRepository;
 
-	@Autowired
-	private RoleApi roleManager;
+    @Autowired
+    private RoleApi roleManager;
 
-	@Override
-	public void deleteById(String id) {
-		itemOrganWordRoleRepository.deleteById(id);
-	}
+    @Override
+    public void deleteById(String id) {
+        itemOrganWordRoleRepository.deleteById(id);
+    }
 
-	@Override
-	public List<ItemOrganWordRole> findByItemOrganWordBindId(String itemOrganWordBindId) {
-		return itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
-	}
+    @Override
+    public List<ItemOrganWordRole> findByItemOrganWordBindId(String itemOrganWordBindId) {
+        return itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
+    }
 
-	@Override
-	public List<ItemOrganWordRole> findByItemOrganWordBindIdContainRoleName(String itemOrganWordBindId) {
-		List<ItemOrganWordRole> roleList = itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
-		for (ItemOrganWordRole role : roleList) {
-			Role r = roleManager.getRole(role.getRoleId());
-			role.setRoleName(r == null ? "角色已删除" : r.getName());
-		}
-		return roleList;
-	}
+    @Override
+    public List<ItemOrganWordRole> findByItemOrganWordBindIdContainRoleName(String itemOrganWordBindId) {
+        List<ItemOrganWordRole> roleList = itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
+        for (ItemOrganWordRole role : roleList) {
+            Role r = roleManager.getRole(role.getRoleId());
+            role.setRoleName(r == null ? "角色已删除" : r.getName());
+        }
+        return roleList;
+    }
 
-	@Override
-	@Transactional(readOnly = false)
-	public void remove(String[] ids) {
-		for (String id : ids) {
-			itemOrganWordRoleRepository.deleteById(id);
-		}
-	}
+    @Override
+    @Transactional(readOnly = false)
+    public void remove(String[] ids) {
+        for (String id : ids) {
+            itemOrganWordRoleRepository.deleteById(id);
+        }
+    }
 
-	@Override
-	@Transactional(readOnly = false)
-	public void removeByItemOrganWordBindId(String itemOrganWordBindId) {
-		List<ItemOrganWordRole> roleList = itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
-		itemOrganWordRoleRepository.deleteAll(roleList);
-	}
+    @Override
+    @Transactional(readOnly = false)
+    public void removeByItemOrganWordBindId(String itemOrganWordBindId) {
+        List<ItemOrganWordRole> roleList = itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
+        itemOrganWordRoleRepository.deleteAll(roleList);
+    }
 
-	@Override
-	@Transactional(readOnly = false)
-	public ItemOrganWordRole saveOrUpdate(String itemOrganWordBindId, String roleId) {
-		ItemOrganWordRole role = itemOrganWordRoleRepository.findByItemOrganWordBindIdAndRoleId(itemOrganWordBindId, roleId);
-		if (null == role) {
-			role = new ItemOrganWordRole();
-			role.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-			role.setItemOrganWordBindId(itemOrganWordBindId);
-			role.setRoleId(roleId);
+    @Override
+    @Transactional(readOnly = false)
+    public ItemOrganWordRole saveOrUpdate(String itemOrganWordBindId, String roleId) {
+        ItemOrganWordRole role =
+            itemOrganWordRoleRepository.findByItemOrganWordBindIdAndRoleId(itemOrganWordBindId, roleId);
+        if (null == role) {
+            role = new ItemOrganWordRole();
+            role.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            role.setItemOrganWordBindId(itemOrganWordBindId);
+            role.setRoleId(roleId);
 
-			itemOrganWordRoleRepository.save(role);
-		}
-		return role;
-	}
+            itemOrganWordRoleRepository.save(role);
+        }
+        return role;
+    }
 }

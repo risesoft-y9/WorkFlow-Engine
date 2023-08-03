@@ -164,7 +164,8 @@ public interface ActRuDetailService {
      * @param sort
      * @return
      */
-    Page<ActRuDetail> findByAssigneeAndStatusAndSystemNameIn(String assignee, int status, List<String> systemNameList, int rows, int page, Sort sort);
+    Page<ActRuDetail> findByAssigneeAndStatusAndSystemNameIn(String assignee, int status, List<String> systemNameList,
+        int rows, int page, Sort sort);
 
     /**
      * 根据流程实例Id和办理人查找
@@ -252,7 +253,8 @@ public interface ActRuDetailService {
      * @param sort
      * @return
      */
-    Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows, int page, Sort sort);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows, int page,
+        Sort sort);
 
     /**
      * 查找你个人在办的件
@@ -265,7 +267,8 @@ public interface ActRuDetailService {
      * @param sort
      * @return
      */
-    Page<ActRuDetail> findBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status, int rows, int page, Sort sort);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status, int rows,
+        int page, Sort sort);
 
     /**
      * 标记流程为归档

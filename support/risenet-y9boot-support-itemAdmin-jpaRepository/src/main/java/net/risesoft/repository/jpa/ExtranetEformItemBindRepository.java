@@ -15,7 +15,8 @@ import net.risesoft.entity.ExtranetEformItemBind;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ExtranetEformItemBindRepository extends JpaRepository<ExtranetEformItemBind, String>, JpaSpecificationExecutor<ExtranetEformItemBind> {
+public interface ExtranetEformItemBindRepository
+    extends JpaRepository<ExtranetEformItemBind, String>, JpaSpecificationExecutor<ExtranetEformItemBind> {
 
     /**
      * 根据事项id获取数据

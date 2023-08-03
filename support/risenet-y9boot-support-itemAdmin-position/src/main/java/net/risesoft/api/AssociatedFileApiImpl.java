@@ -124,7 +124,8 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      */
     @Override
     @PostMapping(value = "/saveAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber, String processInstanceIds) {
+    public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber,
+        String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId);
         Y9LoginUserHolder.setPosition(position);

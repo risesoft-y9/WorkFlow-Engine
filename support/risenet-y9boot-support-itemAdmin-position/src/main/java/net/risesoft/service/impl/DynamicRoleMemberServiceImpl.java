@@ -36,7 +36,8 @@ public class DynamicRoleMemberServiceImpl implements DynamicRoleMemberService {
         DefaultListableBeanFactory beanFactory = BeanFactory.getBeanFactory(applicationContext);
 
         beanFactory = BeanFactory.addBean(beanFactory, classFullPath);
-        AbstractDynamicRoleMember dynamicRoleMemberService = (AbstractDynamicRoleMember)beanFactory.getBean(classFullPath);
+        AbstractDynamicRoleMember dynamicRoleMemberService =
+            (AbstractDynamicRoleMember)beanFactory.getBean(classFullPath);
         department = dynamicRoleMemberService.getDepartment();
         return department;
     }
@@ -50,7 +51,8 @@ public class DynamicRoleMemberServiceImpl implements DynamicRoleMemberService {
         DefaultListableBeanFactory beanFactory = BeanFactory.getBeanFactory(applicationContext);
 
         beanFactory = BeanFactory.addBean(beanFactory, classFullPath);
-        AbstractDynamicRoleMember dynamicRoleMemberService = (AbstractDynamicRoleMember)beanFactory.getBean(classFullPath);
+        AbstractDynamicRoleMember dynamicRoleMemberService =
+            (AbstractDynamicRoleMember)beanFactory.getBean(classFullPath);
         orgUnitList = dynamicRoleMemberService.getOrgUnitList();
         return orgUnitList;
     }
@@ -64,7 +66,8 @@ public class DynamicRoleMemberServiceImpl implements DynamicRoleMemberService {
         DefaultListableBeanFactory beanFactory = BeanFactory.getBeanFactory(applicationContext);
 
         beanFactory = BeanFactory.addBean(beanFactory, classFullPath);
-        AbstractDynamicRoleMember dynamicRoleMemberService = (AbstractDynamicRoleMember)beanFactory.getBean(classFullPath);
+        AbstractDynamicRoleMember dynamicRoleMemberService =
+            (AbstractDynamicRoleMember)beanFactory.getBean(classFullPath);
         if (dynamicRole.isUseProcessInstanceId()) {
             orgUnitList = dynamicRoleMemberService.getOrgUnitList(processInstanceId);
         } else {

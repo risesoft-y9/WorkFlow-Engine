@@ -45,7 +45,8 @@ public interface ItemStartNodeRoleService {
      * @param taskDefKey
      * @return
      */
-    ItemStartNodeRole findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId, String taskDefKey);
+    ItemStartNodeRole findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
+        String taskDefKey);
 
     /**
      * Description:

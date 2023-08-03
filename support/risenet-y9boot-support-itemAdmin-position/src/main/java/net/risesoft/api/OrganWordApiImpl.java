@@ -49,11 +49,13 @@ public class OrganWordApiImpl implements OrganWordApi {
      */
     @Override
     @GetMapping(value = "/checkNumberStr", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Integer checkNumberStr(String tenantId, String userId, String characterValue, String custom, Integer year, Integer numberTemp, String itemId, Integer common, String processSerialNumber) throws Exception {
+    public Integer checkNumberStr(String tenantId, String userId, String characterValue, String custom, Integer year,
+        Integer numberTemp, String itemId, Integer common, String processSerialNumber) throws Exception {
         Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Integer status = organWordService.checkNumberStr(characterValue, custom, year, numberTemp, itemId, common, processSerialNumber);
+        Integer status = organWordService.checkNumberStr(characterValue, custom, year, numberTemp, itemId, common,
+            processSerialNumber);
         return status;
     }
 
@@ -71,7 +73,8 @@ public class OrganWordApiImpl implements OrganWordApi {
      */
     @Override
     @GetMapping(value = "/exist", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> exist(String tenantId, String userId, String custom, String processSerialNumber, String processInstanceId, String itembox) throws Exception {
+    public Map<String, Object> exist(String tenantId, String userId, String custom, String processSerialNumber,
+        String processInstanceId, String itembox) throws Exception {
         Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -93,11 +96,13 @@ public class OrganWordApiImpl implements OrganWordApi {
      */
     @Override
     @GetMapping(value = "/findByCustom", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findByCustom(String tenantId, String userId, String custom, String itemId, String processDefinitionId, String taskDefKey) throws Exception {
+    public List<Map<String, Object>> findByCustom(String tenantId, String userId, String custom, String itemId,
+        String processDefinitionId, String taskDefKey) throws Exception {
         Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> listMap = organWordService.findByCustom(itemId, processDefinitionId, taskDefKey, custom);
+        List<Map<String, Object>> listMap =
+            organWordService.findByCustom(itemId, processDefinitionId, taskDefKey, custom);
         return listMap;
     }
 
@@ -116,7 +121,8 @@ public class OrganWordApiImpl implements OrganWordApi {
      */
     @Override
     @GetMapping(value = "/getNumber", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getNumber(String tenantId, String userId, String custom, String characterValue, Integer year, Integer common, String itemId) throws Exception {
+    public Map<String, Object> getNumber(String tenantId, String userId, String custom, String characterValue,
+        Integer year, Integer common, String itemId) throws Exception {
         Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -139,7 +145,8 @@ public class OrganWordApiImpl implements OrganWordApi {
      */
     @Override
     @GetMapping(value = "/getNumberOnly", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Integer getNumberOnly(String tenantId, String userId, String custom, String characterValue, Integer year, Integer common, String itemId) throws Exception {
+    public Integer getNumberOnly(String tenantId, String userId, String custom, String characterValue, Integer year,
+        Integer common, String itemId) throws Exception {
         Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);

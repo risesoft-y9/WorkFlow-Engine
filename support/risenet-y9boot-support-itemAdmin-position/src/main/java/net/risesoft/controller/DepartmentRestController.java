@@ -51,7 +51,8 @@ public class DepartmentRestController {
      */
     @RequestMapping(value = "/findDeptAndUserById", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Result<List<Map<String, Object>>> findDeptAndUserById(@RequestParam(required = false) String id, @RequestParam(required = false) String name) {
+    public Y9Result<List<Map<String, Object>>> findDeptAndUserById(@RequestParam(required = false) String id,
+        @RequestParam(required = false) String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(id)) {

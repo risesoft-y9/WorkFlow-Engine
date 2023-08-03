@@ -108,15 +108,18 @@ public class DataCenterService {
      * @param processDefinitionKey
      * @param processDefinitionId
      */
-    public List<EformInfo> getEformInfo(String processInstanceId, String processDefinitionKey, String processDefinitionId) {
+    public List<EformInfo> getEformInfo(String processInstanceId, String processDefinitionKey,
+        String processDefinitionId) {
         Connection connection = null;
         List<EformInfo> elist = new ArrayList<EformInfo>();
         try {
-            LOGGER.info("************************************itemAdmin保存表单数据到数据中心***********************************************");
+            LOGGER.info(
+                "************************************itemAdmin保存表单数据到数据中心***********************************************");
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             String itemId = processParam.getItemId();
             String processSerialNumber = processParam.getProcessSerialNumber();
-            List<Y9FormItemBind> formBindData = y9FormItemBindService.findByItemIdAndProcDefId(itemId, processDefinitionId);
+            List<Y9FormItemBind> formBindData =
+                y9FormItemBindService.findByItemIdAndProcDefId(itemId, processDefinitionId);
             for (Y9FormItemBind y9Form : formBindData) {
                 EformInfo eformInfo = new EformInfo();
                 String fieldNames = "";
@@ -136,15 +139,19 @@ public class DataCenterService {
                     } else if ("mysql".equals(dialect)) {
                         sqlStr = new StringBuffer("SELECT * FROM " + tableName + " where guid =?");
                     }
-                    List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), processSerialNumber);
+                    List<Map<String, Object>> datamap =
+                        jdbcTemplate4Tenant.queryForList(sqlStr.toString(), processSerialNumber);
                     if (datamap.size() > 0) {
-                        List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(y9Form.getFormId(), tableName);
+                        List<Y9FormField> elementList =
+                            y9FormFieldRepository.findByFormIdAndTableName(y9Form.getFormId(), tableName);
                         for (Y9FormField element : elementList) {
                             String fieldName = element.getFieldName();
                             String fieldCnName = element.getFieldCnName();
-                            if (!element.getFieldName().equals("processInstanceId") && !element.getFieldName().equals("guid")) {
+                            if (!element.getFieldName().equals("processInstanceId")
+                                && !element.getFieldName().equals("guid")) {
                                 fieldNames = Y9Util.genCustomStr(fieldNames, fieldCnName, "&");
-                                fieldValues = Y9Util.genCustomStr(fieldValues, datamap.get(0).get(fieldName) != null ? datamap.get(0).get(fieldName).toString() : "", "&");
+                                fieldValues = Y9Util.genCustomStr(fieldValues, datamap.get(0).get(fieldName) != null
+                                    ? datamap.get(0).get(fieldName).toString() : "", "&");
                             }
                         }
                     }
@@ -225,13 +232,16 @@ public class DataCenterService {
      */
     @SuppressWarnings("unchecked")
     public boolean saveToDateCenter(String processInstanceId) {
-        LOGGER.info("************************************itemAdmin保存办结数据到数据中心***********************************************");
+        LOGGER.info(
+            "************************************itemAdmin保存办结数据到数据中心***********************************************");
         OfficeInfo officeInfo = new OfficeInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
         Position position = Y9LoginUserHolder.getPosition();
         try {
-            HistoricProcessInstanceModel processInstance = historicProcessManager.getById(Y9LoginUserHolder.getTenantId(), processInstanceId);
-            HistoricVariableInstanceModel vmap = historicVariableManager.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, "infoOvert", "");
+            HistoricProcessInstanceModel processInstance =
+                historicProcessManager.getById(Y9LoginUserHolder.getTenantId(), processInstanceId);
+            HistoricVariableInstanceModel vmap = historicVariableManager.getByProcessInstanceIdAndVariableName(tenantId,
+                processInstanceId, "infoOvert", "");
 
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             String itemId = processParam.getItemId();
@@ -309,7 +319,8 @@ public class DataCenterService {
             officeInfo.setAttachments(aList);
 
             String processDefinitionId = processInstance.getProcessDefinitionId();
-            List<EformInfo> elist = this.getEformInfo(processInstanceId, processDefinitionId.split(":")[0], processDefinitionId);
+            List<EformInfo> elist =
+                this.getEformInfo(processInstanceId, processDefinitionId.split(":")[0], processDefinitionId);
             officeInfo.setEforms(elist);
 
             boolean b = officeInfoManager.saveOfficeInfo(tenantId, officeInfo);
@@ -324,12 +335,14 @@ public class DataCenterService {
 
     @SuppressWarnings("unchecked")
     public boolean saveToDateCenter1(String processInstanceId, String processDefinitionId) {
-        LOGGER.info("************************************itemAdmin保存办结数据到数据中心***********************************************");
+        LOGGER.info(
+            "************************************itemAdmin保存办结数据到数据中心***********************************************");
         OfficeInfo officeInfo = new OfficeInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            String sql = "SELECT v.TEXT_ from act_hi_varinst_2023 v where v.NAME_ = 'infoOvert' and v.PROC_INST_ID_ = '" + processInstanceId + "'";
+            String sql = "SELECT v.TEXT_ from act_hi_varinst_2023 v where v.NAME_ = 'infoOvert' and v.PROC_INST_ID_ = '"
+                + processInstanceId + "'";
             List<Map<String, Object>> list0 = jdbcTemplate4Tenant.queryForList(sql);
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             String itemId = processParam.getItemId();
@@ -378,7 +391,9 @@ public class DataCenterService {
                 associatedId = associatedFile.getAssociatedId();
             }
 
-            sql = "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P.END_TIME_,1,19) as END_TIME_ FROM ACT_HI_PROCINST_2023 P WHERE P .PROC_INST_ID_ ='" + processInstanceId + "'";
+            sql =
+                "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P.END_TIME_,1,19) as END_TIME_ FROM ACT_HI_PROCINST_2023 P WHERE P .PROC_INST_ID_ ='"
+                    + processInstanceId + "'";
             List<Map<String, Object>> list1 = jdbcTemplate4Tenant.queryForList(sql);
 
             officeInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -409,7 +424,8 @@ public class DataCenterService {
             officeInfo.setHistorys(hisList);
             officeInfo.setAttachments(aList);
 
-            List<EformInfo> elist = this.getEformInfo(processInstanceId, processDefinitionId.split(":")[0], processDefinitionId);
+            List<EformInfo> elist =
+                this.getEformInfo(processInstanceId, processDefinitionId.split(":")[0], processDefinitionId);
             officeInfo.setEforms(elist);
 
             boolean b = officeInfoManager.saveOfficeInfo(tenantId, officeInfo);

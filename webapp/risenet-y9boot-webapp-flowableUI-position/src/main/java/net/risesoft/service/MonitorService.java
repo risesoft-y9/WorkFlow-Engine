@@ -18,7 +18,8 @@ public interface MonitorService {
      * @param rows
      * @return
      */
-    Y9Page<Map<String, Object>> deptList(String itemId, String searchName, String userName, String state, String year, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> deptList(String itemId, String searchName, String userName, String state, String year,
+        Integer page, Integer rows);
 
     /**
      * 监控办件
@@ -32,7 +33,8 @@ public interface MonitorService {
      * @param rows
      * @return
      */
-    Y9Page<Map<String, Object>> monitorBanjianList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> monitorBanjianList(String searchName, String itemId, String userName, String state,
+        String year, Integer page, Integer rows);
 
     /**
      * 监控阅件列表
@@ -47,7 +49,8 @@ public interface MonitorService {
      * @param rows
      * @return
      */
-    Y9Page<Map<String, Object>> monitorChaosongList(String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> monitorChaosongList(String searchName, String itemId, String senderName,
+        String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 监控在办列表
@@ -58,7 +61,8 @@ public interface MonitorService {
      * @param rows
      * @return
      */
-    Y9Page<Map<String, Object>> monitorDoingList(String processDefinitionKey, String searchTerm, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> monitorDoingList(String processDefinitionKey, String searchTerm, Integer page,
+        Integer rows);
 
     /**
      * 获取监控办结列表
@@ -69,7 +73,8 @@ public interface MonitorService {
      * @param rows
      * @return
      */
-    Y9Page<Map<String, Object>> monitorDoneList(String processDefinitionKey, String searchTerm, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> monitorDoneList(String processDefinitionKey, String searchTerm, Integer page,
+        Integer rows);
 
     /**
      * 获取回收列表

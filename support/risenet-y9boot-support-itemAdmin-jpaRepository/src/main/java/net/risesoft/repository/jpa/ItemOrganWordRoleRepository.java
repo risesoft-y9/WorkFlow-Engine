@@ -14,7 +14,8 @@ import net.risesoft.entity.ItemOrganWordRole;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemOrganWordRoleRepository extends JpaRepository<ItemOrganWordRole, String>, JpaSpecificationExecutor<ItemOrganWordRole> {
+public interface ItemOrganWordRoleRepository
+    extends JpaRepository<ItemOrganWordRole, String>, JpaSpecificationExecutor<ItemOrganWordRole> {
 
     List<ItemOrganWordRole> findByItemOrganWordBindId(String itemOrganWordBindId);
 

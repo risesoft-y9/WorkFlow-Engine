@@ -12,10 +12,7 @@
 //
 package org.artofsolving.jodconverter;
 
-import static org.artofsolving.jodconverter.office.OfficeUtils.SERVICE_DESKTOP;
-import static org.artofsolving.jodconverter.office.OfficeUtils.cast;
-import static org.artofsolving.jodconverter.office.OfficeUtils.toUnoProperties;
-import static org.artofsolving.jodconverter.office.OfficeUtils.toUrl;
+import static org.artofsolving.jodconverter.office.OfficeUtils.*;
 
 import java.io.File;
 import java.util.Map;
@@ -104,7 +101,9 @@ public abstract class AbstractConversionTask implements OfficeTask {
         } catch (IllegalArgumentException illegalArgumentException) {
             throw new OfficeException("could not load document: " + inputFile.getName(), illegalArgumentException);
         } catch (ErrorCodeIOException errorCodeIoException) {
-            throw new OfficeException("could not load document: " + inputFile.getName() + "; errorCode: " + errorCodeIoException.ErrCode, errorCodeIoException);
+            throw new OfficeException(
+                "could not load document: " + inputFile.getName() + "; errorCode: " + errorCodeIoException.ErrCode,
+                errorCodeIoException);
         } catch (IOException ioException) {
             throw new OfficeException("could not load document: " + inputFile.getName(), ioException);
         }
@@ -134,7 +133,9 @@ public abstract class AbstractConversionTask implements OfficeTask {
         try {
             cast(XStorable.class, document).storeToURL(toUrl(outputFile), toUnoProperties(storeProperties));
         } catch (ErrorCodeIOException errorCodeIoException) {
-            throw new OfficeException("could not store document: " + outputFile.getName() + "; errorCode: " + errorCodeIoException.ErrCode, errorCodeIoException);
+            throw new OfficeException(
+                "could not store document: " + outputFile.getName() + "; errorCode: " + errorCodeIoException.ErrCode,
+                errorCodeIoException);
         } catch (IOException ioException) {
             throw new OfficeException("could not store document: " + outputFile.getName(), ioException);
         }

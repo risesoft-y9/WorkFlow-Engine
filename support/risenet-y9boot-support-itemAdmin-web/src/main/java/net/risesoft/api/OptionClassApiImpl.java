@@ -25,23 +25,23 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/services/rest/optionClass")
 public class OptionClassApiImpl implements OptionClassApi {
 
-	@Autowired
-	private Y9FormOptionClassService y9FormOptionClassService;
-	
-	@Override
-	@GetMapping(value = "/getOptionValueList", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<Map<String, Object>> getOptionValueList(String tenantId, String type) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		List<Y9FormOptionValue> list = y9FormOptionClassService.findByTypeOrderByTabIndexAsc(type);
-		List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-		for (Y9FormOptionValue option : list) {
-			Map<String, Object> map = new HashMap<String, Object>(16);
-			map.put("code", option.getCode());
-			map.put("name", option.getName());
-			map.put("defaultSelected", option.getDefaultSelected());
-			listMap.add(map);
-		}
-		return listMap;
-	}
+    @Autowired
+    private Y9FormOptionClassService y9FormOptionClassService;
+
+    @Override
+    @GetMapping(value = "/getOptionValueList", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Map<String, Object>> getOptionValueList(String tenantId, String type) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<Y9FormOptionValue> list = y9FormOptionClassService.findByTypeOrderByTabIndexAsc(type);
+        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        for (Y9FormOptionValue option : list) {
+            Map<String, Object> map = new HashMap<String, Object>(16);
+            map.put("code", option.getCode());
+            map.put("name", option.getName());
+            map.put("defaultSelected", option.getDefaultSelected());
+            listMap.add(map);
+        }
+        return listMap;
+    }
 
 }

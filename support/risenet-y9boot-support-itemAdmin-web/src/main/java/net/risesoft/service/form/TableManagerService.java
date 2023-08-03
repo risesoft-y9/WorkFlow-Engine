@@ -230,7 +230,8 @@ public class TableManagerService {
     protected String getAllPrimaryKeyFields(String tableId) throws Exception {
         StringBuffer primaryKey = new StringBuffer();
         try {
-            List<Y9TableField> list = y9TableFieldRepository.findByTableIdAndIsSystemFieldOrderByDisplayOrderAsc(tableId, 1);
+            List<Y9TableField> list =
+                y9TableFieldRepository.findByTableIdAndIsSystemFieldOrderByDisplayOrderAsc(tableId, 1);
             for (Y9TableField y9TableField : list) {
                 String filedName = y9TableField.getFieldName();
                 if (StringUtils.isNotBlank(filedName)) {

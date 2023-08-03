@@ -1,13 +1,8 @@
 package net.risesoft.api;
 
-import net.risesoft.api.itemadmin.SpeakInfoApi;
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.entity.SpeakInfo;
-import net.risesoft.model.Person;
-import net.risesoft.model.itemadmin.SpeakInfoModel;
-import net.risesoft.service.SpeakInfoService;
-import net.risesoft.util.ItemAdminModelConvertUtil;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import net.risesoft.api.itemadmin.SpeakInfoApi;
+import net.risesoft.api.org.PersonApi;
+import net.risesoft.entity.SpeakInfo;
+import net.risesoft.model.Person;
+import net.risesoft.model.itemadmin.SpeakInfoModel;
+import net.risesoft.service.SpeakInfoService;
+import net.risesoft.util.ItemAdminModelConvertUtil;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 沟通交流接口
@@ -110,7 +111,8 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * @return String
      */
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public String saveOrUpdate(String tenantId, String userId, @RequestBody SpeakInfoModel speakInfoModel) {
         Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setTenantId(tenantId);

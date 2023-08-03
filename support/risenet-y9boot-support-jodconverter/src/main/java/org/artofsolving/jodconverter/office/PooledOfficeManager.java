@@ -71,7 +71,8 @@ class PooledOfficeManager implements OfficeManager {
             @Override
             public void run() {
                 if (settings.getMaxTasksPerProcess() > 0 && ++taskCount == settings.getMaxTasksPerProcess() + 1) {
-                    logger.info(String.format("reached limit of %d maxTasksPerProcess: restarting", settings.getMaxTasksPerProcess()));
+                    logger.info(String.format("reached limit of %d maxTasksPerProcess: restarting",
+                        settings.getMaxTasksPerProcess()));
                     taskExecutor.setAvailable(false);
                     stopping = true;
                     managedOfficeProcess.restartAndWait();

@@ -78,7 +78,8 @@ public interface ItemOpinionFrameBindService {
      * @param taskDefKey
      * @return
      */
-    List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId, String taskDefKey);
+    List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
+        String processDefinitionId, String taskDefKey);
 
     /**
      * Description:
@@ -89,7 +90,8 @@ public interface ItemOpinionFrameBindService {
      * @param opinionFrameMark
      * @return
      */
-    ItemOpinionFrameBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(String itemId, String processDefinitionId, String taskDefKey, String opinionFrameMark);
+    ItemOpinionFrameBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(String itemId,
+        String processDefinitionId, String taskDefKey, String opinionFrameMark);
 
     /**
      * Description:
@@ -99,7 +101,8 @@ public interface ItemOpinionFrameBindService {
      * @param taskDefKey
      * @return
      */
-    List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String itemId, String processDefinitionId, String taskDefKey);
+    List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String itemId,
+        String processDefinitionId, String taskDefKey);
 
     /**
      * Description:

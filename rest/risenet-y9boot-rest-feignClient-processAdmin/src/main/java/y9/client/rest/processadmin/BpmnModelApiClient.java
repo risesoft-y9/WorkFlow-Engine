@@ -14,7 +14,8 @@ import net.risesoft.api.processadmin.BpmnModelApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "BpmnModelApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}", path = "/services/rest/bpmnModel")
+@FeignClient(contextId = "BpmnModelApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
+    path = "/services/rest/bpmnModel")
 public interface BpmnModelApiClient extends BpmnModelApi {
 
     /**
@@ -27,7 +28,8 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @PostMapping("/genProcessDiagram")
-    byte[] genProcessDiagram(@RequestParam("tenantId") String tenantId, @RequestParam("processId") String processId) throws Exception;
+    byte[] genProcessDiagram(@RequestParam("tenantId") String tenantId, @RequestParam("processId") String processId)
+        throws Exception;
 
     /**
      * 获取流程图模型
@@ -39,7 +41,8 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @GetMapping("/getBpmnModel")
-    Map<String, Object> getBpmnModel(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+    Map<String, Object> getBpmnModel(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
 
     /**
      * 获取流程图数据
@@ -51,6 +54,7 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @GetMapping("/getFlowChart")
-    Map<String, Object> getFlowChart(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+    Map<String, Object> getFlowChart(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
 
 }

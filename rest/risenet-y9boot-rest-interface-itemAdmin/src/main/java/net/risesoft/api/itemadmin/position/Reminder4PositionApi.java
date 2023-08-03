@@ -40,7 +40,8 @@ public interface Reminder4PositionApi {
      * @param msgContent 催办信息
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> saveReminder(String tenantId, String userId, String reminderId, String taskIds, String msgContent);
+    public Map<String, Object> saveReminder(String tenantId, String userId, String reminderId, String taskIds,
+        String msgContent);
 
     /**
      * 发送催办信息
@@ -56,7 +57,8 @@ public interface Reminder4PositionApi {
      * @param msgContent 催办信息
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> sendReminderMessage(String tenantId, String userId, String remType, String procInstId, String processInstanceId, String documentTitle, String taskId, String taskAssigneeId, String msgContent);
+    public Map<String, Object> sendReminderMessage(String tenantId, String userId, String remType, String procInstId,
+        String processInstanceId, String documentTitle, String taskId, String taskAssigneeId, String msgContent);
 
     /**
      * 更新催办信息
@@ -68,6 +70,7 @@ public interface Reminder4PositionApi {
      * @param msgContent 催办信息
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> updateReminder(String tenantId, String userId, String reminderId, String taskIds, String msgContent);
+    public Map<String, Object> updateReminder(String tenantId, String userId, String reminderId, String taskIds,
+        String msgContent);
 
 }

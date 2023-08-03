@@ -172,8 +172,10 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ProcessTrackModel saveOrUpdate(String tenantId, @RequestBody ProcessTrackModel processTrackModel) throws Exception {
+    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ProcessTrackModel saveOrUpdate(String tenantId, @RequestBody ProcessTrackModel processTrackModel)
+        throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         ProcessTrack processTrack = ItemAdminModelConvertUtil.processTrackModel2ProcessTrack(processTrackModel);
         ProcessTrack ptTemp = processTrackService.saveOrUpdate(processTrack);

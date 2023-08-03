@@ -140,7 +140,8 @@ public interface CustomRuntimeService {
      * @param map
      * @return
      */
-    ProcessInstance startProcessInstanceByKey4Position(String processDefinitionKey, String systemName, Map<String, Object> map);
+    ProcessInstance startProcessInstanceByKey4Position(String processDefinitionKey, String systemName,
+        Map<String, Object> map);
 
     /**
      * 挂起或者激活流程实例

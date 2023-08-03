@@ -48,7 +48,8 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
     @Override
     public Page<EntrustHistory> findByAssigneeId(String assigneeId, int page, int rows) {
         Pageable pageable = PageRequest.of(page - 1, rows);
-        Page<EntrustHistory> ehPage = entrustHistoryRepository.findByAssigneeIdOrderByStartTimeDesc(assigneeId, pageable);
+        Page<EntrustHistory> ehPage =
+            entrustHistoryRepository.findByAssigneeIdOrderByStartTimeDesc(assigneeId, pageable);
         return ehPage;
     }
 

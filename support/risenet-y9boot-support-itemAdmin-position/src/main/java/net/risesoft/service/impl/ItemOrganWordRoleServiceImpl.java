@@ -67,7 +67,8 @@ public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
     @Override
     @Transactional(readOnly = false)
     public ItemOrganWordRole saveOrUpdate(String itemOrganWordBindId, String roleId) {
-        ItemOrganWordRole role = itemOrganWordRoleRepository.findByItemOrganWordBindIdAndRoleId(itemOrganWordBindId, roleId);
+        ItemOrganWordRole role =
+            itemOrganWordRoleRepository.findByItemOrganWordBindIdAndRoleId(itemOrganWordBindId, roleId);
         if (null == role) {
             role = new ItemOrganWordRole();
             role.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));

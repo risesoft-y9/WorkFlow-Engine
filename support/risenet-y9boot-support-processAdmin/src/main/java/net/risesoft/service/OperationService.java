@@ -29,7 +29,8 @@ public interface OperationService {
      * @param reason
      * @param sponsorGuid
      */
-    void reposition4Position(String taskId, String targetTaskDefineKey, List<String> users, String reason, String sponsorGuid);
+    void reposition4Position(String taskId, String targetTaskDefineKey, List<String> users, String reason,
+        String sponsorGuid);
 
     /**
      * 退回

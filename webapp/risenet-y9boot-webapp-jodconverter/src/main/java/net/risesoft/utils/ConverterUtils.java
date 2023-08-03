@@ -38,7 +38,8 @@ public class ConverterUtils {
     }
 
     public OfficeDocumentConverter getDocumentConverter() {
-        OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager, new ControlDocumentFormatRegistry());
+        OfficeDocumentConverter converter =
+            new OfficeDocumentConverter(officeManager, new ControlDocumentFormatRegistry());
         converter.setDefaultLoadProperties(getLoadProperties());
         return converter;
     }

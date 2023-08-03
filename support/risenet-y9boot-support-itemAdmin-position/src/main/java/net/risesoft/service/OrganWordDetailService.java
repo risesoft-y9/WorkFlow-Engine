@@ -18,7 +18,8 @@ public interface OrganWordDetailService {
      * @param itemId
      * @return
      */
-    OrganWordDetail findByCustomAndCharacterValueAndYearAndItemId(String custom, String characterValue, Integer year, String itemId);
+    OrganWordDetail findByCustomAndCharacterValueAndYearAndItemId(String custom, String characterValue, Integer year,
+        String itemId);
 
     /**
      * Description:

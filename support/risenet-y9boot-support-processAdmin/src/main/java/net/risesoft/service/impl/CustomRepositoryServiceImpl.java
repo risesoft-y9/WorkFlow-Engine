@@ -99,21 +99,25 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
 
     @Override
     public ProcessDefinition getLatestProcessDefinitionByKey(String processDefinitionKey) {
-        return repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).latestVersion().singleResult();
+        return repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey)
+            .latestVersion().singleResult();
     }
 
     @Override
     public List<ProcessDefinition> getLatestProcessDefinitionList() {
-        return repositoryService.createProcessDefinitionQuery().latestVersion().orderByProcessDefinitionKey().asc().list();
+        return repositoryService.createProcessDefinitionQuery().latestVersion().orderByProcessDefinitionKey().asc()
+            .list();
     }
 
     @Override
     public ProcessDefinition getPreviousProcessDefinitionById(String processDefinitionId) {
-        ProcessDefinition pd = repositoryService.createProcessDefinitionQuery().processDefinitionId(processDefinitionId).singleResult();
+        ProcessDefinition pd =
+            repositoryService.createProcessDefinitionQuery().processDefinitionId(processDefinitionId).singleResult();
         Integer version = pd.getVersion();
         String processDefinitionKey = pd.getKey();
         if (version > 1) {
-            pd = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).processDefinitionVersion(--version).singleResult();
+            pd = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey)
+                .processDefinitionVersion(--version).singleResult();
         }
         return pd;
     }
@@ -125,7 +129,8 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
 
     @Override
     public List<ProcessDefinition> getProcessDefinitionListByKey(String processDefinitionKey) {
-        return repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).orderByProcessDefinitionVersion().desc().list();
+        return repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey)
+            .orderByProcessDefinitionVersion().desc().list();
     }
 
     @Override
@@ -134,10 +139,13 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
         ProcessDefinition processDefinition = null;
         if (StringUtils.isNotBlank(processInstanceId) || StringUtils.isNotBlank(processDefinitionId)) {
             if (StringUtils.isNotBlank(processInstanceId)) {
-                ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-                processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(processInstance.getProcessDefinitionId()).singleResult();
+                ProcessInstance processInstance =
+                    runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+                processDefinition = repositoryService.createProcessDefinitionQuery()
+                    .processDefinitionId(processInstance.getProcessDefinitionId()).singleResult();
             } else if (StringUtils.isNotBlank(processDefinitionId)) {
-                processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(processDefinitionId).singleResult();
+                processDefinition = repositoryService.createProcessDefinitionQuery()
+                    .processDefinitionId(processDefinitionId).singleResult();
             }
         }
 
@@ -168,15 +176,18 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
                 sql = "select top 100 percent RES.* from ACT_RE_PROCDEF RES WHERE 1=1";
             } else if (DialectEnum.MYSQL.getValue().equals(processEngineConfiguration.getDatabaseType())) {
             }
-            sql += " and RES.VERSION_ = (select max(VERSION_) from ACT_RE_PROCDEF where KEY_ = RES.KEY_ ) order by RES.KEY_ asc";
+            sql +=
+                " and RES.VERSION_ = (select max(VERSION_) from ACT_RE_PROCDEF where KEY_ = RES.KEY_ ) order by RES.KEY_ asc";
             sql = Y9SqlPaginationUtil.generatePagedSql(processEngineConfiguration.getDataSource(), sql, 0, 1000);
-            List<ProcessDefinition> processDefinitionList = repositoryService.createNativeProcessDefinitionQuery().sql(sql).list();
+            List<ProcessDefinition> processDefinitionList =
+                repositoryService.createNativeProcessDefinitionQuery().sql(sql).list();
             Map<String, Object> mapTemp = null;
             if (tenantManager) {
                 for (ProcessDefinition processDefinition : processDefinitionList) {
                     mapTemp = new HashMap<String, Object>(16);
                     String deploymentId = processDefinition.getDeploymentId();
-                    Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
+                    Deployment deployment =
+                        repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
                     mapTemp.put("id", processDefinition.getId());
                     mapTemp.put("deploymentId", processDefinition.getDeploymentId());
                     mapTemp.put("name", processDefinition.getName());
@@ -185,17 +196,20 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
                     mapTemp.put("resourceName", processDefinition.getResourceName());
                     mapTemp.put("diagramResourceName", processDefinition.getDiagramResourceName());
                     mapTemp.put("suspended", processDefinition.isSuspended());
-                    mapTemp.put("deploymentTime", DateFormatUtils.format(deployment.getDeploymentTime(), "yyyy-MM-dd HH:mm:ss"));
+                    mapTemp.put("deploymentTime",
+                        DateFormatUtils.format(deployment.getDeploymentTime(), "yyyy-MM-dd HH:mm:ss"));
                     items.add(mapTemp);
                 }
             } else {
-                List<Resource> resourceList = personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId);
+                List<Resource> resourceList =
+                    personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId);
                 for (ProcessDefinition processDefinition : processDefinitionList) {
                     for (Resource resource : resourceList) {
                         if (resource.getCustomId().equals(processDefinition.getKey())) {
                             mapTemp = new HashMap<String, Object>(16);
                             String deploymentId = processDefinition.getDeploymentId();
-                            Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
+                            Deployment deployment =
+                                repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
                             mapTemp.put("id", processDefinition.getId());
                             mapTemp.put("deploymentId", processDefinition.getDeploymentId());
                             mapTemp.put("name", processDefinition.getName());
@@ -204,7 +218,8 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
                             mapTemp.put("resourceName", processDefinition.getResourceName());
                             mapTemp.put("diagramResourceName", processDefinition.getDiagramResourceName());
                             mapTemp.put("suspended", processDefinition.isSuspended());
-                            mapTemp.put("deploymentTime", DateFormatUtils.format(deployment.getDeploymentTime(), "yyyy-MM-dd HH:mm:ss"));
+                            mapTemp.put("deploymentTime",
+                                DateFormatUtils.format(deployment.getDeploymentTime(), "yyyy-MM-dd HH:mm:ss"));
                             items.add(mapTemp);
                         }
                     }

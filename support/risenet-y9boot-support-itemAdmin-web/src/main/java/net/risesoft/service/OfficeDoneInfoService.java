@@ -76,7 +76,8 @@ public interface OfficeDoneInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllByDeptId(String deptId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllByDeptId(String deptId, String title, String itemId, String userName, String state,
+        String year, Integer page, Integer rows);
 
     /**
      * Description: 个人所有件搜索
@@ -91,7 +92,8 @@ public interface OfficeDoneInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllByUserId(String userId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllByUserId(String userId, String title, String itemId, String userName, String state,
+        String year, Integer page, Integer rows);
 
     /**
      * 监控办件列表
@@ -105,7 +107,8 @@ public interface OfficeDoneInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllList(String searchName, String itemId, String userName, String state, String year,
+        Integer page, Integer rows);
 
     /**
      * 获取监控在办，办结件列表
@@ -119,7 +122,8 @@ public interface OfficeDoneInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchByItemId(String title, String itemId, String state, String startdate, String enddate, Integer page, Integer rows);
+    Map<String, Object> searchByItemId(String title, String itemId, String state, String startdate, String enddate,
+        Integer page, Integer rows);
 
     /**
      * 获取个人办结件列表
@@ -133,5 +137,6 @@ public interface OfficeDoneInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchByUserId(String userId, String title, String itemId, String startdate, String enddate, Integer page, Integer rows);
+    Map<String, Object> searchByUserId(String userId, String title, String itemId, String startdate, String enddate,
+        Integer page, Integer rows);
 }

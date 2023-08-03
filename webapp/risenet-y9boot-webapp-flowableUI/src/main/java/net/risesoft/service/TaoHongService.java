@@ -21,7 +21,7 @@ public class TaoHongService {
 
     public void word2RedDocument(String content, String destDocx) {
         try {
-            LOGGER.info("套红开始");      
+            LOGGER.info("套红开始");
             // 模板文件地址
             String model = "C:\\Users\\10858\\Desktop\\开发资料\\深圳罗湖区.docx";
             // 模板文件 参数填写

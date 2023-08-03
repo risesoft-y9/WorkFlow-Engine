@@ -26,7 +26,8 @@ public interface ItemDoneApi {
      * @return
      * @throws Exception
      */
-    ItemPage<ActRuDetailModel> findBySystemName(String tenantId, String systemName, Integer page, Integer rows) throws Exception;
+    ItemPage<ActRuDetailModel> findBySystemName(String tenantId, String systemName, Integer page, Integer rows)
+        throws Exception;
 
     /**
      * 获取个人办结列表
@@ -39,7 +40,8 @@ public interface ItemDoneApi {
      * @return
      * @throws Exception
      */
-    ItemPage<ActRuDetailModel> findByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page, Integer rows) throws Exception;
+    ItemPage<ActRuDetailModel> findByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        Integer page, Integer rows) throws Exception;
 
     /**
      * 监控办结列表搜索
@@ -51,7 +53,8 @@ public interface ItemDoneApi {
      * @return
      * @throws Exception
      */
-    ItemPage<ActRuDetailModel> searchBySystemName(String tenantId, String systemName, String tableName, String searchMapStr, Integer page, Integer rows) throws Exception;
+    ItemPage<ActRuDetailModel> searchBySystemName(String tenantId, String systemName, String tableName,
+        String searchMapStr, Integer page, Integer rows) throws Exception;
 
     /**
      * 个人办结列表搜索
@@ -64,5 +67,6 @@ public interface ItemDoneApi {
      * @return
      * @throws Exception
      */
-    ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(String tenantId, String userId, String systemName, String tableName, String searchMapStr, Integer page, Integer rows) throws Exception;
+    ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        String tableName, String searchMapStr, Integer page, Integer rows) throws Exception;
 }

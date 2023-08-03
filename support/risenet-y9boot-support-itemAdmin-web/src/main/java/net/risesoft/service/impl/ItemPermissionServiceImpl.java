@@ -77,11 +77,13 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
             if (latestpd.getVersion() > 1) {
-                ProcessDefinitionModel previouspd = repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
+                ProcessDefinitionModel previouspd =
+                    repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
                 previouspdId = previouspd.getId();
             }
         }
-        List<ItemPermission> previousipList = itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
+        List<ItemPermission> previousipList =
+            itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
 
         List<Map<String, Object>> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false);
         /**
@@ -93,7 +95,9 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                 String taskDefKeyTemp = ip.getTaskDefKey(), roleId = ip.getRoleId();
                 Integer roleType = ip.getRoleType();
                 if (currentTaskDefKey.equals(taskDefKeyTemp)) {
-                    ItemPermission ipTemp = itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId, latestpdId, currentTaskDefKey, roleId);
+                    ItemPermission ipTemp =
+                        itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId,
+                            latestpdId, currentTaskDefKey, roleId);
                     if (null == ipTemp) {
                         this.save(itemId, latestpdId, currentTaskDefKey, roleId, roleType);
                     }
@@ -109,9 +113,11 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     @Override
-    public List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId, String taskDefKey) {
+    public List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
+        String processDefinitionId, String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemPermission> ipList = itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, processDefinitionId, taskDefKey);
+        List<ItemPermission> ipList = itemPermissionRepository
+            .findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, processDefinitionId, taskDefKey);
         for (ItemPermission ip : ipList) {
             if ((ip.getRoleType() == 1)) {
                 Role role = roleManager.getRole(ip.getRoleId());
@@ -134,16 +140,21 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     @Override
-    public ItemPermission findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(String itemId, String processDefinitionId, String taskdefKey, String roleId) {
-        return itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId, processDefinitionId, taskdefKey, roleId);
+    public ItemPermission findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(String itemId,
+        String processDefinitionId, String taskdefKey, String roleId) {
+        return itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId,
+            processDefinitionId, taskdefKey, roleId);
     }
 
     @Override
-    public List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(String itemId, String processDefinitionId, String taskDefKey) {
+    public List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(String itemId,
+        String processDefinitionId, String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemPermission> ipList = itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, processDefinitionId, taskDefKey);
+        List<ItemPermission> ipList = itemPermissionRepository
+            .findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, processDefinitionId, taskDefKey);
         if (ipList.isEmpty()) {
-            ipList = itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId, processDefinitionId);
+            ipList = itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(itemId,
+                processDefinitionId);
         }
         for (ItemPermission ip : ipList) {
             if (ip.getRoleType() == 4) {
@@ -167,9 +178,11 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     @Override
-    public Map<String, Object> getTabMap(String itemId, String processDefinitionId, String taskDefKey, String processInstanceId) {
+    public Map<String, Object> getTabMap(String itemId, String processDefinitionId, String taskDefKey,
+        String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemPermission> objectPermList = findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
+        List<ItemPermission> objectPermList =
+            findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("existPerson", false);
         map.put("existDepartment", false);
@@ -216,9 +229,11 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     @Override
-    public Map<String, Object> getTabMap4Position(String itemId, String processDefinitionId, String taskDefKey, String processInstanceId) {
+    public Map<String, Object> getTabMap4Position(String itemId, String processDefinitionId, String taskDefKey,
+        String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemPermission> objectPermList = findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
+        List<ItemPermission> objectPermList =
+            findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
         Map<String, Object> map = new HashMap<String, Object>(16);
         boolean existDepartment = false;
         boolean existPosition = false;
@@ -263,14 +278,17 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     @Override
     @Transactional(readOnly = false)
     public void removePerm(String itemId, String processDefinitionId) {
-        List<ItemPermission> ipList = itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+        List<ItemPermission> ipList =
+            itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         itemPermissionRepository.deleteAll(ipList);
     }
 
     @Override
     @Transactional(readOnly = false)
-    public ItemPermission save(String itemId, String processDefinitionId, String taskDefKey, String roleId, Integer roleType) {
-        ItemPermission oldip = this.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId, processDefinitionId, taskDefKey, roleId);
+    public ItemPermission save(String itemId, String processDefinitionId, String taskDefKey, String roleId,
+        Integer roleType) {
+        ItemPermission oldip = this.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId,
+            processDefinitionId, taskDefKey, roleId);
         if (null == oldip) {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemPermission newip = new ItemPermission();

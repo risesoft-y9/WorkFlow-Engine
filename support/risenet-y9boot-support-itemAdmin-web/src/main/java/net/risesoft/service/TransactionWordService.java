@@ -44,7 +44,8 @@ public interface TransactionWordService {
     TransactionWord getByProcessSerialNumber(String processSerialNumber);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param tw
      */
     void save(TransactionWord tw);
@@ -59,7 +60,8 @@ public interface TransactionWordService {
      * @param processSerialNumber
      * @param isTaoHong
      */
-    void saveTransactionWord(String fileStoreId, String fileSize, String documenttitle, String fileType, String processSerialNumber, String isTaoHong);
+    void saveTransactionWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
+        String processSerialNumber, String isTaoHong);
 
     /**
      * Description: 保存正文信息
@@ -81,6 +83,7 @@ public interface TransactionWordService {
      * @param userId
      * @param id
      */
-    void updateTransactionWordById(String fileStoreId, String fileType, String fileName, String fileSize, String isTaoHong, String userId, String id);
+    void updateTransactionWordById(String fileStoreId, String fileType, String fileName, String fileSize,
+        String isTaoHong, String userId, String id);
 
 }

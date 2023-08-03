@@ -103,7 +103,8 @@ public class SignController {
      * @return
      */
     @RequestMapping(value = "/getDay")
-    public Y9Result<String> getDay(@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
+    public Y9Result<String> getDay(@RequestParam(required = false) String startDate,
+        @RequestParam(required = false) String endDate) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             String day = "";
@@ -137,11 +138,13 @@ public class SignController {
      * @return
      */
     @RequestMapping("/getDayOrHour")
-    public Y9Result<String> getDayOrHour(String type, String leaveStartTime, String leaveEndTime, String startSel, String endSel, String selStartTime, String selEndTime) {
+    public Y9Result<String> getDayOrHour(String type, String leaveStartTime, String leaveEndTime, String startSel,
+        String endSel, String selStartTime, String selEndTime) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr = "";
-            CalendarConfigModel calendarConfig = calendarConfigManager.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
+            CalendarConfigModel calendarConfig =
+                calendarConfigManager.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
             dayStr = calendarConfig.getEveryYearHoliday();
             String day = "天", halfDay = "半天", hs = "小时";
             int hd = 12;
@@ -211,7 +214,8 @@ public class SignController {
                         BigDecimal a = BigDecimal.valueOf(hours);
                         double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
                         // 减去中间包含的1.5个小时
-                        if (Integer.valueOf(selStartTime.split(PunctuationConsts.COLON)[0]) < hd && Integer.valueOf(selEndTime.split(PunctuationConsts.COLON)[0]) > hd) {
+                        if (Integer.valueOf(selStartTime.split(PunctuationConsts.COLON)[0]) < hd
+                            && Integer.valueOf(selEndTime.split(PunctuationConsts.COLON)[0]) > hd) {
                             waitTime = waitTime - 1.5;
                         }
                         return Y9Result.success(String.valueOf(waitTime), "获取成功");

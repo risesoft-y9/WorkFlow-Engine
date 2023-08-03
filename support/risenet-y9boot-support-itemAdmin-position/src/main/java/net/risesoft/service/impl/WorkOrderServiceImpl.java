@@ -67,7 +67,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
     @Override
     @Transactional(readOnly = false)
-    public Map<String, Object> changeWorkOrderState(String processSerialNumber, String state, String processInstanceId, String resultFeedback) {
+    public Map<String, Object> changeWorkOrderState(String processSerialNumber, String state, String processInstanceId,
+        String resultFeedback) {
         Y9LoginUserHolder.setTenantId(myTenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -210,7 +211,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         try {
             String handleType = "1";
             if (workOrder.getHandleType().equals(handleType)) {
-                List<OrgUnit> orgUnitList = roleManager.listOrgUnitsById(myTenantId, workOrderRoleId, OrgTypeEnum.POSITION.getEnName());
+                List<OrgUnit> orgUnitList =
+                    roleManager.listOrgUnitsById(myTenantId, workOrderRoleId, OrgTypeEnum.POSITION.getEnName());
                 TodoTask todo = new TodoTask();
                 todo.setTenantId(myTenantId);
                 todo.setSystemName("systemWorkOrder");
@@ -228,7 +230,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
                 todo.setUrgency(urgency);
                 todo.setDocNumber(workOrder.getNumber());
                 todo.setProcessInstanceId(workOrder.getGuid());
-                String url = workOrderIndex + "?itemId=" + workOrderItemId + "&processSerialNumber=" + workOrder.getGuid() + "&type=fromTodo&appName=systemWorkOrder";
+                String url = workOrderIndex + "?itemId=" + workOrderItemId + "&processSerialNumber="
+                    + workOrder.getGuid() + "&type=fromTodo&appName=systemWorkOrder";
                 todo.setUrl(url);
                 for (OrgUnit orgUnit : orgUnitList) {
                     // 提交的工单taskid由processSerialNumber:userId组合
@@ -291,14 +294,16 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     @Override
-    public Map<String, Object> workOrderList(String userId, String searchTerm, String handleType, Integer page, Integer rows) {
+    public Map<String, Object> workOrderList(String userId, String searchTerm, String handleType, Integer page,
+        Integer rows) {
         Y9LoginUserHolder.setTenantId(myTenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
             Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
             PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-            Page<WorkOrderEntity> pageList = workOrderRepository.findByUserIdAndHandleType(userId, handleType, pageable);
+            Page<WorkOrderEntity> pageList =
+                workOrderRepository.findByUserIdAndHandleType(userId, handleType, pageable);
             map.put("currpage", page);
             map.put("totalpages", pageList.getTotalPages());
             map.put("total", pageList.getTotalElements());

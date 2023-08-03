@@ -46,14 +46,18 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
     @Transactional(readOnly = false)
     public void copyTabItemBind(String itemId, String processDefinitionId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(), personName = person.getName();
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(),
+            personName = person.getName();
         ProcessDefinitionModel currentPd = repositoryManager.getProcessDefinitionById(tenantId, processDefinitionId);
         if (currentPd.getVersion() > 1) {
-            ProcessDefinitionModel previouspd = repositoryManager.getPreviousProcessDefinitionById(tenantId, processDefinitionId);
-            List<ItemTabBind> bindList = tabItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, previouspd.getId());
+            ProcessDefinitionModel previouspd =
+                repositoryManager.getPreviousProcessDefinitionById(tenantId, processDefinitionId);
+            List<ItemTabBind> bindList =
+                tabItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, previouspd.getId());
             for (ItemTabBind bind : bindList) {
                 String tabId = bind.getTabId();
-                ItemTabBind bindTemp = tabItemBindRepository.findByItemIdAndProcessDefinitionIdAndTabId(itemId, processDefinitionId, tabId);
+                ItemTabBind bindTemp = tabItemBindRepository.findByItemIdAndProcessDefinitionIdAndTabId(itemId,
+                    processDefinitionId, tabId);
                 if (null == bindTemp) {
                     bindTemp = new ItemTabBind();
                     bindTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -79,7 +83,8 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
 
     @Override
     public List<ItemTabBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
-        List<ItemTabBind> tibList = tabItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, processDefinitionId);
+        List<ItemTabBind> tibList =
+            tabItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, processDefinitionId);
         for (ItemTabBind tib : tibList) {
             TabEntity tabEntity = tabEntityService.findOne(tib.getTabId());
             if (null != tabEntity) {

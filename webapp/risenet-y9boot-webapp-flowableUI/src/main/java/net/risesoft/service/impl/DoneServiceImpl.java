@@ -63,7 +63,8 @@ public class DoneServiceImpl implements DoneService {
         retMap = officeDoneInfoManager.searchByUserId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
         List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
         ObjectMapper objectMapper = new ObjectMapper();
-        List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {});
+        List<OfficeDoneInfoModel> hpiList =
+            objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {});
         int serialNumber = (page - 1) * rows;
         Map<String, Object> mapTemp = null;
         for (OfficeDoneInfoModel hpim : hpiList) {
@@ -90,7 +91,8 @@ public class DoneServiceImpl implements DoneService {
                 mapTemp.put("itemId", itemId);
                 mapTemp.put("level", level);
                 mapTemp.put("number", number);
-                int chaosongNum = chaoSongInfoManager.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
+                int chaosongNum =
+                    chaoSongInfoManager.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
                 mapTemp.put("chaosongNum", chaosongNum);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -99,7 +101,8 @@ public class DoneServiceImpl implements DoneService {
             serialNumber += 1;
             items.add(mapTemp);
         }
-        return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
+            Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
     }
 
     @SuppressWarnings("unchecked")
@@ -114,7 +117,8 @@ public class DoneServiceImpl implements DoneService {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         List<OfficeDoneInfoModel> list = (List<OfficeDoneInfoModel>)retMap.get("rows");
         ObjectMapper objectMapper = new ObjectMapper();
-        List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<OfficeDoneInfoModel>>() {});
+        List<OfficeDoneInfoModel> hpiModelList =
+            objectMapper.convertValue(list, new TypeReference<List<OfficeDoneInfoModel>>() {});
         int serialNumber = (page - 1) * rows;
         Map<String, Object> mapTemp = null;
         Map<String, Object> formDataMap = null;
@@ -142,7 +146,8 @@ public class DoneServiceImpl implements DoneService {
                 mapTemp.put("itemId", itemId);
                 mapTemp.put("level", level);
                 mapTemp.put("number", number);
-                int chaosongNum = chaoSongInfoManager.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
+                int chaosongNum =
+                    chaoSongInfoManager.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
                 mapTemp.put("chaosongNum", chaosongNum);
                 formDataMap = formDataManager.getData(tenantId, itemId, processSerialNumber);
                 if (formDataMap.get("leaveType") != null) {
@@ -166,6 +171,7 @@ public class DoneServiceImpl implements DoneService {
             serialNumber += 1;
             items.add(mapTemp);
         }
-        return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
+            Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
     }
 }

@@ -65,7 +65,8 @@ public class ValidTypeController {
      */
     @RequestMapping(value = "/getValidTypeList")
     @ResponseBody
-    public Map<String, Object> getValidTypeList(@RequestParam(required = false) String validType, @RequestParam(required = false) String validCnName) {
+    public Map<String, Object> getValidTypeList(@RequestParam(required = false) String validType,
+        @RequestParam(required = false) String validCnName) {
         Map<String, Object> map = y9ValidTypeService.getValidTypeList(validType, validCnName);
         return map;
     }

@@ -75,7 +75,8 @@ public interface VariableApi {
      * @param keys 变量keys
      * @return Map
      */
-    Map<String, Object> getVariablesByProcessInstanceId(String tenantId, String processInstanceId, Collection<String> keys);
+    Map<String, Object> getVariablesByProcessInstanceId(String tenantId, String processInstanceId,
+        Collection<String> keys);
 
     /**
      * 获取所有任务变量

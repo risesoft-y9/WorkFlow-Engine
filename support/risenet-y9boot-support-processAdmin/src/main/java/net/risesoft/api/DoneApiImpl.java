@@ -37,7 +37,8 @@ public class DoneApiImpl implements DoneApi {
      */
     @Override
     @GetMapping(value = "/getListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserId(String tenantId, String userId, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> getListByUserId(String tenantId, String userId, Integer page, Integer rows)
+        throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId is null !");
         }
@@ -58,7 +59,8 @@ public class DoneApiImpl implements DoneApi {
      */
     @Override
     @GetMapping(value = "/getListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey, Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId or processDefinitionKey is null !");
         }
@@ -79,7 +81,8 @@ public class DoneApiImpl implements DoneApi {
      */
     @Override
     @GetMapping(value = "/getListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId or systemName is null !");
         }
@@ -100,7 +103,8 @@ public class DoneApiImpl implements DoneApi {
      */
     @Override
     @GetMapping(value = "/searchListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page,
+        Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId is null !");
         }
@@ -122,12 +126,14 @@ public class DoneApiImpl implements DoneApi {
      */
     @Override
     @GetMapping(value = "/searchListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId or processDefinitionKey is null !");
         }
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customDoneService.searchListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, searchTerm, page, rows);
+        return customDoneService.searchListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, searchTerm,
+            page, rows);
     }
 
     /**
@@ -144,7 +150,8 @@ public class DoneApiImpl implements DoneApi {
      */
     @Override
     @GetMapping(value = "/searchListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        String searchTerm, Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId or processDefinitionKey is null !");
         }

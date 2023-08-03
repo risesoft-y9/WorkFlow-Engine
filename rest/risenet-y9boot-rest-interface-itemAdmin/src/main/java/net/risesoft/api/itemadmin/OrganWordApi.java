@@ -25,7 +25,8 @@ public interface OrganWordApi {
      * @return Integer
      * @throws Exception Exception
      */
-    public Integer checkNumberStr(String tenantId, String userId, String characterValue, String custom, Integer year, Integer numberTemp, String itemId, Integer common, String processSerialNumber) throws Exception;
+    public Integer checkNumberStr(String tenantId, String userId, String characterValue, String custom, Integer year,
+        Integer numberTemp, String itemId, Integer common, String processSerialNumber) throws Exception;
 
     /**
      * 判断机构代字custom在某个流程实例中是否已经编号,没有编号的话就查找有权限的编号的机关代字
@@ -40,7 +41,8 @@ public interface OrganWordApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    public Map<String, Object> exist(String tenantId, String userId, String custom, String processSerialNumber, String processInstanceId, String itembox) throws Exception;
+    public Map<String, Object> exist(String tenantId, String userId, String custom, String processSerialNumber,
+        String processInstanceId, String itembox) throws Exception;
 
     /**
      * 
@@ -55,7 +57,8 @@ public interface OrganWordApi {
      * @return
      * @throws Exception
      */
-    public List<Map<String, Object>> findByCustom(String tenantId, String userId, String custom, String itemId, String processDefinitionId, String taskDefKey) throws Exception;
+    public List<Map<String, Object>> findByCustom(String tenantId, String userId, String custom, String itemId,
+        String processDefinitionId, String taskDefKey) throws Exception;
 
     /**
      * 获取编号
@@ -70,7 +73,8 @@ public interface OrganWordApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    public Map<String, Object> getNumber(String tenantId, String userId, String custom, String characterValue, Integer year, Integer common, String itemId) throws Exception;
+    public Map<String, Object> getNumber(String tenantId, String userId, String custom, String characterValue,
+        Integer year, Integer common, String itemId) throws Exception;
 
     /**
      * 获取编号的数字
@@ -85,6 +89,7 @@ public interface OrganWordApi {
      * @return
      * @throws Exception
      */
-    public Integer getNumberOnly(String tenantId, String userId, String custom, String characterValue, Integer year, Integer common, String itemId) throws Exception;
+    public Integer getNumberOnly(String tenantId, String userId, String custom, String characterValue, Integer year,
+        Integer common, String itemId) throws Exception;
 
 }

@@ -1,14 +1,12 @@
-/* Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package org.flowable.ui.common.rest.idm.remote;
 
@@ -44,111 +42,109 @@ import org.springframework.web.bind.annotation.RestController;
  * @date 2023/01/03
  */
 @RestController
-@RequestMapping({
-	"/app",
-	"/"
-})
+@RequestMapping({"/app", "/"})
 public class RemoteAccountResource implements InitializingBean {
 
-	protected final Collection<CurrentUserProvider> currentUserProviders;
+    protected final Collection<CurrentUserProvider> currentUserProviders;
 
-	@Autowired(required = false)
-	private RemoteIdmService remoteIdmService;
+    @Autowired(required = false)
+    private RemoteIdmService remoteIdmService;
 
-	@Autowired(required = false)
-	private IdmIdentityService identityService;
+    @Autowired(required = false)
+    private IdmIdentityService identityService;
 
-	public RemoteAccountResource(ObjectProvider<CurrentUserProvider> currentUserProviders) {
-		this.currentUserProviders = currentUserProviders.orderedStream().collect(Collectors.toList());
-	}
+    public RemoteAccountResource(ObjectProvider<CurrentUserProvider> currentUserProviders) {
+        this.currentUserProviders = currentUserProviders.orderedStream().collect(Collectors.toList());
+    }
 
-	@Override
-	public void afterPropertiesSet() {
-		if (remoteIdmService == null && identityService == null) {
-			throw new FlowableIllegalStateException("No remoteIdmService or identityService have been provided");
-		}
-	}
+    @Override
+    public void afterPropertiesSet() {
+        if (remoteIdmService == null && identityService == null) {
+            throw new FlowableIllegalStateException("No remoteIdmService or identityService have been provided");
+        }
+    }
 
-	/**
-	 * GET /rest/account -> get the current user.
-	 */
-	@GetMapping(value = "/rest/account", produces = "application/json")
-	public UserRepresentation getAccount(Authentication authentication) {
-		UserRepresentation userRepresentation = new UserRepresentation();
-		userRepresentation.setFirstName("admin");
-		userRepresentation.setLastName("admin");
-		userRepresentation.setFullName("admin");
-		userRepresentation.setId("admin");
-		List<String> pris = new ArrayList<>();
-		pris.add(DefaultPrivileges.ACCESS_MODELER);
-		pris.add(DefaultPrivileges.ACCESS_IDM);
-		pris.add(DefaultPrivileges.ACCESS_ADMIN);
-		pris.add(DefaultPrivileges.ACCESS_TASK);
-		pris.add(DefaultPrivileges.ACCESS_REST_API);
-		userRepresentation.setPrivileges(pris);
-		for (CurrentUserProvider userProvider : currentUserProviders) {
-			if (userProvider.supports(authentication)) {
-				userRepresentation = userProvider.getCurrentUser(authentication);
-			}
+    /**
+     * GET /rest/account -> get the current user.
+     */
+    @GetMapping(value = "/rest/account", produces = "application/json")
+    public UserRepresentation getAccount(Authentication authentication) {
+        UserRepresentation userRepresentation = new UserRepresentation();
+        userRepresentation.setFirstName("admin");
+        userRepresentation.setLastName("admin");
+        userRepresentation.setFullName("admin");
+        userRepresentation.setId("admin");
+        List<String> pris = new ArrayList<>();
+        pris.add(DefaultPrivileges.ACCESS_MODELER);
+        pris.add(DefaultPrivileges.ACCESS_IDM);
+        pris.add(DefaultPrivileges.ACCESS_ADMIN);
+        pris.add(DefaultPrivileges.ACCESS_TASK);
+        pris.add(DefaultPrivileges.ACCESS_REST_API);
+        userRepresentation.setPrivileges(pris);
+        for (CurrentUserProvider userProvider : currentUserProviders) {
+            if (userProvider.supports(authentication)) {
+                userRepresentation = userProvider.getCurrentUser(authentication);
+            }
 
-			if (userRepresentation != null) {
-				break;
-			}
+            if (userRepresentation != null) {
+                break;
+            }
 
-		}
+        }
 
-		if (userRepresentation == null) {
-			userRepresentation = getCurrentUserRepresentation(authentication.getName());
-		}
+        if (userRepresentation == null) {
+            userRepresentation = getCurrentUserRepresentation(authentication.getName());
+        }
 
-		if (userRepresentation != null) {
-			return userRepresentation;
-		} else {
-			throw new NotFoundException();
-		}
-	}
+        if (userRepresentation != null) {
+            return userRepresentation;
+        } else {
+            throw new NotFoundException();
+        }
+    }
 
-	protected UserRepresentation getCurrentUserRepresentation(String currentUserId) {
-		UserRepresentation userRepresentation = null;
-		if (remoteIdmService != null) {
-			RemoteUser remoteUser = remoteIdmService.getUser(currentUserId);
-			if (remoteUser != null) {
-				userRepresentation = new UserRepresentation(remoteUser);
+    protected UserRepresentation getCurrentUserRepresentation(String currentUserId) {
+        UserRepresentation userRepresentation = null;
+        if (remoteIdmService != null) {
+            RemoteUser remoteUser = remoteIdmService.getUser(currentUserId);
+            if (remoteUser != null) {
+                userRepresentation = new UserRepresentation(remoteUser);
 
-				if (remoteUser.getGroups() != null && remoteUser.getGroups().size() > 0) {
-					List<GroupRepresentation> groups = new ArrayList<>();
-					for (RemoteGroup remoteGroup : remoteUser.getGroups()) {
-						groups.add(new GroupRepresentation(remoteGroup));
-					}
-					userRepresentation.setGroups(groups);
-				}
+                if (remoteUser.getGroups() != null && remoteUser.getGroups().size() > 0) {
+                    List<GroupRepresentation> groups = new ArrayList<>();
+                    for (RemoteGroup remoteGroup : remoteUser.getGroups()) {
+                        groups.add(new GroupRepresentation(remoteGroup));
+                    }
+                    userRepresentation.setGroups(groups);
+                }
 
-				if (remoteUser.getPrivileges() != null && remoteUser.getPrivileges().size() > 0) {
-					userRepresentation.setPrivileges(remoteUser.getPrivileges());
-				}
+                if (remoteUser.getPrivileges() != null && remoteUser.getPrivileges().size() > 0) {
+                    userRepresentation.setPrivileges(remoteUser.getPrivileges());
+                }
 
-			}
-		} else {
-			User user = identityService.createUserQuery().userId(currentUserId).singleResult();
-			if (user != null) {
-				userRepresentation = new UserRepresentation(user);
+            }
+        } else {
+            User user = identityService.createUserQuery().userId(currentUserId).singleResult();
+            if (user != null) {
+                userRepresentation = new UserRepresentation(user);
 
-				List<Group> userGroups = identityService.createGroupQuery().groupMember(currentUserId).list();
-				if (!userGroups.isEmpty()) {
-					List<GroupRepresentation> groups = new ArrayList<>(userGroups.size());
-					for (Group userGroup : userGroups) {
-						groups.add(new GroupRepresentation(userGroup));
-					}
-					userRepresentation.setGroups(groups);
-				}
+                List<Group> userGroups = identityService.createGroupQuery().groupMember(currentUserId).list();
+                if (!userGroups.isEmpty()) {
+                    List<GroupRepresentation> groups = new ArrayList<>(userGroups.size());
+                    for (Group userGroup : userGroups) {
+                        groups.add(new GroupRepresentation(userGroup));
+                    }
+                    userRepresentation.setGroups(groups);
+                }
 
-				List<Privilege> userPrivileges = identityService.createPrivilegeQuery().userId(currentUserId).list();
-				if (!userPrivileges.isEmpty()) {
-					userRepresentation.setPrivileges(userPrivileges.stream().map(Privilege::getName).collect(Collectors.toList()));
-				}
-			}
-		}
-		return userRepresentation;
-	}
+                List<Privilege> userPrivileges = identityService.createPrivilegeQuery().userId(currentUserId).list();
+                if (!userPrivileges.isEmpty()) {
+                    userRepresentation
+                        .setPrivileges(userPrivileges.stream().map(Privilege::getName).collect(Collectors.toList()));
+                }
+            }
+        }
+        return userRepresentation;
+    }
 
 }

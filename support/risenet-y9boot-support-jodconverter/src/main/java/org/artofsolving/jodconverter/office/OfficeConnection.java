@@ -41,7 +41,8 @@ class OfficeConnection implements OfficeContext {
     private XMultiComponentFactory serviceManager;
     private XComponentContext componentContext;
 
-    private final List<OfficeConnectionEventListener> connectionEventListeners = new ArrayList<OfficeConnectionEventListener>();
+    private final List<OfficeConnectionEventListener> connectionEventListeners =
+        new ArrayList<OfficeConnectionEventListener>();
 
     private volatile boolean connected = false;
 
@@ -75,14 +76,17 @@ class OfficeConnection implements OfficeContext {
         try {
             XComponentContext localContext = Bootstrap.createInitialComponentContext(null);
             XMultiComponentFactory localServiceManager = localContext.getServiceManager();
-            XConnector connector = OfficeUtils.cast(XConnector.class, localServiceManager.createInstanceWithContext("com.sun.star.connection.Connector", localContext));
+            XConnector connector = OfficeUtils.cast(XConnector.class,
+                localServiceManager.createInstanceWithContext("com.sun.star.connection.Connector", localContext));
             XConnection connection = connector.connect(unoUrl.getConnectString());
-            XBridgeFactory bridgeFactory = OfficeUtils.cast(XBridgeFactory.class, localServiceManager.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", localContext));
+            XBridgeFactory bridgeFactory = OfficeUtils.cast(XBridgeFactory.class,
+                localServiceManager.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", localContext));
             String bridgeName = "jodconverter_" + bridgeIndex.getAndIncrement();
             XBridge bridge = bridgeFactory.createBridge(bridgeName, "urp", connection, null);
             bridgeComponent = OfficeUtils.cast(XComponent.class, bridge);
             bridgeComponent.addEventListener(bridgeListener);
-            serviceManager = OfficeUtils.cast(XMultiComponentFactory.class, bridge.getInstance("StarOffice.ServiceManager"));
+            serviceManager =
+                OfficeUtils.cast(XMultiComponentFactory.class, bridge.getInstance("StarOffice.ServiceManager"));
             XPropertySet properties = OfficeUtils.cast(XPropertySet.class, serviceManager);
             componentContext = OfficeUtils.cast(XComponentContext.class, properties.getPropertyValue("DefaultContext"));
             connected = true;
@@ -92,7 +96,8 @@ class OfficeConnection implements OfficeContext {
                 listener.connected(connectionEvent);
             }
         } catch (NoConnectException connectException) {
-            throw new ConnectException(String.format("connection failed: '%s'; %s", unoUrl, connectException.getMessage()));
+            throw new ConnectException(
+                String.format("connection failed: '%s'; %s", unoUrl, connectException.getMessage()));
         } catch (Exception exception) {
             throw new OfficeException("connection failed: " + unoUrl, exception);
         }

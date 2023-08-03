@@ -25,21 +25,21 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RequestMapping(value = "/services/rest/itemViewConf")
 public class ItemViewConfApiImpl implements ItemViewConfApi {
 
-	@Autowired
-	private ItemViewConfService itemViewConfService;
+    @Autowired
+    private ItemViewConfService itemViewConfService;
 
-	@Override
-	@GetMapping(value = "/findByItemIdAndViewType", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<ItemViewConfModel> findByItemIdAndViewType(String tenantId, String itemId, String viewType) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		List<ItemViewConfModel> modelList = new ArrayList<>();
-		List<ItemViewConf> list = itemViewConfService.findByItemIdAndViewType(itemId, viewType);
-		ItemViewConfModel model = null;
-		for (ItemViewConf itemViewConf : list) {
-			model = new ItemViewConfModel();
-			Y9BeanUtil.copyProperties(itemViewConf, model);
-			modelList.add(model);
-		}
-		return modelList;
-	}
+    @Override
+    @GetMapping(value = "/findByItemIdAndViewType", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ItemViewConfModel> findByItemIdAndViewType(String tenantId, String itemId, String viewType) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<ItemViewConfModel> modelList = new ArrayList<>();
+        List<ItemViewConf> list = itemViewConfService.findByItemIdAndViewType(itemId, viewType);
+        ItemViewConfModel model = null;
+        for (ItemViewConf itemViewConf : list) {
+            model = new ItemViewConfModel();
+            Y9BeanUtil.copyProperties(itemViewConf, model);
+            modelList.add(model);
+        }
+        return modelList;
+    }
 }

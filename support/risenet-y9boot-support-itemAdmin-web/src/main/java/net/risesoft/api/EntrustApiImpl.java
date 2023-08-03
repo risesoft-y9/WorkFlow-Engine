@@ -33,165 +33,171 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/services/rest/entrust")
 public class EntrustApiImpl implements EntrustApi {
 
-	@Autowired
-	private EntrustService entrustService;
+    @Autowired
+    private EntrustService entrustService;
 
-	@Autowired
-	private SpmApproveItemService spmApproveItemService;
+    @Autowired
+    private SpmApproveItemService spmApproveItemService;
 
-	@Autowired
-	private PersonApi personManager;
+    @Autowired
+    private PersonApi personManager;
 
-	@Autowired
-	private EntrustDetailService entrustDetailService;
-	
-	@Override
-	@PostMapping(value = "/destroyEntrust", produces = MediaType.APPLICATION_JSON_VALUE)
-	public void destroyEntrust(String tenantId, String userId, String ownerId) throws Exception {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		try {
-			entrustService.destroyEntrust(ownerId);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    @Autowired
+    private EntrustDetailService entrustDetailService;
 
-	@Override
-	@PostMapping(value = "/destroyEntrustById", produces = MediaType.APPLICATION_JSON_VALUE)
-	public void destroyEntrustById(String tenantId, String userId, String id) throws Exception {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		try {
-			entrustService.destroyEntrustById(id);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    @Override
+    @PostMapping(value = "/destroyEntrust", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void destroyEntrust(String tenantId, String userId, String ownerId) throws Exception {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        try {
+            entrustService.destroyEntrust(ownerId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	@PostMapping(value = "/destroyEntrustByOwnerIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-	public void destroyEntrustByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId) throws Exception {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		try {
-			entrustService.destroyEntrust(ownerId, itemId);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    @Override
+    @PostMapping(value = "/destroyEntrustById", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void destroyEntrustById(String tenantId, String userId, String id) throws Exception {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        try {
+            entrustService.destroyEntrustById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	@GetMapping(value = "/findOneByOwnerIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-	public EntrustModel findOneByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId) throws Exception {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		EntrustModel entrustModel = null;
-		Entrust entrust = entrustService.findOneByOwnerIdAndItemId(ownerId, itemId);
-		if (null != entrust) {
-			Person assignee = personManager.getPerson(tenantId, entrust.getAssigneeId());
-			Person owner = personManager.getPerson(tenantId, entrust.getOwnerId());
+    @Override
+    @PostMapping(value = "/destroyEntrustByOwnerIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void destroyEntrustByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId)
+        throws Exception {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        try {
+            entrustService.destroyEntrust(ownerId, itemId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-			SpmApproveItem item = spmApproveItemService.findById(itemId);
-			ItemModel itemModel = new ItemModel();
-			if (item != null) {
-				itemModel.setId(item.getId());
-				itemModel.setAccountability(item.getAccountability());
-				itemModel.setExpired(item.getExpired());
-				itemModel.setIsDocking(item.getIsDocking());
-				itemModel.setIsOnline(item.getIsOnline());
-				itemModel.setLegalLimit(item.getLegalLimit());
-				itemModel.setName(item.getName());
-				itemModel.setNature(item.getNature());
-				itemModel.setStarter(item.getStarter());
-				itemModel.setStarterId(item.getStarterId());
-				itemModel.setSysLevel(item.getSysLevel());
-				itemModel.setSystemName(item.getSystemName());
-				itemModel.setType(item.getType());
-				itemModel.setWorkflowGuid(item.getWorkflowGuid());
-			}
+    @Override
+    @GetMapping(value = "/findOneByOwnerIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public EntrustModel findOneByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId)
+        throws Exception {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        EntrustModel entrustModel = null;
+        Entrust entrust = entrustService.findOneByOwnerIdAndItemId(ownerId, itemId);
+        if (null != entrust) {
+            Person assignee = personManager.getPerson(tenantId, entrust.getAssigneeId());
+            Person owner = personManager.getPerson(tenantId, entrust.getOwnerId());
 
-			entrust.setAssigneeName(assignee.getName());
-			entrust.setOwnerName(owner.getName());
-			entrust.setItemName(itemModel.getName());
-			entrustModel = ItemAdminModelConvertUtil.entrust2Model(entrust);
-		} else {
-			entrustModel = new EntrustModel();
-		}
-		return entrustModel;
-	}
+            SpmApproveItem item = spmApproveItemService.findById(itemId);
+            ItemModel itemModel = new ItemModel();
+            if (item != null) {
+                itemModel.setId(item.getId());
+                itemModel.setAccountability(item.getAccountability());
+                itemModel.setExpired(item.getExpired());
+                itemModel.setIsDocking(item.getIsDocking());
+                itemModel.setIsOnline(item.getIsOnline());
+                itemModel.setLegalLimit(item.getLegalLimit());
+                itemModel.setName(item.getName());
+                itemModel.setNature(item.getNature());
+                itemModel.setStarter(item.getStarter());
+                itemModel.setStarterId(item.getStarterId());
+                itemModel.setSysLevel(item.getSysLevel());
+                itemModel.setSystemName(item.getSystemName());
+                itemModel.setType(item.getType());
+                itemModel.setWorkflowGuid(item.getWorkflowGuid());
+            }
 
-	@Override
-	@GetMapping(value = "/findOneByOwnerIdAndItemIdAndTime", produces = MediaType.APPLICATION_JSON_VALUE)
-	public EntrustModel findOneByOwnerIdAndItemIdAndTime(String tenantId, String ownerId, String itemId, String currentTime) throws Exception {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		Entrust entrust = entrustService.findOneByOwnerIdAndItemIdAndTime(ownerId, itemId, currentTime);
-		EntrustModel entrustModel = null;
-		if (null != entrust) {
-			entrustModel = ItemAdminModelConvertUtil.entrust2Model(entrust);
-		} else {
-			entrustModel = new EntrustModel();
-		}
-		return entrustModel;
-	}
+            entrust.setAssigneeName(assignee.getName());
+            entrust.setOwnerName(owner.getName());
+            entrust.setItemName(itemModel.getName());
+            entrustModel = ItemAdminModelConvertUtil.entrust2Model(entrust);
+        } else {
+            entrustModel = new EntrustModel();
+        }
+        return entrustModel;
+    }
 
-	@Override
-	@GetMapping(value = "/getById", produces = MediaType.APPLICATION_JSON_VALUE)
-	public EntrustModel getById(String tenantId, String userId, String id) throws Exception {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		Entrust entrust = entrustService.findOne(id);
-		EntrustModel entrustModel = ItemAdminModelConvertUtil.entrust2Model(entrust);
-		return entrustModel;
-	}
+    @Override
+    @GetMapping(value = "/findOneByOwnerIdAndItemIdAndTime", produces = MediaType.APPLICATION_JSON_VALUE)
+    public EntrustModel findOneByOwnerIdAndItemIdAndTime(String tenantId, String ownerId, String itemId,
+        String currentTime) throws Exception {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Entrust entrust = entrustService.findOneByOwnerIdAndItemIdAndTime(ownerId, itemId, currentTime);
+        EntrustModel entrustModel = null;
+        if (null != entrust) {
+            entrustModel = ItemAdminModelConvertUtil.entrust2Model(entrust);
+        } else {
+            entrustModel = new EntrustModel();
+        }
+        return entrustModel;
+    }
 
-	@Override
-	@GetMapping(value = "/getEntrustOwnerId", produces = MediaType.APPLICATION_JSON_VALUE)
-	public String getEntrustOwnerId(String tenantId, String taskId) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		return entrustDetailService.getEntrustOwnerId(taskId);
-	}
+    @Override
+    @GetMapping(value = "/getById", produces = MediaType.APPLICATION_JSON_VALUE)
+    public EntrustModel getById(String tenantId, String userId, String id) throws Exception {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Entrust entrust = entrustService.findOne(id);
+        EntrustModel entrustModel = ItemAdminModelConvertUtil.entrust2Model(entrust);
+        return entrustModel;
+    }
 
-	@Override
-	@GetMapping(value = "/getItemList", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getItemList(String tenantId, String userId, String ownerId, Integer page, Integer rows) throws Exception {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		Map<String, Object> map = entrustService.itemList(ownerId, page, rows);
-		return map;
-	}
+    @Override
+    @GetMapping(value = "/getEntrustOwnerId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getEntrustOwnerId(String tenantId, String taskId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return entrustDetailService.getEntrustOwnerId(taskId);
+    }
 
-	@Override
-	@GetMapping(value = "/haveEntrustDetail", produces = MediaType.APPLICATION_JSON_VALUE)
-	public boolean haveEntrustDetail(String tenantId, String taskId) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		return entrustDetailService.haveEntrustDetailByTaskId(taskId);
-	}
+    @Override
+    @GetMapping(value = "/getItemList", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getItemList(String tenantId, String userId, String ownerId, Integer page, Integer rows)
+        throws Exception {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Map<String, Object> map = entrustService.itemList(ownerId, page, rows);
+        return map;
+    }
 
-	@Override
-	@PostMapping(value = "/removeEntrust", produces = MediaType.APPLICATION_JSON_VALUE)
-	public void removeEntrust(String tenantId, String userId, String id) throws Exception {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		try {
-			entrustService.removeEntrust(id);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    @Override
+    @GetMapping(value = "/haveEntrustDetail", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean haveEntrustDetail(String tenantId, String taskId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return entrustDetailService.haveEntrustDetailByTaskId(taskId);
+    }
 
-	@Override
-	@PostMapping(value = "/saveEntrustDetail", produces = MediaType.APPLICATION_JSON_VALUE)
-	public void saveEntrustDetail(String tenantId, String processInstanceId, String taskId, String ownerId, String assigneeId) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		entrustDetailService.save(processInstanceId, taskId, ownerId, assigneeId);
-	}
+    @Override
+    @PostMapping(value = "/removeEntrust", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void removeEntrust(String tenantId, String userId, String id) throws Exception {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        try {
+            entrustService.removeEntrust(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	@PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void saveOrUpdate(String tenantId, String userId,@RequestBody EntrustModel entrustModel) throws Exception {
-		Person person = personManager.getPerson(tenantId, userId);
-		Y9LoginUserHolder.setTenantId(tenantId);
-		Y9LoginUserHolder.setPerson(person);
+    @Override
+    @PostMapping(value = "/saveEntrustDetail", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void saveEntrustDetail(String tenantId, String processInstanceId, String taskId, String ownerId,
+        String assigneeId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        entrustDetailService.save(processInstanceId, taskId, ownerId, assigneeId);
+    }
 
-		Entrust entrust = ItemAdminModelConvertUtil.entrustModel2Entrust(entrustModel);
-		try {
-			entrustService.saveOrUpdate(entrust);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-	}
+    @Override
+    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void saveOrUpdate(String tenantId, String userId, @RequestBody EntrustModel entrustModel) throws Exception {
+        Person person = personManager.getPerson(tenantId, userId);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPerson(person);
+
+        Entrust entrust = ItemAdminModelConvertUtil.entrustModel2Entrust(entrustModel);
+        try {
+            entrustService.saveOrUpdate(entrust);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
 }

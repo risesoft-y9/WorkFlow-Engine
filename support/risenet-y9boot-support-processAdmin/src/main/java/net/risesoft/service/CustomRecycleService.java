@@ -74,7 +74,8 @@ public interface CustomRecycleService {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getRecycleListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, Integer page, Integer rows);
+    Map<String, Object> getRecycleListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
+        Integer page, Integer rows);
 
     /**
      * 根据人员id获取回收站列表
@@ -85,7 +86,8 @@ public interface CustomRecycleService {
      * @param rows 总条数
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getRecycleListByUserIdAndSystemName(String userId, String systemName, Integer page, Integer rows);
+    Map<String, Object> getRecycleListByUserIdAndSystemName(String userId, String systemName, Integer page,
+        Integer rows);
 
     /**
      * 条件搜索在办件
@@ -96,7 +98,8 @@ public interface CustomRecycleService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchRecycleListByProcessDefinitionKey(String processDefinitionKey, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchRecycleListByProcessDefinitionKey(String processDefinitionKey, String searchTerm,
+        Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -119,7 +122,8 @@ public interface CustomRecycleService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchRecycleListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchRecycleListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows);
 
     /**
      * Description: 条件搜索在办件
@@ -131,5 +135,6 @@ public interface CustomRecycleService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchRecycleListByUserIdAndSystemName(String userId, String systemName, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchRecycleListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
+        Integer page, Integer rows);
 }

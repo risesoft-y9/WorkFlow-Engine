@@ -15,7 +15,8 @@ import net.risesoft.entity.CustomProcessInfo;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface CustomProcessInfoRepository extends JpaRepository<CustomProcessInfo, String>, JpaSpecificationExecutor<CustomProcessInfo> {
+public interface CustomProcessInfoRepository
+    extends JpaRepository<CustomProcessInfo, String>, JpaSpecificationExecutor<CustomProcessInfo> {
 
     @Modifying
     @Transactional(readOnly = false)

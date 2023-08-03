@@ -16,7 +16,8 @@ import net.risesoft.entity.ProcessInstance;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ProcessInstanceRepository extends JpaRepository<ProcessInstance, String>, JpaSpecificationExecutor<ProcessInstance> {
+public interface ProcessInstanceRepository
+    extends JpaRepository<ProcessInstance, String>, JpaSpecificationExecutor<ProcessInstance> {
 
     @Modifying
     @Transactional(readOnly = false)

@@ -36,7 +36,8 @@ public class WorkflowHistoryProcessInstanceService {
     public HistoricProcessInstance findOne(String processInstanceId) {
         HistoricProcessInstance historicProcessInstance = null;
         if (StringUtils.isNotBlank(processInstanceId)) {
-            historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+            historicProcessInstance =
+                historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
         }
         return historicProcessInstance;
     }
@@ -87,7 +88,8 @@ public class WorkflowHistoryProcessInstanceService {
         List<HistoricProcessInstance> list = new ArrayList<HistoricProcessInstance>();
         HistoricProcessInstance historicProcessInstance = null;
         if (StringUtils.isNotBlank(processInstanceId)) {
-            historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+            historicProcessInstance =
+                historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             if (historicProcessInstance != null) {
                 String superProcessInstanceId = historicProcessInstance.getId();
                 list.addAll(getHierarchySuperProcessInstance(superProcessInstanceId));
@@ -152,7 +154,8 @@ public class WorkflowHistoryProcessInstanceService {
     public HistoricProcessInstance getSuperProcessInstance(String processInstanceId) {
         HistoricProcessInstance historicProcessInstance = null;
         if (StringUtils.isNotBlank(processInstanceId)) {
-            historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+            historicProcessInstance =
+                historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
         }
         return historicProcessInstance;
     }

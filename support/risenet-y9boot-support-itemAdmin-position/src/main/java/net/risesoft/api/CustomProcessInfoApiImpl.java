@@ -62,8 +62,10 @@ public class CustomProcessInfoApiImpl implements CustomProcessInfoApi {
      * @return boolean
      */
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public boolean saveOrUpdate(String tenantId, String itemId, String processSerialNumber, @RequestBody List<Map<String, Object>> taskList) {
+    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public boolean saveOrUpdate(String tenantId, String itemId, String processSerialNumber,
+        @RequestBody List<Map<String, Object>> taskList) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return customProcessInfoService.saveOrUpdate(itemId, processSerialNumber, taskList);
     }

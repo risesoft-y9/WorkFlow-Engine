@@ -14,11 +14,14 @@ import net.risesoft.entity.ItemTaskConf;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemTaskConfRepository extends JpaRepository<ItemTaskConf, String>, JpaSpecificationExecutor<ItemTaskConf> {
+public interface ItemTaskConfRepository
+    extends JpaRepository<ItemTaskConf, String>, JpaSpecificationExecutor<ItemTaskConf> {
 
     public List<ItemTaskConf> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
-    public ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId, String taskDefKey);
+    public ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
+        String taskDefKey);
 
-    public ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(String itemId, String processDefinitionId);
+    public ItemTaskConf findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(String itemId,
+        String processDefinitionId);
 }

@@ -18,5 +18,6 @@ public interface WeiXinRemindService {
      * @param variables
      * @param local
      */
-    public void weiXinRemind(final DelegateTask taskEntity, final Map<String, Object> variables, final Map<String, Object> local);
+    public void weiXinRemind(final DelegateTask taskEntity, final Map<String, Object> variables,
+        final Map<String, Object> local);
 }

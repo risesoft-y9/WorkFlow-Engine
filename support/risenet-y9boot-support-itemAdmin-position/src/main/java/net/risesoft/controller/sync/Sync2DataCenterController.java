@@ -93,13 +93,19 @@ public class Sync2DataCenterController {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
-            String sql = "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_," + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL" + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
+            String sql =
+                "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
+                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
+                    + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             connection = dataSource.getConnection();
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
-                sql = "SELECT" + "  P .PROC_INST_ID_," + "  SUBSTRING(P.START_TIME_,1,19) as START_TIME_," + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST_2023 P" + " WHERE" + "   P .END_TIME_ IS NOT NULL" + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
+                sql = "SELECT" + "  P .PROC_INST_ID_," + "  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,"
+                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST_2023 P" + " WHERE"
+                    + "   P .END_TIME_ IS NOT NULL" + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY"
+                    + "  P .START_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
@@ -166,13 +172,19 @@ public class Sync2DataCenterController {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
-            String sql = "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_," + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL" + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
+            String sql =
+                "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
+                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
+                    + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             connection = dataSource.getConnection();
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
-                sql = "SELECT" + "  P .PROC_INST_ID_," + "  SUBSTRING(P.START_TIME_,1,19) as START_TIME_," + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST_2023 P" + " WHERE" + "   P .END_TIME_ IS NOT NULL" + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
+                sql = "SELECT" + "  P .PROC_INST_ID_," + "  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,"
+                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST_2023 P" + " WHERE"
+                    + "   P .END_TIME_ IS NOT NULL" + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY"
+                    + "  P .START_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
@@ -181,7 +193,8 @@ public class Sync2DataCenterController {
             for (Map<String, Object> map : list) {
                 try {
                     processInstanceId = (String)map.get("PROC_INST_ID_");
-                    List<HistoricTaskInstanceModel> htiList = historicTaskManager.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, "2023");
+                    List<HistoricTaskInstanceModel> htiList = historicTaskManager
+                        .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, "2023");
                     ActRuDetail newActRuDetail = null;
                     String assignee = null;
                     String owner = null;
@@ -302,13 +315,18 @@ public class Sync2DataCenterController {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
-            String sql = "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_," + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL" + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
+            String sql =
+                "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
+                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
+                    + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             connection = dataSource.getConnection();
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
-                sql = "SELECT" + "  P .PROC_INST_ID_," + "  SUBSTRING(P.START_TIME_,1,19) as START_TIME_," + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "  P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
+                sql = "SELECT" + "  P .PROC_INST_ID_," + "  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,"
+                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "  P .DELETE_REASON_ IS NULL"
+                    + " ORDER BY" + "  P .START_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
@@ -317,7 +335,8 @@ public class Sync2DataCenterController {
             for (Map<String, Object> map : list) {
                 try {
                     processInstanceId = (String)map.get("PROC_INST_ID_");
-                    List<HistoricTaskInstanceModel> htiList = historicTaskManager.findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "");
+                    List<HistoricTaskInstanceModel> htiList = historicTaskManager
+                        .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "");
                     ActRuDetail newActRuDetail = null;
                     String assignee = null;
                     String owner = null;

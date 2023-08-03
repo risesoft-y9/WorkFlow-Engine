@@ -16,7 +16,8 @@ import net.risesoft.model.itemadmin.CustomProcessInfoModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "CustomProcessInfoApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/customProcessInfo")
+@FeignClient(contextId = "CustomProcessInfoApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/customProcessInfo")
 public interface CustomProcessInfoApiClient extends CustomProcessInfoApi {
 
     /**
@@ -28,7 +29,8 @@ public interface CustomProcessInfoApiClient extends CustomProcessInfoApi {
      */
     @Override
     @GetMapping("/getCurrentTaskNextNode")
-    CustomProcessInfoModel getCurrentTaskNextNode(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
+    CustomProcessInfoModel getCurrentTaskNextNode(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存流程定制信息
@@ -41,7 +43,9 @@ public interface CustomProcessInfoApiClient extends CustomProcessInfoApi {
      */
     @Override
     @PostMapping("/saveOrUpdate")
-    public boolean saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("taskList") List<Map<String, Object>> taskList);
+    public boolean saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("taskList") List<Map<String, Object>> taskList);
 
     /**
      * 更新当前运行节点
@@ -52,6 +56,7 @@ public interface CustomProcessInfoApiClient extends CustomProcessInfoApi {
      */
     @Override
     @PostMapping("/updateCurrentTask")
-    boolean updateCurrentTask(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
+    boolean updateCurrentTask(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
 }

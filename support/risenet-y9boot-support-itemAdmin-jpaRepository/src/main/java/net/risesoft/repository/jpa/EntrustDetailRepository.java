@@ -12,7 +12,8 @@ import net.risesoft.entity.EntrustDetail;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface EntrustDetailRepository extends JpaRepository<EntrustDetail, String>, JpaSpecificationExecutor<EntrustDetail> {
+public interface EntrustDetailRepository
+    extends JpaRepository<EntrustDetail, String>, JpaSpecificationExecutor<EntrustDetail> {
 
     EntrustDetail findByTaskId(String taskId);
 }

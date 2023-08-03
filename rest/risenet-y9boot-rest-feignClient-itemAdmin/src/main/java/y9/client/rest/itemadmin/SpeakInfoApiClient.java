@@ -18,7 +18,8 @@ import net.risesoft.model.itemadmin.SpeakInfoModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "SpeakInfoApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/speakInfo")
+@FeignClient(contextId = "SpeakInfoApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/speakInfo")
 public interface SpeakInfoApiClient extends SpeakInfoApi {
 
     /**
@@ -31,7 +32,8 @@ public interface SpeakInfoApiClient extends SpeakInfoApi {
      */
     @Override
     @PostMapping("/deleteById")
-    Map<String, Object> deleteById(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("id") String id);
+    Map<String, Object> deleteById(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("id") String id);
 
     /**
      * 根据唯一标示超找发言信息
@@ -43,7 +45,8 @@ public interface SpeakInfoApiClient extends SpeakInfoApi {
      */
     @Override
     @GetMapping("/findById")
-    SpeakInfoModel findById(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("id") String id);
+    SpeakInfoModel findById(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("id") String id);
 
     /**
      * 根据流程实例查找某一个流程的所有发言信息，根据时间倒叙排列
@@ -55,7 +58,8 @@ public interface SpeakInfoApiClient extends SpeakInfoApi {
      */
     @Override
     @GetMapping("/findByProcessInstanceId")
-    List<SpeakInfoModel> findByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
+    List<SpeakInfoModel> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取未读消息计数
@@ -67,7 +71,8 @@ public interface SpeakInfoApiClient extends SpeakInfoApi {
      */
     @Override
     @GetMapping("/getNotReadCount")
-    int getNotReadCount(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
+    int getNotReadCount(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 保存或者更新发言信息
@@ -79,5 +84,6 @@ public interface SpeakInfoApiClient extends SpeakInfoApi {
      */
     @Override
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    String saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestBody SpeakInfoModel speakInfoModel);
+    String saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestBody SpeakInfoModel speakInfoModel);
 }

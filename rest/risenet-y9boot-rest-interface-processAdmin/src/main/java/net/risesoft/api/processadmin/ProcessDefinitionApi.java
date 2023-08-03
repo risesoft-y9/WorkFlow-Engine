@@ -113,7 +113,8 @@ public interface ProcessDefinitionApi {
      * @param taskDefKey 任务key
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, String>> getTargetNodes4ParallelGateway(String tenantId, String processDefinitionId, String taskDefKey);
+    List<Map<String, String>> getTargetNodes4ParallelGateway(String tenantId, String processDefinitionId,
+        String taskDefKey);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
@@ -124,7 +125,8 @@ public interface ProcessDefinitionApi {
      * @param isContainEndNode 是否包含结束节点
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, String>> getTargetNodes4UserTask(String tenantId, String processDefinitionId, String taskDefKey, Boolean isContainEndNode);
+    List<Map<String, String>> getTargetNodes4UserTask(String tenantId, String processDefinitionId, String taskDefKey,
+        Boolean isContainEndNode);
 
     /**
      * 判断流程定义的节点是否是callActivity节点

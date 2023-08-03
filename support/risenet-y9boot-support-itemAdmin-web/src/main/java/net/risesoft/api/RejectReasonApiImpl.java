@@ -21,19 +21,19 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/services/rest/rejectReason")
 public class RejectReasonApiImpl implements RejectReasonApi {
 
-	@Autowired
-	private RejectReasonService rejectReasonService;
+    @Autowired
+    private RejectReasonService rejectReasonService;
 
-	@Autowired
-	private PersonApi personManager;
+    @Autowired
+    private PersonApi personManager;
 
-	@Override
-	@PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
-	public void save(String tenantId, String userId, Integer action, String taskId, String reason) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		Person person = personManager.getPerson(tenantId, userId);
-		Y9LoginUserHolder.setPerson(person);
+    @Override
+    @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void save(String tenantId, String userId, Integer action, String taskId, String reason) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Person person = personManager.getPerson(tenantId, userId);
+        Y9LoginUserHolder.setPerson(person);
 
-		rejectReasonService.save(reason, taskId, action);
-	}
+        rejectReasonService.save(reason, taskId, action);
+    }
 }

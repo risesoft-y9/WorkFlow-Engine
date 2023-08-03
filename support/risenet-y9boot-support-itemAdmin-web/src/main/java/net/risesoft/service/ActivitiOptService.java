@@ -21,5 +21,6 @@ public interface ActivitiOptService {
      * @param map
      * @return
      */
-    TaskModel startProcess(String processSerialNumber, String processDefinitionKey, String systemName, Map<String, Object> map);
+    TaskModel startProcess(String processSerialNumber, String processDefinitionKey, String systemName,
+        Map<String, Object> map);
 }

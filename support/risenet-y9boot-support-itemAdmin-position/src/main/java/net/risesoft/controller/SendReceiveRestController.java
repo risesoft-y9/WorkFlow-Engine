@@ -100,7 +100,8 @@ public class SendReceiveRestController {
      */
     @RequestMapping(value = "/deptTreeSearch", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = false) String name, @RequestParam(required = true) String deptId) {
+    public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = false) String name,
+        @RequestParam(required = true) String deptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         List<Person> personList = departmentManager.listAllPersonsByDisabledAndName(tenantId, deptId, false, name);
@@ -137,7 +138,8 @@ public class SendReceiveRestController {
      */
     @RequestMapping(value = "/getDeptTree", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Result<List<Map<String, Object>>> getDeptTrees(@RequestParam(required = false) String id, @RequestParam(required = false) String deptId) {
+    public Y9Result<List<Map<String, Object>>> getDeptTrees(@RequestParam(required = false) String id,
+        @RequestParam(required = false) String deptId) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(deptId)) {
@@ -197,7 +199,8 @@ public class SendReceiveRestController {
      * @return
      */
     @RequestMapping(value = "/getOrgChildTree", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getOrgChildTree(@RequestParam(required = false) String id, String treeType) {
+    public Y9Result<List<Map<String, Object>>> getOrgChildTree(@RequestParam(required = false) String id,
+        String treeType) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(id)) {
@@ -238,14 +241,16 @@ public class SendReceiveRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> getOrgTree(@RequestParam(required = true) String id, @RequestParam(required = true) String treeType) {
+    public Y9Result<List<OrgUnit>> getOrgTree(@RequestParam(required = true) String id,
+        @RequestParam(required = true) String treeType) {
         List<OrgUnit> newOrgUnitList = new ArrayList<OrgUnit>();
         List<OrgUnit> orgUnitList = orgUnitManager.getSubTree(Y9LoginUserHolder.getTenantId(), id, treeType);
         for (OrgUnit orgUnit : orgUnitList) {
             if (orgUnit.getOrgType().equals("Department")) {
                 orgUnit.setDn("false");
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
-                List<Department> deptList = orgUnitManager.getDeptTrees(Y9LoginUserHolder.getTenantId(), orgUnit.getId());
+                List<Department> deptList =
+                    orgUnitManager.getDeptTrees(Y9LoginUserHolder.getTenantId(), orgUnit.getId());
                 orgUnit.setGuidPath("false");
                 for (Department dept : deptList) {
                     orgUnit.setGuidPath("true");
@@ -281,7 +286,8 @@ public class SendReceiveRestController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         List<ReceiveDepartment> list = receiveDepartmentRepository.findAllOrderByTabIndex();
         for (ReceiveDepartment receiveDeptAndPerson : list) {
-            Department department = departmentManager.getDepartment(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId());
+            Department department =
+                departmentManager.getDepartment(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId());
             receiveDeptAndPerson.setDeptName(department.getName());
         }
         map.put("rows", list);
@@ -297,14 +303,16 @@ public class SendReceiveRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/orgTreeSearch", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> orgTreeSearch(@RequestParam(required = true) String treeType, @RequestParam(required = true) String name) {
+    public Y9Result<List<OrgUnit>> orgTreeSearch(@RequestParam(required = true) String treeType,
+        @RequestParam(required = true) String name) {
         List<OrgUnit> newOrgUnitList = new ArrayList<OrgUnit>();
         List<OrgUnit> orgUnitList = orgUnitManager.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType);
         for (OrgUnit orgUnit : orgUnitList) {
             if (orgUnit.getOrgType().equals("Department")) {
                 orgUnit.setDn("false");
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
-                List<Department> deptList = orgUnitManager.getDeptTrees(Y9LoginUserHolder.getTenantId(), orgUnit.getId());
+                List<Department> deptList =
+                    orgUnitManager.getDeptTrees(Y9LoginUserHolder.getTenantId(), orgUnit.getId());
                 orgUnit.setGuidPath("false");
                 for (Department dept : deptList) {
                     orgUnit.setGuidPath("true");
@@ -350,7 +358,8 @@ public class SendReceiveRestController {
         return Y9Result.failure("获取失败");
     }
 
-    public void recursionUpToOrg(String tenantId, String nodeId, String parentId, List<OrgUnit> orgUnitList, boolean isParent) {
+    public void recursionUpToOrg(String tenantId, String nodeId, String parentId, List<OrgUnit> orgUnitList,
+        boolean isParent) {
         OrgUnit parent = getParent(tenantId, nodeId, parentId);
         if (isParent) {
             parent.setDescription("parent");
@@ -386,7 +395,8 @@ public class SendReceiveRestController {
      */
     @RequestMapping(value = "/saveOrCancelDept", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> saveOrCancelDept(@RequestParam(required = true) String id, @RequestParam(required = true) String type) {
+    public Y9Result<String> saveOrCancelDept(@RequestParam(required = true) String id,
+        @RequestParam(required = true) String type) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         String save = "save";
         if (type.equals(save)) {
@@ -423,7 +433,8 @@ public class SendReceiveRestController {
      */
     @RequestMapping(value = "/savePerson", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> savePerson(@RequestParam(required = true) String deptId, @RequestParam(required = true) String ids) {
+    public Y9Result<String> savePerson(@RequestParam(required = true) String deptId,
+        @RequestParam(required = true) String ids) {
         Map<String, Object> map = receiveDeptAndPersonService.savePosition(deptId, ids);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -440,7 +451,8 @@ public class SendReceiveRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/searchOrgTree", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> searchOrgTree(@RequestParam(required = true) String treeType, @RequestParam(required = true) String name) {
+    public Y9Result<List<OrgUnit>> searchOrgTree(@RequestParam(required = true) String treeType,
+        @RequestParam(required = true) String name) {
         List<OrgUnit> orgUnitList = orgUnitManager.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType);
         return Y9Result.success(orgUnitList, "获取成功");
     }
@@ -454,7 +466,8 @@ public class SendReceiveRestController {
      */
     @RequestMapping(value = "/setReceive", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> setReceive(@RequestParam(required = true) boolean receive, @RequestParam(required = true) String ids) {
+    public Y9Result<String> setReceive(@RequestParam(required = true) boolean receive,
+        @RequestParam(required = true) String ids) {
         Map<String, Object> map = receiveDeptAndPersonService.setReceive(receive, ids);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg("保存成功");
@@ -471,7 +484,8 @@ public class SendReceiveRestController {
      */
     @RequestMapping(value = "/setSend", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> setSend(@RequestParam(required = true) boolean send, @RequestParam(required = true) String ids) {
+    public Y9Result<String> setSend(@RequestParam(required = true) boolean send,
+        @RequestParam(required = true) String ids) {
         Map<String, Object> map = receiveDeptAndPersonService.setSend(send, ids);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg("保存成功");

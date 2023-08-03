@@ -15,7 +15,8 @@ import net.risesoft.entity.BookMarkBind;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface BookMarkBindRepository extends JpaRepository<BookMarkBind, String>, JpaSpecificationExecutor<BookMarkBind> {
+public interface BookMarkBindRepository
+    extends JpaRepository<BookMarkBind, String>, JpaSpecificationExecutor<BookMarkBind> {
 
     @Modifying
     @Transactional(readOnly = false)

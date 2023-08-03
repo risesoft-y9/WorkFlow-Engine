@@ -63,7 +63,8 @@ public class CommonButtonServiceImpl implements CommonButtonService {
     @Transactional(readOnly = false)
     public CommonButton saveOrUpdate(CommonButton commonButton) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        String userId = userInfo.getPersonId(), userName = userInfo.getName(), tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = userInfo.getPersonId(), userName = userInfo.getName(),
+            tenantId = Y9LoginUserHolder.getTenantId();
 
         String id = commonButton.getId();
         if (StringUtils.isNotEmpty(id)) {

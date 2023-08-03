@@ -41,7 +41,8 @@ public interface RoleService {
      * @param processInstanceId
      * @return
      */
-    List<Map<String, Object>> findPermUser(String itemId, String processDefinitionId, String taskDefKey, Integer principalType, String id, String processInstanceId);
+    List<Map<String, Object>> findPermUser(String itemId, String processDefinitionId, String taskDefKey,
+        Integer principalType, String id, String processInstanceId);
 
     /**
      * Description:
@@ -54,7 +55,8 @@ public interface RoleService {
      * @param processInstanceId
      * @return
      */
-    List<Map<String, Object>> findPermUserByName(String name, String itemId, String processDefinitionId, String taskDefKey, Integer principalType, String processInstanceId);
+    List<Map<String, Object>> findPermUserByName(String name, String itemId, String processDefinitionId,
+        String taskDefKey, Integer principalType, String processInstanceId);
 
     /**
      * Description:

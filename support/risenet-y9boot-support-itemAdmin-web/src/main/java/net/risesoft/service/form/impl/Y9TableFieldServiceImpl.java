@@ -62,7 +62,8 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
 
     @Override
     public List<Y9TableField> findSystemField(String tableId) {
-        List<Y9TableField> list = y9TableFieldRepository.findByTableIdAndIsSystemFieldOrderByDisplayOrderAsc(tableId, 1);
+        List<Y9TableField> list =
+            y9TableFieldRepository.findByTableIdAndIsSystemFieldOrderByDisplayOrderAsc(tableId, 1);
         return list;
     }
 

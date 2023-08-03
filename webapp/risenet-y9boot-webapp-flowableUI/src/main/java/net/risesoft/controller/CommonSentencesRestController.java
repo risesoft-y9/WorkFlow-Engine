@@ -60,7 +60,8 @@ public class CommonSentencesRestController {
     public Y9Result<String> remove(@RequestParam(required = true) int tabIndex) {
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-            commonSentencesManager.removeCommonSentences(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(), tabIndex);
+            commonSentencesManager.removeCommonSentences(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(),
+                tabIndex);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,11 +98,13 @@ public class CommonSentencesRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveEdit", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveEdit(@RequestParam(required = true) String content, @RequestParam(required = true) String tabIndex) {
+    public Y9Result<String> saveEdit(@RequestParam(required = true) String content,
+        @RequestParam(required = true) String tabIndex) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId();
         try {
-            commonSentencesManager.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content, Integer.parseInt(tabIndex));
+            commonSentencesManager.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content,
+                Integer.parseInt(tabIndex));
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();

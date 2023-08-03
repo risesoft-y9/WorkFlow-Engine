@@ -22,21 +22,21 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/services/rest/print")
 public class PrintApiImpl implements PrintApi {
 
-	@Autowired
-	private PrintTemplateItemBindRepository printTemplateItemBindRepository;
+    @Autowired
+    private PrintTemplateItemBindRepository printTemplateItemBindRepository;
 
-	@Autowired
-	private PersonApi personManager;
+    @Autowired
+    private PersonApi personManager;
 
-	@Override
-	@GetMapping(value = "/openDocument", produces = MediaType.APPLICATION_JSON_VALUE)
-	public String openDocument(String tenantId, String userId, String itemId) {
-		Person person = personManager.getPerson(tenantId, userId);
-		Y9LoginUserHolder.setPerson(person);
-		Y9LoginUserHolder.setTenantId(tenantId);
-		ItemPrintTemplateBind bind = printTemplateItemBindRepository.findByItemId(itemId);
-		String fileStoreId = bind.getTemplateUrl();
-		return fileStoreId;
-	}
+    @Override
+    @GetMapping(value = "/openDocument", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String openDocument(String tenantId, String userId, String itemId) {
+        Person person = personManager.getPerson(tenantId, userId);
+        Y9LoginUserHolder.setPerson(person);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        ItemPrintTemplateBind bind = printTemplateItemBindRepository.findByItemId(itemId);
+        String fileStoreId = bind.getTemplateUrl();
+        return fileStoreId;
+    }
 
 }

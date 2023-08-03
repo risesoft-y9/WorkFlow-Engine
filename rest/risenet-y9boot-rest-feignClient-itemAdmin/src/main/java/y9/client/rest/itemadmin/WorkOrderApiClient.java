@@ -17,7 +17,8 @@ import net.risesoft.model.itemadmin.WorkOrderModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "WorkOrderApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/workOrder")
+@FeignClient(contextId = "WorkOrderApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/workOrder")
 public interface WorkOrderApiClient extends WorkOrderApi {
 
     /**
@@ -31,7 +32,9 @@ public interface WorkOrderApiClient extends WorkOrderApi {
      */
     @Override
     @PostMapping("/changeWorkOrderState")
-    Map<String, Object> changeWorkOrderState(@RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("state") String state, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("resultFeedback") String resultFeedback);
+    Map<String, Object> changeWorkOrderState(@RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("state") String state, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("resultFeedback") String resultFeedback);
 
     /**
      * 删除草稿
@@ -54,7 +57,8 @@ public interface WorkOrderApiClient extends WorkOrderApi {
      */
     @Override
     @GetMapping("/draftlist")
-    Map<String, Object> draftlist(@RequestParam("userId") String userId, @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Map<String, Object> draftlist(@RequestParam("userId") String userId, @RequestParam("searchTerm") String searchTerm,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      * 获取工单信息
@@ -116,7 +120,9 @@ public interface WorkOrderApiClient extends WorkOrderApi {
      */
     @Override
     @GetMapping("/workOrderAdminList")
-    Map<String, Object> workOrderAdminList(@RequestParam("searchTerm") String searchTerm, @RequestParam("handleType") String handleType, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Map<String, Object> workOrderAdminList(@RequestParam("searchTerm") String searchTerm,
+        @RequestParam("handleType") String handleType, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 
     /**
      * 获取工单列表
@@ -130,6 +136,8 @@ public interface WorkOrderApiClient extends WorkOrderApi {
      */
     @Override
     @GetMapping("/workOrderList")
-    Map<String, Object> workOrderList(@RequestParam("userId") String userId, @RequestParam("searchTerm") String searchTerm, @RequestParam("handleType") String handleType, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Map<String, Object> workOrderList(@RequestParam("userId") String userId,
+        @RequestParam("searchTerm") String searchTerm, @RequestParam("handleType") String handleType,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
 }

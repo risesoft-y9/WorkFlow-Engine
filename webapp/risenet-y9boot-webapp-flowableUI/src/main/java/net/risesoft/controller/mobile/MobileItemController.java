@@ -49,7 +49,8 @@ public class MobileItemController {
      */
     @ResponseBody
     @RequestMapping(value = "/getItemList")
-    public void getItemList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
+    public void getItemList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);

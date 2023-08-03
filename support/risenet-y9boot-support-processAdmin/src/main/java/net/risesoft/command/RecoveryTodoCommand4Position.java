@@ -43,7 +43,8 @@ public class RecoveryTodoCommand4Position implements Command<Void> {
      */
     protected Map<String, Object> tVarMap;
 
-    public RecoveryTodoCommand4Position(HistoricTaskInstance hisTask, Map<String, Object> pVarMap, Map<String, Object> tVarMap) {
+    public RecoveryTodoCommand4Position(HistoricTaskInstance hisTask, Map<String, Object> pVarMap,
+        Map<String, Object> tVarMap) {
         this.hisTask = hisTask;
         this.pVarMap = pVarMap;
         this.tVarMap = tVarMap;
@@ -54,7 +55,8 @@ public class RecoveryTodoCommand4Position implements Command<Void> {
         TaskService taskService = CommandContextUtil.getTaskService();
         HistoricIdentityLinkService historicIdentityLinkService = CommandContextUtil.getHistoricIdentityLinkService();
         IdentityLinkService identityLinkService = CommandContextUtil.getIdentityLinkService();
-        HistoricProcessInstanceEntityManager historicProcessInstanceEntityManager = CommandContextUtil.getHistoricProcessInstanceEntityManager();
+        HistoricProcessInstanceEntityManager historicProcessInstanceEntityManager =
+            CommandContextUtil.getHistoricProcessInstanceEntityManager();
 
         Position position = Y9LoginUserHolder.getPosition();
         String userId = position.getId();
@@ -100,8 +102,10 @@ public class RecoveryTodoCommand4Position implements Command<Void> {
         /**
          * 触发任务产生事件
          */
-        ProcessEngineConfigurationImpl processEngineConfiguration = org.flowable.engine.impl.util.CommandContextUtil.getProcessEngineConfiguration(commandContext);
-        processEngineConfiguration.getListenerNotificationHelper().executeTaskListeners(taskEntity, TaskListener.EVENTNAME_CREATE);
+        ProcessEngineConfigurationImpl processEngineConfiguration =
+            org.flowable.engine.impl.util.CommandContextUtil.getProcessEngineConfiguration(commandContext);
+        processEngineConfiguration.getListenerNotificationHelper().executeTaskListeners(taskEntity,
+            TaskListener.EVENTNAME_CREATE);
 
         /**
          * 2-设置历史任务办结时间为null
@@ -109,7 +113,8 @@ public class RecoveryTodoCommand4Position implements Command<Void> {
         /**
          * 3-历史act_hi_procinst结束时间改为null
          */
-        HistoricProcessInstanceEntity historicProcessInstanceEntity = historicProcessInstanceEntityManager.findById(processInstanceId);
+        HistoricProcessInstanceEntity historicProcessInstanceEntity =
+            historicProcessInstanceEntityManager.findById(processInstanceId);
         if (null != historicProcessInstanceEntity) {
             historicProcessInstanceEntity.setEndTime(null);
             historicProcessInstanceEntity.setDurationInMillis(null);
@@ -120,12 +125,14 @@ public class RecoveryTodoCommand4Position implements Command<Void> {
         /**
          * 4-copy participant(流程实例) candidate(单实例任务节点生成的任务会有)
          */
-        List<HistoricIdentityLinkEntity> hilEntityList4P = historicIdentityLinkService.findHistoricIdentityLinksByProcessInstanceId(processInstanceId);
+        List<HistoricIdentityLinkEntity> hilEntityList4P =
+            historicIdentityLinkService.findHistoricIdentityLinksByProcessInstanceId(processInstanceId);
         for (HistoricIdentityLinkEntity hilEntity : hilEntityList4P) {
             identityLinkService.createProcessInstanceIdentityLink(processInstanceId, userId, null, hilEntity.getType());
         }
 
-        List<HistoricIdentityLinkEntity> hilEntityList4T = historicIdentityLinkService.findHistoricIdentityLinksByTaskId(taskId);
+        List<HistoricIdentityLinkEntity> hilEntityList4T =
+            historicIdentityLinkService.findHistoricIdentityLinksByTaskId(taskId);
         for (HistoricIdentityLinkEntity hilEntity : hilEntityList4T) {
             identityLinkService.createTaskIdentityLink(taskId, userId, null, hilEntity.getType());
         }

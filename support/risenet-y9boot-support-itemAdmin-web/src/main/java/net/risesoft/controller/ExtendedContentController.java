@@ -24,90 +24,94 @@ import net.risesoft.service.ExtendedContentService;
 @RequestMapping("/extendedContent")
 public class ExtendedContentController {
 
-	@Autowired
-	private ExtendedContentService extendedContentService;
+    @Autowired
+    private ExtendedContentService extendedContentService;
 
-	/**
-	 * 是否填写内容
-	 * 
-	 * @param taskId
-	 * @param processSerialNumber
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/checkSignContent")
-	public Map<String, Object> checkSignContent(@RequestParam(required = false) String taskId, @RequestParam(required = false) String category, @RequestParam(required = false) String processSerialNumber) {
-		Map<String, Object> map = new HashMap<String, Object>(16);
-		try {
-			int count = 0;
-			count = extendedContentService.findByProcSerialNumberAndCategory(processSerialNumber, category);
-			if (count > 0) {
-				map.put("checkSignContent", true);
-			} else {
-				map.put("checkSignContent", false);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return map;
-	}
+    /**
+     * 是否填写内容
+     * 
+     * @param taskId
+     * @param processSerialNumber
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/checkSignContent")
+    public Map<String, Object> checkSignContent(@RequestParam(required = false) String taskId,
+        @RequestParam(required = false) String category, @RequestParam(required = false) String processSerialNumber) {
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        try {
+            int count = 0;
+            count = extendedContentService.findByProcSerialNumberAndCategory(processSerialNumber, category);
+            if (count > 0) {
+                map.put("checkSignContent", true);
+            } else {
+                map.put("checkSignContent", false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
 
-	/**
-	 * 获取内容列表
-	 * 
-	 * @param processSerialNumber
-	 * @param itembox
-	 * @param taskId
-	 * @param category
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/contentList")
-	public List<Map<String, Object>> contentList(@RequestParam String processSerialNumber, @RequestParam String itembox, @RequestParam String taskId, @RequestParam String category) {
-		List<Map<String, Object>> listMap = extendedContentService.contentList(processSerialNumber, taskId, itembox, category);
-		return listMap;
-	}
+    /**
+     * 获取内容列表
+     * 
+     * @param processSerialNumber
+     * @param itembox
+     * @param taskId
+     * @param category
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/contentList")
+    public List<Map<String, Object>> contentList(@RequestParam String processSerialNumber, @RequestParam String itembox,
+        @RequestParam String taskId, @RequestParam String category) {
+        List<Map<String, Object>> listMap =
+            extendedContentService.contentList(processSerialNumber, taskId, itembox, category);
+        return listMap;
+    }
 
-	/**
-	 * 删除内容
-	 * 
-	 * @param id
-	 * @return
-	 */
-	@RequestMapping(value = "/delete")
-	@ResponseBody
-	public Map<String, Object> delete(@RequestParam String id) {
-		Map<String, Object> map = extendedContentService.delete(id);
-		return map;
-	}
+    /**
+     * 删除内容
+     * 
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/delete")
+    @ResponseBody
+    public Map<String, Object> delete(@RequestParam String id) {
+        Map<String, Object> map = extendedContentService.delete(id);
+        return map;
+    }
 
-	/**
-	 * 新增编辑内容
-	 * 
-	 * @param processSerialNumber
-	 * @param processInstanceId
-	 * @param taskId
-	 * @param category
-	 * @param id
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping(value = "/newOrModify/content")
-	public String newOrModifyContent(@RequestParam String processSerialNumber, @RequestParam String taskId, @RequestParam String category, @RequestParam String id, Model model) {
-		model = extendedContentService.newOrModifyContent(processSerialNumber, taskId, category, id, model);
-		return "opinion/extendedContent";
-	}
+    /**
+     * 新增编辑内容
+     * 
+     * @param processSerialNumber
+     * @param processInstanceId
+     * @param taskId
+     * @param category
+     * @param id
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/newOrModify/content")
+    public String newOrModifyContent(@RequestParam String processSerialNumber, @RequestParam String taskId,
+        @RequestParam String category, @RequestParam String id, Model model) {
+        model = extendedContentService.newOrModifyContent(processSerialNumber, taskId, category, id, model);
+        return "opinion/extendedContent";
+    }
 
-	/**
-	 * 保存内容
-	 * 
-	 * @param content
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST)
-	public Map<String, Object> saveOrUpdate(ExtendedContent content) {
-		Map<String, Object> map = extendedContentService.saveOrUpdate(content);
-		return map;
-	}
+    /**
+     * 保存内容
+     * 
+     * @param content
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST)
+    public Map<String, Object> saveOrUpdate(ExtendedContent content) {
+        Map<String, Object> map = extendedContentService.saveOrUpdate(content);
+        return map;
+    }
 }

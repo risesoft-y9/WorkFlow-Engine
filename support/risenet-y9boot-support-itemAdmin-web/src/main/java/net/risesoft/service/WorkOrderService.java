@@ -20,7 +20,8 @@ public interface WorkOrderService {
      * @param resultFeedback
      * @return
      */
-    public Map<String, Object> changeWorkOrderState(String processSerialNumber, String state, String processInstanceId, String resultFeedback);
+    public Map<String, Object> changeWorkOrderState(String processSerialNumber, String state, String processInstanceId,
+        String resultFeedback);
 
     /**
      * 删除草稿
@@ -100,6 +101,7 @@ public interface WorkOrderService {
      * @param rows
      * @return
      */
-    public Map<String, Object> workOrderList(String userId, String searchTerm, String handleType, Integer page, Integer rows);
+    public Map<String, Object> workOrderList(String userId, String searchTerm, String handleType, Integer page,
+        Integer rows);
 
 }

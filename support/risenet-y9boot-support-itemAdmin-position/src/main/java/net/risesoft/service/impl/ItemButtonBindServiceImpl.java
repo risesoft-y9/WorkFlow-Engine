@@ -66,7 +66,8 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
 
     @Override
     @Transactional(readOnly = false)
-    public ItemButtonBind bindButton(String itemId, String buttonId, String processDefinitionId, String taskDefKey, Integer buttonType) {
+    public ItemButtonBind bindButton(String itemId, String buttonId, String processDefinitionId, String taskDefKey,
+        Integer buttonType) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemButtonBind bib = new ItemButtonBind();
@@ -104,7 +105,8 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
             if (latestpd.getVersion() > 1) {
-                ProcessDefinitionModel previouspd = repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
+                ProcessDefinitionModel previouspd =
+                    repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
                 previouspdId = previouspd.getId();
             }
         }
@@ -113,16 +115,22 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
             String currentTaskDefKey = (String)map.get("taskDefKey");
             List<ItemButtonBind> bindList = new ArrayList<>();
             if (StringUtils.isBlank(currentTaskDefKey)) {
-                bindList = buttonItemBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNullOrderByTabIndexAsc(itemId, previouspdId);
+                bindList = buttonItemBindRepository
+                    .findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNullOrderByTabIndexAsc(itemId, previouspdId);
             } else {
-                bindList = buttonItemBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, previouspdId, currentTaskDefKey);
+                bindList = buttonItemBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
+                    itemId, previouspdId, currentTaskDefKey);
             }
             for (ItemButtonBind bind : bindList) {
                 ItemButtonBind oldBind = null;
                 if (StringUtils.isBlank(currentTaskDefKey)) {
-                    oldBind = buttonItemBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNullAndButtonIdOrderByTabIndexAsc(itemId, latestpdId, bind.getButtonId());
+                    oldBind = buttonItemBindRepository
+                        .findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNullAndButtonIdOrderByTabIndexAsc(itemId,
+                            latestpdId, bind.getButtonId());
                 } else {
-                    oldBind = buttonItemBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndButtonIdOrderByTabIndexAsc(itemId, latestpdId, currentTaskDefKey, bind.getButtonId());
+                    oldBind = buttonItemBindRepository
+                        .findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndButtonIdOrderByTabIndexAsc(itemId,
+                            latestpdId, currentTaskDefKey, bind.getButtonId());
                 }
                 if (null == oldBind) {
                     String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE), oldbindId = bind.getId();
@@ -143,7 +151,8 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
                     newbind.setUserId(userId);
                     newbind.setUserName(userName);
 
-                    Integer index = buttonItemBindRepository.getMaxTabIndex(itemId, latestpdId, currentTaskDefKey, bind.getButtonType());
+                    Integer index = buttonItemBindRepository.getMaxTabIndex(itemId, latestpdId, currentTaskDefKey,
+                        bind.getButtonType());
                     if (index == null) {
                         newbind.setTabIndex(1);
                     } else {
@@ -167,7 +176,8 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     public List<ItemButtonBind> findList(String itemId, Integer buttonType, String processDefinitionId) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
-        List<ItemButtonBind> bibList = buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdOrderByTabIndexAsc(itemId, buttonType, processDefinitionId);
+        List<ItemButtonBind> bibList = buttonItemBindRepository
+            .findByItemIdAndButtonTypeAndProcessDefinitionIdOrderByTabIndexAsc(itemId, buttonType, processDefinitionId);
         for (ItemButtonBind bib : bibList) {
             if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
                 CommonButton cb = commonButtonService.findOne(bib.getButtonId());
@@ -189,10 +199,13 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    public List<ItemButtonBind> findList(String itemId, Integer buttonType, String processDefinitionId, String taskDefKey) {
+    public List<ItemButtonBind> findList(String itemId, Integer buttonType, String processDefinitionId,
+        String taskDefKey) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
-        List<ItemButtonBind> bibList = buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, buttonType, processDefinitionId, taskDefKey);
+        List<ItemButtonBind> bibList =
+            buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
+                itemId, buttonType, processDefinitionId, taskDefKey);
         for (ItemButtonBind bib : bibList) {
             if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
                 CommonButton cb = commonButtonService.findOne(bib.getButtonId());
@@ -215,7 +228,8 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
 
     @Override
     public List<ItemButtonBind> findListByButtonId(String buttonId) {
-        List<ItemButtonBind> bindList = buttonItemBindRepository.findByButtonIdOrderByItemIdDescUpdateTimeDesc(buttonId);
+        List<ItemButtonBind> bindList =
+            buttonItemBindRepository.findByButtonIdOrderByItemIdDescUpdateTimeDesc(buttonId);
         for (ItemButtonBind bind : bindList) {
             List<ItemButtonRole> roleList = itemButtonRoleService.findByItemButtonIdContainRoleName(bind.getId());
             String roleNames = "";
@@ -232,10 +246,13 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    public List<ItemButtonBind> findListContainRole(String itemId, Integer buttonType, String processDefinitionId, String taskDefineKey) {
+    public List<ItemButtonBind> findListContainRole(String itemId, Integer buttonType, String processDefinitionId,
+        String taskDefineKey) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
-        List<ItemButtonBind> bindList = buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, buttonType, processDefinitionId, taskDefineKey);
+        List<ItemButtonBind> bindList =
+            buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
+                itemId, buttonType, processDefinitionId, taskDefineKey);
         for (ItemButtonBind bind : bindList) {
             if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
                 CommonButton cb = commonButtonService.findOne(bind.getButtonId());
@@ -272,12 +289,17 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    public List<ItemButtonBind> findListContainRoleId(String itemId, Integer buttonType, String processDefinitionId, String taskDefineKey) {
+    public List<ItemButtonBind> findListContainRoleId(String itemId, Integer buttonType, String processDefinitionId,
+        String taskDefineKey) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
-        List<ItemButtonBind> bindList = buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, buttonType, processDefinitionId, taskDefineKey);
+        List<ItemButtonBind> bindList =
+            buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
+                itemId, buttonType, processDefinitionId, taskDefineKey);
         if (bindList.isEmpty()) {
-            bindList = buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyIsNullOrderByTabIndexAsc(itemId, buttonType, processDefinitionId);
+            bindList = buttonItemBindRepository
+                .findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyIsNullOrderByTabIndexAsc(itemId,
+                    buttonType, processDefinitionId);
         }
         for (ItemButtonBind bind : bindList) {
             if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {
@@ -307,12 +329,17 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    public List<ItemButtonBind> findListExtra(String itemId, Integer buttonType, String processDefinitionId, String taskDefineKey) {
+    public List<ItemButtonBind> findListExtra(String itemId, Integer buttonType, String processDefinitionId,
+        String taskDefineKey) {
         String buttonName = "按钮不存在";
         String buttonCustomId = "";
-        List<ItemButtonBind> bibList = buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, buttonType, processDefinitionId, taskDefineKey);
+        List<ItemButtonBind> bibList =
+            buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
+                itemId, buttonType, processDefinitionId, taskDefineKey);
         if (bibList.isEmpty()) {
-            bibList = buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, buttonType, processDefinitionId, "");
+            bibList =
+                buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
+                    itemId, buttonType, processDefinitionId, "");
         }
         for (ItemButtonBind bib : bibList) {
             if (buttonType == ItemButtonTypeEnum.COMMON.getValue()) {

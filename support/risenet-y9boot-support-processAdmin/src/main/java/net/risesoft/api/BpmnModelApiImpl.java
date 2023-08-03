@@ -128,10 +128,12 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 activityIds.addAll(ids);
             }
             // 获取流程图
-            in = diagramGenerator.generateDiagram(bpmnModel, "png", activityIds, flows, engconf.getActivityFontName(), engconf.getLabelFontName(), engconf.getAnnotationFontName(), engconf.getClassLoader(), 1.0, false);
+            in = diagramGenerator.generateDiagram(bpmnModel, "png", activityIds, flows, engconf.getActivityFontName(),
+                engconf.getLabelFontName(), engconf.getAnnotationFontName(), engconf.getClassLoader(), 1.0, false);
         } else {
             // 获取流程图
-            in = diagramGenerator.generateDiagram(bpmnModel, "png", engconf.getActivityFontName(), engconf.getLabelFontName(), engconf.getAnnotationFontName(), engconf.getClassLoader(), false);
+            in = diagramGenerator.generateDiagram(bpmnModel, "png", engconf.getActivityFontName(),
+                engconf.getLabelFontName(), engconf.getAnnotationFontName(), engconf.getClassLoader(), false);
         }
 
         byte[] buf = new byte[1024];
@@ -312,15 +314,18 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         try {
             HistoricProcessInstance hpi = customHistoricProcessService.getById(processInstanceId);
             if (hpi == null) {
-                OfficeDoneInfoModel officeDoneInfo = officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+                OfficeDoneInfoModel officeDoneInfo =
+                    officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
                 if (officeDoneInfo == null) {
-                    ProcessParamModel processParam = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    ProcessParamModel processParam =
+                        processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                     year = processParam.getCreateTime().substring(0, 4);
                 } else {
                     year = officeDoneInfo.getStartTime().substring(0, 4);
                 }
             }
-            List<HistoricActivityInstance> list = customHistoricActivityService.getByProcessInstanceIdAndYear(processInstanceId, year);
+            List<HistoricActivityInstance> list =
+                customHistoricActivityService.getByProcessInstanceIdAndYear(processInstanceId, year);
             Collections.sort(list, new Comparator<HistoricActivityInstance>() {
                 @Override
                 public int compare(HistoricActivityInstance o1, HistoricActivityInstance o2) {
@@ -349,7 +354,8 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 String id = his.getId();
                 String taskId = his.getTaskId();
                 String type = his.getActivityType();
-                if (type.contains(SysVariables.STARTEVENT) || type.contains("Flow") || type.contains(SysVariables.ENDEVENT)) {
+                if (type.contains(SysVariables.STARTEVENT) || type.contains("Flow")
+                    || type.contains(SysVariables.ENDEVENT)) {
                     continue;
                 }
                 if (type.contains(SysVariables.ENDEVENT)) {
@@ -380,7 +386,8 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     map.put("id", taskId);
                     map.put("name", his.getActivityName());
                     map.put("title", person != null ? person.getName() : "该用户不存在");
-                    HistoricVariableInstance historicVariableInstance = customHistoricVariableService.getByTaskIdAndVariableName(taskId, SysVariables.PARALLELSPONSOR, year);
+                    HistoricVariableInstance historicVariableInstance = customHistoricVariableService
+                        .getByTaskIdAndVariableName(taskId, SysVariables.PARALLELSPONSOR, year);
                     if (historicVariableInstance != null) {
                         map.put("title", person != null ? person.getName() + "(主办)" : "该用户不存在");
                     }
@@ -398,7 +405,8 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     map.put("id", taskId);
                     map.put("name", his.getActivityName());
                     map.put("title", person != null ? person.getName() : "该用户不存在");
-                    HistoricVariableInstance historicVariableInstance = customHistoricVariableService.getByTaskIdAndVariableName(taskId, SysVariables.PARALLELSPONSOR, year);
+                    HistoricVariableInstance historicVariableInstance = customHistoricVariableService
+                        .getByTaskIdAndVariableName(taskId, SysVariables.PARALLELSPONSOR, year);
                     if (historicVariableInstance != null) {
                         map.put("title", person != null ? person.getName() + "(主办)" : "该用户不存在");
                     }
@@ -423,7 +431,8 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     map.put("title", pt.getSenderName());
                     map.put("parentId", parentId0);
                     map.put("className", StringUtils.isNotBlank(pt.getEndTime()) ? "serverColor" : "specialColor");
-                    map.put("endTime", StringUtils.isNotBlank(pt.getEndTime()) ? sdf.parse(pt.getEndTime()).getTime() : 0);
+                    map.put("endTime",
+                        StringUtils.isNotBlank(pt.getEndTime()) ? sdf.parse(pt.getEndTime()).getTime() : 0);
                     map.put("num", num);
                     listMap.add(map);
                     if (j == ptList.size() - 1) {

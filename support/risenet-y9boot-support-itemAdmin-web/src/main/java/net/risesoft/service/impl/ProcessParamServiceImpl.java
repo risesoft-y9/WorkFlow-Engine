@@ -98,7 +98,8 @@ public class ProcessParamServiceImpl implements ProcessParamService {
                 if (StringUtils.isNotBlank(processInstanceId)) {
                     boolean update = false;
                     // 搜索字段不一样才修改
-                    if (oldpp.getSearchTerm() != null && processParam.getSearchTerm() != null && !oldpp.getSearchTerm().equals(processParam.getSearchTerm())) {
+                    if (oldpp.getSearchTerm() != null && processParam.getSearchTerm() != null
+                        && !oldpp.getSearchTerm().equals(processParam.getSearchTerm())) {
                         update = true;
                     }
                     if (update) {
@@ -164,7 +165,8 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             processParamRepository.save(pp);
             Map<String, Object> val = new HashMap<String, Object>();
             val.put("val", pp.getSearchTerm());
-            variableManager.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId, "searchTerm", val);
+            variableManager.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId,
+                "searchTerm", val);
         }
     }
 

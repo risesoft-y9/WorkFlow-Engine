@@ -39,7 +39,8 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     @Override
     @Transactional(readOnly = false)
     public void delBatchByProcessSerialNumbers(List<String> processSerialNumbers) {
-        List<TransactionHistoryWord> list = transactionHistoryWordRepository.findByProcessSerialNumbers(processSerialNumbers);
+        List<TransactionHistoryWord> list =
+            transactionHistoryWordRepository.findByProcessSerialNumbers(processSerialNumbers);
         for (TransactionHistoryWord file : list) {
             try {
                 transactionHistoryWordRepository.delete(file);
@@ -57,7 +58,8 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
         List<TransactionHistoryWord> list = new ArrayList<TransactionHistoryWord>();
 
         if (StringUtils.isNotBlank(processSerialNumber) && StringUtils.isNotBlank(isTaoHong)) {
-            list = transactionHistoryWordRepository.findByProcessSerialNumberAndIsTaoHong(processSerialNumber, isTaoHong);
+            list =
+                transactionHistoryWordRepository.findByProcessSerialNumberAndIsTaoHong(processSerialNumber, isTaoHong);
         }
         for (TransactionHistoryWord historyWord : list) {
             transactionHistoryWordRepository.delete(historyWord);
@@ -71,7 +73,8 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
 
     @Override
     public List<TransactionHistoryWord> findByProcessSerialNumber(String processSerialNumber) {
-        List<TransactionHistoryWord> list = transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
+        List<TransactionHistoryWord> list =
+            transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
         return list;
     }
 
@@ -79,7 +82,8 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     public TransactionHistoryWord getByProcessSerialNumber(String processSerialNumber) {
         TransactionHistoryWord fileDocument = new TransactionHistoryWord();
         if (StringUtils.isNotBlank(processSerialNumber)) {
-            List<TransactionHistoryWord> list = transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
+            List<TransactionHistoryWord> list =
+                transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
             if (list.size() > 0 && !list.isEmpty()) {
                 fileDocument = list.get(0);
             }
@@ -103,7 +107,8 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
 
     @Transactional(readOnly = false)
     @Override
-    public void saveTransactionHistoryWord(String fileStoreId, String fileSize, String documenttitle, String fileType, String processSerialNumber, String isTaoHong, String taskId) {
+    public void saveTransactionHistoryWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
+        String processSerialNumber, String isTaoHong, String taskId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -118,7 +123,8 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
         transactionHistoryWord.setSaveDate(sdfymdhms.format(new Date()));
         transactionHistoryWord.setTenantId(tenantId);
         transactionHistoryWord.setTitle(documenttitle);
-        transactionHistoryWord.setFileName(StringUtils.isNotBlank(documenttitle) ? documenttitle + fileType : "正文" + fileType);
+        transactionHistoryWord
+            .setFileName(StringUtils.isNotBlank(documenttitle) ? documenttitle + fileType : "正文" + fileType);
         transactionHistoryWord.setFileStoreId(fileStoreId);
         transactionHistoryWord.setFileSize(fileSize);
         transactionHistoryWord.setUserId(userId);
@@ -131,7 +137,8 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     public int update(String taskId, String processSerialNumber) {
         try {
             if (StringUtils.isNotBlank(processSerialNumber)) {
-                List<TransactionHistoryWord> list = transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
+                List<TransactionHistoryWord> list =
+                    transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
                 if (list.size() > 0 && !list.isEmpty()) {
                     if (StringUtils.isNotBlank(taskId)) {
                         transactionHistoryWordRepository.update(taskId, processSerialNumber);
@@ -148,9 +155,11 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
 
     @Transactional(readOnly = false)
     @Override
-    public void updateTransactionHistoryWordById(String fileStoreId, String fileType, String fileName, String fileSize, String isTaoHong, String userId, String id) {
+    public void updateTransactionHistoryWordById(String fileStoreId, String fileType, String fileName, String fileSize,
+        String isTaoHong, String userId, String id) {
         if (StringUtils.isNotBlank(id)) {
-            transactionHistoryWordRepository.updateTransactionHistoryWordById(fileStoreId, fileSize, isTaoHong, sdfymdhms.format(new Date()), userId, id);
+            transactionHistoryWordRepository.updateTransactionHistoryWordById(fileStoreId, fileSize, isTaoHong,
+                sdfymdhms.format(new Date()), userId, id);
         }
     }
 

@@ -35,9 +35,11 @@ public class WorkflowApiImpl implements WorkflowApi {
      */
     @Override
     @GetMapping(value = "/getCurrentTaskTargets", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getCurrentTaskTargets(String tenantId, String processDefinitionId, String taskDefKey) {
+    public List<Map<String, String>> getCurrentTaskTargets(String tenantId, String processDefinitionId,
+        String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<Map<String, String>> listMap = workflowProcessInstanceService.getCurrentTaskTargets(processDefinitionId, taskDefKey);
+        List<Map<String, String>> listMap =
+            workflowProcessInstanceService.getCurrentTaskTargets(processDefinitionId, taskDefKey);
         return listMap;
     }
 }

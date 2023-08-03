@@ -39,7 +39,8 @@ public interface DraftEntityService {
      * @param delFlag
      * @return
      */
-    public Page<DraftEntity> getDraftList(String itemId, String userid, int page, int rows, String title, boolean delFlag);
+    public Page<DraftEntity> getDraftList(String itemId, String userid, int page, int rows, String title,
+        boolean delFlag);
 
     /**
      * Description: 获取草稿列表
@@ -52,10 +53,12 @@ public interface DraftEntityService {
      * @param delFlag
      * @return
      */
-    public Page<DraftEntity> getDraftListBySystemName(String systemName, String userId, int page, int rows, String title, boolean delFlag);
+    public Page<DraftEntity> getDraftListBySystemName(String systemName, String userId, int page, int rows,
+        String title, boolean delFlag);
 
     /**
      * Description: 打开草稿
+     * 
      * @param processSerialNumber
      * @param itemId
      * @param mobile
@@ -81,6 +84,7 @@ public interface DraftEntityService {
 
     /**
      * Description: 保存草稿
+     * 
      * @param itemId
      * @param processSerialNumber
      * @param processDefinitionKey
@@ -90,10 +94,12 @@ public interface DraftEntityService {
      * @param type
      * @return
      */
-    public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String title, String type);
+    public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
+        String number, String level, String title, String type);
 
     /**
      * Description: 保存草稿
+     * 
      * @param itemId
      * @param processSerialNumber
      * @param processDefinitionKey
@@ -104,5 +110,6 @@ public interface DraftEntityService {
      * @param type
      * @return
      */
-    public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String jijian, String title, String type);
+    public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
+        String number, String level, String jijian, String title, String type);
 }

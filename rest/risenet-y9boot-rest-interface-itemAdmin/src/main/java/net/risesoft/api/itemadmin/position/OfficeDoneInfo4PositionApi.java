@@ -82,7 +82,8 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllByDeptId(String tenantId, String deptId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllByDeptId(String tenantId, String deptId, String title, String itemId, String userName,
+        String state, String year, Integer page, Integer rows);
 
     /**
      * 
@@ -99,7 +100,8 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllByPositionId(String tenantId, String positionId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllByPositionId(String tenantId, String positionId, String title, String itemId,
+        String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 监控办件列表
@@ -114,7 +116,8 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String userName, String state,
+        String year, Integer page, Integer rows);
 
     /**
      * 获取监控在办，办结件列表
@@ -129,7 +132,8 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows
      * @return
      */
-    Map<String, Object> searchByItemId(String tenantId, String title, String itemId, String state, String startdate, String enddate, Integer page, Integer rows);
+    Map<String, Object> searchByItemId(String tenantId, String title, String itemId, String state, String startdate,
+        String enddate, Integer page, Integer rows);
 
     /**
      * 获取个人办结件列表
@@ -144,6 +148,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows
      * @return
      */
-    Map<String, Object> searchByPositionId(String tenantId, String positionId, String title, String itemId, String startdate, String enddate, Integer page, Integer rows);
+    Map<String, Object> searchByPositionId(String tenantId, String positionId, String title, String itemId,
+        String startdate, String enddate, Integer page, Integer rows);
 
 }

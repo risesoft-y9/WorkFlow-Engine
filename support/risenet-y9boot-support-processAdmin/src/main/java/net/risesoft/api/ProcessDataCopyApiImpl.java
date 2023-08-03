@@ -86,7 +86,8 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
                 BpmnModel bpmnModel = modelService.getBpmnModel(modelData);
                 byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(bpmnModel);
                 String processName = modelData.getName() + ".bpmn20.xml";
-                repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes).deploy();
+                repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes)
+                    .deploy();
             }
         } catch (Exception e) {
             e.printStackTrace();

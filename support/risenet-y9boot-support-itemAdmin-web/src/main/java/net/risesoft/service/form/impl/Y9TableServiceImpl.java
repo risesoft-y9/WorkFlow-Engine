@@ -85,7 +85,8 @@ public class Y9TableServiceImpl implements Y9TableService {
             for (DbColumn dbColumn : list) {
                 Y9TableField y9TableField = new Y9TableField();
                 y9TableField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                y9TableField.setFieldCnName(StringUtils.isNotBlank(dbColumn.getComment()) ? dbColumn.getComment() : dbColumn.getColumnName());
+                y9TableField.setFieldCnName(
+                    StringUtils.isNotBlank(dbColumn.getComment()) ? dbColumn.getComment() : dbColumn.getColumnName());
                 y9TableField.setFieldLength(dbColumn.getDataLength());
                 y9TableField.setFieldType(dbColumn.getTypeName() + "(" + dbColumn.getDataLength() + ")");
                 y9TableField.setIsMayNull(dbColumn.getNullable() ? 1 : 0);
@@ -337,7 +338,8 @@ public class Y9TableServiceImpl implements Y9TableService {
      * @return
      */
     @Transactional(readOnly = false)
-    public List<DbColumn> saveField(String tableId, String tableName, List<Map<String, Object>> listMap, List<String> ids) {
+    public List<DbColumn> saveField(String tableId, String tableName, List<Map<String, Object>> listMap,
+        List<String> ids) {
         List<DbColumn> dbcs = new ArrayList<DbColumn>();
         int order = 1;
         Y9TableField fieldTemp = null;

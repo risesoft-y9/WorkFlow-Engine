@@ -69,7 +69,8 @@ public interface TaskApi {
      * @param taskId 任务id
      * @param vars 变量map
      */
-    void completeWithVariables4Position(String tenantId, String userId, String positionId, String taskId, Map<String, Object> vars);
+    void completeWithVariables4Position(String tenantId, String userId, String positionId, String taskId,
+        Map<String, Object> vars);
 
     /**
      * 创建变量
@@ -81,7 +82,8 @@ public interface TaskApi {
      * @param userIdList 人员ids
      * @return TaskModel
      */
-    TaskModel createWithVariables(String tenantId, String personId, String routeToTaskId, Map<String, Object> vars, List<String> userIdList);
+    TaskModel createWithVariables(String tenantId, String personId, String routeToTaskId, Map<String, Object> vars,
+        List<String> userIdList);
 
     /**
      * 创建变量/岗位
@@ -94,7 +96,8 @@ public interface TaskApi {
      * @param positionIdList 岗位ids
      * @return TaskModel
      */
-    TaskModel createWithVariables(String tenantId, String positionId, String personId, String routeToTaskId, Map<String, Object> vars, List<String> positionIdList);
+    TaskModel createWithVariables(String tenantId, String positionId, String personId, String routeToTaskId,
+        Map<String, Object> vars, List<String> positionIdList);
 
     /**
      * 设置任务代理
@@ -162,7 +165,8 @@ public interface TaskApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> findListByProcessInstanceId(String tenantId, String processInstanceId, Integer page, Integer rows) throws Exception;
+    Map<String, Object> findListByProcessInstanceId(String tenantId, String processInstanceId, Integer page,
+        Integer rows) throws Exception;
 
     /**
      * 保存任务

@@ -83,16 +83,21 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
             if (latestpd.getVersion() > 1) {
-                ProcessDefinitionModel previouspd = repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
+                ProcessDefinitionModel previouspd =
+                    repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
                 previouspdId = previouspd.getId();
             }
         }
         List<Map<String, Object>> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false);
         for (Map<String, Object> map : nodes) {
             String currentTaskDefKey = (String)map.get("taskDefKey");
-            List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateDateAsc(itemId, previouspdId, currentTaskDefKey);
+            List<ItemOpinionFrameBind> bindList =
+                itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateDateAsc(
+                    itemId, previouspdId, currentTaskDefKey);
             for (ItemOpinionFrameBind bind : bindList) {
-                ItemOpinionFrameBind oldBind = itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId, latestpdId, currentTaskDefKey, bind.getOpinionFrameMark());
+                ItemOpinionFrameBind oldBind =
+                    itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
+                        itemId, latestpdId, currentTaskDefKey, bind.getOpinionFrameMark());
                 if (null == oldBind) {
                     String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE), oldbindId = bind.getId();
                     /**
@@ -115,7 +120,8 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                     /**
                      * 保存意见框的授权
                      */
-                    List<ItemOpinionFrameRole> roleList = itemOpinionFrameRoleService.findByItemOpinionFrameId(oldbindId);
+                    List<ItemOpinionFrameRole> roleList =
+                        itemOpinionFrameRoleService.findByItemOpinionFrameId(oldbindId);
                     for (ItemOpinionFrameRole role : roleList) {
                         itemOpinionFrameRoleService.saveOrUpdate(newbindId, role.getRoleId());
                     }
@@ -153,17 +159,23 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
 
     @Override
     public List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
-        return itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(itemId, processDefinitionId);
+        return itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(itemId,
+            processDefinitionId);
     }
 
     @Override
-    public List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId, String taskDefKey) {
-        return itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateDateAsc(itemId, processDefinitionId, taskDefKey);
+    public List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
+        String processDefinitionId, String taskDefKey) {
+        return itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateDateAsc(
+            itemId, processDefinitionId, taskDefKey);
     }
 
     @Override
-    public ItemOpinionFrameBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(String itemId, String processDefinitionId, String taskDefKey, String opinionFrameMark) {
-        ItemOpinionFrameBind bind = itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId, processDefinitionId, taskDefKey, opinionFrameMark);
+    public ItemOpinionFrameBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(String itemId,
+        String processDefinitionId, String taskDefKey, String opinionFrameMark) {
+        ItemOpinionFrameBind bind =
+            itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId,
+                processDefinitionId, taskDefKey, opinionFrameMark);
         if (null != bind) {
             List<String> roleIds = new ArrayList<>();
             List<ItemOpinionFrameRole> roleList = itemOpinionFrameRoleService.findByItemOpinionFrameId(bind.getId());
@@ -172,10 +184,13 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
             }
             bind.setRoleIds(roleIds);
         } else {// 任务没有绑定意见框，获取流程绑定的意见框
-            bind = itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndOpinionFrameMarkAndTaskDefKeyIsNull(itemId, processDefinitionId, opinionFrameMark);
+            bind =
+                itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndOpinionFrameMarkAndTaskDefKeyIsNull(
+                    itemId, processDefinitionId, opinionFrameMark);
             if (null != bind) {
                 List<String> roleIds = new ArrayList<>();
-                List<ItemOpinionFrameRole> roleList = itemOpinionFrameRoleService.findByItemOpinionFrameId(bind.getId());
+                List<ItemOpinionFrameRole> roleList =
+                    itemOpinionFrameRoleService.findByItemOpinionFrameId(bind.getId());
                 for (ItemOpinionFrameRole role : roleList) {
                     roleIds.add(role.getRoleId());
                 }
@@ -186,9 +201,12 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     }
 
     @Override
-    public List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String itemId, String processDefinitionId, String taskDefKey) {
+    public List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String itemId,
+        String processDefinitionId, String taskDefKey) {
         List<ItemOpinionFrameBind> resList = new ArrayList<>();
-        List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateDateAsc(itemId, processDefinitionId, taskDefKey);
+        List<ItemOpinionFrameBind> bindList =
+            itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateDateAsc(itemId,
+                processDefinitionId, taskDefKey);
         for (ItemOpinionFrameBind bind : bindList) {
             List<String> roleIds = new ArrayList<>();
             List<ItemOpinionFrameRole> roleList = itemOpinionFrameRoleService.findByItemOpinionFrameId(bind.getId());
@@ -212,7 +230,8 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
 
     @Override
     public List<ItemOpinionFrameBind> findByMark(String mark) {
-        return StringUtils.isNotEmpty(mark) ? itemOpinionFrameBindRepository.findByOpinionFrameMarkOrderByItemIdDescModifyDateDesc(mark) : null;
+        return StringUtils.isNotEmpty(mark)
+            ? itemOpinionFrameBindRepository.findByOpinionFrameMarkOrderByItemIdDescModifyDateDesc(mark) : null;
     }
 
     @Override

@@ -75,7 +75,8 @@ public class TableFieldRestController {
      * @return
      */
     @RequestMapping(value = "/newOrModifyField", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> newOrModifyField(@RequestParam(required = false) String id, @RequestParam(required = true) String tableId) {
+    public Y9Result<Map<String, Object>> newOrModifyField(@RequestParam(required = false) String id,
+        @RequestParam(required = true) String tableId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("tableId", tableId);
         Y9TableField field = new Y9TableField();

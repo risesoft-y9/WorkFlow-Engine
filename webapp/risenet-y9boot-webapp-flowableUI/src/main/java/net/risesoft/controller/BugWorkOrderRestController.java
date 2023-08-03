@@ -160,7 +160,9 @@ public class BugWorkOrderRestController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/doingList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> doingList(@RequestParam(required = false) String listType, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> doingList(@RequestParam(required = false) String listType,
+        @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId();
         try {
@@ -171,7 +173,9 @@ public class BugWorkOrderRestController {
                 map = workOrderManager.workOrderList(userId, searchTerm, "2", page, rows);
             }
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+                return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
+                    Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"),
+                    "获取列表成功");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -191,7 +195,9 @@ public class BugWorkOrderRestController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/doneList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> doneList(@RequestParam(required = false) String listType, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> doneList(@RequestParam(required = false) String listType,
+        @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId();
         try {
@@ -202,7 +208,9 @@ public class BugWorkOrderRestController {
                 map = workOrderManager.workOrderList(userId, searchTerm, "3", page, rows);
             }
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+                return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
+                    Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"),
+                    "获取列表成功");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -221,14 +229,17 @@ public class BugWorkOrderRestController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/draftList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> draftList(@RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> draftList(@RequestParam(required = false) String searchTerm,
+        @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId();
         try {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map = workOrderManager.workOrderList(userId, searchTerm, "0", page, rows);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+                return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
+                    Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"),
+                    "获取列表成功");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -247,12 +258,15 @@ public class BugWorkOrderRestController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getAttachmentList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Page<Map<String, Object>> getAttachmentList(@RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
+    public Y9Page<Map<String, Object>> getAttachmentList(@RequestParam(required = true) String processSerialNumber,
+        @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map = attachmentManager.getAttachmentList(myTenantId, "", processSerialNumber, "", page, rows);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+                return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()),
+                    Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"),
+                    "获取列表成功");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -314,7 +328,8 @@ public class BugWorkOrderRestController {
      * @return
      */
     @RequestMapping(value = "/open", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> open(@RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String itembox, @RequestParam(required = false) String itemId) {
+    public Y9Result<Map<String, Object>> open(@RequestParam(required = true) String processSerialNumber,
+        @RequestParam(required = true) String itembox, @RequestParam(required = false) String itemId) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId();
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -326,10 +341,12 @@ public class BugWorkOrderRestController {
             if (b) {
                 WorkOrderModel workOrderModel = workOrderManager.findByProcessSerialNumber(processSerialNumber);
                 if (workOrderModel.getHandleType().equals(WorkOrderHandleTypeEnum.UNHANDLE.getValue())) {
-                    map = documentManager.add(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), itemId, false);
+                    map = documentManager.add(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), itemId,
+                        false);
                     try {
                         // 管理员打开待办工单，更新统一待办状态
-                        todoTaskApi.setIsNewTodo(Y9LoginUserHolder.getTenantId(), processSerialNumber + ":" + userId, "0");
+                        todoTaskApi.setIsNewTodo(Y9LoginUserHolder.getTenantId(), processSerialNumber + ":" + userId,
+                            "0");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -381,7 +398,9 @@ public class BugWorkOrderRestController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/todoList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> todoList(@RequestParam(required = false) String listType, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> todoList(@RequestParam(required = false) String listType,
+        @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId();
         try {
@@ -392,7 +411,9 @@ public class BugWorkOrderRestController {
                 map = workOrderManager.workOrderList(userId, searchTerm, "1", page, rows);
             }
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+                return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
+                    Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"),
+                    "获取列表成功");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -403,7 +424,8 @@ public class BugWorkOrderRestController {
     private String upload(MultipartFile image, byte[] data) throws Exception {
         String fileName = image.getOriginalFilename();
         LocalDate localDate = LocalDate.now();
-        String fullPath = Y9FileStore.buildFullPath(Y9Context.getSystemName(), String.valueOf(localDate.getYear()), String.valueOf(localDate.getMonth().getValue()), String.valueOf(localDate.getDayOfMonth()));
+        String fullPath = Y9FileStore.buildFullPath(Y9Context.getSystemName(), String.valueOf(localDate.getYear()),
+            String.valueOf(localDate.getMonth().getValue()), String.valueOf(localDate.getDayOfMonth()));
         Y9FileStore y9FileStore = y9FileStoreService.uploadFile(data, fullPath, fileName);
         return y9FileStore.getUrl();
     }
@@ -418,7 +440,8 @@ public class BugWorkOrderRestController {
     @RiseLog(operationType = OperationTypeEnum.ADD, operationName = "上传附件")
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> uploadFile(@RequestParam(required = false) MultipartFile file, @RequestParam(required = true) String processSerialNumber) {
+    public Y9Result<String> uploadFile(@RequestParam(required = false) MultipartFile file,
+        @RequestParam(required = true) String processSerialNumber) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -427,7 +450,8 @@ public class BugWorkOrderRestController {
             String fileName = FilenameUtils.getName(originalFilename);
             String[] types = fileName.split("\\.");
             String type = types[types.length - 1].toLowerCase();
-            String fullPath = "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
+            String fullPath =
+                "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
 
             AttachmentModel attachmentModel = new AttachmentModel();
@@ -442,7 +466,8 @@ public class BugWorkOrderRestController {
             attachmentModel.setDescribes("");
             attachmentModel.setPersonName(userInfo.getName());
             attachmentModel.setPersonId(userInfo.getPersonId());
-            OrgUnit orgUnit = orgUnitApi.getParent(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId());
+            OrgUnit orgUnit =
+                orgUnitApi.getParent(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId());
             attachmentModel.setDeptId(orgUnit != null ? orgUnit.getId() : "");
             attachmentModel.setDeptName(orgUnit != null ? orgUnit.getName() : "");
             attachmentModel.setFileStoreId(y9FileStore.getId());
@@ -472,7 +497,8 @@ public class BugWorkOrderRestController {
             BufferedImage bufferedImage = ImageIO.read(image.getInputStream());
             if (bufferedImage.getWidth() > displayWidth) {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                Thumbnails.of(image.getInputStream()).width(displayWidth).outputQuality(1.0F).toOutputStream(byteArrayOutputStream);
+                Thumbnails.of(image.getInputStream()).width(displayWidth).outputQuality(1.0F)
+                    .toOutputStream(byteArrayOutputStream);
                 data = byteArrayOutputStream.toByteArray();
             } else {
                 data = image.getBytes();
@@ -501,7 +527,8 @@ public class BugWorkOrderRestController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/workOrderSubmit", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> workOrderSubmit(@RequestParam(required = true) String type, @RequestParam(required = true) String formdata) {
+    public Y9Result<String> workOrderSubmit(@RequestParam(required = true) String type,
+        @RequestParam(required = true) String formdata) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId();
@@ -511,9 +538,11 @@ public class BugWorkOrderRestController {
             Map<String, Object> keyValue = Y9JsonUtil.readValue(formdata, Map.class);
             WorkOrderModel workOrderModel = new WorkOrderModel();
             workOrderModel.setCreateDate(keyValue.get("createDate") != null ? (String)keyValue.get("createDate") : "");
-            workOrderModel.setDescription(keyValue.get("description") != null ? (String)keyValue.get("description") : "");
+            workOrderModel
+                .setDescription(keyValue.get("description") != null ? (String)keyValue.get("description") : "");
             workOrderModel.setCreateTime(sdf.format(new Date()));
-            workOrderModel.setHtmlDescription(keyValue.get("description") != null ? (String)keyValue.get("description") : "");
+            workOrderModel
+                .setHtmlDescription(keyValue.get("description") != null ? (String)keyValue.get("description") : "");
             workOrderModel.setHandleType(type.equals(ItemBoxTypeEnum.DRAFT.getValue()) ? "0" : "1");
             workOrderModel.setGuid((String)keyValue.get("guid"));
             workOrderModel.setMobile(keyValue.get("mobile") != null ? (String)keyValue.get("mobile") : "");
@@ -530,7 +559,8 @@ public class BugWorkOrderRestController {
             workOrderModel.setUrgency(keyValue.get("urgency") != null ? (String)keyValue.get("urgency") : "中");
             workOrderModel.setUserId(userId);
             workOrderModel.setUserName(userInfo.getName());
-            workOrderModel.setWorkOrderType(keyValue.get("workOrderType") != null ? (String)keyValue.get("workOrderType") : "其他");
+            workOrderModel
+                .setWorkOrderType(keyValue.get("workOrderType") != null ? (String)keyValue.get("workOrderType") : "其他");
             resMap = workOrderManager.saveWorkOrder(workOrderModel);
             if ((Boolean)resMap.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("提交成功");

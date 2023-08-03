@@ -71,8 +71,10 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     }
 
     @Override
-    public Page<OpinionFrame> findAllNotUsed(String itemId, String processDefinitionId, String taskDefKey, int page, int rows) {
-        List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+    public Page<OpinionFrame> findAllNotUsed(String itemId, String processDefinitionId, String taskDefKey, int page,
+        int rows) {
+        List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindService
+            .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         List<String> markList = new ArrayList<>();
         for (ItemOpinionFrameBind bind : bindList) {
             markList.add(bind.getOpinionFrameMark());
@@ -185,8 +187,10 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     }
 
     @Override
-    public Page<OpinionFrame> search4NotUsed(String itemId, String processDefinitionId, String taskDefKey, int page, int rows, final String keyword) {
-        List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+    public Page<OpinionFrame> search4NotUsed(String itemId, String processDefinitionId, String taskDefKey, int page,
+        int rows, final String keyword) {
+        List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindService
+            .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         List<String> markList = new ArrayList<>();
         for (ItemOpinionFrameBind bind : bindList) {
             markList.add(bind.getOpinionFrameMark());

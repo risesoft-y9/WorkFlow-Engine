@@ -46,7 +46,9 @@ public interface Document4PositionApi {
      * @param processInstanceId
      * @return
      */
-    public Map<String, Object> docUserChoise(String tenantId, String userId, String positionId, String itemId, String processDefinitionKey, String processDefinitionId, String taskId, String routeToTask, String processInstanceId);
+    public Map<String, Object> docUserChoise(String tenantId, String userId, String positionId, String itemId,
+        String processDefinitionKey, String processDefinitionId, String taskId, String routeToTask,
+        String processInstanceId);
 
     /**
      *
@@ -61,7 +63,8 @@ public interface Document4PositionApi {
      * @param mobile
      * @return
      */
-    public Map<String, Object> edit(String tenantId, String positionId, String itembox, String taskId, String processInstanceId, String itemId, boolean mobile);
+    public Map<String, Object> edit(String tenantId, String positionId, String itembox, String taskId,
+        String processInstanceId, String itemId, boolean mobile);
 
     /**
      * 带自定义变量发送
@@ -80,8 +83,9 @@ public interface Document4PositionApi {
      * @param variables 保存变量
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> saveAndForwarding(String tenantId, String positionId, String processInstanceId, String taskId, String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId,
-        Map<String, Object> variables);
+    public Map<String, Object> saveAndForwarding(String tenantId, String positionId, String processInstanceId,
+        String taskId, String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey,
+        String userChoice, String sponsorGuid, String routeToTaskId, Map<String, Object> variables);
 
     /**
      *
@@ -102,8 +106,10 @@ public interface Document4PositionApi {
      * @param variables
      * @return
      */
-    public Map<String, Object> saveAndForwardingByTaskKey(String tenantId, String positionId, String processInstanceId, String taskId, String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId,
-        String startRouteToTaskId, Map<String, Object> variables);
+    public Map<String, Object> saveAndForwardingByTaskKey(String tenantId, String positionId, String processInstanceId,
+        String taskId, String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey,
+        String userChoice, String sponsorGuid, String routeToTaskId, String startRouteToTaskId,
+        Map<String, Object> variables);
 
     /**
      * 获取签收任务配置
@@ -116,7 +122,8 @@ public interface Document4PositionApi {
      * @param processSerialNumber
      * @return
      */
-    public Map<String, Object> signTaskConfig(String tenantId, String positionId, String itemId, String processDefinitionId, String taskDefinitionKey, String processSerialNumber);
+    public Map<String, Object> signTaskConfig(String tenantId, String positionId, String itemId,
+        String processDefinitionId, String taskDefinitionKey, String processSerialNumber);
 
     /**
      * 启动流程
@@ -129,7 +136,8 @@ public interface Document4PositionApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    public Map<String, Object> startProcess(String tenantId, String positionId, String itemId, String processSerialNumber, String processDefinitionKey) throws Exception;
+    public Map<String, Object> startProcess(String tenantId, String positionId, String itemId,
+        String processSerialNumber, String processDefinitionKey) throws Exception;
 
     /**
      * 启动流程，多人
@@ -143,5 +151,6 @@ public interface Document4PositionApi {
      * @return
      * @throws Exception
      */
-    Map<String, Object> startProcess(String tenantId, String positionId, String itemId, String processSerialNumber, String processDefinitionKey, String positionIds) throws Exception;
+    Map<String, Object> startProcess(String tenantId, String positionId, String itemId, String processSerialNumber,
+        String processDefinitionKey, String positionIds) throws Exception;
 }

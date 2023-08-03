@@ -124,13 +124,16 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             sql = "select count(t.ID) from FF_ChaoSong_" + year + " t where t.ID = '" + id + "'";
             totalCount = jdbcTemplate.queryForObject(sql, Integer.class);
             if (totalCount > 0) {
-                sql = "update FF_ChaoSong_" + year + " t set t.opinionState='" + opinionState + "' where t.ID = '" + id + "'";
+                sql = "update FF_ChaoSong_" + year + " t set t.opinionState='" + opinionState + "' where t.ID = '" + id
+                    + "'";
                 jdbcTemplate.execute(sql);
             } else {
-                sql = "select count(t.ID) from FF_ChaoSong_" + String.valueOf(Integer.parseInt(year) - 1) + " t where t.ID = '" + id + "'";
+                sql = "select count(t.ID) from FF_ChaoSong_" + String.valueOf(Integer.parseInt(year) - 1)
+                    + " t where t.ID = '" + id + "'";
                 totalCount = jdbcTemplate.queryForObject(sql, Integer.class);
                 if (totalCount > 0) {
-                    sql = "update FF_ChaoSong_" + String.valueOf(Integer.parseInt(year) - 1) + " t set t.opinionState='" + opinionState + "' where t.ID = '" + id + "'";
+                    sql = "update FF_ChaoSong_" + String.valueOf(Integer.parseInt(year) - 1) + " t set t.opinionState='"
+                        + opinionState + "' where t.ID = '" + id + "'";
                     jdbcTemplate.execute(sql);
                 }
             }
@@ -146,13 +149,23 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         String opinionState = StringUtils.isBlank(chaoSong.getOpinionState()) ? "" : chaoSong.getOpinionState();
         String opinionContent = StringUtils.isBlank(chaoSong.getOpinionContent()) ? "" : chaoSong.getOpinionContent();
         String opinionGroup = StringUtils.isBlank(chaoSong.getOpinionGroup()) ? "" : chaoSong.getOpinionGroup();
-        String processSerialNumber = StringUtils.isBlank(chaoSong.getProcessSerialNumber()) ? "" : chaoSong.getProcessSerialNumber();
+        String processSerialNumber =
+            StringUtils.isBlank(chaoSong.getProcessSerialNumber()) ? "" : chaoSong.getProcessSerialNumber();
         String taskId = StringUtils.isBlank(chaoSong.getTaskId()) ? "" : chaoSong.getTaskId();
-        String sql = "INSERT INTO FF_CHAOSONG_" + year + " (" + "	ID," + "	CREATETIME," + "	ITEMID," + "	ITEMNAME," + "	PROCESSINSTANCEID," + "	READTIME," + "	SENDDEPTID," + "	SENDDEPTNAME," + "	SENDERID," + "	SENDERNAME," + "	STATUS," + "	SYSTEMNAME," + "	TASKID,"
-            + "	TENANTID," + "	TITLE," + "	USERID," + "	USERNAME," + "	USERDEPTID," + "	USERDEPTNAME," + "	opinionState," + "	opinionContent," + "	opinionGroup," + "	PROCESSSERIALNUMBER" + " )" + " VALUES" + "	(" + "		'" + chaoSong.getId() + "'," + "		'"
-            + chaoSong.getCreateTime() + "'," + "		'" + chaoSong.getItemId() + "'," + "		'" + chaoSong.getItemName() + "'," + "		'" + chaoSong.getProcessInstanceId() + "'," + "		'" + sdf.format(new Date()) + "'," + "		'" + chaoSong.getSendDeptId() + "'," + "		'"
-            + chaoSong.getSendDeptName() + "'," + "		'" + chaoSong.getSenderId() + "'," + "		'" + chaoSong.getSenderName() + "'," + "		'1'," + "		'" + chaoSong.getSystemName() + "'," + "		'" + taskId + "'," + "		'" + chaoSong.getTenantId() + "'," + "		'"
-            + chaoSong.getTitle() + "'," + "		'" + chaoSong.getUserId() + "'," + "		'" + chaoSong.getUserName() + "'," + "		'" + chaoSong.getUserDeptId() + "'," + "		'" + chaoSong.getUserDeptName() + "'," + "		'" + opinionState + "'," + "		'" + opinionContent + "',"
+        String sql = "INSERT INTO FF_CHAOSONG_" + year + " (" + "	ID," + "	CREATETIME," + "	ITEMID,"
+            + "	ITEMNAME," + "	PROCESSINSTANCEID," + "	READTIME," + "	SENDDEPTID," + "	SENDDEPTNAME,"
+            + "	SENDERID," + "	SENDERNAME," + "	STATUS," + "	SYSTEMNAME," + "	TASKID," + "	TENANTID,"
+            + "	TITLE," + "	USERID," + "	USERNAME," + "	USERDEPTID," + "	USERDEPTNAME," + "	opinionState,"
+            + "	opinionContent," + "	opinionGroup," + "	PROCESSSERIALNUMBER" + " )" + " VALUES" + "	(" + "		'"
+            + chaoSong.getId() + "'," + "		'" + chaoSong.getCreateTime() + "'," + "		'"
+            + chaoSong.getItemId() + "'," + "		'" + chaoSong.getItemName() + "'," + "		'"
+            + chaoSong.getProcessInstanceId() + "'," + "		'" + sdf.format(new Date()) + "'," + "		'"
+            + chaoSong.getSendDeptId() + "'," + "		'" + chaoSong.getSendDeptName() + "'," + "		'"
+            + chaoSong.getSenderId() + "'," + "		'" + chaoSong.getSenderName() + "'," + "		'1'," + "		'"
+            + chaoSong.getSystemName() + "'," + "		'" + taskId + "'," + "		'" + chaoSong.getTenantId() + "',"
+            + "		'" + chaoSong.getTitle() + "'," + "		'" + chaoSong.getUserId() + "'," + "		'"
+            + chaoSong.getUserName() + "'," + "		'" + chaoSong.getUserDeptId() + "'," + "		'"
+            + chaoSong.getUserDeptName() + "'," + "		'" + opinionState + "'," + "		'" + opinionContent + "',"
             + "		'" + opinionGroup + "'," + "		'" + processSerialNumber + "'" + "	)";
         jdbcTemplate.execute(sql);
         chaoSongRepository.delete(chaoSong);
@@ -166,17 +179,28 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             ChaoSong chaoSong = chaoSongRepository.findById(id).orElse(null);
             String year = chaoSong.getCreateTime().substring(0, 4);
             String opinionState = StringUtils.isBlank(chaoSong.getOpinionState()) ? "" : chaoSong.getOpinionState();
-            String opinionContent = StringUtils.isBlank(chaoSong.getOpinionContent()) ? "" : chaoSong.getOpinionContent();
+            String opinionContent =
+                StringUtils.isBlank(chaoSong.getOpinionContent()) ? "" : chaoSong.getOpinionContent();
             String opinionGroup = StringUtils.isBlank(chaoSong.getOpinionGroup()) ? "" : chaoSong.getOpinionGroup();
             // String processSerialNumber = StringUtils.isBlank(chaoSong.getProcessSerialNumber()) ? "" :
             // chaoSong.getProcessSerialNumber();
             String taskId = StringUtils.isBlank(chaoSong.getTaskId()) ? "" : chaoSong.getTaskId();
-            String sql = "INSERT INTO FF_CHAOSONG_" + year + " (" + "	ID," + "	CREATETIME," + "	ITEMID," + "	ITEMNAME," + "	PROCESSINSTANCEID," + "	READTIME," + "	SENDDEPTID," + "	SENDDEPTNAME," + "	SENDERID," + "	SENDERNAME," + "	STATUS," + "	SYSTEMNAME," + "	TASKID,"
-                + "	TENANTID," + "	TITLE," + "	USERID," + "	USERNAME," + "	USERDEPTID," + "	USERDEPTNAME," + "	opinionState," + "	opinionContent," + "	opinionGroup," + "	PROCESSSERIALNUMBER" + " )" + " VALUES" + "	(" + "		'" + chaoSong.getId() + "'," + "		'"
-                + chaoSong.getCreateTime() + "'," + "		'" + chaoSong.getItemId() + "'," + "		'" + chaoSong.getItemName() + "'," + "		'" + chaoSong.getProcessInstanceId() + "'," + "		'" + sdf.format(new Date()) + "'," + "		'" + chaoSong.getSendDeptId() + "'," + "		'"
-                + chaoSong.getSendDeptName() + "'," + "		'" + chaoSong.getSenderId() + "'," + "		'" + chaoSong.getSenderName() + "'," + "		'1'," + "		'" + chaoSong.getSystemName() + "'," + "		'" + taskId + "'," + "		'" + chaoSong.getTenantId() + "'," + "		'"
-                + chaoSong.getTitle() + "'," + "		'" + chaoSong.getUserId() + "'," + "		'" + chaoSong.getUserName() + "'," + "		'" + chaoSong.getUserDeptId() + "'," + "		'" + chaoSong.getUserDeptName() + "'," + "		'" + opinionState + "'," + "		'" + opinionContent
-                + "'," + "		'" + opinionGroup + "'," + "		'" + taskId + "'" + "	)";
+            String sql = "INSERT INTO FF_CHAOSONG_" + year + " (" + "	ID," + "	CREATETIME," + "	ITEMID,"
+                + "	ITEMNAME," + "	PROCESSINSTANCEID," + "	READTIME," + "	SENDDEPTID," + "	SENDDEPTNAME,"
+                + "	SENDERID," + "	SENDERNAME," + "	STATUS," + "	SYSTEMNAME," + "	TASKID," + "	TENANTID,"
+                + "	TITLE," + "	USERID," + "	USERNAME," + "	USERDEPTID," + "	USERDEPTNAME," + "	opinionState,"
+                + "	opinionContent," + "	opinionGroup," + "	PROCESSSERIALNUMBER" + " )" + " VALUES" + "	("
+                + "		'" + chaoSong.getId() + "'," + "		'" + chaoSong.getCreateTime() + "'," + "		'"
+                + chaoSong.getItemId() + "'," + "		'" + chaoSong.getItemName() + "'," + "		'"
+                + chaoSong.getProcessInstanceId() + "'," + "		'" + sdf.format(new Date()) + "'," + "		'"
+                + chaoSong.getSendDeptId() + "'," + "		'" + chaoSong.getSendDeptName() + "'," + "		'"
+                + chaoSong.getSenderId() + "'," + "		'" + chaoSong.getSenderName() + "'," + "		'1',"
+                + "		'" + chaoSong.getSystemName() + "'," + "		'" + taskId + "'," + "		'"
+                + chaoSong.getTenantId() + "'," + "		'" + chaoSong.getTitle() + "'," + "		'"
+                + chaoSong.getUserId() + "'," + "		'" + chaoSong.getUserName() + "'," + "		'"
+                + chaoSong.getUserDeptId() + "'," + "		'" + chaoSong.getUserDeptName() + "'," + "		'"
+                + opinionState + "'," + "		'" + opinionContent + "'," + "		'" + opinionGroup + "',"
+                + "		'" + taskId + "'" + "	)";
             jdbcTemplate.execute(sql);
             chaoSongRepository.delete(chaoSong);
         }
@@ -187,7 +211,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         String tenantId = Y9LoginUserHolder.getTenantId();
         String year = "";
-        HistoricProcessInstanceModel historicProcessInstanceModel = historicProcessManager.getById(tenantId, processInstanceId);
+        HistoricProcessInstanceModel historicProcessInstanceModel =
+            historicProcessManager.getById(tenantId, processInstanceId);
         if (historicProcessInstanceModel != null) {
             year = sdf.format(historicProcessInstanceModel.getStartTime());
         } else {
@@ -197,22 +222,29 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             } else {
                 ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 year = processParam.getCreateTime().substring(0, 4);
-                HistoricProcessInstanceModel hpi = historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year);
+                HistoricProcessInstanceModel hpi =
+                    historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year);
                 if (hpi == null) {
                     year = String.valueOf(Integer.parseInt(year) + 1);
                 }
             }
         }
-        String countyearSql0 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + year + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + "			AND SENDERID != '" + userId + "'";
+        String countyearSql0 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + year
+            + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' "
+            + "			AND SENDERID != '" + userId + "'";
         int countyear0 = jdbcTemplate.queryForObject(countyearSql0, Integer.class);
 
-        String countyearSql1 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + "			AND SENDERID != '" + userId + "'";
+        String countyearSql1 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_"
+            + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			processInstanceId = '"
+            + processInstanceId + "' " + "			AND SENDERID != '" + userId + "'";
         int countyear1 = 0;
         try {
             countyear1 = jdbcTemplate.queryForObject(countyearSql1, Integer.class);
         } catch (Exception e) {
         }
-        String countyearSql2 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG" + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + "			AND SENDERID != '" + userId + "'";
+        String countyearSql2 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG"
+            + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' "
+            + "			AND SENDERID != '" + userId + "'";
         int totalCount = jdbcTemplate.queryForObject(countyearSql2, Integer.class);
         return totalCount + countyear0 + countyear1;
     }
@@ -222,7 +254,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         String tenantId = Y9LoginUserHolder.getTenantId();
         String year = "";
-        HistoricProcessInstanceModel historicProcessInstanceModel = historicProcessManager.getById(tenantId, processInstanceId);
+        HistoricProcessInstanceModel historicProcessInstanceModel =
+            historicProcessManager.getById(tenantId, processInstanceId);
         if (historicProcessInstanceModel != null) {
             year = sdf.format(historicProcessInstanceModel.getStartTime());
         } else {
@@ -232,22 +265,29 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             } else {
                 ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 year = processParam.getCreateTime().substring(0, 4);
-                HistoricProcessInstanceModel hpi = historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year);
+                HistoricProcessInstanceModel hpi =
+                    historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year);
                 if (hpi == null) {
                     year = String.valueOf(Integer.parseInt(year) + 1);
                 }
             }
         }
-        String countyearSql0 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + year + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + "			AND SENDERID = '" + userId + "'";
+        String countyearSql0 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + year
+            + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' "
+            + "			AND SENDERID = '" + userId + "'";
         int countyear0 = jdbcTemplate.queryForObject(countyearSql0, Integer.class);
 
-        String countyearSql1 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + "			AND SENDERID = '" + userId + "'";
+        String countyearSql1 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_"
+            + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			processInstanceId = '"
+            + processInstanceId + "' " + "			AND SENDERID = '" + userId + "'";
         int countyear1 = 0;
         try {
             countyear1 = jdbcTemplate.queryForObject(countyearSql1, Integer.class);
         } catch (Exception e) {
         }
-        String countyearSql2 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG" + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + "			AND SENDERID = '" + userId + "'";
+        String countyearSql2 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG"
+            + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' "
+            + "			AND SENDERID = '" + userId + "'";
         int totalCount = jdbcTemplate.queryForObject(countyearSql2, Integer.class);
         return totalCount + countyear0 + countyear1;
     }
@@ -264,17 +304,23 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
                 year = sdf.format(new Date());
             }
-            String countSql = "SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + year + "		WHERE" + "			PROCESSINSTANCEID = '" + processInstanceId + "' ";
+            String countSql = "SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + year
+                + "		WHERE" + "			PROCESSINSTANCEID = '" + processInstanceId + "' ";
             int totalCount = jdbcTemplate.queryForObject(countSql, Integer.class);
             if (totalCount > 0) {
-                countSql = "delete" + "		FROM" + "			FF_CHAOSONG_" + year + "		WHERE" + "			PROCESSINSTANCEID = '" + processInstanceId + "' ";
+                countSql = "delete" + "		FROM" + "			FF_CHAOSONG_" + year + "		WHERE"
+                    + "			PROCESSINSTANCEID = '" + processInstanceId + "' ";
                 jdbcTemplate.execute(countSql);
             } else {
                 try {
-                    countSql = "SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			PROCESSINSTANCEID = '" + processInstanceId + "' ";
+                    countSql = "SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_"
+                        + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE"
+                        + "			PROCESSINSTANCEID = '" + processInstanceId + "' ";
                     totalCount = jdbcTemplate.queryForObject(countSql, Integer.class);
                     if (totalCount > 0) {
-                        countSql = "delete" + "		FROM" + "			FF_CHAOSONG_" + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			PROCESSINSTANCEID = '" + processInstanceId + "' ";
+                        countSql = "delete" + "		FROM" + "			FF_CHAOSONG_"
+                            + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE"
+                            + "			PROCESSINSTANCEID = '" + processInstanceId + "' ";
                         jdbcTemplate.execute(countSql);
                     }
                 } catch (Exception e) {
@@ -299,32 +345,40 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
                 String tenantId = Y9LoginUserHolder.getTenantId();
                 String year = "";
-                HistoricProcessInstanceModel historicProcessInstanceModel = historicProcessManager.getById(tenantId, processInstanceId);
+                HistoricProcessInstanceModel historicProcessInstanceModel =
+                    historicProcessManager.getById(tenantId, processInstanceId);
                 if (historicProcessInstanceModel != null) {
                     year = sdf.format(historicProcessInstanceModel.getStartTime());
                 } else {
-                    OfficeDoneInfo officeDoneInfoModel = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                    OfficeDoneInfo officeDoneInfoModel =
+                        officeDoneInfoService.findByProcessInstanceId(processInstanceId);
                     if (officeDoneInfoModel != null && officeDoneInfoModel.getProcessInstanceId() != null) {
                         year = officeDoneInfoModel.getStartTime().substring(0, 4);
                     } else {
                         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
                         year = processParam.getCreateTime().substring(0, 4);
-                        HistoricProcessInstanceModel hpi = historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year);
+                        HistoricProcessInstanceModel hpi =
+                            historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year);
                         if (hpi == null) {
                             year = String.valueOf(Integer.parseInt(year) + 1);
                         }
                     }
                 }
-                String countSql = "SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + year + "		WHERE" + "			ID = '" + id + "' ";
+                String countSql = "SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + year
+                    + "		WHERE" + "			ID = '" + id + "' ";
                 int totalCount = jdbcTemplate.queryForObject(countSql, Integer.class);
                 if (totalCount > 0) {
-                    countSql = "delete" + "		FROM" + "			FF_CHAOSONG_" + year + "		WHERE" + "			ID = '" + id + "' ";
+                    countSql = "delete" + "		FROM" + "			FF_CHAOSONG_" + year + "		WHERE"
+                        + "			ID = '" + id + "' ";
                     jdbcTemplate.execute(countSql);
                 } else {
-                    countSql = "SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			ID = '" + id + "' ";
+                    countSql = "SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_"
+                        + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			ID = '" + id + "' ";
                     totalCount = jdbcTemplate.queryForObject(countSql, Integer.class);
                     if (totalCount > 0) {
-                        countSql = "delete" + "		FROM" + "			FF_CHAOSONG_" + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			ID = '" + id + "' ";
+                        countSql = "delete" + "		FROM" + "			FF_CHAOSONG_"
+                            + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			ID = '" + id
+                            + "' ";
                         jdbcTemplate.execute(countSql);
                     }
                 }
@@ -346,7 +400,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             TaskModel task = taskManager.findById(tenantId, taskId);
             processInstanceId = task.getProcessInstanceId();
         }
-        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "", activitiUser = "";
+        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
+            activitiUser = "";
         String itemboxStr = itembox;
         String startor = "";
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -388,7 +443,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         returnMap.put("taskId", taskId);
         returnMap.put(SysVariables.ACTIVITIUSER, activitiUser);
         returnMap = spmApproveitemService.findById(processParam.getItemId(), returnMap);
-        returnMap = documentService.genDocumentModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, returnMap);
+        returnMap = documentService.genDocumentModel(processParam.getItemId(), processDefinitionKey,
+            processDefinitionId, taskDefinitionKey, mobile, returnMap);
         String menuName = "打印,抄送,返回";
         String menuKey = "17,18,03";
         if (status == 1) {
@@ -409,7 +465,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     public int getDone4OpinionCountByUserId(String userId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         String year = sdf.format(new Date());
-        String sqlCount = "SELECT" + "			count(ID)" + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE" + "			USERID ='" + userId + "' and opinionState = '1'";
+        String sqlCount = "SELECT" + "			count(ID)" + "		FROM" + "			FF_ChaoSong_" + year
+            + "		WHERE" + "			USERID ='" + userId + "' and opinionState = '1'";
         int totalCount = jdbcTemplate.queryForObject(sqlCount, Integer.class);
         return totalCount;
     }
@@ -418,7 +475,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     public int getDoneCountByUserId(String userId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         String year = sdf.format(new Date());
-        String sqlCount = "SELECT" + "			count(ID)" + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE" + "			USERID ='" + userId + "'";
+        String sqlCount = "SELECT" + "			count(ID)" + "		FROM" + "			FF_ChaoSong_" + year
+            + "		WHERE" + "			USERID ='" + userId + "'";
         int totalCount = jdbcTemplate.queryForObject(sqlCount, Integer.class);
         return totalCount;
     }
@@ -434,7 +492,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Map<String, Object> getDoneListByUserId(String userId, String year, String documentTitle, int rows, int page) {
+    public Map<String, Object> getDoneListByUserId(String userId, String year, String documentTitle, int rows,
+        int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         if (StringUtils.isBlank(year)) {
@@ -450,7 +509,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         if (StringUtils.isNotBlank(documentTitle)) {
             sql0 += " and TITLE like '%" + documentTitle + "%'";
         }
-        String sql = "		SELECT" + "			* " + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE" + "			USERID ='" + userId + "'" + sql0 + "		ORDER BY" + "			CREATETIME DESC" + rowstr;
+        String sql = "		SELECT" + "			* " + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE"
+            + "			USERID ='" + userId + "'" + sql0 + "		ORDER BY" + "			CREATETIME DESC" + rowstr;
         Connection connection = null;
         try {
             connection = jdbcTemplate.getDataSource().getConnection();
@@ -458,15 +518,20 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.ORACLE.getValue().equals(dialect)) {
                 rowstr = " WHERE rnum <= " + (startRow + rows) + " and rnum >" + startRow;
-                sql = "SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "		SELECT" + "			* " + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE" + "			USERID ='" + userId + "'" + sql0 + "		ORDER BY" + "			CREATETIME DESC"
+                sql = "SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "		SELECT"
+                    + "			* " + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE"
+                    + "			USERID ='" + userId + "'" + sql0 + "		ORDER BY" + "			CREATETIME DESC"
                     + "	) b " + ")" + rowstr;
             } else if (DialectEnum.DM.getValue().equals(dialect)) {
                 rowstr = " WHERE rnum <= " + (startRow + rows) + " and rnum >" + startRow;
-                sql = "SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "		SELECT" + "			* " + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE" + "			USERID ='" + userId + "'" + sql0 + "		ORDER BY" + "			CREATETIME DESC"
+                sql = "SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "		SELECT"
+                    + "			* " + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE"
+                    + "			USERID ='" + userId + "'" + sql0 + "		ORDER BY" + "			CREATETIME DESC"
                     + "	) b " + ")" + rowstr;
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
-            String sqlCount = "SELECT" + "			count(ID)" + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE" + "			USERID ='" + userId + "'" + sql0;
+            String sqlCount = "SELECT" + "			count(ID)" + "		FROM" + "			FF_ChaoSong_" + year
+                + "		WHERE" + "			USERID ='" + userId + "'" + sql0;
             totalCount = jdbcTemplate.queryForObject(sqlCount, Integer.class);
             SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -611,7 +676,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Map<String, Object> getListByProcessInstanceId(String processInstanceId, String userName, int rows, int page) {
+    public Map<String, Object> getListByProcessInstanceId(String processInstanceId, String userName, int rows,
+        int page) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -621,7 +687,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         String senderId = Y9LoginUserHolder.getPersonId();
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         try {
-            HistoricProcessInstanceModel historicProcessInstanceModel = historicProcessManager.getById(tenantId, processInstanceId);
+            HistoricProcessInstanceModel historicProcessInstanceModel =
+                historicProcessManager.getById(tenantId, processInstanceId);
             if (historicProcessInstanceModel != null) {
                 year = sdf.format(historicProcessInstanceModel.getStartTime());
             } else {
@@ -631,7 +698,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 } else {
                     ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
                     year = processParam.getCreateTime().substring(0, 4);
-                    HistoricProcessInstanceModel hpi = historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year);
+                    HistoricProcessInstanceModel hpi =
+                        historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year);
                     if (hpi == null) {
                         year = String.valueOf(Integer.parseInt(year) + 1);
                     }
@@ -645,13 +713,22 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 sql0 = " and USERNAME like '%" + userName + "%'";
             }
             String countsql = "";
-            String yearSql = " UNION ALL SELECT" + "			ID," + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME," + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS" + "		FROM"
-                + "			FF_CHAOSONG_" + year + "		WHERE" + "			processInstanceId = '" + processInstanceId + "'" + sql0 + "			AND SENDERID != '" + senderId + "'";
+            String yearSql = " UNION ALL SELECT" + "			ID," + "			CREATETIME,"
+                + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME,"
+                + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS"
+                + "		FROM" + "			FF_CHAOSONG_" + year + "		WHERE" + "			processInstanceId = '"
+                + processInstanceId + "'" + sql0 + "			AND SENDERID != '" + senderId + "'";
 
-            String yearSql1 = " UNION ALL SELECT" + "			ID," + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME," + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS" + "		FROM"
-                + "			FF_CHAOSONG_" + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			processInstanceId = '" + processInstanceId + "'" + sql0 + "			AND SENDERID != '" + senderId + "'";
+            String yearSql1 = " UNION ALL SELECT" + "			ID," + "			CREATETIME,"
+                + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME,"
+                + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS"
+                + "		FROM" + "			FF_CHAOSONG_" + String.valueOf((Integer.parseInt(year) + 1))
+                + "		WHERE" + "			processInstanceId = '" + processInstanceId + "'" + sql0
+                + "			AND SENDERID != '" + senderId + "'";
 
-            String countyearSql1 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID != '" + senderId + "'";
+            String countyearSql1 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_"
+                + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			processInstanceId = '"
+                + processInstanceId + "' " + sql0 + "			AND SENDERID != '" + senderId + "'";
             try {
                 int countyear = jdbcTemplate.queryForObject(countyearSql1, Integer.class);
                 if (countyear == 0) {
@@ -663,22 +740,38 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             connection = jdbcTemplate.getDataSource().getConnection();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
-            sql = "	SELECT" + "	t.* " + "	FROM" + "		(" + "		SELECT" + "			ID," + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME," + "			USERNAME," + "			USERDEPTNAME," + "			READTIME,"
-                + "			STATUS" + "		FROM" + "			FF_ChaoSong " + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID != '" + senderId + "' " + yearSql + yearSql1 + "		) t " + "	ORDER BY" + "		t.CREATETIME DESC"
+            sql = "	SELECT" + "	t.* " + "	FROM" + "		(" + "		SELECT" + "			ID,"
+                + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID,"
+                + "			SENDDEPTNAME," + "			USERNAME," + "			USERDEPTNAME," + "			READTIME,"
+                + "			STATUS" + "		FROM" + "			FF_ChaoSong " + "		WHERE"
+                + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID != '"
+                + senderId + "' " + yearSql + yearSql1 + "		) t " + "	ORDER BY" + "		t.CREATETIME DESC"
                 + rowstr;
             if (DialectEnum.ORACLE.getValue().equals(dialect)) {
                 rowstr = " WHERE rnum <= " + (startRow + rows) + " and rnum >" + startRow;
-                sql = " SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "	SELECT" + "		* " + "	FROM" + "		(" + "		SELECT" + "			ID," + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME,"
-                    + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS" + "		FROM" + "			FF_ChaoSong " + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID != '" + senderId + "' "
-                    + yearSql + yearSql1 + "		) " + "	ORDER BY" + "		CREATETIME DESC" + "	) b" + " )" + rowstr;
+                sql = " SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "	SELECT"
+                    + "		* " + "	FROM" + "		(" + "		SELECT" + "			ID," + "			CREATETIME,"
+                    + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME,"
+                    + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS"
+                    + "		FROM" + "			FF_ChaoSong " + "		WHERE" + "			processInstanceId = '"
+                    + processInstanceId + "' " + sql0 + "			AND SENDERID != '" + senderId + "' " + yearSql
+                    + yearSql1 + "		) " + "	ORDER BY" + "		CREATETIME DESC" + "	) b" + " )" + rowstr;
             } else if (DialectEnum.DM.getValue().equals(dialect)) {
                 rowstr = " WHERE rnum <= " + (startRow + rows) + " and rnum >" + startRow;
-                sql = " SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "	SELECT" + "		* " + "	FROM" + "		(" + "		SELECT" + "			ID," + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME,"
-                    + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS" + "		FROM" + "			FF_ChaoSong " + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID != '" + senderId + "' "
-                    + yearSql + yearSql1 + "		) " + "	ORDER BY" + "		CREATETIME DESC" + "	) b" + " )" + rowstr;
+                sql = " SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "	SELECT"
+                    + "		* " + "	FROM" + "		(" + "		SELECT" + "			ID," + "			CREATETIME,"
+                    + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME,"
+                    + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS"
+                    + "		FROM" + "			FF_ChaoSong " + "		WHERE" + "			processInstanceId = '"
+                    + processInstanceId + "' " + sql0 + "			AND SENDERID != '" + senderId + "' " + yearSql
+                    + yearSql1 + "		) " + "	ORDER BY" + "		CREATETIME DESC" + "	) b" + " )" + rowstr;
             }
-            countsql = "	SELECT" + "		count(t.ID) " + "	FROM" + "		(" + "		SELECT" + "			ID," + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME," + "			USERNAME," + "			USERDEPTNAME,"
-                + "			READTIME," + "			STATUS" + "		FROM" + "			FF_ChaoSong " + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID != '" + senderId + "' " + yearSql + yearSql1 + "		) t";
+            countsql = "	SELECT" + "		count(t.ID) " + "	FROM" + "		(" + "		SELECT" + "			ID,"
+                + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID,"
+                + "			SENDDEPTNAME," + "			USERNAME," + "			USERDEPTNAME," + "			READTIME,"
+                + "			STATUS" + "		FROM" + "			FF_ChaoSong " + "		WHERE"
+                + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID != '"
+                + senderId + "' " + yearSql + yearSql1 + "		) t";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             totalCount = jdbcTemplate.queryForObject(countsql, Integer.class);
             SimpleDateFormat sdf0 = new SimpleDateFormat("yy/MM/dd HH:mm");
@@ -728,7 +821,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId, String userName, int rows, int page) {
+    public Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId,
+        String userName, int rows, int page) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -737,7 +831,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         Connection connection = null;
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         try {
-            HistoricProcessInstanceModel historicProcessInstanceModel = historicProcessManager.getById(tenantId, processInstanceId);
+            HistoricProcessInstanceModel historicProcessInstanceModel =
+                historicProcessManager.getById(tenantId, processInstanceId);
             if (historicProcessInstanceModel != null) {
                 year = sdf.format(historicProcessInstanceModel.getStartTime());
             } else {
@@ -747,7 +842,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 } else {
                     ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
                     year = processParam.getCreateTime().substring(0, 4);
-                    HistoricProcessInstanceModel hpi = historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year);
+                    HistoricProcessInstanceModel hpi =
+                        historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year);
                     if (hpi == null) {
                         year = String.valueOf(Integer.parseInt(year) + 1);
                     }
@@ -761,13 +857,22 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 sql0 = " and USERNAME like '%" + userName + "%'";
             }
             String countsql = "";
-            String yearSql = " UNION ALL SELECT" + "			ID," + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME," + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS" + "		FROM"
-                + "			FF_CHAOSONG_" + year + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID = '" + senderId + "'";
+            String yearSql = " UNION ALL SELECT" + "			ID," + "			CREATETIME,"
+                + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME,"
+                + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS"
+                + "		FROM" + "			FF_CHAOSONG_" + year + "		WHERE" + "			processInstanceId = '"
+                + processInstanceId + "' " + sql0 + "			AND SENDERID = '" + senderId + "'";
 
-            String yearSql1 = " UNION ALL SELECT" + "			ID," + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME," + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS" + "		FROM"
-                + "			FF_CHAOSONG_" + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			processInstanceId = '" + processInstanceId + "'" + sql0 + "			AND SENDERID = '" + senderId + "'";
+            String yearSql1 = " UNION ALL SELECT" + "			ID," + "			CREATETIME,"
+                + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME,"
+                + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS"
+                + "		FROM" + "			FF_CHAOSONG_" + String.valueOf((Integer.parseInt(year) + 1))
+                + "		WHERE" + "			processInstanceId = '" + processInstanceId + "'" + sql0
+                + "			AND SENDERID = '" + senderId + "'";
 
-            String countyearSql1 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_" + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID = '" + senderId + "'";
+            String countyearSql1 = " SELECT" + "			count(ID)" + "		FROM" + "			FF_CHAOSONG_"
+                + String.valueOf((Integer.parseInt(year) + 1)) + "		WHERE" + "			processInstanceId = '"
+                + processInstanceId + "' " + sql0 + "			AND SENDERID = '" + senderId + "'";
             try {
                 int countyear = jdbcTemplate.queryForObject(countyearSql1, Integer.class);
                 if (countyear == 0) {
@@ -779,22 +884,38 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             connection = jdbcTemplate.getDataSource().getConnection();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
-            sql = "	SELECT" + "	t.* " + "	FROM" + "		(" + "		SELECT" + "			ID," + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME," + "			USERNAME," + "			USERDEPTNAME," + "			READTIME,"
-                + "			STATUS" + "		FROM" + "			FF_ChaoSong " + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID = '" + senderId + "' " + yearSql + yearSql1 + "		) t " + "	ORDER BY" + "		t.CREATETIME DESC"
+            sql = "	SELECT" + "	t.* " + "	FROM" + "		(" + "		SELECT" + "			ID,"
+                + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID,"
+                + "			SENDDEPTNAME," + "			USERNAME," + "			USERDEPTNAME," + "			READTIME,"
+                + "			STATUS" + "		FROM" + "			FF_ChaoSong " + "		WHERE"
+                + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID = '"
+                + senderId + "' " + yearSql + yearSql1 + "		) t " + "	ORDER BY" + "		t.CREATETIME DESC"
                 + rowstr;
             if (DialectEnum.ORACLE.getValue().equals(dialect)) {
                 rowstr = " WHERE rnum <= " + (startRow + rows) + " and rnum >" + startRow;
-                sql = " SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "	SELECT" + "		* " + "	FROM" + "		(" + "		SELECT" + "			ID," + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME,"
-                    + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS" + "		FROM" + "			FF_ChaoSong " + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID = '" + senderId + "' "
-                    + yearSql + yearSql1 + "		) " + "	ORDER BY" + "		CREATETIME DESC" + "	) b" + " )" + rowstr;
+                sql = " SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "	SELECT"
+                    + "		* " + "	FROM" + "		(" + "		SELECT" + "			ID," + "			CREATETIME,"
+                    + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME,"
+                    + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS"
+                    + "		FROM" + "			FF_ChaoSong " + "		WHERE" + "			processInstanceId = '"
+                    + processInstanceId + "' " + sql0 + "			AND SENDERID = '" + senderId + "' " + yearSql
+                    + yearSql1 + "		) " + "	ORDER BY" + "		CREATETIME DESC" + "	) b" + " )" + rowstr;
             } else if (DialectEnum.DM.getValue().equals(dialect)) {
                 rowstr = " WHERE rnum <= " + (startRow + rows) + " and rnum >" + startRow;
-                sql = " SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "	SELECT" + "		* " + "	FROM" + "		(" + "		SELECT" + "			ID," + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME,"
-                    + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS" + "		FROM" + "			FF_ChaoSong " + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID = '" + senderId + "' "
-                    + yearSql + yearSql1 + "		) " + "	ORDER BY" + "		CREATETIME DESC" + "	) b" + " )" + rowstr;
+                sql = " SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "	SELECT"
+                    + "		* " + "	FROM" + "		(" + "		SELECT" + "			ID," + "			CREATETIME,"
+                    + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME,"
+                    + "			USERNAME," + "			USERDEPTNAME," + "			READTIME," + "			STATUS"
+                    + "		FROM" + "			FF_ChaoSong " + "		WHERE" + "			processInstanceId = '"
+                    + processInstanceId + "' " + sql0 + "			AND SENDERID = '" + senderId + "' " + yearSql
+                    + yearSql1 + "		) " + "	ORDER BY" + "		CREATETIME DESC" + "	) b" + " )" + rowstr;
             }
-            countsql = "	SELECT" + "		count(t.ID) " + "	FROM" + "		(" + "		SELECT" + "			ID," + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID," + "			SENDDEPTNAME," + "			USERNAME," + "			USERDEPTNAME,"
-                + "			READTIME," + "			STATUS" + "		FROM" + "			FF_ChaoSong " + "		WHERE" + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID = '" + senderId + "' " + yearSql + yearSql1 + "		) t";
+            countsql = "	SELECT" + "		count(t.ID) " + "	FROM" + "		(" + "		SELECT" + "			ID,"
+                + "			CREATETIME," + "			SENDERNAME," + "			SENDDEPTID,"
+                + "			SENDDEPTNAME," + "			USERNAME," + "			USERDEPTNAME," + "			READTIME,"
+                + "			STATUS" + "		FROM" + "			FF_ChaoSong " + "		WHERE"
+                + "			processInstanceId = '" + processInstanceId + "' " + sql0 + "			AND SENDERID = '"
+                + senderId + "' " + yearSql + yearSql1 + "		) t";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             totalCount = jdbcTemplate.queryForObject(countsql, Integer.class);
             SimpleDateFormat sdf0 = new SimpleDateFormat("yy/MM/dd HH:mm");
@@ -844,7 +965,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Map<String, Object> getOpinionChaosongByUserId(String userId, String year, String documentTitle, int rows, int page) {
+    public Map<String, Object> getOpinionChaosongByUserId(String userId, String year, String documentTitle, int rows,
+        int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         if (StringUtils.isBlank(year)) {
@@ -860,7 +982,9 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         if (StringUtils.isNotBlank(documentTitle)) {
             sql0 += " and TITLE like '%" + documentTitle + "%'";
         }
-        String sql = "		SELECT" + "			* " + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE" + "			USERID ='" + userId + "' and opinionState = '1' " + sql0 + "		ORDER BY" + "			CREATETIME DESC" + rowstr;
+        String sql = "		SELECT" + "			* " + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE"
+            + "			USERID ='" + userId + "' and opinionState = '1' " + sql0 + "		ORDER BY"
+            + "			CREATETIME DESC" + rowstr;
         Connection connection = null;
         try {
             connection = jdbcTemplate.getDataSource().getConnection();
@@ -868,16 +992,21 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.ORACLE.getValue().equals(dialect)) {
                 rowstr = " WHERE rnum <= " + (startRow + rows) + " and rnum >" + startRow;
-                sql = "SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "		SELECT" + "			* " + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE" + "			USERID ='" + userId + "' and opinionState = '1' " + sql0 + "		ORDER BY"
+                sql = "SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "		SELECT"
+                    + "			* " + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE"
+                    + "			USERID ='" + userId + "' and opinionState = '1' " + sql0 + "		ORDER BY"
                     + "			CREATETIME DESC" + "	) b " + ")" + rowstr;
             }
             if (DialectEnum.DM.getValue().equals(dialect)) {
                 rowstr = " WHERE rnum <= " + (startRow + rows) + " and rnum >" + startRow;
-                sql = "SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "		SELECT" + "			* " + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE" + "			USERID ='" + userId + "' and opinionState = '1' " + sql0 + "		ORDER BY"
+                sql = "SELECT * from (" + " SELECT" + "	b.* ,ROWNUM rnum " + " FROM" + "	(" + "		SELECT"
+                    + "			* " + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE"
+                    + "			USERID ='" + userId + "' and opinionState = '1' " + sql0 + "		ORDER BY"
                     + "			CREATETIME DESC" + "	) b " + ")" + rowstr;
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
-            String sqlCount = "SELECT" + "			count(ID)" + "		FROM" + "			FF_ChaoSong_" + year + "		WHERE" + "			USERID ='" + userId + "' and opinionState = '1' " + sql0;
+            String sqlCount = "SELECT" + "			count(ID)" + "		FROM" + "			FF_ChaoSong_" + year
+                + "		WHERE" + "			USERID ='" + userId + "' and opinionState = '1' " + sql0;
             totalCount = jdbcTemplate.queryForObject(sqlCount, Integer.class);
             SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -1075,13 +1204,15 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Map<String, Object> getTodoListByUserIdAndItemIdAndTitle(String userId, String itemId, String title, int rows, int page) {
+    public Map<String, Object> getTodoListByUserIdAndItemIdAndTitle(String userId, String itemId, String title,
+        int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         List<ChaoSong> csList = new ArrayList<ChaoSong>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        Page<ChaoSong> pageList = chaoSongRepository.getTodoListByUserIdAndItemIdAndTitle(userId, itemId, "%" + title + "%", pageable);
+        Page<ChaoSong> pageList =
+            chaoSongRepository.getTodoListByUserIdAndItemIdAndTitle(userId, itemId, "%" + title + "%", pageable);
         csList = pageList.getContent();
         for (ChaoSong cs : csList) {
             cs.setEnded(false);
@@ -1123,13 +1254,15 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    public Map<String, Object> getTodoListByUserIdAndSystemNameAndTitle(String userId, String systemName, String title, int rows, int page) {
+    public Map<String, Object> getTodoListByUserIdAndSystemNameAndTitle(String userId, String systemName, String title,
+        int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         List<ChaoSong> csList = new ArrayList<ChaoSong>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        Page<ChaoSong> pageList = chaoSongRepository.getTodoListByUserIdAndSystemNameAndTitle(userId, systemName, "%" + title + "%", pageable);
+        Page<ChaoSong> pageList = chaoSongRepository.getTodoListByUserIdAndSystemNameAndTitle(userId, systemName,
+            "%" + title + "%", pageable);
         csList = pageList.getContent();
         for (ChaoSong cs : csList) {
             cs.setEnded(false);
@@ -1160,16 +1293,19 @@ public class ChaoSongServiceImpl implements ChaoSongService {
 
     @Override
     @Transactional(readOnly = false)
-    public Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
+    public Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
+        String smsContent, String smsPersonId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "抄送失败");
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(), personName = person.getName();
+            String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(),
+                personName = person.getName();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-            String title = processParam.getTitle(), itemId = processParam.getItemId(), itemName = processParam.getItemName(), systemName = processParam.getSystemName();
+            String title = processParam.getTitle(), itemId = processParam.getItemId(),
+                itemName = processParam.getItemName(), systemName = processParam.getSystemName();
             List<String> orgUnitList = Arrays.asList(users.split(";"));
             List<ChaoSong> csList = new ArrayList<ChaoSong>();
             List<String> userIdListAdd = new ArrayList<String>();
@@ -1236,7 +1372,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 if (smsSwitch) {
                     smsHttpManager.sendSmsHttpList(tenantId, personId, mobile, smsContent, systemName + "抄送");
                 } else {
-                    LOGGER.info("*********************y9.app.itemAdmin.smsSwitch开关未打开**********************************");
+                    LOGGER
+                        .info("*********************y9.app.itemAdmin.smsSwitch开关未打开**********************************");
                 }
             }
             asyncHandleService.weiXinRemind(tenantId, personId, processParam.getProcessSerialNumber(), csList);
@@ -1255,16 +1392,20 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             chaoSongRepository.updateTitle(processInstanceId, documentTitle);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             String year = sdf.format(new Date());
-            String sql = "select count(t.ID) from FF_ChaoSong_" + year + " t where t.PROCESSINSTANCEID = '" + processInstanceId + "'";
+            String sql = "select count(t.ID) from FF_ChaoSong_" + year + " t where t.PROCESSINSTANCEID = '"
+                + processInstanceId + "'";
             int totalCount = jdbcTemplate.queryForObject(sql, Integer.class);
             if (totalCount > 0) {
-                sql = "update FF_ChaoSong_" + year + " t set t.title='" + documentTitle + "' where t.PROCESSINSTANCEID = '" + processInstanceId + "'";
+                sql = "update FF_ChaoSong_" + year + " t set t.title='" + documentTitle
+                    + "' where t.PROCESSINSTANCEID = '" + processInstanceId + "'";
                 jdbcTemplate.execute(sql);
             } else {
-                sql = "select count(t.ID) from FF_ChaoSong_" + String.valueOf(Integer.parseInt(year) - 1) + " t where t.PROCESSINSTANCEID = '" + processInstanceId + "'";
+                sql = "select count(t.ID) from FF_ChaoSong_" + String.valueOf(Integer.parseInt(year) - 1)
+                    + " t where t.PROCESSINSTANCEID = '" + processInstanceId + "'";
                 totalCount = jdbcTemplate.queryForObject(sql, Integer.class);
                 if (totalCount > 0) {
-                    sql = "update FF_ChaoSong_" + String.valueOf(Integer.parseInt(year) - 1) + " t set t.title='" + documentTitle + "' where t.PROCESSINSTANCEID = '" + processInstanceId + "'";
+                    sql = "update FF_ChaoSong_" + String.valueOf(Integer.parseInt(year) - 1) + " t set t.title='"
+                        + documentTitle + "' where t.PROCESSINSTANCEID = '" + processInstanceId + "'";
                     jdbcTemplate.execute(sql);
                 }
             }

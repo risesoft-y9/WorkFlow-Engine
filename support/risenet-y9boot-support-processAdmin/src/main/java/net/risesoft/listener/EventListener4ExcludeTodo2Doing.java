@@ -35,7 +35,8 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
         FlowableEngineEventType type = (FlowableEngineEventType)event.getType();
         switch (type) {
             case TASK_CREATED:
-                org.flowable.common.engine.impl.event.FlowableEntityEventImpl entity = (org.flowable.common.engine.impl.event.FlowableEntityEventImpl)event;
+                org.flowable.common.engine.impl.event.FlowableEntityEventImpl entity =
+                    (org.flowable.common.engine.impl.event.FlowableEntityEventImpl)event;
                 TaskEntityImpl taskEntity = (TaskEntityImpl)entity.getEntity();
                 String assignee = taskEntity.getAssignee();
                 if (StringUtils.isNotBlank(assignee)) {
@@ -69,7 +70,8 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                     if (!p.equals(priority)) {
                         taskEntity.setPriority(priority);
                         try {
-                            Y9Context.getBean(CustomHistoricProcessService.class).setPriority(taskEntity.getProcessInstanceId(), priority.toString());
+                            Y9Context.getBean(CustomHistoricProcessService.class)
+                                .setPriority(taskEntity.getProcessInstanceId(), priority.toString());
                         } catch (BeansException e) {
                             e.printStackTrace();
                         } catch (Exception e) {
@@ -79,7 +81,8 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 }
                 taskEntity.setVariablesLocal(mapTemp);
 
-                HistoricProcessInstance historicProcessInstance = Y9Context.getBean(CustomHistoricProcessService.class).getById(taskEntity.getProcessInstanceId());
+                HistoricProcessInstance historicProcessInstance =
+                    Y9Context.getBean(CustomHistoricProcessService.class).getById(taskEntity.getProcessInstanceId());
                 if (null != historicProcessInstance) {
                     String businessKey = historicProcessInstance.getBusinessKey();
                     taskEntity.setCategory(businessKey);

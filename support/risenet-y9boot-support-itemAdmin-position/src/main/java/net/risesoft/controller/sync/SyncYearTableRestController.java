@@ -51,7 +51,9 @@ public class SyncYearTableRestController {
         List<String> list = jdbcTemplate4Public.queryForList("select id from rs_common_tenant", String.class);
         for (String tenantId : list) {
             Y9LoginUserHolder.setTenantId(tenantId);
-            String sql = "SELECT" + "	count(t.ID)" + " FROM" + "	rs_common_tenant_system t" + " LEFT JOIN rs_common_system s on t.SYSTEMID = s.ID" + " WHERE" + "	t.TENANTID = '" + tenantId + "'" + " and s.SYSTEMNAME = 'itemAdmin'";
+            String sql = "SELECT" + "	count(t.ID)" + " FROM" + "	rs_common_tenant_system t"
+                + " LEFT JOIN rs_common_system s on t.SYSTEMID = s.ID" + " WHERE" + "	t.TENANTID = '" + tenantId + "'"
+                + " and s.SYSTEMNAME = 'itemAdmin'";
             int count = jdbcTemplate4Public.queryForObject(sql, Integer.class);
             if (count > 0) {
                 Map<String, Object> m = syncYearTableService.syncYearTable(year);

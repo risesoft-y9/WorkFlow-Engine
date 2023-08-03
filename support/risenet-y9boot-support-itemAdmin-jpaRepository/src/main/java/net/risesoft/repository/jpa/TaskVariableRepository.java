@@ -12,7 +12,8 @@ import net.risesoft.entity.TaskVariable;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface TaskVariableRepository extends JpaRepository<TaskVariable, String>, JpaSpecificationExecutor<TaskVariable> {
+public interface TaskVariableRepository
+    extends JpaRepository<TaskVariable, String>, JpaSpecificationExecutor<TaskVariable> {
 
     TaskVariable findByTaskIdAndKeyName(String taskId, String keyName);
 

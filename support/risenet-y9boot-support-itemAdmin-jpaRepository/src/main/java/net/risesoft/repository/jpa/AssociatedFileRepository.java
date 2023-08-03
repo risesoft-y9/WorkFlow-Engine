@@ -14,7 +14,8 @@ import net.risesoft.entity.AssociatedFile;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface AssociatedFileRepository extends JpaRepository<AssociatedFile, String>, JpaSpecificationExecutor<AssociatedFile> {
+public interface AssociatedFileRepository
+    extends JpaRepository<AssociatedFile, String>, JpaSpecificationExecutor<AssociatedFile> {
 
     @Modifying
     @Transactional(readOnly = false)

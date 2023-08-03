@@ -14,21 +14,24 @@ import net.risesoft.model.OrgUnit;
 public interface DynamicRoleMemberService {
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param dynamicRole
      * @return
      */
     Department getDepartment(DynamicRole dynamicRole);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param dynamicRoleId
      * @return
      */
     List<OrgUnit> getOrgUnitList(String dynamicRoleId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param dynamicRoleId
      * @param processInstanceId
      * @return

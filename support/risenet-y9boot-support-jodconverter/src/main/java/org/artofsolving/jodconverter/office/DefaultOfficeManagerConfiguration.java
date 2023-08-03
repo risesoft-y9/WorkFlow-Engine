@@ -52,7 +52,8 @@ public class DefaultOfficeManagerConfiguration {
             throw new IllegalStateException("invalid officeHome: it doesn't contain soffice.bin: " + officeHome);
         }
         if (templateProfileDir != null && !isValidProfileDir(templateProfileDir)) {
-            throw new IllegalStateException("templateProfileDir doesn't appear to contain a user profile: " + templateProfileDir);
+            throw new IllegalStateException(
+                "templateProfileDir doesn't appear to contain a user profile: " + templateProfileDir);
         }
         if (!workDir.isDirectory()) {
             throw new IllegalStateException("workDir doesn't exist or is not a directory: " + workDir);
@@ -65,9 +66,11 @@ public class DefaultOfficeManagerConfiguration {
         int numInstances = connectionProtocol == OfficeConnectionProtocol.PIPE ? pipeNames.length : portNumbers.length;
         UnoUrl[] unoUrls = new UnoUrl[numInstances];
         for (int i = 0; i < numInstances; i++) {
-            unoUrls[i] = (connectionProtocol == OfficeConnectionProtocol.PIPE) ? UnoUrl.pipe(pipeNames[i]) : UnoUrl.socket(portNumbers[i]);
+            unoUrls[i] = (connectionProtocol == OfficeConnectionProtocol.PIPE) ? UnoUrl.pipe(pipeNames[i])
+                : UnoUrl.socket(portNumbers[i]);
         }
-        return new ProcessPoolOfficeManager(officeHome, unoUrls, runAsArgs, templateProfileDir, workDir, retryTimeout, taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager);
+        return new ProcessPoolOfficeManager(officeHome, unoUrls, runAsArgs, templateProfileDir, workDir, retryTimeout,
+            taskQueueTimeout, taskExecutionTimeout, maxTasksPerProcess, processManager);
     }
 
     private void checkArgument(String argName, boolean condition, String message) throws IllegalArgumentException {
@@ -111,7 +114,8 @@ public class DefaultOfficeManagerConfiguration {
         return new File(profileDir, "user").isDirectory();
     }
 
-    public DefaultOfficeManagerConfiguration setConnectionProtocol(OfficeConnectionProtocol connectionProtocol) throws NullPointerException {
+    public DefaultOfficeManagerConfiguration setConnectionProtocol(OfficeConnectionProtocol connectionProtocol)
+        throws NullPointerException {
         checkArgumentNotNull("connectionProtocol", connectionProtocol);
         this.connectionProtocol = connectionProtocol;
         return this;
@@ -122,14 +126,16 @@ public class DefaultOfficeManagerConfiguration {
         return this;
     }
 
-    public DefaultOfficeManagerConfiguration setOfficeHome(File officeHome) throws NullPointerException, IllegalArgumentException {
+    public DefaultOfficeManagerConfiguration setOfficeHome(File officeHome)
+        throws NullPointerException, IllegalArgumentException {
         checkArgumentNotNull("officeHome", officeHome);
         checkArgument("officeHome", officeHome.isDirectory(), "must exist and be a directory");
         this.officeHome = officeHome;
         return this;
     }
 
-    public DefaultOfficeManagerConfiguration setOfficeHome(String officeHome) throws NullPointerException, IllegalArgumentException {
+    public DefaultOfficeManagerConfiguration setOfficeHome(String officeHome)
+        throws NullPointerException, IllegalArgumentException {
         checkArgumentNotNull("officeHome", officeHome);
         return setOfficeHome(new File(officeHome));
     }
@@ -140,7 +146,8 @@ public class DefaultOfficeManagerConfiguration {
         return this;
     }
 
-    public DefaultOfficeManagerConfiguration setPipeNames(String... pipeNames) throws NullPointerException, IllegalArgumentException {
+    public DefaultOfficeManagerConfiguration setPipeNames(String... pipeNames)
+        throws NullPointerException, IllegalArgumentException {
         checkArgumentNotNull("pipeNames", pipeNames);
         checkArgument("pipeNames", pipeNames.length > 0, "must not be empty");
         this.pipeNames = pipeNames;
@@ -152,7 +159,8 @@ public class DefaultOfficeManagerConfiguration {
         return this;
     }
 
-    public DefaultOfficeManagerConfiguration setPortNumbers(int... portNumbers) throws NullPointerException, IllegalArgumentException {
+    public DefaultOfficeManagerConfiguration setPortNumbers(int... portNumbers)
+        throws NullPointerException, IllegalArgumentException {
         checkArgumentNotNull("portNumbers", portNumbers);
         checkArgument("portNumbers", portNumbers.length > 0, "must not be empty");
         this.portNumbers = portNumbers;
@@ -169,7 +177,8 @@ public class DefaultOfficeManagerConfiguration {
      * @return
      * @throws NullPointerException
      */
-    public DefaultOfficeManagerConfiguration setProcessManager(ProcessManager processManager) throws NullPointerException {
+    public DefaultOfficeManagerConfiguration setProcessManager(ProcessManager processManager)
+        throws NullPointerException {
         checkArgumentNotNull("processManager", processManager);
         this.processManager = processManager;
         return this;
@@ -201,7 +210,8 @@ public class DefaultOfficeManagerConfiguration {
         return this;
     }
 
-    public DefaultOfficeManagerConfiguration setTemplateProfileDir(File templateProfileDir) throws IllegalArgumentException {
+    public DefaultOfficeManagerConfiguration setTemplateProfileDir(File templateProfileDir)
+        throws IllegalArgumentException {
         if (templateProfileDir != null) {
             checkArgument("templateProfileDir", templateProfileDir.isDirectory(), "must exist and be a directory");
         }

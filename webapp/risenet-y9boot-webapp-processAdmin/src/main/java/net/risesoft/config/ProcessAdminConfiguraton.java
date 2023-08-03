@@ -128,7 +128,8 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
 
     @Bean
     public FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> processAdminCheckUserLoginFilter() {
-        final FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> filterBean = new FilterRegistrationBean<ProcessAdminCheckUserLoginFilter>();
+        final FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> filterBean =
+            new FilterRegistrationBean<ProcessAdminCheckUserLoginFilter>();
         filterBean.setFilter(new ProcessAdminCheckUserLoginFilter());
         filterBean.setAsyncSupported(false);
         filterBean.setOrder(50);
@@ -138,7 +139,8 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
 
     @Bean
     public FilterRegistrationBean<RemoveUrlJsessionIdFilter> removeUrlJsessionIdFilter() {
-        final FilterRegistrationBean<RemoveUrlJsessionIdFilter> filterBean = new FilterRegistrationBean<RemoveUrlJsessionIdFilter>();
+        final FilterRegistrationBean<RemoveUrlJsessionIdFilter> filterBean =
+            new FilterRegistrationBean<RemoveUrlJsessionIdFilter>();
         filterBean.setFilter(new RemoveUrlJsessionIdFilter());
         filterBean.setAsyncSupported(false);
         filterBean.addUrlPatterns("/*");
@@ -155,7 +157,8 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
 
-        Resource resource = new PathMatchingResourcePatternResolver().getResource("classpath:mybatis/mybatis-config.xml");
+        Resource resource =
+            new PathMatchingResourcePatternResolver().getResource("classpath:mybatis/mybatis-config.xml");
         bean.setConfigLocation(resource);
         return bean.getObject();
     }
@@ -187,7 +190,8 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     }
 
     @Bean("y9TenantDataSource")
-    public DataSource y9TenantDataSource(@Qualifier("y9FlowableDS") DruidDataSource y9FlowableDs, @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
+    public DataSource y9TenantDataSource(@Qualifier("y9FlowableDS") DruidDataSource y9FlowableDs,
+        @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
         Y9TenantDataSource ds = new Y9TenantDataSource();
         ds.setDefaultDataSource(y9FlowableDs);
         ds.setDataSourceLookup(y9TenantDataSourceLookup);

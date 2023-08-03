@@ -24,7 +24,10 @@ class OfficeDocumentUtils {
 
     public static DocumentFamily getDocumentFamily(XComponent document) throws OfficeException {
         XServiceInfo serviceInfo = cast(XServiceInfo.class, document);
-        String genericTextDocument = "com.sun.star.text.GenericTextDocument", spreadsheetDocument = "com.sun.star.sheet.SpreadsheetDocument", presentationDocument = "com.sun.star.presentation.PresentationDocument", drawingDocument = "com.sun.star.drawing.DrawingDocument";
+        String genericTextDocument = "com.sun.star.text.GenericTextDocument",
+            spreadsheetDocument = "com.sun.star.sheet.SpreadsheetDocument",
+            presentationDocument = "com.sun.star.presentation.PresentationDocument",
+            drawingDocument = "com.sun.star.drawing.DrawingDocument";
         if (serviceInfo.supportsService(genericTextDocument)) {
             return DocumentFamily.TEXT;
         } else if (serviceInfo.supportsService(spreadsheetDocument)) {

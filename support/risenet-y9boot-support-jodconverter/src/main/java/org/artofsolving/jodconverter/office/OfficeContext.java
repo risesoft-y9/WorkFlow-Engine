@@ -20,7 +20,8 @@ package org.artofsolving.jodconverter.office;
 public interface OfficeContext {
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param serviceName
      * @return
      */

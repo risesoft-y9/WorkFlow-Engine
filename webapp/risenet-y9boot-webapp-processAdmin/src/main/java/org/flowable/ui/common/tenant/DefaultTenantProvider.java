@@ -16,28 +16,28 @@ import net.risesoft.service.FlowableTenantInfoHolder;
 @Service
 public class DefaultTenantProvider implements TenantProvider {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTenantProvider.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTenantProvider.class);
 
-	private String tenantId;
+    private String tenantId;
 
-	public DefaultTenantProvider() {
-		String configuredTenantId = FlowableTenantInfoHolder.getTenantId();
-		if (!StringUtils.isBlank(configuredTenantId)) {
-			configuredTenantId = configuredTenantId.trim();
-			LOGGER.debug("Found configured tenantId: '{}'", configuredTenantId);
-			this.tenantId = configuredTenantId;
-		}
-	}
+    public DefaultTenantProvider() {
+        String configuredTenantId = FlowableTenantInfoHolder.getTenantId();
+        if (!StringUtils.isBlank(configuredTenantId)) {
+            configuredTenantId = configuredTenantId.trim();
+            LOGGER.debug("Found configured tenantId: '{}'", configuredTenantId);
+            this.tenantId = configuredTenantId;
+        }
+    }
 
-	@Override
-	public String getTenantId() {
-		tenantId = FlowableTenantInfoHolder.getTenantId();
-		if (StringUtils.isNoneBlank(tenantId)) {
-			LOGGER.debug("Using configured tenantId: '{}'", tenantId);
-			return tenantId;
-		}
-		tenantId = AbstractEngineConfiguration.NO_TENANT_ID;
-		LOGGER.debug("Using user tenantId: '{}'", tenantId);
-		return tenantId;
-	}
+    @Override
+    public String getTenantId() {
+        tenantId = FlowableTenantInfoHolder.getTenantId();
+        if (StringUtils.isNoneBlank(tenantId)) {
+            LOGGER.debug("Using configured tenantId: '{}'", tenantId);
+            return tenantId;
+        }
+        tenantId = AbstractEngineConfiguration.NO_TENANT_ID;
+        LOGGER.debug("Using user tenantId: '{}'", tenantId);
+        return tenantId;
+    }
 }

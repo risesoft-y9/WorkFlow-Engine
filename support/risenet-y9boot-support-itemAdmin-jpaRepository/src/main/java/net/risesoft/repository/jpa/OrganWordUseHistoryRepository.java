@@ -12,7 +12,8 @@ import net.risesoft.entity.OrganWordUseHistory;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface OrganWordUseHistoryRepository extends JpaRepository<OrganWordUseHistory, String>, JpaSpecificationExecutor<OrganWordUseHistory> {
+public interface OrganWordUseHistoryRepository
+    extends JpaRepository<OrganWordUseHistory, String>, JpaSpecificationExecutor<OrganWordUseHistory> {
 
     OrganWordUseHistory findByItemIdAndNumberString(String itemId, String numberString);
 

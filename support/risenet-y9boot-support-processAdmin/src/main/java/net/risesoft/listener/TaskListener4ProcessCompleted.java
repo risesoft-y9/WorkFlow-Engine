@@ -34,7 +34,8 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 FlowableEntityEventImpl entityEvent = (FlowableEntityEventImpl)event;
                 ExecutionEntityImpl executionEntity = (ExecutionEntityImpl)entityEvent.getEntity();
                 String tenantId = (String)executionEntity.getVariable(SysVariables.TENANTID);
-                Y9Context.getBean(ActRuDetailApi.class).endByProcessInstanceId(tenantId, executionEntity.getProcessInstanceId());
+                Y9Context.getBean(ActRuDetailApi.class).endByProcessInstanceId(tenantId,
+                    executionEntity.getProcessInstanceId());
                 break;
             case HISTORIC_PROCESS_INSTANCE_ENDED:
                 try {

@@ -22,20 +22,20 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RequestMapping(value = "/services/rest/taskVariable")
 public class TaskVariableApiImpl implements TaskVariableApi {
 
-	@Autowired
-	private TaskVariableRepository taskVariableRepository;
+    @Autowired
+    private TaskVariableRepository taskVariableRepository;
 
-	@Override
-	@GetMapping(value = "/findByTaskIdAndKeyName", produces = MediaType.APPLICATION_JSON_VALUE)
-	public TaskVariableModel findByTaskIdAndKeyName(String tenantId, String taskId, String keyName) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, keyName);
-		TaskVariableModel taskVariableModel = null;
-		if (taskVariable != null) {
-			taskVariableModel = new TaskVariableModel();
-			Y9BeanUtil.copyProperties(taskVariable, taskVariableModel);
-		}
-		return taskVariableModel;
-	}
+    @Override
+    @GetMapping(value = "/findByTaskIdAndKeyName", produces = MediaType.APPLICATION_JSON_VALUE)
+    public TaskVariableModel findByTaskIdAndKeyName(String tenantId, String taskId, String keyName) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, keyName);
+        TaskVariableModel taskVariableModel = null;
+        if (taskVariable != null) {
+            taskVariableModel = new TaskVariableModel();
+            Y9BeanUtil.copyProperties(taskVariable, taskVariableModel);
+        }
+        return taskVariableModel;
+    }
 
 }

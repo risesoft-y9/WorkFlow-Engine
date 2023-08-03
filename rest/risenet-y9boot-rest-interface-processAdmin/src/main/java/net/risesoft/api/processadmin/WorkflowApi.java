@@ -18,5 +18,6 @@ public interface WorkflowApi {
      * @param taskDefKey 任务key
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    public List<Map<String, String>> getCurrentTaskTargets(String tenantId, String processDefinitionId, String taskDefKey);
+    public List<Map<String, String>> getCurrentTaskTargets(String tenantId, String processDefinitionId,
+        String taskDefKey);
 }

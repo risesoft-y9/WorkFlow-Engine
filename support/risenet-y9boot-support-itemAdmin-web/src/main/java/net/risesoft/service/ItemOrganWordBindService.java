@@ -52,7 +52,8 @@ public interface ItemOrganWordBindService {
      * @param taskDefKey
      * @return
      */
-    public List<ItemOrganWordBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId, String taskDefKey);
+    public List<ItemOrganWordBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
+        String processDefinitionId, String taskDefKey);
 
     /**
      * Description:
@@ -63,7 +64,8 @@ public interface ItemOrganWordBindService {
      * @param custom
      * @return
      */
-    public ItemOrganWordBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(String itemId, String processDefinitionId, String taskDefKey, String custom);
+    public ItemOrganWordBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(String itemId,
+        String processDefinitionId, String taskDefKey, String custom);
 
     /**
      * 移除单个

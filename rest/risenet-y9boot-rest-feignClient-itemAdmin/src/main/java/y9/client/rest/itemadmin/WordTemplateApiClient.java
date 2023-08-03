@@ -11,7 +11,8 @@ import net.risesoft.api.itemadmin.WordTemplateApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "WordTemplateApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/wordTemplate")
+@FeignClient(contextId = "WordTemplateApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/wordTemplate")
 public interface WordTemplateApiClient extends WordTemplateApi {
 
     /**

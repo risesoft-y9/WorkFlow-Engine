@@ -30,72 +30,75 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RequestMapping(value = "/services/rest/officeFollow")
 public class OfficeFollowApiImpl implements OfficeFollowApi {
 
-	@Resource(name = "officeFollowService")
-	private OfficeFollowService officeFollowService;
+    @Resource(name = "officeFollowService")
+    private OfficeFollowService officeFollowService;
 
-	@Autowired
-	private PersonApi personManager;
-	
-	@Override
-	@GetMapping(value = "/countByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-	public int countByProcessInstanceId(String tenantId, String userId, String processInstanceId) {
-		Person person = personManager.getPerson(tenantId, userId);
-		Y9LoginUserHolder.setTenantId(tenantId);
-		Y9LoginUserHolder.setPerson(person);
-		return officeFollowService.countByProcessInstanceId(processInstanceId);
-	}
+    @Autowired
+    private PersonApi personManager;
 
-	@Override
-	@PostMapping(value = "/deleteByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-	public void deleteByProcessInstanceId(String tenantId, String processInstanceId) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		officeFollowService.deleteByProcessInstanceId(processInstanceId);
-	}
+    @Override
+    @GetMapping(value = "/countByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public int countByProcessInstanceId(String tenantId, String userId, String processInstanceId) {
+        Person person = personManager.getPerson(tenantId, userId);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPerson(person);
+        return officeFollowService.countByProcessInstanceId(processInstanceId);
+    }
 
-	@Override
-	@PostMapping(value = "/delOfficeFollow", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> delOfficeFollow(String tenantId, String userId, String processInstanceIds) {
-		Person person = personManager.getPerson(tenantId, userId);
-		Y9LoginUserHolder.setTenantId(tenantId);
-		Y9LoginUserHolder.setPerson(person);
-		return officeFollowService.delOfficeFollow(processInstanceIds);
-	}
+    @Override
+    @PostMapping(value = "/deleteByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void deleteByProcessInstanceId(String tenantId, String processInstanceId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        officeFollowService.deleteByProcessInstanceId(processInstanceId);
+    }
 
-	@Override
-	@GetMapping(value = "/getFollowCount", produces = MediaType.APPLICATION_JSON_VALUE)
-	public int getFollowCount(String tenantId, String userId) {
-		Person person = personManager.getPerson(tenantId, userId);
-		Y9LoginUserHolder.setTenantId(tenantId);
-		Y9LoginUserHolder.setPerson(person);
-		return officeFollowService.getFollowCount();
-	}
+    @Override
+    @PostMapping(value = "/delOfficeFollow", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> delOfficeFollow(String tenantId, String userId, String processInstanceIds) {
+        Person person = personManager.getPerson(tenantId, userId);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPerson(person);
+        return officeFollowService.delOfficeFollow(processInstanceIds);
+    }
 
-	@Override
-	@GetMapping(value = "/getOfficeFollowList", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getOfficeFollowList(String tenantId, String userId, String searchName, int page, int rows) {
-		Person person = personManager.getPerson(tenantId, userId);
-		Y9LoginUserHolder.setTenantId(tenantId);
-		Y9LoginUserHolder.setPerson(person);
-		return officeFollowService.getOfficeFollowList(searchName, page, rows);
-	}
+    @Override
+    @GetMapping(value = "/getFollowCount", produces = MediaType.APPLICATION_JSON_VALUE)
+    public int getFollowCount(String tenantId, String userId) {
+        Person person = personManager.getPerson(tenantId, userId);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPerson(person);
+        return officeFollowService.getFollowCount();
+    }
 
-	@Override
-	@PostMapping(value = "/saveOfficeFollow", produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> saveOfficeFollow(String tenantId, String userId,@RequestBody OfficeFollowModel officeFollowModel) {
-		Person person = personManager.getPerson(tenantId, userId);
-		Y9LoginUserHolder.setTenantId(tenantId);
-		Y9LoginUserHolder.setPerson(person);
-		OfficeFollow officeFollow = new OfficeFollow();
-		if (null != officeFollowModel) {
-			Y9BeanUtil.copyProperties(officeFollowModel, officeFollow);
-		}
-		return officeFollowService.saveOfficeFollow(officeFollow);
-	}
+    @Override
+    @GetMapping(value = "/getOfficeFollowList", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getOfficeFollowList(String tenantId, String userId, String searchName, int page,
+        int rows) {
+        Person person = personManager.getPerson(tenantId, userId);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPerson(person);
+        return officeFollowService.getOfficeFollowList(searchName, page, rows);
+    }
 
-	@Override
-	@PostMapping(value = "/updateTitle", produces = MediaType.APPLICATION_JSON_VALUE)
-	public void updateTitle(String tenantId, String processInstanceId, String documentTitle) {
-		Y9LoginUserHolder.setTenantId(tenantId);
-		officeFollowService.updateTitle(processInstanceId, documentTitle);
-	}
+    @Override
+    @PostMapping(value = "/saveOfficeFollow", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> saveOfficeFollow(String tenantId, String userId,
+        @RequestBody OfficeFollowModel officeFollowModel) {
+        Person person = personManager.getPerson(tenantId, userId);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPerson(person);
+        OfficeFollow officeFollow = new OfficeFollow();
+        if (null != officeFollowModel) {
+            Y9BeanUtil.copyProperties(officeFollowModel, officeFollow);
+        }
+        return officeFollowService.saveOfficeFollow(officeFollow);
+    }
+
+    @Override
+    @PostMapping(value = "/updateTitle", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void updateTitle(String tenantId, String processInstanceId, String documentTitle) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        officeFollowService.updateTitle(processInstanceId, documentTitle);
+    }
 }

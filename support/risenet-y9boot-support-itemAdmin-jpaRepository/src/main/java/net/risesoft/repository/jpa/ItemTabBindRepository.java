@@ -15,7 +15,8 @@ import net.risesoft.entity.ItemTabBind;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemTabBindRepository extends JpaRepository<ItemTabBind, String>, JpaSpecificationExecutor<ItemTabBind> {
+public interface ItemTabBindRepository
+    extends JpaRepository<ItemTabBind, String>, JpaSpecificationExecutor<ItemTabBind> {
 
     ItemTabBind findByItemIdAndProcessDefinitionIdAndTabId(String itemId, String processDefinitionId, String tabId);
 

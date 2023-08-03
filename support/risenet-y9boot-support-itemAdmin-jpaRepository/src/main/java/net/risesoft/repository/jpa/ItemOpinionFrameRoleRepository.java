@@ -14,7 +14,8 @@ import net.risesoft.entity.ItemOpinionFrameRole;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemOpinionFrameRoleRepository extends JpaRepository<ItemOpinionFrameRole, String>, JpaSpecificationExecutor<ItemOpinionFrameRole> {
+public interface ItemOpinionFrameRoleRepository
+    extends JpaRepository<ItemOpinionFrameRole, String>, JpaSpecificationExecutor<ItemOpinionFrameRole> {
 
     List<ItemOpinionFrameRole> findByItemOpinionFrameId(String itemOpinionFrameId);
 

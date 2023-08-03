@@ -21,7 +21,8 @@ public class OfficeToPdf {
      * @param outputFilePath
      * @param converter
      */
-    public static void converterFile(File inputFile, String outputFilePathEnd, String inputFilePath, String outputFilePath, OfficeDocumentConverter converter) {
+    public static void converterFile(File inputFile, String outputFilePathEnd, String inputFilePath,
+        String outputFilePath, OfficeDocumentConverter converter) {
         File outputFile = new File(outputFilePathEnd);
         // 假如目标路径不存在,则新建该路径
         if (!outputFile.getParentFile().exists()) {

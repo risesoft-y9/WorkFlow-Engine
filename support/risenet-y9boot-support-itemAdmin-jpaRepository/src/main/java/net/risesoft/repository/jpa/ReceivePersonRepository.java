@@ -16,7 +16,8 @@ import net.risesoft.entity.ReceivePerson;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ReceivePersonRepository extends JpaRepository<ReceivePerson, String>, JpaSpecificationExecutor<ReceivePerson> {
+public interface ReceivePersonRepository
+    extends JpaRepository<ReceivePerson, String>, JpaSpecificationExecutor<ReceivePerson> {
 
     @Query("select count(t.id) from ReceivePerson t where t.deptId = ?1")
     Integer countByDeptId(String deptId);

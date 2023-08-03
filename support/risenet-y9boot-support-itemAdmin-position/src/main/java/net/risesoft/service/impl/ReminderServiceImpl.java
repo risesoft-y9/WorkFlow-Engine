@@ -143,7 +143,8 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    public Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId, int page, int rows) {
+    public Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId,
+        int page, int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         List<Reminder> reminderList = new ArrayList<Reminder>();
@@ -250,7 +251,8 @@ public class ReminderServiceImpl implements ReminderService {
 
     @Override
     @Transactional(readOnly = false)
-    public String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType, String taskId, String taskAssigneeId, String documentTitle) {
+    public String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType,
+        String taskId, String taskAssigneeId, String documentTitle) {
         String smsErr = "";
         String emailErr = "";
         UserInfo person = Y9LoginUserHolder.getUserInfo();

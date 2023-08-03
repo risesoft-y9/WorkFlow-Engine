@@ -90,14 +90,18 @@ public class JumpCommand4Position implements Command<Void> {
             identityLinkService.deleteIdentityLinksByTaskId(taskId);
             variableService.deleteVariablesByExecutionId(executionId);
             taskService.deleteTask(taskEntity, true);
-            org.flowable.engine.impl.util.CommandContextUtil.getHistoryManager().recordTaskEnd(taskEntity, executionEntity, reason, new Date());
-            org.flowable.engine.impl.util.CommandContextUtil.getActivityInstanceEntityManager().recordActivityEnd(executionEntity, reason);
+            org.flowable.engine.impl.util.CommandContextUtil.getHistoryManager().recordTaskEnd(taskEntity,
+                executionEntity, reason, new Date());
+            org.flowable.engine.impl.util.CommandContextUtil.getActivityInstanceEntityManager()
+                .recordActivityEnd(executionEntity, reason);
         }
         /**
          * 触发任务删除事件
          */
-        ProcessEngineConfigurationImpl processEngineConfiguration = org.flowable.engine.impl.util.CommandContextUtil.getProcessEngineConfiguration(commandContext);
-        processEngineConfiguration.getListenerNotificationHelper().executeTaskListeners(taskEntity, TaskListener.EVENTNAME_DELETE);
+        ProcessEngineConfigurationImpl processEngineConfiguration =
+            org.flowable.engine.impl.util.CommandContextUtil.getProcessEngineConfiguration(commandContext);
+        processEngineConfiguration.getListenerNotificationHelper().executeTaskListeners(taskEntity,
+            TaskListener.EVENTNAME_DELETE);
 
         /**
          * 获取目标节点的信息，并设置目标节点为当前执行实体的当前节点

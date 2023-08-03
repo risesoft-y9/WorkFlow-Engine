@@ -140,7 +140,8 @@ public class DocumentRestController {
      */
     @RequestMapping(value = "/complete", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> complete(@RequestParam(required = true) String taskId, @RequestParam(required = false) String infoOvert) {
+    public Y9Result<String> complete(@RequestParam(required = true) String taskId,
+        @RequestParam(required = false) String infoOvert) {
         try {
             buttonOperationService.complete(taskId, "办结", "已办结", infoOvert);
             return Y9Result.successMsg("办结成功");
@@ -161,20 +162,25 @@ public class DocumentRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/edit", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> edit(@RequestParam(required = true) String itembox, @RequestParam(required = false) String taskId, @RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String itemId) {
+    public Y9Result<Map<String, Object>> edit(@RequestParam(required = true) String itembox,
+        @RequestParam(required = false) String taskId, @RequestParam(required = true) String processInstanceId,
+        @RequestParam(required = true) String itemId) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId();
         String monitor = itembox;
-        if (ItemBoxTypeEnum.MONITORDONE.getValue().equals(itembox) || ItemBoxTypeEnum.MONITORRECYCLE.getValue().equals(itembox)) {
+        if (ItemBoxTypeEnum.MONITORDONE.getValue().equals(itembox)
+            || ItemBoxTypeEnum.MONITORRECYCLE.getValue().equals(itembox)) {
             itembox = ItemBoxTypeEnum.DONE.getValue();
         }
         try {
-            Map<String, Object> map = documentManager.edit(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), itembox, taskId, processInstanceId, itemId, false);
+            Map<String, Object> map = documentManager.edit(Y9LoginUserHolder.getTenantId(),
+                Y9LoginUserHolder.getPersonId(), itembox, taskId, processInstanceId, itemId, false);
             String processSerialNumber = (String)map.get("processSerialNumber");
             Integer fileNum = attachmentManager.fileCounts(tenantId, userId, processSerialNumber);
             int docNum = 0;
             // 是否正文正常
-            Map<String, Object> wordMap = transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
+            Map<String, Object> wordMap =
+                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
             if (!wordMap.isEmpty() && wordMap.size() > 0) {
                 docNum = 1;
             }
@@ -223,19 +229,26 @@ public class DocumentRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/forwarding", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<Map<String, Object>> forwarding(@RequestParam(required = true) String itemId, @RequestParam(required = true) String sponsorHandle, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
-        @RequestParam(required = true) String processDefinitionKey, @RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String userChoice, @RequestParam(required = false) String sponsorGuid, @RequestParam(required = true) String routeToTaskId,
-        @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
+    public Y9Result<Map<String, Object>> forwarding(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String sponsorHandle, @RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = false) String taskId, @RequestParam(required = true) String processDefinitionKey,
+        @RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String userChoice,
+        @RequestParam(required = false) String sponsorGuid, @RequestParam(required = true) String routeToTaskId,
+        @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing,
+        @RequestParam(required = false) String smsContent) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Map<String, Object> variables = new HashMap<String, Object>(16);
         try {
-            ProcessParamModel processParamModel = processParamManager.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamManager.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber);
             processParamModel.setIsSendSms(isSendSms);
             processParamModel.setIsShuMing(isShuMing);
             processParamModel.setSmsContent(smsContent);
             processParamModel.setSmsPersonId("");
             processParamManager.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
-            map = documentManager.saveAndForwarding(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
+            map = documentManager.saveAndForwarding(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+                processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice,
+                sponsorGuid, routeToTaskId, variables);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.success(map, (String)map.get("msg"));
             } else {
@@ -267,7 +280,8 @@ public class DocumentRestController {
                 map.put("workOrdertodoCount", workOrdertodoCount);
             }
             map.put("itemMap", listMap);
-            map.put("notReadCount", chaoSongInfoManager.getTodoCountByUserId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId()));
+            map.put("notReadCount", chaoSongInfoManager.getTodoCountByUserId(Y9LoginUserHolder.getTenantId(),
+                Y9LoginUserHolder.getPersonId()));
             int youjianCount = 0;
             try {
                 youjianCount = todoTaskApi.countByReceiverIdAndItemId(tenantId, personId, "sms", "");
@@ -304,7 +318,8 @@ public class DocumentRestController {
         List<TaskModel> list = null;
         try {
             TaskModel taskModel = taskManager.findById(tenantId, taskId);
-            String multiInstance = processDefinitionManager.getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey());
+            String multiInstance = processDefinitionManager.getNodeType(tenantId, taskModel.getProcessDefinitionId(),
+                taskModel.getTaskDefinitionKey());
             if (multiInstance.equals(SysVariables.PARALLEL)) {
                 map.put("isParallel", true);
                 list = taskManager.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), true);
@@ -341,7 +356,8 @@ public class DocumentRestController {
      */
     @RequestMapping(value = "/multipleResumeToDo", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> multipleResumeToDo(@RequestParam(required = true) String processInstanceIds, @RequestParam(required = false) String desc) {
+    public Y9Result<String> multipleResumeToDo(@RequestParam(required = true) String processInstanceIds,
+        @RequestParam(required = false) String desc) {
         try {
             buttonOperationService.multipleResumeToDo(processInstanceIds, desc);
             return Y9Result.successMsg("恢复成功");
@@ -371,12 +387,16 @@ public class DocumentRestController {
      * @return
      */
     @RequestMapping(value = "/signTaskConfig", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> signTaskConfig(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId, @RequestParam(required = true) String taskDefinitionKey, @RequestParam(required = true) String processSerialNumber) {
+    public Y9Result<Map<String, Object>> signTaskConfig(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String processDefinitionId,
+        @RequestParam(required = true) String taskDefinitionKey,
+        @RequestParam(required = true) String processSerialNumber) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId();
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            map = documentManager.signTaskConfig(tenantId, userId, itemId, processDefinitionId, taskDefinitionKey, processSerialNumber);
+            map = documentManager.signTaskConfig(tenantId, userId, itemId, processDefinitionId, taskDefinitionKey,
+                processSerialNumber);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.success(map, (String)map.get("msg"));
             } else {
@@ -401,10 +421,13 @@ public class DocumentRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/userChoiseData", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> userChoiseData(@RequestParam(required = true) String itemId, @RequestParam(required = true) String routeToTask, @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String processInstanceId) {
+    public Y9Result<Map<String, Object>> userChoiseData(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String routeToTask, @RequestParam(required = true) String processDefinitionId,
+        @RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId) {
         try {
-            Map<String, Object> map = documentManager.docUserChoise(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
+            Map<String, Object> map =
+                documentManager.docUserChoise(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), itemId,
+                    "", processDefinitionId, taskId, routeToTask, processInstanceId);
             map.put("userName", Y9LoginUserHolder.getUserInfo().getName());
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {

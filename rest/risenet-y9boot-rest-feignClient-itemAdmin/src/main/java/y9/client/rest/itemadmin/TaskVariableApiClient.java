@@ -12,7 +12,8 @@ import net.risesoft.model.itemadmin.TaskVariableModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "TaskVariableApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/taskVariable")
+@FeignClient(contextId = "TaskVariableApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/taskVariable")
 public interface TaskVariableApiClient extends TaskVariableApi {
 
     /**
@@ -25,5 +26,6 @@ public interface TaskVariableApiClient extends TaskVariableApi {
      */
     @Override
     @GetMapping("/findByTaskIdAndKeyName")
-    TaskVariableModel findByTaskIdAndKeyName(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("keyName") String keyName);
+    TaskVariableModel findByTaskIdAndKeyName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId, @RequestParam("keyName") String keyName);
 }

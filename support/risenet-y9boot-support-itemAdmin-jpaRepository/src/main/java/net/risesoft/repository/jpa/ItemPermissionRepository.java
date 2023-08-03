@@ -15,16 +15,20 @@ import net.risesoft.entity.ItemPermission;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemPermissionRepository extends JpaRepository<ItemPermission, String>, JpaSpecificationExecutor<ItemPermission> {
+public interface ItemPermissionRepository
+    extends JpaRepository<ItemPermission, String>, JpaSpecificationExecutor<ItemPermission> {
 
     List<ItemPermission> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
-    ItemPermission findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(String itemId, String processDefinitionId, String taskdefKey, String roleId);
+    ItemPermission findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(String itemId, String processDefinitionId,
+        String taskdefKey, String roleId);
 
     @Query("from ItemPermission t where t.itemId=?1 and t.processDefinitionId=?2 and t.taskDefKey=''")
-    List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(String itemId, String processDefinitionId);
+    List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNull(String itemId,
+        String processDefinitionId);
 
-    List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(String itemId, String processDefinitionId, String taskdefKey);
+    List<ItemPermission> findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(String itemId,
+        String processDefinitionId, String taskdefKey);
 
     @Query("select max(t.tabIndex) from ItemPermission t where t.itemId=?1 and t.processDefinitionId=?2 and t.taskDefKey=?3")
     Integer getMaxTabIndex(String itemId, String processDefinitionId, String taskDefKey);

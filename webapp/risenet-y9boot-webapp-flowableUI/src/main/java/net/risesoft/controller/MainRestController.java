@@ -128,10 +128,13 @@ public class MainRestController {
                     map.put("wtodoCount", m.get("todoCount"));
                     map.put("wdoneCount", m.get("doneCount"));
                 } else {
-                    draftCount = draftManager.getDraftCount(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(), itemId);
-                    draftRecycleCount = draftManager.getDeleteDraftCount(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(), itemId);
+                    draftCount =
+                        draftManager.getDraftCount(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(), itemId);
+                    draftRecycleCount = draftManager.getDeleteDraftCount(Y9LoginUserHolder.getTenantId(),
+                        userInfo.getPersonId(), itemId);
                 }
-                Map<String, Object> countMap = todoManager.getCountByUserIdAndProcessDefinitionKey(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(), processDefinitionKey);
+                Map<String, Object> countMap = todoManager.getCountByUserIdAndProcessDefinitionKey(
+                    Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(), processDefinitionKey);
                 todoCount = countMap != null ? Long.parseLong(countMap.get("todoCount").toString()) : 0;
                 doingCount = countMap != null ? Long.parseLong(countMap.get("doingCount").toString()) : 0;
                 try {
@@ -225,14 +228,18 @@ public class MainRestController {
             String processDefinitionKey = itemModel.getWorkflowGuid();
             if (itemModel != null && itemModel.getId() != null) {
                 model.addAttribute("processDefinitionKey", processDefinitionKey);
-                boolean hasOnlineAccess = roleApi.hasRole(tenantId, Y9Context.getSystemName(), "", itemModel.getName() + "收件角色", userInfo.getPersonId());
+                boolean hasOnlineAccess = roleApi.hasRole(tenantId, Y9Context.getSystemName(), "",
+                    itemModel.getName() + "收件角色", userInfo.getPersonId());
 
-                Map<String, Object> countMap = todoManager.getCountByUserIdAndProcessDefinitionKey(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(), processDefinitionKey);
-                draftCount = draftManager.getDraftCount(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(), itemId);
+                Map<String, Object> countMap = todoManager.getCountByUserIdAndProcessDefinitionKey(
+                    Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(), processDefinitionKey);
+                draftCount =
+                    draftManager.getDraftCount(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(), itemId);
                 todoCount = countMap != null ? (long)countMap.get("todoCount") : 0;
                 doingCount = countMap != null ? (long)countMap.get("doingCount") : 0;
                 doneCount = countMap != null ? (long)countMap.get("doneCount") : 0;
-                draftRecycleCount = draftManager.getDeleteDraftCount(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(), itemId);
+                draftRecycleCount =
+                    draftManager.getDeleteDraftCount(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(), itemId);
                 if (itemModel.getWorkflowGuid().equals(processDefinitionKey)) {
                     map.put("itemType", "workOrder");
                 }
@@ -252,7 +259,8 @@ public class MainRestController {
             if (b) {
                 long monitorDoing = monitorManager.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey);
                 long monitorDone = monitorManager.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey);
-                long recycleCount = monitorManager.getRecycleCountByProcessDefinitionKey(tenantId, processDefinitionKey);
+                long recycleCount =
+                    monitorManager.getRecycleCountByProcessDefinitionKey(tenantId, processDefinitionKey);
                 map.put("monitorDoing", monitorDoing);
                 map.put("monitorDone", monitorDone);
                 map.put("monitorRecycle", recycleCount);
@@ -293,7 +301,8 @@ public class MainRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getTaskOrProcessInfo", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getTaskOrProcessInfo(@RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId, @RequestParam(required = true) String type) {
+    public Y9Result<Map<String, Object>> getTaskOrProcessInfo(@RequestParam(required = false) String taskId,
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = true) String type) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId();
@@ -308,7 +317,8 @@ public class MainRestController {
                     map.put("taskId", "");
                 }
                 processInstanceId = taskModel.getProcessInstanceId();
-                ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processParamModel =
+                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                 processSerialNumber = processParamModel.getProcessSerialNumber();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -316,7 +326,8 @@ public class MainRestController {
         } else if (type.equals(fromCplane)) {
             taskId = "";
             HistoricProcessInstanceModel hisProcess = historicProcessManager.getById(tenantId, processInstanceId);
-            ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+            ProcessParamModel processParamModel =
+                processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
             processSerialNumber = processParamModel.getProcessSerialNumber();
             if (hisProcess == null || hisProcess.getId() == null) {
 
@@ -343,7 +354,8 @@ public class MainRestController {
         } else if (type.equals(fromHistory)) {
             HistoricProcessInstanceModel processModel = historicProcessManager.getById(tenantId, processInstanceId);
             if (processModel == null || processModel.getId() == null) {
-                OfficeDoneInfoModel officeDoneInfoModel = officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+                OfficeDoneInfoModel officeDoneInfoModel =
+                    officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
                 if (officeDoneInfoModel == null) {
                     processInstanceId = "";
                 } else {

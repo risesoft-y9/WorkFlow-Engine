@@ -64,7 +64,8 @@ public class CalendarRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveCalendar", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveCalendar(@RequestParam(required = true) String startDate, @RequestParam(required = true) Integer type) {
+    public Y9Result<String> saveCalendar(@RequestParam(required = true) String startDate,
+        @RequestParam(required = true) Integer type) {
         Map<String, Object> map = calendarConfigService.saveCalendar(startDate, type);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("message"));

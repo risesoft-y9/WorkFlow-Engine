@@ -62,10 +62,13 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      * @return List<RemindInstanceModel>
      */
     @Override
-    @GetMapping(value = "/findRemindInstanceByProcessInstanceIdAndArriveTaskKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(String tenantId, String processInstanceId, String taskKey) {
+    @GetMapping(value = "/findRemindInstanceByProcessInstanceIdAndArriveTaskKey",
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(String tenantId,
+        String processInstanceId, String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<RemindInstance> list = remindInstanceService.findRemindInstanceByProcessInstanceIdAndArriveTaskKey(processInstanceId, taskKey);
+        List<RemindInstance> list =
+            remindInstanceService.findRemindInstanceByProcessInstanceIdAndArriveTaskKey(processInstanceId, taskKey);
         List<RemindInstanceModel> newList = new ArrayList<RemindInstanceModel>();
         for (RemindInstance remindInstance : list) {
             RemindInstanceModel remindInstanceModel = new RemindInstanceModel();
@@ -84,10 +87,13 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      * @return List<RemindInstanceModel>
      */
     @Override
-    @GetMapping(value = "/findRemindInstanceByProcessInstanceIdAndCompleteTaskKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(String tenantId, String processInstanceId, String taskKey) {
+    @GetMapping(value = "/findRemindInstanceByProcessInstanceIdAndCompleteTaskKey",
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(String tenantId,
+        String processInstanceId, String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<RemindInstance> list = remindInstanceService.findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(processInstanceId, taskKey);
+        List<RemindInstance> list =
+            remindInstanceService.findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(processInstanceId, taskKey);
         List<RemindInstanceModel> newList = new ArrayList<RemindInstanceModel>();
         for (RemindInstance remindInstance : list) {
             RemindInstanceModel remindInstanceModel = new RemindInstanceModel();
@@ -106,10 +112,13 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      * @return List<RemindInstanceModel>
      */
     @Override
-    @GetMapping(value = "/findRemindInstanceByProcessInstanceIdAndRemindType", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndRemindType(String tenantId, String processInstanceId, String remindType) {
+    @GetMapping(value = "/findRemindInstanceByProcessInstanceIdAndRemindType",
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndRemindType(String tenantId,
+        String processInstanceId, String remindType) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<RemindInstance> list = remindInstanceService.findRemindInstanceByProcessInstanceIdAndRemindType(processInstanceId, remindType);
+        List<RemindInstance> list =
+            remindInstanceService.findRemindInstanceByProcessInstanceIdAndRemindType(processInstanceId, remindType);
         List<RemindInstanceModel> newList = new ArrayList<RemindInstanceModel>();
         for (RemindInstance remindInstance : list) {
             RemindInstanceModel remindInstanceModel = new RemindInstanceModel();
@@ -129,9 +138,11 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      */
     @Override
     @GetMapping(value = "/findRemindInstanceByProcessInstanceIdAndTaskId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndTaskId(String tenantId, String processInstanceId, String taskId) {
+    public List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndTaskId(String tenantId,
+        String processInstanceId, String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<RemindInstance> list = remindInstanceService.findRemindInstanceByProcessInstanceIdAndTaskId(processInstanceId, taskId);
+        List<RemindInstance> list =
+            remindInstanceService.findRemindInstanceByProcessInstanceIdAndTaskId(processInstanceId, taskId);
         List<RemindInstanceModel> newList = new ArrayList<RemindInstanceModel>();
         for (RemindInstance remindInstance : list) {
             RemindInstanceModel remindInstanceModel = new RemindInstanceModel();
@@ -177,10 +188,12 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      */
     @Override
     @PostMapping(value = "/saveRemindInstance", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveRemindInstance(String tenantId, String userId, String processInstanceId, String taskIds, Boolean process, String arriveTaskKey, String completeTaskKey) {
+    public Map<String, Object> saveRemindInstance(String tenantId, String userId, String processInstanceId,
+        String taskIds, Boolean process, String arriveTaskKey, String completeTaskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(userId);
-        return remindInstanceService.saveRemindInstance(processInstanceId, taskIds, process, arriveTaskKey, completeTaskKey);
+        return remindInstanceService.saveRemindInstance(processInstanceId, taskIds, process, arriveTaskKey,
+            completeTaskKey);
     }
 
 }

@@ -15,7 +15,8 @@ import net.risesoft.model.itemadmin.ProcessParamModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ProcessParamApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/processParam")
+@FeignClient(contextId = "ProcessParamApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/processParam")
 public interface ProcessParamApiClient extends ProcessParamApi {
 
     /**
@@ -26,7 +27,8 @@ public interface ProcessParamApiClient extends ProcessParamApi {
      */
     @Override
     @PostMapping("/deleteByPprocessInstanceId")
-    void deleteByPprocessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    void deleteByPprocessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 
@@ -38,7 +40,8 @@ public interface ProcessParamApiClient extends ProcessParamApi {
      */
     @Override
     @GetMapping("/findByProcessInstanceId")
-    ProcessParamModel findByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    ProcessParamModel findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 
@@ -50,7 +53,8 @@ public interface ProcessParamApiClient extends ProcessParamApi {
      */
     @Override
     @GetMapping("/findByProcessSerialNumber")
-    ProcessParamModel findByProcessSerialNumber(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
+    ProcessParamModel findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存或更新流程数据
@@ -73,5 +77,6 @@ public interface ProcessParamApiClient extends ProcessParamApi {
      */
     @Override
     @PostMapping("/updateCustomItem")
-    void updateCustomItem(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("b") boolean b);
+    void updateCustomItem(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("b") boolean b);
 }

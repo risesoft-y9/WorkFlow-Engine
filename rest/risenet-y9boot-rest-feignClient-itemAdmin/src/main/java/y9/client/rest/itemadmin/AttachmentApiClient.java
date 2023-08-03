@@ -20,7 +20,8 @@ import net.risesoft.model.itemadmin.AttachmentModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "AttachmentApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/attachment")
+@FeignClient(contextId = "AttachmentApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/attachment")
 public interface AttachmentApiClient extends AttachmentApi {
 
     /**
@@ -33,7 +34,8 @@ public interface AttachmentApiClient extends AttachmentApi {
      */
     @Override
     @GetMapping("/attachmentDownload")
-    public Map<String, Object> attachmentDownload(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("id") String id);
+    public Map<String, Object> attachmentDownload(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("id") String id);
 
     /**
      * 根据流程编号删除附件
@@ -43,7 +45,8 @@ public interface AttachmentApiClient extends AttachmentApi {
      */
     @Override
     @PostMapping(value = "/delBatchByProcessSerialNumbers", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void delBatchByProcessSerialNumbers(@RequestParam("tenantId") String tenantId, @RequestBody List<String> processSerialNumbers);
+    public void delBatchByProcessSerialNumbers(@RequestParam("tenantId") String tenantId,
+        @RequestBody List<String> processSerialNumbers);
 
     /**
      * 删除附件
@@ -55,7 +58,8 @@ public interface AttachmentApiClient extends AttachmentApi {
      */
     @Override
     @PostMapping("/delFile")
-    public Map<String, Object> delFile(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("ids") String ids);
+    public Map<String, Object> delFile(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("ids") String ids);
 
     /**
      * 附件数
@@ -67,7 +71,8 @@ public interface AttachmentApiClient extends AttachmentApi {
      */
     @Override
     @GetMapping("/fileCounts")
-    public Integer fileCounts(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
+    public Integer fileCounts(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 获取附件数
@@ -81,7 +86,9 @@ public interface AttachmentApiClient extends AttachmentApi {
      */
     @Override
     @GetMapping("/getAttachmentCount")
-    public int getAttachmentCount(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("fileSource") String fileSource, @RequestParam("fileType") String fileType);
+    public int getAttachmentCount(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("fileSource") String fileSource,
+        @RequestParam("fileType") String fileType);
 
     /**
      * 获取附件列表
@@ -96,8 +103,9 @@ public interface AttachmentApiClient extends AttachmentApi {
      */
     @Override
     @GetMapping("/getAttachmentList")
-    public Map<String, Object> getAttachmentList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("fileSource") String fileSource, @RequestParam("page") int page,
-        @RequestParam("rows") int rows);
+    public Map<String, Object> getAttachmentList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("fileSource") String fileSource, @RequestParam("page") int page, @RequestParam("rows") int rows);
 
     /**
      * 获取附件列表(model)
@@ -110,7 +118,9 @@ public interface AttachmentApiClient extends AttachmentApi {
      */
     @Override
     @GetMapping("/getAttachmentModelList")
-    public List<AttachmentModel> getAttachmentModelList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("fileSource") String fileSource);
+    public List<AttachmentModel> getAttachmentModelList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("fileSource") String fileSource);
 
     /**
      * 保存附件信息
@@ -123,7 +133,8 @@ public interface AttachmentApiClient extends AttachmentApi {
      */
     @Override
     @PostMapping("/saveAttachment")
-    public Boolean saveAttachment(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("attachjson") String attachjson, @RequestParam("processSerialNumber") String processSerialNumber);
+    public Boolean saveAttachment(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("attachjson") String attachjson, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存附件信息
@@ -142,8 +153,12 @@ public interface AttachmentApiClient extends AttachmentApi {
      */
     @Override
     @PostMapping("/saveOrUpdateUploadInfo")
-    public String saveOrUpdateUploadInfo(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("fileName") String fileName, @RequestParam("fileType") String fileType, @RequestParam("fileSizeString") String fileSizeString,
-        @RequestParam("fileSource") String fileSource, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("taskId") String taskId, @RequestParam("y9FileStoreId") String y9FileStoreId);
+    public String saveOrUpdateUploadInfo(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("fileName") String fileName,
+        @RequestParam("fileType") String fileType, @RequestParam("fileSizeString") String fileSizeString,
+        @RequestParam("fileSource") String fileSource, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("taskId") String taskId,
+        @RequestParam("y9FileStoreId") String y9FileStoreId);
 
     /**
      * 上传附件
@@ -162,8 +177,11 @@ public interface AttachmentApiClient extends AttachmentApi {
      */
     @Override
     @PostMapping("/upload")
-    public Map<String, Object> upload(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("fileName") String fileName, @RequestParam("fileSize") String fileSize, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("taskId") String taskId, @RequestParam("describes") String describes, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("fileSource") String fileSource, @RequestParam("y9FileStoreId") String y9FileStoreId);
+    public Map<String, Object> upload(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("fileName") String fileName, @RequestParam("fileSize") String fileSize,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId,
+        @RequestParam("describes") String describes, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("fileSource") String fileSource, @RequestParam("y9FileStoreId") String y9FileStoreId);
 
     /**
      * 上传附件(model)
@@ -176,5 +194,6 @@ public interface AttachmentApiClient extends AttachmentApi {
      */
     @Override
     @PostMapping(value = "/uploadModel", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public boolean uploadModel(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestBody AttachmentModel attachmentModel) throws Exception;
+    public boolean uploadModel(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestBody AttachmentModel attachmentModel) throws Exception;
 }

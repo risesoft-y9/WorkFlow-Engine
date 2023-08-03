@@ -16,23 +16,28 @@ import net.risesoft.entity.ActRuDetail;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ActRuDetailRepository extends JpaRepository<ActRuDetail, String>, JpaSpecificationExecutor<ActRuDetail> {
+public interface ActRuDetailRepository
+    extends JpaRepository<ActRuDetail, String>, JpaSpecificationExecutor<ActRuDetail> {
 
     int countBySystemNameAndAssigneeAndDeletedTrue(String systemName, String assignee);
 
     int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalse(String systemName, String assignee);
 
-    int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndCreateTimeAndPlaceOnFileFalse(String systemName, String assignee, String createTime);
+    int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndCreateTimeAndPlaceOnFileFalse(String systemName,
+        String assignee, String createTime);
 
     int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee);
 
-    int countBySystemNameAndAssigneeAndStatusAndCreateTimeAndDeletedFalse(String systemName, String assignee, int status, String createTime);
+    int countBySystemNameAndAssigneeAndStatusAndCreateTimeAndDeletedFalse(String systemName, String assignee,
+        int status, String createTime);
 
     int countBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee, int status);
 
-    int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndCreateTimeAndDeletedFalse(String systemName, String assignee, int status, String createTime);
+    int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndCreateTimeAndDeletedFalse(String systemName,
+        String assignee, int status, String createTime);
 
-    int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName, String assignee, int status);
+    int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName, String assignee,
+        int status);
 
     int countBySystemNameAndDeletedTrue(String systemName);
 
@@ -62,23 +67,32 @@ public interface ActRuDetailRepository extends JpaRepository<ActRuDetail, String
 
     Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalse(String systemName, String assignee, Pageable pageable);
 
-    Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee,
+        Pageable pageable);
 
-    Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalse(String systemName, String assignee, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalse(String systemName, String assignee,
+        Pageable pageable);
 
-    Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(String systemName,
+        String assignee, Pageable pageable);
 
-    List<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee, int status);
+    List<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
+        int status);
 
-    Page<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee, int status, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
+        int status, Pageable pageable);
 
-    Page<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName, String assignee, int status, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName,
+        String assignee, int status, Pageable pageable);
 
     Page<ActRuDetail> findBySystemNameAndStatusAndEndedFalse(String systemName, int status, Pageable pageable);
 
-    Page<ActRuDetail> findBySystemNameInAndAssigneeAndStatusAndDeletedFalse(List<String> systemNameList, String assignee, int status, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameInAndAssigneeAndStatusAndDeletedFalse(List<String> systemNameList,
+        String assignee, int status, Pageable pageable);
 
-    Page<ActRuDetail> findBySystemNameNotAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee, int status, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameNotAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
+        int status, Pageable pageable);
 
-    List<ActRuDetail> findBySystemNameNotAndAssigneeAndStatusAndDeletedFalseOrderByCreateTimeDesc(String systemName, String assignee, int status);
+    List<ActRuDetail> findBySystemNameNotAndAssigneeAndStatusAndDeletedFalseOrderByCreateTimeDesc(String systemName,
+        String assignee, int status);
 }

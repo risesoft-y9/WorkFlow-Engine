@@ -15,7 +15,8 @@ import net.risesoft.entity.SpmApproveItem;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-public interface SpmApproveItemRepository extends PagingAndSortingRepository<SpmApproveItem, String>, JpaRepository<SpmApproveItem, String>, JpaSpecificationExecutor<SpmApproveItem> {
+public interface SpmApproveItemRepository extends PagingAndSortingRepository<SpmApproveItem, String>,
+    JpaRepository<SpmApproveItem, String>, JpaSpecificationExecutor<SpmApproveItem> {
 
     @Override
     @Query("from SpmApproveItem s order by s.createDate desc")

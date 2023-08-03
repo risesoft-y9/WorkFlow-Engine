@@ -37,9 +37,11 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
     @Override
     public List<HistoricTaskInstance> getByProcessInstanceId(String processInstanceId, String year) {
         if (StringUtils.isBlank(year)) {
-            return historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId).orderByHistoricTaskInstanceStartTime().asc().list();
+            return historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId)
+                .orderByHistoricTaskInstanceStartTime().asc().list();
         } else {
-            String sql = "SELECT DISTINCT" + "	RES.*" + " FROM" + "	ACT_HI_TASKINST_" + year + " RES" + " WHERE" + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "	RES.START_TIME_ ASC";
+            String sql = "SELECT DISTINCT" + "	RES.*" + " FROM" + "	ACT_HI_TASKINST_" + year + " RES" + " WHERE"
+                + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "	RES.START_TIME_ ASC";
             return historyService.createNativeHistoricTaskInstanceQuery().sql(sql).list();
         }
     }
@@ -47,30 +49,36 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
     @Override
     public List<HistoricTaskInstance> getByProcessInstanceIdOrderByEndTimeAsc(String processInstanceId, String year) {
         if (StringUtils.isNotEmpty(year)) {
-            String sql = "SELECT DISTINCT" + "	RES.*" + " FROM" + "	ACT_HI_TASKINST_" + year + " RES" + " WHERE" + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "	RES.END_TIME_ ASC";
+            String sql = "SELECT DISTINCT" + "	RES.*" + " FROM" + "	ACT_HI_TASKINST_" + year + " RES" + " WHERE"
+                + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "	RES.END_TIME_ ASC";
             return historyService.createNativeHistoricTaskInstanceQuery().sql(sql).list();
         } else {
-            return historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId).orderByHistoricTaskInstanceEndTime().asc().list();
+            return historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId)
+                .orderByHistoricTaskInstanceEndTime().asc().list();
         }
     }
 
     @Override
     public List<HistoricTaskInstance> getByProcessInstanceIdOrderByEndTimeDesc(String processInstanceId, String year) {
         if (StringUtils.isNotEmpty(year)) {
-            String sql = "SELECT DISTINCT" + "	RES.*" + " FROM" + "	ACT_HI_TASKINST_" + year + " RES" + " WHERE" + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "	RES.END_TIME_ DESC";
+            String sql = "SELECT DISTINCT" + "	RES.*" + " FROM" + "	ACT_HI_TASKINST_" + year + " RES" + " WHERE"
+                + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "	RES.END_TIME_ DESC";
             return historyService.createNativeHistoricTaskInstanceQuery().sql(sql).list();
         } else {
-            return historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId).orderByHistoricTaskInstanceEndTime().desc().list();
+            return historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId)
+                .orderByHistoricTaskInstanceEndTime().desc().list();
         }
     }
 
     @Override
     public List<HistoricTaskInstance> getByProcessInstanceIdOrderByStartTimeAsc(String processInstanceId, String year) {
         if (StringUtils.isNotEmpty(year)) {
-            String sql = "SELECT DISTINCT" + "  RES.*" + " FROM" + "    ACT_HI_TASKINST_" + year + " RES" + " WHERE" + "    RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "  RES.START_TIME_ ASC";
+            String sql = "SELECT DISTINCT" + "  RES.*" + " FROM" + "    ACT_HI_TASKINST_" + year + " RES" + " WHERE"
+                + "    RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "  RES.START_TIME_ ASC";
             return historyService.createNativeHistoricTaskInstanceQuery().sql(sql).list();
         } else {
-            return historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId).orderByHistoricTaskInstanceStartTime().asc().list();
+            return historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId)
+                .orderByHistoricTaskInstanceStartTime().asc().list();
         }
     }
 
@@ -83,14 +91,17 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
     public HistoricTaskInstance getThePreviousTask(String taskId) {
         try {
             String currentTaskDefKey = "", currentExecutionId = "", processDefineId = "", currentMultiInstance = "";
-            HistoricTaskInstance currenthti = historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
+            HistoricTaskInstance currenthti =
+                historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
             String processInstanceId = currenthti.getProcessInstanceId();
-            List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId).orderByHistoricTaskInstanceStartTime().desc().list();
+            List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery()
+                .processInstanceId(processInstanceId).orderByHistoricTaskInstanceStartTime().desc().list();
 
             currentTaskDefKey = currenthti.getTaskDefinitionKey();
             currentExecutionId = currenthti.getExecutionId();
             processDefineId = currenthti.getProcessDefinitionId();
-            currentMultiInstance = workflowProcessDefinitionService.getMultiinstanceType(processDefineId, currentTaskDefKey);
+            currentMultiInstance =
+                workflowProcessDefinitionService.getMultiinstanceType(processDefineId, currentTaskDefKey);
             long currentTime = currenthti.getCreateTime().getTime(), tempTime = 0;
             if (currentMultiInstance.equals(SysVariables.PARALLEL)) {
                 for (HistoricTaskInstance htiTemp : list) {
@@ -127,14 +138,18 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
         List<HistoricTaskInstance> returnList = new ArrayList<>();
         try {
             String currentTaskDefKey = "", currentExecutionId = "", processDefineId = "", currentMultiInstance = "";
-            String processInstanceId = historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult().getProcessInstanceId();
-            List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId).orderByHistoricTaskInstanceStartTime().desc().list();
+            String processInstanceId =
+                historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult().getProcessInstanceId();
+            List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery()
+                .processInstanceId(processInstanceId).orderByHistoricTaskInstanceStartTime().desc().list();
 
-            HistoricTaskInstance currenthti = historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
+            HistoricTaskInstance currenthti =
+                historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
             currentTaskDefKey = currenthti.getTaskDefinitionKey();
             currentExecutionId = currenthti.getExecutionId();
             processDefineId = currenthti.getProcessDefinitionId();
-            currentMultiInstance = workflowProcessDefinitionService.getMultiinstanceType(processDefineId, currentTaskDefKey);
+            currentMultiInstance =
+                workflowProcessDefinitionService.getMultiinstanceType(processDefineId, currentTaskDefKey);
             /**
              * 查找当前任务的前一个节点的任务
              */
@@ -194,6 +209,7 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
     @Transactional(readOnly = false)
     public void setTenantId(String taskId) {
         String updateSql = "UPDATE ACT_HI_TASKINST T SET T.TENANT_ID_ = #{TENANT_ID_} WHERE T.ID_=#{taskId}";
-        historyService.createNativeHistoricTaskInstanceQuery().sql(updateSql).parameter("TENANT_ID_", "1").parameter("taskId", taskId).singleResult();
+        historyService.createNativeHistoricTaskInstanceQuery().sql(updateSql).parameter("TENANT_ID_", "1")
+            .parameter("taskId", taskId).singleResult();
     }
 }

@@ -26,7 +26,8 @@ public interface ProcessTodoApi {
      * @param processDefinitionKey 流程定义Key
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getCountByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey);
+    Map<String, Object> getCountByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey);
 
     /**
      * 根据人员id，系统标识获取对应事项的办件统计（包括待办件，在办件，办结件）
@@ -61,7 +62,8 @@ public interface ProcessTodoApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, Integer page, Integer rows) throws Exception;
+    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey, Integer page, Integer rows) throws Exception;
 
     /**
      * 根据人员Id,系统标识获取用户的待办任务(分页)
@@ -74,7 +76,8 @@ public interface ProcessTodoApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page, Integer rows) throws Exception;
+    Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page,
+        Integer rows) throws Exception;
 
     /**
      * 根据岗位id,流程定义key获取对应事项的待办数量
@@ -84,7 +87,8 @@ public interface ProcessTodoApi {
      * @param processDefinitionKey 流程定义key
      * @return
      */
-    long getTodoCountByPositionIdAndProcessDefinitionKey(String tenantId, String positionId, String processDefinitionKey);
+    long getTodoCountByPositionIdAndProcessDefinitionKey(String tenantId, String positionId,
+        String processDefinitionKey);
 
     /**
      * 根据人员id，事项id获取对应事项的待办数量
@@ -125,7 +129,8 @@ public interface ProcessTodoApi {
      * @param rows 行数
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page,
+        Integer rows);
 
     /**
      * 条件搜索待办件
@@ -138,7 +143,8 @@ public interface ProcessTodoApi {
      * @param rows 行数
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey, String searchTerm, Integer page, Integer rows);
 
     /**
      * 条件搜索待办件
@@ -151,5 +157,6 @@ public interface ProcessTodoApi {
      * @param rows 行数
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        String searchTerm, Integer page, Integer rows);
 }

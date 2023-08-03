@@ -204,7 +204,8 @@ public class InitTableDataService {
 
     private void createItemOpinionFrame(String processDefinitionId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<ItemOpinionFrameBind> list = itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(ITEM_ID, processDefinitionId);
+        List<ItemOpinionFrameBind> list = itemOpinionFrameBindRepository
+            .findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(ITEM_ID, processDefinitionId);
         if (list.size() == 0) {
             ItemOpinionFrameBind newoftrb = new ItemOpinionFrameBind();
             newoftrb.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -222,7 +223,8 @@ public class InitTableDataService {
 
     private void createItemPermission(String processDefinitionId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<ItemPermission> list = itemPermissionRepository.findByItemIdAndProcessDefinitionId(ITEM_ID, processDefinitionId);
+        List<ItemPermission> list =
+            itemPermissionRepository.findByItemIdAndProcessDefinitionId(ITEM_ID, processDefinitionId);
         if (list.size() == 0) {
             ItemPermission newip = new ItemPermission();
             newip.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -259,100 +261,158 @@ public class InitTableDataService {
             List<ItemViewConf> list0 = new ArrayList<ItemViewConf>();
             ItemViewConf newConf = new ItemViewConf();
             int i = 0;
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("serialNumber").setDisPlayName("序号").setDisPlayWidth("60").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.DRAFT.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("serialNumber").setDisPlayName("序号")
+                .setDisPlayWidth("60").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.DRAFT.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("level").setDisPlayName("紧急程度").setDisPlayWidth("120").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DRAFT.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("level").setDisPlayName("紧急程度")
+                .setDisPlayWidth("120").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID)
+                .setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DRAFT.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("number").setDisPlayName("文件编号").setDisPlayWidth("180").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DRAFT.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("number").setDisPlayName("文件编号")
+                .setDisPlayWidth("180").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID)
+                .setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DRAFT.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("title").setDisPlayName("文件标题").setDisPlayWidth("auto").setDisPlayAlign("left").setTabIndex(i++).setItemId(ITEM_ID).setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DRAFT.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("title").setDisPlayName("文件标题")
+                .setDisPlayWidth("auto").setDisPlayAlign("left").setTabIndex(i++).setItemId(ITEM_ID)
+                .setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DRAFT.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("createDate").setDisPlayName("创建时间").setDisPlayWidth("150").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DRAFT.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("createDate").setDisPlayName("创建时间")
+                .setDisPlayWidth("150").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID)
+                .setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DRAFT.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("opt").setDisPlayName("操作").setDisPlayWidth("180").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.DRAFT.getValue()).setCreateTime(date);
-            list0.add(newConf);
-            itemViewConfRepository.saveAll(list0);
-            i = 0;
-            list0 = new ArrayList<ItemViewConf>();
-            newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("serialNumber").setDisPlayName("序号").setDisPlayWidth("60").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
-            list0.add(newConf);
-            newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("number").setDisPlayName("文件编号").setDisPlayWidth("180").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
-            list0.add(newConf);
-            newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("level").setDisPlayName("紧急程度").setDisPlayWidth("90").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
-            list0.add(newConf);
-            newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("title").setDisPlayName("文件标题").setDisPlayWidth("auto").setDisPlayAlign("left").setTabIndex(i++).setItemId(ITEM_ID).setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
-            list0.add(newConf);
-            newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("taskName").setDisPlayName("办理环节").setDisPlayWidth("120").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
-            list0.add(newConf);
-            newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("taskCreateTime").setDisPlayName("发送时间").setDisPlayWidth("150").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
-            list0.add(newConf);
-            newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("taskSender").setDisPlayName("发送人").setDisPlayWidth("120").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
-            list0.add(newConf);
-            newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("opt").setDisPlayName("操作").setDisPlayWidth("300").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("opt").setDisPlayName("操作")
+                .setDisPlayWidth("180").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.DRAFT.getValue()).setCreateTime(date);
             list0.add(newConf);
             itemViewConfRepository.saveAll(list0);
             i = 0;
             list0 = new ArrayList<ItemViewConf>();
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("serialNumber").setDisPlayName("序号").setDisPlayWidth("60").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("serialNumber").setDisPlayName("序号")
+                .setDisPlayWidth("60").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("number").setDisPlayName("文件编号").setDisPlayWidth("180").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("number").setDisPlayName("文件编号")
+                .setDisPlayWidth("180").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID)
+                .setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("level").setDisPlayName("紧急程度").setDisPlayWidth("90").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("level").setDisPlayName("紧急程度")
+                .setDisPlayWidth("90").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID)
+                .setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("title").setDisPlayName("文件标题").setDisPlayWidth("auto").setDisPlayAlign("left").setTabIndex(i++).setItemId(ITEM_ID).setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("title").setDisPlayName("文件标题")
+                .setDisPlayWidth("auto").setDisPlayAlign("left").setTabIndex(i++).setItemId(ITEM_ID)
+                .setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("taskName").setDisPlayName("办理环节").setDisPlayWidth("120").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("taskName").setDisPlayName("办理环节")
+                .setDisPlayWidth("120").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("taskCreateTime").setDisPlayName("发送时间").setDisPlayWidth("150").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("taskCreateTime").setDisPlayName("发送时间")
+                .setDisPlayWidth("150").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("taskAssignee").setDisPlayName("当前办理人").setDisPlayWidth("150").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("taskSender").setDisPlayName("发送人")
+                .setDisPlayWidth("120").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("opt").setDisPlayName("操作").setDisPlayWidth("300").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("opt").setDisPlayName("操作")
+                .setDisPlayWidth("300").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.TODO.getValue()).setCreateTime(date);
             list0.add(newConf);
             itemViewConfRepository.saveAll(list0);
             i = 0;
             list0 = new ArrayList<ItemViewConf>();
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("serialNumber").setDisPlayName("序号").setDisPlayWidth("60").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("serialNumber").setDisPlayName("序号")
+                .setDisPlayWidth("60").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("number").setDisPlayName("文件编号").setDisPlayWidth("180").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("number").setDisPlayName("文件编号")
+                .setDisPlayWidth("180").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID)
+                .setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("level").setDisPlayName("紧急程度").setDisPlayWidth("90").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("level").setDisPlayName("紧急程度")
+                .setDisPlayWidth("90").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID)
+                .setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("title").setDisPlayName("文件标题").setDisPlayWidth("auto").setDisPlayAlign("left").setTabIndex(i++).setItemId(ITEM_ID).setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("title").setDisPlayName("文件标题")
+                .setDisPlayWidth("auto").setDisPlayAlign("left").setTabIndex(i++).setItemId(ITEM_ID)
+                .setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("user4Complete").setDisPlayName("办结人").setDisPlayWidth("150").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("taskName").setDisPlayName("办理环节")
+                .setDisPlayWidth("120").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("endTime").setDisPlayName("办结时间").setDisPlayWidth("150").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("taskCreateTime").setDisPlayName("发送时间")
+                .setDisPlayWidth("150").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
             list0.add(newConf);
             newConf = new ItemViewConf();
-            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("opt").setDisPlayName("操作").setDisPlayWidth("200").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("").setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("taskAssignee").setDisPlayName("当前办理人")
+                .setDisPlayWidth("150").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
+            list0.add(newConf);
+            newConf = new ItemViewConf();
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("opt").setDisPlayName("操作")
+                .setDisPlayWidth("300").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.DOING.getValue()).setCreateTime(date);
+            list0.add(newConf);
+            itemViewConfRepository.saveAll(list0);
+            i = 0;
+            list0 = new ArrayList<ItemViewConf>();
+            newConf = new ItemViewConf();
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("serialNumber").setDisPlayName("序号")
+                .setDisPlayWidth("60").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
+            list0.add(newConf);
+            newConf = new ItemViewConf();
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("number").setDisPlayName("文件编号")
+                .setDisPlayWidth("180").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID)
+                .setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
+            list0.add(newConf);
+            newConf = new ItemViewConf();
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("level").setDisPlayName("紧急程度")
+                .setDisPlayWidth("90").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID)
+                .setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
+            list0.add(newConf);
+            newConf = new ItemViewConf();
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("title").setDisPlayName("文件标题")
+                .setDisPlayWidth("auto").setDisPlayAlign("left").setTabIndex(i++).setItemId(ITEM_ID)
+                .setTableName(Y9_TABLE_NAME).setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
+            list0.add(newConf);
+            newConf = new ItemViewConf();
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("user4Complete").setDisPlayName("办结人")
+                .setDisPlayWidth("150").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
+            list0.add(newConf);
+            newConf = new ItemViewConf();
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("endTime").setDisPlayName("办结时间")
+                .setDisPlayWidth("150").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
+            list0.add(newConf);
+            newConf = new ItemViewConf();
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setColumnName("opt").setDisPlayName("操作")
+                .setDisPlayWidth("200").setDisPlayAlign("center").setTabIndex(i++).setItemId(ITEM_ID).setTableName("")
+                .setViewType(ItemBoxTypeEnum.DONE.getValue()).setCreateTime(date);
             list0.add(newConf);
             itemViewConfRepository.saveAll(list0);
         }
@@ -390,55 +450,89 @@ public class InitTableDataService {
 
             List<Y9FormField> list = new ArrayList<Y9FormField>();
             Y9FormField newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("主键").setFieldName("guid").setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("主键").setFieldName("guid")
+                .setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("流程编号").setFieldName("processInstanceId").setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("流程编号")
+                .setFieldName("processInstanceId").setFieldType("varchar(50)").setFormId(PRINT_FORM_ID)
+                .setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("文件编号").setFieldName("number").setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("文件编号").setFieldName("number")
+                .setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("类型").setFieldName("type").setFieldType("varchar(20)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("类型").setFieldName("type")
+                .setFieldType("varchar(20)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("字号").setFieldName("wordSize").setFieldType("varchar(20)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("字号").setFieldName("wordSize")
+                .setFieldType("varchar(20)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("标题").setFieldName("title").setFieldType("varchar(500)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("标题").setFieldName("title")
+                .setFieldType("varchar(500)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("创建部门").setFieldName("department").setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("创建部门").setFieldName("department")
+                .setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("创建人").setFieldName("creater").setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("创建人").setFieldName("creater")
+                .setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("创建时间").setFieldName("createDate").setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("创建时间").setFieldName("createDate")
+                .setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("联系方式").setFieldName("contact").setFieldType("varchar(20)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("联系方式").setFieldName("contact")
+                .setFieldType("varchar(20)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("主题词").setFieldName("motive").setFieldType("varchar(2000)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("主题词").setFieldName("motive")
+                .setFieldType("varchar(2000)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("发送对象").setFieldName("send").setFieldType("varchar(500)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("发送对象").setFieldName("send")
+                .setFieldType("varchar(500)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("紧急程度").setFieldName("level").setFieldType("varchar(20)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("紧急程度").setFieldName("level")
+                .setFieldType("varchar(20)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("签发人").setFieldName("signAndIssue").setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("签发人").setFieldName("signAndIssue")
+                .setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("签发日期").setFieldName("dateOfIssue").setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("签发日期").setFieldName("dateOfIssue")
+                .setFieldType("varchar(50)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("备注").setFieldName("remarks").setFieldType("varchar(500)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("备注").setFieldName("remarks")
+                .setFieldType("varchar(500)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("文件概要").setFieldName("outline").setFieldType("varchar(2000)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("文件概要").setFieldName("outline")
+                .setFieldType("varchar(2000)").setFormId(PRINT_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             y9FormFieldRepository.saveAll(list);
         }
@@ -459,55 +553,75 @@ public class InitTableDataService {
             y9FormRepository.save(y9Form);
             List<Y9FormField> list = new ArrayList<Y9FormField>();
             Y9FormField newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("主键").setFieldName("guid").setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("主键").setFieldName("guid")
+                .setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("流程编号").setFieldName("processInstanceId").setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("流程编号")
+                .setFieldName("processInstanceId").setFieldType("varchar(50)").setFormId(Y9_FORM_ID)
+                .setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("文件编号").setFieldName("number").setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("文件编号").setFieldName("number")
+                .setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("类型").setFieldName("type").setFieldType("varchar(20)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("类型").setFieldName("type")
+                .setFieldType("varchar(20)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("字号").setFieldName("wordSize").setFieldType("varchar(20)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("字号").setFieldName("wordSize")
+                .setFieldType("varchar(20)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("标题").setFieldName("title").setFieldType("varchar(500)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("标题").setFieldName("title")
+                .setFieldType("varchar(500)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("创建部门").setFieldName("department").setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("创建部门").setFieldName("department")
+                .setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("创建人").setFieldName("creater").setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("创建人").setFieldName("creater")
+                .setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("创建时间").setFieldName("createDate").setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("创建时间").setFieldName("createDate")
+                .setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("联系方式").setFieldName("contact").setFieldType("varchar(20)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("联系方式").setFieldName("contact")
+                .setFieldType("varchar(20)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("主题词").setFieldName("motive").setFieldType("varchar(2000)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("主题词").setFieldName("motive")
+                .setFieldType("varchar(2000)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("发送对象").setFieldName("send").setFieldType("varchar(500)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("发送对象").setFieldName("send")
+                .setFieldType("varchar(500)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("紧急程度").setFieldName("level").setFieldType("varchar(20)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("紧急程度").setFieldName("level")
+                .setFieldType("varchar(20)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("签发人").setFieldName("signAndIssue").setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("签发人").setFieldName("signAndIssue")
+                .setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("签发日期").setFieldName("dateOfIssue").setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("签发日期").setFieldName("dateOfIssue")
+                .setFieldType("varchar(50)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("备注").setFieldName("remarks").setFieldType("varchar(500)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("备注").setFieldName("remarks")
+                .setFieldType("varchar(500)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
-            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("文件概要").setFieldName("outline").setFieldType("varchar(2000)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldCnName("文件概要").setFieldName("outline")
+                .setFieldType("varchar(2000)").setFormId(Y9_FORM_ID).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(newField);
             y9FormFieldRepository.saveAll(list);
         }
@@ -530,71 +644,105 @@ public class InitTableDataService {
             List<Y9TableField> list = new ArrayList<Y9TableField>();
             Y9TableField field = new Y9TableField();
             int i = 0;
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("guid").setFieldCnName("主键").setFieldType("varchar(50)").setFieldLength(50).setIsMayNull(0).setIsSystemField(1).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("guid").setFieldCnName("主键")
+                .setFieldType("varchar(50)").setFieldLength(50).setIsMayNull(0).setIsSystemField(1).setDisplayOrder(i++)
+                .setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("processInstanceId").setFieldCnName("流程编号").setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("processInstanceId").setFieldCnName("流程编号")
+                .setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("number").setFieldCnName("文件编号").setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("number").setFieldCnName("文件编号")
+                .setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("type").setFieldCnName("类型").setFieldType("varchar(20)").setFieldLength(20).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("type").setFieldCnName("类型")
+                .setFieldType("varchar(20)").setFieldLength(20).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("wordSize").setFieldCnName("字号").setFieldType("varchar(20)").setFieldLength(20).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("wordSize").setFieldCnName("字号")
+                .setFieldType("varchar(20)").setFieldLength(20).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("title").setFieldCnName("标题").setFieldType("varchar(500)").setFieldLength(500).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("title").setFieldCnName("标题")
+                .setFieldType("varchar(500)").setFieldLength(500).setDisplayOrder(i++).setState(1)
+                .setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("department").setFieldCnName("创建部门").setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("department").setFieldCnName("创建部门")
+                .setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("creater").setFieldCnName("创建人").setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("creater").setFieldCnName("创建人")
+                .setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("createDate").setFieldCnName("创建时间").setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("createDate").setFieldCnName("创建时间")
+                .setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("contact").setFieldCnName("联系方式").setFieldType("varchar(20)").setFieldLength(20).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("contact").setFieldCnName("联系方式")
+                .setFieldType("varchar(20)").setFieldLength(20).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("motive").setFieldCnName("主题词").setFieldType("varchar(2000)").setFieldLength(2000).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("motive").setFieldCnName("主题词")
+                .setFieldType("varchar(2000)").setFieldLength(2000).setDisplayOrder(i++).setState(1)
+                .setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("send").setFieldCnName("发送对象").setFieldType("varchar(500)").setFieldLength(500).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("send").setFieldCnName("发送对象")
+                .setFieldType("varchar(500)").setFieldLength(500).setDisplayOrder(i++).setState(1)
+                .setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("level").setFieldCnName("紧急程度").setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("level").setFieldCnName("紧急程度")
+                .setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("signAndIssue").setFieldCnName("签发人").setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("signAndIssue").setFieldCnName("签发人")
+                .setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("dateOfIssue").setFieldCnName("签发日期").setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("dateOfIssue").setFieldCnName("签发日期")
+                .setFieldType("varchar(50)").setFieldLength(50).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID)
+                .setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("remarks").setFieldCnName("备注").setFieldType("varchar(500)").setFieldLength(500).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("remarks").setFieldCnName("备注")
+                .setFieldType("varchar(500)").setFieldLength(500).setDisplayOrder(i++).setState(1)
+                .setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
-            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("outline").setFieldCnName("文件概要").setFieldType("varchar(2000)").setFieldLength(2000).setDisplayOrder(i++).setState(1).setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
+            field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE)).setFieldName("outline").setFieldCnName("文件概要")
+                .setFieldType("varchar(2000)").setFieldLength(2000).setDisplayOrder(i++).setState(1)
+                .setTableId(Y9_TABLE_ID).setTableName(Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             y9TableFieldRepository.saveAll(list);
@@ -628,7 +776,8 @@ public class InitTableDataService {
         createPrintForm();// 创建打印表单
 
         // 获取流程定义id
-        String sql = "SELECT ID_ FROM act_re_procdef WHERE KEY_ = '" + PROCESSDEFINITIONKEY + "' AND VERSION_ = (SELECT MAX(VERSION_) FROM act_re_procdef WHERE KEY_ = '" + PROCESSDEFINITIONKEY + "')";
+        String sql = "SELECT ID_ FROM act_re_procdef WHERE KEY_ = '" + PROCESSDEFINITIONKEY
+            + "' AND VERSION_ = (SELECT MAX(VERSION_) FROM act_re_procdef WHERE KEY_ = '" + PROCESSDEFINITIONKEY + "')";
         List<Map<String, Object>> qlist = jdbcTemplate4Tenant.queryForList(sql);
         String processDefinitionId = qlist.get(0).get("ID_").toString();
 

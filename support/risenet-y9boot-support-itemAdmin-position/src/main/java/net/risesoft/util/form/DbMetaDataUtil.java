@@ -133,7 +133,8 @@ public class DbMetaDataUtil {
         }
     }
 
-    public static List<DynaBean> listAllTables(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String types[]) throws Exception {
+    public static List<DynaBean> listAllTables(Connection connection, String catalog, String schemaPattern,
+        String tableNamePattern, String types[]) throws Exception {
         ResultSet rs = null;
         try {
             DatabaseMetaData dbmd = connection.getMetaData();
@@ -318,7 +319,8 @@ public class DbMetaDataUtil {
     }
 
     @SuppressWarnings({"resource"})
-    public List<DbColumn> listAllColumns(Connection connection, String tableName, String columnNamePatten) throws Exception {
+    public List<DbColumn> listAllColumns(Connection connection, String tableName, String columnNamePatten)
+        throws Exception {
         String tableSchema = null, databaseName = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -397,7 +399,8 @@ public class DbMetaDataUtil {
         return dbColumnList;
     }
 
-    private ResultSet getPrimaryKeys(String dialect, DatabaseMetaData dbmd, String databaseName, String tableName, String tableSchema) throws SQLException {
+    private ResultSet getPrimaryKeys(String dialect, DatabaseMetaData dbmd, String databaseName, String tableName,
+        String tableSchema) throws SQLException {
         ResultSet rs = null;
         if (DialectEnum.MYSQL.getValue().equals(dialect)) {
             rs = dbmd.getPrimaryKeys(null, databaseName, tableName);
@@ -413,7 +416,8 @@ public class DbMetaDataUtil {
         return rs;
     }
 
-    private ResultSet getColumns(String dialect, DatabaseMetaData dbmd, String databaseName, String tableName, String tableSchema, String columnNamePatten) throws SQLException {
+    private ResultSet getColumns(String dialect, DatabaseMetaData dbmd, String databaseName, String tableName,
+        String tableSchema, String columnNamePatten) throws SQLException {
         ResultSet rs = null;
         if (DialectEnum.MYSQL.getValue().equals(dialect)) {
             rs = dbmd.getColumns(null, databaseName, tableName, columnNamePatten);

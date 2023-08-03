@@ -14,7 +14,8 @@ import net.risesoft.model.itemadmin.ItemOpinionFrameRoleModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ItemOpinionFrameRoleApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/itemOpinionFrameRole")
+@FeignClient(contextId = "ItemOpinionFrameRoleApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/itemOpinionFrameRole")
 public interface ItemOpinionFrameRoleApiClient extends ItemOpinionFrameRoleApi {
 
     /**
@@ -27,5 +28,6 @@ public interface ItemOpinionFrameRoleApiClient extends ItemOpinionFrameRoleApi {
      */
     @Override
     @GetMapping("/findByItemOpinionFrameId")
-    public List<ItemOpinionFrameRoleModel> findByItemOpinionFrameId(@RequestParam("tenantId") String tenantId, @RequestParam("itemOpinionFrameId") String itemOpinionFrameId);
+    public List<ItemOpinionFrameRoleModel> findByItemOpinionFrameId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("itemOpinionFrameId") String itemOpinionFrameId);
 }

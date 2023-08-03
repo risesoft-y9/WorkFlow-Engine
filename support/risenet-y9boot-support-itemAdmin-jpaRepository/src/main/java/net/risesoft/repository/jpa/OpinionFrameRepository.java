@@ -17,7 +17,8 @@ import net.risesoft.entity.OpinionFrame;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface OpinionFrameRepository extends JpaRepository<OpinionFrame, String>, JpaSpecificationExecutor<OpinionFrame> {
+public interface OpinionFrameRepository
+    extends JpaRepository<OpinionFrame, String>, JpaSpecificationExecutor<OpinionFrame> {
 
     OpinionFrame findByMark(String mark);
 

@@ -18,7 +18,8 @@ import net.risesoft.entity.TransactionWord;
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 @Repository
-public interface TransactionWordRepository extends JpaRepository<TransactionWord, String>, JpaSpecificationExecutor<TransactionWord> {
+public interface TransactionWordRepository
+    extends JpaRepository<TransactionWord, String>, JpaSpecificationExecutor<TransactionWord> {
 
     /**
      * 根据processSerialNumber获取正文
@@ -54,6 +55,7 @@ public interface TransactionWordRepository extends JpaRepository<TransactionWord
     @Transactional(readOnly = false)
     @Modifying
     @Query("update TransactionWord t set t.fileStoreId=?1,t.fileType=?2,t.fileName=?3,t.fileSize=?4,t.saveDate=?5,t.istaohong=?6,t.userId=?7 where t.id=?8")
-    public void updateTransactionWordById(String fileStoreId, String fileType, String fileName, String fileSize, String saveDate, String isTaoHong, String userId, String id);
+    public void updateTransactionWordById(String fileStoreId, String fileType, String fileName, String fileSize,
+        String saveDate, String isTaoHong, String userId, String id);
 
 }

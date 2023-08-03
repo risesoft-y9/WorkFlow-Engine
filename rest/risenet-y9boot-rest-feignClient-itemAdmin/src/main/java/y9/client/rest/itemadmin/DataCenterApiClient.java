@@ -11,7 +11,8 @@ import net.risesoft.api.itemadmin.DataCenterApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "DataCenterApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/dataCenter")
+@FeignClient(contextId = "DataCenterApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/dataCenter")
 public interface DataCenterApiClient extends DataCenterApi {
 
     /**
@@ -24,6 +25,7 @@ public interface DataCenterApiClient extends DataCenterApi {
      */
     @Override
     @PostMapping("/saveToDateCenter")
-    public boolean saveToDateCenter(@RequestParam("processInstanceId") String processInstanceId, @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
+    public boolean saveToDateCenter(@RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
 
 }

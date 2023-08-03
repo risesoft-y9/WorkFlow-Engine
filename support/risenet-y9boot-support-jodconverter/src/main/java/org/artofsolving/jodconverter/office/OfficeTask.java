@@ -20,7 +20,8 @@ package org.artofsolving.jodconverter.office;
 public interface OfficeTask {
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param context
      * @throws OfficeException
      */

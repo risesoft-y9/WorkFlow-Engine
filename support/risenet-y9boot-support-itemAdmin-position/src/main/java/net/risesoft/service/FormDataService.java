@@ -39,7 +39,8 @@ public interface FormDataService {
      * @return
      * @throws Exception
      */
-    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber) throws Exception;
+    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber)
+        throws Exception;
 
     /**
      * 根据事项id和流程序列号获取数据
@@ -60,7 +61,8 @@ public interface FormDataService {
      * @param processDefinitionId
      * @return
      */
-    public Map<String, Object> getFieldPerm(String formId, String fieldName, String taskDefKey, String processDefinitionId);
+    public Map<String, Object> getFieldPerm(String formId, String fieldName, String taskDefKey,
+        String processDefinitionId);
 
     /**
      * 根据表单id获取绑定字段信息
@@ -96,7 +98,8 @@ public interface FormDataService {
      * @param jsonData
      * @throws Exception
      */
-    public void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData) throws Exception;
+    public void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData)
+        throws Exception;
 
     /**
      * 保存表单数据

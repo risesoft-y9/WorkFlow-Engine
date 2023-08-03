@@ -34,7 +34,8 @@ public class ItemOpinionFrameRoleRestController {
      */
     @RequestMapping(value = "/bindRole", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> bindRole(@RequestParam(required = true) String roleIds, @RequestParam(required = true) String itemOpinionFrameId) {
+    public Y9Result<String> bindRole(@RequestParam(required = true) String roleIds,
+        @RequestParam(required = true) String itemOpinionFrameId) {
         String[] roleIdarr = roleIds.split(";");
         for (String roleId : roleIdarr) {
             itemOpinionFrameRoleService.saveOrUpdate(itemOpinionFrameId, roleId);
@@ -51,7 +52,8 @@ public class ItemOpinionFrameRoleRestController {
     @ResponseBody
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemOpinionFrameRole>> list(@RequestParam(required = true) String itemOpinionFrameId) {
-        List<ItemOpinionFrameRole> list = itemOpinionFrameRoleService.findByItemOpinionFrameIdContainRoleName(itemOpinionFrameId);
+        List<ItemOpinionFrameRole> list =
+            itemOpinionFrameRoleService.findByItemOpinionFrameIdContainRoleName(itemOpinionFrameId);
         return Y9Result.success(list, "获取成功");
     }
 

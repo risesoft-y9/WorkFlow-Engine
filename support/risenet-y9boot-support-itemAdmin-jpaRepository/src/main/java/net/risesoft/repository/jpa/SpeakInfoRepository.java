@@ -14,7 +14,8 @@ import net.risesoft.entity.SpeakInfo;
  */
 public interface SpeakInfoRepository extends JpaRepository<SpeakInfo, String>, JpaSpecificationExecutor<SpeakInfo> {
 
-    int countByProcessInstanceIdAndDeletedFalseAndUserIdNotAndReadUserIdNotLike(String processInstanceId, String userId, String readUserId);
+    int countByProcessInstanceIdAndDeletedFalseAndUserIdNotAndReadUserIdNotLike(String processInstanceId, String userId,
+        String readUserId);
 
     List<SpeakInfo> findByProcessInstanceIdAndDeletedFalseOrderByCreateTimeAsc(String processInstanceId);
 }

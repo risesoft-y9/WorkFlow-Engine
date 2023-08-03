@@ -14,7 +14,8 @@ import net.risesoft.api.processadmin.WorkflowApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "WorkflowApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}", path = "/services/rest/workflow")
+@FeignClient(contextId = "WorkflowApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
+    path = "/services/rest/workflow")
 public interface WorkflowApiClient extends WorkflowApi {
 
     /**
@@ -27,5 +28,6 @@ public interface WorkflowApiClient extends WorkflowApi {
      */
     @Override
     @GetMapping("/getCurrentTaskTargets")
-    public List<Map<String, String>> getCurrentTaskTargets(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
+    public List<Map<String, String>> getCurrentTaskTargets(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 }

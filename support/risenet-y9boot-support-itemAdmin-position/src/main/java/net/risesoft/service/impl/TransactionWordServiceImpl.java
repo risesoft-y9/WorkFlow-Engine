@@ -59,7 +59,8 @@ public class TransactionWordServiceImpl implements TransactionWordService {
 
     @Override
     public List<TransactionWord> findByProcessSerialNumberAndIstaohong(String processSerialNumber, String taohong) {
-        List<TransactionWord> list = transactionWordRepository.findByProcessSerialNumberAndIstaohong(processSerialNumber, taohong);
+        List<TransactionWord> list =
+            transactionWordRepository.findByProcessSerialNumberAndIstaohong(processSerialNumber, taohong);
         return list;
     }
 
@@ -83,7 +84,8 @@ public class TransactionWordServiceImpl implements TransactionWordService {
 
     @Transactional(readOnly = false)
     @Override
-    public void saveTransactionWord(String fileStoreId, String fileSize, String documenttitle, String fileType, String processSerialNumber, String istaohong) {
+    public void saveTransactionWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
+        String processSerialNumber, String istaohong) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
@@ -135,10 +137,12 @@ public class TransactionWordServiceImpl implements TransactionWordService {
 
     @Transactional(readOnly = false)
     @Override
-    public void updateTransactionWordById(String fileStoreId, String fileType, String fileName, String fileSize, String isTaoHong, String userId, String id) {
+    public void updateTransactionWordById(String fileStoreId, String fileType, String fileName, String fileSize,
+        String isTaoHong, String userId, String id) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
-            transactionWordRepository.updateTransactionWordById(fileStoreId, fileType, fileName, fileSize, sdf.format(new Date()), isTaoHong, userId, id);
+            transactionWordRepository.updateTransactionWordById(fileStoreId, fileType, fileName, fileSize,
+                sdf.format(new Date()), isTaoHong, userId, id);
         }
     }
 

@@ -15,7 +15,8 @@ import net.risesoft.entity.ProcessTrack;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ProcessTrackRepository extends JpaRepository<ProcessTrack, String>, JpaSpecificationExecutor<ProcessTrack> {
+public interface ProcessTrackRepository
+    extends JpaRepository<ProcessTrack, String>, JpaSpecificationExecutor<ProcessTrack> {
 
     @Query("from ProcessTrack t where t.taskId=?1 order by t.endTime desc")
     List<ProcessTrack> findByTaskId(String taskId);

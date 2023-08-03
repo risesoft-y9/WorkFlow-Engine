@@ -7,6 +7,7 @@ import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
 
 /**
  * 协作状态接口
+ * 
  * @author zhangchongjie
  * @date 2023/02/06
  */
@@ -53,5 +54,6 @@ public interface ProcessInstanceApi {
      * @param endTime 结束时间
      * @return
      */
-    boolean updateProcessInstanceDetails(String tenantId, String assigneeId, String processInstanceId, String taskId, String itembox, Date endTime);
+    boolean updateProcessInstanceDetails(String tenantId, String assigneeId, String processInstanceId, String taskId,
+        String itembox, Date endTime);
 }

@@ -129,12 +129,14 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         Map<String, Object> map = new HashMap<String, Object>(16);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         try {
-            PageRequest pageable = PageRequest.of(page < 1 ? 0 : page - 1, rows, Sort.by(Sort.Direction.DESC, "uploadTime"));
+            PageRequest pageable =
+                PageRequest.of(page < 1 ? 0 : page - 1, rows, Sort.by(Sort.Direction.DESC, "uploadTime"));
             Page<TransactionFile> transactionFileList = null;
             if (StringUtils.isBlank(fileSource)) {
                 transactionFileList = transactionFileRepository.getAttachmentList(processSerialNumber, pageable);
             } else {
-                transactionFileList = transactionFileRepository.getAttachmentList(processSerialNumber, fileSource, pageable);
+                transactionFileList =
+                    transactionFileRepository.getAttachmentList(processSerialNumber, fileSource, pageable);
             }
             int number = (page - 1) * rows;
             for (TransactionFile transactionFile : transactionFileList) {
@@ -156,7 +158,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 m.put("fileType", transactionFile.getFileType());
                 m.put("fileSource", transactionFile.getFileSource());
                 m.put("filePath", transactionFile.getFileStoreId());
-                String downloadUrl = y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + transactionFile.getFileStoreId() + "." + transactionFile.getFileType();
+                String downloadUrl = y9Config.getCommon().getItemAdminBaseUrl() + "/s/"
+                    + transactionFile.getFileStoreId() + "." + transactionFile.getFileType();
                 m.put("downloadUrl", downloadUrl);
                 m.put("processInstanceId", transactionFile.getProcessInstanceId());
                 m.put("processSerialNumber", transactionFile.getProcessSerialNumber());
@@ -202,8 +205,10 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     }
 
     @Override
-    public List<TransactionFile> getListByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource) {
-        List<TransactionFile> list = transactionFileRepository.findByProcessSerialNumberAndFileSource(processSerialNumber, fileSource);
+    public List<TransactionFile> getListByProcessSerialNumberAndFileSource(String processSerialNumber,
+        String fileSource) {
+        List<TransactionFile> list =
+            transactionFileRepository.findByProcessSerialNumberAndFileSource(processSerialNumber, fileSource);
         return list;
     }
 
@@ -212,7 +217,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         if (StringUtils.isBlank(fileType)) {
             return transactionFileRepository.getTransactionFileCount(processSerialNumber, fileSource);
         } else {
-            return transactionFileRepository.getTransactionFileCountByFileType(processSerialNumber, fileSource, fileType);
+            return transactionFileRepository.getTransactionFileCountByFileType(processSerialNumber, fileSource,
+                fileType);
         }
     }
 
@@ -246,7 +252,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 file.setName(map.get("fileName").toString());
                 file.setPersonId(map.get("personId") == null ? "" : map.get("personId").toString());
                 file.setPersonName(map.get("personName") == null ? "" : map.get("personName").toString());
-                Department department = departmentManager.getDepartment(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId());
+                Department department =
+                    departmentManager.getDepartment(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId());
                 file.setDeptId(Y9LoginUserHolder.getDeptId());
                 file.setDeptName(department != null ? department.getName() : "");
                 file.setProcessSerialNumber(processSerialNumber);
@@ -273,7 +280,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
 
     @Transactional(readOnly = false)
     @Override
-    public Map<String, Object> upload(MultipartFile multipartFile, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource) {
+    public Map<String, Object> upload(MultipartFile multipartFile, String processInstanceId, String taskId,
+        String processSerialNumber, String describes, String fileSource) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         TransactionFile transactionFile = new TransactionFile();
         try {
@@ -285,7 +293,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             String fileType = FilenameUtils.getExtension(fileName);
 
             Date nowDate = new Date();
-            String fullPath = Y9FileStore.buildFullPath(Y9Context.getSystemName(), "transaction", sdfymd.format(nowDate), sdfhms.format(nowDate), processSerialNumber);
+            String fullPath = Y9FileStore.buildFullPath(Y9Context.getSystemName(), "transaction",
+                sdfymd.format(nowDate), sdfhms.format(nowDate), processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, fileName);
 
             UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -305,7 +314,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             transactionFile.setPersonId(person.getPersonId());
             transactionFile.setFileStoreId(y9FileStore.getId());
             transactionFile.setFileType(fileType);
-            Department department = departmentManager.getDepartment(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId());
+            Department department =
+                departmentManager.getDepartment(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId());
             transactionFile.setDeptId(Y9LoginUserHolder.getDeptId());
             transactionFile.setDeptName(department != null ? department.getName() : "");
             transactionFileRepository.save(transactionFile);
@@ -321,7 +331,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
 
     @Transactional(readOnly = false)
     @Override
-    public Map<String, Object> uploadRest(String fileName, String fileSize, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource, String y9FileStoreId) {
+    public Map<String, Object> uploadRest(String fileName, String fileSize, String processInstanceId, String taskId,
+        String processSerialNumber, String describes, String fileSource, String y9FileStoreId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "保存附件信息失败");
@@ -341,7 +352,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             transactionFile.setPersonName(Y9LoginUserHolder.getUserInfo().getName());
             transactionFile.setPersonId(Y9LoginUserHolder.getPersonId());
             transactionFile.setPositionId(Y9LoginUserHolder.getPositionId());
-            Department department = departmentManager.getDepartment(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPosition().getParentId());
+            Department department = departmentManager.getDepartment(Y9LoginUserHolder.getTenantId(),
+                Y9LoginUserHolder.getPosition().getParentId());
             transactionFile.setDeptId(department != null ? department.getId() : "");
             transactionFile.setDeptName(department != null ? department.getName() : "");
             transactionFile.setFileStoreId(y9FileStoreId);

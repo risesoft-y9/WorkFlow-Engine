@@ -15,7 +15,8 @@ import net.risesoft.model.Person;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ReceiveDeptAndPersonApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/receiveDeptAndPerson")
+@FeignClient(contextId = "ReceiveDeptAndPersonApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/receiveDeptAndPerson")
 public interface ReceiveDeptAndPersonApiClient extends ReceiveDeptAndPersonApi {
 
     /**
@@ -27,7 +28,8 @@ public interface ReceiveDeptAndPersonApiClient extends ReceiveDeptAndPersonApi {
      */
     @Override
     @GetMapping("/findByDeptNameLike")
-    List<Map<String, Object>> findByDeptNameLike(@RequestParam("tenantId") String tenantId, @RequestParam("name") String name);
+    List<Map<String, Object>> findByDeptNameLike(@RequestParam("tenantId") String tenantId,
+        @RequestParam("name") String name);
 
     /**
      * 获取所有收发单位
@@ -50,7 +52,8 @@ public interface ReceiveDeptAndPersonApiClient extends ReceiveDeptAndPersonApi {
      */
     @Override
     @GetMapping("/getReceiveDeptTreeById")
-    List<Map<String, Object>> getReceiveDeptTreeById(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId, @RequestParam("name") String name);
+    List<Map<String, Object>> getReceiveDeptTreeById(@RequestParam("tenantId") String tenantId,
+        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("name") String name);
 
     /**
      * 
@@ -62,7 +65,8 @@ public interface ReceiveDeptAndPersonApiClient extends ReceiveDeptAndPersonApi {
      */
     @Override
     @GetMapping("/getSendReceiveByDeptId")
-    public List<Person> getSendReceiveByDeptId(@RequestParam("tenantId") String tenantId, @RequestParam("deptId") String deptId);
+    public List<Person> getSendReceiveByDeptId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("deptId") String deptId);
 
     /**
      * 根据人员id,获取对应的收发单位
@@ -73,5 +77,6 @@ public interface ReceiveDeptAndPersonApiClient extends ReceiveDeptAndPersonApi {
      */
     @Override
     @GetMapping("/getSendReceiveByUserId")
-    public List<Map<String, Object>> getSendReceiveByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
+    public List<Map<String, Object>> getSendReceiveByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId);
 }

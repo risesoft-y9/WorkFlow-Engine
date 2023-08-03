@@ -11,7 +11,8 @@ import net.risesoft.api.itemadmin.PrintApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "PrintApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/print")
+@FeignClient(contextId = "PrintApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/print")
 public interface PrintApiClient extends PrintApi {
 
     /**
@@ -24,6 +25,7 @@ public interface PrintApiClient extends PrintApi {
      */
     @Override
     @GetMapping("/openDocument")
-    public String openDocument(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId);
+    public String openDocument(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("itemId") String itemId);
 
 }

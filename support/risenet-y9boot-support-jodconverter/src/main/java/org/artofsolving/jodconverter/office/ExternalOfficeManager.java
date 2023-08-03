@@ -23,11 +23,13 @@ import java.net.ConnectException;
  * soffice -accept="socket,host=127.0.0.1,port=2002;urp;"
  * </pre>
  * <p>
- * Since this implementation does not manage the Office process, it does not support auto-restarting the process if it exits unexpectedly.
+ * Since this implementation does not manage the Office process, it does not support auto-restarting the process if it
+ * exits unexpectedly.
  * <p>
  * It will however auto-reconnect to the external process if the latter is manually restarted.
  * <p>
- * This {@link OfficeManager} implementation basically provides the same behaviour as JODConverter 2.x, including using <em>synchronized</em> blocks for serialising office operations.
+ * This {@link OfficeManager} implementation basically provides the same behaviour as JODConverter 2.x, including using
+ * <em>synchronized</em> blocks for serialising office operations.
  */
 class ExternalOfficeManager implements OfficeManager {
 
@@ -36,7 +38,8 @@ class ExternalOfficeManager implements OfficeManager {
 
     /**
      * @param unoUrl
-     * @param connectOnStart should a connection be attempted on {@link #start()}? Default is <em>true</em>. If <em>false</em>, a connection will only be attempted the first time an {@link OfficeTask} is executed.
+     * @param connectOnStart should a connection be attempted on {@link #start()}? Default is <em>true</em>. If
+     *            <em>false</em>, a connection will only be attempted the first time an {@link OfficeTask} is executed.
      */
     public ExternalOfficeManager(UnoUrl unoUrl, boolean connectOnStart) {
         connection = new OfficeConnection(unoUrl);

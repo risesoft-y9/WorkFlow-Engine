@@ -14,9 +14,11 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
  * @author zhangchongjie
  * @date 2023/01/03
  */
-@SpringBootApplication(exclude = { SecurityAutoConfiguration.class, IdmEngineServicesAutoConfiguration.class, FlowableSecurityAutoConfiguration.class, EventRegistryServicesAutoConfiguration.class, FlowableUiSecurityAutoConfiguration.class, OAuth2ClientAutoConfiguration.class })
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class, IdmEngineServicesAutoConfiguration.class,
+    FlowableSecurityAutoConfiguration.class, EventRegistryServicesAutoConfiguration.class,
+    FlowableUiSecurityAutoConfiguration.class, OAuth2ClientAutoConfiguration.class})
 public class ProcessAdminApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(ProcessAdminApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ProcessAdminApplication.class, args);
+    }
 }

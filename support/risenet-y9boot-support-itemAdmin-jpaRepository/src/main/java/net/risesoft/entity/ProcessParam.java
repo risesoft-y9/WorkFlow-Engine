@@ -25,7 +25,9 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @org.hibernate.annotations.Table(comment = "流程参数信息表", appliesTo = "FF_PROCESS_PARAM")
-@Table(name = "FF_PROCESS_PARAM", indexes = {@Index(name = "index_001_processInstanceId", columnList = "processInstanceId"), @Index(name = "index_002_processSerialNumber", columnList = "processSerialNumber")})
+@Table(name = "FF_PROCESS_PARAM",
+    indexes = {@Index(name = "index_001_processInstanceId", columnList = "processInstanceId"),
+        @Index(name = "index_002_processSerialNumber", columnList = "processSerialNumber")})
 public class ProcessParam implements Serializable {
 
     private static final long serialVersionUID = -5245779237483037821L;

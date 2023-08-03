@@ -30,6 +30,7 @@ public interface ItemDataTransferService {
      * @param rows
      * @return
      */
-    Y9Page<Map<String, Object>> getProcessInstanceList(String itemId, String processDefinitionId, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> getProcessInstanceList(String itemId, String processDefinitionId, Integer page,
+        Integer rows);
 
 }

@@ -540,14 +540,16 @@ public abstract class AbstractEngineConfiguration {
 
     public void configuratorsAfterInit() {
         for (EngineConfigurator configurator : allConfigurators) {
-            logger.info("Executing configure() of {} (priority:{})", configurator.getClass(), configurator.getPriority());
+            logger.info("Executing configure() of {} (priority:{})", configurator.getClass(),
+                configurator.getPriority());
             configurator.configure(this);
         }
     }
 
     public void configuratorsBeforeInit() {
         for (EngineConfigurator configurator : allConfigurators) {
-            logger.info("Executing beforeInit() of {} (priority:{})", configurator.getClass(), configurator.getPriority());
+            logger.info("Executing beforeInit() of {} (priority:{})", configurator.getClass(),
+                configurator.getPriority());
             configurator.beforeInit(this);
         }
     }
@@ -563,7 +565,8 @@ public abstract class AbstractEngineConfiguration {
      */
     public abstract CommandInterceptor createTransactionInterceptor();
 
-    protected void defaultInitDbSqlSessionFactoryEntitySettings(List<Class<? extends Entity>> insertOrder, List<Class<? extends Entity>> deleteOrder) {
+    protected void defaultInitDbSqlSessionFactoryEntitySettings(List<Class<? extends Entity>> insertOrder,
+        List<Class<? extends Entity>> deleteOrder) {
         if (insertOrder != null) {
             for (Class<? extends Entity> clazz : insertOrder) {
                 dbSqlSessionFactory.getInsertionOrder().add(clazz);
@@ -746,7 +749,8 @@ public abstract class AbstractEngineConfiguration {
 
             if (commandContextFactory != null) {
                 String engineCfgKey = getEngineCfgKey();
-                CommandContextInterceptor commandContextInterceptor = new CommandContextInterceptor(commandContextFactory, classLoader, useClassForNameClassLoading, clock, objectMapper);
+                CommandContextInterceptor commandContextInterceptor = new CommandContextInterceptor(
+                    commandContextFactory, classLoader, useClassForNameClassLoading, clock, objectMapper);
                 engineConfigurations.put(engineCfgKey, this);
                 commandContextInterceptor.setEngineConfigurations(engineConfigurations);
                 interceptors.add(commandContextInterceptor);
@@ -1088,7 +1092,8 @@ public abstract class AbstractEngineConfiguration {
                 classLoader = ReflectUtil.getClassLoader();
             }
 
-            ServiceLoader<EngineConfigurator> configuratorServiceLoader = ServiceLoader.load(EngineConfigurator.class, classLoader);
+            ServiceLoader<EngineConfigurator> configuratorServiceLoader =
+                ServiceLoader.load(EngineConfigurator.class, classLoader);
             int nrOfServiceLoadedConfigurators = 0;
             for (EngineConfigurator configurator : configuratorServiceLoader) {
                 allConfigurators.add(configurator);
@@ -1096,7 +1101,8 @@ public abstract class AbstractEngineConfiguration {
             }
 
             if (nrOfServiceLoadedConfigurators > 0) {
-                logger.info("Found {} auto-discoverable Process Engine Configurator{}", nrOfServiceLoadedConfigurators, nrOfServiceLoadedConfigurators > 1 ? "s" : "");
+                logger.info("Found {} auto-discoverable Process Engine Configurator{}", nrOfServiceLoadedConfigurators,
+                    nrOfServiceLoadedConfigurators > 1 ? "s" : "");
             }
 
             if (!allConfigurators.isEmpty()) {
@@ -1157,13 +1163,15 @@ public abstract class AbstractEngineConfiguration {
             // CRDB does not expose the version through the jdbc driver, so we need to fetch
             // it through version().
             if (PRODUCT_NAME_POSTGRES.equalsIgnoreCase(databaseProductName)) {
-                try (PreparedStatement preparedStatement = connection.prepareStatement("select version() as version;"); ResultSet resultSet = preparedStatement.executeQuery()) {
+                try (PreparedStatement preparedStatement = connection.prepareStatement("select version() as version;");
+                    ResultSet resultSet = preparedStatement.executeQuery()) {
                     String version = null;
                     if (resultSet.next()) {
                         version = resultSet.getString("version");
                     }
 
-                    if (StringUtils.isNotEmpty(version) && version.toLowerCase().startsWith(PRODUCT_NAME_CRDB.toLowerCase())) {
+                    if (StringUtils.isNotEmpty(version)
+                        && version.toLowerCase().startsWith(PRODUCT_NAME_CRDB.toLowerCase())) {
                         databaseProductName = PRODUCT_NAME_CRDB;
                         logger.info("CockroachDB version '{}' detected", version);
                     }
@@ -1172,7 +1180,8 @@ public abstract class AbstractEngineConfiguration {
 
             databaseType = databaseTypeMappings.getProperty(databaseProductName);
             if (databaseType == null) {
-                throw new FlowableException("couldn't deduct database type from database product name '" + databaseProductName + "'");
+                throw new FlowableException(
+                    "couldn't deduct database type from database product name '" + databaseProductName + "'");
             }
             logger.debug("using database type: {}", databaseType);
 
@@ -1212,12 +1221,14 @@ public abstract class AbstractEngineConfiguration {
                 try {
                     dataSource = (DataSource)new InitialContext().lookup(dataSourceJndiName);
                 } catch (Exception e) {
-                    throw new FlowableException("couldn't lookup datasource from " + dataSourceJndiName + ": " + e.getMessage(), e);
+                    throw new FlowableException(
+                        "couldn't lookup datasource from " + dataSourceJndiName + ": " + e.getMessage(), e);
                 }
 
             } else if (jdbcUrl != null) {
                 if ((jdbcDriver == null) || (jdbcUsername == null)) {
-                    throw new FlowableException("DataSource or JDBC properties have to be specified in a process engine configuration");
+                    throw new FlowableException(
+                        "DataSource or JDBC properties have to be specified in a process engine configuration");
                 }
 
                 logger.debug("initializing datasource to db: {}", jdbcUrl);
@@ -1229,7 +1240,8 @@ public abstract class AbstractEngineConfiguration {
                     logger.info("datasource user name : {}", jdbcUsername);
                 }
 
-                PooledDataSource pooledDataSource = new PooledDataSource(this.getClass().getClassLoader(), jdbcDriver, jdbcUrl, jdbcUsername, jdbcPassword);
+                PooledDataSource pooledDataSource = new PooledDataSource(this.getClass().getClassLoader(), jdbcDriver,
+                    jdbcUrl, jdbcUsername, jdbcPassword);
 
                 if (jdbcMaxActiveConnections > 0) {
                     pooledDataSource.setPoolMaximumActiveConnections(jdbcMaxActiveConnections);
@@ -1301,7 +1313,8 @@ public abstract class AbstractEngineConfiguration {
         }
 
         if (byteArrayEntityManager == null) {
-            byteArrayEntityManager = new ByteArrayEntityManagerImpl(byteArrayDataManager, getEngineCfgKey(), this::getEventDispatcher);
+            byteArrayEntityManager =
+                new ByteArrayEntityManagerImpl(byteArrayDataManager, getEngineCfgKey(), this::getEventDispatcher);
         }
 
         if (tableDataManager == null) {
@@ -1656,7 +1669,8 @@ public abstract class AbstractEngineConfiguration {
 
     protected void parseMybatisXmlMapping(Configuration configuration, String resource) {
         // see XMLConfigBuilder.mapperElement()
-        XMLMapperBuilder mapperParser = new XMLMapperBuilder(getResourceAsStream(resource), configuration, resource, configuration.getSqlFragments());
+        XMLMapperBuilder mapperParser = new XMLMapperBuilder(getResourceAsStream(resource), configuration, resource,
+            configuration.getSqlFragments());
         mapperParser.parse();
     }
 
@@ -1664,7 +1678,8 @@ public abstract class AbstractEngineConfiguration {
         return "org/flowable/common/db/properties/" + databaseType + ".properties";
     }
 
-    public AbstractEngineConfiguration setAdditionalEventDispatchActions(List<EventDispatchAction> additionalEventDispatchActions) {
+    public AbstractEngineConfiguration
+        setAdditionalEventDispatchActions(List<EventDispatchAction> additionalEventDispatchActions) {
         this.additionalEventDispatchActions = additionalEventDispatchActions;
         return this;
     }
@@ -1674,7 +1689,8 @@ public abstract class AbstractEngineConfiguration {
         return this;
     }
 
-    public AbstractEngineConfiguration setAlwaysLookupLatestDefinitionVersion(boolean alwaysLookupLatestDefinitionVersion) {
+    public AbstractEngineConfiguration
+        setAlwaysLookupLatestDefinitionVersion(boolean alwaysLookupLatestDefinitionVersion) {
         this.alwaysLookupLatestDefinitionVersion = alwaysLookupLatestDefinitionVersion;
         return this;
     }
@@ -1754,7 +1770,8 @@ public abstract class AbstractEngineConfiguration {
         return this;
     }
 
-    public AbstractEngineConfiguration setCustomPostCommandInterceptors(List<CommandInterceptor> customPostCommandInterceptors) {
+    public AbstractEngineConfiguration
+        setCustomPostCommandInterceptors(List<CommandInterceptor> customPostCommandInterceptors) {
         this.customPostCommandInterceptors = customPostCommandInterceptors;
         return this;
     }
@@ -1764,7 +1781,8 @@ public abstract class AbstractEngineConfiguration {
         return this;
     }
 
-    public AbstractEngineConfiguration setCustomPreCommandInterceptors(List<CommandInterceptor> customPreCommandInterceptors) {
+    public AbstractEngineConfiguration
+        setCustomPreCommandInterceptors(List<CommandInterceptor> customPreCommandInterceptors) {
         this.customPreCommandInterceptors = customPreCommandInterceptors;
         return this;
     }
@@ -1834,7 +1852,8 @@ public abstract class AbstractEngineConfiguration {
         return this;
     }
 
-    public AbstractEngineConfiguration setDefaultCommandInterceptors(Collection<? extends CommandInterceptor> defaultCommandInterceptors) {
+    public AbstractEngineConfiguration
+        setDefaultCommandInterceptors(Collection<? extends CommandInterceptor> defaultCommandInterceptors) {
         this.defaultCommandInterceptors = defaultCommandInterceptors;
         return this;
     }
@@ -1849,17 +1868,20 @@ public abstract class AbstractEngineConfiguration {
         return this;
     }
 
-    public AbstractEngineConfiguration setDependentEngineMybatisTypeAliasConfigs(List<MybatisTypeAliasConfigurator> dependentEngineMybatisTypeAliasConfigs) {
+    public AbstractEngineConfiguration setDependentEngineMybatisTypeAliasConfigs(
+        List<MybatisTypeAliasConfigurator> dependentEngineMybatisTypeAliasConfigs) {
         this.dependentEngineMybatisTypeAliasConfigs = dependentEngineMybatisTypeAliasConfigs;
         return this;
     }
 
-    public AbstractEngineConfiguration setDependentEngineMybatisTypeHandlerConfigs(List<MybatisTypeHandlerConfigurator> dependentEngineMybatisTypeHandlerConfigs) {
+    public AbstractEngineConfiguration setDependentEngineMybatisTypeHandlerConfigs(
+        List<MybatisTypeHandlerConfigurator> dependentEngineMybatisTypeHandlerConfigs) {
         this.dependentEngineMybatisTypeHandlerConfigs = dependentEngineMybatisTypeHandlerConfigs;
         return this;
     }
 
-    public AbstractEngineConfiguration setDependentEngineMyBatisXmlMappers(Set<String> dependentEngineMyBatisXmlMappers) {
+    public AbstractEngineConfiguration
+        setDependentEngineMyBatisXmlMappers(Set<String> dependentEngineMyBatisXmlMappers) {
         this.dependentEngineMyBatisXmlMappers = dependentEngineMyBatisXmlMappers;
         return this;
     }
@@ -1883,12 +1905,14 @@ public abstract class AbstractEngineConfiguration {
         this.enableLogSqlExecutionTime = enableLogSqlExecutionTime;
     }
 
-    public AbstractEngineConfiguration setEngineConfigurations(Map<String, AbstractEngineConfiguration> engineConfigurations) {
+    public AbstractEngineConfiguration
+        setEngineConfigurations(Map<String, AbstractEngineConfiguration> engineConfigurations) {
         this.engineConfigurations = engineConfigurations;
         return this;
     }
 
-    public AbstractEngineConfiguration setEngineLifecycleListeners(List<EngineLifecycleListener> engineLifecycleListeners) {
+    public AbstractEngineConfiguration
+        setEngineLifecycleListeners(List<EngineLifecycleListener> engineLifecycleListeners) {
         this.engineLifecycleListeners = engineLifecycleListeners;
         return this;
     }
@@ -1908,7 +1932,8 @@ public abstract class AbstractEngineConfiguration {
         return this;
     }
 
-    public AbstractEngineConfiguration setEventRegistryEventConsumers(Map<String, EventRegistryEventConsumer> eventRegistryEventConsumers) {
+    public AbstractEngineConfiguration
+        setEventRegistryEventConsumers(Map<String, EventRegistryEventConsumer> eventRegistryEventConsumers) {
         this.eventRegistryEventConsumers = eventRegistryEventConsumers;
         return this;
     }
@@ -1933,7 +1958,8 @@ public abstract class AbstractEngineConfiguration {
         return this;
     }
 
-    public AbstractEngineConfiguration setJdbcDefaultTransactionIsolationLevel(int jdbcDefaultTransactionIsolationLevel) {
+    public AbstractEngineConfiguration
+        setJdbcDefaultTransactionIsolationLevel(int jdbcDefaultTransactionIsolationLevel) {
         this.jdbcDefaultTransactionIsolationLevel = jdbcDefaultTransactionIsolationLevel;
         return this;
     }
@@ -2050,7 +2076,8 @@ public abstract class AbstractEngineConfiguration {
         return this;
     }
 
-    public AbstractEngineConfiguration setServiceConfigurations(Map<String, AbstractServiceConfiguration> serviceConfigurations) {
+    public AbstractEngineConfiguration
+        setServiceConfigurations(Map<String, AbstractServiceConfiguration> serviceConfigurations) {
         this.serviceConfigurations = serviceConfigurations;
         return this;
     }
@@ -2075,7 +2102,8 @@ public abstract class AbstractEngineConfiguration {
         return this;
     }
 
-    public AbstractEngineConfiguration setTransactionContextFactory(TransactionContextFactory transactionContextFactory) {
+    public AbstractEngineConfiguration
+        setTransactionContextFactory(TransactionContextFactory transactionContextFactory) {
         this.transactionContextFactory = transactionContextFactory;
         return this;
     }
@@ -2090,7 +2118,8 @@ public abstract class AbstractEngineConfiguration {
         return this;
     }
 
-    public AbstractEngineConfiguration setTypedEventListeners(Map<String, List<FlowableEventListener>> typedEventListeners) {
+    public AbstractEngineConfiguration
+        setTypedEventListeners(Map<String, List<FlowableEventListener>> typedEventListeners) {
         this.typedEventListeners = typedEventListeners;
         return this;
     }

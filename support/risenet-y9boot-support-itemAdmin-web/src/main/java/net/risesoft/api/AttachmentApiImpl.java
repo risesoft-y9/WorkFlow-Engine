@@ -59,7 +59,8 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     @Override
-    @PostMapping(value = "/delBatchByProcessSerialNumbers", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/delBatchByProcessSerialNumbers", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void delBatchByProcessSerialNumbers(String tenantId, @RequestBody List<String> processSerialNumbers) {
         Y9LoginUserHolder.setTenantId(tenantId);
         transactionFileService.delBatchByProcessSerialNumbers(processSerialNumbers);
@@ -86,7 +87,8 @@ public class AttachmentApiImpl implements AttachmentApi {
 
     @Override
     @GetMapping(value = "/getAttachmentCount", produces = MediaType.APPLICATION_JSON_VALUE)
-    public int getAttachmentCount(String tenantId, String userId, String processSerialNumber, String fileSource, String fileType) {
+    public int getAttachmentCount(String tenantId, String userId, String processSerialNumber, String fileSource,
+        String fileType) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
@@ -97,7 +99,8 @@ public class AttachmentApiImpl implements AttachmentApi {
 
     @Override
     @GetMapping(value = "/getAttachmentList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getAttachmentList(String tenantId, String userId, String processSerialNumber, String fileSource, int page, int rows) {
+    public Map<String, Object> getAttachmentList(String tenantId, String userId, String processSerialNumber,
+        String fileSource, int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
@@ -108,12 +111,15 @@ public class AttachmentApiImpl implements AttachmentApi {
 
     @Override
     @GetMapping(value = "/getAttachmentModelList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<AttachmentModel> getAttachmentModelList(String tenantId, String userId, String processSerialNumber, String fileSource) {
+    public List<AttachmentModel> getAttachmentModelList(String tenantId, String userId, String processSerialNumber,
+        String fileSource) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
-        List<TransactionFile> transactionFileList = transactionFileService.getAttachmentModelList(processSerialNumber, fileSource);
-        List<AttachmentModel> attachmentModelList = ItemAdminModelConvertUtil.attachmentList2ModelList(transactionFileList);
+        List<TransactionFile> transactionFileList =
+            transactionFileService.getAttachmentModelList(processSerialNumber, fileSource);
+        List<AttachmentModel> attachmentModelList =
+            ItemAdminModelConvertUtil.attachmentList2ModelList(transactionFileList);
         return attachmentModelList;
     }
 
@@ -153,7 +159,9 @@ public class AttachmentApiImpl implements AttachmentApi {
 
     @Override
     @PostMapping(value = "/saveOrUpdateUploadInfo", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String saveOrUpdateUploadInfo(String tenantId, String userId, String fileName, String fileType, String fileSizeString, String fileSource, String processInstanceId, String processSerialNumber, String taskId, String y9FileStoreId) {
+    public String saveOrUpdateUploadInfo(String tenantId, String userId, String fileName, String fileType,
+        String fileSizeString, String fileSource, String processInstanceId, String processSerialNumber, String taskId,
+        String y9FileStoreId) {
         String msg = null;
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
@@ -197,18 +205,23 @@ public class AttachmentApiImpl implements AttachmentApi {
 
     @Override
     @PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> upload(String tenantId, String userId, String fileName, String fileSize, String processInstanceId, String taskId, String describes, String processSerialNumber, String fileSource, String y9FileStoreId) {
+    public Map<String, Object> upload(String tenantId, String userId, String fileName, String fileSize,
+        String processInstanceId, String taskId, String describes, String processSerialNumber, String fileSource,
+        String y9FileStoreId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
-        map = transactionFileService.uploadRest(fileName, fileSize, processInstanceId, taskId, processSerialNumber, describes, fileSource, y9FileStoreId);
+        map = transactionFileService.uploadRest(fileName, fileSize, processInstanceId, taskId, processSerialNumber,
+            describes, fileSource, y9FileStoreId);
         return map;
     }
 
     @Override
-    @PostMapping(value = "/uploadModel", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public boolean uploadModel(String tenantId, String userId, @RequestBody AttachmentModel attachmentModel) throws Exception {
+    @PostMapping(value = "/uploadModel", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public boolean uploadModel(String tenantId, String userId, @RequestBody AttachmentModel attachmentModel)
+        throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);

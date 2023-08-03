@@ -55,7 +55,8 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "正文模板绑定失败");
         try {
-            ItemWordTemplateBind bind = wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+            ItemWordTemplateBind bind =
+                wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
             if (null != bind) {
                 bind.setTemplateId(templateId);
                 wordTemplateBindRepository.save(bind);

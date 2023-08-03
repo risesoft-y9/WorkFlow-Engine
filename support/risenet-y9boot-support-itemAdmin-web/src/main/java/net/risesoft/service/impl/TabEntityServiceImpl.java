@@ -53,7 +53,8 @@ public class TabEntityServiceImpl implements TabEntityService {
     @Transactional(readOnly = false)
     public TabEntity saveOrUpdate(TabEntity tabEntity) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        String userId = userInfo.getPersonId(), userName = userInfo.getName(), tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = userInfo.getPersonId(), userName = userInfo.getName(),
+            tenantId = Y9LoginUserHolder.getTenantId();
 
         String id = tabEntity.getId();
         if (StringUtils.isNotEmpty(id)) {

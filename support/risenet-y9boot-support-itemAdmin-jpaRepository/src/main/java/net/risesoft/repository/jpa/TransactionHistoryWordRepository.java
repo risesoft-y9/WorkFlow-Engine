@@ -18,7 +18,8 @@ import net.risesoft.entity.TransactionHistoryWord;
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 @Repository
-public interface TransactionHistoryWordRepository extends JpaRepository<TransactionHistoryWord, String>, JpaSpecificationExecutor<TransactionHistoryWord> {
+public interface TransactionHistoryWordRepository
+    extends JpaRepository<TransactionHistoryWord, String>, JpaSpecificationExecutor<TransactionHistoryWord> {
 
     /**
      * 根据processSerialNumber获取历史正文
@@ -57,7 +58,8 @@ public interface TransactionHistoryWordRepository extends JpaRepository<Transact
      * @return
      */
     @Query("From TransactionHistoryWord d where d.processSerialNumber=?1 and d.istaohong=?2 and d.taskId=?3 order by d.saveDate desc")
-    List<TransactionHistoryWord> getByProcessSerialNumberAndIsTaoHongAndTaskId(String processSerialNumber, String istaohong, String taskId);
+    List<TransactionHistoryWord> getByProcessSerialNumberAndIsTaoHongAndTaskId(String processSerialNumber,
+        String istaohong, String taskId);
 
     /**
      * 根据processSerialNumber和任务ID获取历史正文
@@ -75,7 +77,8 @@ public interface TransactionHistoryWordRepository extends JpaRepository<Transact
      * @return
      */
     @Query("From TransactionHistoryWord d where d.processSerialNumber=?1 and d.istaohong=?2 and d.taskId=?3 order by d.saveDate desc")
-    List<TransactionHistoryWord> getByProcessSerialNumberAndTaskIdAndIsTaoHong(String processSerialNumber, String istaohong, String taskId);
+    List<TransactionHistoryWord> getByProcessSerialNumberAndTaskIdAndIsTaoHong(String processSerialNumber,
+        String istaohong, String taskId);
 
     @Query("select max(h.version) from TransactionHistoryWord h where h.processSerialNumber=?1")
     Integer getMaxHistoryVersion(String processSerialNumber);
@@ -100,5 +103,6 @@ public interface TransactionHistoryWordRepository extends JpaRepository<Transact
     @Transactional(readOnly = false)
     @Modifying
     @Query("update TransactionHistoryWord t set t.fileStoreId=?1,t.fileSize=?2,t.istaohong=?3,t.saveDate=?4,t.userId=?5 where t.id=?6")
-    public void updateTransactionHistoryWordById(String fileStoreId, String fileSize, String isTaoHong, String saveDate, String userId, String id);
+    public void updateTransactionHistoryWordById(String fileStoreId, String fileSize, String isTaoHong, String saveDate,
+        String userId, String id);
 }

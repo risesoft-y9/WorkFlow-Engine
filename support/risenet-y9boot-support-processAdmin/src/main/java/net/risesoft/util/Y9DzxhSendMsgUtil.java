@@ -32,7 +32,8 @@ public class Y9DzxhSendMsgUtil {
     private static final String APP_SECRET = "c21d1806c39a";
     private static final String MOULD_ID = "3912543";
 
-    private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    private static final char[] HEX_DIGITS =
+        {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     private static String encode(String algorithm, String value) {
         if (value == null) {
@@ -71,7 +72,8 @@ public class Y9DzxhSendMsgUtil {
         System.out.println(lo);
     }
 
-    public static boolean sendMsgByphoneAndParams(String mobile, String receiverName, String itemName, String senderName, String title) throws Exception {
+    public static boolean sendMsgByphoneAndParams(String mobile, String receiverName, String itemName,
+        String senderName, String title) throws Exception {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpPost post = new HttpPost(SERVER_URL);
 

@@ -11,7 +11,8 @@ import net.risesoft.api.processadmin.ProcessDataCopyApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ProcessDataCopyApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}", path = "/services/rest/processDataCopy")
+@FeignClient(contextId = "ProcessDataCopyApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
+    path = "/services/rest/processDataCopy")
 public interface ProcessDataCopyApiClient extends ProcessDataCopyApi {
 
     /**
@@ -24,6 +25,7 @@ public interface ProcessDataCopyApiClient extends ProcessDataCopyApi {
      */
     @Override
     @PostMapping("/copyModel")
-    void copyModel(@RequestParam("sourceTenantId") String sourceTenantId, @RequestParam("targetTenantId") String targetTenantId, @RequestParam("modelKey") String modelKey);
+    void copyModel(@RequestParam("sourceTenantId") String sourceTenantId,
+        @RequestParam("targetTenantId") String targetTenantId, @RequestParam("modelKey") String modelKey);
 
 }

@@ -13,27 +13,31 @@ import net.risesoft.entity.OrganWordProperty;
 public interface OrganWordPropertyService {
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @return
      */
     List<OrganWordProperty> findAll();
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param id
      * @return
      */
     OrganWordProperty findById(String id);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param organWordId
      * @return
      */
     List<OrganWordProperty> findByOrganWordId(String organWordId);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param organWordId
      * @param name
      * @return
@@ -42,12 +46,14 @@ public interface OrganWordPropertyService {
 
     /**
      * Description: 根据传进来的机关代字Id的数组删除
+     * 
      * @param organWordPropertyIds
      */
     public void removeOrganWordPropertys(String[] organWordPropertyIds);
 
     /**
      * Description: 保存机关代字
+     * 
      * @param organWordProperty
      * @return
      */

@@ -113,7 +113,8 @@ public class MobileBugWorkOrderController {
      * @param response
      */
     @RequestMapping(value = "/add")
-    public void add(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
+    public void add(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -200,7 +201,9 @@ public class MobileBugWorkOrderController {
      * @param response
      */
     @RequestMapping(value = "/doingList")
-    public void doingList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String listType, @RequestParam(required = false) String searchTerm, Integer page, Integer rows, HttpServletResponse response) {
+    public void doingList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestParam(required = false) String listType, @RequestParam(required = false) String searchTerm,
+        Integer page, Integer rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             if (StringUtils.isNotBlank(listType)) {
@@ -227,7 +230,9 @@ public class MobileBugWorkOrderController {
      * @param response
      */
     @RequestMapping(value = "/doneList")
-    public void doneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String listType, @RequestParam(required = false) String searchTerm, Integer page, Integer rows, HttpServletResponse response) {
+    public void doneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestParam(required = false) String listType, @RequestParam(required = false) String searchTerm,
+        Integer page, Integer rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             if (StringUtils.isNotBlank(listType)) {
@@ -253,7 +258,8 @@ public class MobileBugWorkOrderController {
      * @param response
      */
     @RequestMapping(value = "/draftList")
-    public void draftList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String searchTerm, Integer page, Integer rows, HttpServletResponse response) {
+    public void draftList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestParam(required = false) String searchTerm, Integer page, Integer rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map = workOrderManager.workOrderList(userId, searchTerm, "0", page, rows);
@@ -283,9 +289,13 @@ public class MobileBugWorkOrderController {
      * @return
      */
     @RequestMapping(value = "/forwarding")
-    public void forwarding(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String itemId, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String processDefinitionKey,
-        @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String userChoice, @RequestParam(required = false) String sponsorGuid, @RequestParam(required = false) String routeToTaskId, @RequestParam(required = false) String level,
-        @RequestParam(required = false) String number, @RequestParam(required = false) String documentTitle, HttpServletResponse response) {
+    public void forwarding(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = false) String processDefinitionKey,
+        @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String userChoice,
+        @RequestParam(required = false) String sponsorGuid, @RequestParam(required = false) String routeToTaskId,
+        @RequestParam(required = false) String level, @RequestParam(required = false) String number,
+        @RequestParam(required = false) String documentTitle, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "发送成功");
@@ -302,7 +312,8 @@ public class MobileBugWorkOrderController {
             }
             Map<String, Object> variables = new HashMap<String, Object>(16);
             ItemModel item = itemManager.getByItemId(tenantId, itemId);
-            ProcessParamModel processParamModel = processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             ProcessParamModel pp = new ProcessParamModel();
             pp.setIsSendSms("");
             pp.setIsShuMing("");
@@ -324,10 +335,12 @@ public class MobileBugWorkOrderController {
             pp.setStartorName(processParamModel != null ? processParamModel.getStartorName() : "");
             pp.setTodoTaskUrlPrefix(item.getTodoTaskUrlPrefix());
             StringBuffer searchTerm = new StringBuffer();
-            searchTerm.append(documentTitle).append("|").append(number).append("|").append(level).append("|").append(item.getName());
+            searchTerm.append(documentTitle).append("|").append(number).append("|").append(level).append("|")
+                .append(item.getName());
             pp.setSearchTerm(searchTerm.toString());
             processParamManager.saveOrUpdate(tenantId, pp);
-            map = documentManager.saveAndForwarding(tenantId, userId, processInstanceId, "", "", itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
+            map = documentManager.saveAndForwarding(tenantId, userId, processInstanceId, "", "", itemId,
+                processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
             if ((boolean)map.get(UtilConsts.SUCCESS)) {
                 processInstanceId = (String)map.get("processInstanceId");
                 workOrderManager.changeWorkOrderState(processSerialNumber, "2", processInstanceId, "");
@@ -369,7 +382,8 @@ public class MobileBugWorkOrderController {
      * @param response
      */
     @RequestMapping("/getAttachmentList")
-    public void getAttachmentList(@RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
+    public void getAttachmentList(@RequestParam(required = false) String processSerialNumber,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map = attachmentManager.getAttachmentList(myTenantId, "", processSerialNumber, "", 1, 50);
@@ -409,7 +423,8 @@ public class MobileBugWorkOrderController {
      * @param response
      */
     @RequestMapping(value = "/getRole")
-    public void getRole(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
+    public void getRole(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             boolean workOrderManage = roleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId);
@@ -457,7 +472,9 @@ public class MobileBugWorkOrderController {
      */
     @ResponseBody
     @RequestMapping(value = "/openTodo")
-    public void openTodo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam String itemId, @RequestParam String taskId, HttpServletRequest request, HttpServletResponse response) {
+    public void openTodo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestParam String itemId, @RequestParam String taskId, HttpServletRequest request,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -471,7 +488,9 @@ public class MobileBugWorkOrderController {
             String[] formId = formIds.split(SysVariables.COMMA);
             List<Map<String, Object>> fieldDefineList = new ArrayList<Map<String, Object>>();
             List<Map<String, Object>> opinionFrameList = new ArrayList<Map<String, Object>>();
-            List<ItemOpinionFrameBindModel> bindList = itemOpinionFrameBindManager.findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(tenantId, userId, itemId, processDefinitionId, taskDefKey);
+            List<ItemOpinionFrameBindModel> bindList =
+                itemOpinionFrameBindManager.findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(tenantId, userId,
+                    itemId, processDefinitionId, taskDefKey);
             for (ItemOpinionFrameBindModel bind : bindList) {
                 Map<String, Object> opinionFrameMap = new HashMap<String, Object>(16);
                 opinionFrameMap.put("hasRole", false);
@@ -524,7 +543,9 @@ public class MobileBugWorkOrderController {
      * @param response
      */
     @RequestMapping(value = "/todoList")
-    public void todoList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String listType, @RequestParam(required = false) String searchTerm, Integer page, Integer rows, HttpServletResponse response) {
+    public void todoList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestParam(required = false) String listType, @RequestParam(required = false) String searchTerm,
+        Integer page, Integer rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             if (StringUtils.isNotBlank(listType)) {
@@ -549,7 +570,9 @@ public class MobileBugWorkOrderController {
      * @param response
      */
     @RequestMapping("/uploadFile")
-    public void uploadFile(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) MultipartFile file, @RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
+    public void uploadFile(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestParam(required = false) MultipartFile file, @RequestParam(required = false) String processSerialNumber,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -562,7 +585,8 @@ public class MobileBugWorkOrderController {
             String fileName = FilenameUtils.getName(originalFilename);
             String[] types = fileName.split("\\.");
             String type = types[types.length - 1].toLowerCase();
-            String fullPath = "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
+            String fullPath =
+                "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
 
             AttachmentModel attachmentModel = new AttachmentModel();
@@ -600,7 +624,8 @@ public class MobileBugWorkOrderController {
      * @param response
      */
     @RequestMapping("/workOrderFinish")
-    public void workOrderFinish(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String resultFeedback, HttpServletResponse response) {
+    public void workOrderFinish(@RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String resultFeedback, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         resMap.put(UtilConsts.SUCCESS, true);
         resMap.put("msg", "办结成功");
@@ -637,7 +662,8 @@ public class MobileBugWorkOrderController {
      * @param response
      */
     @RequestMapping("/workOrderSubmit")
-    public void workOrderSubmit(@RequestParam(required = false) String type, @RequestParam(required = false) String formdata, HttpServletRequest request, HttpServletResponse response) {
+    public void workOrderSubmit(@RequestParam(required = false) String type,
+        @RequestParam(required = false) String formdata, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         resMap.put(UtilConsts.SUCCESS, true);
         try {

@@ -15,7 +15,8 @@ import net.risesoft.model.itemadmin.DocumentWpsModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "DocumentWpsApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/documentWps")
+@FeignClient(contextId = "DocumentWpsApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/documentWps")
 public interface DocumentWpsApiClient extends DocumentWpsApi {
 
     /**
@@ -38,7 +39,8 @@ public interface DocumentWpsApiClient extends DocumentWpsApi {
      */
     @Override
     @GetMapping("/findByProcessSerialNumber")
-    DocumentWpsModel findByProcessSerialNumber(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
+    DocumentWpsModel findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存正文信息
@@ -59,5 +61,6 @@ public interface DocumentWpsApiClient extends DocumentWpsApi {
      */
     @Override
     @PostMapping("/saveWpsContent")
-    void saveWpsContent(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("hasContent") String hasContent);
+    void saveWpsContent(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("hasContent") String hasContent);
 }

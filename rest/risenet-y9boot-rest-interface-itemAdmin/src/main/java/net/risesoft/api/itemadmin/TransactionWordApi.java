@@ -37,7 +37,8 @@ public interface TransactionWordApi {
      * @param processSerialNumber 流程编号
      * @return Map&lt;String, Object&gt;
      */
-    public List<Map<String, Object>> exchangeFindWordByProcessSerialNumber(String tenantId, String userId, String processSerialNumber);
+    public List<Map<String, Object>> exchangeFindWordByProcessSerialNumber(String tenantId, String userId,
+        String processSerialNumber);
 
     /**
      * 
@@ -130,7 +131,8 @@ public interface TransactionWordApi {
      * @param isTaoHong
      * @return
      */
-    public String openRevokePdfAfterDocument(String tenantId, String userId, String processSerialNumber, String isTaoHong);
+    public String openRevokePdfAfterDocument(String tenantId, String userId, String processSerialNumber,
+        String isTaoHong);
 
     /**
      * 选择套红
@@ -164,7 +166,8 @@ public interface TransactionWordApi {
      * @param taskId 任务id
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> showWord(String tenantId, String userId, String processSerialNumber, String itemId, String itembox, String taskId);
+    public Map<String, Object> showWord(String tenantId, String userId, String processSerialNumber, String itemId,
+        String itembox, String taskId);
 
     /**
      * 获取套红模板列表
@@ -191,7 +194,8 @@ public interface TransactionWordApi {
      * @param fileStoreId
      * @return
      */
-    public String uploadWord(String tenantId, String userId, String documentTitle, String fileType, String processSerialNumber, String isTaoHong, String taskId, String fileSizeString, String fileStoreId);
+    public String uploadWord(String tenantId, String userId, String documentTitle, String fileType,
+        String processSerialNumber, String isTaoHong, String taskId, String fileSizeString, String fileStoreId);
 
     /**
      * 下载正文

@@ -122,7 +122,8 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     }
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param wordTemplateId
      * @param wordTemplateType
      * @return
@@ -137,7 +138,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
             byte[] b = y9FileStoreService.downloadFileToBytes(wordTemplate.getFilePath());
             InputStream is = new ByteArrayInputStream(b);
             List<String> bookMarkNameList = new ArrayList<>();
-            boolean isdoc ="doc".equals(wordTemplateType);
+            boolean isdoc = "doc".equals(wordTemplateType);
             if (isdoc) {
                 bookMarkNameList = Y9WordTool4Doc.getBookmarkNameList(is);
             } else {
@@ -170,7 +171,8 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     @Transactional(readOnly = false)
     public void saveOrUpdate(WordTemplate wordTemplate) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = userInfo.getPersonId(), personName = userInfo.getName();
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = userInfo.getPersonId(),
+            personName = userInfo.getName();
         String id = wordTemplate.getId();
         if (StringUtils.isNotEmpty(id)) {
             WordTemplate oldWord = this.findById(id);

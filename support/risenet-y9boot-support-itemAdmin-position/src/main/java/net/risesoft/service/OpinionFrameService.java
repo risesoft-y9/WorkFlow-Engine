@@ -108,5 +108,6 @@ public interface OpinionFrameService {
      * @param keyword
      * @return
      */
-    Page<OpinionFrame> search4NotUsed(String itemId, String processDefinitionId, String taskDefKey, int page, int rows, String keyword);
+    Page<OpinionFrame> search4NotUsed(String itemId, String processDefinitionId, String taskDefKey, int page, int rows,
+        String keyword);
 }

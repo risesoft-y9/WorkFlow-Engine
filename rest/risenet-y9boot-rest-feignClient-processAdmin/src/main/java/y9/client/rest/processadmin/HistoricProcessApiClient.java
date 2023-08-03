@@ -15,7 +15,8 @@ import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "HistoricProcessApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}", path = "/services/rest/historicProcess")
+@FeignClient(contextId = "HistoricProcessApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
+    path = "/services/rest/historicProcess")
 public interface HistoricProcessApiClient extends HistoricProcessApi {
 
     /**
@@ -27,7 +28,8 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @PostMapping("/deleteProcessInstance")
-    boolean deleteProcessInstance(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    boolean deleteProcessInstance(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程实例id获取实例
@@ -38,7 +40,8 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @GetMapping("/getById")
-    HistoricProcessInstanceModel getById(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    HistoricProcessInstanceModel getById(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程实例id和年度获取实例
@@ -50,7 +53,8 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @GetMapping("/getByIdAndYear")
-    HistoricProcessInstanceModel getByIdAndYear(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id, @RequestParam("year") String year);
+    HistoricProcessInstanceModel getByIdAndYear(@RequestParam("tenantId") String tenantId,
+        @RequestParam("id") String id, @RequestParam("year") String year);
 
     /**
      * 根据父流程实例获取所有历史子流程实例
@@ -61,7 +65,8 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @GetMapping("/getBySuperProcessInstanceId")
-    List<HistoricProcessInstanceModel> getBySuperProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("superProcessInstanceId") String superProcessInstanceId);
+    List<HistoricProcessInstanceModel> getBySuperProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("superProcessInstanceId") String superProcessInstanceId);
 
     /**
      * 根据流程实例获取父流程实例
@@ -72,7 +77,8 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @GetMapping("/getSuperProcessInstanceById")
-    HistoricProcessInstanceModel getSuperProcessInstanceById(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    HistoricProcessInstanceModel getSuperProcessInstanceById(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 恢复流程实例
@@ -84,7 +90,8 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @PostMapping("/recoveryProcess")
-    boolean recoveryProcess(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
+    boolean recoveryProcess(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 彻底删除流程实例
@@ -95,7 +102,8 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @PostMapping("/removeProcess")
-    boolean removeProcess(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    boolean removeProcess(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 彻底删除流程实例，岗位
@@ -106,7 +114,8 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @PostMapping("/removeProcess4Position")
-    boolean removeProcess4Position(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    boolean removeProcess4Position(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 设置优先级
@@ -118,5 +127,7 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @PostMapping("/setPriority")
-    void setPriority(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("priority") String priority) throws Exception;
+    void setPriority(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("priority") String priority)
+        throws Exception;
 }

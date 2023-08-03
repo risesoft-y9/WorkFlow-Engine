@@ -1,5 +1,18 @@
 package net.risesoft.controller.mobile;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.api.org.PersonApi;
@@ -9,17 +22,6 @@ import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -48,7 +50,8 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/comment/save")
-    public void addComment(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam String formJsonData, HttpServletResponse response) {
+    public void addComment(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestParam String formJsonData, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -78,7 +81,9 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/comment/checkSignOpinion")
-    public void checkSignOpinion(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String taskId, @RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
+    public void checkSignOpinion(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String taskId,
+        @RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             boolean b = opinionManager.checkSignOpinion(tenantId, userId, processSerialNumber, taskId);
@@ -103,7 +108,8 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/comment/delete")
-    public void deleteComment(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam String id, HttpServletResponse response) {
+    public void deleteComment(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestParam String id, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -129,7 +135,8 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/personalSetup")
-    public void personalSetup(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
+    public void personalSetup(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             Person person = personApi.getPerson(tenantId, userId);
@@ -157,15 +164,19 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/personCommentList")
-    public void personCommentList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox, @RequestParam String opinionFrameMark, @RequestParam String itemId,
-        @RequestParam String taskDefinitionKey, @RequestParam String activitiUser, HttpServletResponse response) {
+    public void personCommentList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestParam String processSerialNumber,
+        @RequestParam String taskId, @RequestParam String itembox, @RequestParam String opinionFrameMark,
+        @RequestParam String itemId, @RequestParam String taskDefinitionKey, @RequestParam String activitiUser,
+        HttpServletResponse response) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.getPerson(tenantId, userId);
             Y9LoginUserHolder.setPerson(person);
-            listMap = opinionManager.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
+            listMap = opinionManager.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
+                opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
             map.put("opinionList", listMap);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取成功");
@@ -187,7 +198,8 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/removeCommonSentences")
-    public void removeCommonSentences(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam String id, HttpServletResponse response) {
+    public void removeCommonSentences(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestParam String id, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -216,7 +228,9 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/saveCommonSentences")
-    public void saveCommonSentences(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam String content, @RequestParam String id, HttpServletResponse response) {
+    public void saveCommonSentences(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestParam String content, @RequestParam String id,
+        HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -242,7 +256,8 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/systemSetup")
-    public void systemSetup(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
+    public void systemSetup(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             Person person = personApi.getPerson(tenantId, userId);

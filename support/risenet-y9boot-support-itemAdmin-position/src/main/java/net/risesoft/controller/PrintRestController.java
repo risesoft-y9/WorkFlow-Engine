@@ -80,7 +80,8 @@ public class PrintRestController {
      * @param request
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam(required = true) String id, HttpServletResponse response, HttpServletRequest request) {
+    public void download(@RequestParam(required = true) String id, HttpServletResponse response,
+        HttpServletRequest request) {
         printTemplateService.download(id, response, request);
     }
 
@@ -139,8 +140,11 @@ public class PrintRestController {
      */
     @RequestMapping(value = "/saveBindTemplate", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> saveBindTemplate(@RequestParam(required = true) String itemId, @RequestParam(required = true) String templateId, @RequestParam(required = true) String templateName, @RequestParam(required = false) String templateUrl, @RequestParam(required = true) String templateType) {
-        Map<String, Object> map = printTemplateService.saveBindTemplate(itemId, templateId, templateName, templateUrl, templateType);
+    public Y9Result<String> saveBindTemplate(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String templateId, @RequestParam(required = true) String templateName,
+        @RequestParam(required = false) String templateUrl, @RequestParam(required = true) String templateType) {
+        Map<String, Object> map =
+            printTemplateService.saveBindTemplate(itemId, templateId, templateName, templateUrl, templateType);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
         }

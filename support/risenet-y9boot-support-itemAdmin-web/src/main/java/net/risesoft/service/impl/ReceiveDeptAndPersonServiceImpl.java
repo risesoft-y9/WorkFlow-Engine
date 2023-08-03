@@ -202,7 +202,8 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                 Integer tabIndex = 0;
                 for (String guid : idArr) {
                     ReceiveDepartment receiveDeptAndPerson = receiveDepartmentRepository.findById(guid).orElse(null);
-                    Department dept = departmentManager.getDepartment(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId());
+                    Department dept = departmentManager.getDepartment(Y9LoginUserHolder.getTenantId(),
+                        receiveDeptAndPerson.getDeptId());
                     receiveDeptAndPerson.setDeptName(dept.getName());
                     receiveDeptAndPerson.setTabIndex(tabIndex);
                     tabIndex += 1;
@@ -234,7 +235,8 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                 if (list != null && list.size() > 0) {
                     boolean isAdd = true;
                     for (ReceivePerson receivePerson : list) {
-                        OrgUnit orgUnit = departmentManager.getBureau(Y9LoginUserHolder.getTenantId(), receivePerson.getDeptId());
+                        OrgUnit orgUnit =
+                            departmentManager.getBureau(Y9LoginUserHolder.getTenantId(), receivePerson.getDeptId());
                         OrgUnit orgUnit1 = departmentManager.getBureau(Y9LoginUserHolder.getTenantId(), deptId);
                         // 委办局相同，且部门不相同则，不可添加该收文员
                         if (orgUnit.getId().equals(orgUnit1.getId()) && !receivePerson.getDeptId().equals(deptId)) {

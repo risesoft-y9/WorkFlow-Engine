@@ -22,21 +22,24 @@ import java.util.Set;
 public interface DocumentFormatRegistry {
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param extension
      * @return
      */
     public DocumentFormat getFormatByExtension(String extension);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param mediaType
      * @return
      */
     public DocumentFormat getFormatByMediaType(String mediaType);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param family
      * @return
      */

@@ -14,7 +14,8 @@ import net.risesoft.api.itemadmin.DraftApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "DraftApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/draft")
+@FeignClient(contextId = "DraftApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/draft")
 public interface DraftApiClient extends DraftApi {
 
     /**
@@ -27,7 +28,8 @@ public interface DraftApiClient extends DraftApi {
      */
     @Override
     @PostMapping("/deleteDraft")
-    public Map<String, Object> deleteDraft(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("ids") String ids);
+    public Map<String, Object> deleteDraft(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("ids") String ids);
 
     /**
      * 根据人员id和事项id获取删除草稿统计
@@ -39,7 +41,8 @@ public interface DraftApiClient extends DraftApi {
      */
     @Override
     @GetMapping("/getDeleteDraftCount")
-    public int getDeleteDraftCount(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId);
+    public int getDeleteDraftCount(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("itemId") String itemId);
 
     /**
      * 根据流程序列号获取草稿
@@ -51,7 +54,8 @@ public interface DraftApiClient extends DraftApi {
      */
     @Override
     @GetMapping("/getDraftByProcessSerialNumber")
-    public Map<String, Object> getDraftByProcessSerialNumber(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
+    public Map<String, Object> getDraftByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 根据人员id和事项id获取草稿统计
@@ -63,7 +67,8 @@ public interface DraftApiClient extends DraftApi {
      */
     @Override
     @GetMapping("/getDraftCount")
-    public int getDraftCount(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId);
+    public int getDraftCount(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("itemId") String itemId);
 
     /**
      * 
@@ -76,7 +81,8 @@ public interface DraftApiClient extends DraftApi {
      */
     @Override
     @GetMapping("/getDraftCountBySystemName")
-    public int getDraftCountBySystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName);
+    public int getDraftCountBySystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName);
 
     /**
      * 获取草稿列表
@@ -92,7 +98,9 @@ public interface DraftApiClient extends DraftApi {
      */
     @Override
     @GetMapping("/getDraftList")
-    public Map<String, Object> getDraftList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("page") int page, @RequestParam("rows") int rows, @RequestParam("title") String title, @RequestParam("itemId") String itemId,
+    public Map<String, Object> getDraftList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("page") int page, @RequestParam("rows") int rows,
+        @RequestParam("title") String title, @RequestParam("itemId") String itemId,
         @RequestParam("delFlag") boolean delFlag);
 
     /**
@@ -110,7 +118,9 @@ public interface DraftApiClient extends DraftApi {
      */
     @Override
     @GetMapping("/getDraftListBySystemName")
-    public Map<String, Object> getDraftListBySystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("page") int page, @RequestParam("rows") int rows, @RequestParam("title") String title, @RequestParam("systemName") String systemName,
+    public Map<String, Object> getDraftListBySystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("page") int page, @RequestParam("rows") int rows,
+        @RequestParam("title") String title, @RequestParam("systemName") String systemName,
         @RequestParam("delFlag") boolean delFlag);
 
     /**
@@ -126,7 +136,9 @@ public interface DraftApiClient extends DraftApi {
      */
     @Override
     @GetMapping("/openDraft")
-    public Map<String, Object> openDraft(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("mobile") boolean mobile);
+    public Map<String, Object> openDraft(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("mobile") boolean mobile);
 
     /**
      * 还原草稿
@@ -138,7 +150,8 @@ public interface DraftApiClient extends DraftApi {
      */
     @Override
     @PostMapping("/reduction")
-    public Map<String, Object> reduction(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("ids") String ids);
+    public Map<String, Object> reduction(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("ids") String ids);
 
     /**
      * 删除草稿
@@ -150,7 +163,8 @@ public interface DraftApiClient extends DraftApi {
      */
     @Override
     @PostMapping("/removeDraft")
-    public Map<String, Object> removeDraft(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("ids") String ids);
+    public Map<String, Object> removeDraft(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("ids") String ids);
 
     /**
      * 保存草稿
@@ -167,8 +181,11 @@ public interface DraftApiClient extends DraftApi {
      */
     @Override
     @PostMapping("/saveDraft")
-    public Map<String, Object> saveDraft(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("number") String number, @RequestParam("level") String level, @RequestParam("title") String title);
+    public Map<String, Object> saveDraft(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("number") String number,
+        @RequestParam("level") String level, @RequestParam("title") String title);
 
     /**
      * 保存草稿
@@ -186,8 +203,12 @@ public interface DraftApiClient extends DraftApi {
      */
     @Override
     @PostMapping("/saveDraft1")
-    public Map<String, Object> saveDraft(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("number") String number, @RequestParam("level") String level, @RequestParam("jijian") String jijian, @RequestParam("title") String title);
+    public Map<String, Object> saveDraft(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("number") String number,
+        @RequestParam("level") String level, @RequestParam("jijian") String jijian,
+        @RequestParam("title") String title);
 
     /**
      * 保存草稿(带类型)
@@ -205,6 +226,9 @@ public interface DraftApiClient extends DraftApi {
      */
     @Override
     @PostMapping("/saveDraftAndType")
-    public Map<String, Object> saveDraftAndType(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("number") String number, @RequestParam("level") String level, @RequestParam("title") String title, @RequestParam("type") String type);
+    public Map<String, Object> saveDraftAndType(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("number") String number,
+        @RequestParam("level") String level, @RequestParam("title") String title, @RequestParam("type") String type);
 }

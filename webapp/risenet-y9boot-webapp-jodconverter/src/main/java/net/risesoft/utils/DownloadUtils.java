@@ -56,12 +56,15 @@ public class DownloadUtils {
                 // 编码探测失败,
                 e.printStackTrace();
             }
-            boolean b = (encoding != null && !"UTF-8".equals(encoding)) && !fileType.equals("java") && !fileType.equals("sql") && !fileType.equals("xml");
+            boolean b = (encoding != null && !"UTF-8".equals(encoding)) && !fileType.equals("java")
+                && !fileType.equals("sql") && !fileType.equals("xml");
             if (b) {
                 // 不为utf8,进行转码
                 File tmpUtf8File = new File(filePath + ".utf8");
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "GBK"));
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmpUtf8File), "UTF-8"));
+                BufferedReader bufferedReader =
+                    new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "GBK"));
+                BufferedWriter bufferedWriter =
+                    new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmpUtf8File), "UTF-8"));
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
                     bufferedWriter.write(line + "\r\n");
@@ -115,7 +118,8 @@ public class DownloadUtils {
     public ReturnResponse<String> downLoad(String urlAddress, String type, String fileName) {
         ReturnResponse<String> response = new ReturnResponse<>(0, "下载成功!!!", "");
         URL url = null;
-        HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpServletRequest request =
+            ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
         // 压缩文件打开，不需要下载
         boolean b = urlAddress.contains("/static/previewFile/");
         if (b) {
@@ -137,7 +141,8 @@ public class DownloadUtils {
         } else { // 文件后缀不一致时，以type为准(针对simText【将类txt文件转为txt】)
             fileName = fileName.replace(fileName.substring(fileName.lastIndexOf(".") + 1), type);
         }
-        String dirPath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "previewFile" + File.separator;
+        String dirPath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator
+            + "previewFile" + File.separator;
         String filePath = dirPath + fileName;
         File dirFile = new File(dirPath);
         if (!dirFile.exists()) {
@@ -187,8 +192,10 @@ public class DownloadUtils {
      */
     public ReturnResponse<String> downLoadZipFile(String urlAddress, String type, String fileName) {
         ReturnResponse<String> response = new ReturnResponse<>(0, "下载成功!!!", "");
-        HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-        String oldPath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "previewFile" + File.separator + fileName;
+        HttpServletRequest request =
+            ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+        String oldPath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator
+            + "previewFile" + File.separator + fileName;
         String fileType = FilenameUtils.getExtension(urlAddress);
         if (fileType.contains(TXT)) {
             response.setContent(oldPath);
@@ -201,7 +208,8 @@ public class DownloadUtils {
         } else { // 文件后缀不一致时，以type为准(针对simText【将类txt文件转为txt】)
             fileName = fileName.replace(fileName.substring(fileName.lastIndexOf(".") + 1), type);
         }
-        String dirPath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "previewFile" + File.separator;
+        String dirPath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator
+            + "previewFile" + File.separator;
         String filePath = dirPath + fileName;
         File dirFile = new File(dirPath);
         if (!dirFile.exists()) {

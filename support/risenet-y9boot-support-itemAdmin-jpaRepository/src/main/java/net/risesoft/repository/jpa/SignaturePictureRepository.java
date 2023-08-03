@@ -10,7 +10,8 @@ import net.risesoft.entity.SignaturePicture;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-public interface SignaturePictureRepository extends JpaRepository<SignaturePicture, String>, JpaSpecificationExecutor<SignaturePicture> {
+public interface SignaturePictureRepository
+    extends JpaRepository<SignaturePicture, String>, JpaSpecificationExecutor<SignaturePicture> {
 
     SignaturePicture findByUserId(String userId);
 }

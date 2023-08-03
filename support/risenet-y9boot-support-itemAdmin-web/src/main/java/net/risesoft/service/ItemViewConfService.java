@@ -37,14 +37,16 @@ public interface ItemViewConfService {
     List<ItemViewConf> findByItemIdAndViewType(String itemId, String viewType);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param viewType
      * @return
      */
     List<ItemViewConf> findByViewType(String viewType);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param viewType
      */
     void removeByViewType(String viewType);
@@ -62,13 +64,14 @@ public interface ItemViewConfService {
      * @param itemViewConf
      */
     void saveOrUpdate(ItemViewConf itemViewConf);
-    
+
     /**
      * 复制视图列的数据到指定视图下面
+     * 
      * @param ids
      * @param viewType
      */
-    void copyView(String[] ids,String viewType);
+    void copyView(String[] ids, String viewType);
 
     /**
      * 排序

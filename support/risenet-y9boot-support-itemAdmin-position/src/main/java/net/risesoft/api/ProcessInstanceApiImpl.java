@@ -49,7 +49,8 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
     }
 
     @Override
-    @PostMapping(value = "/saveProcessInstanceDetails", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/saveProcessInstanceDetails", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public boolean saveProcessInstanceDetails(String tenantId, @RequestBody ProcessInstanceDetailsModel model) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return processInstanceDetailsService.save(model);
@@ -57,7 +58,8 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
 
     @Override
     @PostMapping(value = "/updateProcessInstanceDetails", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean updateProcessInstanceDetails(String tenantId, String assigneeId, String processInstanceId, String taskId, String itembox, Date endTime) {
+    public boolean updateProcessInstanceDetails(String tenantId, String assigneeId, String processInstanceId,
+        String taskId, String itembox, Date endTime) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.getPosition(tenantId, assigneeId);
         Y9LoginUserHolder.setPosition(position);

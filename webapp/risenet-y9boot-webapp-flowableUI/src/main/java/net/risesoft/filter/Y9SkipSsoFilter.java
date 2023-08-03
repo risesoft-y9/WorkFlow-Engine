@@ -30,7 +30,8 @@ public class Y9SkipSsoFilter implements Filter {
     public void destroy() {}
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
+        throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest)servletRequest;
         HttpSession session = request.getSession();
         try {

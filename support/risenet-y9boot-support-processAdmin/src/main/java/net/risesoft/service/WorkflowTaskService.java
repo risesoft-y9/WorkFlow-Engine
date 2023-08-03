@@ -54,7 +54,8 @@ public class WorkflowTaskService {
      */
     public List<String> getActiveTaskDefinitionKeys(String processInstanceId) {
         List<String> taskDefinitionKeyList = new ArrayList<String>();
-        List<Execution> executionList = runtimeService.createExecutionQuery().processInstanceId(processInstanceId).list();
+        List<Execution> executionList =
+            runtimeService.createExecutionQuery().processInstanceId(processInstanceId).list();
         for (Execution execution : executionList) {
             if (execution != null) {
                 taskDefinitionKeyList = runtimeService.getActiveActivityIds(execution.getId());
@@ -72,7 +73,8 @@ public class WorkflowTaskService {
     public String getActivitiIdByTask(Task task) {
         if (task != null) {
             String excId = task.getExecutionId();
-            ExecutionEntity execution = (ExecutionEntity)runtimeService.createExecutionQuery().executionId(excId).singleResult();
+            ExecutionEntity execution =
+                (ExecutionEntity)runtimeService.createExecutionQuery().executionId(excId).singleResult();
             String activitiId = execution.getActivityId();
             return activitiId;
         }
@@ -112,13 +114,17 @@ public class WorkflowTaskService {
         try {
             Task currentTask = getTaskByTaskId(taskId);
             if (currentTask != null) {
-                String multinstance = workflowProcessDefinitionService.getMultiinstanceType(currentTask.getProcessDefinitionId(), currentTask.getTaskDefinitionKey());
+                String multinstance = workflowProcessDefinitionService
+                    .getMultiinstanceType(currentTask.getProcessDefinitionId(), currentTask.getTaskDefinitionKey());
 
                 if (multinstance.equals(SysVariables.PARALLEL)) {
-                    List<HistoricTaskInstance> hisTaskList = historyService.createHistoricTaskInstanceQuery().processInstanceId(currentTask.getProcessInstanceId()).taskCreatedOn(currentTask.getCreateTime()).list();
+                    List<HistoricTaskInstance> hisTaskList = historyService.createHistoricTaskInstanceQuery()
+                        .processInstanceId(currentTask.getProcessInstanceId())
+                        .taskCreatedOn(currentTask.getCreateTime()).list();
                     // 由于并行任务的创建时间可能会有延迟，所以这里创建时间相差不超过2秒的，即为当前任务的所有并行任务
                     for (HistoricTaskInstance entity : hisTaskList) {
-                        if (entity.getCreateTime().getTime() - currentTask.getCreateTime().getTime() > -2 && entity.getCreateTime().getTime() - currentTask.getCreateTime().getTime() < 2) {
+                        if (entity.getCreateTime().getTime() - currentTask.getCreateTime().getTime() > -2
+                            && entity.getCreateTime().getTime() - currentTask.getCreateTime().getTime() < 2) {
                             list.add(entity);
                         }
                     }
@@ -145,16 +151,22 @@ public class WorkflowTaskService {
                 if (taskId.equals(task.getId())) {
                     taskDefKey = task.getTaskDefinitionKey();
                 }
-                List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().processInstanceId(task.getProcessInstanceId()).includeTaskLocalVariables().orderByHistoricTaskInstanceStartTime().desc().list();
+                List<HistoricTaskInstance> list =
+                    historyService.createHistoricTaskInstanceQuery().processInstanceId(task.getProcessInstanceId())
+                        .includeTaskLocalVariables().orderByHistoricTaskInstanceStartTime().desc().list();
                 if (list.size() > 0) {
                     for (int i = 0; i < list.size(); i++) {
                         HistoricTaskInstance historicTaskInstance = list.get(i);
-                        String multiInstance = workflowProcessDefinitionService.getMultiinstanceType(historicTaskInstance.getProcessDefinitionId(), historicTaskInstance.getTaskDefinitionKey());
+                        String multiInstance = workflowProcessDefinitionService.getMultiinstanceType(
+                            historicTaskInstance.getProcessDefinitionId(), historicTaskInstance.getTaskDefinitionKey());
                         if (multiInstance.equals(SysVariables.PARALLEL)) {
                             if (StringUtils.isNotBlank(taskDefKey)) {
                                 if (!taskId.equals(historicTaskInstance.getId())) {
                                     // 判定是否属于同一并行任务，由于并行任务的开始时间可能会出现一点延迟，所以，这里判定时间相差不超过2秒，即为同一并行任务
-                                    if (-2 <= historicTaskInstance.getCreateTime().getTime() - task.getCreateTime().getTime() && historicTaskInstance.getCreateTime().getTime() - task.getCreateTime().getTime() <= 2) {
+                                    if (-2 <= historicTaskInstance.getCreateTime().getTime()
+                                        - task.getCreateTime().getTime()
+                                        && historicTaskInstance.getCreateTime().getTime()
+                                            - task.getCreateTime().getTime() <= 2) {
                                         // 得到当前任务的前一个任务节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
                                         Map<String, Object> localMap = historicTaskInstance.getTaskLocalVariables();
                                         // 前一个任务节点如果是并行，则要获取主办人的guid，如果主办人的guid不为空，则返回historicTaskInstance，如果不是并行，则直接返回historicTaskInstance
@@ -185,8 +197,11 @@ public class WorkflowTaskService {
                     }
                 }
             } else {// 当前task已办理完成，results.size()>1时，才查出当前任务（task）的前一个任务（task）
-                HistoricTaskInstance histask = historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
-                List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().processInstanceId(histask.getProcessInstanceId()).includeTaskLocalVariables().orderByHistoricTaskInstanceStartTime().desc().list();
+                HistoricTaskInstance histask =
+                    historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
+                List<HistoricTaskInstance> list =
+                    historyService.createHistoricTaskInstanceQuery().processInstanceId(histask.getProcessInstanceId())
+                        .includeTaskLocalVariables().orderByHistoricTaskInstanceStartTime().desc().list();
                 if (list.size() > 1) {
                     for (int i = 0; i < list.size(); i++) {
                         HistoricTaskInstance historicTaskInstance = list.get(i);
@@ -197,7 +212,9 @@ public class WorkflowTaskService {
                         if (StringUtils.isNotBlank(taskDefKey)) {
                             if (!taskDefKey.equals(historicTaskInstance.getTaskDefinitionKey())) {
                                 // 得到当前任务的前一个任务节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
-                                String multiInstance = workflowProcessDefinitionService.getMultiinstanceType(historicTaskInstance.getProcessDefinitionId(), historicTaskInstance.getTaskDefinitionKey());
+                                String multiInstance = workflowProcessDefinitionService.getMultiinstanceType(
+                                    historicTaskInstance.getProcessDefinitionId(),
+                                    historicTaskInstance.getTaskDefinitionKey());
                                 // 前一个任务节点如果是并行，则要获取主办人的guid，如果主办人的guid不为空，则返回historicTaskInstance，如果不是并行，则直接返回historicTaskInstance
                                 if (multiInstance.equals(SysVariables.PARALLEL)) {
                                     Map<String, Object> localMap = historicTaskInstance.getTaskLocalVariables();
@@ -266,7 +283,8 @@ public class WorkflowTaskService {
      * @return
      */
     public Task getTaskByProcessInstanceIdAndAssgness(String processInstanceId, String assgness) {
-        Task task = taskService.createTaskQuery().processInstanceId(processInstanceId).taskAssignee(assgness).singleResult();
+        Task task =
+            taskService.createTaskQuery().processInstanceId(processInstanceId).taskAssignee(assgness).singleResult();
         return task;
     }
 
@@ -340,7 +358,9 @@ public class WorkflowTaskService {
     public String startProUser(String processDefinitionId, String processInstanceId) {
         String sendUserId = "";
         if (StringUtils.isNotBlank(processDefinitionId) && StringUtils.isNotBlank(processInstanceId)) {
-            List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().processDefinitionId(processDefinitionId).processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
+            List<HistoricTaskInstance> list =
+                historyService.createHistoricTaskInstanceQuery().processDefinitionId(processDefinitionId)
+                    .processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
             if (list != null && list.size() > 0) {
                 sendUserId = list.get(0).getAssignee();
             }
@@ -358,7 +378,9 @@ public class WorkflowTaskService {
     public String startTaskDefKey(String processDefinitionId, String processInstanceId) {
         String startTaskDefKey = "";
         if (StringUtils.isNotBlank(processDefinitionId) && StringUtils.isNotBlank(processDefinitionId)) {
-            List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().processDefinitionId(processDefinitionId).processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
+            List<HistoricTaskInstance> list =
+                historyService.createHistoricTaskInstanceQuery().processDefinitionId(processDefinitionId)
+                    .processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
             if (list != null && list.size() > 0) {
                 startTaskDefKey = list.get(0).getTaskDefinitionKey();
             }

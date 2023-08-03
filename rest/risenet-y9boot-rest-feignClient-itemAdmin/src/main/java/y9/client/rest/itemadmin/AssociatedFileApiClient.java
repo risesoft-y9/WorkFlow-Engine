@@ -16,7 +16,8 @@ import net.risesoft.api.itemadmin.AssociatedFileApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "AssociatedFileApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/associatedFile")
+@FeignClient(contextId = "AssociatedFileApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/associatedFile")
 public interface AssociatedFileApiClient extends AssociatedFileApi {
 
     /**
@@ -28,7 +29,8 @@ public interface AssociatedFileApiClient extends AssociatedFileApi {
      */
     @Override
     @GetMapping("/countAssociatedFile")
-    int countAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
+    int countAssociatedFile(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 删除关联文件
@@ -41,7 +43,9 @@ public interface AssociatedFileApiClient extends AssociatedFileApi {
      */
     @Override
     @PostMapping("/deleteAllAssociatedFile")
-    public boolean deleteAllAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delIds") String delIds);
+    public boolean deleteAllAssociatedFile(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("delIds") String delIds);
 
     /**
      * 删除关联文件
@@ -54,7 +58,9 @@ public interface AssociatedFileApiClient extends AssociatedFileApi {
      */
     @Override
     @PostMapping("/deleteAssociatedFile")
-    public boolean deleteAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delId") String delId);
+    public boolean deleteAssociatedFile(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("delId") String delId);
 
     /**
      * 获取关联文件列表,包括未办结件
@@ -66,7 +72,8 @@ public interface AssociatedFileApiClient extends AssociatedFileApi {
      */
     @Override
     @GetMapping("/getAssociatedFileAllList")
-    public Map<String, Object> getAssociatedFileAllList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
+    public Map<String, Object> getAssociatedFileAllList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 获取关联文件列表
@@ -78,7 +85,8 @@ public interface AssociatedFileApiClient extends AssociatedFileApi {
      */
     @Override
     @GetMapping("/getAssociatedFileList")
-    public Map<String, Object> getAssociatedFileList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
+    public Map<String, Object> getAssociatedFileList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存关联文件
@@ -91,5 +99,7 @@ public interface AssociatedFileApiClient extends AssociatedFileApi {
      */
     @Override
     @PostMapping("/saveAssociatedFile")
-    public boolean saveAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processInstanceIds") String processInstanceIds);
+    public boolean saveAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processInstanceIds") String processInstanceIds);
 }

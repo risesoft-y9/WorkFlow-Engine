@@ -38,7 +38,8 @@ public class HistoricVariableVueController {
     public Y9Page<Map<String, Object>> getAllHistoricVariable(@RequestParam int page, @RequestParam int rows) {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         long totalCount = historyService.createHistoricVariableInstanceQuery().count();
-        List<HistoricVariableInstance> hviList = historyService.createHistoricVariableInstanceQuery().listPage((page - 1) * rows, rows);
+        List<HistoricVariableInstance> hviList =
+            historyService.createHistoricVariableInstanceQuery().listPage((page - 1) * rows, rows);
         for (HistoricVariableInstance var : hviList) {
             Map<String, Object> map = new HashMap<>(16);
             map.put("processInstanceId", var.getProcessInstanceId());
@@ -68,26 +69,35 @@ public class HistoricVariableVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/searchHistoricVariable", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> searchHistoricVariable(@RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId, @RequestParam(required = false) String variableName, @RequestParam(required = true) int page,
-        @RequestParam(required = true) int rows) {
+    public Y9Page<Map<String, Object>> searchHistoricVariable(@RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = false) String taskId, @RequestParam(required = false) String variableName,
+        @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         long totalCount = 0;
         List<HistoricVariableInstance> hviList = null;
         if (StringUtils.isBlank(processInstanceId)) {
             if (StringUtils.isBlank(taskId)) {
-                totalCount = historyService.createHistoricVariableInstanceQuery().variableNameLike("%" + variableName + "%").count();
-                hviList = historyService.createHistoricVariableInstanceQuery().variableNameLike("%" + variableName + "%").listPage((page - 1) * rows, rows);
+                totalCount = historyService.createHistoricVariableInstanceQuery()
+                    .variableNameLike("%" + variableName + "%").count();
+                hviList = historyService.createHistoricVariableInstanceQuery()
+                    .variableNameLike("%" + variableName + "%").listPage((page - 1) * rows, rows);
             } else {
-                totalCount = historyService.createHistoricVariableInstanceQuery().taskId(taskId).variableNameLike("%" + variableName + "%").count();
-                hviList = historyService.createHistoricVariableInstanceQuery().taskId(taskId).variableNameLike("%" + variableName + "%").listPage((page - 1) * rows, rows);
+                totalCount = historyService.createHistoricVariableInstanceQuery().taskId(taskId)
+                    .variableNameLike("%" + variableName + "%").count();
+                hviList = historyService.createHistoricVariableInstanceQuery().taskId(taskId)
+                    .variableNameLike("%" + variableName + "%").listPage((page - 1) * rows, rows);
             }
         } else {
             if (StringUtils.isBlank(taskId)) {
-                totalCount = historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstanceId).variableNameLike("%" + variableName + "%").count();
-                hviList = historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstanceId).variableNameLike("%" + variableName + "%").listPage((page - 1) * rows, rows);
+                totalCount = historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstanceId)
+                    .variableNameLike("%" + variableName + "%").count();
+                hviList = historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstanceId)
+                    .variableNameLike("%" + variableName + "%").listPage((page - 1) * rows, rows);
             } else {
-                totalCount = historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstanceId).taskId(taskId).variableNameLike("%" + variableName + "%").count();
-                hviList = historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstanceId).taskId(taskId).variableNameLike("%" + variableName + "%").listPage((page - 1) * rows, rows);
+                totalCount = historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstanceId)
+                    .taskId(taskId).variableNameLike("%" + variableName + "%").count();
+                hviList = historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstanceId)
+                    .taskId(taskId).variableNameLike("%" + variableName + "%").listPage((page - 1) * rows, rows);
             }
         }
         for (HistoricVariableInstance var : hviList) {

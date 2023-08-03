@@ -72,7 +72,8 @@ public class EntrustController {
         List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
         OrgUnit orgUnit = personManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId());
         if (OrgTypeEnum.DEPARTMENT.getEnName().equals(orgUnit.getOrgType())) {
-            List<Person> personList = departmentManager.listAllPersonsByDisabledAndName(tenantId, orgUnit.getId(), false, name);
+            List<Person> personList =
+                departmentManager.listAllPersonsByDisabledAndName(tenantId, orgUnit.getId(), false, name);
             for (Person person : personList) {
                 orgUnitList.add(person);
                 Person p = personManager.getPerson(tenantId, person.getId());
@@ -207,7 +208,8 @@ public class EntrustController {
         return Y9Result.success(entrustList, "获取成功");
     }
 
-    public void recursionUpToOrg(String tenantId, String nodeId, String parentId, List<OrgUnit> orgUnitList, boolean isParent) {
+    public void recursionUpToOrg(String tenantId, String nodeId, String parentId, List<OrgUnit> orgUnitList,
+        boolean isParent) {
         OrgUnit parent = getParent(tenantId, nodeId, parentId);
         if (isParent) {
             parent.setDescription("parent");

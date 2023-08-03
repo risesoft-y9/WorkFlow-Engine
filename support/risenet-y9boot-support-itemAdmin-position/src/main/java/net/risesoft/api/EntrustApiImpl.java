@@ -1,5 +1,16 @@
 package net.risesoft.api;
 
+import java.text.ParseException;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import net.risesoft.api.itemadmin.EntrustApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.Entrust;
@@ -12,16 +23,6 @@ import net.risesoft.service.EntrustService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.text.ParseException;
-import java.util.Map;
 
 /**
  * 出差委托接口
@@ -95,7 +96,8 @@ public class EntrustApiImpl implements EntrustApi {
      */
     @Override
     @PostMapping(value = "/destroyEntrustByOwnerIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void destroyEntrustByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId) throws Exception {
+    public void destroyEntrustByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId)
+        throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             entrustService.destroyEntrust(ownerId, itemId);
@@ -116,7 +118,8 @@ public class EntrustApiImpl implements EntrustApi {
      */
     @Override
     @GetMapping(value = "/findOneByOwnerIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EntrustModel findOneByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId) throws Exception {
+    public EntrustModel findOneByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId)
+        throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         EntrustModel entrustModel = null;
         Entrust entrust = entrustService.findOneByOwnerIdAndItemId(ownerId, itemId);
@@ -166,7 +169,8 @@ public class EntrustApiImpl implements EntrustApi {
      */
     @Override
     @GetMapping(value = "/findOneByOwnerIdAndItemIdAndTime", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EntrustModel findOneByOwnerIdAndItemIdAndTime(String tenantId, String ownerId, String itemId, String currentTime) throws Exception {
+    public EntrustModel findOneByOwnerIdAndItemIdAndTime(String tenantId, String ownerId, String itemId,
+        String currentTime) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         Entrust entrust = entrustService.findOneByOwnerIdAndItemIdAndTime(ownerId, itemId, currentTime);
         EntrustModel entrustModel = null;
@@ -223,7 +227,8 @@ public class EntrustApiImpl implements EntrustApi {
      */
     @Override
     @GetMapping(value = "/getItemList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getItemList(String tenantId, String userId, String ownerId, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> getItemList(String tenantId, String userId, String ownerId, Integer page, Integer rows)
+        throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = entrustService.itemList(ownerId, page, rows);
         return map;
@@ -273,7 +278,8 @@ public class EntrustApiImpl implements EntrustApi {
      */
     @Override
     @PostMapping(value = "/saveEntrustDetail", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void saveEntrustDetail(String tenantId, String processInstanceId, String taskId, String ownerId, String assigneeId) {
+    public void saveEntrustDetail(String tenantId, String processInstanceId, String taskId, String ownerId,
+        String assigneeId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         entrustDetailService.save(processInstanceId, taskId, ownerId, assigneeId);
     }
@@ -287,7 +293,8 @@ public class EntrustApiImpl implements EntrustApi {
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveOrUpdate(String tenantId, String userId, @RequestBody EntrustModel entrustModel) throws Exception {
         Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setTenantId(tenantId);

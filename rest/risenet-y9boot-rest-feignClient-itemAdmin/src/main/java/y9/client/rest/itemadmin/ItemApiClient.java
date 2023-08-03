@@ -16,7 +16,8 @@ import net.risesoft.model.itemadmin.ItemModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ItemApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/item")
+@FeignClient(contextId = "ItemApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/item")
 public interface ItemApiClient extends ItemApi {
 
     /**
@@ -29,7 +30,8 @@ public interface ItemApiClient extends ItemApi {
      */
     @Override
     @GetMapping("/findAll")
-    public List<ItemModel> findAll(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName);
+    public List<ItemModel> findAll(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("systemName") String systemName);
 
     /**
      * 根据流程的定义Key查找对应的事项
@@ -40,7 +42,8 @@ public interface ItemApiClient extends ItemApi {
      */
     @Override
     @GetMapping("/findByProcessDefinitionKey")
-    public ItemModel findByProcessDefinitionKey(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionKey") String processDefinitionKey);
+    public ItemModel findByProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
      * 获取所有事项列表
@@ -96,7 +99,8 @@ public interface ItemApiClient extends ItemApi {
      */
     @Override
     @GetMapping("/getFormIdByItemId")
-    public String getFormIdByItemId(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionKey") String processDefinitionKey);
+    public String getFormIdByItemId(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
      * 获取新建事项列表
@@ -107,7 +111,8 @@ public interface ItemApiClient extends ItemApi {
      */
     @Override
     @GetMapping("/getItemList")
-    public List<Map<String, Object>> getItemList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
+    public List<Map<String, Object>> getItemList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId);
 
     /**
      * 分页获取事项列表
@@ -121,7 +126,9 @@ public interface ItemApiClient extends ItemApi {
      */
     @Override
     @GetMapping("/getItemPageList")
-    public Map<String, Object> getItemList(@RequestParam("tenantId") String tenantId, @RequestParam("personID") String personId, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows, @RequestParam("name") String name);
+    public Map<String, Object> getItemList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("personID") String personId, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows, @RequestParam("name") String name);
 
     /**
      * 
@@ -134,7 +141,8 @@ public interface ItemApiClient extends ItemApi {
      */
     @Override
     @GetMapping("/getItemMappingConf")
-    public List<ItemMappingConfModel> getItemMappingConf(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId, @RequestParam("mappingId") String mappingId);
+    public List<ItemMappingConfModel> getItemMappingConf(@RequestParam("tenantId") String tenantId,
+        @RequestParam("itemId") String itemId, @RequestParam("mappingId") String mappingId);
 
     /**
      * 获取事项系统
@@ -145,7 +153,8 @@ public interface ItemApiClient extends ItemApi {
      */
     @Override
     @GetMapping("/getItemSystem")
-    public List<Map<String, Object>> getItemSystem(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
+    public List<Map<String, Object>> getItemSystem(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId);
 
     /**
      * 获取个人有权限事项列表
@@ -156,7 +165,8 @@ public interface ItemApiClient extends ItemApi {
      */
     @Override
     @GetMapping("/getMyItemList")
-    public List<Map<String, Object>> getMyItemList(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
+    public List<Map<String, Object>> getMyItemList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("id") String id);
 
     /**
      * 判断该租户是否有流程定义
@@ -167,6 +177,7 @@ public interface ItemApiClient extends ItemApi {
      */
     @Override
     @GetMapping("/hasProcessDefinitionByKey")
-    public Boolean hasProcessDefinitionByKey(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionKey") String processDefinitionKey);
+    public Boolean hasProcessDefinitionByKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
 
 }

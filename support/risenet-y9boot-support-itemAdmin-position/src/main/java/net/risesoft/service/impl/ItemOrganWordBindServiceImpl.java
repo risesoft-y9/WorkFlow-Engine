@@ -74,16 +74,20 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
             if (latestpd.getVersion() > 1) {
-                ProcessDefinitionModel previouspd = repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
+                ProcessDefinitionModel previouspd =
+                    repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
                 previouspdId = previouspd.getId();
             }
         }
         List<Map<String, Object>> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false);
         for (Map<String, Object> map : nodes) {
             String currentTaskDefKey = (String)map.get("taskDefKey");
-            List<ItemOrganWordBind> bindList = itemOrganWordBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, previouspdId, currentTaskDefKey);
+            List<ItemOrganWordBind> bindList = itemOrganWordBindRepository
+                .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, previouspdId, currentTaskDefKey);
             for (ItemOrganWordBind bind : bindList) {
-                ItemOrganWordBind oldBind = itemOrganWordBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId, latestpdId, currentTaskDefKey, bind.getOrganWordCustom());
+                ItemOrganWordBind oldBind =
+                    itemOrganWordBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(
+                        itemId, latestpdId, currentTaskDefKey, bind.getOrganWordCustom());
                 if (null == oldBind) {
                     String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE), oldbindId = bind.getId();
                     /**
@@ -125,14 +129,16 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
 
     @Override
     public List<ItemOrganWordBind> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
-        List<ItemOrganWordBind> owtrbList = itemOrganWordBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+        List<ItemOrganWordBind> owtrbList =
+            itemOrganWordBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         OrganWord organWord = null;
         for (ItemOrganWordBind bind : owtrbList) {
             String custom = bind.getOrganWordCustom();
             organWord = organWordRepository.findByCustom(custom);
             bind.setOrganWordName(organWord == null ? custom + "对应的编号不存在" : organWord.getName());
 
-            List<ItemOrganWordRole> roleList = itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(bind.getId());
+            List<ItemOrganWordRole> roleList =
+                itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(bind.getId());
             List<String> roleIds = new ArrayList<>();
             String roleNames = "";
             for (ItemOrganWordRole role : roleList) {
@@ -151,8 +157,10 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     }
 
     @Override
-    public List<ItemOrganWordBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId, String taskDefKey) {
-        List<ItemOrganWordBind> owtrbList = itemOrganWordBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+    public List<ItemOrganWordBind> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
+        String processDefinitionId, String taskDefKey) {
+        List<ItemOrganWordBind> owtrbList = itemOrganWordBindRepository
+            .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         OrganWord organWord = null;
         for (ItemOrganWordBind bind : owtrbList) {
             String custom = bind.getOrganWordCustom();
@@ -179,8 +187,11 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     }
 
     @Override
-    public ItemOrganWordBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(String itemId, String processDefinitionId, String taskDefKey, String custom) {
-        ItemOrganWordBind bind = itemOrganWordBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId, processDefinitionId, taskDefKey, custom);
+    public ItemOrganWordBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(String itemId,
+        String processDefinitionId, String taskDefKey, String custom) {
+        ItemOrganWordBind bind =
+            itemOrganWordBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId,
+                processDefinitionId, taskDefKey, custom);
         if (null != bind) {
             List<String> roleIds = new ArrayList<>();
             List<ItemOrganWordRole> roleList = itemOrganWordRoleService.findByItemOrganWordBindId(bind.getId());
@@ -225,7 +236,8 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     @Override
     @Transactional(readOnly = false)
     public void save(String custom, String itemId, String processDefinitionId, String taskDefKey) {
-        ItemOrganWordBind bind = this.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId, processDefinitionId, taskDefKey, custom);
+        ItemOrganWordBind bind = this.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId,
+            processDefinitionId, taskDefKey, custom);
         if (null == bind) {
             ItemOrganWordBind taskRoleBind = new ItemOrganWordBind();
             taskRoleBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));

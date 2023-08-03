@@ -57,7 +57,8 @@ public class DdlMysql {
                     add = true;
                 } else {
                     // 存在旧字段，字段名称没有改变则修改属性
-                    if (dbc.getColumnName().equalsIgnoreCase(dbc.getColumnNameOld()) || StringUtils.isBlank(dbc.getColumnNameOld())) {
+                    if (dbc.getColumnName().equalsIgnoreCase(dbc.getColumnNameOld())
+                        || StringUtils.isBlank(dbc.getColumnNameOld())) {
                         ddl += " MODIFY COLUMN " + dbc.getColumnName() + " ";
                     } else {
                         // 存在旧字段，字段名称改变则修改字段名称及属性
@@ -105,7 +106,8 @@ public class DdlMysql {
         if (!dbMetaDataUtil.checkTableExist(connection, tableName)) {
             throw new Exception("数据库中不存在这个表：" + tableName);
         }
-        DbColumn[] dbcs = Y9JsonUtil.objectMapper.readValue(jsonDbColumns, TypeFactory.defaultInstance().constructArrayType(DbColumn.class));
+        DbColumn[] dbcs = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
+            TypeFactory.defaultInstance().constructArrayType(DbColumn.class));
         for (DbColumn dbc : dbcs) {
             String ddl = "ALTER TABLE " + tableName;
             // 字段名称没有改变
@@ -140,7 +142,8 @@ public class DdlMysql {
     }
 
     public void createTable(Connection connection, String tableName, String jsonDbColumns) throws Exception {
-        List<DbColumn> dbcs = Y9JsonUtil.objectMapper.readValue(jsonDbColumns, Y9JsonUtil.objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, DbColumn.class));
+        List<DbColumn> dbcs = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
+            Y9JsonUtil.objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, DbColumn.class));
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
         StringBuilder sb = new StringBuilder();
         //@formatter:off

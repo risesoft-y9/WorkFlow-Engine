@@ -44,7 +44,8 @@ public class WorkOrderApiImpl implements WorkOrderApi {
      */
     @Override
     @PostMapping(value = "/changeWorkOrderState", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> changeWorkOrderState(String processSerialNumber, String state, String processInstanceId, String resultFeedback) {
+    public Map<String, Object> changeWorkOrderState(String processSerialNumber, String state, String processInstanceId,
+        String resultFeedback) {
         return workOrderService.changeWorkOrderState(processSerialNumber, state, processInstanceId, resultFeedback);
     }
 
@@ -145,7 +146,8 @@ public class WorkOrderApiImpl implements WorkOrderApi {
      * @return Map<String, Object>
      */
     @Override
-    @PostMapping(value = "/saveWorkOrder", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/saveWorkOrder", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> saveWorkOrder(@RequestBody WorkOrderModel workOrderModel) {
         WorkOrderEntity workOrder = new WorkOrderEntity();
         Y9BeanUtil.copyProperties(workOrderModel, workOrder);
@@ -191,7 +193,8 @@ public class WorkOrderApiImpl implements WorkOrderApi {
     @SuppressWarnings("unchecked")
     @Override
     @GetMapping(value = "/workOrderList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> workOrderList(String userId, String searchTerm, String handleType, Integer page, Integer rows) {
+    public Map<String, Object> workOrderList(String userId, String searchTerm, String handleType, Integer page,
+        Integer rows) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = workOrderService.workOrderList(userId, searchTerm, handleType, page, rows);
         List<WorkOrderModel> resList = new ArrayList<WorkOrderModel>();

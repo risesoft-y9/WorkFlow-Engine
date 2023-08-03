@@ -60,7 +60,8 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
+                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -66,7 +66,8 @@ public interface ReminderService {
      * @param rows
      * @return
      */
-    Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId, int page, int rows);
+    Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId, int page,
+        int rows);
 
     /**
      * 根据taskId查找是否存在催办
@@ -116,7 +117,8 @@ public interface ReminderService {
      * @param documentTitle
      * @return
      */
-    String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType, String taskId, String taskAssigneeId, String documentTitle);
+    String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType,
+        String taskId, String taskAssigneeId, String documentTitle);
 
     /**
      * 保存或者编辑催办

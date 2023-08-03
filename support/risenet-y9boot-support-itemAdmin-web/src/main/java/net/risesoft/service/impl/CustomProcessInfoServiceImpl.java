@@ -31,7 +31,8 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
     @Override
     public CustomProcessInfo getCurrentTaskNextNode(String processSerialNumber) {
         try {
-            List<CustomProcessInfo> taskList = customProcessInfoRepository.findByProcessSerialNumberOrderByTabIndexAsc(processSerialNumber);
+            List<CustomProcessInfo> taskList =
+                customProcessInfoRepository.findByProcessSerialNumberOrderByTabIndexAsc(processSerialNumber);
             boolean isnext = false;
             for (CustomProcessInfo info : taskList) {
                 if (isnext) {
@@ -62,7 +63,8 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
                 info.setProcessSerialNumber(processSerialNumber);
                 info.setTaskKey((String)map.get("taskKey"));
                 info.setTaskName((String)map.get("taskName"));
-                info.setTaskType(StringUtils.isBlank((String)map.get("type")) ? SysVariables.USERTASK : (String)map.get("type"));
+                info.setTaskType(
+                    StringUtils.isBlank((String)map.get("type")) ? SysVariables.USERTASK : (String)map.get("type"));
                 info.setTabIndex(i);
                 List<Map<String, Object>> orgList = (List<Map<String, Object>>)map.get("orgList");
                 String orgId = "";
@@ -91,7 +93,8 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
     @Transactional(readOnly = false)
     public boolean updateCurrentTask(String processSerialNumber) {
         try {
-            List<CustomProcessInfo> taskList = customProcessInfoRepository.findByProcessSerialNumberOrderByTabIndexAsc(processSerialNumber);
+            List<CustomProcessInfo> taskList =
+                customProcessInfoRepository.findByProcessSerialNumberOrderByTabIndexAsc(processSerialNumber);
             boolean isSet = false;
             for (CustomProcessInfo info : taskList) {
                 if (isSet) {

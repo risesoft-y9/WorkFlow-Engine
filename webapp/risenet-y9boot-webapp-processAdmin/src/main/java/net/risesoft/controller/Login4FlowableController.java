@@ -22,15 +22,15 @@ import net.risesoft.y9.Y9Context;
 @RequestMapping("/login4Flowable")
 public class Login4FlowableController {
 
-	@ResponseBody
-	@RequestMapping(value = "/logout", method = RequestMethod.GET)
-	public Map<String, Object> logout(HttpServletRequest request, HttpSession session) {
-		Map<String, Object> map = new HashMap<String, Object>(16);
-		if (session != null) {
-			session.invalidate();
-		}
-		map.put("y9LogoutUrl", Y9Context.getLogoutUrl());
-		map.put("success", true);
-		return map;
-	}
+    @ResponseBody
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public Map<String, Object> logout(HttpServletRequest request, HttpSession session) {
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        if (session != null) {
+            session.invalidate();
+        }
+        map.put("y9LogoutUrl", Y9Context.getLogoutUrl());
+        map.put("success", true);
+        return map;
+    }
 }

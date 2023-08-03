@@ -74,8 +74,10 @@ public class Y9FormItemBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/bindList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Y9FormItemBind>> bindList(@RequestParam(required = true) String itemId, @RequestParam(required = true) String procDefId, @RequestParam(required = false) String taskDefKey) {
-        List<Y9FormItemBind> eformItemList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, procDefId, taskDefKey);
+    public Y9Result<List<Y9FormItemBind>> bindList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String procDefId, @RequestParam(required = false) String taskDefKey) {
+        List<Y9FormItemBind> eformItemList =
+            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, procDefId, taskDefKey);
         return Y9Result.success(eformItemList, "获取成功");
     }
 
@@ -87,7 +89,8 @@ public class Y9FormItemBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/copyForm", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyForm(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> copyForm(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String processDefinitionId) {
         y9FormItemBindService.copyEform(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }
@@ -131,10 +134,13 @@ public class Y9FormItemBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/formList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> formList(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey, @RequestParam(required = true) String systemName) {
+    public Y9Result<List<Map<String, Object>>> formList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey,
+        @RequestParam(required = true) String systemName) {
         List<Map<String, Object>> listmap = new ArrayList<Map<String, Object>>();
         List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(systemName, "%%");
-        List<Y9FormItemBind> bindList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
+        List<Y9FormItemBind> bindList =
+            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
         for (Y9Form y9Form : list) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             boolean isbind = false;
@@ -161,7 +167,8 @@ public class Y9FormItemBindRestController {
      * @return
      */
     @RequestMapping(value = "/getBindForm", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Y9FormItemBind> getBindForm(@RequestParam(required = false) String id, @RequestParam(required = true) String procDefId) {
+    public Y9Result<Y9FormItemBind> getBindForm(@RequestParam(required = false) String id,
+        @RequestParam(required = true) String procDefId) {
         Y9FormItemBind eformItemBind = null;
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(id)) {
@@ -186,7 +193,8 @@ public class Y9FormItemBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String processDefinitionId, @RequestParam(required = true) String itemId) {
+    public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String processDefinitionId,
+        @RequestParam(required = true) String itemId) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -198,8 +206,10 @@ public class Y9FormItemBindRestController {
             String mobileFormName = "";
             String mobileFormId = "";
             String mobileBindId = "";
-            eibList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, processDefinitionId, (String)map.get("taskDefKey"));
-            eibList1 = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(itemId, processDefinitionId, (String)map.get("taskDefKey"));
+            eibList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, processDefinitionId,
+                (String)map.get("taskDefKey"));
+            eibList1 = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(itemId,
+                processDefinitionId, (String)map.get("taskDefKey"));
             for (Y9FormItemBind eib : eibList) {
                 if (StringUtils.isNotBlank(eib.getFormName())) {
                     eformNames = Y9Util.genCustomStr(eformNames, eib.getFormName());
@@ -247,10 +257,12 @@ public class Y9FormItemBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getPrintFormList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getFormList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String formName) {
+    public Y9Result<List<Map<String, Object>>> getFormList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = false) String formName) {
         List<Map<String, Object>> listmap = new ArrayList<Map<String, Object>>();
         SpmApproveItem spmApproveItem = spmApproveItemService.findById(itemId);
-        List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(spmApproveItem.getSystemName(), StringUtils.isNotBlank(formName) ? "%" + formName + "%" : "%%");
+        List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(spmApproveItem.getSystemName(),
+            StringUtils.isNotBlank(formName) ? "%" + formName + "%" : "%%");
         List<ItemPrintTemplateBind> bindList = printTemplateService.getTemplateBindList(itemId);
         ItemPrintTemplateBind itemPrintTemplateBind = bindList.size() > 0 ? bindList.get(0) : null;
         for (Y9Form y9Form : list) {

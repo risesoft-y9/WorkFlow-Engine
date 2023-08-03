@@ -144,7 +144,8 @@ public class ItemRestController {
                     if (subDeptList != null && subDeptList.size() > 0) {
                         isParent = true;
                     }
-                    sb.append("{ id:'" + dept.getId() + "', pId:'" + orgList.get(0).getId() + "', name:'" + dept.getName() + "', isParent: " + isParent + "},");
+                    sb.append("{ id:'" + dept.getId() + "', pId:'" + orgList.get(0).getId() + "', name:'"
+                        + dept.getName() + "', isParent: " + isParent + "},");
                 }
             }
         } else {
@@ -155,7 +156,8 @@ public class ItemRestController {
                 if (subDeptList != null && subDeptList.size() > 0) {
                     isParent = true;
                 }
-                sb.append("{ id:'" + dept.getId() + "', pId:'" + deptId + "', name:'" + dept.getName() + "', isParent: " + isParent + "},");
+                sb.append("{ id:'" + dept.getId() + "', pId:'" + deptId + "', name:'" + dept.getName() + "', isParent: "
+                    + isParent + "},");
             }
         }
     }

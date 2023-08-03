@@ -53,9 +53,12 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                 String workingDay2Holiday = calendarConfig.getWorkingDay2Holiday();
                 String everyYearHoliday = calendarConfig.getEveryYearHoliday();
 
-                List<String> workingDay2HolidayList = StringUtils.isNotBlank(workingDay2Holiday) ? new ArrayList<String>(Arrays.asList(workingDay2Holiday.split(","))) : new ArrayList<String>();
-                List<String> weekend2WorkingDayList = StringUtils.isNotBlank(weekend2WorkingDay) ? new ArrayList<String>(Arrays.asList(weekend2WorkingDay.split(","))) : new ArrayList<String>();
-                List<String> everyYearHolidayList = StringUtils.isNotBlank(everyYearHoliday) ? new ArrayList<String>(Arrays.asList(everyYearHoliday.split(","))) : new ArrayList<String>();
+                List<String> workingDay2HolidayList = StringUtils.isNotBlank(workingDay2Holiday)
+                    ? new ArrayList<String>(Arrays.asList(workingDay2Holiday.split(","))) : new ArrayList<String>();
+                List<String> weekend2WorkingDayList = StringUtils.isNotBlank(weekend2WorkingDay)
+                    ? new ArrayList<String>(Arrays.asList(weekend2WorkingDay.split(","))) : new ArrayList<String>();
+                List<String> everyYearHolidayList = StringUtils.isNotBlank(everyYearHoliday)
+                    ? new ArrayList<String>(Arrays.asList(everyYearHoliday.split(","))) : new ArrayList<String>();
                 // 删除休假
                 if (workingDay2HolidayList.contains(startDate)) {
                     if (workingDay2HolidayList.contains(startDate)) {
@@ -228,7 +231,8 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                     }
                 }
                 // 获取前一年的配置
-                CalendarConfig calendarConfig0 = calendarConfigRepository.findByYear(String.valueOf((Integer.valueOf(year) - 1)));
+                CalendarConfig calendarConfig0 =
+                    calendarConfigRepository.findByYear(String.valueOf((Integer.valueOf(year) - 1)));
                 String yearHolidayStr = StringUtils.join(yearHoliday, ",");
                 if (calendarConfig0 != null) {
                     // 每年休假日期累加,方便跨年计算
@@ -241,9 +245,12 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                 String workingDay2Holiday = calendarConfig.getWorkingDay2Holiday();
                 String everyYearHoliday = calendarConfig.getEveryYearHoliday();
 
-                List<String> workingDay2HolidayList = StringUtils.isNotBlank(workingDay2Holiday) ? new ArrayList<String>(Arrays.asList(workingDay2Holiday.split(","))) : new ArrayList<String>();
-                List<String> weekend2WorkingDayList = StringUtils.isNotBlank(weekend2WorkingDay) ? new ArrayList<String>(Arrays.asList(weekend2WorkingDay.split(","))) : new ArrayList<String>();
-                List<String> everyYearHolidayList = StringUtils.isNotBlank(everyYearHoliday) ? new ArrayList<String>(Arrays.asList(everyYearHoliday.split(","))) : new ArrayList<String>();
+                List<String> workingDay2HolidayList = StringUtils.isNotBlank(workingDay2Holiday)
+                    ? new ArrayList<String>(Arrays.asList(workingDay2Holiday.split(","))) : new ArrayList<String>();
+                List<String> weekend2WorkingDayList = StringUtils.isNotBlank(weekend2WorkingDay)
+                    ? new ArrayList<String>(Arrays.asList(weekend2WorkingDay.split(","))) : new ArrayList<String>();
+                List<String> everyYearHolidayList = StringUtils.isNotBlank(everyYearHoliday)
+                    ? new ArrayList<String>(Arrays.asList(everyYearHoliday.split(","))) : new ArrayList<String>();
                 if (type == 1) {
                     // 休假
                     if (!workingDay2HolidayList.contains(startDate)) {

@@ -105,7 +105,8 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param processSerialNumbers 流程编号
      */
     @Override
-    @PostMapping(value = "/delBatchByProcessSerialNumbers", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/delBatchByProcessSerialNumbers", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void delBatchByProcessSerialNumbers(String tenantId, @RequestBody List<String> processSerialNumbers) {
         Y9LoginUserHolder.setTenantId(tenantId);
         transactionWordService.delBatchByProcessSerialNumbers(processSerialNumbers);
@@ -151,7 +152,8 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      */
     @Override
     @GetMapping(value = "/exchangeFindWordByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> exchangeFindWordByProcessSerialNumber(String tenantId, String userId, String processSerialNumber) {
+    public List<Map<String, Object>> exchangeFindWordByProcessSerialNumber(String tenantId, String userId,
+        String processSerialNumber) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -197,9 +199,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         List<TransactionHistoryWord> historyWord = transactionHistoryWordService.getListByTaskId(taskId);
         if (null != historyWord && StringUtils.isNotBlank(historyWord.get(0).getId())) {
             if (StringUtils.isNotEmpty(historyWord.get(0).getIstaohong())) {
-                if (ItemWordTypeEnum.PDF.getValue().equals(historyWord.get(0).getIstaohong()) || ItemWordTypeEnum.PDF1.getValue().equals(historyWord.get(0).getIstaohong()) || ItemWordTypeEnum.PDF2.getValue().equals(historyWord.get(0).getIstaohong())) {
+                if (ItemWordTypeEnum.PDF.getValue().equals(historyWord.get(0).getIstaohong())
+                    || ItemWordTypeEnum.PDF1.getValue().equals(historyWord.get(0).getIstaohong())
+                    || ItemWordTypeEnum.PDF2.getValue().equals(historyWord.get(0).getIstaohong())) {
                     map.put("openWordOrPdf", "openPDF");
-                } else if (ItemWordTypeEnum.WORD.getValue().equals(historyWord.get(0).getIstaohong()) || ItemWordTypeEnum.REDHEADWORD.getValue().equals(historyWord.get(0).getIstaohong())) {
+                } else if (ItemWordTypeEnum.WORD.getValue().equals(historyWord.get(0).getIstaohong())
+                    || ItemWordTypeEnum.REDHEADWORD.getValue().equals(historyWord.get(0).getIstaohong())) {
                     map.put("openWordOrPdf", "openWord");
                 }
             } else {
@@ -211,7 +216,8 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             map.put("saveDate", historyWord.get(0).getSaveDate());
             Person p = personManager.getPerson(tenantId, historyWord.get(0).getUserId());
             map.put("userName", p != null && StringUtils.isNotBlank(p.getId()) ? p.getName() : "");
-            map.put("isTaoHong", StringUtils.isNotBlank(historyWord.get(0).getIstaohong()) ? historyWord.get(0).getIstaohong() : "");
+            map.put("isTaoHong",
+                StringUtils.isNotBlank(historyWord.get(0).getIstaohong()) ? historyWord.get(0).getIstaohong() : "");
         }
         return map;
     }
@@ -315,10 +321,13 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         } else {// 打开事项配置的正文模板
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
-            ProcessDefinitionModel processDefinition = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+            ProcessDefinitionModel processDefinition =
+                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
             String processDefinitionId = processDefinition.getId();
-            ItemWordTemplateBind wordTemplateBind = wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
-            WordTemplate wordTemplate = wordTemplateRepository.findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
+            ItemWordTemplateBind wordTemplateBind =
+                wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+            WordTemplate wordTemplate = wordTemplateRepository
+                .findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
             if (wordTemplate != null && wordTemplate.getId() != null) {
                 String docBase = wordTemplate.getFilePath();
                 return docBase;
@@ -469,7 +478,8 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      */
     @Override
     @GetMapping(value = "/openRevokePDFAfterDocument", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String openRevokePdfAfterDocument(String tenantId, String userId, String processSerialNumber, String isTaoHong) {
+    public String openRevokePdfAfterDocument(String tenantId, String userId, String processSerialNumber,
+        String isTaoHong) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
@@ -525,7 +535,8 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     @SuppressWarnings("unchecked")
     @Override
     @PostMapping(value = "/saveImportTransationWord", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Boolean saveImportTransationWord(String tenantId, String userId, String docjson, String processSerialNumber) {
+    public Boolean saveImportTransationWord(String tenantId, String userId, String docjson,
+        String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
@@ -567,7 +578,8 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      */
     @Override
     @GetMapping(value = "/showWord", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> showWord(String tenantId, String userId, String processSerialNumber, String itemId, String itembox, String taskId) {
+    public Map<String, Object> showWord(String tenantId, String userId, String processSerialNumber, String itemId,
+        String itembox, String taskId) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId);
@@ -576,9 +588,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         String wordReadOnly = "";
         String openWordOrPdf = "";
         String isTaoHong = "0";
-        if ("".equals(itembox) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.ADD.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue())) {
+        if ("".equals(itembox) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.ADD.getValue())
+            || itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())
+            || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue())) {
             wordReadOnly = "NO";
-        } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())) {
+        } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())
+            || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())) {
             wordReadOnly = "YES";
         }
         String saveDate = "";
@@ -616,11 +631,14 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             } else {
                 SpmApproveItem item = spmApproveItemService.findById(itemId);
                 String processDefinitionKey = item.getWorkflowGuid();
-                ProcessDefinitionModel processDefinitionModel = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+                ProcessDefinitionModel processDefinitionModel =
+                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
                 processDefinitionId = processDefinitionModel.getId();
             }
-            ItemWordTemplateBind wordTemplateBind = wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
-            WordTemplate wordTemplate = wordTemplateRepository.findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
+            ItemWordTemplateBind wordTemplateBind =
+                wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+            WordTemplate wordTemplate = wordTemplateRepository
+                .findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
             if (wordTemplate != null && wordTemplate.getId() != null) {
                 fileDocumentId = wordTemplate.getId();
                 openWordOrPdf = "openWordTemplate";
@@ -692,28 +710,34 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      */
     @Override
     @PostMapping(value = "/uploadWord", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String uploadWord(String tenantId, String userId, String documentTitle, String fileType, String processSerialNumber, String isTaoHong, String taskId, String fileSizeString, String fileStoreId) {
+    public String uploadWord(String tenantId, String userId, String documentTitle, String fileType,
+        String processSerialNumber, String isTaoHong, String taskId, String fileSizeString, String fileStoreId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
         String info = "";
         try {
             if (StringUtils.isNotBlank(processSerialNumber) && !"".equals(processSerialNumber)) {
-                List<TransactionWord> list = transactionWordService.findByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
+                List<TransactionWord> list =
+                    transactionWordService.findByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
                 if (list.size() == 0) {
-                    transactionWordService.saveTransactionWord(fileStoreId, fileSizeString, documentTitle, fileType, processSerialNumber, isTaoHong);
-                    transactionHistoryWordService.saveTransactionHistoryWord(fileStoreId, fileSizeString, documentTitle, fileType, processSerialNumber, isTaoHong, taskId);
+                    transactionWordService.saveTransactionWord(fileStoreId, fileSizeString, documentTitle, fileType,
+                        processSerialNumber, isTaoHong);
+                    transactionHistoryWordService.saveTransactionHistoryWord(fileStoreId, fileSizeString, documentTitle,
+                        fileType, processSerialNumber, isTaoHong, taskId);
                 } else {
                     if (StringUtils.isNotEmpty(list.get(0).getTitle())) {
                         documentTitle = list.get(0).getTitle();
                     } else {
                         documentTitle = "正文";
                     }
-                    transactionWordService.updateTransactionWordById(fileStoreId, fileType, documentTitle + fileType, fileSizeString, isTaoHong, userId, list.get(0).getId());
+                    transactionWordService.updateTransactionWordById(fileStoreId, fileType, documentTitle + fileType,
+                        fileSizeString, isTaoHong, userId, list.get(0).getId());
 
                     List<TransactionHistoryWord> thwlist = null;
                     if (StringUtils.isNotBlank(taskId)) {
-                        thwlist = transactionHistoryWordRepository.getByProcessSerialNumberAndIsTaoHongAndTaskId(processSerialNumber, isTaoHong, taskId);
+                        thwlist = transactionHistoryWordRepository
+                            .getByProcessSerialNumberAndIsTaoHongAndTaskId(processSerialNumber, isTaoHong, taskId);
                     } else {
                         /**
                          * 流程刚启动的时候taskId为空
@@ -724,9 +748,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                         /**
                          * 在当前任务还没有保存过正文
                          */
-                        transactionHistoryWordService.saveTransactionHistoryWord(fileStoreId, fileSizeString, documentTitle, fileType, processSerialNumber, isTaoHong, taskId);
+                        transactionHistoryWordService.saveTransactionHistoryWord(fileStoreId, fileSizeString,
+                            documentTitle, fileType, processSerialNumber, isTaoHong, taskId);
                     } else {
-                        transactionHistoryWordService.updateTransactionHistoryWordById(fileStoreId, fileType, documentTitle + fileType, fileSizeString, isTaoHong, userId, thwlist.get(0).getId());
+                        transactionHistoryWordService.updateTransactionHistoryWordById(fileStoreId, fileType,
+                            documentTitle + fileType, fileSizeString, isTaoHong, userId, thwlist.get(0).getId());
                     }
                 }
                 info = "success:true";

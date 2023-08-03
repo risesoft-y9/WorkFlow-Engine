@@ -17,13 +17,15 @@ import java.util.EventListener;
 interface OfficeConnectionEventListener extends EventListener {
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param event
      */
     void connected(OfficeConnectionEvent event);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param event
      */
     void disconnected(OfficeConnectionEvent event);

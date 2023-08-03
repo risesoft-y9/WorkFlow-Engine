@@ -14,13 +14,15 @@ import net.risesoft.entity.ViewType;
 public interface ViewTypeService {
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @return
      */
     List<ViewType> findAll();
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param page
      * @param rows
      * @return
@@ -28,47 +30,54 @@ public interface ViewTypeService {
     Page<ViewType> findAll(int page, int rows);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param id
      * @return
      */
     ViewType findById(String id);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param mark
      * @return
      */
     ViewType findByMark(String mark);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param id
      */
     void remove(String id);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param ids
      */
     void remove(String[] ids);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param viewType
      * @return
      */
     ViewType save(ViewType viewType);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param viewType
      * @return
      */
     ViewType saveOrUpdate(ViewType viewType);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param page
      * @param rows
      * @param keyword

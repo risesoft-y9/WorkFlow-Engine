@@ -14,13 +14,15 @@ import net.risesoft.entity.OpinionFrame;
 public interface OpinionFrameService {
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @return
      */
     List<OpinionFrame> findAll();
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param page
      * @param rows
      * @return
@@ -28,7 +30,8 @@ public interface OpinionFrameService {
     Page<OpinionFrame> findAll(int page, int rows);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
@@ -39,47 +42,54 @@ public interface OpinionFrameService {
     Page<OpinionFrame> findAllNotUsed(String itemId, String processDefinitionId, String taskDefKey, int page, int rows);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param mark
      * @return
      */
     OpinionFrame findByMark(String mark);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param id
      * @return
      */
     OpinionFrame findOne(String id);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param id
      */
     void remove(String id);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param ids
      */
     void remove(String[] ids);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param opinionFrame
      * @return
      */
     OpinionFrame save(OpinionFrame opinionFrame);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param opinionFrame
      * @return
      */
     OpinionFrame saveOrUpdate(OpinionFrame opinionFrame);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param page
      * @param rows
      * @param keyword
@@ -88,7 +98,8 @@ public interface OpinionFrameService {
     Page<OpinionFrame> search(int page, int rows, String keyword);
 
     /**
-     * Description: 
+     * Description:
+     * 
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
@@ -97,5 +108,6 @@ public interface OpinionFrameService {
      * @param keyword
      * @return
      */
-    Page<OpinionFrame> search4NotUsed(String itemId, String processDefinitionId, String taskDefKey, int page, int rows, String keyword);
+    Page<OpinionFrame> search4NotUsed(String itemId, String processDefinitionId, String taskDefKey, int page, int rows,
+        String keyword);
 }

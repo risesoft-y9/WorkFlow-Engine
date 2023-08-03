@@ -25,7 +25,8 @@ import net.risesoft.utils.UploadUtils;
 public class FileController {
 
     @RequestMapping(value = "fileUpload", method = RequestMethod.POST)
-    public Map<String, Object> fileUpload(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws JsonProcessingException {
+    public Map<String, Object> fileUpload(@RequestParam("file") MultipartFile file, HttpServletRequest request)
+        throws JsonProcessingException {
         String originalFilename = file.getOriginalFilename();
         String fileName = FilenameUtils.getName(originalFilename);
         UploadUtils uploadUtils = new UploadUtils();

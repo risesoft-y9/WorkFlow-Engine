@@ -68,7 +68,8 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      */
     @Override
     @GetMapping(value = "/findCsUser", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findCsUser(String tenantId, String userId, String positionId, String id, Integer principalType, String processInstanceId) {
+    public List<Map<String, Object>> findCsUser(String tenantId, String userId, String positionId, String id,
+        Integer principalType, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId);
         Y9LoginUserHolder.setPosition(position);
@@ -90,7 +91,8 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      */
     @Override
     @GetMapping(value = "/findCsUserBureau", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findCsUserBureau(String tenantId, String userId, String positionId, Integer principalType) {
+    public List<Map<String, Object>> findCsUserBureau(String tenantId, String userId, String positionId,
+        Integer principalType) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId);
@@ -124,7 +126,8 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      */
     @Override
     @GetMapping(value = "/findCsUserSearch", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findCsUserSearch(String tenantId, String userId, String positionId, String name, Integer principalType, String processInstanceId) {
+    public List<Map<String, Object>> findCsUserSearch(String tenantId, String userId, String positionId, String name,
+        Integer principalType, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId);
         Y9LoginUserHolder.setPosition(position);
@@ -151,14 +154,16 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      */
     @Override
     @GetMapping(value = "/findPermUser", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findPermUser(String tenantId, String userId, String positionId, String itemId, String processDefinitionId, String taskDefKey, Integer principalType, String id, String processInstanceId) {
+    public List<Map<String, Object>> findPermUser(String tenantId, String userId, String positionId, String itemId,
+        String processDefinitionId, String taskDefKey, Integer principalType, String id, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId);
         Y9LoginUserHolder.setPosition(position);
         Person person = personApi.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-        listMap = roleService.findPermUser(itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
+        listMap =
+            roleService.findPermUser(itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
         return listMap;
     }
 
@@ -178,14 +183,16 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      */
     @Override
     @GetMapping(value = "/findPermUserByName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findPermUserByName(String tenantId, String userId, String positionId, String name, Integer principalType, String itemId, String processDefinitionId, String taskDefKey, String processInstanceId) {
+    public List<Map<String, Object>> findPermUserByName(String tenantId, String userId, String positionId, String name,
+        Integer principalType, String itemId, String processDefinitionId, String taskDefKey, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId);
         Y9LoginUserHolder.setPosition(position);
         Person person = personApi.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-        listMap = roleService.findPermUserByName(name, itemId, processDefinitionId, taskDefKey, principalType, processInstanceId);
+        listMap = roleService.findPermUserByName(name, itemId, processDefinitionId, taskDefKey, principalType,
+            processInstanceId);
         return listMap;
     }
 
@@ -222,7 +229,8 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      */
     @Override
     @GetMapping(value = "/getOrgTree", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getOrgTree(String tenantId, String positionId, String id, String treeType, String name) {
+    public List<Map<String, Object>> getOrgTree(String tenantId, String positionId, String id, String treeType,
+        String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId);
         Y9LoginUserHolder.setPosition(position);

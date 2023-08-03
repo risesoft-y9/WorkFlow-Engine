@@ -16,7 +16,8 @@ import net.risesoft.entity.TaoHongTemplateType;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface TaoHongTemplateTypeRepository extends JpaRepository<TaoHongTemplateType, String>, JpaSpecificationExecutor<TaoHongTemplateType> {
+public interface TaoHongTemplateTypeRepository
+    extends JpaRepository<TaoHongTemplateType, String>, JpaSpecificationExecutor<TaoHongTemplateType> {
     @Override
     @Query("from TaoHongTemplateType t order by t.tabIndex")
     List<TaoHongTemplateType> findAll();

@@ -68,17 +68,20 @@ public class FileUtils {
             } else if (lin) {
                 encoding = "UTF-8";
             }
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(outFilePath), encoding));
+            BufferedReader bufferedReader =
+                new BufferedReader(new InputStreamReader(new FileInputStream(outFilePath), encoding));
 
             File tmpUtf8File = new File(outFilePath + ".utf8");
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmpUtf8File), "UTF-8"));
+            BufferedWriter bufferedWriter =
+                new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmpUtf8File), "UTF-8"));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line);
             }
             sb.append("<script src=\"/jodconverter/static/js/jquery-3.0.0.min.js\" type=\"text/javascript\"></script>");
             sb.append("<script src=\"/jodconverter/static/js/excel.header.js\" type=\"text/javascript\"></script>");
-            sb.append("<link rel=\"stylesheet\" href=\"http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css\">");
+            sb.append(
+                "<link rel=\"stylesheet\" href=\"http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css\">");
             bufferedWriter.write(sb.toString());
             bufferedWriter.close();
             bufferedReader.close();

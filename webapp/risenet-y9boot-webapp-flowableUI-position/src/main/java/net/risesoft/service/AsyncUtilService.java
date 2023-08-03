@@ -16,34 +16,35 @@ import net.risesoft.api.todo.TodoTaskApi;
 @Service(value = "asyncUtilService")
 public class AsyncUtilService {
 
-	@Autowired
-	private TodoTaskApi todoTaskManager;
+    @Autowired
+    private TodoTaskApi todoTaskManager;
 
-	@Autowired
-	private ChaoSong4PositionApi chaoSongInfoManager;
+    @Autowired
+    private ChaoSong4PositionApi chaoSongInfoManager;
 
-	@Autowired
-	private OfficeFollow4PositionApi officeFollowManager;
+    @Autowired
+    private OfficeFollow4PositionApi officeFollowManager;
 
-	/**
-	 * 更新统一待办，抄送件标题
-	 *
-	 * @param tenantId
-	 * @param processInstanceId
-	 * @param documentTitle
-	 * @return
-	 */
-	@Async
-	public Future<Boolean> updateTitle(final String tenantId, final String processInstanceId, final String documentTitle) {
-		try {
-			chaoSongInfoManager.updateTitle(tenantId, processInstanceId, documentTitle);
-			todoTaskManager.updateTitle(tenantId, processInstanceId, documentTitle);
-			officeFollowManager.updateTitle(tenantId, processInstanceId, documentTitle);
-			return new AsyncResult<>(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return new AsyncResult<>(false);
-	}
+    /**
+     * 更新统一待办，抄送件标题
+     *
+     * @param tenantId
+     * @param processInstanceId
+     * @param documentTitle
+     * @return
+     */
+    @Async
+    public Future<Boolean> updateTitle(final String tenantId, final String processInstanceId,
+        final String documentTitle) {
+        try {
+            chaoSongInfoManager.updateTitle(tenantId, processInstanceId, documentTitle);
+            todoTaskManager.updateTitle(tenantId, processInstanceId, documentTitle);
+            officeFollowManager.updateTitle(tenantId, processInstanceId, documentTitle);
+            return new AsyncResult<>(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new AsyncResult<>(false);
+    }
 
 }

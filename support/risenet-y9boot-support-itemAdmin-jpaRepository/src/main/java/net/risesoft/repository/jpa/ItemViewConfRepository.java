@@ -16,7 +16,8 @@ import net.risesoft.entity.ItemViewConf;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemViewConfRepository extends JpaRepository<ItemViewConf, String>, JpaSpecificationExecutor<ItemViewConf> {
+public interface ItemViewConfRepository
+    extends JpaRepository<ItemViewConf, String>, JpaSpecificationExecutor<ItemViewConf> {
 
     List<ItemViewConf> findByItemIdAndViewTypeOrderByTabIndexAsc(String itemId, String viewType);
 

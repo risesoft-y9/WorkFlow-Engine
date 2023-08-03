@@ -18,7 +18,8 @@ import net.risesoft.entity.OfficeFollow;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface OfficeFollowRepository extends JpaRepository<OfficeFollow, String>, JpaSpecificationExecutor<OfficeFollow> {
+public interface OfficeFollowRepository
+    extends JpaRepository<OfficeFollow, String>, JpaSpecificationExecutor<OfficeFollow> {
 
     Integer countByProcessInstanceIdAndUserId(String processInstanceId, String userId);
 

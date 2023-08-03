@@ -20,7 +20,8 @@ import net.risesoft.entity.TransactionFile;
  */
 @Repository
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface TransactionFileRepository extends JpaRepository<TransactionFile, String>, JpaSpecificationExecutor<TransactionFile> {
+public interface TransactionFileRepository
+    extends JpaRepository<TransactionFile, String>, JpaSpecificationExecutor<TransactionFile> {
 
     @Modifying
     @Transactional(readOnly = false)

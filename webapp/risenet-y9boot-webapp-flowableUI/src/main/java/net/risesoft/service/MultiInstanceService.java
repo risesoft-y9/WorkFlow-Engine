@@ -21,7 +21,8 @@ public interface MultiInstanceService {
      * @param smsContent
      * @throws Exception
      */
-    void addExecutionId(String processInstanceId, String taskId, String userChoice, String isSendSms, String isShuMing, String smsContent) throws Exception;
+    void addExecutionId(String processInstanceId, String taskId, String userChoice, String isSendSms, String isShuMing,
+        String smsContent) throws Exception;
 
     /**
      * 串行加签
@@ -33,7 +34,8 @@ public interface MultiInstanceService {
      * @param num
      * @throws Exception
      */
-    void addExecutionId4Sequential(String executionId, String taskId, String userChoice, String selectUserId, int num) throws Exception;
+    void addExecutionId4Sequential(String executionId, String taskId, String userChoice, String selectUserId, int num)
+        throws Exception;
 
     /**
      * 并行时获取办理人列表

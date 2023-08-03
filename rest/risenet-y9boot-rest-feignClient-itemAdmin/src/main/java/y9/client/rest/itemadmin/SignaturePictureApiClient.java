@@ -13,7 +13,8 @@ import net.risesoft.model.itemadmin.SignaturePictureModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "SignaturePictureApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/signaturePicture")
+@FeignClient(contextId = "SignaturePictureApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/signaturePicture")
 public interface SignaturePictureApiClient extends SignaturePictureApi {
 
     /**
@@ -46,7 +47,8 @@ public interface SignaturePictureApiClient extends SignaturePictureApi {
      */
     @Override
     @GetMapping("/findByUserId")
-    SignaturePictureModel findByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
+    SignaturePictureModel findByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId);
 
     /**
      * 保存或者修改签名照片信息
@@ -58,5 +60,6 @@ public interface SignaturePictureApiClient extends SignaturePictureApi {
      */
     @Override
     @PostMapping("/saveOrUpdate")
-    SignaturePictureModel saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("spJson") String spJson);
+    SignaturePictureModel saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("spJson") String spJson);
 }

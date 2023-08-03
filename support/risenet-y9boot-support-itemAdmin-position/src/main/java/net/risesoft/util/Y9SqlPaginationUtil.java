@@ -66,7 +66,8 @@ public class Y9SqlPaginationUtil {
         return rSql;
     }
 
-    public static String generatePagedSql(String databaseType, int databaseVersion, String sql, int start, int limit) throws Exception {
+    public static String generatePagedSql(String databaseType, int databaseVersion, String sql, int start, int limit)
+        throws Exception {
         String rSql = "";
         if (limit == 0) {
             limit = Integer.MAX_VALUE;
@@ -80,17 +81,24 @@ public class Y9SqlPaginationUtil {
                     // 只适用mssql2012版本
                     rSql = sql + " OFFSET " + start + " ROW FETCH NEXT " + limit + " rows only";
                 } else {
-                    rSql = "SELECT TOP " + limit + " A.* FROM ( SELECT ROW_NUMBER() OVER (ORDER BY (select NULL)) AS RowNumber,B.* FROM ( " + sql + ") B ) A WHERE A.RowNumber > " + start;
+                    rSql = "SELECT TOP " + limit
+                        + " A.* FROM ( SELECT ROW_NUMBER() OVER (ORDER BY (select NULL)) AS RowNumber,B.* FROM ( " + sql
+                        + ") B ) A WHERE A.RowNumber > " + start;
                 }
             } else {
-                rSql = "SELECT TOP " + limit + " A.* FROM ( SELECT ROW_NUMBER() OVER (ORDER BY (select NULL)) AS RowNumber,B.* FROM ( " + sql + ") B ) A WHERE A.RowNumber > " + start;
+                rSql = "SELECT TOP " + limit
+                    + " A.* FROM ( SELECT ROW_NUMBER() OVER (ORDER BY (select NULL)) AS RowNumber,B.* FROM ( " + sql
+                    + ") B ) A WHERE A.RowNumber > " + start;
             }
         } else if (databaseType.equalsIgnoreCase(DialectEnum.ORACLE.getValue())) {
-            rSql = "select * from (select mytable.*,rownum as my_rownum from (" + sql + ") mytable) where my_rownum<=" + (start + limit) + " and my_rownum>" + start;
+            rSql = "select * from (select mytable.*,rownum as my_rownum from (" + sql + ") mytable) where my_rownum<="
+                + (start + limit) + " and my_rownum>" + start;
         } else if (databaseType.equalsIgnoreCase(DialectEnum.MYSQL.getValue())) {
-            rSql = "select * from (select mytable.*,rownum as my_rownum from (" + sql + ") mytable) where my_rownum<=" + (start + limit) + " and my_rownum>" + start;
+            rSql = "select * from (select mytable.*,rownum as my_rownum from (" + sql + ") mytable) where my_rownum<="
+                + (start + limit) + " and my_rownum>" + start;
         } else if (databaseType.equalsIgnoreCase(DialectEnum.KINGBASE.getValue())) {
-            rSql = "select * from (select mytable.*,rownum as my_rownum from (" + sql + ") mytable) where my_rownum<=" + (start + limit) + " and my_rownum>" + start;
+            rSql = "select * from (select mytable.*,rownum as my_rownum from (" + sql + ") mytable) where my_rownum<="
+                + (start + limit) + " and my_rownum>" + start;
         }
 
         return rSql;

@@ -65,7 +65,8 @@ public class TodoApiImpl implements ProcessTodoApi {
      */
     @Override
     @GetMapping(value = "/getCountByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getCountByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey) {
+    public Map<String, Object> getCountByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         long todoCount = customTodoService.getCountByUserIdAndProcessDefinitionKey(userId, processDefinitionKey);
@@ -109,7 +110,8 @@ public class TodoApiImpl implements ProcessTodoApi {
      */
     @Override
     @GetMapping(value = "/getListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserId(String tenantId, String userId, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> getListByUserId(String tenantId, String userId, Integer page, Integer rows)
+        throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId is null !");
         }
@@ -130,7 +132,8 @@ public class TodoApiImpl implements ProcessTodoApi {
      */
     @Override
     @GetMapping(value = "/getListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey, Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(processDefinitionKey) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or processDefinitionKey or userId is null !");
         }
@@ -151,7 +154,8 @@ public class TodoApiImpl implements ProcessTodoApi {
      */
     @Override
     @GetMapping(value = "/getListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(systemName) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or systemName or userId is null !");
         }
@@ -169,7 +173,8 @@ public class TodoApiImpl implements ProcessTodoApi {
      */
     @Override
     @GetMapping(value = "/getTodoCountByPositionIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public long getTodoCountByPositionIdAndProcessDefinitionKey(String tenantId, String positionId, String processDefinitionKey) {
+    public long getTodoCountByPositionIdAndProcessDefinitionKey(String tenantId, String positionId,
+        String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customTodoService.getCountByUserIdAndProcessDefinitionKey(positionId, processDefinitionKey);
     }
@@ -198,7 +203,8 @@ public class TodoApiImpl implements ProcessTodoApi {
      */
     @Override
     @GetMapping(value = "/getTodoCountByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public long getTodoCountByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey) {
+    public long getTodoCountByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customTodoService.getCountByUserIdAndProcessDefinitionKey(userId, processDefinitionKey);
     }
@@ -230,7 +236,8 @@ public class TodoApiImpl implements ProcessTodoApi {
      */
     @Override
     @GetMapping(value = "/searchListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page, Integer rows) {
+    public Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page,
+        Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Map<String, Object> m = customTodoService.searchListByUserId(userId, searchTerm, page, rows);
         return m;
@@ -249,9 +256,11 @@ public class TodoApiImpl implements ProcessTodoApi {
      */
     @Override
     @GetMapping(value = "/searchListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, String searchTerm, Integer page, Integer rows) {
+    public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey, String searchTerm, Integer page, Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Map<String, Object> m = customTodoService.searchListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, searchTerm, page, rows);
+        Map<String, Object> m = customTodoService.searchListByUserIdAndProcessDefinitionKey(userId,
+            processDefinitionKey, searchTerm, page, rows);
         return m;
     }
 
@@ -268,9 +277,11 @@ public class TodoApiImpl implements ProcessTodoApi {
      */
     @Override
     @GetMapping(value = "/searchListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName, String searchTerm, Integer page, Integer rows) {
+    public Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        String searchTerm, Integer page, Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Map<String, Object> m = customTodoService.searchListByUserIdAndSystemName(userId, systemName, searchTerm, page, rows);
+        Map<String, Object> m =
+            customTodoService.searchListByUserIdAndSystemName(userId, systemName, searchTerm, page, rows);
         return m;
     }
 }

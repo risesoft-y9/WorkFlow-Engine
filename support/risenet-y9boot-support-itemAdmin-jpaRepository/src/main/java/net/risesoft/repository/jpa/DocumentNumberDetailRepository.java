@@ -12,6 +12,7 @@ import net.risesoft.entity.DocumentNumberDetail;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface DocumentNumberDetailRepository extends JpaRepository<DocumentNumberDetail, String>, JpaSpecificationExecutor<DocumentNumberDetail> {
+public interface DocumentNumberDetailRepository
+    extends JpaRepository<DocumentNumberDetail, String>, JpaSpecificationExecutor<DocumentNumberDetail> {
 
 }

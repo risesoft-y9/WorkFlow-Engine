@@ -13,7 +13,8 @@ import net.risesoft.model.itemadmin.ItemPage;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ItemTodoApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/itemTodo")
+@FeignClient(contextId = "ItemTodoApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/itemTodo")
 public interface ItemTodoApiClient extends ItemTodoApi {
 
     /**
@@ -27,7 +28,8 @@ public interface ItemTodoApiClient extends ItemTodoApi {
      */
     @Override
     @GetMapping("/countByUserIdAndSystemName")
-    int countByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName) throws Exception;
+    int countByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("systemName") String systemName) throws Exception;
 
     /**
      * 获取待办任务，以发送时间排序
@@ -42,7 +44,9 @@ public interface ItemTodoApiClient extends ItemTodoApi {
      */
     @Override
     @GetMapping("/findByUserIdAndSystemName")
-    ItemPage<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+    ItemPage<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
     /**
      * 查询待办任务，以发送时间排序
@@ -57,7 +61,9 @@ public interface ItemTodoApiClient extends ItemTodoApi {
      */
     @Override
     @GetMapping("/searchByUserIdAndSystemName")
-    ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName, @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr,
+    ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
 }

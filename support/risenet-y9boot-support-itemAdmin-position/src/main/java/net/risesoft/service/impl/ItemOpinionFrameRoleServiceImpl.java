@@ -42,7 +42,8 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
 
     @Override
     public List<ItemOpinionFrameRole> findByItemOpinionFrameIdContainRoleName(String itemOpinionFrameId) {
-        List<ItemOpinionFrameRole> roleList = itemOpinionFrameRoleRepository.findByItemOpinionFrameId(itemOpinionFrameId);
+        List<ItemOpinionFrameRole> roleList =
+            itemOpinionFrameRoleRepository.findByItemOpinionFrameId(itemOpinionFrameId);
         for (ItemOpinionFrameRole role : roleList) {
             Role r = roleManager.getRole(role.getRoleId());
             role.setRoleName(r == null ? "角色已删除" : r.getName());
@@ -61,14 +62,16 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
     @Override
     @Transactional(readOnly = false)
     public void removeByItemOpinionFrameId(String itemOpinionFrameId) {
-        List<ItemOpinionFrameRole> roleList = itemOpinionFrameRoleRepository.findByItemOpinionFrameId(itemOpinionFrameId);
+        List<ItemOpinionFrameRole> roleList =
+            itemOpinionFrameRoleRepository.findByItemOpinionFrameId(itemOpinionFrameId);
         itemOpinionFrameRoleRepository.deleteAll(roleList);
     }
 
     @Override
     @Transactional(readOnly = false)
     public ItemOpinionFrameRole saveOrUpdate(String itemOpinionFrameId, String roleId) {
-        ItemOpinionFrameRole iofr = itemOpinionFrameRoleRepository.findByItemOpinionFrameIdAndRoleId(itemOpinionFrameId, roleId);
+        ItemOpinionFrameRole iofr =
+            itemOpinionFrameRoleRepository.findByItemOpinionFrameIdAndRoleId(itemOpinionFrameId, roleId);
         if (null == iofr) {
             iofr = new ItemOpinionFrameRole();
             iofr.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));

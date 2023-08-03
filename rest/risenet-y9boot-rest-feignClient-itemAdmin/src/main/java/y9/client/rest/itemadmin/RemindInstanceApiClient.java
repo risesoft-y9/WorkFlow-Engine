@@ -16,7 +16,8 @@ import net.risesoft.model.itemadmin.RemindInstanceModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "RemindInstanceApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/remindInstance")
+@FeignClient(contextId = "RemindInstanceApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/remindInstance")
 public interface RemindInstanceApiClient extends RemindInstanceApi {
 
     /**
@@ -28,7 +29,8 @@ public interface RemindInstanceApiClient extends RemindInstanceApi {
      */
     @Override
     @GetMapping("/findRemindInstance")
-    List<RemindInstanceModel> findRemindInstance(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    List<RemindInstanceModel> findRemindInstance(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程实例id和任务key获取消息提醒设置
@@ -40,7 +42,9 @@ public interface RemindInstanceApiClient extends RemindInstanceApi {
      */
     @Override
     @GetMapping("/findRemindInstanceByProcessInstanceIdAndArriveTaskKey")
-    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskKey") String taskKey);
+    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(
+        @RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("taskKey") String taskKey);
 
     /**
      * 根据流程实例id和任务key获取消息提醒设置
@@ -52,7 +56,9 @@ public interface RemindInstanceApiClient extends RemindInstanceApi {
      */
     @Override
     @GetMapping("/findRemindInstanceByProcessInstanceIdAndCompleteTaskKey")
-    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskKey") String taskKey);
+    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(
+        @RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("taskKey") String taskKey);
 
     /**
      * 
@@ -65,7 +71,9 @@ public interface RemindInstanceApiClient extends RemindInstanceApi {
      */
     @Override
     @GetMapping("/findRemindInstanceByProcessInstanceIdAndRemindType")
-    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndRemindType(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("remindType") String remindType);
+    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndRemindType(
+        @RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("remindType") String remindType);
 
     /**
      * 根据流程实例id和任务id获取消息提醒设置
@@ -77,7 +85,8 @@ public interface RemindInstanceApiClient extends RemindInstanceApi {
      */
     @Override
     @GetMapping("/findRemindInstanceByProcessInstanceIdAndTaskId")
-    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndTaskId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId);
+    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndTaskId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId);
 
     /**
      * 根据流程实例id获取个人消息提醒设置
@@ -89,7 +98,8 @@ public interface RemindInstanceApiClient extends RemindInstanceApi {
      */
     @Override
     @GetMapping("/getRemindInstance")
-    RemindInstanceModel getRemindInstance(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
+    RemindInstanceModel getRemindInstance(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 保存消息提醒
@@ -105,7 +115,9 @@ public interface RemindInstanceApiClient extends RemindInstanceApi {
      */
     @Override
     @PostMapping("/saveRemindInstance")
-    Map<String, Object> saveRemindInstance(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskIds") String taskIds, @RequestParam("process") Boolean process,
+    Map<String, Object> saveRemindInstance(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("taskIds") String taskIds, @RequestParam("process") Boolean process,
         @RequestParam("arriveTaskKey") String arriveTaskKey, @RequestParam("completeTaskKey") String completeTaskKey);
 
 }

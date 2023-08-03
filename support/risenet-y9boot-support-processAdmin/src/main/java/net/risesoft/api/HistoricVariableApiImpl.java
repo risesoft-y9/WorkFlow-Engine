@@ -41,8 +41,10 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
     @GetMapping(value = "/getByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<HistoricVariableInstanceModel> getByProcessInstanceId(String tenantId, String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<HistoricVariableInstance> hviList = customHistoricVariableService.getByProcessInstanceId(processInstanceId);
-        List<HistoricVariableInstanceModel> hviModelList = FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList);
+        List<HistoricVariableInstance> hviList =
+            customHistoricVariableService.getByProcessInstanceId(processInstanceId);
+        List<HistoricVariableInstanceModel> hviModelList =
+            FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList);
         return hviModelList;
     }
 
@@ -57,9 +59,11 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
      */
     @Override
     @GetMapping(value = "/getByProcessInstanceIdAndVariableName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HistoricVariableInstanceModel getByProcessInstanceIdAndVariableName(String tenantId, String processInstanceId, String variableName, String year) {
+    public HistoricVariableInstanceModel getByProcessInstanceIdAndVariableName(String tenantId,
+        String processInstanceId, String variableName, String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        HistoricVariableInstance hvi = customHistoricVariableService.getByProcessInstanceIdAndVariableName(processInstanceId, variableName, year);
+        HistoricVariableInstance hvi =
+            customHistoricVariableService.getByProcessInstanceIdAndVariableName(processInstanceId, variableName, year);
         HistoricVariableInstanceModel model = new HistoricVariableInstanceModel();
         if (hvi != null) {
             model = FlowableModelConvertUtil.historicVariableInstance2Model(hvi);
@@ -79,7 +83,8 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
     public List<HistoricVariableInstanceModel> getByTaskId(String tenantId, String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricVariableInstance> hviList = customHistoricVariableService.getByTaskId(taskId);
-        List<HistoricVariableInstanceModel> hviModelList = FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList);
+        List<HistoricVariableInstanceModel> hviModelList =
+            FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList);
         return hviModelList;
     }
 
@@ -94,9 +99,11 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
      */
     @Override
     @GetMapping(value = "/getByTaskIdAndVariableName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HistoricVariableInstanceModel getByTaskIdAndVariableName(String tenantId, String taskId, String variableName, String year) {
+    public HistoricVariableInstanceModel getByTaskIdAndVariableName(String tenantId, String taskId, String variableName,
+        String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        HistoricVariableInstance hvi = customHistoricVariableService.getByTaskIdAndVariableName(taskId, variableName, year);
+        HistoricVariableInstance hvi =
+            customHistoricVariableService.getByTaskIdAndVariableName(taskId, variableName, year);
         HistoricVariableInstanceModel model = new HistoricVariableInstanceModel();
         if (hvi != null) {
             model = FlowableModelConvertUtil.historicVariableInstance2Model(hvi);
@@ -114,8 +121,10 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
      * @return Map<String, Object>
      */
     @Override
-    @GetMapping(value = "/getVariables", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getVariables(String tenantId, String processInstanceId, @RequestBody Collection<String> keys) {
+    @GetMapping(value = "/getVariables", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getVariables(String tenantId, String processInstanceId,
+        @RequestBody Collection<String> keys) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customHistoricVariableService.getVariables(tenantId, processInstanceId, keys);
     }

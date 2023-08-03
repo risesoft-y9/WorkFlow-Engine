@@ -121,7 +121,8 @@ public class WorkflowProcessDefinitionService {
             Deployment deployment = repositoryService.createDeployment().addZipInputStream(zis).deploy();
 
             // export diagram
-            List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()).list();
+            List<ProcessDefinition> list =
+                repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()).list();
             for (ProcessDefinition processDefinition : list) {
                 WorkflowUtils.exportDiagramToFile(repositoryService, processDefinition);
             }
@@ -140,7 +141,8 @@ public class WorkflowProcessDefinitionService {
         if (StringUtils.isNotBlank(processDefinitionId)) {
             try {
                 // 取得流程定义
-                processDefinition = (ProcessDefinitionEntity)((RepositoryServiceImpl)repositoryService).getDeployedProcessDefinition(processDefinitionId);
+                processDefinition = (ProcessDefinitionEntity)((RepositoryServiceImpl)repositoryService)
+                    .getDeployedProcessDefinition(processDefinitionId);
                 if (processDefinition == null) {
                     throw new Exception("流程定义未找到!");
                 }
@@ -159,7 +161,8 @@ public class WorkflowProcessDefinitionService {
      */
     public ProcessDefinitionEntity findProcessDefinitionByPid(String processInstanceId) {
         ProcessDefinitionEntity processDefinition = null;
-        HistoricProcessInstance historicProcessInstance = workflowHistoryProcessInstanceService.findOne(processInstanceId);
+        HistoricProcessInstance historicProcessInstance =
+            workflowHistoryProcessInstanceService.findOne(processInstanceId);
         if (historicProcessInstance != null) {
             String processDefinitionId = historicProcessInstance.getProcessDefinitionId();
             if (StringUtils.isNotBlank(processDefinitionId)) {
@@ -210,7 +213,8 @@ public class WorkflowProcessDefinitionService {
      * @param propertiesNameList 指定要获取的属性的列表
      * @return
      */
-    public Map<String, String> getActivityProperties(List<FlowElement> activities, String activityId, List<String> propertiesNameList) {
+    public Map<String, String> getActivityProperties(List<FlowElement> activities, String activityId,
+        List<String> propertiesNameList) {
         Map<String, String> result = new HashMap<String, String>(16);
         try {
             for (FlowElement activity : activities) {
@@ -242,7 +246,8 @@ public class WorkflowProcessDefinitionService {
      * @param propertiesNameList 指定要获取的属性的列表
      * @return
      */
-    public Map<String, String> getActivityProperties(String processDefinitionId, String activityId, List<String> propertiesNameList) {
+    public Map<String, String> getActivityProperties(String processDefinitionId, String activityId,
+        List<String> propertiesNameList) {
         Map<String, String> result = new HashMap<String, String>(16);
         try {
             BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
@@ -297,7 +302,8 @@ public class WorkflowProcessDefinitionService {
             Iterator<FlowElement> sListIterator = activitieList.iterator();
             while (sListIterator.hasNext()) {
                 FlowElement e = sListIterator.next();
-                if (e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent || e instanceof SequenceFlow) {
+                if (e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
+                    || e instanceof SequenceFlow) {
                     sListIterator.remove();
                 }
             }
@@ -432,7 +438,8 @@ public class WorkflowProcessDefinitionService {
      */
     public ProcessDefinition getLatestProcessDefinition(String processDefinitionKey) {
         if (StringUtils.isNotBlank(processDefinitionKey)) {
-            return repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).latestVersion().singleResult();
+            return repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey)
+                .latestVersion().singleResult();
         }
         return null;
     }
@@ -518,7 +525,8 @@ public class WorkflowProcessDefinitionService {
     public List<ProcessDefinition> getProcessDefinitions(String processDefinitionKey) {
         List<ProcessDefinition> processDefinitionList = new ArrayList<ProcessDefinition>();
         if (StringUtils.isNotBlank(processDefinitionKey)) {
-            ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).orderByProcessDefinitionVersion().desc();
+            ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionKey(processDefinitionKey).orderByProcessDefinitionVersion().desc();
             processDefinitionList = processDefinitionQuery.list();
         }
         return processDefinitionList;
@@ -590,7 +598,8 @@ public class WorkflowProcessDefinitionService {
      */
     public Map<String, String> procDefIdMap() {
         Map<String, String> procDefMap = new HashMap<String, String>(16);
-        ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery().latestVersion().orderByProcessDefinitionKey().asc();
+        ProcessDefinitionQuery processDefinitionQuery =
+            repositoryService.createProcessDefinitionQuery().latestVersion().orderByProcessDefinitionKey().asc();
         List<ProcessDefinition> processDefinitionList = processDefinitionQuery.list();
         for (ProcessDefinition pd : processDefinitionList) {
             procDefMap.put(pd.getId(), pd.getName());

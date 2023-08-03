@@ -82,7 +82,8 @@ public interface CustomTaskService {
      * @param positionIdList
      * @return
      */
-    TaskModel createWithVariables(String positionId, Map<String, Object> vars, String routeToTaskId, List<String> positionIdList);
+    TaskModel createWithVariables(String positionId, Map<String, Object> vars, String routeToTaskId,
+        List<String> positionIdList);
 
     /**
      * 设置任务代理

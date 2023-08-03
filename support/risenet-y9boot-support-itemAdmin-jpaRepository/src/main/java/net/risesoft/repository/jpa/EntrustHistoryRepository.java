@@ -18,7 +18,8 @@ import net.risesoft.entity.EntrustHistory;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface EntrustHistoryRepository extends JpaRepository<EntrustHistory, String>, JpaSpecificationExecutor<Entrust> {
+public interface EntrustHistoryRepository
+    extends JpaRepository<EntrustHistory, String>, JpaSpecificationExecutor<Entrust> {
 
     @Override
     @Query("from EntrustHistory t order by t.startTime desc")

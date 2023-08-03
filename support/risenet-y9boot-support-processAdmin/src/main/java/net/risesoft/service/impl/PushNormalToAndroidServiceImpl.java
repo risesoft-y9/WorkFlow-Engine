@@ -58,7 +58,8 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
             String assignee = task.getAssignee();
             String processSerialNumber = (String)map.get(SysVariables.PROCESSSERIALNUMBER);
             String tenantId = (String)map.get("tenantId");
-            ProcessParamModel processParamModel = processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             String title = processParamModel.getTitle();
             String itemName = processParamModel.getItemName();
             List<String> list = new ArrayList<String>();

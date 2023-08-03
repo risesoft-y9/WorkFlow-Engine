@@ -14,7 +14,8 @@ import net.risesoft.api.itemadmin.ItemRoleApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ItemRoleApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/itemRole")
+@FeignClient(contextId = "ItemRoleApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/itemRole")
 public interface ItemRoleApiClient extends ItemRoleApi {
 
     /**
@@ -30,7 +31,10 @@ public interface ItemRoleApiClient extends ItemRoleApi {
      */
     @Override
     @GetMapping("/findCsUser")
-    public List<Map<String, Object>> findCsUser(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("id") String id, @RequestParam("principalType") Integer principalType, @RequestParam("processInstanceId") String processInstanceId);
+    public List<Map<String, Object>> findCsUser(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("id") String id,
+        @RequestParam("principalType") Integer principalType,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 
@@ -43,7 +47,8 @@ public interface ItemRoleApiClient extends ItemRoleApi {
      */
     @Override
     @GetMapping("/findCsUserBureau")
-    public List<Map<String, Object>> findCsUserBureau(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("principalType") Integer principalType);
+    public List<Map<String, Object>> findCsUserBureau(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("principalType") Integer principalType);
 
     /**
      * 
@@ -58,7 +63,10 @@ public interface ItemRoleApiClient extends ItemRoleApi {
      */
     @Override
     @GetMapping("/findCsUserSearch")
-    public List<Map<String, Object>> findCsUserSearch(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("name") String name, @RequestParam("principalType") Integer principalType, @RequestParam("processInstanceId") String processInstanceId);
+    public List<Map<String, Object>> findCsUserSearch(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("name") String name,
+        @RequestParam("principalType") Integer principalType,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取发送人
@@ -75,8 +83,11 @@ public interface ItemRoleApiClient extends ItemRoleApi {
      */
     @Override
     @GetMapping("/findPermUser")
-    public List<Map<String, Object>> findPermUser(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey,
-        @RequestParam("principalType") Integer principalType, @RequestParam("id") String id, @RequestParam("processInstanceId") String processInstanceId);
+    public List<Map<String, Object>> findPermUser(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("itemId") String itemId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey,
+        @RequestParam("principalType") Integer principalType, @RequestParam("id") String id,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 
@@ -94,8 +105,11 @@ public interface ItemRoleApiClient extends ItemRoleApi {
      */
     @Override
     @GetMapping("/findPermUserByName")
-    public List<Map<String, Object>> findPermUserByName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("name") String name, @RequestParam("principalType") Integer principalType, @RequestParam("itemId") String itemId,
-        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey, @RequestParam("processInstanceId") String processInstanceId);
+    public List<Map<String, Object>> findPermUserByName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("name") String name,
+        @RequestParam("principalType") Integer principalType, @RequestParam("itemId") String itemId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 
@@ -108,7 +122,8 @@ public interface ItemRoleApiClient extends ItemRoleApi {
      */
     @Override
     @GetMapping("/findPermUserSendReceive")
-    public List<Map<String, Object>> findPermUserSendReceive(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("id") String id);
+    public List<Map<String, Object>> findPermUserSendReceive(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("id") String id);
 
     /**
      * 获取组织机构树
@@ -124,5 +139,7 @@ public interface ItemRoleApiClient extends ItemRoleApi {
      */
     @Override
     @GetMapping("/getOrgTree")
-    public List<Map<String, Object>> getOrgTree(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("id") String id, @RequestParam("treeType") String treeType, @RequestParam("name") String name);
+    public List<Map<String, Object>> getOrgTree(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("id") String id, @RequestParam("treeType") String treeType,
+        @RequestParam("name") String name);
 }

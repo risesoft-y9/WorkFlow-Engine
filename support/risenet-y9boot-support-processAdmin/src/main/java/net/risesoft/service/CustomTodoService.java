@@ -54,7 +54,8 @@ public interface CustomTodoService {
      * @param rows
      * @return
      */
-    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, Integer page, Integer rows);
+    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, Integer page,
+        Integer rows);
 
     /**
      * 根据人员Id,系统标识获取用户的待办任务(分页)
@@ -88,7 +89,8 @@ public interface CustomTodoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
+        String searchTerm, Integer page, Integer rows);
 
     /**
      * 条件搜索待办件
@@ -100,5 +102,6 @@ public interface CustomTodoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm, Integer page, Integer rows);
+    Map<String, Object> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
+        Integer page, Integer rows);
 }

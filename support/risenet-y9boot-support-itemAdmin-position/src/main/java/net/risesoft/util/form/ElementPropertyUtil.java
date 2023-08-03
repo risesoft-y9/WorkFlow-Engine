@@ -26,7 +26,8 @@ public class ElementPropertyUtil {
 
         map = new HashMap<String, Object>(16);
         map.put("key", "bindOption");
-        map.put("name", "<a onclick=\"bindOption();\" href=\"javascript:void(0);\" style=\"text-decoration:none;color:blue;\" title=\"点击绑定\" >数据字典</a>");
+        map.put("name",
+            "<a onclick=\"bindOption();\" href=\"javascript:void(0);\" style=\"text-decoration:none;color:blue;\" title=\"点击绑定\" >数据字典</a>");
         map.put("value", "");
         list.add(map);
 
@@ -35,8 +36,11 @@ public class ElementPropertyUtil {
         map.put("key", "validType");
         map.put("name", "校验类型");
         map.put("value", "");
-        map.put("editor", new Fluent.HashMap<String, Object>().append("type", "combobox").append("options",
-            new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false).append("url", request.getContextPath() + "/y9form/bind/validType?formType=" + formType).append("panelHeight", "300px")));
+        map.put("editor",
+            new Fluent.HashMap<String, Object>().append("type", "combobox").append("options",
+                new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false)
+                    .append("url", request.getContextPath() + "/y9form/bind/validType?formType=" + formType)
+                    .append("panelHeight", "300px")));
         list.add(map);
 
         return list;
@@ -62,13 +66,17 @@ public class ElementPropertyUtil {
         map = new HashMap<String, Object>(16);
         map.put("key", "required");
         map.put("name", "是否必填");
-        map.put("editor", new Fluent.HashMap<String, Object>().append("type", "combobox").append("options", new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false).append("data", list1).append("panelHeight", "auto")));
+        map.put("editor",
+            new Fluent.HashMap<String, Object>().append("type", "combobox").append("options",
+                new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false)
+                    .append("data", list1).append("panelHeight", "auto")));
         map.put("value", "");
         list.add(map);
 
         map = new HashMap<String, Object>(16);
         map.put("key", "fieldPermission");
-        map.put("name", "<a onclick=\"fieldPermission();\" href=\"javascript:void(0);\" style=\"text-decoration:none;color:blue;\" title=\"点击设置\" >读写权限</a>");
+        map.put("name",
+            "<a onclick=\"fieldPermission();\" href=\"javascript:void(0);\" style=\"text-decoration:none;color:blue;\" title=\"点击设置\" >读写权限</a>");
         map.put("value", "");
         list.add(map);
 
@@ -83,8 +91,11 @@ public class ElementPropertyUtil {
         map.put("key", "validType");
         map.put("name", "校验类型");
         map.put("value", "");
-        map.put("editor", new Fluent.HashMap<String, Object>().append("type", "combobox").append("options",
-            new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false).append("url", request.getContextPath() + "/y9form/bind/validType?formType=" + formType).append("data", list1).append("panelHeight", "300px")));
+        map.put("editor",
+            new Fluent.HashMap<String, Object>().append("type", "combobox").append("options",
+                new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false)
+                    .append("url", request.getContextPath() + "/y9form/bind/validType?formType=" + formType)
+                    .append("data", list1).append("panelHeight", "300px")));
         list.add(map);
 
         if (formType == 1) {
@@ -125,13 +136,17 @@ public class ElementPropertyUtil {
         map = new HashMap<String, Object>(16);
         map.put("key", "required");
         map.put("name", "是否必填");
-        map.put("editor", new Fluent.HashMap<String, Object>().append("type", "combobox").append("options", new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false).append("data", list1).append("panelHeight", "auto")));
+        map.put("editor",
+            new Fluent.HashMap<String, Object>().append("type", "combobox").append("options",
+                new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false)
+                    .append("data", list1).append("panelHeight", "auto")));
         map.put("value", "");
         list.add(map);
 
         map = new HashMap<String, Object>(16);
         map.put("key", "fieldPermission");
-        map.put("name", "<a onclick=\"fieldPermission();\" href=\"javascript:void(0);\" style=\"text-decoration:none;color:blue;\" title=\"点击设置\" >读写权限</a>");
+        map.put("name",
+            "<a onclick=\"fieldPermission();\" href=\"javascript:void(0);\" style=\"text-decoration:none;color:blue;\" title=\"点击设置\" >读写权限</a>");
         map.put("value", "");
         list.add(map);
 
@@ -146,8 +161,11 @@ public class ElementPropertyUtil {
         map.put("key", "validType");
         map.put("name", "校验类型");
         map.put("value", "");
-        map.put("editor", new Fluent.HashMap<String, Object>().append("type", "combobox").append("options",
-            new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false).append("url", request.getContextPath() + "/y9form/bind/validType?formType=" + formType).append("data", list1).append("panelHeight", "300px")));
+        map.put("editor",
+            new Fluent.HashMap<String, Object>().append("type", "combobox").append("options",
+                new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false)
+                    .append("url", request.getContextPath() + "/y9form/bind/validType?formType=" + formType)
+                    .append("data", list1).append("panelHeight", "300px")));
         list.add(map);
 
         if (formType == 1) {
@@ -169,14 +187,16 @@ public class ElementPropertyUtil {
             map.put("key", "min");
             map.put("name", "最小值");
             map.put("value", "");
-            map.put("editor", new Fluent.HashMap<String, Object>().append("type", "numberbox").append("options", new Fluent.HashMap<String, Object>().append("editable", true)));
+            map.put("editor", new Fluent.HashMap<String, Object>().append("type", "numberbox").append("options",
+                new Fluent.HashMap<String, Object>().append("editable", true)));
             list.add(map);
 
             map = new HashMap<String, Object>(16);
             map.put("key", "max");
             map.put("name", "最大值");
             map.put("value", "");
-            map.put("editor", new Fluent.HashMap<String, Object>().append("type", "numberbox").append("options", new Fluent.HashMap<String, Object>().append("editable", true)));
+            map.put("editor", new Fluent.HashMap<String, Object>().append("type", "numberbox").append("options",
+                new Fluent.HashMap<String, Object>().append("editable", true)));
             list.add(map);
         }
 
@@ -233,13 +253,17 @@ public class ElementPropertyUtil {
         map = new HashMap<String, Object>(16);
         map.put("key", "required");
         map.put("name", "是否必填");
-        map.put("editor", new Fluent.HashMap<String, Object>().append("type", "combobox").append("options", new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false).append("data", list1).append("panelHeight", "auto")));
+        map.put("editor",
+            new Fluent.HashMap<String, Object>().append("type", "combobox").append("options",
+                new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false)
+                    .append("data", list1).append("panelHeight", "auto")));
         map.put("value", "");
         list.add(map);
 
         map = new HashMap<String, Object>(16);
         map.put("key", "fieldPermission");
-        map.put("name", "<a onclick=\"fieldPermission();\" href=\"javascript:void(0);\" style=\"text-decoration:none;color:blue;\" title=\"点击设置\" >读写权限</a>");
+        map.put("name",
+            "<a onclick=\"fieldPermission();\" href=\"javascript:void(0);\" style=\"text-decoration:none;color:blue;\" title=\"点击设置\" >读写权限</a>");
         map.put("value", "");
         list.add(map);
 
@@ -255,8 +279,11 @@ public class ElementPropertyUtil {
         map.put("key", "validType");
         map.put("name", "校验类型");
         map.put("value", "");
-        map.put("editor", new Fluent.HashMap<String, Object>().append("type", "combobox").append("options",
-            new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false).append("url", request.getContextPath() + "/y9form/bind/validType?formType=" + formType).append("panelHeight", "300px")));
+        map.put("editor",
+            new Fluent.HashMap<String, Object>().append("type", "combobox").append("options",
+                new Fluent.HashMap<String, Object>().append("limitToList", true).append("editable", false)
+                    .append("url", request.getContextPath() + "/y9form/bind/validType?formType=" + formType)
+                    .append("panelHeight", "300px")));
         list.add(map);
 
         if (formType == 1) {

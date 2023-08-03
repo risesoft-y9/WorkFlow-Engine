@@ -13,7 +13,8 @@ import net.risesoft.api.processadmin.DoneApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "DoneApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}", path = "/services/rest/done")
+@FeignClient(contextId = "DoneApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
+    path = "/services/rest/done")
 public interface DoneApiClient extends DoneApi {
 
     /**
@@ -28,7 +29,9 @@ public interface DoneApiClient extends DoneApi {
      */
     @Override
     @GetMapping("/getListByUserId")
-    Map<String, Object> getListByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+    Map<String, Object> getListByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows)
+        throws Exception;
 
     /**
      * 根据人员Id,事项ID获取用户的办结流程列表(分页,包含流程变量)
@@ -43,8 +46,9 @@ public interface DoneApiClient extends DoneApi {
      */
     @Override
     @GetMapping("/getListByUserIdAndProcessDefinitionKey")
-    Map<String, Object> getListByUserIdAndProcessDefinitionKey(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows)
-        throws Exception;
+    Map<String, Object> getListByUserIdAndProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
     /**
      * 根据人员Id,系统标识获取用户的办结流程列表(分页,包含流程变量)
@@ -59,7 +63,9 @@ public interface DoneApiClient extends DoneApi {
      */
     @Override
     @GetMapping("/getListByUserIdAndSystemName")
-    Map<String, Object> getListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+    Map<String, Object> getListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
     /**
      * 
@@ -75,7 +81,9 @@ public interface DoneApiClient extends DoneApi {
      */
     @Override
     @GetMapping("/searchListByUserId")
-    Map<String, Object> searchListByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+    Map<String, Object> searchListByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("searchTerm") String searchTerm,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
     /**
      * 
@@ -92,7 +100,9 @@ public interface DoneApiClient extends DoneApi {
      */
     @Override
     @GetMapping("/searchListByUserIdAndProcessDefinitionKey")
-    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
+    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows) throws Exception;
 
     /**
@@ -110,6 +120,8 @@ public interface DoneApiClient extends DoneApi {
      */
     @Override
     @GetMapping("/searchListByUserIdAndSystemName")
-    Map<String, Object> searchListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName, @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
+    Map<String, Object> searchListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows) throws Exception;
 }

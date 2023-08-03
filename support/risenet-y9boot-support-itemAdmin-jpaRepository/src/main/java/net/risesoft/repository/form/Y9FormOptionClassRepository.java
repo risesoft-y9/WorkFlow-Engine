@@ -14,7 +14,8 @@ import net.risesoft.entity.form.Y9FormOptionClass;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface Y9FormOptionClassRepository extends JpaRepository<Y9FormOptionClass, String>, JpaSpecificationExecutor<Y9FormOptionClass> {
+public interface Y9FormOptionClassRepository
+    extends JpaRepository<Y9FormOptionClass, String>, JpaSpecificationExecutor<Y9FormOptionClass> {
 
     List<Y9FormOptionClass> findByNameContaining(String name);
 

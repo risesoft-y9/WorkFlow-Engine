@@ -65,7 +65,8 @@ public class ZipReader {
 
         public FileNode() {}
 
-        public FileNode(String originName, String fileName, String parentFileName, List<FileNode> childList, boolean directory) {
+        public FileNode(String originName, String fileName, String parentFileName, List<FileNode> childList,
+            boolean directory) {
             this.originName = originName;
             this.fileName = fileName;
             this.parentFileName = parentFileName;
@@ -73,7 +74,8 @@ public class ZipReader {
             this.directory = directory;
         }
 
-        public FileNode(String originName, String fileName, String parentFileName, List<FileNode> childList, boolean directory, String fileKey) {
+        public FileNode(String originName, String fileName, String parentFileName, List<FileNode> childList,
+            boolean directory, String fileKey) {
             this.originName = originName;
             this.fileName = fileName;
             this.parentFileName = parentFileName;
@@ -152,7 +154,8 @@ public class ZipReader {
          */
         private String filePath;
 
-        public RarExtractorWorker(List<Map<String, FileHeader>> headersToBeExtracted, Archive archive, String filePath) {
+        public RarExtractorWorker(List<Map<String, FileHeader>> headersToBeExtracted, Archive archive,
+            String filePath) {
             this.headersToBeExtracted = headersToBeExtracted;
             this.archive = archive;
             this.filePath = filePath;
@@ -209,7 +212,8 @@ public class ZipReader {
         private ZipFile zipFile;
         private String filePath;
 
-        public ZipExtractorWorker(List<Map<String, ZipArchiveEntry>> entriesToBeExtracted, ZipFile zipFile, String filePath) {
+        public ZipExtractorWorker(List<Map<String, ZipArchiveEntry>> entriesToBeExtracted, ZipFile zipFile,
+            String filePath) {
             this.entriesToBeExtracted = entriesToBeExtracted;
             this.zipFile = zipFile;
             this.filePath = filePath;
@@ -332,7 +336,8 @@ public class ZipReader {
 
     String dirPath;
 
-    ThreadPoolExecutor executors = new ThreadPoolExecutor(5, 20, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new DaemonThreadFactory("OfficeProcessThread"));
+    ThreadPoolExecutor executors = new ThreadPoolExecutor(5, 20, 0L, TimeUnit.MILLISECONDS,
+        new LinkedBlockingQueue<Runnable>(), new DaemonThreadFactory("OfficeProcessThread"));
 
     private void addNodes(Map<String, FileNode> appender, String parentName, FileNode node) {
         if (appender.containsKey(parentName)) {
@@ -363,8 +368,10 @@ public class ZipReader {
         String archiveSeparator = "/";
         Map<String, FileNode> appender = Maps.newHashMap();
         String archiveFileName = fileUtils.getFileNameFromPath(filePath);
-        HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-        dirPath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "previewFile" + File.separator;
+        HttpServletRequest request =
+            ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+        dirPath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "previewFile"
+            + File.separator;
         try {
             ZipFile zipFile = new ZipFile(filePath, fileUtils.getFileEncodeUtfgbk(filePath));
             Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();

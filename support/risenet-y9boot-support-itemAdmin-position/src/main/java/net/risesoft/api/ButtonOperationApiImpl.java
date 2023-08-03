@@ -83,7 +83,8 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      */
     @Override
     @PostMapping(value = "/addMultiInstanceExecution", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId, String taskId, String elementUser) throws Exception {
+    public void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId, String taskId,
+        String elementUser) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         multiInstanceService.addMultiInstanceExecution(activityId, parentExecutionId, taskId, elementUser);
     }
@@ -99,7 +100,8 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      */
     @Override
     @PostMapping(value = "/deleteMultiInstanceExecution", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteMultiInstanceExecution(String tenantId, String executionId, String taskId, String elementUser) throws Exception {
+    public void deleteMultiInstanceExecution(String tenantId, String executionId, String taskId, String elementUser)
+        throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         multiInstanceService.deleteMultiInstanceExecution(executionId, taskId, elementUser);
     }
@@ -116,7 +118,8 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      */
     @Override
     @PostMapping(value = "/directSend", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean directSend(String tenantId, String positionId, String taskId, String routeToTask, String processInstanceId) {
+    public boolean directSend(String tenantId, String positionId, String taskId, String routeToTask,
+        String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId);
         Y9LoginUserHolder.setPosition(position);
@@ -158,8 +161,10 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
             String assignee = hti.getAssignee();
             userAndDeptIdList.add(assignee);
             Position position = positionManager.getPosition(tenantId, positionId);
-            String htiMultiInstance = processDefinitionManager.getNodeType(tenantId, hti.getProcessDefinitionId(), hti.getTaskDefinitionKey());
-            Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), hti.getTaskDefinitionKey(), userAndDeptIdList, "");
+            String htiMultiInstance = processDefinitionManager.getNodeType(tenantId, hti.getProcessDefinitionId(),
+                hti.getTaskDefinitionKey());
+            Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(),
+                hti.getTaskDefinitionKey(), userAndDeptIdList, "");
             Map<String, Object> val = new HashMap<String, Object>();
             val.put("val", SysVariables.REFUSECLAIMROLLBACK);
             variableManager.setVariableLocal(tenantId, taskId, SysVariables.REFUSECLAIMROLLBACK, val);
@@ -168,11 +173,13 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
              * 如果上一任务是并行，则回退时设置主办人
              */
             if (SysVariables.PARALLEL.equals(htiMultiInstance)) {
-                List<TaskModel> taskNextList1 = taskManager.findByProcessInstanceId(tenantId, currentTask.getProcessInstanceId());
+                List<TaskModel> taskNextList1 =
+                    taskManager.findByProcessInstanceId(tenantId, currentTask.getProcessInstanceId());
                 for (TaskModel taskModelNext : taskNextList1) {
                     Map<String, Object> val1 = new HashMap<String, Object>();
                     val1.put("val", assignee.split(SysVariables.COLON)[0]);
-                    variableManager.setVariableLocal(tenantId, taskModelNext.getId(), SysVariables.PARALLELSPONSOR, val1);
+                    variableManager.setVariableLocal(tenantId, taskModelNext.getId(), SysVariables.PARALLELSPONSOR,
+                        val1);
                 }
             }
         } catch (Exception e) {
@@ -196,10 +203,13 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @throws Exception exception
      */
     @Override
-    @PostMapping(value = "/reposition", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void reposition(String tenantId, String positionId, String taskId, String repositionToTaskId, @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) throws Exception {
+    @PostMapping(value = "/reposition", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void reposition(String tenantId, String positionId, String taskId, String repositionToTaskId,
+        @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        specialOperationManager.reposition4Position(tenantId, positionId, taskId, repositionToTaskId, userChoice, reason, sponsorGuid);
+        specialOperationManager.reposition4Position(tenantId, positionId, taskId, repositionToTaskId, userChoice,
+            reason, sponsorGuid);
     }
 
     /**

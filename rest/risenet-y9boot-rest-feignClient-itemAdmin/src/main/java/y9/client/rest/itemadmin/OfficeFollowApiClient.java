@@ -17,7 +17,8 @@ import net.risesoft.model.itemadmin.OfficeFollowModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "OfficeFollowApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/officeFollow")
+@FeignClient(contextId = "OfficeFollowApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/officeFollow")
 public interface OfficeFollowApiClient extends OfficeFollowApi {
 
     /**
@@ -30,7 +31,8 @@ public interface OfficeFollowApiClient extends OfficeFollowApi {
      */
     @Override
     @GetMapping("/countByProcessInstanceId")
-    public int countByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
+    public int countByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程实例id删除关注
@@ -40,7 +42,8 @@ public interface OfficeFollowApiClient extends OfficeFollowApi {
      */
     @Override
     @PostMapping("/deleteByProcessInstanceId")
-    public void deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    public void deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 
@@ -53,7 +56,8 @@ public interface OfficeFollowApiClient extends OfficeFollowApi {
      */
     @Override
     @PostMapping("/delOfficeFollow")
-    public Map<String, Object> delOfficeFollow(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceIds") String processInstanceIds);
+    public Map<String, Object> delOfficeFollow(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processInstanceIds") String processInstanceIds);
 
     /**
      * 获取我的关注数量
@@ -78,7 +82,9 @@ public interface OfficeFollowApiClient extends OfficeFollowApi {
      */
     @Override
     @GetMapping("/getOfficeFollowList")
-    public Map<String, Object> getOfficeFollowList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("searchName") String searchName, @RequestParam("page") int page, @RequestParam("rows") int rows);
+    public Map<String, Object> getOfficeFollowList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("searchName") String searchName,
+        @RequestParam("page") int page, @RequestParam("rows") int rows);
 
     /**
      * 保存办件关注信息
@@ -90,7 +96,8 @@ public interface OfficeFollowApiClient extends OfficeFollowApi {
      */
     @Override
     @PostMapping(value = "/saveOfficeFollow", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveOfficeFollow(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestBody OfficeFollowModel officeFollow);
+    public Map<String, Object> saveOfficeFollow(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestBody OfficeFollowModel officeFollow);
 
     /**
      * 更新标题
@@ -101,6 +108,8 @@ public interface OfficeFollowApiClient extends OfficeFollowApi {
      */
     @Override
     @PostMapping("/updateTitle")
-    public void updateTitle(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("documentTitle") String documentTitle);
+    public void updateTitle(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("documentTitle") String documentTitle);
 
 }

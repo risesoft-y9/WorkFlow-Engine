@@ -15,7 +15,8 @@ import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "HistoricTaskApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}", path = "/services/rest/historicTask")
+@FeignClient(contextId = "HistoricTaskApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
+    path = "/services/rest/historicTask")
 public interface HistoricTaskApiClient extends HistoricTaskApi {
 
     /**
@@ -29,7 +30,8 @@ public interface HistoricTaskApiClient extends HistoricTaskApi {
      */
     @Override
     @GetMapping("/findTaskByProcessInstanceIdOrByEndTimeAsc")
-    List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrByEndTimeAsc(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("year") String year);
+    List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrByEndTimeAsc(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("year") String year);
 
     /**
      *
@@ -42,7 +44,9 @@ public interface HistoricTaskApiClient extends HistoricTaskApi {
      */
     @Override
     @GetMapping("/findTaskByProcessInstanceIdOrderByStartTimeAsc")
-    List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrderByStartTimeAsc(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("year") String year);
+    List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrderByStartTimeAsc(
+        @RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("year") String year);
 
     /**
      * 根据任务Id获取任务实例
@@ -66,7 +70,8 @@ public interface HistoricTaskApiClient extends HistoricTaskApi {
      */
     @Override
     @GetMapping("/getByProcessInstanceId")
-    List<HistoricTaskInstanceModel> getByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("year") String year);
+    List<HistoricTaskInstanceModel> getByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("year") String year);
 
     /**
      *
@@ -79,7 +84,8 @@ public interface HistoricTaskApiClient extends HistoricTaskApi {
      */
     @Override
     @GetMapping("/getByProcessInstanceIdOrderByEndTimeDesc")
-    List<HistoricTaskInstanceModel> getByProcessInstanceIdOrderByEndTimeDesc(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("year") String year);
+    List<HistoricTaskInstanceModel> getByProcessInstanceIdOrderByEndTimeDesc(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("year") String year);
 
     /**
      *
@@ -91,7 +97,8 @@ public interface HistoricTaskApiClient extends HistoricTaskApi {
      */
     @Override
     @GetMapping("/getFinishedCountByExecutionId")
-    long getFinishedCountByExecutionId(@RequestParam("tenantId") String tenantId, @RequestParam("executionId") String executionId);
+    long getFinishedCountByExecutionId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("executionId") String executionId);
 
     /**
      * 获取当前任务的上一个任务节点，当前任务只可以是正在运行的任务实例
@@ -103,7 +110,8 @@ public interface HistoricTaskApiClient extends HistoricTaskApi {
      */
     @Override
     @GetMapping("/getThePreviousTask")
-    HistoricTaskInstanceModel getThePreviousTask(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+    HistoricTaskInstanceModel getThePreviousTask(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId);
 
     /**
      * 获取当前任务的上一个任务节点产生的所有任务，当前任务只可以是正在运行的任务实例
@@ -115,7 +123,8 @@ public interface HistoricTaskApiClient extends HistoricTaskApi {
      */
     @Override
     @GetMapping("/getThePreviousTasks")
-    List<HistoricTaskInstanceModel> getThePreviousTasks(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+    List<HistoricTaskInstanceModel> getThePreviousTasks(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId);
 
     /**
      * 设置历史任务TANENT_ID_字段，存放协办任务是否被强制办结标识

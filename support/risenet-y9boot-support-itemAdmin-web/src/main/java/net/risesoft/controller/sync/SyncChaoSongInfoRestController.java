@@ -59,7 +59,8 @@ public class SyncChaoSongInfoRestController {
                 info.setItemName(m.get("ITEMNAME") != null ? (String)m.get("ITEMNAME") : "");
                 info.setOpinionState(m.get("opinionState") != null ? (String)m.get("opinionState") : "");
                 info.setProcessInstanceId(m.get("PROCESSINSTANCEID") != null ? (String)m.get("PROCESSINSTANCEID") : "");
-                info.setProcessSerialNumber(m.get("PROCESSSERIALNUMBER") != null ? (String)m.get("PROCESSSERIALNUMBER") : "");
+                info.setProcessSerialNumber(
+                    m.get("PROCESSSERIALNUMBER") != null ? (String)m.get("PROCESSSERIALNUMBER") : "");
                 info.setReadTime(m.get("READTIME") != null ? (String)m.get("READTIME") : "");
                 info.setSendDeptId(m.get("SENDDEPTID") != null ? (String)m.get("SENDDEPTID") : "");
                 info.setSendDeptName(m.get("SENDDEPTNAME") != null ? (String)m.get("SENDDEPTNAME") : "");
@@ -93,8 +94,10 @@ public class SyncChaoSongInfoRestController {
                     info.setItemId(m.get("ITEMID") != null ? (String)m.get("ITEMID") : "");
                     info.setItemName(m.get("ITEMNAME") != null ? (String)m.get("ITEMNAME") : "");
                     info.setOpinionState(m.get("opinionState") != null ? (String)m.get("opinionState") : "");
-                    info.setProcessInstanceId(m.get("PROCESSINSTANCEID") != null ? (String)m.get("PROCESSINSTANCEID") : "");
-                    info.setProcessSerialNumber(m.get("PROCESSSERIALNUMBER") != null ? (String)m.get("PROCESSSERIALNUMBER") : "");
+                    info.setProcessInstanceId(
+                        m.get("PROCESSINSTANCEID") != null ? (String)m.get("PROCESSINSTANCEID") : "");
+                    info.setProcessSerialNumber(
+                        m.get("PROCESSSERIALNUMBER") != null ? (String)m.get("PROCESSSERIALNUMBER") : "");
                     info.setReadTime(m.get("READTIME") != null ? (String)m.get("READTIME") : "");
                     info.setSendDeptId(m.get("SENDDEPTID") != null ? (String)m.get("SENDDEPTID") : "");
                     info.setSendDeptName(m.get("SENDDEPTNAME") != null ? (String)m.get("SENDDEPTNAME") : "");
@@ -132,8 +135,10 @@ public class SyncChaoSongInfoRestController {
                     info.setItemId(m.get("ITEMID") != null ? (String)m.get("ITEMID") : "");
                     info.setItemName(m.get("ITEMNAME") != null ? (String)m.get("ITEMNAME") : "");
                     info.setOpinionState(m.get("opinionState") != null ? (String)m.get("opinionState") : "");
-                    info.setProcessInstanceId(m.get("PROCESSINSTANCEID") != null ? (String)m.get("PROCESSINSTANCEID") : "");
-                    info.setProcessSerialNumber(m.get("PROCESSSERIALNUMBER") != null ? (String)m.get("PROCESSSERIALNUMBER") : "");
+                    info.setProcessInstanceId(
+                        m.get("PROCESSINSTANCEID") != null ? (String)m.get("PROCESSINSTANCEID") : "");
+                    info.setProcessSerialNumber(
+                        m.get("PROCESSSERIALNUMBER") != null ? (String)m.get("PROCESSSERIALNUMBER") : "");
                     info.setReadTime(m.get("READTIME") != null ? (String)m.get("READTIME") : "");
                     info.setSendDeptId(m.get("SENDDEPTID") != null ? (String)m.get("SENDDEPTID") : "");
                     info.setSendDeptName(m.get("SENDDEPTNAME") != null ? (String)m.get("SENDDEPTNAME") : "");

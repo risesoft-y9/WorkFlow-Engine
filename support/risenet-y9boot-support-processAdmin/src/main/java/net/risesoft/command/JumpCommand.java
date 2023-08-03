@@ -134,8 +134,10 @@ public class JumpCommand implements Command<Void> {
         /**
          * 触发退回任务删除事件
          */
-        ProcessEngineConfigurationImpl processEngineConfiguration = CommandContextUtil.getProcessEngineConfiguration(commandContext);
-        processEngineConfiguration.getListenerNotificationHelper().executeTaskListeners(taskEntity, TaskListener.EVENTNAME_DELETE);
+        ProcessEngineConfigurationImpl processEngineConfiguration =
+            CommandContextUtil.getProcessEngineConfiguration(commandContext);
+        processEngineConfiguration.getListenerNotificationHelper().executeTaskListeners(taskEntity,
+            TaskListener.EVENTNAME_DELETE);
         return null;
     }
 }

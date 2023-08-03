@@ -14,7 +14,8 @@ import net.risesoft.model.itemadmin.EntrustHistoryModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "EntrustHistoryApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/entrustHistory")
+@FeignClient(contextId = "EntrustHistoryApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/entrustHistory")
 public interface EntrustHistoryApiClient extends EntrustHistoryApi {
 
     /**
@@ -28,7 +29,9 @@ public interface EntrustHistoryApiClient extends EntrustHistoryApi {
      */
     @Override
     @GetMapping("/findByOwnerIdAndItemId")
-    public List<EntrustHistoryModel> findByOwnerIdAndItemId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("ownerId") String ownerId, @RequestParam("itemId") String itemId);
+    public List<EntrustHistoryModel> findByOwnerIdAndItemId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("ownerId") String ownerId,
+        @RequestParam("itemId") String itemId);
 
     /**
      * 获取某个用户的委托历史对象集合
@@ -40,5 +43,6 @@ public interface EntrustHistoryApiClient extends EntrustHistoryApi {
      */
     @Override
     @GetMapping("/findOneByOwnerId")
-    public List<EntrustHistoryModel> findOneByOwnerId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("ownerId") String ownerId);
+    public List<EntrustHistoryModel> findOneByOwnerId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("ownerId") String ownerId);
 }

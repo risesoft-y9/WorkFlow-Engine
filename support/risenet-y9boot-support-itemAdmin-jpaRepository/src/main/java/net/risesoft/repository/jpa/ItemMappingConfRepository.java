@@ -15,7 +15,8 @@ import net.risesoft.entity.ItemMappingConf;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemMappingConfRepository extends JpaRepository<ItemMappingConf, String>, JpaSpecificationExecutor<ItemMappingConf> {
+public interface ItemMappingConfRepository
+    extends JpaRepository<ItemMappingConf, String>, JpaSpecificationExecutor<ItemMappingConf> {
 
     @Modifying
     @Transactional(readOnly = false)

@@ -1,11 +1,8 @@
 package net.risesoft.api;
 
-import net.risesoft.api.itemadmin.CommonSentencesApi;
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.model.Person;
-import net.risesoft.service.CommonSentencesService;
-import net.risesoft.util.CommentUtil;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,8 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import net.risesoft.api.itemadmin.CommonSentencesApi;
+import net.risesoft.api.org.PersonApi;
+import net.risesoft.model.Person;
+import net.risesoft.service.CommonSentencesService;
+import net.risesoft.util.CommentUtil;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 常用语接口

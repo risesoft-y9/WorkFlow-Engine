@@ -50,8 +50,10 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/reposition", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void reposition(String tenantId, String userId, String taskId, String targetTaskDefineKey, @RequestBody List<String> users, String reason, String sponsorGuid) throws Exception {
+    @PostMapping(value = "/reposition", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void reposition(String tenantId, String userId, String taskId, String targetTaskDefineKey,
+        @RequestBody List<String> users, String reason, String sponsorGuid) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setPerson(person);
@@ -72,8 +74,10 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/reposition4Position", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void reposition4Position(String tenantId, String positionId, String taskId, String repositionToTaskId, @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) throws Exception {
+    @PostMapping(value = "/reposition4Position", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void reposition4Position(String tenantId, String positionId, String taskId, String repositionToTaskId,
+        @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId);
@@ -194,7 +198,8 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      */
     @Override
     @PostMapping(value = "/rollbackToStartor4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void rollbackToStartor4Position(String tenantId, String positionId, String taskId, String reason) throws Exception {
+    public void rollbackToStartor4Position(String tenantId, String positionId, String taskId, String reason)
+        throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId);
@@ -232,7 +237,8 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
      */
     @Override
     @PostMapping(value = "/specialComplete4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void specialComplete4Position(String tenantId, String positionId, String taskId, String reason) throws Exception {
+    public void specialComplete4Position(String tenantId, String positionId, String taskId, String reason)
+        throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId);

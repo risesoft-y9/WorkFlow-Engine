@@ -19,7 +19,8 @@ import net.risesoft.model.itemadmin.OpinionModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "Opinion4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/opinion4Position")
+@FeignClient(contextId = "Opinion4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/opinion4Position")
 public interface Opinion4PositionApiClient extends Opinion4PositionApi {
 
     /**
@@ -33,7 +34,8 @@ public interface Opinion4PositionApiClient extends Opinion4PositionApi {
      */
     @Override
     @GetMapping("/checkSignOpinion")
-    public Boolean checkSignOpinion(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("taskId") String taskId);
+    public Boolean checkSignOpinion(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("taskId") String taskId);
 
     /**
      * 获取意见框历史记录数量
@@ -45,7 +47,9 @@ public interface Opinion4PositionApiClient extends Opinion4PositionApi {
      */
     @Override
     @GetMapping("/countOpinionHistory")
-    int countOpinionHistory(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("opinionFrameMark") String opinionFrameMark);
+    int countOpinionHistory(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("opinionFrameMark") String opinionFrameMark);
 
     /**
      * 删除意见
@@ -56,7 +60,7 @@ public interface Opinion4PositionApiClient extends Opinion4PositionApi {
      */
     @Override
     @PostMapping("/delete")
-    public void delete(@RequestParam("tenantId") String tenantId,@RequestParam("id") String id) throws Exception;
+    public void delete(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id) throws Exception;
 
     /**
      * 获取事项绑定的意见框列表
@@ -68,7 +72,8 @@ public interface Opinion4PositionApiClient extends Opinion4PositionApi {
      */
     @Override
     @GetMapping("/getBindOpinionFrame")
-    public List<String> getBindOpinionFrame(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId);
+    public List<String> getBindOpinionFrame(@RequestParam("tenantId") String tenantId,
+        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 根据id获取意见
@@ -91,7 +96,9 @@ public interface Opinion4PositionApiClient extends Opinion4PositionApi {
      */
     @Override
     @GetMapping("/opinionHistoryList")
-    List<OpinionHistoryModel> opinionHistoryList(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("opinionFrameMark") String opinionFrameMark);
+    List<OpinionHistoryModel> opinionHistoryList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("opinionFrameMark") String opinionFrameMark);
 
     /**
      * 获取个人意见列表
@@ -109,8 +116,11 @@ public interface Opinion4PositionApiClient extends Opinion4PositionApi {
      */
     @Override
     @GetMapping("/personCommentList")
-    public List<Map<String, Object>> personCommentList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("taskId") String taskId, @RequestParam("itembox") String itembox,
-        @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId, @RequestParam("taskDefinitionKey") String taskDefinitionKey, @RequestParam("activitiUser") String activitiUser);
+    public List<Map<String, Object>> personCommentList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("taskId") String taskId, @RequestParam("itembox") String itembox,
+        @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId,
+        @RequestParam("taskDefinitionKey") String taskDefinitionKey, @RequestParam("activitiUser") String activitiUser);
 
     /**
      * 保存意见
@@ -136,5 +146,6 @@ public interface Opinion4PositionApiClient extends Opinion4PositionApi {
      */
     @Override
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public OpinionModel saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("positionId") String positionId, @RequestBody OpinionModel opinion) throws Exception;
+    public OpinionModel saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("positionId") String positionId, @RequestBody OpinionModel opinion) throws Exception;
 }

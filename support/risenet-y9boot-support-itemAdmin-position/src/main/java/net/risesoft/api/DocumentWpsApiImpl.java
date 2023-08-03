@@ -54,7 +54,8 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
     }
 
     @Override
-    @PostMapping(value = "/saveDocumentWps", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/saveDocumentWps", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveDocumentWps(String tenantId, @RequestBody DocumentWpsModel documentWpsModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         DocumentWps documentWps = new DocumentWps();

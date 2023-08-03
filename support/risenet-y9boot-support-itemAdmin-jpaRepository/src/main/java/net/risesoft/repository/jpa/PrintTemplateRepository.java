@@ -15,7 +15,8 @@ import net.risesoft.entity.PrintTemplate;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface PrintTemplateRepository extends JpaRepository<PrintTemplate, String>, JpaSpecificationExecutor<PrintTemplate> {
+public interface PrintTemplateRepository
+    extends JpaRepository<PrintTemplate, String>, JpaSpecificationExecutor<PrintTemplate> {
 
     @Query("from PrintTemplate t order by t.uploadTime DESC")
     public List<PrintTemplate> findAllOrderByUploadTimeDesc();

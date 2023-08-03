@@ -131,23 +131,23 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
         }
     }
 
-	@Override
-	@Transactional(readOnly = false)
-	public void copyView(String[] ids, String viewType) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		for (String id : ids) {
-			ItemViewConf oldView = this.findById(id);
-			ItemViewConf newView = new ItemViewConf();
-			Y9BeanUtil.copyProperties(oldView, newView);
-			newView.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-			newView.setCreateTime(sdf.format(new Date()));
-			newView.setUpdateTime(sdf.format(new Date()));
-			newView.setViewType(viewType);
-			Integer tabIndex = itemViewConfRepository.getMaxTabIndex(oldView.getItemId(), viewType);
-			newView.setTabIndex(null != tabIndex ? tabIndex + 1 : 1);
-			itemViewConfRepository.save(newView);
-		}
-		
-	}
+    @Override
+    @Transactional(readOnly = false)
+    public void copyView(String[] ids, String viewType) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (String id : ids) {
+            ItemViewConf oldView = this.findById(id);
+            ItemViewConf newView = new ItemViewConf();
+            Y9BeanUtil.copyProperties(oldView, newView);
+            newView.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            newView.setCreateTime(sdf.format(new Date()));
+            newView.setUpdateTime(sdf.format(new Date()));
+            newView.setViewType(viewType);
+            Integer tabIndex = itemViewConfRepository.getMaxTabIndex(oldView.getItemId(), viewType);
+            newView.setTabIndex(null != tabIndex ? tabIndex + 1 : 1);
+            itemViewConfRepository.save(newView);
+        }
+
+    }
 
 }

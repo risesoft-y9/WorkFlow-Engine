@@ -38,5 +38,6 @@ public interface DoingService {
      * @param rows
      * @return
      */
-    Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page,
+        Integer rows);
 }

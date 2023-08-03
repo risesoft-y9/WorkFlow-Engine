@@ -29,7 +29,8 @@ public interface CustomHistoricVariableService {
      * @param year
      * @return
      */
-    HistoricVariableInstance getByProcessInstanceIdAndVariableName(String processInstanceId, String variableName, String year);
+    HistoricVariableInstance getByProcessInstanceIdAndVariableName(String processInstanceId, String variableName,
+        String year);
 
     /**
      * 根据流程实例Id,获取历史任务变量的值集合

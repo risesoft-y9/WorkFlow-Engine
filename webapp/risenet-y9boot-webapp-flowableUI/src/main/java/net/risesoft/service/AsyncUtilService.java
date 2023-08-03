@@ -39,7 +39,8 @@ public class AsyncUtilService {
      * @return
      */
     @Async
-    public Future<Boolean> updateTitle(final String tenantId, final String processInstanceId, final String documentTitle) {
+    public Future<Boolean> updateTitle(final String tenantId, final String processInstanceId,
+        final String documentTitle) {
         try {
             chaoSongInfoManager.updateTitle(tenantId, processInstanceId, documentTitle);
             todoTaskApi.updateTitle(tenantId, processInstanceId, documentTitle);

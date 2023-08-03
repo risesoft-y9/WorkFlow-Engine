@@ -27,19 +27,22 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
         DocumentFormat pdf = new DocumentFormat("Portable Document Format", "pdf", "application/pdf");
         pdf.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "writer_pdf_Export"));
         pdf.setStoreProperties(DocumentFamily.SPREADSHEET, Collections.singletonMap("FilterName", "calc_pdf_Export"));
-        pdf.setStoreProperties(DocumentFamily.PRESENTATION, Collections.singletonMap("FilterName", "impress_pdf_Export"));
+        pdf.setStoreProperties(DocumentFamily.PRESENTATION,
+            Collections.singletonMap("FilterName", "impress_pdf_Export"));
         pdf.setStoreProperties(DocumentFamily.DRAWING, Collections.singletonMap("FilterName", "draw_pdf_Export"));
         addFormat(pdf);
 
         DocumentFormat swf = new DocumentFormat("Macromedia Flash", "swf", "application/x-shockwave-flash");
-        swf.setStoreProperties(DocumentFamily.PRESENTATION, Collections.singletonMap("FilterName", "impress_flash_Export"));
+        swf.setStoreProperties(DocumentFamily.PRESENTATION,
+            Collections.singletonMap("FilterName", "impress_flash_Export"));
         swf.setStoreProperties(DocumentFamily.DRAWING, Collections.singletonMap("FilterName", "draw_flash_Export"));
         addFormat(swf);
         DocumentFormat html = new DocumentFormat("HTML", "html", "text/html");
         html.setInputFamily(DocumentFamily.TEXT);
         html.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "HTML (StarWriter)"));
         html.setStoreProperties(DocumentFamily.SPREADSHEET, Collections.singletonMap("FilterName", "HTML (StarCalc)"));
-        html.setStoreProperties(DocumentFamily.PRESENTATION, Collections.singletonMap("FilterName", "impress_html_Export"));
+        html.setStoreProperties(DocumentFamily.PRESENTATION,
+            Collections.singletonMap("FilterName", "impress_html_Export"));
         addFormat(html);
 
         DocumentFormat odt = new DocumentFormat("OpenDocument Text", "odt", "application/vnd.oasis.opendocument.text");
@@ -47,7 +50,8 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
         odt.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "writer8"));
         addFormat(odt);
 
-        DocumentFormat sxw = new DocumentFormat("OpenOffice.org 1.0 Text Document", "sxw", "application/vnd.sun.xml.writer");
+        DocumentFormat sxw =
+            new DocumentFormat("OpenOffice.org 1.0 Text Document", "sxw", "application/vnd.sun.xml.writer");
         sxw.setInputFamily(DocumentFamily.TEXT);
         sxw.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "StarOffice XML (Writer)"));
         addFormat(sxw);
@@ -57,7 +61,8 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
         doc.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "MS Word 97"));
         addFormat(doc);
 
-        DocumentFormat docx = new DocumentFormat("Microsoft Word 2007 XML", "docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        DocumentFormat docx = new DocumentFormat("Microsoft Word 2007 XML", "docx",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
         docx.setInputFamily(DocumentFamily.TEXT);
         addFormat(docx);
 
@@ -83,14 +88,17 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
         wikitext.setStoreProperties(DocumentFamily.TEXT, Collections.singletonMap("FilterName", "MediaWiki"));
         // addFormat(wikitext);
 
-        DocumentFormat ods = new DocumentFormat("OpenDocument Spreadsheet", "ods", "application/vnd.oasis.opendocument.spreadsheet");
+        DocumentFormat ods =
+            new DocumentFormat("OpenDocument Spreadsheet", "ods", "application/vnd.oasis.opendocument.spreadsheet");
         ods.setInputFamily(DocumentFamily.SPREADSHEET);
         ods.setStoreProperties(DocumentFamily.SPREADSHEET, Collections.singletonMap("FilterName", "calc8"));
         addFormat(ods);
 
-        DocumentFormat sxc = new DocumentFormat("OpenOffice.org 1.0 Spreadsheet", "sxc", "application/vnd.sun.xml.calc");
+        DocumentFormat sxc =
+            new DocumentFormat("OpenOffice.org 1.0 Spreadsheet", "sxc", "application/vnd.sun.xml.calc");
         sxc.setInputFamily(DocumentFamily.SPREADSHEET);
-        sxc.setStoreProperties(DocumentFamily.SPREADSHEET, Collections.singletonMap("FilterName", "StarOffice XML (Calc)"));
+        sxc.setStoreProperties(DocumentFamily.SPREADSHEET,
+            Collections.singletonMap("FilterName", "StarOffice XML (Calc)"));
         addFormat(sxc);
 
         DocumentFormat xls = new DocumentFormat("Microsoft Excel", "xls", "application/vnd.ms-excel");
@@ -98,7 +106,8 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
         xls.setStoreProperties(DocumentFamily.SPREADSHEET, Collections.singletonMap("FilterName", "MS Excel 97"));
         addFormat(xls);
 
-        DocumentFormat xlsx = new DocumentFormat("Microsoft Excel 2007 XML", "xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        DocumentFormat xlsx = new DocumentFormat("Microsoft Excel 2007 XML", "xlsx",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         xlsx.setInputFamily(DocumentFamily.SPREADSHEET);
         addFormat(xlsx);
 
@@ -122,14 +131,17 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
         tsv.setStoreProperties(DocumentFamily.SPREADSHEET, tsvLoadAndStoreProperties);
         addFormat(tsv);
 
-        DocumentFormat odp = new DocumentFormat("OpenDocument Presentation", "odp", "application/vnd.oasis.opendocument.presentation");
+        DocumentFormat odp =
+            new DocumentFormat("OpenDocument Presentation", "odp", "application/vnd.oasis.opendocument.presentation");
         odp.setInputFamily(DocumentFamily.PRESENTATION);
         odp.setStoreProperties(DocumentFamily.PRESENTATION, Collections.singletonMap("FilterName", "impress8"));
         addFormat(odp);
 
-        DocumentFormat sxi = new DocumentFormat("OpenOffice.org 1.0 Presentation", "sxi", "application/vnd.sun.xml.impress");
+        DocumentFormat sxi =
+            new DocumentFormat("OpenOffice.org 1.0 Presentation", "sxi", "application/vnd.sun.xml.impress");
         sxi.setInputFamily(DocumentFamily.PRESENTATION);
-        sxi.setStoreProperties(DocumentFamily.PRESENTATION, Collections.singletonMap("FilterName", "StarOffice XML (Impress)"));
+        sxi.setStoreProperties(DocumentFamily.PRESENTATION,
+            Collections.singletonMap("FilterName", "StarOffice XML (Impress)"));
         addFormat(sxi);
 
         DocumentFormat ppt = new DocumentFormat("Microsoft PowerPoint", "ppt", "application/vnd.ms-powerpoint");
@@ -137,11 +149,13 @@ public class DefaultDocumentFormatRegistry extends SimpleDocumentFormatRegistry 
         ppt.setStoreProperties(DocumentFamily.PRESENTATION, Collections.singletonMap("FilterName", "MS PowerPoint 97"));
         addFormat(ppt);
 
-        DocumentFormat pptx = new DocumentFormat("Microsoft PowerPoint 2007 XML", "pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+        DocumentFormat pptx = new DocumentFormat("Microsoft PowerPoint 2007 XML", "pptx",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation");
         pptx.setInputFamily(DocumentFamily.PRESENTATION);
         addFormat(pptx);
 
-        DocumentFormat odg = new DocumentFormat("OpenDocument Drawing", "odg", "application/vnd.oasis.opendocument.graphics");
+        DocumentFormat odg =
+            new DocumentFormat("OpenDocument Drawing", "odg", "application/vnd.oasis.opendocument.graphics");
         odg.setInputFamily(DocumentFamily.DRAWING);
         odg.setStoreProperties(DocumentFamily.DRAWING, Collections.singletonMap("FilterName", "draw8"));
         addFormat(odg);

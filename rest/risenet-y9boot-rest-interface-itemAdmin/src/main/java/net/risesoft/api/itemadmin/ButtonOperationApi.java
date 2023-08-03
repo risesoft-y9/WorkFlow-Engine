@@ -21,7 +21,8 @@ public interface ButtonOperationApi {
      * @param elementUser elementUser
      * @throws Exception exception
      */
-    public void addMultiInstanceExecution(String tenantId, String userId, String activityId, String parentExecutionId, String taskId, String elementUser) throws Exception;
+    public void addMultiInstanceExecution(String tenantId, String userId, String activityId, String parentExecutionId,
+        String taskId, String elementUser) throws Exception;
 
     /**
      * 减签
@@ -33,7 +34,8 @@ public interface ButtonOperationApi {
      * @param elementUser elementUser
      * @throws Exception exception
      */
-    public void deleteMultiInstanceExecution(String tenantId, String userId, String executionId, String taskId, String elementUser) throws Exception;
+    public void deleteMultiInstanceExecution(String tenantId, String userId, String executionId, String taskId,
+        String elementUser) throws Exception;
 
     /**
      * 直接发送至流程启动人
@@ -45,7 +47,8 @@ public interface ButtonOperationApi {
      * @param processInstanceId 流程实例ID
      * @return boolean
      */
-    public boolean directSend(String tenantId, String userId, String taskId, String routeToTask, String processInstanceId);
+    public boolean directSend(String tenantId, String userId, String taskId, String routeToTask,
+        String processInstanceId);
 
     /**
      * 最后一人拒签退回
@@ -69,7 +72,8 @@ public interface ButtonOperationApi {
      * @param sponsorGuid
      * @throws Exception
      */
-    public void reposition(String tenantId, String userId, String taskId, String repositionToTaskId, List<String> userChoice, String reason, String sponsorGuid) throws Exception;
+    public void reposition(String tenantId, String userId, String taskId, String repositionToTaskId,
+        List<String> userChoice, String reason, String sponsorGuid) throws Exception;
 
     /**
      * 退回操作

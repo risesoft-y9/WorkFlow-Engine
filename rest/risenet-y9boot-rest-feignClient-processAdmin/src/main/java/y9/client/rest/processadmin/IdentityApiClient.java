@@ -14,7 +14,8 @@ import net.risesoft.model.processadmin.IdentityLinkModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "IdentityApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}", path = "/services/rest/identity")
+@FeignClient(contextId = "IdentityApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
+    path = "/services/rest/identity")
 public interface IdentityApiClient extends IdentityApi {
 
     /**
@@ -26,5 +27,6 @@ public interface IdentityApiClient extends IdentityApi {
      */
     @Override
     @GetMapping("/getIdentityLinksForTask")
-    List<IdentityLinkModel> getIdentityLinksForTask(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+    List<IdentityLinkModel> getIdentityLinksForTask(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId);
 }

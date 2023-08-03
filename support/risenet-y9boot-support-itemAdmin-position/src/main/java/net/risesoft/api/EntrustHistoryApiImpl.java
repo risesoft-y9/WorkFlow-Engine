@@ -40,7 +40,8 @@ public class EntrustHistoryApiImpl implements EntrustHistoryApi {
      */
     @Override
     @GetMapping(value = "/findByOwnerIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EntrustHistoryModel> findByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId) {
+    public List<EntrustHistoryModel> findByOwnerIdAndItemId(String tenantId, String userId, String ownerId,
+        String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<EntrustHistory> ehList = entrustHistoryService.list(ownerId, itemId);
         List<EntrustHistoryModel> ehModelList = ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);

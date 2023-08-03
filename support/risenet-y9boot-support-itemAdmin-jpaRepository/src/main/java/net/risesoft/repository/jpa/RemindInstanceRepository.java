@@ -14,7 +14,8 @@ import net.risesoft.entity.RemindInstance;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface RemindInstanceRepository extends JpaRepository<RemindInstance, String>, JpaSpecificationExecutor<RemindInstance> {
+public interface RemindInstanceRepository
+    extends JpaRepository<RemindInstance, String>, JpaSpecificationExecutor<RemindInstance> {
 
     List<RemindInstance> findByProcessInstanceId(String processInstanceId);
 
