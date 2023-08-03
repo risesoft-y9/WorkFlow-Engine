@@ -1,17 +1,5 @@
 package net.risesoft.service.form.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9ValidType;
@@ -22,6 +10,17 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.form.Y9ValidTypeRepository;
 import net.risesoft.service.form.Y9ValidTypeService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -86,7 +85,7 @@ public class Y9ValidTypeServiceImpl implements Y9ValidTypeService {
                 m.put("validName", y9VlidType.getValidName());
                 m.put("validType", y9VlidType.getValidType());
                 String personId = y9VlidType.getPersonId();
-                Person person = personManager.getPersonById(Y9LoginUserHolder.getTenantId(), personId);
+                Person person = personManager.getPerson(Y9LoginUserHolder.getTenantId(), personId);
                 m.put("personName", person.getName());
                 m.put("updateTime", sdf.format(y9VlidType.getUpdateTime()));
                 resList.add(m);

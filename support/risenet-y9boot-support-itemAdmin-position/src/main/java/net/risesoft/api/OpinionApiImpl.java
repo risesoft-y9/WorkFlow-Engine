@@ -1,16 +1,5 @@
 package net.risesoft.api;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
@@ -24,6 +13,16 @@ import net.risesoft.service.OpinionService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 意见接口
@@ -161,7 +160,7 @@ public class OpinionApiImpl implements Opinion4PositionApi {
     @Override
     @GetMapping(value = "/personCommentList", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber, String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser) {
-        Person person = personManager.getPersonById(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = opinionService.personCommentList(processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
@@ -196,7 +195,7 @@ public class OpinionApiImpl implements Opinion4PositionApi {
     @Override
     @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public OpinionModel saveOrUpdate(String tenantId, String userId, String positionId, @RequestBody OpinionModel opinionModel) throws Exception {
-        Person person = personManager.getPersonById(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         Position position = positionManager.getPosition(tenantId, positionId);

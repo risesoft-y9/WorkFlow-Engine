@@ -1,16 +1,5 @@
 package net.risesoft.api;
 
-import java.text.ParseException;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import net.risesoft.api.itemadmin.EntrustApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.Entrust;
@@ -23,6 +12,16 @@ import net.risesoft.service.EntrustService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.text.ParseException;
+import java.util.Map;
 
 /**
  * 出差委托接口
@@ -122,8 +121,8 @@ public class EntrustApiImpl implements EntrustApi {
         EntrustModel entrustModel = null;
         Entrust entrust = entrustService.findOneByOwnerIdAndItemId(ownerId, itemId);
         if (null != entrust) {
-            Person assignee = personManager.getPersonById(tenantId, entrust.getAssigneeId());
-            Person owner = personManager.getPersonById(tenantId, entrust.getOwnerId());
+            Person assignee = personManager.getPerson(tenantId, entrust.getAssigneeId());
+            Person owner = personManager.getPerson(tenantId, entrust.getOwnerId());
 
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             ItemModel itemModel = new ItemModel();
@@ -290,7 +289,7 @@ public class EntrustApiImpl implements EntrustApi {
     @Override
     @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveOrUpdate(String tenantId, String userId, @RequestBody EntrustModel entrustModel) throws Exception {
-        Person person = personManager.getPersonById(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
 
