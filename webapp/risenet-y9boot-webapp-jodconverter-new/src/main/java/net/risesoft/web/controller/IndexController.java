@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 /**
  * 页面跳转
  *
- * @author yudian-it
- * @date 2017/12/27
+ * @author lizihwen
+ * @date 2023-08-01
  */
 @Controller
 public class IndexController {

@@ -77,7 +77,7 @@
     var url = '${finalUrl}';
     var baseUrl = '${baseUrl}'.endsWithh('/') ? '${baseUrl}' : '${baseUrl}' + '/';
     if (!url.startsWithh(baseUrl)) {
-        url = baseUrl + 'getCorsFile?urlPath=' + encodeURIComponent(Base64.encode(url));
+        url = baseUrl + 'getCorsFile?urlPath=' + url;
     }
     const xhr = new XMLHttpRequest();
     xhr.open('GET', url);

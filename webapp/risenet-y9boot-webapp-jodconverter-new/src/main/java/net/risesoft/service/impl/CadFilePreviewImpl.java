@@ -15,7 +15,7 @@ import org.springframework.util.StringUtils;
 import static net.risesoft.service.impl.OfficeFilePreviewImpl.getPreviewType;
 
 /**
- * @author chenjh
+ * @author lizhiwen
  * @since 2019/11/21 14:28
  */
 @Service

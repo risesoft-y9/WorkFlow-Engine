@@ -5,8 +5,8 @@ import javax.servlet.*;
 import java.io.IOException;
 
 /**
- * @author yudian-it
- * @date 2017/11/30
+ * @author lizihwen
+ * @date 2023-08-02
  */
 public class ChinesePathFilter implements Filter {
 

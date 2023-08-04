@@ -18,9 +18,9 @@
     var url = '${finalUrl}';
     var baseUrl = '${baseUrl}'.endsWith('/') ? '${baseUrl}' : '${baseUrl}' + '/';
     if (!url.startsWith(baseUrl)) {
-        url = baseUrl + 'getCorsFile?urlPath=' + encodeURIComponent(Base64.encode(url));
+        url = baseUrl + 'getCorsFile?urlPath=' + url;
     }
-    document.getElementsByTagName('iframe')[0].src = "${baseUrl}drawio/index.html?src=about#U" + encodeURIComponent(url) + "";
+    document.getElementsByTagName('iframe')[0].src = "${baseUrl}drawio/index.html?src=about#U" + url + "";
     document.getElementsByTagName('iframe')[0].height = document.documentElement.clientHeight - 10;
     /**
      * 页面变化调整高度

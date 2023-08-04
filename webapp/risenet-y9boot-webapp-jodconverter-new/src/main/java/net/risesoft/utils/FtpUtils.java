@@ -15,8 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * @auther: chenjh
- * @since: 2019/6/18 14:36
+ * @auther: lizhiwen
+ * @since: 2023-08-04 14:36
  */
 public class FtpUtils {
 

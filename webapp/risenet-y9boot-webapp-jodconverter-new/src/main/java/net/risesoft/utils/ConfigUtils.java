@@ -1,28 +1,37 @@
 package net.risesoft.utils;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * @author : kl
+ * @author : lizhiwen
  **/
 @Component
 public class ConfigUtils {
 
-    private final ResourceLoader resourceLoader;
+    private static ResourceLoader resourceLoader;
 
 
+    @Autowired
     public ConfigUtils(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
+        ConfigUtils.resourceLoader = resourceLoader;
     }
-
     private static final String MAIN_DIRECTORY_NAME = "risenet-y9boot-webapp-jodconverter-new";
+
+    static {
+        ApplicationContext context = new AnnotationConfigApplicationContext(ConfigUtils.class);
+    }
 
     public static String getHomePath() {
         String userDir = System.getenv("KKFILEVIEW_BIN_FOLDER");
@@ -78,11 +87,16 @@ public class ConfigUtils {
         }
     }
 
-    public static String getCustomizedConfigPath() {
+    public static String getCustomizedConfigPath() throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:");
+        String absolutePath = resource.getFile().getAbsoluteFile().getAbsolutePath();
 
         String homePath = getHomePath();
         String separator = java.io.File.separator;
-        return homePath + separator + "config" + separator + "application.properties";
+
+        System.out.println("配置文件路径"+":::"+absolutePath + separator + "application.properties");
+
+        return absolutePath + separator + "application.properties";
     }
 
     public synchronized static void restorePropertiesFromEnvFormat(Properties properties) {

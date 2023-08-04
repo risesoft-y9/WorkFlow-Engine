@@ -13,8 +13,8 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @auther: chenjh
- * @time: 2019/4/10 16:16
+ * @auther: lizhiwen
+ * @time: 2023-08-04 14:16
  * @description 每隔1s读取并更新一次配置文件
  */
 @Component

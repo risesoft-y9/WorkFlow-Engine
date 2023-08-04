@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author yudian-it
+ * @author lizihwen
  */
 @Controller
 public class OnlinePreviewController {
@@ -67,7 +67,8 @@ public class OnlinePreviewController {
 
         String fileUrl;
         try {
-            fileUrl = WebUtils.decodeUrl(url);
+     //     fileUrl = WebUtils.decodeUrl(url);
+            fileUrl = url;
         } catch (Exception ex) {
             String errorMsg = String.format(BASE64_DECODE_ERROR_MSG, "url");
             return otherFilePreview.notSupportedFile(model, errorMsg);
@@ -81,9 +82,9 @@ public class OnlinePreviewController {
 
     @GetMapping("/picturesPreview")
     public String picturesPreview(String urls, Model model, HttpServletRequest req) {
-        String fileUrls;
+        String fileUrls = urls;
         try {
-            fileUrls = WebUtils.decodeUrl(urls);
+         //   fileUrls = WebUtils.decodeUrl(urls);
             // 防止XSS攻击
             fileUrls = KkFileUtils.htmlEscape(fileUrls);
         } catch (Exception ex) {
@@ -116,7 +117,7 @@ public class OnlinePreviewController {
     @GetMapping("/getCorsFile")
     public void getCorsFile(String urlPath, HttpServletResponse response) throws IOException {
         try {
-            urlPath = WebUtils.decodeUrl(urlPath);
+       //     urlPath = WebUtils.decodeUrl(urlPath);
         } catch (Exception ex) {
             logger.error(String.format(BASE64_DECODE_ERROR_MSG, urlPath), ex);
             return;

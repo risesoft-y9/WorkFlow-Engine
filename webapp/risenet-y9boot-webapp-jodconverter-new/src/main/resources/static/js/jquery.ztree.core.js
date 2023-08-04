@@ -1,15 +1,4 @@
-/*
- * JQuery zTree core v3.5.30
- * http://treejs.cn/
- *
- * Copyright (c) 2010 Hunter.z
- *
- * Licensed same as jquery - MIT License
- * http://www.opensource.org/licenses/mit-license.php
- *
- * email: hunter.z@263.net
- * Date: 2017-11-11
- */
+
 (function ($) {
     var settings = {}, roots = {}, caches = {},
         //default consts of core

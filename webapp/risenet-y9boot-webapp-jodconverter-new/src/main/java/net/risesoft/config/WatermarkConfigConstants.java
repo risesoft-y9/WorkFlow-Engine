@@ -3,8 +3,8 @@ package net.risesoft.config;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
- * @author chenjh
- * @since 2020/5/13 17:44
+ * @author lizhiwen
+ * @since 2023-08-04 17:44
  */
 public class WatermarkConfigConstants {
 

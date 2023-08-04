@@ -26,7 +26,7 @@ import java.util.Arrays;
 /**
  * 创建文件转换器
  *
- * @author chenjh
+ * @author lizhiwen
  * @since 2022-12-15
  */
 @Component
@@ -47,7 +47,7 @@ public class OfficePluginManager {
      * 启动Office组件进程
      */
     @PostConstruct
-    public void startOfficeManager() throws OfficeException {
+    public void startOfficeManager() throws OfficeException, IOException {
         File officeHome = LocalOfficeUtils.getDefaultOfficeHome();
         if (officeHome == null) {
             throw new RuntimeException("找不到office组件，请确认'office.home'配置是否有误");

@@ -21,7 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author : kl
+ * @author : lizhiwen
  * create : 2020-12-27 1:30 上午
  **/
 public class WebUtils {
@@ -92,7 +92,7 @@ public class WebUtils {
     /**
      * 从url中剥离出文件名
      *
-     * @param url 格式如：http://www.com.cn/20171113164107_月度绩效表模板(新).xls?UCloudPublicKey=ucloudtangshd@weifenf.com14355492830001993909323&Expires=&Signature=I D1NOFtAJSPT16E6imv6JWuq0k=
+     * @param url 格式如：http://www.com.cn/20231113164107_月度绩效表模板(新).xls?UCloudPublicKey=ucloudtangshd@weifenf.com14355492830001993909323&Expires=&Signature=I D1NOFtAJSPT16E6imv6JWuq0k=
      * @return 文件名
      */
     public static String getFileNameFromURL(String url) {
@@ -155,19 +155,20 @@ public class WebUtils {
      * @return 文件名编码后的url
      */
     public static String encodeUrlFileName(String url) {
-        String encodedFileName;
-        String noQueryUrl = url.substring(0, url.contains("?") ? url.indexOf("?") : url.length());
-        int fileNameStartIndex = noQueryUrl.lastIndexOf('/') + 1;
-        int fileNameEndIndex = noQueryUrl.lastIndexOf('.');
-        if (fileNameEndIndex < fileNameStartIndex) {
-            return url;
-        }
-        try {
-            encodedFileName = URLEncoder.encode(noQueryUrl.substring(fileNameStartIndex, fileNameEndIndex), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
-        return url.substring(0, fileNameStartIndex) + encodedFileName + url.substring(fileNameEndIndex);
+//        String encodedFileName;
+//        String noQueryUrl = url.substring(0, url.contains("?") ? url.indexOf("?") : url.length());
+//        int fileNameStartIndex = noQueryUrl.lastIndexOf('/') + 1;
+//        int fileNameEndIndex = noQueryUrl.lastIndexOf('.');
+//        if (fileNameEndIndex < fileNameStartIndex) {
+//            return url;
+//        }
+//        try {
+//            encodedFileName = URLEncoder.encode(noQueryUrl.substring(fileNameStartIndex, fileNameEndIndex), "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            return null;
+//        }
+//        return url.substring(0, fileNameStartIndex) + encodedFileName + url.substring(fileNameEndIndex);
+    return url;
     }
 
     /**
@@ -182,16 +183,16 @@ public class WebUtils {
         String currentUrl = request.getParameter("currentUrl");
         String urlPath = request.getParameter("urlPath");
         if (StringUtils.isNotBlank(url)) {
-            return decodeUrl(url);
+            return url;
         }
         if (StringUtils.isNotBlank(currentUrl)) {
-            return decodeUrl(currentUrl);
+            return currentUrl;
         }
         if (StringUtils.isNotBlank(urlPath)) {
-            return decodeUrl(urlPath);
+            return urlPath;
         }
         if (StringUtils.isNotBlank(urls)) {
-            urls = decodeUrl(urls);
+            urls = urls;
             String[] images = urls.split("\\|");
             return images[0];
         }
@@ -226,7 +227,7 @@ public class WebUtils {
      * aHR0cHM6Ly9maWxlLmtla2luZy5jbi9kZW1vL%2BS4reaWhy5wcHR4 -> https://file.keking.cn/demo/%E4%B8%AD%E6%96%87.pptx -> https://file.keking.cn/demo/中文.pptx
      */
     public static String decodeUrl(String source) {
-        String url = decodeBase64String(source, StandardCharsets.UTF_8);
+        String url = source;
         if (!StringUtils.isNotBlank(url)) {
             return null;
         }

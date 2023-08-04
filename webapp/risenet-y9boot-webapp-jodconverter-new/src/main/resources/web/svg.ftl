@@ -22,7 +22,7 @@
     var url = '${finalUrl}';
     var baseUrl = '${baseUrl}'.endsWith('/') ? '${baseUrl}' : '${baseUrl}' + '/';
     if (!url.startsWith(baseUrl)) {
-        url = baseUrl + 'getCorsFile?urlPath=' + encodeURIComponent(Base64.encode(url));
+        url = baseUrl + 'getCorsFile?urlPath=' + url;
     }
 
     function createNewEmbed(src) {

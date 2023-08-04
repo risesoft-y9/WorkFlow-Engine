@@ -5,7 +5,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 /**
- * @author 鞠玉果
+ * @author lizhiwen
  */
 public class SslUtils {
 

@@ -17,10 +17,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-/**
- * @author : kl (http://kailing.pub)
- * @since : 2022-05-25 17:45
- */
+
 public class TrustDirFilter implements Filter {
 
     private String notTrustDirView;

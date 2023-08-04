@@ -23,7 +23,7 @@
     var url = '${finalUrl}';
     var baseUrl = '${baseUrl}'.endsWith('/') ? '${baseUrl}' : '${baseUrl}' + '/';
     if (!url.startsWith(baseUrl)) {
-        url = baseUrl + 'getCorsFile?urlPath=' + encodeURIComponent(Base64.encode(url));
+        url = baseUrl + 'getCorsFile?urlPath=' + url;
         document.getElementsByTagName('iframe')[0].src = "${baseUrl}website/index.html#model=" + url + "&fullfilename=/${file.name}";
     } else {
         document.getElementsByTagName('iframe')[0].src = "${baseUrl}website/index.html#model=" + url;

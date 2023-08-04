@@ -44,8 +44,8 @@ import java.util.concurrent.*;
 import java.util.stream.IntStream;
 
 /**
- * @author yudian-it
- * @date 2017/11/13
+ * @author lizihwen
+ * @date 2023-08-02
  */
 @Component
 public class FileHandlerService {
@@ -431,7 +431,7 @@ public class FileHandlerService {
             fileName = strs[1] + urlStrr.trim();
             attribute.setSkipDownLoad(true);
         }
-        url = WebUtils.encodeUrlFileName(url);
+    //    url = WebUtils.encodeUrlFileName(url);
         fileName = KkFileUtils.htmlEscape(fileName);  //文件名处理
         attribute.setType(type);
         attribute.setName(fileName);

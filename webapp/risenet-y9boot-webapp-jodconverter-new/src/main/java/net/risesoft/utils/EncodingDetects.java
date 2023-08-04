@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 
 /**
- * @author asiawu
+ * @author lizhiwen
  * @date 2023/07/20 17:26
  * @description: 自动获取文件的编码
  */

@@ -22,7 +22,7 @@ import static net.risesoft.utils.KkFileUtils.isFtpUrl;
 import static net.risesoft.utils.KkFileUtils.isHttpUrl;
 
 /**
- * @author yudian-it
+ * @author lizhiwen
  */
 public class DownloadUtils {
 

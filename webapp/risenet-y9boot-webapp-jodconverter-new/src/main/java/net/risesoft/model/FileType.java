@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by kl on 2018/1/17.
+ *
  * Content :文件类型，文本，office，压缩包等等
  */
 public enum FileType {

@@ -13,8 +13,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author : Gao
- * create : 2023-04-08
+ * @author : lizhiwen
+ * create : 2023-08-04
  **/
 public class RarUtils {
     private static final String fileDir = ConfigConstants.getFileDir();

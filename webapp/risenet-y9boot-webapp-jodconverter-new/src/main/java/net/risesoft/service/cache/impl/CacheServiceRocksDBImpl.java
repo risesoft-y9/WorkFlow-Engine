@@ -18,8 +18,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * @auther: chenjh
- * @time: 2019/4/22 11:02
+ * @auther: lizhiwen
+ * @time: 2023-08-04 11:02
  * @description
  */
 @ConditionalOnExpression("'${cache.type:default}'.equals('default')")

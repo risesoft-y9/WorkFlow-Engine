@@ -3,7 +3,7 @@ package net.risesoft.model;
 import net.risesoft.config.ConfigConstants;
 
 /**
- * Created by kl on 2018/1/17.
+ *
  * Content :
  */
 public class FileAttribute {

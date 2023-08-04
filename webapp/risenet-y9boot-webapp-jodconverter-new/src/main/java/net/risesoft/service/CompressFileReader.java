@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author yudian-it
- * create 2017/11/27
+ * @author lizihwen
+ * create 2023-08-02
  */
 @Component
 public class CompressFileReader {

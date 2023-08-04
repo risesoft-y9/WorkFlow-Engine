@@ -17,8 +17,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author: chenjh
- * @since: 2019/4/16 20:04
+ * @author: lizhiwen
+ * @since: 2023-08-04 16:04
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {

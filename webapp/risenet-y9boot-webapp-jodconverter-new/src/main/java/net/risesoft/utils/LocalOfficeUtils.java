@@ -5,17 +5,18 @@ import org.jodconverter.core.util.OSUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.stream.Stream;
 
 /**
- * @author chenjh
- * @since 2022-12-15
+ * @author lizhiwen
+ * @since 2023-08-04
  */
 public class LocalOfficeUtils {
-
+    // LibreOfficePortable 路径
     public static final String OFFICE_HOME_KEY = "office.home";
     public static final String DEFAULT_OFFICE_HOME_VALUE = "default";
 
@@ -24,7 +25,7 @@ public class LocalOfficeUtils {
     private static final String EXECUTABLE_MAC_41 = "MacOS/soffice";
     private static final String EXECUTABLE_WINDOWS = "program/soffice.exe";
 
-    public static File getDefaultOfficeHome() {
+    public static File getDefaultOfficeHome() throws IOException {
         Properties properties = new Properties();
         String customizedConfigPath = ConfigUtils.getCustomizedConfigPath();
         try {
@@ -35,6 +36,7 @@ public class LocalOfficeUtils {
         }
         String officeHome = properties.getProperty(OFFICE_HOME_KEY);
         if (officeHome != null && !DEFAULT_OFFICE_HOME_VALUE.equals(officeHome)) {
+            officeHome = officeHome.replace('.', '/');
             return new File(officeHome);
         }
         if (OSUtils.IS_OS_WINDOWS) {

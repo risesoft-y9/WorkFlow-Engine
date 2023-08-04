@@ -9,8 +9,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * @auther: chenjh
- * @since: 2019/6/11 7:45
+ * @auther: lizhiwen
+ * @since: 2023-08-04 9:45
  */
 @Component
 @ConditionalOnExpression("'${cache.clean.enabled:false}'.equals('true')")
