@@ -31,6 +31,7 @@
         <module>webapp/risenet-y9boot-webapp-flowableUI-position</module>
         <module>webapp/risenet-y9boot-webapp-itemAdmin</module>
         <module>webapp/risenet-y9boot-webapp-jodconverter</module>
+        <module>webapp/risenet-y9boot-webapp-jodconverter-new</module>
         <module>webapp/risenet-y9boot-webapp-processAdmin</module>
     </modules>
 
