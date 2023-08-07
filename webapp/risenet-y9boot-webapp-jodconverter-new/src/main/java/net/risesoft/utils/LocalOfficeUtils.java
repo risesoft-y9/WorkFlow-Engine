@@ -1,6 +1,11 @@
 package net.risesoft.utils;
 
+import com.aspose.cad.internal.cu.S;
 import org.jodconverter.core.util.OSUtils;
+import org.springframework.beans.factory.config.YamlMapFactoryBean;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,13 +13,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-/**
- * @author lizhiwen
- * @since 2023-08-04
- */
+
 public class LocalOfficeUtils {
     // LibreOfficePortable 路径
     public static final String OFFICE_HOME_KEY = "office.home";
@@ -25,15 +28,13 @@ public class LocalOfficeUtils {
     private static final String EXECUTABLE_MAC_41 = "MacOS/soffice";
     private static final String EXECUTABLE_WINDOWS = "program/soffice.exe";
 
-    public static File getDefaultOfficeHome() throws IOException {
-        Properties properties = new Properties();
-        String customizedConfigPath = ConfigUtils.getCustomizedConfigPath();
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(customizedConfigPath));
-            properties.load(bufferedReader);
-            ConfigUtils.restorePropertiesFromEnvFormat(properties);
-        } catch (Exception ignored) {
-        }
+    public static File getDefaultOfficeHome() {
+        Properties properties;
+        YamlPropertiesFactoryBean factoryBean = new YamlPropertiesFactoryBean();
+
+        // 加载yml配置文件
+        factoryBean.setResources(new ClassPathResource("application.yml"));
+        properties = factoryBean.getObject();
         String officeHome = properties.getProperty(OFFICE_HOME_KEY);
         if (officeHome != null && !DEFAULT_OFFICE_HOME_VALUE.equals(officeHome)) {
             officeHome = officeHome.replace('.', '/');

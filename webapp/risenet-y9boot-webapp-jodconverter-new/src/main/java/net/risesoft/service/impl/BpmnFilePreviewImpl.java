@@ -5,10 +5,7 @@ import net.risesoft.service.FilePreview;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 
-/**
- * @author kl (http://kailing.pub)
- * @since 2023/3/9
- */
+
 @Component
 public class BpmnFilePreviewImpl implements FilePreview {
 

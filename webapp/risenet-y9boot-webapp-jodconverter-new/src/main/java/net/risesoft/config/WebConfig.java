@@ -16,10 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @author: lizhiwen
- * @since: 2023-08-04 16:04
- */
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 

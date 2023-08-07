@@ -3,12 +3,7 @@ package net.risesoft.web.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-/**
- * 页面跳转
- *
- * @author lizihwen
- * @date 2023-08-01
- */
+
 @Controller
 public class IndexController {
 

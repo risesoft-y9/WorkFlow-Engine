@@ -5,10 +5,6 @@ import net.risesoft.service.FilePreview;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-/**
- * @author kl (http://kailing.pub)
- * @since 2020/12/25
- */
 @Service
 public class XmlFilePreviewImpl implements FilePreview {
 

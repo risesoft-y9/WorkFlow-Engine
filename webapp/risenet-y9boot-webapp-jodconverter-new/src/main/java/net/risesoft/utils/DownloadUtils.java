@@ -21,9 +21,7 @@ import java.util.UUID;
 import static net.risesoft.utils.KkFileUtils.isFtpUrl;
 import static net.risesoft.utils.KkFileUtils.isHttpUrl;
 
-/**
- * @author lizhiwen
- */
+
 public class DownloadUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(DownloadUtils.class);

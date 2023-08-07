@@ -17,10 +17,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 
-/**
- * Created by kl on 2018/1/17.
- * Content :处理压缩包文件
- */
+
 @Service
 public class CompressFilePreviewImpl implements FilePreview {
 

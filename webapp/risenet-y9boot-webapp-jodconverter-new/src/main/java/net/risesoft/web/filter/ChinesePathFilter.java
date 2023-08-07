@@ -4,10 +4,7 @@ package net.risesoft.web.filter;
 import javax.servlet.*;
 import java.io.IOException;
 
-/**
- * @author lizihwen
- * @date 2023-08-02
- */
+
 public class ChinesePathFilter implements Filter {
 
     @Override

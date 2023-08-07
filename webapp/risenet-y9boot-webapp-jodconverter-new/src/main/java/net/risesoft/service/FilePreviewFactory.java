@@ -4,10 +4,7 @@ import net.risesoft.model.FileAttribute;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by kl on 2018/1/17.
- * Content :
- */
+
 @Service
 public class FilePreviewFactory {
 

@@ -15,10 +15,7 @@ import javax.servlet.ServletResponse;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
 
-/**
- * @author lizhiwen
- * @since 2020/2/18 19:13
- */
+
 public class TrustHostFilter implements Filter {
 
     private String notTrustHost;

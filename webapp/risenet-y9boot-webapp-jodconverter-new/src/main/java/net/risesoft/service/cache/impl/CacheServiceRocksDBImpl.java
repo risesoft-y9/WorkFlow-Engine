@@ -17,11 +17,6 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-/**
- * @auther: lizhiwen
- * @time: 2023-08-04 11:02
- * @description
- */
 @ConditionalOnExpression("'${cache.type:default}'.equals('default')")
 @Service
 public class CacheServiceRocksDBImpl implements CacheService {

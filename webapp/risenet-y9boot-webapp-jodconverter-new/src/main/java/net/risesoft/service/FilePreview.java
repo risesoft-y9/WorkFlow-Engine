@@ -3,10 +3,7 @@ package net.risesoft.service;
 import net.risesoft.model.FileAttribute;
 import org.springframework.ui.Model;
 
-/**
- * Created by kl on 2018/1/17.
- * Content :
- */
+
 public interface FilePreview {
 
     String FLV_FILE_PREVIEW_PAGE = "flv";

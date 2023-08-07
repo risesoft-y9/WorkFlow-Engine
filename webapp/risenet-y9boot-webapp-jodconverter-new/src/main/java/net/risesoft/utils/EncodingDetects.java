@@ -10,11 +10,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
-/**
- * @author lizhiwen
- * @date 2023/07/20 17:26
- * @description: 自动获取文件的编码
- */
+
 public class EncodingDetects {
     private static UniversalDetector detector = new UniversalDetector(null);
     private static final int DEFAULT_LENGTH = 4096;

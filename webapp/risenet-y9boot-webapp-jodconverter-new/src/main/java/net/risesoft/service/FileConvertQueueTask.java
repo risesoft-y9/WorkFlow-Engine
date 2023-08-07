@@ -12,7 +12,6 @@ import javax.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by kl on 2018/1/19.
  * Content :消费队列中的转换文件
  */
 @Service

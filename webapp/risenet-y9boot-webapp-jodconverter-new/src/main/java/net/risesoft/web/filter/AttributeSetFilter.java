@@ -8,10 +8,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-/**
- * @author lizhiwen
- * @since 2020/5/13 18:34
- */
+
 public class AttributeSetFilter implements Filter {
 
     @Override

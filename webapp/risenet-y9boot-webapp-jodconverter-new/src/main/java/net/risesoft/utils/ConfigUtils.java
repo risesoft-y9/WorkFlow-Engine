@@ -14,9 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-/**
- * @author : lizhiwen
- **/
+
 @Component
 public class ConfigUtils {
 
@@ -94,9 +92,9 @@ public class ConfigUtils {
         String homePath = getHomePath();
         String separator = java.io.File.separator;
 
-        System.out.println("配置文件路径"+":::"+absolutePath + separator + "application.properties");
+        System.out.println("配置文件路径"+":::"+absolutePath + separator + "application.yml");
 
-        return absolutePath + separator + "application.properties";
+        return absolutePath + separator + "application.yml";
     }
 
     public synchronized static void restorePropertiesFromEnvFormat(Properties properties) {

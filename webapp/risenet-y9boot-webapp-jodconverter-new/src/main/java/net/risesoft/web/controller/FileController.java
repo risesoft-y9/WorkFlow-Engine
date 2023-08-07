@@ -24,10 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-/**
- * @author lizihwen
- * 2023-08-01
- */
+
 @RestController
 public class FileController {
 
@@ -148,12 +145,7 @@ public class FileController {
         if (ObjectUtils.isEmpty(fileName)) {
             return ReturnResponse.failure("文件名为空，删除失败！");
         }
-        try {
-            fileName = WebUtils.decodeUrl(fileName);
-        } catch (Exception ex) {
-            String errorMsg = String.format(BASE64_DECODE_ERROR_MSG, fileName);
-            return ReturnResponse.failure(errorMsg + "删除失败！");
-        }
+
         assert fileName != null;
         if (fileName.contains("/")) {
             fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
@@ -166,17 +158,11 @@ public class FileController {
 
     @GetMapping("/directory")
     public Object directory(String urls) {
-        String fileUrl;
-        try {
-            fileUrl = WebUtils.decodeUrl(urls);
-        } catch (Exception ex) {
-            String errorMsg = String.format(BASE64_DECODE_ERROR_MSG, "url");
-            return ReturnResponse.failure(errorMsg);
-        }
-        if (KkFileUtils.isIllegalFileName(fileUrl)) {
+
+        if (KkFileUtils.isIllegalFileName(urls)) {
             return ReturnResponse.failure("不允许访问的路径:");
         }
-        return RarUtils.getTree(fileUrl);
+        return RarUtils.getTree(urls);
     }
 
     private boolean existsFile(String fileName) {

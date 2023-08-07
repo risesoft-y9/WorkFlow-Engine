@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 /**
- * @author : kl
- * create : 2020-12-27 2:50 下午
  * flv文件预览处理实现
  **/
 @Service

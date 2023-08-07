@@ -14,11 +14,6 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-/**
- * @auther: lizhiwen
- * @time: 2023-08-03 17:21
- * @description
- */
 @Service
 @ConditionalOnExpression("'${cache.type:default}'.equals('jdk')")
 public class CacheServiceJDKImpl implements CacheService {

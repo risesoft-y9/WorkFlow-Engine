@@ -2,10 +2,7 @@ package net.risesoft.config;
 
 import org.springframework.beans.factory.annotation.Value;
 
-/**
- * @author lizhiwen
- * @since 2023-08-04 17:44
- */
+
 public class WatermarkConfigConstants {
 
     private static String WATERMARK_TXT;

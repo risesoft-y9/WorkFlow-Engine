@@ -18,10 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author lizihwen
- * create 2023-08-02
- */
+
 @Component
 public class CompressFileReader {
     private final FileHandlerService fileHandlerService;
@@ -38,6 +35,7 @@ public class CompressFileReader {
         IInArchive inArchive = null;
         try {
             randomAccessFile = new RandomAccessFile(paths, "r");
+            SevenZip.initSevenZipFromPlatformJAR();
             inArchive = SevenZip.openInArchive(null, new RandomAccessFileInStream(randomAccessFile));
             String folderName = paths.substring(paths.lastIndexOf(File.separator) + 1);
             String extractPath = paths.substring(0, paths.lastIndexOf(folderName));

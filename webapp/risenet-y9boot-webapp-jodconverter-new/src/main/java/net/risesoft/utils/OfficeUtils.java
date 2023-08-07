@@ -11,12 +11,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-/**
- * Office工具类
- *
- * @author lizhiwen
- * @since 2023-08-04
- */
+
 public class OfficeUtils {
 
     private static final String POI_INVALID_PASSWORD_MSG = "password";

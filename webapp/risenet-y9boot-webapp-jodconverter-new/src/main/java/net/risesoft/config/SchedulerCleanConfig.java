@@ -8,10 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-/**
- * @auther: lizhiwen
- * @since: 2023-08-04 9:45
- */
+
 @Component
 @ConditionalOnExpression("'${cache.clean.enabled:false}'.equals('true')")
 public class SchedulerCleanConfig {

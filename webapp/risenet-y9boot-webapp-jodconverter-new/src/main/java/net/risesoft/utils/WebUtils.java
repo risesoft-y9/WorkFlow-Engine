@@ -20,10 +20,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @author : lizhiwen
- * create : 2020-12-27 1:30 上午
- **/
+
 public class WebUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebUtils.class);
