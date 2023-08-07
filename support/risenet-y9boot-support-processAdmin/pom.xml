@@ -115,12 +115,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.jxl</groupId>
-            <artifactId>jxl</artifactId>
-            <version>2.6</version>
-        </dependency>
-
-        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
@@ -149,6 +143,12 @@
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.jxl</groupId>
+            <artifactId>jxl</artifactId>
+            <version>2.6</version>
         </dependency>
 
     </dependencies>

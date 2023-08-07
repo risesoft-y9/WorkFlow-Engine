@@ -25,7 +25,7 @@
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-jpa-tenant</artifactId>
-            <version>v9.6.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.risesoft</groupId>
