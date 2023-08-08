@@ -61,73 +61,66 @@
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-common-model</artifactId>
-            <version>v9.6.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-common-util</artifactId>
-            <version>v9.6.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-common-sqlddl</artifactId>
-            <version>v9.6.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-log</artifactId>
-            <version>v9.6.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-support-fileService-FTP</artifactId>
-            <version>v9.6.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
-
 
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-jpa-public</artifactId>
-            <version>v9.6.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-jpa-tenant</artifactId>
-            <version>v9.6.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-cache-redis</artifactId>
-            <version>v9.6.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-properties</artifactId>
-            <version>v9.6.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-listener-kafka</artifactId>
-            <version>v9.6.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jxl</groupId>
-            <artifactId>jxl</artifactId>
-            <version>2.6</version>
         </dependency>
 
         <dependency>
@@ -154,6 +147,12 @@
             <groupId>com.github.alexheretic</groupId>
             <artifactId>fluent</artifactId>
             <version>2.0</version>
+        </dependency>
+        
+         <dependency>
+            <groupId>com.jxl</groupId>
+            <artifactId>jxl</artifactId>
+            <version>2.6</version>
         </dependency>
     </dependencies>
 

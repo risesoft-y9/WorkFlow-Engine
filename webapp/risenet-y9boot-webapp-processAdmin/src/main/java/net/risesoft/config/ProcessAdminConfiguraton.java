@@ -192,17 +192,11 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     @Bean("y9TenantDataSource")
     public DataSource y9TenantDataSource(@Qualifier("y9FlowableDS") DruidDataSource y9FlowableDs,
         @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
-        Y9TenantDataSource ds = new Y9TenantDataSource();
-        ds.setDefaultDataSource(y9FlowableDs);
-        ds.setDataSourceLookup(y9TenantDataSourceLookup);
-        return ds;
+        return new Y9TenantDataSource(y9FlowableDs, y9TenantDataSourceLookup);
     }
 
     @Bean("y9TenantDataSourceLookup")
     public Y9TenantDataSourceLookup y9TenantDataSourceLookup(@Qualifier("y9PublicDS") DruidDataSource ds) {
-        Y9TenantDataSourceLookup lookup = new Y9TenantDataSourceLookup();
-        lookup.setPublicDataSource(ds);
-        lookup.setSystemName(environment.getProperty("y9.systemName"));
-        return lookup;
+        return new Y9TenantDataSourceLookup(ds, environment.getProperty("y9.systemName"));
     }
 }
