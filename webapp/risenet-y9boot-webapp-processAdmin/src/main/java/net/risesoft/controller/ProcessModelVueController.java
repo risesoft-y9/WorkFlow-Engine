@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.BpmnAutoLayout;
@@ -58,6 +59,7 @@ import net.risesoft.y9.configuration.Y9Properties;
 /**
  * 流程模型控制器
  */
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -89,8 +91,8 @@ public class ProcessModelVueController {
     /**
      * 创建模型
      *
-     * @param name 流程名称
-     * @param key 流程定义key
+     * @param name        流程名称
+     * @param key         流程定义key
      * @param description 描述
      * @param request
      * @param response
@@ -98,8 +100,8 @@ public class ProcessModelVueController {
     @ResponseBody
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> create(@RequestParam(required = true) String name,
-        @RequestParam(required = true) String key, @RequestParam(required = false) String description,
-        HttpServletRequest request, HttpServletResponse response) {
+                                   @RequestParam(required = true) String key, @RequestParam(required = false) String description,
+                                   HttpServletRequest request, HttpServletResponse response) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String personName = userInfo.getName();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -186,6 +188,102 @@ public class ProcessModelVueController {
     }
 
     /**
+     * 获取流程设计模型xml
+     *
+     * @param modelId
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/getModelXml")
+    public Y9Result<Map<String, Object>> getModelXml(@RequestParam(required = true) String modelId, HttpServletResponse response) {
+        byte[] bpmnBytes = null;
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            Model model = modelService.getModel(modelId);
+            map.put("key", model.getKey());
+            map.put("name", model.getName());
+            bpmnBytes = modelService.getBpmnXML(model);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes));
+        return Y9Result.success(map, "获取成功");
+    }
+
+
+    /**
+     * 保存设计模型xml
+     *
+     * @param file
+     * @param model
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/saveModelXml")
+    public Y9Result<String> saveModelXml(MultipartFile file, ModelRepresentation model) {
+        try {
+            UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
+            InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), "UTF-8");
+            XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
+
+            BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
+            BpmnModel bpmnModel = bpmnXmlConverter.convertToBpmnModel(xtr);
+            // 模板验证
+            ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
+            List<ValidationError> errors = validator.validate(bpmnModel);
+            if (!errors.isEmpty()) {
+                StringBuffer es = new StringBuffer();
+                errors.forEach(ve -> es.append(ve.toString()).append("/n"));
+                return Y9Result.failure("保存失败：模板验证失败，原因: " + es.toString());
+            }
+            if (bpmnModel.getProcesses().isEmpty()) {
+                return Y9Result.failure("保存失败： 文件中不存在流程的信息");
+            }
+            if (bpmnModel.getLocationMap().size() == 0) {
+                BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
+                bpmnLayout.execute();
+            }
+            BpmnJsonConverter bpmnJsonConverter = new BpmnJsonConverter();
+            ObjectNode modelNode = bpmnJsonConverter.convertToJson(bpmnModel);
+            org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
+            String name = process.getId();
+            if (StringUtils.isNotEmpty(process.getName())) {
+                name = process.getName();
+            }
+            String description = process.getDocumentation();
+            model.setKey(process.getId());
+            model.setName(name);
+            model.setDescription(description);
+            model.setModelType(AbstractModel.MODEL_TYPE_BPMN);
+            // 查询是否已经存在流程模板
+            Model newModel = new Model();
+            List<Model> models = modelRepository.findByKeyAndType(model.getKey(), model.getModelType());
+            if (!models.isEmpty()) {
+                Model updateModel = models.get(0);
+                newModel.setId(updateModel.getId());
+            }
+            newModel.setName(model.getName());
+            newModel.setKey(model.getKey());
+            newModel.setModelType(model.getModelType());
+            newModel.setCreated(Calendar.getInstance().getTime());
+            newModel.setCreatedBy(userInfo.getName());
+            newModel.setDescription(model.getDescription());
+            newModel.setModelEditorJson(modelNode.toString());
+            newModel.setLastUpdated(Calendar.getInstance().getTime());
+            newModel.setLastUpdatedBy(userInfo.getName());
+            newModel.setTenantId(tenantId);
+            String createdBy = SecurityUtils.getCurrentUserId();
+            newModel = modelService.createModel(newModel, createdBy);
+            return Y9Result.successMsg("保存成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Y9Result.failure("保存失败");
+    }
+
+    /**
      * 获取模型列表
      *
      * @return
@@ -208,7 +306,7 @@ public class ProcessModelVueController {
                 mapTemp.put("name", model.getName());
                 mapTemp.put("version", 0);
                 processDefinition = repositoryService.createProcessDefinitionQuery()
-                    .processDefinitionKey(model.getKey()).latestVersion().singleResult();
+                        .processDefinitionKey(model.getKey()).latestVersion().singleResult();
                 if (null != processDefinition) {
                     mapTemp.put("version", processDefinition.getVersion());
                 }
@@ -219,7 +317,7 @@ public class ProcessModelVueController {
         } else {
             Map<String, Object> mapTemp = null;
             List<Resource> resourceList =
-                personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId);
+                    personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId);
             for (AbstractModel model : list) {
                 for (Resource resource : resourceList) {
                     if (resource.getCustomId().equals(model.getKey())) {
@@ -229,7 +327,7 @@ public class ProcessModelVueController {
                         mapTemp.put("name", model.getName());
                         mapTemp.put("version", 0);
                         processDefinition = repositoryService.createProcessDefinitionQuery()
-                            .processDefinitionKey(model.getKey()).latestVersion().singleResult();
+                                .processDefinitionKey(model.getKey()).latestVersion().singleResult();
                         if (null != processDefinition) {
                             mapTemp.put("version", processDefinition.getVersion());
                         }
@@ -252,7 +350,7 @@ public class ProcessModelVueController {
      */
     @RequestMapping(value = "/editor/{modelId}")
     public void gotoEditor(@PathVariable("modelId") String modelId, HttpServletRequest request,
-        HttpServletResponse response) {
+                           HttpServletResponse response) {
         try {
             response.sendRedirect(request.getContextPath() + "/modeler.html#/editor/" + modelId);
         } catch (IOException e) {
