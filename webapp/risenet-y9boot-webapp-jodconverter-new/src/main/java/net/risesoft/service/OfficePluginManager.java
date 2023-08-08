@@ -26,7 +26,6 @@ import java.util.Arrays;
 /**
  * 创建文件转换器
  *
- * @author lizhiwen
  * @since 2022-12-15
  */
 @Component

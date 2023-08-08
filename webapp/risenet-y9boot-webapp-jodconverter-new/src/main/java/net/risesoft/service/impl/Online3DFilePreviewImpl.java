@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 /**
- * Created by kl on 2018/1/17.
  * Content :图片文件处理
  */
 @Service

@@ -43,10 +43,7 @@ import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.stream.IntStream;
 
-/**
- * @author lizihwen
- * @date 2023-08-02
- */
+
 @Component
 public class FileHandlerService {
 

@@ -3,10 +3,7 @@ package net.risesoft.service.cache;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author: chenjh
- * @since: 2019/4/2 16:45
- */
+
 public interface CacheService {
 
     String FILE_PREVIEW_PDF_KEY = "converted-preview-pdf-file";

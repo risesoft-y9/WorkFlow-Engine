@@ -9,10 +9,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-/**
- * @author: lizhiwen
- * @since: 2023-08-03 17:22
- */
+
 @Component
 public class ConfigConstants {
 

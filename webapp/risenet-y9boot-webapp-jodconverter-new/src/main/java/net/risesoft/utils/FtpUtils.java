@@ -14,10 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-/**
- * @auther: lizhiwen
- * @since: 2023-08-04 14:36
- */
+
 public class FtpUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FtpUtils.class);

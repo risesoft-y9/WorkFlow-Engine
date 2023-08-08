@@ -4,9 +4,7 @@ import javax.net.ssl.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-/**
- * @author lizhiwen
- */
+
 public class SslUtils {
 
     private static void trustAllHttpsCertificates() throws Exception {

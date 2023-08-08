@@ -3,6 +3,8 @@ package net.risesoft.config;
 import net.risesoft.utils.ConfigUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -13,8 +15,6 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @auther: lizhiwen
- * @time: 2023-08-04 14:16
  * @description 每隔1s读取并更新一次配置文件
  */
 @Component
@@ -46,7 +46,6 @@ public class ConfigRefreshComponent {
                 String ftpUsername;
                 String ftpPassword;
                 String ftpControlEncoding;
-                String configFilePath = ConfigUtils.getCustomizedConfigPath();
                 String baseUrl;
                 String trustHost;
                 String pdfPresentationModeDisable;
@@ -76,10 +75,11 @@ public class ConfigRefreshComponent {
                 String cadTimeout;
                 int cadThread;
                 while (true) {
-                    FileReader fileReader = new FileReader(configFilePath);
-                    BufferedReader bufferedReader = new BufferedReader(fileReader);
-                    properties.load(bufferedReader);
-                    ConfigUtils.restorePropertiesFromEnvFormat(properties);
+                    YamlPropertiesFactoryBean factoryBean = new YamlPropertiesFactoryBean();
+
+                    // 加载yml配置文件
+                    factoryBean.setResources(new ClassPathResource("application.yml"));
+                    properties = factoryBean.getObject();
                     cacheEnabled = Boolean.parseBoolean(properties.getProperty("cache.enabled", ConfigConstants.DEFAULT_CACHE_ENABLED));
                     text = properties.getProperty("simText", ConfigConstants.DEFAULT_TXT_TYPE);
                     media = properties.getProperty("media", ConfigConstants.DEFAULT_MEDIA_TYPE);
@@ -155,11 +155,10 @@ public class ConfigRefreshComponent {
                     ConfigConstants.setCadTimeoutValue(cadTimeout);
                     ConfigConstants.setCadThreadValue(cadThread);
                     setWatermarkConfig(properties);
-                    bufferedReader.close();
-                    fileReader.close();
+
                     TimeUnit.SECONDS.sleep(1);
                 }
-            } catch (IOException | InterruptedException e) {
+            } catch (InterruptedException e) {
                 LOGGER.error("读取配置文件异常", e);
             }
         }

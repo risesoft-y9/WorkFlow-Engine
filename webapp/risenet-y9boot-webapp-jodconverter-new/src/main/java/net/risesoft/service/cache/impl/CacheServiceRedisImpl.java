@@ -12,11 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @auther: lizhiwen
- * @time: 2023-08-03 18:02
- * @description
- */
 @ConditionalOnExpression("'${cache.type:default}'.equals('redis')")
 @Service
 public class CacheServiceRedisImpl implements CacheService {

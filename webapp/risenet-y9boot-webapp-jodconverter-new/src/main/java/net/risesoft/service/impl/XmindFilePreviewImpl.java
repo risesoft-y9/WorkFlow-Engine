@@ -8,8 +8,6 @@ import org.springframework.ui.Model;
 /**
  * svg 图片文件处理
  *
- * @author kl (http://kailing.pub)
- * @since 2021/2/8
  */
 @Service
 public class XmindFilePreviewImpl implements FilePreview {

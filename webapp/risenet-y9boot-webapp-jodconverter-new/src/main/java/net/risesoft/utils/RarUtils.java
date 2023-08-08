@@ -12,10 +12,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @author : lizhiwen
- * create : 2023-08-04
- **/
+
 public class RarUtils {
     private static final String fileDir = ConfigConstants.getFileDir();
 

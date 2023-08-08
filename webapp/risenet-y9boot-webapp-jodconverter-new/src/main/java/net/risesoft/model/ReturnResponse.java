@@ -5,7 +5,6 @@ import java.io.Serializable;
 /**
  * 接口返回值结构
  *
- * @author lizihwen
  * @date 2023-08-02
  */
 public class ReturnResponse<T> implements Serializable {

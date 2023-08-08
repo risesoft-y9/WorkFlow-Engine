@@ -20,8 +20,6 @@ import java.util.List;
 /**
  * tiff 图片文件处理
  *
- * @author kl (http://kailing.pub)
- * @since 2021/2/8
  */
 @Service
 public class TiffFilePreviewImpl implements FilePreview {

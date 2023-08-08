@@ -41,9 +41,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author lizihwen
- */
+
 @Controller
 public class OnlinePreviewController {
 

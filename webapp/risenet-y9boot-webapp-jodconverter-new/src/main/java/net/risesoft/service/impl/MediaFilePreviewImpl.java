@@ -18,12 +18,7 @@ import org.springframework.ui.Model;
 
 import java.io.File;
 
-/**
- * @author : kl
- * @authorboke : kailing.pub
- * @create : 2018-03-25 上午11:58
- * @description:
- **/
+
 @Service
 public class MediaFilePreviewImpl implements FilePreview {
 
