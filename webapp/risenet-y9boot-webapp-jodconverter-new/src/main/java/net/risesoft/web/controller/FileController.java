@@ -33,7 +33,6 @@ public class FileController {
     private final String fileDir = ConfigConstants.getFileDir();
     private final String demoDir = "demo";
     private final String demoPath = demoDir + File.separator;
-    public static final String BASE64_DECODE_ERROR_MSG = "Base64解码失败，请检查你的 %s 是否采用 Base64 + urlEncode 双重编码了！";
 
     @PostMapping("/fileUpload")
     public ReturnResponse<Object> fileUpload(@RequestParam("file") MultipartFile file) {

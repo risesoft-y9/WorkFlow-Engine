@@ -63,19 +63,11 @@ public class OnlinePreviewController {
     @GetMapping("/onlinePreview")
     public String onlinePreview(String url, Model model, HttpServletRequest req) {
 
-        String fileUrl;
-        try {
-     //     fileUrl = WebUtils.decodeUrl(url);
-            fileUrl = url;
-        } catch (Exception ex) {
-            String errorMsg = String.format(BASE64_DECODE_ERROR_MSG, "url");
-            return otherFilePreview.notSupportedFile(model, errorMsg);
-        }
-        FileAttribute fileAttribute = fileHandlerService.getFileAttribute(fileUrl, req);
+        FileAttribute fileAttribute = fileHandlerService.getFileAttribute(url, req);
         model.addAttribute("file", fileAttribute);
         FilePreview filePreview = previewFactory.get(fileAttribute);
-        logger.info("预览文件url：{}，previewType：{}", fileUrl, fileAttribute.getType());
-        return filePreview.filePreviewHandle(fileUrl, model, fileAttribute);
+        logger.info("预览文件url：{}，previewType：{}", url, fileAttribute.getType());
+        return filePreview.filePreviewHandle(url, model, fileAttribute);
     }
 
     @GetMapping("/picturesPreview")
@@ -96,9 +88,8 @@ public class OnlinePreviewController {
         model.addAttribute("imgUrls", imgUrls);
         String currentUrl = req.getParameter("currentUrl");
         if (StringUtils.hasText(currentUrl)) {
-            String decodedCurrentUrl = new String(Base64.decodeBase64(currentUrl));
-            decodedCurrentUrl = KkFileUtils.htmlEscape(decodedCurrentUrl);   // 防止XSS攻击
-            model.addAttribute("currentUrl", decodedCurrentUrl);
+            currentUrl = KkFileUtils.htmlEscape(currentUrl);   // 防止XSS攻击
+            model.addAttribute("currentUrl", currentUrl);
         } else {
             model.addAttribute("currentUrl", imgUrls.get(0));
         }

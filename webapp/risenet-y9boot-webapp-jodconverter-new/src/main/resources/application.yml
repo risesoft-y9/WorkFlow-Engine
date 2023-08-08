@@ -6,7 +6,7 @@ cache:
         cron: 0 0 3 * * ?
         enabled: true
     enabled: true
-    type: jdk
+    type: jdk # 缓存类型 jdk/redis
 cad:
     preview:
         type: svg
@@ -25,8 +25,8 @@ file:
 ftp:
     control:
         encoding: UTF-8
-    password: 123456
-    username: ftpuser
+    password: 111111
+    username: y9admin
 local:
     preview:
         dir: default
@@ -74,7 +74,7 @@ server:
         enable: true #启用GZIP压缩功能
         mime-types: application/javascript,text/css,application/json,application/xml,text/html,text/xml,text/plain,font/woff,application/font-woff,font/eot,image/svg+xml,image/x-icon #压缩格式
         min-response-size: 2048
-simText: txt,html,htm,asp,jsp,xml,json,properties,md,gitignore,log,java,py,c,cpp,sql,sh,bat,m,bas,prg,cmd,yml
+simText: txt,html,htm,asp,jsp,xml,json,properties,md,gitignore,log,java,py,c,cpp,sql,sh,bat,m,bas,prg,cmd
 spring:
     freemarker: # Freemarker 配置
         cache: false

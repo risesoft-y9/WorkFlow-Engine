@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1.0"/>
-    <title>kkFileView演示首页</title>
+    <title>FileView首页</title>
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/viewer.min.css"/>
     <link rel="stylesheet" href="css/loading.css"/>
@@ -73,15 +73,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="https://kkview.cn" target='_blank'>kkFileView</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="./index">首页</a></li>
-                <li><a href="./integrated">接入说明</a></li>
-                <li><a href="./record">版本发布记录</a></li>
-                <li><a href="./sponsor">赞助开源</a></li>
-            </ul>
+            <a class="navbar-brand" target='_blank'>FileView</a>
         </div>
     </div>
 </nav>
@@ -90,8 +82,6 @@
     <#--  接入说明  -->
     <div class="page-header">
         <h1>支持的文件类型</h1>
-        我们一直在扩展支持的文件类型，不断优化预览的效果，如果您有什么建议，欢迎在kk开源社区留意反馈：<a target='_blank'
-                                                                                                     href="https://t.zsxq.com/09ZHSXbsQ">https://t.zsxq.com/09ZHSXbsQ</a>。
     </div>
     <div>
         <ol>
@@ -350,8 +340,8 @@
         }).on('pre-body.bs.table', function (e, data) {
             // 每个data添加一列用来操作
             $(data).each(function (index, item) {
-                item.action = "<a class='btn btn-success' target='_blank' href='${baseUrl}onlinePreview?url=" + encodeURIComponent(Base64.encode('${baseUrl}' + item.fileName)) + "'>预览</a>" +
-                    "<a class='btn btn-danger' style='margin-left:10px;' href='javascript:void(0);' onclick='deleteFile(\"" + encodeURIComponent(Base64.encode('${baseUrl}' + item.fileName)) + "\")'>删除</a>";
+                item.action = "<a class='btn btn-success' target='_blank' href='${baseUrl}onlinePreview?url=" + '${baseUrl}' + item.fileName + "'>预览</a>" +
+                    "<a class='btn btn-danger' style='margin-left:10px;' href='javascript:void(0);' onclick='deleteFile(\"" + '${baseUrl}' + item.fileName + "\")'>删除</a>";
             });
             return data;
         }).on('post-body.bs.table', function (e, data) {
@@ -368,9 +358,7 @@
                 return false;
             }
 
-            var b64Encoded = Base64.encode(_url);
-
-            window.open('${baseUrl}onlinePreview?url=' + encodeURIComponent(b64Encoded));
+            window.open('${baseUrl}onlinePreview?url=' + _url);
         });
 
         $('#fileSelectBtn').on('click', function () {
