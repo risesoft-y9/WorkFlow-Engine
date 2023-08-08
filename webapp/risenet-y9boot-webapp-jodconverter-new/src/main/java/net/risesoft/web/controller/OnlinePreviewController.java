@@ -1,5 +1,7 @@
 package net.risesoft.web.controller;
 
+import fr.opensagres.xdocreport.core.io.IOUtils;
+import io.mola.galimatias.GalimatiasParseException;
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.FileAttribute;
 import net.risesoft.service.FileHandlerService;
@@ -10,9 +12,6 @@ import net.risesoft.service.impl.OtherFilePreviewImpl;
 import net.risesoft.utils.KkFileUtils;
 import net.risesoft.utils.RandomValidateCodeUtil;
 import net.risesoft.utils.WebUtils;
-import fr.opensagres.xdocreport.core.io.IOUtils;
-import io.mola.galimatias.GalimatiasParseException;
-import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;

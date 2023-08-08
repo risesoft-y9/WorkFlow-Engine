@@ -1,17 +1,20 @@
 package net.risesoft.utils;
 
 
-import net.risesoft.config.ConfigConstants;
-
-import com.sun.media.jai.codec.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.io.FileChannelRandomAccessSource;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.RandomAccessFileOrArray;
 import com.itextpdf.text.pdf.codec.TiffImage;
+import com.sun.media.jai.codec.FileSeekableStream;
+import com.sun.media.jai.codec.ImageCodec;
+import com.sun.media.jai.codec.ImageDecoder;
+import com.sun.media.jai.codec.JPEGEncodeParam;
+import com.sun.media.jai.codec.TIFFEncodeParam;
+import net.risesoft.config.ConfigConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
