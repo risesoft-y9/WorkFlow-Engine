@@ -1,3 +1,13 @@
+server:
+    port: 7055
+    servlet:
+        context-path: /jodconverter-new
+    compression:
+        enable: true #启用GZIP压缩功能
+        mime-types: application/javascript,text/css,application/json,application/xml,text/html,text/xml,text/plain,font/woff,application/font-woff,font/eot,image/svg+xml,image/x-icon #压缩格式
+        min-response-size: 2048
+simText: txt,html,htm,asp,jsp,xml,json,properties,md,gitignore,log,java,py,c,cpp,sql,sh,bat,m,bas,prg,cmd
+
 base:
     url: default
 beian: default
@@ -6,7 +16,7 @@ cache:
         cron: 0 0 3 * * ?
         enabled: true
     enabled: true
-    type: jdk # 缓存类型 jdk/redis
+    type: redis    # 缓存类型 jdk/redis
 cad:
     preview:
         type: svg
@@ -36,7 +46,8 @@ office:
     documentopenpasswords: true
     exportbookmarks: true
     exportnotes: true
-    home: G:/risesoft/y9-digitalbase-pro/y9-flowable/webapp/risenet-y9boot-webapp-jodconverter-new/target/classes/static/LibreOfficePortable/App/libreoffice
+    #home: /opt/openoffice 4
+    home: D:/LibreOfficePortable/App/libreoffice  # Libreoffice/Openoffice  驱动的绝对路径
     maximageresolution: 150
     pagerange: false
     plugin:
@@ -66,15 +77,7 @@ pdf:
 pdf2jpg:
     dpi: 144
 prohibit: exe,dll,dat
-server:
-    port: 7055
-    servlet:
-        context-path: /jodconverter-new
-    compression:
-        enable: true #启用GZIP压缩功能
-        mime-types: application/javascript,text/css,application/json,application/xml,text/html,text/xml,text/plain,font/woff,application/font-woff,font/eot,image/svg+xml,image/x-icon #压缩格式
-        min-response-size: 2048
-simText: txt,html,htm,asp,jsp,xml,json,properties,md,gitignore,log,java,py,c,cpp,sql,sh,bat,m,bas,prg,cmd
+
 spring:
     freemarker: # Freemarker 配置
         cache: false

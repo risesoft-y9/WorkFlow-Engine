@@ -1,6 +1,6 @@
 package net.risesoft;
 
-import net.sf.sevenzipjbinding.SevenZip;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.sevenzipjbinding.SevenZipNativeInitializationException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,9 +16,9 @@ import org.springframework.util.StopWatch;
 @SpringBootApplication
 @EnableScheduling
 @ComponentScan(value = "net.risesoft.*")
+@Slf4j
 public class FilePreviewServerApplication {
 
-    private static final Logger logger = LoggerFactory.getLogger(FilePreviewServerApplication.class);
 
     public static void main(String[] args) throws SevenZipNativeInitializationException {
         StopWatch stopWatch = new StopWatch();
@@ -32,7 +32,7 @@ public class FilePreviewServerApplication {
         ServerProperties.Servlet servlet = serverProperties.getServlet();
         String contextPath = servlet.getContextPath();
         String urlSuffix = StringUtils.isBlank(contextPath) ? String.valueOf(port) : port + contextPath;
-        logger.info("FileView 服务启动完成，耗时:{}s，演示页请访问: http://127.0.0.1:{} ", stopWatch.getTotalTimeSeconds(), urlSuffix);
+        LOGGER.info("FileView 服务启动完成，耗时:{}s，演示页请访问: http://127.0.0.1:{} ", stopWatch.getTotalTimeSeconds(), urlSuffix);
     }
 
 }
