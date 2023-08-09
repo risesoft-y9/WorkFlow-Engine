@@ -31,7 +31,7 @@ public class TrustDirFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
-        ClassPathResource classPathResource = new ClassPathResource("web/notTrustDir.html");
+        ClassPathResource classPathResource = new ClassPathResource("templates/notTrustDir.html");
         try {
             classPathResource.getInputStream();
             byte[] bytes = FileCopyUtils.copyToByteArray(classPathResource.getInputStream());

@@ -88,7 +88,7 @@ spring:
         expose-session-attributes: true
         request-context-attribute: request
         suffix: .ftl
-        template-loader-path: classpath:/web/
+        template-loader-path: classpath:/templates/
     redisson:
         address: 127.0.0.1:6379
         password:

@@ -22,7 +22,7 @@ public class TrustHostFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
-        ClassPathResource classPathResource = new ClassPathResource("web/notTrustHost.html");
+        ClassPathResource classPathResource = new ClassPathResource("templates/notTrustHost.html");
         try {
             classPathResource.getInputStream();
             byte[] bytes = FileCopyUtils.copyToByteArray(classPathResource.getInputStream());
