@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -32,7 +33,7 @@ public class ProcessTrack implements Serializable {
      * 主键
      */
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 50, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
@@ -41,35 +42,35 @@ public class ProcessTrack implements Serializable {
     /**
      * 流程实例Id
      */
-    @org.hibernate.annotations.Comment("流程实例Id")
+    @Comment("流程实例Id")
     @Column(name = "PROCESSINSTANCEID", length = 50, nullable = false)
     private String processInstanceId;
 
     /**
      * 任务节点Id
      */
-    @org.hibernate.annotations.Comment("任务节点Id")
+    @Comment("任务节点Id")
     @Column(name = "TASKID", length = 50, nullable = false)
     private String taskId;
 
     /**
      * 发送人/操作人
      */
-    @org.hibernate.annotations.Comment("发送人")
+    @Comment("发送人")
     @Column(name = "SENDERNAME", nullable = false)
     private String senderName;
 
     /**
      * 接收人
      */
-    @org.hibernate.annotations.Comment("接收人")
+    @Comment("接收人")
     @Column(name = "RECEIVERNAME", length = 50)
     private String receiverName;
 
     /**
      * 任务节点名称
      */
-    @org.hibernate.annotations.Comment("任务节点名称")
+    @Comment("任务节点名称")
     @Column(name = "TASKDEFNAME", length = 50)
     private String taskDefName;
 
@@ -94,14 +95,14 @@ public class ProcessTrack implements Serializable {
     /**
      * 开始时间
      */
-    @org.hibernate.annotations.Comment("开始时间")
+    @Comment("开始时间")
     @Column(name = "STARTTIME", length = 50)
     private String startTime;
 
     /**
      * 结束时间
      */
-    @org.hibernate.annotations.Comment("结束时间")
+    @Comment("结束时间")
     @Column(name = "ENDTIME", length = 50)
     private String endTime;
 
@@ -114,7 +115,7 @@ public class ProcessTrack implements Serializable {
     /**
      * 描述
      */
-    @org.hibernate.annotations.Comment("描述")
+    @Comment("描述")
     @Column(name = "DESCRIBED", length = 500)
     private String described;
 

@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -30,13 +31,13 @@ public class ItemOrganWordBind implements Serializable {
     private static final long serialVersionUID = -8651203798076312089L;
 
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 38, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @org.hibernate.annotations.Comment("编号唯一标示")
+    @Comment("编号唯一标示")
     @Column(name = "ORGANWORDCUSTOM", length = 50, nullable = false)
     private String organWordCustom;
 
@@ -46,15 +47,15 @@ public class ItemOrganWordBind implements Serializable {
     @Transient
     private String organWordName;
 
-    @org.hibernate.annotations.Comment("事项Id")
+    @Comment("事项Id")
     @Column(name = "ITEMID", length = 50, nullable = false)
     private String itemId;
 
-    @org.hibernate.annotations.Comment("流程定义ID")
+    @Comment("流程定义ID")
     @Column(name = "PROCESSDEFINITIONID", length = 200)
     private String processDefinitionId;
 
-    @org.hibernate.annotations.Comment("任务key")
+    @Comment("任务key")
     @Column(name = "TASKDEFKEY", length = 100)
     private String taskDefKey;
 
@@ -70,19 +71,19 @@ public class ItemOrganWordBind implements Serializable {
     @Transient
     private String roleNames;
 
-    @org.hibernate.annotations.Comment("人员名称")
+    @Comment("人员名称")
     @Column(name = "USERNAME", length = 50)
     private String userName;
 
-    @org.hibernate.annotations.Comment("人员id")
+    @Comment("人员id")
     @Column(name = "USERID", length = 50)
     private String userId;
 
-    @org.hibernate.annotations.Comment("生成时间")
+    @Comment("生成时间")
     @Column(name = "CREATEDATE", length = 50)
     private String createDate;
 
-    @org.hibernate.annotations.Comment("修改时间")
+    @Comment("修改时间")
     @Column(name = "MODIFYDATE", length = 50)
     private String modifyDate;
 }

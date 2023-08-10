@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -28,18 +29,18 @@ public class ItemOpinionFrameRole implements Serializable {
 
     private static final long serialVersionUID = 7079860101823150509L;
 
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Id
     @Column(name = "ID", length = 38, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @org.hibernate.annotations.Comment("事项和意见框的绑定关系")
+    @Comment("事项和意见框的绑定关系")
     @Column(name = "ITEMOPINIONFRAMEID", length = 50, nullable = false)
     private String itemOpinionFrameId;
 
-    @org.hibernate.annotations.Comment("角色Id")
+    @Comment("角色Id")
     @Column(name = "ROLEID", length = 50, nullable = false)
     private String roleId;
 

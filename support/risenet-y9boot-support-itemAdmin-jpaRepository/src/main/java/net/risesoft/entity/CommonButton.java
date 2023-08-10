@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -31,7 +32,7 @@ public class CommonButton implements Serializable {
      * 唯一标示
      */
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 38, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
@@ -40,49 +41,49 @@ public class CommonButton implements Serializable {
     /**
      * 按钮名称
      */
-    @org.hibernate.annotations.Comment("按钮名称")
+    @Comment("按钮名称")
     @Column(name = "NAME", length = 50, nullable = false)
     private String name;
 
     /**
      * 租户Id
      */
-    @org.hibernate.annotations.Comment("租户Id")
+    @Comment("租户Id")
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
 
     /**
      * 租户Id
      */
-    @org.hibernate.annotations.Comment("按钮标识")
+    @Comment("按钮标识")
     @Column(name = "CUSTOMID", length = 50, nullable = false, unique = true)
     private String customId;
 
     /**
      * 创建/修改人员的名称
      */
-    @org.hibernate.annotations.Comment("创建人名称")
+    @Comment("创建人名称")
     @Column(name = "USERNAME", length = 50)
     private String userName;
 
     /**
      * 创建/修改的人员的唯一标示
      */
-    @org.hibernate.annotations.Comment("创建人id")
+    @Comment("创建人id")
     @Column(name = "USERID", length = 50)
     private String userId;
 
     /**
      * 生成时间
      */
-    @org.hibernate.annotations.Comment("创建时间")
+    @Comment("创建时间")
     @Column(name = "CREATETIME")
     private String createTime;
 
     /**
      * 生成时间
      */
-    @org.hibernate.annotations.Comment("修改时间")
+    @Comment("修改时间")
     @Column(name = "UPDATETIME")
     private String updateTime;
 }

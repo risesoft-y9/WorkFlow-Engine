@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -28,25 +29,25 @@ public class ItemWordTemplateBind implements Serializable {
     private static final long serialVersionUID = -7420288864269881175L;
 
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID")
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @org.hibernate.annotations.Comment("事项Id")
+    @Comment("事项Id")
     @Column(name = "ITEMID", length = 50)
     private String itemId;
 
-    @org.hibernate.annotations.Comment("流程定义Id")
+    @Comment("流程定义Id")
     @Column(name = "PROCESSDEFINITIONID", length = 100, nullable = false)
     private String processDefinitionId;
 
-    @org.hibernate.annotations.Comment("正文模板Id")
+    @Comment("正文模板Id")
     @Column(name = "TEMPLATEID", length = 50)
     private String templateId;
 
-    @org.hibernate.annotations.Comment("租户Id")
+    @Comment("租户Id")
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
 }

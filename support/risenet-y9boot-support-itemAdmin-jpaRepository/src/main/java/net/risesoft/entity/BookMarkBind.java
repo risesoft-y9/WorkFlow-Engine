@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -27,45 +28,45 @@ public class BookMarkBind implements Serializable {
     private static final long serialVersionUID = 3758496712029777467L;
 
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 50, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @org.hibernate.annotations.Comment("正文模板Id")
+    @Comment("正文模板Id")
     @Column(name = "WORDTEMPLATEID", length = 50, nullable = false)
     private String wordTemplateId;
 
-    @org.hibernate.annotations.Comment("书签名称")
+    @Comment("书签名称")
     @Column(name = "BOOKMARKNAME", length = 50, nullable = false)
     private String bookMarkName;
 
-    @org.hibernate.annotations.Comment("书签类型")
+    @Comment("书签类型")
     @Column(name = "BOOKMARKTYPE", length = 2, nullable = false)
     private int bookMarkType;
 
-    @org.hibernate.annotations.Comment("绑定的数据库表")
+    @Comment("绑定的数据库表")
     @Column(name = "TABLENAME", length = 50, nullable = false)
     private String tableName;
 
-    @org.hibernate.annotations.Comment("绑定的数据库表字段")
+    @Comment("绑定的数据库表字段")
     @Column(name = "COLUMNAME", length = 50, nullable = false)
     private String columnName;
 
-    @org.hibernate.annotations.Comment("绑定的人员名称")
+    @Comment("绑定的人员名称")
     @Column(name = "USERNAME", length = 50, nullable = false)
     private String userName;
 
-    @org.hibernate.annotations.Comment("绑定的人员Id")
+    @Comment("绑定的人员Id")
     @Column(name = "USERID", length = 50, nullable = false)
     private String userId;
 
-    @org.hibernate.annotations.Comment("绑定时间")
+    @Comment("绑定时间")
     @Column(name = "CREATETIME", length = 100)
     private String createTime;
 
-    @org.hibernate.annotations.Comment("更新绑定时间")
+    @Comment("更新绑定时间")
     @Column(name = "UPDATETIME", length = 100)
     private String updateTime;
 }

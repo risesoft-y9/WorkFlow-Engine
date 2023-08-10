@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -32,7 +33,7 @@ public class SpeakInfo implements Serializable {
      * 唯一标示
      */
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 38, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
@@ -41,28 +42,28 @@ public class SpeakInfo implements Serializable {
     /**
      * 流程实例Id
      */
-    @org.hibernate.annotations.Comment("流程实例Id")
+    @Comment("流程实例Id")
     @Column(name = "PROCESSINSTANCEID", length = 50, nullable = false)
     private String processInstanceId;
 
     /**
      * 发言信息
      */
-    @org.hibernate.annotations.Comment("发言信息")
+    @Comment("发言信息")
     @Column(name = "CONTENT", length = 1000)
     private String content;
 
     /**
      * 发言人名称
      */
-    @org.hibernate.annotations.Comment("发言人名称")
+    @Comment("发言人名称")
     @Column(name = "USERNAME", length = 50)
     private String userName;
 
     /**
      * 发言人Id
      */
-    @org.hibernate.annotations.Comment("发言人Id")
+    @Comment("发言人Id")
     @Column(name = "USERID", length = 50)
     private String userId;
 
@@ -75,28 +76,28 @@ public class SpeakInfo implements Serializable {
     /**
      * 是否删除
      */
-    @org.hibernate.annotations.Comment("是否删除")
+    @Comment("是否删除")
     @Column(name = "DELETED", length = 50)
     private boolean deleted;
 
     /**
      * 发言时间
      */
-    @org.hibernate.annotations.Comment("发言时间")
+    @Comment("发言时间")
     @Column(name = "CREATETIME", length = 50)
     private String createTime;
 
     /**
      * 发言时间
      */
-    @org.hibernate.annotations.Comment("修改时间")
+    @Comment("修改时间")
     @Column(name = "UPDATETIME", length = 50)
     private String updateTime;
 
     /**
      * 已看人员id
      */
-    @org.hibernate.annotations.Comment("已看人员id")
+    @Comment("已看人员id")
     @Column(name = "READUSERID", length = 2000)
     private String readUserId;
 

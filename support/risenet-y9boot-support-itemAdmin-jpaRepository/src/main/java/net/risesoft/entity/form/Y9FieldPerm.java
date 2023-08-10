@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -25,31 +27,31 @@ public class Y9FieldPerm implements Serializable {
 
     @Id
     @Column(name = "ID", length = 38)
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     private String id;
 
     @Column(name = "FORMID", length = 38)
-    @org.hibernate.annotations.Comment("表单Id")
+    @Comment("表单Id")
     private String formId;
 
     @Column(name = "FIELDNAME", length = 100)
-    @org.hibernate.annotations.Comment("字段名称")
+    @Comment("字段名称")
     private String fieldName;
 
     @Column(name = "WRITEROLEID", length = 200)
-    @org.hibernate.annotations.Comment("写权限角色id")
+    @Comment("写权限角色id")
     private String writeRoleId;
 
     @Column(name = "WRITEROLENAME", length = 200)
-    @org.hibernate.annotations.Comment("写权限角色名称")
+    @Comment("写权限角色名称")
     private String writeRoleName;
 
     @Column(name = "PROCESSDEFINITIONID", length = 200)
-    @org.hibernate.annotations.Comment("流程定义id")
+    @Comment("流程定义id")
     private String processDefinitionId;
 
     @Column(name = "TASKDEFKEY", length = 200)
-    @org.hibernate.annotations.Comment("任务key")
+    @Comment("任务key")
     private String taskDefKey;
 
 }

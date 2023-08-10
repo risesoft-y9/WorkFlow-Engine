@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -33,41 +34,41 @@ public class WordTemplate implements Serializable {
     private static final long serialVersionUID = -7420288864269881175L;
 
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID")
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @org.hibernate.annotations.Comment("委办局Id")
+    @Comment("委办局Id")
     @Column(name = "BUREAUID", length = 50)
     private String bureauId;
 
     /**
      * 文档名称
      */
-    @org.hibernate.annotations.Comment("文档名称")
+    @Comment("文档名称")
     @Column(name = "FILENAME", length = 50)
     private String fileName;
 
     /**
      * 文档路径
      */
-    @org.hibernate.annotations.Comment("文档路径")
+    @Comment("文档路径")
     @Column(name = "FILEPATH", length = 2000)
     private String filePath;
 
     /**
      * 文件字节数
      */
-    @org.hibernate.annotations.Comment("文件大小")
+    @Comment("文件大小")
     @Column(name = "FILESIZE", length = 20)
     private String fileSize;
 
     /**
      * 上传时间
      */
-    @org.hibernate.annotations.Comment("上传时间")
+    @Comment("上传时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "UPLOADTIME")
@@ -76,21 +77,21 @@ public class WordTemplate implements Serializable {
     /**
      * 上传人Id
      */
-    @org.hibernate.annotations.Comment("上传人Id")
+    @Comment("上传人Id")
     @Column(name = "PERSONID", length = 50)
     private String personId;
 
     /**
      * 上传人
      */
-    @org.hibernate.annotations.Comment("上传人")
+    @Comment("上传人")
     @Column(name = "PERSONNAME", length = 100)
     private String personName;
 
     /**
      * 文件描述
      */
-    @org.hibernate.annotations.Comment("文件描述")
+    @Comment("文件描述")
     @Column(name = "DESCRIBES", length = 1000)
     private String describes;
 

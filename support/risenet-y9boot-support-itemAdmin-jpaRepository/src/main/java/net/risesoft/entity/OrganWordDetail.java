@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -31,7 +32,7 @@ public class OrganWordDetail implements Serializable {
      * 主键
      */
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 50, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
@@ -40,49 +41,49 @@ public class OrganWordDetail implements Serializable {
     /**
      * 租户Id
      */
-    @org.hibernate.annotations.Comment("租户Id")
+    @Comment("租户Id")
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
 
     /**
      * 是否独立的,独立的话保存当前事项的Id，公共的值为common
      */
-    @org.hibernate.annotations.Comment("事项Id")
+    @Comment("事项Id")
     @Column(name = "ITEMID", length = 50, nullable = false)
     private String itemId;
 
     /**
      * 机关代字标识
      */
-    @org.hibernate.annotations.Comment("机关代字标识")
+    @Comment("机关代字标识")
     @Column(name = "CUSTOM", length = 50, nullable = false)
     private String custom;
 
     /**
      * 机关代字
      */
-    @org.hibernate.annotations.Comment("机关代字")
+    @Comment("机关代字")
     @Column(name = "CHARACTERVALUE", length = 50, nullable = false)
     private String characterValue;
 
     /**
      * 文号年份
      */
-    @org.hibernate.annotations.Comment("文号年份")
+    @Comment("文号年份")
     @Column(name = "YEARS", length = 10, nullable = false)
     private Integer year;
 
     /**
      * 当前值
      */
-    @org.hibernate.annotations.Comment("当前值")
+    @Comment("当前值")
     @Column(name = "CURRENTNUMBER", length = 10, nullable = false)
     private Integer number;
 
     /**
      * 生成、修改时间
      */
-    @org.hibernate.annotations.Comment("修改时间")
+    @Comment("修改时间")
     @Column(name = "CREATETIME", nullable = false)
     private String createTime;
 

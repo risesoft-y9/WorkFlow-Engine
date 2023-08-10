@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -26,41 +27,41 @@ import lombok.NoArgsConstructor;
 public class ItemPrintTemplateBind implements Serializable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 6829462901084070306L;
 
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 38, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @org.hibernate.annotations.Comment("租户Id")
+    @Comment("租户Id")
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
 
-    @org.hibernate.annotations.Comment("模板ID")
+    @Comment("模板ID")
     @Column(name = "TEMPLATEID", length = 38, nullable = false)
     private String templateId;
 
-    @org.hibernate.annotations.Comment("模板名称")
+    @Comment("模板名称")
     @Column(name = "TEMPLATENAME", length = 100, nullable = false)
     private String templateName;
 
-    @org.hibernate.annotations.Comment("模板Url")
+    @Comment("模板Url")
     @Column(name = "TEMPLATEURL", length = 100, nullable = true)
     private String templateUrl;
 
     /**
      * 模板类型，1为word模板,2为表单模板
      */
-    @org.hibernate.annotations.Comment("模板类型")
+    @Comment("模板类型")
     @Column(name = "TEMPLATETYPE", length = 10, nullable = false)
     private String templateType;
 
-    @org.hibernate.annotations.Comment("事项Id")
+    @Comment("事项Id")
     @Column(name = "ITEMID", length = 55, nullable = false)
     private String itemId;
 

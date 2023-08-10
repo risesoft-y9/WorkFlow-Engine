@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -25,46 +27,46 @@ public class Y9Table implements Serializable {
 
     @Id
     @Column(name = "ID", length = 38)
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     private String id;
 
     @Column(name = "TABLENAME", length = 30)
-    @org.hibernate.annotations.Comment("表英文名称")
+    @Comment("表英文名称")
     private String tableName;
 
     @Column(name = "OLDTABLENAME", length = 30)
-    @org.hibernate.annotations.Comment("老表英文名称")
+    @Comment("老表英文名称")
     private String oldTableName;
 
     @Column(name = "TABLECNNAME", length = 30)
-    @org.hibernate.annotations.Comment("表中文名称")
+    @Comment("表中文名称")
     private String tableCnName;
 
     @Column(name = "TABLEALIAS", length = 4)
-    @org.hibernate.annotations.Comment("表别名")
+    @Comment("表别名")
     private String tableAlias;
 
     @Column(name = "TABLEMEMO", length = 50)
-    @org.hibernate.annotations.Comment("表备注")
+    @Comment("表备注")
     private String tableMemo;
 
     /**
      * {@link #ItemTableTypeEnum}
      */
     @Column(name = "TABLETYPE")
-    @org.hibernate.annotations.Comment("表类型")
+    @Comment("表类型")
     private Integer tableType = 1;
 
     @Column(name = "SYSTEMNAME", length = 50)
-    @org.hibernate.annotations.Comment("系统名称")
+    @Comment("系统名称")
     private String systemName;
 
     @Column(name = "SYSTEMCNNAME", length = 50)
-    @org.hibernate.annotations.Comment("系统中文名称")
+    @Comment("系统中文名称")
     private String systemCnName;
 
     @Column(name = "CREATETIME", length = 50)
-    @org.hibernate.annotations.Comment("创建时间")
+    @Comment("创建时间")
     private String createTime;
 
 }

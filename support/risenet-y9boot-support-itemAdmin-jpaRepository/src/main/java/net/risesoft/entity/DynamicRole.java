@@ -10,6 +10,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -30,35 +31,35 @@ public class DynamicRole implements Serializable {
     private static final long serialVersionUID = 2662610252539539962L;
 
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 255, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @org.hibernate.annotations.Comment("租户Id")
+    @Comment("租户Id")
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
 
-    @org.hibernate.annotations.Comment("动态角色名称")
+    @Comment("动态角色名称")
     @Column(name = "NAME", length = 255)
     private String name;
 
-    @org.hibernate.annotations.Comment("描述")
+    @Comment("描述")
     @Lob
     @Column(name = "DESCRIPTION", length = 1000)
     private String description;
 
-    @org.hibernate.annotations.Comment("类全路径")
+    @Comment("类全路径")
     @Column(name = "CLASSPATH", length = 500, nullable = false)
     private String classPath;
 
-    @org.hibernate.annotations.Comment("序号")
+    @Comment("序号")
     @Column(name = "TABINDEX", length = 10)
     private Integer tabIndex;
 
     @ColumnDefault("0")
-    @org.hibernate.annotations.Comment("是否使用流程实例")
+    @Comment("是否使用流程实例")
     @Column(name = "USEPROCESSINSTANCEID")
     private boolean useProcessInstanceId = false;
 }

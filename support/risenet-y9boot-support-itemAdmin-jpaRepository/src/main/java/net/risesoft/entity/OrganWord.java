@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -30,28 +31,28 @@ public class OrganWord implements Serializable {
     private static final long serialVersionUID = 991194093927556827L;
 
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 50, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @org.hibernate.annotations.Comment("编号标识标志")
+    @Comment("编号标识标志")
     @Column(name = "CUSTOM", length = 50, unique = true)
     private String custom;
 
-    @org.hibernate.annotations.Comment("编号标识名字")
+    @Comment("编号标识名字")
     @Column(name = "NAME", length = 50)
     private String name;
 
     @Transient
     private List<OrganWordProperty> organWordProperties;
 
-    @org.hibernate.annotations.Comment("人员名称")
+    @Comment("人员名称")
     @Column(name = "USERNAME", length = 50, nullable = false)
     private String userName;
 
-    @org.hibernate.annotations.Comment("生成时间")
+    @Comment("生成时间")
     @Column(name = "CREATETIME")
     private String createTime;
 

@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -30,11 +31,11 @@ public class Y9FormOptionClass implements Serializable {
     @Column(name = "TYPE", length = 255, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
-    @org.hibernate.annotations.Comment("主键，类型名称")
+    @Comment("主键，类型名称")
     private String type;
 
     @Column(name = "NAME", length = 255, nullable = false)
-    @org.hibernate.annotations.Comment("中文名称")
+    @Comment("中文名称")
     private String name;
 
 }

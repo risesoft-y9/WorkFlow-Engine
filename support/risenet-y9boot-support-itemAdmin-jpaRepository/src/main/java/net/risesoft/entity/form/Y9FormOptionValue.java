@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -30,31 +31,31 @@ public class Y9FormOptionValue implements Serializable {
     @Column(name = "ID", length = 255, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
-    @org.hibernate.annotations.Comment("主键id")
+    @Comment("主键id")
     private String id;
 
     @Column(name = "CODE", length = 255)
-    @org.hibernate.annotations.Comment("数据代码")
+    @Comment("数据代码")
     private String code;
 
     @Column(name = "NAME", length = 255, nullable = false)
-    @org.hibernate.annotations.Comment("主键名称")
+    @Comment("主键名称")
     private String name;
 
     @Column(name = "TABINDEX", length = 10, nullable = false)
-    @org.hibernate.annotations.Comment("排序号")
+    @Comment("排序号")
     private Integer tabIndex;
 
     @Column(name = "TYPE", length = 255, nullable = false)
-    @org.hibernate.annotations.Comment("字典类型")
+    @Comment("字典类型")
     private String type;
 
     @Column(name = "DEFAULTSELECTED", length = 2, nullable = false)
-    @org.hibernate.annotations.Comment("是否默认选中")
+    @Comment("是否默认选中")
     private Integer defaultSelected = 0;
 
     @Column(name = "UPDATETIME", length = 50)
-    @org.hibernate.annotations.Comment("更新时间")
+    @Comment("更新时间")
     private String updateTime;
 
 }

@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -35,7 +36,7 @@ public class ReceivePerson implements Serializable {
      * 主键
      */
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 50, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
@@ -44,39 +45,39 @@ public class ReceivePerson implements Serializable {
     /**
      * 收发部门Id
      */
-    @org.hibernate.annotations.Comment("收发部门Id")
+    @Comment("收发部门Id")
     @Column(name = "DEPTID", length = 50, nullable = false)
     private String deptId;
 
     /**
      * 收发部门名称
      */
-    @org.hibernate.annotations.Comment("收发部门名称")
+    @Comment("收发部门名称")
     @Column(name = "DEPTNAME", length = 200, nullable = false)
     private String deptName;
 
     /**
      * 收发人员Id
      */
-    @org.hibernate.annotations.Comment("收发人员Id")
+    @Comment("收发人员Id")
     @Column(name = "PERSONID", length = 50)
     private String personId;
 
-    @org.hibernate.annotations.Comment("收发人员部门Id")
+    @Comment("收发人员部门Id")
     @Column(name = "PERSONDEPTID", length = 50)
     private String personDeptId;
 
-    @org.hibernate.annotations.Comment("创建时间")
+    @Comment("创建时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATEDATE")
     private Date createDate;
 
-    @org.hibernate.annotations.Comment("是否可以发送")
+    @Comment("是否可以发送")
     @Column(name = "SEND")
     private boolean send = true;
 
-    @org.hibernate.annotations.Comment("是否可以接收")
+    @Comment("是否可以接收")
     @Column(name = "RECEIVE")
     private boolean receive = true;
 }
