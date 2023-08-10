@@ -3,8 +3,6 @@ package net.risesoft;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.sevenzipjbinding.SevenZipNativeInitializationException;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -17,13 +15,13 @@ import org.springframework.util.StopWatch;
 @EnableScheduling
 @ComponentScan(value = "net.risesoft.*")
 @Slf4j
-public class FilePreviewServerApplication {
-
+public class NewFilePreviewApplication {
 
     public static void main(String[] args) throws SevenZipNativeInitializationException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        ConfigurableApplicationContext context = new SpringApplicationBuilder(FilePreviewServerApplication.class)
+        ConfigurableApplicationContext context =
+            new SpringApplicationBuilder(NewFilePreviewApplication.class)
                 .logStartupInfo(false)
                 .run(args);
         stopWatch.stop();

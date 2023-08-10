@@ -12,11 +12,11 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.WebApplicationContext;
 
-public class PreviewFileServletInitializer extends SpringBootServletInitializer {
+public class NewFilePreviewServletInitializer extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(final SpringApplicationBuilder builder) {
-        return builder.sources(FilePreviewServerApplication.class);
+        return builder.sources(NewFilePreviewApplication.class);
     }
 
     @Override

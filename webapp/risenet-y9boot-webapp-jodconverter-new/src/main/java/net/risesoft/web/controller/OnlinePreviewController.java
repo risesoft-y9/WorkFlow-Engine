@@ -104,12 +104,7 @@ public class OnlinePreviewController {
      */
     @GetMapping("/getCorsFile")
     public void getCorsFile(String urlPath, HttpServletResponse response) throws IOException {
-        try {
-       //     urlPath = WebUtils.decodeUrl(urlPath);
-        } catch (Exception ex) {
-            logger.error(String.format(BASE64_DECODE_ERROR_MSG, urlPath), ex);
-            return;
-        }
+
         HttpURLConnection urlcon = null;
         InputStream inputStream = null;
         String urlStr;
@@ -260,9 +255,7 @@ public class OnlinePreviewController {
                 assert sos != null;
                 sos.close();
             }
-
         }
-
     }
 
     /**
