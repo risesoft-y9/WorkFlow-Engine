@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -35,7 +36,7 @@ public class ReceiveDepartment implements Serializable {
      * 主键
      */
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 50, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
@@ -44,38 +45,38 @@ public class ReceiveDepartment implements Serializable {
     /**
      * 委办局Id
      */
-    @org.hibernate.annotations.Comment("委办局Id")
+    @Comment("委办局Id")
     @Column(name = "BUREAUID", length = 50)
     private String bureauId;
 
     /**
      * 父节点Id
      */
-    @org.hibernate.annotations.Comment("父节点Id")
+    @Comment("父节点Id")
     @Column(name = "PARENTID", length = 50)
     private String parentId;
 
     /**
      * 收发部门Id
      */
-    @org.hibernate.annotations.Comment("收发部门Id")
+    @Comment("收发部门Id")
     @Column(name = "DEPTID", length = 50, nullable = false)
     private String deptId;
 
     /**
      * 收发部门名称
      */
-    @org.hibernate.annotations.Comment("收发部门名称")
+    @Comment("收发部门名称")
     @Column(name = "DEPTNAME", length = 200, nullable = false)
     private String deptName;
 
-    @org.hibernate.annotations.Comment("创建时间")
+    @Comment("创建时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATEDATE")
     private Date createDate;
 
-    @org.hibernate.annotations.Comment("x序号")
+    @Comment("x序号")
     @Column(name = "TABINDEX", length = 11)
     private Integer tabIndex;
 

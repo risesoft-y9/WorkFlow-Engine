@@ -1,21 +1,14 @@
 package net.risesoft.controller;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import net.risesoft.api.permission.PersonResourceApi;
+import net.risesoft.enums.AuthorityEnum;
+import net.risesoft.model.Resource;
+import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.Y9Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.BpmnAutoLayout;
@@ -37,24 +30,20 @@ import org.flowable.validation.ValidationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import net.risesoft.api.permission.PersonResourceApi;
-import net.risesoft.enums.AuthorityEnum;
-import net.risesoft.model.Resource;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 流程模型控制器
@@ -188,102 +177,6 @@ public class ProcessModelVueController {
     }
 
     /**
-     * 获取流程设计模型xml
-     *
-     * @param modelId
-     * @param response
-     * @return
-     */
-    @RequestMapping(value = "/getModelXml")
-    public Y9Result<Map<String, Object>> getModelXml(@RequestParam(required = true) String modelId, HttpServletResponse response) {
-        byte[] bpmnBytes = null;
-        Map<String, Object> map = new HashMap<String, Object>();
-        try {
-            Model model = modelService.getModel(modelId);
-            map.put("key", model.getKey());
-            map.put("name", model.getName());
-            bpmnBytes = modelService.getBpmnXML(model);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes));
-        return Y9Result.success(map, "获取成功");
-    }
-
-
-    /**
-     * 保存设计模型xml
-     *
-     * @param file
-     * @param model
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "/saveModelXml")
-    public Y9Result<String> saveModelXml(MultipartFile file, ModelRepresentation model) {
-        try {
-            UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
-            InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), "UTF-8");
-            XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
-
-            BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
-            BpmnModel bpmnModel = bpmnXmlConverter.convertToBpmnModel(xtr);
-            // 模板验证
-            ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
-            List<ValidationError> errors = validator.validate(bpmnModel);
-            if (!errors.isEmpty()) {
-                StringBuffer es = new StringBuffer();
-                errors.forEach(ve -> es.append(ve.toString()).append("/n"));
-                return Y9Result.failure("保存失败：模板验证失败，原因: " + es.toString());
-            }
-            if (bpmnModel.getProcesses().isEmpty()) {
-                return Y9Result.failure("保存失败： 文件中不存在流程的信息");
-            }
-            if (bpmnModel.getLocationMap().size() == 0) {
-                BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
-                bpmnLayout.execute();
-            }
-            BpmnJsonConverter bpmnJsonConverter = new BpmnJsonConverter();
-            ObjectNode modelNode = bpmnJsonConverter.convertToJson(bpmnModel);
-            org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
-            String name = process.getId();
-            if (StringUtils.isNotEmpty(process.getName())) {
-                name = process.getName();
-            }
-            String description = process.getDocumentation();
-            model.setKey(process.getId());
-            model.setName(name);
-            model.setDescription(description);
-            model.setModelType(AbstractModel.MODEL_TYPE_BPMN);
-            // 查询是否已经存在流程模板
-            Model newModel = new Model();
-            List<Model> models = modelRepository.findByKeyAndType(model.getKey(), model.getModelType());
-            if (!models.isEmpty()) {
-                Model updateModel = models.get(0);
-                newModel.setId(updateModel.getId());
-            }
-            newModel.setName(model.getName());
-            newModel.setKey(model.getKey());
-            newModel.setModelType(model.getModelType());
-            newModel.setCreated(Calendar.getInstance().getTime());
-            newModel.setCreatedBy(userInfo.getName());
-            newModel.setDescription(model.getDescription());
-            newModel.setModelEditorJson(modelNode.toString());
-            newModel.setLastUpdated(Calendar.getInstance().getTime());
-            newModel.setLastUpdatedBy(userInfo.getName());
-            newModel.setTenantId(tenantId);
-            String createdBy = SecurityUtils.getCurrentUserId();
-            newModel = modelService.createModel(newModel, createdBy);
-            return Y9Result.successMsg("保存成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Y9Result.failure("保存失败");
-    }
-
-    /**
      * 获取模型列表
      *
      * @return
@@ -339,6 +232,29 @@ public class ProcessModelVueController {
             }
         }
         return Y9Result.success(items, "获取成功");
+    }
+
+    /**
+     * 获取流程设计模型xml
+     *
+     * @param modelId
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/getModelXml")
+    public Y9Result<Map<String, Object>> getModelXml(@RequestParam(required = true) String modelId, HttpServletResponse response) {
+        byte[] bpmnBytes = null;
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            Model model = modelService.getModel(modelId);
+            map.put("key", model.getKey());
+            map.put("name", model.getName());
+            bpmnBytes = modelService.getBpmnXML(model);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes));
+        return Y9Result.success(map, "获取成功");
     }
 
     /**
@@ -435,5 +351,77 @@ public class ProcessModelVueController {
             e.printStackTrace();
         }
         return map;
+    }
+
+    /**
+     * 保存设计模型xml
+     *
+     * @param file
+     * @param model
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/saveModelXml")
+    public Y9Result<String> saveModelXml(MultipartFile file, ModelRepresentation model) {
+        try {
+            UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
+            InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), "UTF-8");
+            XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
+
+            BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
+            BpmnModel bpmnModel = bpmnXmlConverter.convertToBpmnModel(xtr);
+            // 模板验证
+            ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
+            List<ValidationError> errors = validator.validate(bpmnModel);
+            if (!errors.isEmpty()) {
+                StringBuffer es = new StringBuffer();
+                errors.forEach(ve -> es.append(ve.toString()).append("/n"));
+                return Y9Result.failure("保存失败：模板验证失败，原因: " + es.toString());
+            }
+            if (bpmnModel.getProcesses().isEmpty()) {
+                return Y9Result.failure("保存失败： 文件中不存在流程的信息");
+            }
+            if (bpmnModel.getLocationMap().size() == 0) {
+                BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
+                bpmnLayout.execute();
+            }
+            BpmnJsonConverter bpmnJsonConverter = new BpmnJsonConverter();
+            ObjectNode modelNode = bpmnJsonConverter.convertToJson(bpmnModel);
+            org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
+            String name = process.getId();
+            if (StringUtils.isNotEmpty(process.getName())) {
+                name = process.getName();
+            }
+            String description = process.getDocumentation();
+            model.setKey(process.getId());
+            model.setName(name);
+            model.setDescription(description);
+            model.setModelType(AbstractModel.MODEL_TYPE_BPMN);
+            // 查询是否已经存在流程模板
+            Model newModel = new Model();
+            List<Model> models = modelRepository.findByKeyAndType(model.getKey(), model.getModelType());
+            if (!models.isEmpty()) {
+                Model updateModel = models.get(0);
+                newModel.setId(updateModel.getId());
+            }
+            newModel.setName(model.getName());
+            newModel.setKey(model.getKey());
+            newModel.setModelType(model.getModelType());
+            newModel.setCreated(Calendar.getInstance().getTime());
+            newModel.setCreatedBy(userInfo.getName());
+            newModel.setDescription(model.getDescription());
+            newModel.setModelEditorJson(modelNode.toString());
+            newModel.setLastUpdated(Calendar.getInstance().getTime());
+            newModel.setLastUpdatedBy(userInfo.getName());
+            newModel.setTenantId(tenantId);
+            String createdBy = SecurityUtils.getCurrentUserId();
+            newModel = modelService.createModel(newModel, createdBy);
+            return Y9Result.successMsg("保存成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Y9Result.failure("保存失败");
     }
 }

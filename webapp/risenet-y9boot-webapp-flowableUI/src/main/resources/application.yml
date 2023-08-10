@@ -177,8 +177,6 @@ y9:
             emailUrl: https://www.youshengyun.com/sms/emailIndex
         itemAdmin:
             systemName: itemAdmin
-        log:
-            kafkaEnabled: false
         workOrder:
             inNetrouteToTaskId: qicao
             outNetrouteToTaskId: fenpei

@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -29,39 +30,39 @@ public class ItemTaskConf implements Serializable {
     private static final long serialVersionUID = -4007011147966571051L;
 
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 38, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @org.hibernate.annotations.Comment("租户Id")
+    @Comment("租户Id")
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
 
-    @org.hibernate.annotations.Comment("事项Id")
+    @Comment("事项Id")
     @Column(name = "ITEMID", length = 50, nullable = false)
     private String itemId;
 
-    @org.hibernate.annotations.Comment("流程定义Id")
+    @Comment("流程定义Id")
     @Column(name = "PROCESSDEFINITIONID", length = 100, nullable = false)
     private String processDefinitionId;
 
-    @org.hibernate.annotations.Comment("任务key")
+    @Comment("任务key")
     @Column(name = "TASKDEFKEY", length = 100)
     private String taskDefKey;
 
-    @org.hibernate.annotations.Comment("区分主协办")
+    @Comment("区分主协办")
     @Column(name = "SPONSOR", nullable = false)
     @ColumnDefault("0")
     private Boolean sponsor = false;
 
-    @org.hibernate.annotations.Comment("抢占式签收")
+    @Comment("抢占式签收")
     @Column(name = "SIGNTASK", nullable = false)
     @ColumnDefault("0")
     private Boolean signTask = false;
 
-    @org.hibernate.annotations.Comment("必签意见")
+    @Comment("必签意见")
     @Column(name = "SIGNOPINION")
     @ColumnDefault("0")
     private Boolean signOpinion = false;

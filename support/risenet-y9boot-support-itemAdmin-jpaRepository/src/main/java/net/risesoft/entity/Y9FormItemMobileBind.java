@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -32,45 +33,45 @@ public class Y9FormItemMobileBind implements Serializable {
     private static final long serialVersionUID = 7852048678955381044L;
 
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 38, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @org.hibernate.annotations.Comment("租户Id")
+    @Comment("租户Id")
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
 
-    @org.hibernate.annotations.Comment("表单ID")
+    @Comment("表单ID")
     @Column(name = "FORMID", length = 38, nullable = false)
     private String formId;
 
-    @org.hibernate.annotations.Comment("表单名称")
+    @Comment("表单名称")
     @Column(name = "FORMNAME", length = 55, nullable = false)
     private String formName;
 
-    @org.hibernate.annotations.Comment("事项Id")
+    @Comment("事项Id")
     @Column(name = "ITEMID", length = 55, nullable = false)
     private String itemId;
 
-    @org.hibernate.annotations.Comment("流程定义Id")
+    @Comment("流程定义Id")
     @Column(name = "PROCESSDEFINITIONID", length = 255, nullable = false)
     private String processDefinitionId;
 
-    @org.hibernate.annotations.Comment("任务key")
+    @Comment("任务key")
     @Column(name = "TASKDEFKEY", length = 255)
     private String taskDefKey;
 
-    @org.hibernate.annotations.Comment("事项名称")
+    @Comment("事项名称")
     @Transient
     private String itemName;
 
-    @org.hibernate.annotations.Comment("流程定义名称")
+    @Comment("流程定义名称")
     @Transient
     private String procDefName;
 
-    @org.hibernate.annotations.Comment("任务名称")
+    @Comment("任务名称")
     @Transient
     private String taskDefName;
 

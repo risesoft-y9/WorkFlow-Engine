@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -29,7 +30,7 @@ public class OfficeFollow implements Serializable {
      * 唯一标示
      */
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "GUID", length = 38, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
@@ -38,105 +39,105 @@ public class OfficeFollow implements Serializable {
     /**
      * 工作流流程序列号
      */
-    @org.hibernate.annotations.Comment("工作流流程序列号")
+    @Comment("工作流流程序列号")
     @Column(name = "PROCESSSERIALNUMBER", length = 50, nullable = false)
     private String processSerialNumber;
 
     /**
      * 事项id
      */
-    @org.hibernate.annotations.Comment("事项id")
+    @Comment("事项id")
     @Column(name = "ITEMID", length = 50, nullable = true)
     private String itemId;
 
     /**
      * 流程实例id
      */
-    @org.hibernate.annotations.Comment("流程实例id")
+    @Comment("流程实例id")
     @Column(name = "PROCESSINSTANCEID", length = 50, nullable = false)
     private String processInstanceId;
 
     /**
      * 紧急程度
      */
-    @org.hibernate.annotations.Comment("紧急程度")
+    @Comment("紧急程度")
     @Column(name = "JINJICHENGDU", length = 50, nullable = true)
     private String jinjichengdu;
 
     /**
      * 文件编号
      */
-    @org.hibernate.annotations.Comment("文件编号")
+    @Comment("文件编号")
     @Column(name = "NUMBERS", length = 50, nullable = true)
     private String numbers;
 
     /**
      * 来文单位/拟稿单位
      */
-    @org.hibernate.annotations.Comment("来文单位/拟稿单位")
+    @Comment("来文单位/拟稿单位")
     @Column(name = "sendDept", length = 150, nullable = true)
     private String sendDept;
 
     /**
      * 文件类型
      */
-    @org.hibernate.annotations.Comment("文件类型")
+    @Comment("文件类型")
     @Column(name = "FILETYPE", length = 50, nullable = true)
     private String fileType;
 
     /**
      * 标题
      */
-    @org.hibernate.annotations.Comment("标题")
+    @Comment("标题")
     @Column(name = "DOCUMENTTITLE", length = 500, nullable = true)
     private String documentTitle;
 
     /**
      * 办理期限
      */
-    @org.hibernate.annotations.Comment("办理期限")
+    @Comment("办理期限")
     @Column(name = "handleTerm", length = 50, nullable = true)
     private String handleTerm;
 
     /**
      * 委办局id
      */
-    @org.hibernate.annotations.Comment("委办局id")
+    @Comment("委办局id")
     @Column(name = "BUREAUID", length = 50, nullable = true)
     private String bureauId;
 
     /**
      * 委办局名称
      */
-    @org.hibernate.annotations.Comment("委办局名称")
+    @Comment("委办局名称")
     @Column(name = "BUREAUNAME", length = 200, nullable = true)
     private String bureauName;
 
     /**
      * 关注人ID
      */
-    @org.hibernate.annotations.Comment("关注人ID")
+    @Comment("关注人ID")
     @Column(name = "USERID", length = 50, nullable = false)
     private String userId;
 
     /**
      * 关注人姓名
      */
-    @org.hibernate.annotations.Comment("关注人姓名")
+    @Comment("关注人姓名")
     @Column(name = "USERNAME", length = 50, nullable = false)
     private String userName;
 
     /**
      * 流程启动时间
      */
-    @org.hibernate.annotations.Comment("流程启动时间")
+    @Comment("流程启动时间")
     @Column(name = "STARTTIME")
     private String startTime;
 
     /**
      * 关注时间
      */
-    @org.hibernate.annotations.Comment("关注时间")
+    @Comment("关注时间")
     @Column(name = "CREATETIME")
     private String createTime;
 

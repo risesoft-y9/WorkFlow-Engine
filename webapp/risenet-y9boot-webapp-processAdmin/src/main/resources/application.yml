@@ -190,8 +190,6 @@ y9:
             todoSwitch: false
             weiXinSwitch: false
             weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage
-        log:
-            kafkaEnabled: false
     common:
         cacheEnabled: true
         kafkaEnabled: true

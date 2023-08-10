@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -27,21 +28,21 @@ public class EntrustDetail implements Serializable {
     private static final long serialVersionUID = 3836935260567480966L;
 
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 38)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @org.hibernate.annotations.Comment("委托人Id")
+    @Comment("委托人Id")
     @Column(name = "OWNERID", length = 100, nullable = false)
     private String ownerId;
 
-    @org.hibernate.annotations.Comment("任务Id")
+    @Comment("任务Id")
     @Column(name = "TASKID", length = 50, nullable = false)
     private String taskId;
 
-    @org.hibernate.annotations.Comment("流程实例Id")
+    @Comment("流程实例Id")
     @Column(name = "PROCESSINSTANCEID", length = 50, nullable = false)
     private String processInstanceId;
 

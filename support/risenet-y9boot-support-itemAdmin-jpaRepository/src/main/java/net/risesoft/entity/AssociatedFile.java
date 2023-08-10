@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -31,7 +32,7 @@ import lombok.NoArgsConstructor;
 public class AssociatedFile implements Serializable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -7634277136028658011L;
 
@@ -39,7 +40,7 @@ public class AssociatedFile implements Serializable {
      * 主键
      */
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 50, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
@@ -48,14 +49,14 @@ public class AssociatedFile implements Serializable {
     /**
      * 租户Id
      */
-    @org.hibernate.annotations.Comment("租户Id")
+    @Comment("租户Id")
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
 
     /**
      * 流程编号
      */
-    @org.hibernate.annotations.Comment("流程编号")
+    @Comment("流程编号")
     @Column(name = "PROCESSSERIALNUMBER", nullable = false)
     private String processSerialNumber;
 
@@ -63,7 +64,7 @@ public class AssociatedFile implements Serializable {
      * 流程实例id
      */
     @Lob
-    @org.hibernate.annotations.Comment("流程实例id")
+    @Comment("流程实例id")
     @Column(name = "PROCESSINSTANCEID")
     private String processInstanceId;
 
@@ -71,14 +72,14 @@ public class AssociatedFile implements Serializable {
      * 关联流程实例id
      */
     @Lob
-    @org.hibernate.annotations.Comment("关联流程实例id")
+    @Comment("关联流程实例id")
     @Column(name = "ASSOCIATEDID")
     private String associatedId;
 
     /**
      * 关联时间
      */
-    @org.hibernate.annotations.Comment("关联时间")
+    @Comment("关联时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATETIME")
@@ -87,14 +88,14 @@ public class AssociatedFile implements Serializable {
     /**
      * 创建人id
      */
-    @org.hibernate.annotations.Comment("创建人id")
+    @Comment("创建人id")
     @Column(name = "USERID", length = 50)
     private String userId;
 
     /**
      * 创建人姓名
      */
-    @org.hibernate.annotations.Comment("创建人姓名")
+    @Comment("创建人姓名")
     @Column(name = "USERNAME", length = 50)
     private String userName;
 }

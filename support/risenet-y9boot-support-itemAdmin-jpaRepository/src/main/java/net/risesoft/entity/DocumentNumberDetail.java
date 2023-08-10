@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -31,7 +32,7 @@ public class DocumentNumberDetail implements Serializable {
      * 主键
      */
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 50, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
@@ -40,25 +41,25 @@ public class DocumentNumberDetail implements Serializable {
     /**
      * 文号年份
      */
-    @org.hibernate.annotations.Comment("文号年份")
+    @Comment("文号年份")
     @Column(name = "CALENDARYEAR", length = 10, nullable = false)
     private Integer calendarYear;
 
     /**
      * 文号的序号长度
      */
-    @org.hibernate.annotations.Comment("文号的序号长度")
+    @Comment("文号的序号长度")
     @Column(name = "NUMLENGTH", length = 10)
     private Integer numLength;
 
     /**
      * 文号的序列号初始化值
      */
-    @org.hibernate.annotations.Comment("文号的序列号初始化值")
+    @Comment("文号的序列号初始化值")
     @Column(name = "SEQUENCEINITVALUE", length = 50)
     private Integer sequenceInitValue;
 
-    @org.hibernate.annotations.Comment("租户id")
+    @Comment("租户id")
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
 }

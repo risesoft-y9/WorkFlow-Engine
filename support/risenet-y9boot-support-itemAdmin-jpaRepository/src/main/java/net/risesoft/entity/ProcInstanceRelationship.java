@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -28,15 +30,15 @@ public class ProcInstanceRelationship implements Serializable {
      * 子流程实例Id，由于每个父流程调用子流程时可以调用多个子流程，而每个子流程只会有一个父流程，所以这里以子流程实例的Id作为主键
      */
     @Id
-    @org.hibernate.annotations.Comment("子流程实例Id")
+    @Comment("子流程实例Id")
     @Column(name = "PROCINSTANCEID", nullable = false)
     private String procInstanceId;
 
-    @org.hibernate.annotations.Comment("父流程实例Id")
+    @Comment("父流程实例Id")
     @Column(name = "PARENTPROCINSTANCEID")
     private String parentProcInstanceId;
 
-    @org.hibernate.annotations.Comment("流程实例Key")
+    @Comment("流程实例Key")
     @Column(name = "PROCDEFINITIONKEY")
     private String procDefinitionKey;
 

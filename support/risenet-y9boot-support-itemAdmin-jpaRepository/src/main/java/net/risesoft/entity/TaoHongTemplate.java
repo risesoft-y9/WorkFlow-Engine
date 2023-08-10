@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -34,7 +35,7 @@ public class TaoHongTemplate implements Serializable {
     private static final long serialVersionUID = -9021379988316606779L;
 
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "TEMPLATE_GUID", length = 38, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
@@ -43,42 +44,42 @@ public class TaoHongTemplate implements Serializable {
     /**
      * 租户Id
      */
-    @org.hibernate.annotations.Comment("租户Id")
+    @Comment("租户Id")
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
 
-    @org.hibernate.annotations.Comment("委办局GUID")
+    @Comment("委办局GUID")
     @Column(name = "BUREAU_GUID", length = 38)
     private String bureauGuid;
 
-    @org.hibernate.annotations.Comment("委办局名称")
+    @Comment("委办局名称")
     @Column(name = "BUREAU_NAME", length = 38)
     private String bureauName;
 
-    @org.hibernate.annotations.Comment("上传人")
+    @Comment("上传人")
     @Column(name = "USERID", length = 38)
     private String userId;
 
-    @org.hibernate.annotations.Comment("上传时间")
+    @Comment("上传时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date uploadTime;
 
-    @org.hibernate.annotations.Comment("文件内容")
+    @Comment("文件内容")
     @Lob
     @Column(name = "TEMPLATE_CONTENT")
     private byte[] templateContent;
 
-    @org.hibernate.annotations.Comment("文件名")
+    @Comment("文件名")
     @Column(name = "TEMPLATE_FILENAME", length = 100)
     private String templateFileName;
 
-    @org.hibernate.annotations.Comment("模板类型")
+    @Comment("模板类型")
     @Column(name = "TEMPLATE_TYPE", length = 100)
     private String templateType;
 
-    @org.hibernate.annotations.Comment("排序号")
+    @Comment("排序号")
     @Column(name = "TABINDEX", length = 10)
     private Integer tabIndex;
 

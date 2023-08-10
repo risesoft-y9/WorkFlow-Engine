@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -27,31 +29,31 @@ public class Y9FormField implements Serializable {
 
     @Id
     @Column(name = "ID", length = 38)
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     private String id;
 
     @Column(name = "FORMID", length = 38)
-    @org.hibernate.annotations.Comment("表单Id")
+    @Comment("表单Id")
     private String formId;
 
     @Column(name = "TABLEID", length = 50)
-    @org.hibernate.annotations.Comment("对应的表id")
+    @Comment("对应的表id")
     private String tableId;
 
     @Column(name = "TABLENAME", length = 50)
-    @org.hibernate.annotations.Comment("对应的表名称")
+    @Comment("对应的表名称")
     private String tableName;
 
     @Column(name = "FIELDNAME", length = 50)
-    @org.hibernate.annotations.Comment("字段名称")
+    @Comment("字段名称")
     private String fieldName;
 
     @Column(name = "FIELDCNNAME", length = 50)
-    @org.hibernate.annotations.Comment("字段中文名称")
+    @Comment("字段中文名称")
     private String fieldCnName;
 
     @Column(name = "FIELDTYPE", length = 100)
-    @org.hibernate.annotations.Comment("字段类型")
+    @Comment("字段类型")
     private String fieldType;
 
 }

@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -28,42 +29,42 @@ public class ErrorLog implements Serializable {
     private static final long serialVersionUID = 2537599274208903877L;
 
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 50, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @org.hibernate.annotations.Comment("流程实例")
+    @Comment("流程实例")
     @Column(name = "PROCESSINSTANCEID", length = 50)
     private String processInstanceId;
 
-    @org.hibernate.annotations.Comment("任务id")
+    @Comment("任务id")
     @Column(name = "TASKID", length = 50)
     private String taskId;
 
-    @org.hibernate.annotations.Comment("错误类型")
+    @Comment("错误类型")
     @Column(name = "ERRORTYPE", length = 100, nullable = false)
     private String errorType;
 
-    @org.hibernate.annotations.Comment("错误标识")
+    @Comment("错误标识")
     @Column(name = "ERRORFLAG", length = 100, nullable = false)
     private String errorFlag;
 
-    @org.hibernate.annotations.Comment("扩展字段")
+    @Comment("扩展字段")
     @Column(name = "EXTENDFIELD", length = 255)
     private String extendField;
 
-    @org.hibernate.annotations.Comment("错误日志信息")
+    @Comment("错误日志信息")
     @Lob
     @Column(name = "TEXT")
     private String text;
 
-    @org.hibernate.annotations.Comment("创建时间")
+    @Comment("创建时间")
     @Column(name = "CREATETIME", length = 50)
     private String createTime;
 
-    @org.hibernate.annotations.Comment("更新时间")
+    @Comment("更新时间")
     @Column(name = "UPDATETIME", length = 50)
     private String updateTime;
 

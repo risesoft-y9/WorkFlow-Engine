@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -33,7 +34,7 @@ public class ItemButtonBind implements Serializable {
      * 唯一标示
      */
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 38, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
@@ -42,53 +43,53 @@ public class ItemButtonBind implements Serializable {
     /**
      * 租户Id
      */
-    @org.hibernate.annotations.Comment("租户Id")
+    @Comment("租户Id")
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
 
     /**
      * 按钮唯一标示
      */
-    @org.hibernate.annotations.Comment("按钮id")
+    @Comment("按钮id")
     @Column(name = "BUTTONID", length = 38, nullable = false)
     private String buttonId;
 
     /**
      * 按钮类型 1为普通按钮，2为发送下面的按钮
      */
-    @org.hibernate.annotations.Comment("按钮类型")
+    @Comment("按钮类型")
     @Column(name = "BUTTONTYPE", length = 2, nullable = false)
     private Integer buttonType;
 
     /**
      * 按钮名称
      */
-    @org.hibernate.annotations.Comment("按钮名称")
+    @Comment("按钮名称")
     @Transient
     private String buttonName;
 
-    @org.hibernate.annotations.Comment("按钮标识")
+    @Comment("按钮标识")
     @Transient
     private String buttonCustomId;
 
     /**
      * 事项Id
      */
-    @org.hibernate.annotations.Comment("事项Id")
+    @Comment("事项Id")
     @Column(name = "ITEMID", length = 100, nullable = false)
     private String itemId;
 
     /**
      * 流程定义Id
      */
-    @org.hibernate.annotations.Comment("流程定义Id")
+    @Comment("流程定义Id")
     @Column(name = "PROCESSDEFINITIONID", length = 100, nullable = false)
     private String processDefinitionId;
 
     /**
      * 流程节点Key
      */
-    @org.hibernate.annotations.Comment("流程节点Key")
+    @Comment("流程节点Key")
     @Column(name = "TASKDEFKEY", length = 100, nullable = false)
     private String taskDefKey;
 
@@ -107,35 +108,35 @@ public class ItemButtonBind implements Serializable {
     /**
      * 创建/修改人员的名称
      */
-    @org.hibernate.annotations.Comment("创建人名称")
+    @Comment("创建人名称")
     @Column(name = "USERNAME", length = 50)
     private String userName;
 
     /**
      * 创建/修改的人员的唯一标示
      */
-    @org.hibernate.annotations.Comment("创建人id")
+    @Comment("创建人id")
     @Column(name = "USERID", length = 50)
     private String userId;
 
     /**
      * 序号
      */
-    @org.hibernate.annotations.Comment("序号")
+    @Comment("序号")
     @Column(name = "TABINDEX", length = 3)
     private Integer tabIndex;
 
     /**
      * 生成时间
      */
-    @org.hibernate.annotations.Comment("生成时间")
+    @Comment("生成时间")
     @Column(name = "CREATETIME", length = 50)
     private String createTime;
 
     /**
      * 更新时间
      */
-    @org.hibernate.annotations.Comment("更新时间")
+    @Comment("更新时间")
     @Column(name = "UPDATETIME", length = 50)
     private String updateTime;
 }

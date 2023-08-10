@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
@@ -28,25 +29,25 @@ public class OrganWordProperty implements Serializable {
     private static final long serialVersionUID = 8837558736331688025L;
 
     @Id
-    @org.hibernate.annotations.Comment("主键")
+    @Comment("主键")
     @Column(name = "ID", length = 50, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @org.hibernate.annotations.Comment("编号标识Id")
+    @Comment("编号标识Id")
     @Column(name = "ORGANWORDID", length = 50)
     private String organWordId;
 
-    @org.hibernate.annotations.Comment("机关代字名字")
+    @Comment("机关代字名字")
     @Column(name = "NAME", length = 50)
     private String name;
 
-    @org.hibernate.annotations.Comment("初始值")
+    @Comment("初始值")
     @Column(name = "INITNUMBER", length = 10, nullable = false)
     private Integer initNumber;
 
-    @org.hibernate.annotations.Comment("序号")
+    @Comment("序号")
     @Column(name = "TABINDEX", length = 10, nullable = false)
     private Integer tabIndex;
 

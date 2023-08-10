@@ -200,8 +200,6 @@ y9:
             smsSwitch: false
             weiXinSwitch: true
             weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage
-        log:
-            kafkaEnabled: false
         risesoftTenantId: 993f08e4a9624c7d82b0bd0766f45f10
     common:
         cacheEnabled: true
