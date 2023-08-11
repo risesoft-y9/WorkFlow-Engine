@@ -16,7 +16,7 @@ cache:
         cron: 0 0 3 * * ?
         enabled: true
     enabled: true
-    type: redis    # 缓存类型 jdk/redis
+    type: jdk    # 缓存类型 jdk/redis
 cad:
     preview:
         type: svg
@@ -58,22 +58,22 @@ office:
     preview:
         switch:
             disabled: false
-        type: image
+        type: pdf #office类型文档(word ppt)样式，默认为图片(image)，可配置为pdf（预览时也有按钮切换）
     quality: 80
     type:
         web: web
     watermark: false
-pdf:
+pdf: # pdf下 按钮的禁用
     bookmark:
-        disable: true
+        disable: false
     download:
-        disable: true
+        disable: false
     openFile:
-        disable: true
+        disable: false
     presentationMode:
-        disable: true
+        disable: false
     print:
-        disable: true
+        disable: false
 pdf2jpg:
     dpi: 144
 prohibit: exe,dll,dat

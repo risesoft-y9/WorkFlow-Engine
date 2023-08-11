@@ -72,7 +72,7 @@ public class ConfigConstants {
     public static final String DEFAULT_TRUST_HOST = "default";
     public static final String DEFAULT_PDF_PRESENTATION_MODE_DISABLE = "true";
     public static final String DEFAULT_PDF_OPEN_FILE_DISABLE = "true";
-    public static final String DEFAULT_PDF_PRINT_DISABLE = "true";
+    public static final String DEFAULT_PDF_PRINT_DISABLE = "false";
     public static final String DEFAULT_PDF_DOWNLOAD_DISABLE = "true";
     public static final String DEFAULT_PDF_BOOKMARK_DISABLE = "true";
     public static final String DEFAULT_FILE_UPLOAD_DISABLE = "false";
@@ -298,7 +298,7 @@ public class ConfigConstants {
         return pdfPresentationModeDisable;
     }
 
-    @Value("${pdf.presentationMode.disable:true}")
+    @Value("${pdf.presentationMode.disable:false}")
     public void setPdfPresentationModeDisable(String pdfPresentationModeDisable) {
         setPdfPresentationModeDisableValue(pdfPresentationModeDisable);
     }
@@ -311,7 +311,7 @@ public class ConfigConstants {
         return pdfOpenFileDisable;
     }
 
-    @Value("${pdf.openFile.disable:true}")
+    @Value("${pdf.openFile.disable:false}")
     public void setPdfOpenFileDisable(String pdfOpenFileDisable) {
         setPdfOpenFileDisableValue(pdfOpenFileDisable);
     }
@@ -324,7 +324,7 @@ public class ConfigConstants {
         return pdfPrintDisable;
     }
 
-    @Value("${pdf.print.disable:true}")
+    @Value("${pdf.print.disable:false}")
     public void setPdfPrintDisable(String pdfPrintDisable) {
         setPdfPrintDisableValue(pdfPrintDisable);
     }
@@ -337,7 +337,7 @@ public class ConfigConstants {
         return pdfDownloadDisable;
     }
 
-    @Value("${pdf.download.disable:true}")
+    @Value("${pdf.download.disable:false}")
     public void setPdfDownloadDisable(String pdfDownloadDisable) {
         setPdfDownloadDisableValue(pdfDownloadDisable);
     }
@@ -350,7 +350,7 @@ public class ConfigConstants {
         return pdfBookmarkDisable;
     }
 
-    @Value("${pdf.bookmark.disable:true}")
+    @Value("${pdf.bookmark.disable:false}")
     public void setPdfBookmarkDisable(String pdfBookmarkDisable) {
         setPdfBookmarkDisableValue(pdfBookmarkDisable);
     }

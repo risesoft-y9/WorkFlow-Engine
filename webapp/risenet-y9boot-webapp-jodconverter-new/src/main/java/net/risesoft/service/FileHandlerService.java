@@ -62,7 +62,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-
 @Component
 public class FileHandlerService {
 
@@ -100,7 +99,6 @@ public class FileHandlerService {
         return cacheService.getPdfImageCache(key);
     }
 
-
     /**
      * 从路径中获取文件负
      *
@@ -125,7 +123,7 @@ public class FileHandlerService {
      * 添加转换后PDF缓存
      *
      * @param fileName pdf文件名
-     * @param value    缓存相对路径
+     * @param value 缓存相对路径
      */
     public void addConvertedFile(String fileName, String value) {
         cacheService.putPDFCache(fileName, value);
@@ -135,7 +133,7 @@ public class FileHandlerService {
      * 添加转换后图片组缓存
      *
      * @param pdfFilePath pdf文件绝对路径
-     * @param num         图片张数
+     * @param num 图片张数
      */
     public void addPdf2jpgCache(String pdfFilePath, int num) {
         cacheService.putPdfImageCache(pdfFilePath, num);
@@ -155,7 +153,7 @@ public class FileHandlerService {
      * 设置redis中压缩包内图片文件
      *
      * @param fileKey fileKey
-     * @param imgs    图片文件访问url列表
+     * @param imgs 图片文件访问url列表
      */
     public void putImgCache(String fileKey, List<String> imgs) {
         cacheService.putImgCache(fileKey, imgs);
@@ -175,7 +173,7 @@ public class FileHandlerService {
         String charset = EncodingDetects.getJavaEncode(outFilePath);
         StringBuilder sb = new StringBuilder();
         try (InputStream inputStream = new FileInputStream(outFilePath);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charset))) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charset))) {
             String line;
             while (null != (line = reader.readLine())) {
                 if (line.contains("charset=gb2312")) {
@@ -192,7 +190,7 @@ public class FileHandlerService {
         }
         // 重新写入文件
         try (FileOutputStream fos = new FileOutputStream(outFilePath);
-             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos, StandardCharsets.UTF_8))) {
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos, StandardCharsets.UTF_8))) {
             writer.write(sb.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -203,7 +201,7 @@ public class FileHandlerService {
      * 获取本地 pdf 转 image 后的 web 访问地址
      *
      * @param pdfName pdf文件名
-     * @param index   图片索引
+     * @param index 图片索引
      * @return 图片访问地址
      */
     private String getPdf2jpgUrl(String pdfName, int index) {
@@ -224,7 +222,7 @@ public class FileHandlerService {
      * 获取缓存中的 pdf 转换成 jpg 图片集
      *
      * @param pdfFilePath pdf文件路径
-     * @param pdfName     pdf文件名称
+     * @param pdfName pdf文件名称
      * @return 图片访问集合
      */
     private List<String> loadPdf2jpgCache(String pdfFilePath, String pdfName) {
@@ -244,7 +242,7 @@ public class FileHandlerService {
      * pdf文件转换成jpg图片集
      *
      * @param pdfFilePath pdf文件路径
-     * @param pdfName     pdf文件名称
+     * @param pdfName pdf文件名称
      * @return 图片访问集合
      */
     public List<String> pdf2jpg(String pdfFilePath, String pdfName, FileAttribute fileAttribute) throws Exception {
@@ -278,18 +276,19 @@ public class FileHandlerService {
             String imageFilePath;
             for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
                 imageFilePath = folder + File.separator + pageIndex + PDF2JPG_IMAGE_FORMAT;
-                BufferedImage image = pdfRenderer.renderImageWithDPI(pageIndex, ConfigConstants.getPdf2JpgDpi(), ImageType.RGB);
+                BufferedImage image =
+                    pdfRenderer.renderImageWithDPI(pageIndex, ConfigConstants.getPdf2JpgDpi(), ImageType.RGB);
                 ImageIOUtil.writeImage(image, imageFilePath, ConfigConstants.getPdf2JpgDpi());
                 String imageUrl = this.getPdf2jpgUrl(pdfName, pageIndex);
                 imageUrls.add(imageUrl);
             }
             try {
                 if (ObjectUtils.isEmpty(filePassword)) {
-                    pdfReader = new PdfReader(pdfFilePath);   //读取PDF文件
+                    pdfReader = new PdfReader(pdfFilePath); // 读取PDF文件
                 } else {
-                    pdfReader = new PdfReader(pdfFilePath, filePassword.getBytes());   //读取PDF文件
+                    pdfReader = new PdfReader(pdfFilePath, filePassword.getBytes()); // 读取PDF文件
                 }
-            } catch (Exception e) {  //获取异常方法 判断是否有加密字符串
+            } catch (Exception e) { // 获取异常方法 判断是否有加密字符串
                 Throwable[] throwableArray = ExceptionUtils.getThrowables(e);
                 for (Throwable throwable : throwableArray) {
                     if (throwable instanceof IOException || throwable instanceof EncryptedDocumentException) {
@@ -300,11 +299,11 @@ public class FileHandlerService {
                 }
                 logger.error("Convert pdf exception, pdfFilePath：{}", pdfFilePath, e);
             } finally {
-                if (pdfReader != null) {   //关闭
+                if (pdfReader != null) { // 关闭
                     pdfReader.close();
                 }
             }
-            //判断是否加密文件 加密文件不缓存
+            // 判断是否加密文件 加密文件不缓存
             if (!PDF_PASSWORD_MSG.equals(pdfPassword)) {
                 this.addPdf2jpgCache(pdfFilePath, pageCount);
             }
@@ -312,7 +311,7 @@ public class FileHandlerService {
             logger.error("Convert pdf to jpg exception, pdfFilePath：{}", pdfFilePath, e);
             throw new Exception(e);
         } finally {
-            if (doc != null) {   //关闭
+            if (doc != null) { // 关闭
                 doc.close();
             }
         }
@@ -322,12 +321,12 @@ public class FileHandlerService {
     /**
      * cad文件转pdf
      *
-     * @param inputFilePath  cad文件路径
+     * @param inputFilePath cad文件路径
      * @param outputFilePath pdf输出文件路径
      * @return 转换是否成功
      */
     public String cadToPdf(String inputFilePath, String outputFilePath, String cadPreviewType) throws Exception {
-        final InterruptionTokenSource source = new InterruptionTokenSource();//CAD延时
+        final InterruptionTokenSource source = new InterruptionTokenSource();// CAD延时
         Callable<String> call = () -> {
             File outputFile = new File(outputFilePath);
             LoadOptions opts = new LoadOptions();
@@ -343,7 +342,7 @@ public class FileHandlerService {
             SvgOptions SvgOptions = null;
             PdfOptions pdfOptions = null;
             TiffOptions TiffOptions = null;
-            switch (cadPreviewType) {  //新增格式方法
+            switch (cadPreviewType) { // 新增格式方法
                 case "svg":
                     SvgOptions = new SvgOptions();
                     SvgOptions.setVectorRasterizationOptions(cadRasterizationOptions);
@@ -376,11 +375,11 @@ public class FileHandlerService {
                 logger.error("PDFFileNotFoundException，inputFilePath：{}", inputFilePath, e);
                 return null;
             } finally {
-                //关闭
-                if (cadImage != null) {   //关闭
+                // 关闭
+                if (cadImage != null) { // 关闭
                     cadImage.dispose();
                 }
-                source.interrupt();  //结束任务
+                source.interrupt(); // 结束任务
             }
             return "true";
         };
@@ -404,14 +403,13 @@ public class FileHandlerService {
     }
 
     /**
-     * @param str    原字符串（待截取原串）
+     * @param str 原字符串（待截取原串）
      * @param posStr 指定字符串
      * @return 截取截取指定字符串之后的数据
      */
     public static String getSubString(String str, String posStr) {
         return str.substring(str.indexOf(posStr) + posStr.length());
     }
-
 
     /**
      * 获取文件属性
@@ -441,20 +439,24 @@ public class FileHandlerService {
             suffix = WebUtils.suffixFromUrl(url);
         }
         if (url.contains("?fileKey=")) {
-            String[] strs = url.split("=");  //处理解压后有反代情况下 文件的路径
+            String[] strs = url.split("="); // 处理解压后有反代情况下 文件的路径
             String urlStrr = getSubString(url, strs[1]);
             urlStrr = urlStrr.substring(0, urlStrr.lastIndexOf("?"));
             fileName = strs[1] + urlStrr.trim();
             attribute.setSkipDownLoad(true);
         }
-    //    url = WebUtils.encodeUrlFileName(url);
-        fileName = KkFileUtils.htmlEscape(fileName);  //文件名处理
+        // url = WebUtils.encodeUrlFileName(url);
+        fileName = KkFileUtils.htmlEscape(fileName); // 文件名处理
         attribute.setType(type);
         attribute.setName(fileName);
         attribute.setSuffix(suffix);
         attribute.setUrl(url);
+
         if (req != null) {
             String officePreviewType = req.getParameter("officePreviewType");
+            if ("docx" == suffix || "doc" == suffix) {
+                officePreviewType = "pdf";
+            }
             String forceUpdatedCache = req.getParameter("forceUpdatedCache");
             String fileKey = WebUtils.getUrlParameterReg(url, "fileKey");
             if (StringUtils.hasText(officePreviewType)) {
