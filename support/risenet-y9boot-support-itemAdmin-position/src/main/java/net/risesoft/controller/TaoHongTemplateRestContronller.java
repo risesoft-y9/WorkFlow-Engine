@@ -1,27 +1,5 @@
 package net.risesoft.controller;
 
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 import net.risesoft.api.org.ManagerApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.TaoHongTemplate;
@@ -33,6 +11,24 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.TaoHongTemplateService;
 import net.risesoft.service.TaoHongTemplateTypeService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -70,8 +66,8 @@ public class TaoHongTemplateRestContronller {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         name = StringUtils.isBlank(name) ? "" : name;
         List<Map<String, Object>> orgUnitList = jdbcTemplate.queryForList(
-            " SELECT ID,NAME,PARENT_ID FROM Y9_ORG_DEPARTMENT where bureau = 1 and deleted = 0 and name like '%" + name
-                + "%' and disabled = 0 order by guidPath asc");
+                " SELECT ID,NAME,PARENT_ID FROM Y9_ORG_DEPARTMENT where bureau = 1 and deleted = 0 and name like '%" + name
+                        + "%' and disabled = 0 order by GUID_PATH asc");
         for (Map<String, Object> dept : orgUnitList) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("id", dept.get("ID").toString());
@@ -92,7 +88,7 @@ public class TaoHongTemplateRestContronller {
      */
     @RequestMapping(value = "/download")
     public void download(@RequestParam(required = true) String templateGuid, HttpServletRequest request,
-        HttpServletResponse response) throws Exception {
+                         HttpServletResponse response) throws Exception {
         try {
             TaoHongTemplate taoHongTemplate = taoHongTemplateService.findOne(templateGuid);
             byte[] b = taoHongTemplate.getTemplateContent();
@@ -130,7 +126,7 @@ public class TaoHongTemplateRestContronller {
         List<TaoHongTemplate> list = new ArrayList<TaoHongTemplate>();
         if (person.isGlobalManager()) {
             list = taoHongTemplateService.findByTenantId(Y9LoginUserHolder.getTenantId(),
-                StringUtils.isBlank(name) ? "%%" : "%" + name + "%");
+                    StringUtils.isBlank(name) ? "%%" : "%" + name + "%");
         } else {
             OrgUnit orgUnit = personManager.getBureau(Y9LoginUserHolder.getTenantId(), person.getPersonId());
             list = taoHongTemplateService.findByBureauGuid(orgUnit.getId());
@@ -198,15 +194,18 @@ public class TaoHongTemplateRestContronller {
     /**
      * 保存套红信息
      *
-     * @param taoHongInfo 套红信息
-     * @param file 文件
+     * @param templateGuid 模板id
+     * @param bureauGuid   委办局id
+     * @param bureauName   委办局名称
+     * @param templateType 模板类型
+     * @param file         模板文件
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(@RequestParam(required = false) String templateGuid,
-        @RequestParam(required = true) String bureauGuid, @RequestParam(required = true) String bureauName,
-        @RequestParam(required = true) String templateType, MultipartFile file) {
+                                         @RequestParam(required = true) String bureauGuid, @RequestParam(required = true) String bureauName,
+                                         @RequestParam(required = true) String templateType, MultipartFile file) {
         try {
             TaoHongTemplate taoHong = new TaoHongTemplate();
             taoHong.setBureauGuid(bureauGuid);

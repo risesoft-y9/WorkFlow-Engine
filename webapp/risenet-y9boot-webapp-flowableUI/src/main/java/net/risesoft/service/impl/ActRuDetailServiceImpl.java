@@ -41,39 +41,24 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     @Override
     public Y9Result<String> complete(String processSerialNumber) {
-        Y9Result<String> y9result = new Y9Result<>();
-        y9result.setCode(500);
-        y9result.setMsg("办结失败");
-        y9result.setSuccess(false);
         boolean b = actRuDetailManager.endByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber);
         if (b) {
-            y9result.setCode(200);
-            y9result.setMsg("办结成功");
-            y9result.setSuccess(true);
+            return Y9Result.success("办结成功", "办结成功");
         }
-        return y9result;
+        return Y9Result.failure("办结失败");
     }
 
     @Override
     public Y9Result<String> saveOrUpdate(String itemId, String processSerialNumber) {
-        Y9Result<String> y9result = new Y9Result<>();
-        y9result.setCode(500);
-        y9result.setMsg("设置办理人信息异常");
-        y9result.setSuccess(false);
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-            String tenantId = Y9LoginUserHolder.getTenantId(), personId = userInfo.getPersonId(),
-                personName = userInfo.getName();
-            List<ActRuDetailModel> ardmList =
-                actRuDetailManager.findByProcessSerialNumberAndStatus(tenantId, processSerialNumber, 0);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String personId = userInfo.getPersonId(), personName = userInfo.getName();
+            List<ActRuDetailModel> ardmList = actRuDetailManager.findByProcessSerialNumberAndStatus(tenantId, processSerialNumber, 0);
             if (!ardmList.isEmpty()) {
-                y9result.setCode(200);
-                y9result.setMsg("已设置办理人信息");
-                y9result.setSuccess(true);
-                return y9result;
+                return Y9Result.success("已设置办理人信息", "已设置办理人信息");
             }
-            ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel = processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             ItemModel item = itemManager.getByItemId(tenantId, itemId);
             ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
             actRuDetailModel.setCreateTime(new Date());
@@ -92,12 +77,10 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             actRuDetailModel.setAssigneeName(personName);
             actRuDetailModel.setDeptId(userInfo.getParentId());
             actRuDetailManager.saveOrUpdate(tenantId, actRuDetailModel);
-            y9result.setCode(200);
-            y9result.setMsg("设置办理人信息正常");
-            y9result.setSuccess(true);
+            return Y9Result.success("设置办理人信息正常", "设置办理人信息正常");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return y9result;
+        return Y9Result.failure("设置办理人信息异常");
     }
 }
