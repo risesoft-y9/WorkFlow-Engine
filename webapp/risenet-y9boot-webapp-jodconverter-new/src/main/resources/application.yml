@@ -1,7 +1,7 @@
 server:
-    port: 7055
+    port: 8080
     servlet:
-        context-path: /jodconverter-new
+        context-path: /jodconverter
     compression:
         enable: true #启用GZIP压缩功能
         mime-types: application/javascript,text/css,application/json,application/xml,text/html,text/xml,text/plain,font/woff,application/font-woff,font/eot,image/svg+xml,image/x-icon #压缩格式
@@ -9,7 +9,7 @@ server:
 simText: txt,html,htm,asp,jsp,xml,json,properties,md,gitignore,log,java,py,c,cpp,sql,sh,bat,m,bas,prg,cmd
 
 base:
-    url: default
+    url: https://dev.youshengyun.com/jodconverter
 beian: default
 cache:
     clean:
@@ -46,7 +46,7 @@ office:
     documentopenpasswords: true
     exportbookmarks: true
     exportnotes: true
-    #home: /opt/openoffice 4
+    # home: /opt/openoffice4
     home: D:/LibreOfficePortable/App/libreoffice  # Libreoffice/Openoffice  驱动的绝对路径
     maximageresolution: 150
     pagerange: false

@@ -303,7 +303,7 @@
     </dependencies>
 
     <build>
-        <finalName>jodconverter-new</finalName>
+        <finalName>jodconverter</finalName>
         <!--        <resources>-->
         <!--            <resource>-->
         <!--                <directory>src/main/resources</directory>-->

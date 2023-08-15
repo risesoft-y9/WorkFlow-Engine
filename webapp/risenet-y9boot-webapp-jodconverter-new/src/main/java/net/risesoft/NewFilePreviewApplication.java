@@ -21,9 +21,7 @@ public class NewFilePreviewApplication {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         ConfigurableApplicationContext context =
-            new SpringApplicationBuilder(NewFilePreviewApplication.class)
-                .logStartupInfo(false)
-                .run(args);
+            new SpringApplicationBuilder(NewFilePreviewApplication.class).logStartupInfo(false).run(args);
         stopWatch.stop();
         ServerProperties serverProperties = context.getBean(ServerProperties.class);
         Integer port = serverProperties.getPort();

@@ -40,7 +40,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-
 @Controller
 public class OnlinePreviewController {
 
@@ -52,7 +51,8 @@ public class OnlinePreviewController {
     private final FileHandlerService fileHandlerService;
     private final OtherFilePreviewImpl otherFilePreview;
 
-    public OnlinePreviewController(FilePreviewFactory filePreviewFactory, FileHandlerService fileHandlerService, CacheService cacheService, OtherFilePreviewImpl otherFilePreview) {
+    public OnlinePreviewController(FilePreviewFactory filePreviewFactory, FileHandlerService fileHandlerService,
+        CacheService cacheService, OtherFilePreviewImpl otherFilePreview) {
         this.previewFactory = filePreviewFactory;
         this.fileHandlerService = fileHandlerService;
         this.cacheService = cacheService;
@@ -73,7 +73,7 @@ public class OnlinePreviewController {
     public String picturesPreview(String urls, Model model, HttpServletRequest req) {
         String fileUrls = urls;
         try {
-         //   fileUrls = WebUtils.decodeUrl(urls);
+            // fileUrls = WebUtils.decodeUrl(urls);
             // 防止XSS攻击
             fileUrls = KkFileUtils.htmlEscape(fileUrls);
         } catch (Exception ex) {
@@ -87,7 +87,7 @@ public class OnlinePreviewController {
         model.addAttribute("imgUrls", imgUrls);
         String currentUrl = req.getParameter("currentUrl");
         if (StringUtils.hasText(currentUrl)) {
-            currentUrl = KkFileUtils.htmlEscape(currentUrl);   // 防止XSS攻击
+            currentUrl = KkFileUtils.htmlEscape(currentUrl); // 防止XSS攻击
             model.addAttribute("currentUrl", currentUrl);
         } else {
             model.addAttribute("currentUrl", imgUrls.get(0));
@@ -96,10 +96,9 @@ public class OnlinePreviewController {
     }
 
     /**
-     * 根据url获取文件内容
-     * 当pdfjs读取存在跨域问题的文件时将通过此接口读取
+     * 根据url获取文件内容 当pdfjs读取存在跨域问题的文件时将通过此接口读取
      *
-     * @param urlPath  url
+     * @param urlPath url
      * @param response response
      */
     @GetMapping("/getCorsFile")
@@ -109,7 +108,8 @@ public class OnlinePreviewController {
         InputStream inputStream = null;
         String urlStr;
         assert urlPath != null;
-        if (!urlPath.toLowerCase().startsWith("http") && !urlPath.toLowerCase().startsWith("https") && !urlPath.toLowerCase().startsWith("ftp")) {
+        if (!urlPath.toLowerCase().startsWith("http") && !urlPath.toLowerCase().startsWith("https")
+            && !urlPath.toLowerCase().startsWith("ftp")) {
             logger.info("读取跨域文件异常，可能存在非法访问，urlPath：{}", urlPath);
             return;
         }
@@ -117,30 +117,32 @@ public class OnlinePreviewController {
         if (!urlPath.toLowerCase().startsWith("ftp:")) {
             try {
                 URL url = WebUtils.normalizedURL(urlPath);
-                urlcon = (HttpURLConnection) url.openConnection();
+                urlcon = (HttpURLConnection)url.openConnection();
                 urlcon.setConnectTimeout(30000);
                 urlcon.setReadTimeout(30000);
                 urlcon.setInstanceFollowRedirects(false);
                 int responseCode = urlcon.getResponseCode();
-                if (responseCode == 403 || responseCode == 500) { //403  500
+                if (responseCode == 403 || responseCode == 500) { // 403 500
                     logger.error("读取跨域文件异常，url：{}，错误：{}", urlPath, responseCode);
                     return;
                 }
-                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) { //301 302
+                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
+                    || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) { // 301 302
                     url = new URL(urlcon.getHeaderField("Location"));
-                    urlcon = (HttpURLConnection) url.openConnection();
+                    urlcon = (HttpURLConnection)url.openConnection();
                 }
-                if (responseCode == 404) {  //404
+                if (responseCode == 404) { // 404
                     try {
                         urlStr = URLDecoder.decode(urlPath, StandardCharsets.UTF_8.name());
                         urlStr = URLDecoder.decode(urlStr, StandardCharsets.UTF_8.name());
                         url = WebUtils.normalizedURL(urlStr);
-                        urlcon = (HttpURLConnection) url.openConnection();
+                        urlcon = (HttpURLConnection)url.openConnection();
                         urlcon.setConnectTimeout(30000);
                         urlcon.setReadTimeout(30000);
                         urlcon.setInstanceFollowRedirects(false);
                         responseCode = urlcon.getResponseCode();
-                        if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) { //301 302
+                        if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
+                            || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) { // 301 302
                             url = new URL(urlcon.getHeaderField("Location"));
                         }
                         if (responseCode == 404 || responseCode == 403 || responseCode == 500) {
@@ -195,17 +197,17 @@ public class OnlinePreviewController {
         response.setHeader("Pragma", "No-cache");
         response.setHeader("Cache-Control", "no-cache");
         response.setDateHeader("Expires", 0);
-        Date date = new Date();   // 当前时间
-        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   // 设置时间格式
+        Date date = new Date(); // 当前时间
+        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // 设置时间格式
         String sessionCode;
         try {
-            sessionCode = request.getSession().getAttribute("code").toString();  //获取已经保存的验证码
+            sessionCode = request.getSession().getAttribute("code").toString(); // 获取已经保存的验证码
         } catch (Exception e) {
             sessionCode = null;
         }
-        Object time = request.getSession().getAttribute("time");  //获取已经保存的时间
-        if (ObjectUtils.isEmpty(time)) {  //判断时间是否为空
-            request.getSession().setAttribute("time", formater.format(date));  //为空重新添加缓存时间
+        Object time = request.getSession().getAttribute("time"); // 获取已经保存的时间
+        if (ObjectUtils.isEmpty(time)) { // 判断时间是否为空
+            request.getSession().setAttribute("time", formater.format(date)); // 为空重新添加缓存时间
             time = request.getSession().getAttribute("time");
         }
         Date joinTime = formater.parse(String.valueOf(time));
@@ -216,7 +218,7 @@ public class OnlinePreviewController {
         long diffSeconds = diff / 1000 % 60;
         String ip = request.getRemoteAddr();
         ServletOutputStream sos = null;
-        if (ObjectUtils.isEmpty(sessionCode) || diffSeconds > 50) {   //判断验证码是否为空 为空重新生成  判断是否在有效时间内 默认50秒
+        if (ObjectUtils.isEmpty(sessionCode) || diffSeconds > 50) { // 判断验证码是否为空 为空重新生成 判断是否在有效时间内 默认50秒
             Map<String, Object> codeMap = RandomValidateCodeUtil.generateCodeAndPic(ip, sessionCode, 0);
             // 验证码存入session
             request.getSession().setAttribute("code", codeMap.get("code").toString());
@@ -230,7 +232,7 @@ public class OnlinePreviewController {
             // 将图像输出到Servlet输出流中。
             try {
                 sos = response.getOutputStream();
-                ImageIO.write((RenderedImage) codeMap.get("codePic"), "jpeg", sos);
+                ImageIO.write((RenderedImage)codeMap.get("codePic"), "jpeg", sos);
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -248,7 +250,7 @@ public class OnlinePreviewController {
             // 将图像输出到Servlet输出流中。
             try {
                 sos = response.getOutputStream();
-                ImageIO.write((RenderedImage) codeMap.get("codePic"), "jpeg", sos);
+                ImageIO.write((RenderedImage)codeMap.get("codePic"), "jpeg", sos);
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
