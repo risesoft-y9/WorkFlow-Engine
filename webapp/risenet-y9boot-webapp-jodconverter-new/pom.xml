@@ -26,6 +26,10 @@
 
     <repositories>
         <repository>
+            <id>releases</id>
+            <url>https://svn.youshengyun.com:9900/nexus/repository/maven-public/</url>
+        </repository>
+        <repository>
             <id>aspose-maven-repository</id>
             <url>https://repository.aspose.com/repo</url>
             <snapshots>
