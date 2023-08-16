@@ -2,11 +2,11 @@ package net.risesoft.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_CustomProcessInfo")
-@org.hibernate.annotations.Table(comment = "定制流程信息表", appliesTo = "FF_CustomProcessInfo")
+@Comment("定制流程信息表")
 public class CustomProcessInfo implements Serializable {
 
     private static final long serialVersionUID = -3115139234478159745L;

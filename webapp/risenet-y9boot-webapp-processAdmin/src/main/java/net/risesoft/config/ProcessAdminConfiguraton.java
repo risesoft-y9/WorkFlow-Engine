@@ -33,7 +33,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
+import com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceBuilder;
 
 import net.risesoft.filter.ProcessAdminCheckUserLoginFilter;
 import net.risesoft.filter.RemoveUrlJsessionIdFilter;

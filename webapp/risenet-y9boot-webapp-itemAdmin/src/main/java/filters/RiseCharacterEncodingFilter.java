@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -55,7 +55,7 @@ public class RiseCharacterEncodingFilter extends OncePerRequestFilter {
 
     /**
      * Set the encoding to use for requests. This encoding will be passed into a
-     * {@link javax.servlet.http.HttpServletRequest#setCharacterEncoding} call.
+     * {@link jakarta.servlet.http.HttpServletRequest#setCharacterEncoding} call.
      * <p>
      * Whether this encoding will override existing request encodings (and whether it will be applied as default
      * response encoding as well) depends on the {@link #setForceEncoding "forceEncoding"} flag.
@@ -69,7 +69,7 @@ public class RiseCharacterEncodingFilter extends OncePerRequestFilter {
      * and response encodings.
      * <p>
      * Default is "false", i.e. do not modify the encoding if
-     * {@link javax.servlet.http.HttpServletRequest#getCharacterEncoding()} returns a non-null value. Switch this to
+     * {@link jakarta.servlet.http.HttpServletRequest#getCharacterEncoding()} returns a non-null value. Switch this to
      * "true" to enforce the specified encoding in any case, applying it as default response encoding as well.
      * <p>
      * Note that the response encoding will only be set on Servlet 2.4+ containers, since Servlet 2.3 did not provide a

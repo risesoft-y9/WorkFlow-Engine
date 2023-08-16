@@ -3,13 +3,13 @@ package net.risesoft.entity.form;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import org.hibernate.annotations.Comment;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(name = "Y9FORM_ValidType")
-@org.hibernate.annotations.Table(comment = "校验规则定义", appliesTo = "Y9FORM_ValidType")
+@Comment("校验规则定义")
 @NoArgsConstructor
 @Data
 public class Y9ValidType implements Serializable {

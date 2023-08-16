@@ -3,13 +3,13 @@ package net.risesoft.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(name = "FF_PROCESSINSTANCE_DETAILS")
-@org.hibernate.annotations.Table(comment = "协作状态详情表", appliesTo = "FF_PROCESSINSTANCE_DETAILS")
+@Comment("协作状态详情表")
 @NoArgsConstructor
 @Data
 public class ProcessInstanceDetails implements Serializable {

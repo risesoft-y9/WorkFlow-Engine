@@ -32,6 +32,8 @@ import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9FileUtil;
 
+import jakarta.annotation.Resource;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -42,7 +44,7 @@ import net.risesoft.y9.util.Y9FileUtil;
 @Slf4j
 public class SyncYearTableService {
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     @Autowired

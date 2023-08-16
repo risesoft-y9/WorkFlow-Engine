@@ -2,10 +2,10 @@ package net.risesoft.entity.form;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Comment;
 
@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(name = "Y9FORM_TABLE")
-@org.hibernate.annotations.Table(comment = "业务表定义", appliesTo = "Y9FORM_TABLE")
+@Comment("业务表定义")
 @NoArgsConstructor
 @Data
 public class Y9Table implements Serializable {

@@ -2,7 +2,6 @@ package net.risesoft.controller;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.db.DbUtil;
 import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
 
+import jakarta.annotation.PostConstruct;
 import y9.dbcomment.Y9CommentUtil;
 
 /**

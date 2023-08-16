@@ -2,12 +2,12 @@ package net.risesoft.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -22,7 +22,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "FF_Office_Follow")
-@org.hibernate.annotations.Table(comment = "办件关注信息表", appliesTo = "FF_Office_Follow")
+@Comment("办件关注信息表")
 public class OfficeFollow implements Serializable {
     private static final long serialVersionUID = -2749619146231540189L;
 

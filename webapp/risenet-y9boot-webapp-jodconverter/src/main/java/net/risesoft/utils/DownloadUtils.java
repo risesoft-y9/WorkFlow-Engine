@@ -17,14 +17,14 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import net.risesoft.model.ReturnResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author qinman

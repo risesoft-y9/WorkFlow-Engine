@@ -2,13 +2,13 @@ package net.risesoft.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@org.hibernate.annotations.Table(comment = "流程参数信息表", appliesTo = "FF_PROCESS_PARAM")
+@Comment("流程参数信息表")
 @Table(name = "FF_PROCESS_PARAM", indexes = {@Index(name = "index_001_processInstanceId", columnList = "processInstanceId"), @Index(name = "index_002_processSerialNumber", columnList = "processSerialNumber")})
 public class ProcessParam implements Serializable {
 

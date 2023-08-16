@@ -3,12 +3,12 @@ package net.risesoft.entity;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_ORGANWORD")
-@org.hibernate.annotations.Table(comment = "编号标识表", appliesTo = "FF_ORGANWORD")
+@Comment("编号标识表")
 public class OrganWord implements Serializable {
 
     private static final long serialVersionUID = 991194093927556827L;

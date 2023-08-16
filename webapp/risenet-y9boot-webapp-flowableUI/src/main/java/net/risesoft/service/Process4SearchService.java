@@ -30,6 +30,8 @@ import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
+import jakarta.annotation.Resource;
+
 /**
  * 流程数据进入数据中心，用于综合搜索
  * 
@@ -45,7 +47,7 @@ public class Process4SearchService {
     @Autowired
     private OfficeDoneInfoApi officeDoneInfoManager;
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     @Autowired

@@ -2,11 +2,11 @@ package net.risesoft.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_ITEM_TASKCONF")
-@org.hibernate.annotations.Table(comment = "事项绑定流程的任务配置表", appliesTo = "FF_ITEM_TASKCONF")
+@Comment("事项绑定流程的任务配置表")
 public class ItemTaskConf implements Serializable {
 
     private static final long serialVersionUID = -4007011147966571051L;

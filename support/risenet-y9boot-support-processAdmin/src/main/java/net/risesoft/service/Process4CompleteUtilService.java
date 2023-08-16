@@ -39,6 +39,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.Y9Util;
 
+import jakarta.annotation.Resource;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -55,7 +57,7 @@ public class Process4CompleteUtilService {
     @Autowired
     private OfficeDoneInfoApi officeDoneInfoApi;
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
