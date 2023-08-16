@@ -25,7 +25,8 @@ public class ConfigUtils {
     public ConfigUtils(ResourceLoader resourceLoader) {
         ConfigUtils.resourceLoader = resourceLoader;
     }
-    private static final String MAIN_DIRECTORY_NAME = "risenet-y9boot-webapp-jodconverter-new";
+
+    private static final String MAIN_DIRECTORY_NAME = "jodconverter";
 
     static {
         ApplicationContext context = new AnnotationConfigApplicationContext(ConfigUtils.class);

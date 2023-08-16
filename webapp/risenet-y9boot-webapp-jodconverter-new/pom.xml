@@ -26,6 +26,10 @@
 
     <repositories>
         <repository>
+            <id>releases</id>
+            <url>https://svn.youshengyun.com:9900/nexus/repository/maven-public/</url>
+        </repository>
+        <repository>
             <id>aspose-maven-repository</id>
             <url>https://repository.aspose.com/repo</url>
             <snapshots>
@@ -303,20 +307,7 @@
     </dependencies>
 
     <build>
-        <finalName>jodconverter-new</finalName>
-        <!--        <resources>-->
-        <!--            <resource>-->
-        <!--                <directory>src/main/resources</directory>-->
-        <!--                <includes>-->
-        <!--                    <include>**/*</include>-->
-        <!--                </includes>-->
-        <!--                <filtering>false</filtering>-->
-        <!--            </resource>-->
-        <!--            <resource>-->
-        <!--                <directory>src/main/config</directory>-->
-        <!--                <filtering>true</filtering>-->
-        <!--            </resource>-->
-        <!--        </resources>-->
+        <finalName>jodconverter</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

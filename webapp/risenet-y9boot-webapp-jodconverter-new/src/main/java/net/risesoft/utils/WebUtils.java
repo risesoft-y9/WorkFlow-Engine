@@ -8,7 +8,7 @@ import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
 
-import javax.servlet.ServletRequest;
+import jakarta.servlet.ServletRequest;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
