@@ -26,8 +26,18 @@
 
     <repositories>
         <repository>
-            <id>releases</id>
-            <url>https://svn.youshengyun.com:9900/nexus/repository/maven-public/</url>
+            <id>jai-codec-maven</id>
+            <url>http://maven.geotoolkit.org/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jai-core-maven</id>
+            <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>aspose-maven-repository</id>
@@ -270,14 +280,14 @@
         </dependency>
 
         <dependency>
-            <groupId>com.sun.media</groupId>
+            <groupId>javax.media</groupId>
             <artifactId>jai_codec</artifactId>
             <version>1.1.3</version>
         </dependency>
 
         <dependency>
-            <groupId>com.sun.media</groupId>
-            <artifactId>jai_core</artifactId>
+            <groupId>javax.media</groupId>
+            <artifactId>jai-core</artifactId>
             <version>1.1.3</version>
         </dependency>
 
@@ -322,6 +332,10 @@
         <!--            </resource>-->
         <!--        </resources>-->
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
