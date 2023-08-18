@@ -27,7 +27,7 @@
     <repositories>
         <repository>
             <id>jai-codec-maven</id>
-            <url>http://maven.geotoolkit.org/</url>
+            <url>https://maven.geotoolkit.org/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
