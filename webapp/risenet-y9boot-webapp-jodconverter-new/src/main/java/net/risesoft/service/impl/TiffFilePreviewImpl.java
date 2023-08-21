@@ -1,5 +1,13 @@
 package net.risesoft.service.impl;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.FileAttribute;
 import net.risesoft.model.ReturnResponse;
@@ -9,13 +17,6 @@ import net.risesoft.utils.ConvertPicUtil;
 import net.risesoft.utils.DownloadUtils;
 import net.risesoft.utils.KkFileUtils;
 import net.risesoft.web.filter.BaseUrlFilter;
-import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * tiff 图片文件处理
@@ -49,26 +50,29 @@ public class TiffFilePreviewImpl implements FilePreview {
             model.addAttribute("currentUrl", url);
             return TIFF_FILE_PREVIEW_PAGE;
         } else if ("jpg".equalsIgnoreCase(tifPreviewType) || "pdf".equalsIgnoreCase(tifPreviewType)) {
-            String pdfName = fileName.substring(0, fileName.lastIndexOf(".")) + suffix + "." + "pdf"; //生成文件添加类型后缀 防止同名文件
-            String jpgName = fileName.substring(0, fileName.lastIndexOf(".")) + suffix; //生成文件添加类型后缀 防止同名文件
+            String pdfName = fileName.substring(0, fileName.lastIndexOf(".")) + suffix + "." + "pdf"; // 生成文件添加类型后缀
+                                                                                                      // 防止同名文件
+            String jpgName = fileName.substring(0, fileName.lastIndexOf(".")) + suffix; // 生成文件添加类型后缀 防止同名文件
             String strLocalTif = fileDir + fileName;
             String outFilePath = fileDir + pdfName;
             if ("pdf".equalsIgnoreCase(tifPreviewType)) {
-                //当文件不存在时，就去下载
-                if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(pdfName) || !ConfigConstants.isCacheEnabled()) {
+                // 当文件不存在时，就去下载
+                if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(pdfName)
+                    || !ConfigConstants.isCacheEnabled()) {
                     ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);
                     if (response.isFailure()) {
                         return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
                     }
                     String filePath = response.getContent();
                     if (ConvertPicUtil.convertJpg2Pdf(filePath, outFilePath)) {
-                        //是否保留TIFF源文件
+                        // 是否保留TIFF源文件
                         if (ConfigConstants.getDeleteSourceFile()) {
                             KkFileUtils.deleteFileByPath(filePath);
                         }
                         if (ConfigConstants.isCacheEnabled()) {
                             // 加入缓存
-                            fileHandlerService.addConvertedFile(pdfName, fileHandlerService.getRelativePath(outFilePath));
+                            fileHandlerService.addConvertedFile(pdfName,
+                                fileHandlerService.getRelativePath(outFilePath));
                         }
                         model.addAttribute("pdfUrl", pdfName);
                         return PDF_FILE_PREVIEW_PAGE;

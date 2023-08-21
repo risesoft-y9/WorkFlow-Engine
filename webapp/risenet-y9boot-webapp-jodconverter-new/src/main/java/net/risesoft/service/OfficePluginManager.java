@@ -1,6 +1,14 @@
 package net.risesoft.service;
 
-import net.risesoft.utils.LocalOfficeUtils;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jodconverter.core.office.InstalledOfficeManagerHolder;
 import org.jodconverter.core.office.OfficeException;
@@ -15,13 +23,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
+import net.risesoft.utils.LocalOfficeUtils;
 
 /**
  * 创建文件转换器
@@ -59,11 +61,8 @@ public class OfficePluginManager {
             String[] portsString = serverPorts.split(",");
             int[] ports = Arrays.stream(portsString).mapToInt(Integer::parseInt).toArray();
             long timeout = DurationStyle.detectAndParse(timeOut).toMillis();
-            officeManager = LocalOfficeManager.builder()
-                    .officeHome(officeHome)
-                    .portNumbers(ports)
-                    .processTimeout(timeout)
-                    .build();
+            officeManager =
+                LocalOfficeManager.builder().officeHome(officeHome).portNumbers(ports).processTimeout(timeout).build();
             officeManager.start();
             InstalledOfficeManagerHolder.setInstance(officeManager);
         } catch (Exception e) {
@@ -89,7 +88,7 @@ public class OfficePluginManager {
                     flag = true;
                 }
             } else if (OSUtils.IS_OS_MAC || OSUtils.IS_OS_MAC_OSX) {
-                Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", "ps -ef | grep " + "soffice.bin"});
+                Process p = Runtime.getRuntime().exec(new String[] {"sh", "-c", "ps -ef | grep " + "soffice.bin"});
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 InputStream os = p.getInputStream();
                 byte[] b = new byte[256];
@@ -103,7 +102,8 @@ public class OfficePluginManager {
                     flag = true;
                 }
             } else {
-                Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", "ps -ef | grep " + "soffice.bin" + " |grep -v grep | wc -l"});
+                Process p = Runtime.getRuntime()
+                    .exec(new String[] {"sh", "-c", "ps -ef | grep " + "soffice.bin" + " |grep -v grep | wc -l"});
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 InputStream os = p.getInputStream();
                 byte[] b = new byte[256];
@@ -112,7 +112,8 @@ public class OfficePluginManager {
                 }
                 String s = baos.toString();
                 if (!s.startsWith("0")) {
-                    String[] cmd = {"sh", "-c", "ps -ef | grep soffice.bin | grep -v grep | awk '{print \"kill -9 \"$2}' | sh"};
+                    String[] cmd =
+                        {"sh", "-c", "ps -ef | grep soffice.bin | grep -v grep | awk '{print \"kill -9 \"$2}' | sh"};
                     Runtime.getRuntime().exec(cmd);
                     flag = true;
                 }

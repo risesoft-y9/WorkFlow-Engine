@@ -19,7 +19,7 @@ import org.hyperic.sigar.SigarException;
 import org.hyperic.sigar.ptql.ProcessFinder;
 
 /**
- * {@link ProcessManager} implementation that uses the SIGAR library.
+ * {@link org.artofsolving.jodconverter.process.ProcessManager} implementation that uses the SIGAR library.
  * <p>
  * Requires the sigar.jar in the classpath and the appropriate system-specific native library (e.g.
  * <tt>libsigar-x86-linux.so</tt> on Linux x86) available in the <em>java.library.path</em>.

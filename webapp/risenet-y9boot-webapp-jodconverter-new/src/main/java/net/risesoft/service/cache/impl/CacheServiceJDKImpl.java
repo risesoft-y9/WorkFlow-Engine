@@ -1,18 +1,21 @@
 package net.risesoft.service.cache.impl;
 
-import net.risesoft.service.cache.CacheService;
-import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
-import com.googlecode.concurrentlinkedhashmap.Weighers;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.stereotype.Service;
+
+import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
+import com.googlecode.concurrentlinkedhashmap.Weighers;
+
+import net.risesoft.service.cache.CacheService;
 
 @Service
 @ConditionalOnExpression("'${cache.type:default}'.equals('jdk')")
@@ -110,30 +113,26 @@ public class CacheServiceJDKImpl implements CacheService {
 
     @Override
     public void initPDFCachePool(Integer capacity) {
-        pdfCache = new ConcurrentLinkedHashMap.Builder<String, String>()
-                .maximumWeightedCapacity(capacity).weigher(Weighers.singleton())
-                .build();
+        pdfCache = new ConcurrentLinkedHashMap.Builder<String, String>().maximumWeightedCapacity(capacity)
+            .weigher(Weighers.singleton()).build();
     }
 
     @Override
     public void initIMGCachePool(Integer capacity) {
-        imgCache = new ConcurrentLinkedHashMap.Builder<String, List<String>>()
-                .maximumWeightedCapacity(capacity).weigher(Weighers.singleton())
-                .build();
+        imgCache = new ConcurrentLinkedHashMap.Builder<String, List<String>>().maximumWeightedCapacity(capacity)
+            .weigher(Weighers.singleton()).build();
     }
 
     @Override
     public void initPdfImagesCachePool(Integer capacity) {
-        pdfImagesCache = new ConcurrentLinkedHashMap.Builder<String, Integer>()
-                .maximumWeightedCapacity(capacity).weigher(Weighers.singleton())
-                .build();
+        pdfImagesCache = new ConcurrentLinkedHashMap.Builder<String, Integer>().maximumWeightedCapacity(capacity)
+            .weigher(Weighers.singleton()).build();
     }
 
     @Override
     public void initMediaConvertCachePool(Integer capacity) {
-        mediaConvertCache = new ConcurrentLinkedHashMap.Builder<String, String>()
-                .maximumWeightedCapacity(capacity).weigher(Weighers.singleton())
-                .build();
+        mediaConvertCache = new ConcurrentLinkedHashMap.Builder<String, String>().maximumWeightedCapacity(capacity)
+            .weigher(Weighers.singleton()).build();
     }
 
 }

@@ -1,7 +1,5 @@
 package net.risesoft;
 
-import lombok.extern.slf4j.Slf4j;
-import net.sf.sevenzipjbinding.SevenZipNativeInitializationException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -10,6 +8,10 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.StopWatch;
+
+import lombok.extern.slf4j.Slf4j;
+
+import net.sf.sevenzipjbinding.SevenZipNativeInitializationException;
 
 @SpringBootApplication
 @EnableScheduling

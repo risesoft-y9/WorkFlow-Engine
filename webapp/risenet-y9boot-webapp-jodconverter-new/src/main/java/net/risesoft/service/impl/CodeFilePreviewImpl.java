@@ -1,10 +1,10 @@
 package net.risesoft.service.impl;
 
-import net.risesoft.model.FileAttribute;
-import net.risesoft.service.FilePreview;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 
+import net.risesoft.model.FileAttribute;
+import net.risesoft.service.FilePreview;
 
 @Component
 public class CodeFilePreviewImpl implements FilePreview {

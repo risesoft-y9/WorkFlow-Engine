@@ -85,7 +85,7 @@
             <artifactId>risenet-y9boot-starter-health</artifactId>
             <version>${project.version}</version>
         </dependency> -->
-        
+
 
         <dependency>
             <groupId>net.risesoft</groupId>

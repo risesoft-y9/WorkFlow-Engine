@@ -1,15 +1,14 @@
 package net.risesoft.utils;
 
-import org.mozilla.universalchardet.UniversalDetector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
+import org.mozilla.universalchardet.UniversalDetector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EncodingDetects {
     private static UniversalDetector detector = new UniversalDetector(null);
@@ -21,7 +20,7 @@ public class EncodingDetects {
     }
 
     public static String getJavaEncode(File file) {
-        int len = Math.min(DEFAULT_LENGTH, (int) file.length());
+        int len = Math.min(DEFAULT_LENGTH, (int)file.length());
         byte[] content = new byte[len];
         try (InputStream fis = Files.newInputStream(file.toPath())) {
             fis.read(content, 0, len);

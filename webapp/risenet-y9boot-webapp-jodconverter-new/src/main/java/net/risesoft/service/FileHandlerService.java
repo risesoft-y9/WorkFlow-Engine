@@ -1,41 +1,5 @@
 package net.risesoft.service;
 
-import com.aspose.cad.CodePages;
-import com.aspose.cad.Color;
-import com.aspose.cad.Image;
-import com.aspose.cad.InterruptionTokenSource;
-import com.aspose.cad.LoadOptions;
-import com.aspose.cad.fileformats.tiff.enums.TiffExpectedFormat;
-import com.aspose.cad.imageoptions.CadRasterizationOptions;
-import com.aspose.cad.imageoptions.PdfOptions;
-import com.aspose.cad.imageoptions.SvgOptions;
-import com.aspose.cad.imageoptions.TiffOptions;
-import com.aspose.cad.internal.Exceptions.TimeoutException;
-import com.itextpdf.text.pdf.PdfReader;
-import net.risesoft.config.ConfigConstants;
-import net.risesoft.model.FileAttribute;
-import net.risesoft.model.FileType;
-import net.risesoft.service.cache.CacheService;
-import net.risesoft.service.cache.NotResourceCache;
-import net.risesoft.utils.EncodingDetects;
-import net.risesoft.utils.KkFileUtils;
-import net.risesoft.utils.WebUtils;
-import net.risesoft.web.filter.BaseUrlFilter;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.ImageType;
-import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.pdfbox.tools.imageio.ImageIOUtil;
-import org.apache.poi.EncryptedDocumentException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
-
-import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -61,6 +25,45 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
+import org.apache.poi.EncryptedDocumentException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
+
+import com.aspose.cad.CodePages;
+import com.aspose.cad.Color;
+import com.aspose.cad.Image;
+import com.aspose.cad.InterruptionTokenSource;
+import com.aspose.cad.LoadOptions;
+import com.aspose.cad.fileformats.tiff.enums.TiffExpectedFormat;
+import com.aspose.cad.imageoptions.CadRasterizationOptions;
+import com.aspose.cad.imageoptions.PdfOptions;
+import com.aspose.cad.imageoptions.SvgOptions;
+import com.aspose.cad.imageoptions.TiffOptions;
+import com.aspose.cad.internal.Exceptions.TimeoutException;
+import com.itextpdf.text.pdf.PdfReader;
+
+import net.risesoft.config.ConfigConstants;
+import net.risesoft.model.FileAttribute;
+import net.risesoft.model.FileType;
+import net.risesoft.service.cache.CacheService;
+import net.risesoft.service.cache.NotResourceCache;
+import net.risesoft.utils.EncodingDetects;
+import net.risesoft.utils.KkFileUtils;
+import net.risesoft.utils.WebUtils;
+import net.risesoft.web.filter.BaseUrlFilter;
 
 @Component
 public class FileHandlerService {

@@ -1,16 +1,15 @@
 package net.risesoft.utils;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.extractor.ExtractorFactory;
-import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
-import org.springframework.lang.Nullable;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.extractor.ExtractorFactory;
+import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
+import org.springframework.lang.Nullable;
 
 public class OfficeUtils {
 
@@ -41,9 +40,9 @@ public class OfficeUtils {
                 }
             }
         } finally {
-            if (propStream != null) {//如果文件输入流不是null
+            if (propStream != null) {// 如果文件输入流不是null
                 try {
-                    propStream.close();//关闭文件输入流
+                    propStream.close();// 关闭文件输入流
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -55,7 +54,7 @@ public class OfficeUtils {
     /**
      * 判断office文件是否可打开（兼容）
      *
-     * @param path     office文件路径
+     * @param path office文件路径
      * @param password 文件密码
      * @return 是否可打开（兼容）
      */
@@ -69,9 +68,9 @@ public class OfficeUtils {
             return false;
         } finally {
             Biff8EncryptionKey.setCurrentUserPassword(null);
-            if (propStream != null) {//如果文件输入流不是null
+            if (propStream != null) {// 如果文件输入流不是null
                 try {
-                    propStream.close();//关闭文件输入流
+                    propStream.close();// 关闭文件输入流
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

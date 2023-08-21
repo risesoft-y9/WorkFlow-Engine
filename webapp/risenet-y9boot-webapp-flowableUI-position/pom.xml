@@ -127,8 +127,8 @@
             <artifactId>risenet-y9boot-starter-web</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
-         <dependency>
+
+        <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-common-nacos</artifactId>
             <version>${project.version}</version>
@@ -139,33 +139,33 @@
             <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        
-         <dependency>
+
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
-        
-         <dependency>
+
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
@@ -192,7 +192,7 @@
             <artifactId>pinyin4j</artifactId>
             <version>2.5.1</version>
         </dependency>
-        
+
         <dependency>
             <groupId>cn.songxinqiang</groupId>
             <artifactId>com.baidu.ueditor</artifactId>

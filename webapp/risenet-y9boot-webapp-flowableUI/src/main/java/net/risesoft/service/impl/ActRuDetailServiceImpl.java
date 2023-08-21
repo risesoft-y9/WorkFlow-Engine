@@ -54,11 +54,13 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId();
             String personId = userInfo.getPersonId(), personName = userInfo.getName();
-            List<ActRuDetailModel> ardmList = actRuDetailManager.findByProcessSerialNumberAndStatus(tenantId, processSerialNumber, 0);
+            List<ActRuDetailModel> ardmList =
+                actRuDetailManager.findByProcessSerialNumberAndStatus(tenantId, processSerialNumber, 0);
             if (!ardmList.isEmpty()) {
                 return Y9Result.success("已设置办理人信息", "已设置办理人信息");
             }
-            ProcessParamModel processParamModel = processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             ItemModel item = itemManager.getByItemId(tenantId, itemId);
             ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
             actRuDetailModel.setCreateTime(new Date());

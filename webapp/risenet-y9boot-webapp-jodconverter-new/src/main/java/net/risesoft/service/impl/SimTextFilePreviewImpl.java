@@ -1,5 +1,17 @@
 package net.risesoft.service.impl;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.commons.codec.binary.Base64;
+import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+import org.springframework.web.util.HtmlUtils;
+
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.FileAttribute;
 import net.risesoft.model.ReturnResponse;
@@ -8,17 +20,6 @@ import net.risesoft.service.FilePreview;
 import net.risesoft.utils.DownloadUtils;
 import net.risesoft.utils.EncodingDetects;
 import net.risesoft.utils.KkFileUtils;
-import org.apache.commons.codec.binary.Base64;
-import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-import org.springframework.web.util.HtmlUtils;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Content :处理文本文件
@@ -41,14 +42,15 @@ public class SimTextFilePreviewImpl implements FilePreview {
         String fileName = fileAttribute.getName();
         boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
         String filePath = FILE_DIR + fileName;
-        if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(fileName) || !ConfigConstants.isCacheEnabled()) {
+        if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(fileName)
+            || !ConfigConstants.isCacheEnabled()) {
             ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);
             if (response.isFailure()) {
                 return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
             }
             filePath = response.getContent();
             if (ConfigConstants.isCacheEnabled()) {
-                fileHandlerService.addConvertedFile(fileName, filePath);  //加入缓存
+                fileHandlerService.addConvertedFile(fileName, filePath); // 加入缓存
             }
             try {
                 String fileData = HtmlUtils.htmlEscape(textData(filePath, fileName));

@@ -1,15 +1,17 @@
 package net.risesoft.service;
 
-import net.risesoft.model.FileAttribute;
-import net.risesoft.model.FileType;
-import net.risesoft.service.cache.CacheService;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ExtendedModelMap;
 
-import javax.annotation.PostConstruct;
-import java.util.concurrent.TimeUnit;
+import net.risesoft.model.FileAttribute;
+import net.risesoft.model.FileType;
+import net.risesoft.service.cache.CacheService;
 
 /**
  * Content :消费队列中的转换文件
@@ -22,7 +24,8 @@ public class FileConvertQueueTask {
     private final CacheService cacheService;
     private final FileHandlerService fileHandlerService;
 
-    public FileConvertQueueTask(FilePreviewFactory previewFactory, CacheService cacheService, FileHandlerService fileHandlerService) {
+    public FileConvertQueueTask(FilePreviewFactory previewFactory, CacheService cacheService,
+        FileHandlerService fileHandlerService) {
         this.previewFactory = previewFactory;
         this.cacheService = cacheService;
         this.fileHandlerService = fileHandlerService;
@@ -30,8 +33,7 @@ public class FileConvertQueueTask {
 
     @PostConstruct
     public void startTask() {
-        new Thread(new ConvertTask(previewFactory, cacheService, fileHandlerService))
-                .start();
+        new Thread(new ConvertTask(previewFactory, cacheService, fileHandlerService)).start();
         logger.info("队列处理文件转换任务启动完成 ");
     }
 
@@ -42,9 +44,8 @@ public class FileConvertQueueTask {
         private final CacheService cacheService;
         private final FileHandlerService fileHandlerService;
 
-        public ConvertTask(FilePreviewFactory previewFactory,
-                           CacheService cacheService,
-                           FileHandlerService fileHandlerService) {
+        public ConvertTask(FilePreviewFactory previewFactory, CacheService cacheService,
+            FileHandlerService fileHandlerService) {
             this.previewFactory = previewFactory;
             this.cacheService = cacheService;
             this.fileHandlerService = fileHandlerService;
@@ -80,7 +81,8 @@ public class FileConvertQueueTask {
         }
 
         public boolean isNeedConvert(FileType fileType) {
-            return fileType.equals(FileType.COMPRESS) || fileType.equals(FileType.OFFICE) || fileType.equals(FileType.CAD);
+            return fileType.equals(FileType.COMPRESS) || fileType.equals(FileType.OFFICE)
+                || fileType.equals(FileType.CAD);
 
         }
     }

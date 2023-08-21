@@ -20,8 +20,7 @@ public class FileAttribute {
     private Boolean skipDownLoad = false;
     private Boolean forceUpdatedCache = false;
 
-    public FileAttribute() {
-    }
+    public FileAttribute() {}
 
     public FileAttribute(FileType type, String suffix, String name, String url) {
         this.type = type;

@@ -1,5 +1,20 @@
 package net.risesoft.utils;
 
+import java.awt.image.RenderedImage;
+import java.awt.image.renderable.ParameterBlock;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.media.jai.JAI;
+import javax.media.jai.RenderedOp;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Image;
@@ -12,21 +27,8 @@ import com.sun.media.jai.codec.ImageCodec;
 import com.sun.media.jai.codec.ImageDecoder;
 import com.sun.media.jai.codec.JPEGEncodeParam;
 import com.sun.media.jai.codec.TIFFEncodeParam;
-import net.risesoft.config.ConfigConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.media.jai.JAI;
-import javax.media.jai.RenderedOp;
-import java.awt.image.RenderedImage;
-import java.awt.image.renderable.ParameterBlock;
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import net.risesoft.config.ConfigConstants;
 
 public class ConvertPicUtil {
 
@@ -37,9 +39,9 @@ public class ConvertPicUtil {
     private final static String fileDir = ConfigConstants.getFileDir();
 
     /**
-     * Tif 转  JPG。
+     * Tif 转 JPG。
      *
-     * @param strInputFile  输入文件的路径和文件名
+     * @param strInputFile 输入文件的路径和文件名
      * @param strOutputFile 输出文件的路径和文件名
      * @return boolean 是否转换成功
      */
@@ -118,7 +120,8 @@ public class ConvertPicUtil {
             document = new Document();
             PdfWriter.getInstance(document, Files.newOutputStream(Paths.get(strPdfFile)));
             document.open();
-            rafa = new RandomAccessFileOrArray(new FileChannelRandomAccessSource(new RandomAccessFile(strJpgFile, "r").getChannel()));
+            rafa = new RandomAccessFileOrArray(
+                new FileChannelRandomAccessSource(new RandomAccessFile(strJpgFile, "r").getChannel()));
             int pages = TiffImage.getNumberOfPages(rafa);
             Image image;
             for (int i = 1; i <= pages; i++) {

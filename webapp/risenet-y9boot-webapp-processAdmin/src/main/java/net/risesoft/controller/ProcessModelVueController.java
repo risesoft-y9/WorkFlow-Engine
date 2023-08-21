@@ -1,14 +1,20 @@
 package net.risesoft.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import net.risesoft.api.permission.PersonResourceApi;
-import net.risesoft.enums.AuthorityEnum;
-import net.risesoft.model.Resource;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.BpmnAutoLayout;
@@ -30,20 +36,24 @@ import org.flowable.validation.ValidationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import net.risesoft.api.permission.PersonResourceApi;
+import net.risesoft.enums.AuthorityEnum;
+import net.risesoft.model.Resource;
+import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.Y9Properties;
 
 /**
  * 流程模型控制器
@@ -80,8 +90,8 @@ public class ProcessModelVueController {
     /**
      * 创建模型
      *
-     * @param name        流程名称
-     * @param key         流程定义key
+     * @param name 流程名称
+     * @param key 流程定义key
      * @param description 描述
      * @param request
      * @param response
@@ -89,8 +99,8 @@ public class ProcessModelVueController {
     @ResponseBody
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> create(@RequestParam(required = true) String name,
-                                   @RequestParam(required = true) String key, @RequestParam(required = false) String description,
-                                   HttpServletRequest request, HttpServletResponse response) {
+        @RequestParam(required = true) String key, @RequestParam(required = false) String description,
+        HttpServletRequest request, HttpServletResponse response) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String personName = userInfo.getName();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -199,7 +209,7 @@ public class ProcessModelVueController {
                 mapTemp.put("name", model.getName());
                 mapTemp.put("version", 0);
                 processDefinition = repositoryService.createProcessDefinitionQuery()
-                        .processDefinitionKey(model.getKey()).latestVersion().singleResult();
+                    .processDefinitionKey(model.getKey()).latestVersion().singleResult();
                 if (null != processDefinition) {
                     mapTemp.put("version", processDefinition.getVersion());
                 }
@@ -210,7 +220,7 @@ public class ProcessModelVueController {
         } else {
             Map<String, Object> mapTemp = null;
             List<Resource> resourceList =
-                    personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId);
+                personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId);
             for (AbstractModel model : list) {
                 for (Resource resource : resourceList) {
                     if (resource.getCustomId().equals(model.getKey())) {
@@ -220,7 +230,7 @@ public class ProcessModelVueController {
                         mapTemp.put("name", model.getName());
                         mapTemp.put("version", 0);
                         processDefinition = repositoryService.createProcessDefinitionQuery()
-                                .processDefinitionKey(model.getKey()).latestVersion().singleResult();
+                            .processDefinitionKey(model.getKey()).latestVersion().singleResult();
                         if (null != processDefinition) {
                             mapTemp.put("version", processDefinition.getVersion());
                         }
@@ -242,7 +252,8 @@ public class ProcessModelVueController {
      * @return
      */
     @RequestMapping(value = "/getModelXml")
-    public Y9Result<Map<String, Object>> getModelXml(@RequestParam(required = true) String modelId, HttpServletResponse response) {
+    public Y9Result<Map<String, Object>> getModelXml(@RequestParam(required = true) String modelId,
+        HttpServletResponse response) {
         byte[] bpmnBytes = null;
         Map<String, Object> map = new HashMap<String, Object>();
         try {
@@ -266,7 +277,7 @@ public class ProcessModelVueController {
      */
     @RequestMapping(value = "/editor/{modelId}")
     public void gotoEditor(@PathVariable("modelId") String modelId, HttpServletRequest request,
-                           HttpServletResponse response) {
+        HttpServletResponse response) {
         try {
             response.sendRedirect(request.getContextPath() + "/modeler.html#/editor/" + modelId);
         } catch (IOException e) {

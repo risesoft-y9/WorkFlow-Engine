@@ -1,21 +1,5 @@
 package net.risesoft.web.controller;
 
-import net.risesoft.config.ConfigConstants;
-import net.risesoft.model.ReturnResponse;
-import net.risesoft.utils.KkFileUtils;
-import net.risesoft.utils.RarUtils;
-import net.risesoft.utils.WebUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StreamUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +13,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import net.risesoft.config.ConfigConstants;
+import net.risesoft.model.ReturnResponse;
+import net.risesoft.utils.KkFileUtils;
+import net.risesoft.utils.RarUtils;
+import net.risesoft.utils.WebUtils;
 
 @RestController
 public class FileController {
@@ -51,7 +52,8 @@ public class FileController {
         }
         String fileName = checkResult.getContent().toString();
         logger.info("上传文件：{}{}{}", fileDir, demoPath, fileName);
-        try (InputStream in = file.getInputStream(); OutputStream out = Files.newOutputStream(Paths.get(fileDir + demoPath + fileName))) {
+        try (InputStream in = file.getInputStream();
+            OutputStream out = Files.newOutputStream(Paths.get(fileDir + demoPath + fileName))) {
             StreamUtils.copy(in, out);
             return ReturnResponse.success(null);
         } catch (IOException e) {
@@ -70,7 +72,7 @@ public class FileController {
         if (ConfigConstants.getDeleteCaptcha()) {
             String sessionCode;
             try {
-                sessionCode = request.getSession().getAttribute("code").toString();  //获取已经保存的验证码
+                sessionCode = request.getSession().getAttribute("code").toString(); // 获取已经保存的验证码
             } catch (Exception e) {
                 sessionCode = "null";
             }
@@ -91,7 +93,7 @@ public class FileController {
             logger.error(msg);
             return ReturnResponse.failure(msg);
         }
-        request.getSession().removeAttribute("code"); //删除缓存验证码
+        request.getSession().removeAttribute("code"); // 删除缓存验证码
         return ReturnResponse.success();
     }
 
@@ -137,7 +139,6 @@ public class FileController {
         }
         return ReturnResponse.success(fileName);
     }
-
 
     /**
      * 删除文件前校验

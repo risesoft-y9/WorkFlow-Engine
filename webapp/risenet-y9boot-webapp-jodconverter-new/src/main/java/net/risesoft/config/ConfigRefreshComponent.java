@@ -1,14 +1,15 @@
 package net.risesoft.config;
 
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @description 每隔1s读取并更新一次配置文件
@@ -18,7 +19,6 @@ public class ConfigRefreshComponent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigRefreshComponent.class);
 
-
     @PostConstruct
     void refresh() {
         Thread configRefreshThread = new Thread(new ConfigRefreshThread());
@@ -26,7 +26,6 @@ public class ConfigRefreshComponent {
     }
 
     static class ConfigRefreshThread implements Runnable {
-
 
         @Override
         public void run() {
@@ -76,43 +75,67 @@ public class ConfigRefreshComponent {
                     // 加载yml配置文件
                     factoryBean.setResources(new ClassPathResource("application.yml"));
                     properties = factoryBean.getObject();
-                    cacheEnabled = Boolean.parseBoolean(properties.getProperty("cache.enabled", ConfigConstants.DEFAULT_CACHE_ENABLED));
+                    cacheEnabled = Boolean
+                        .parseBoolean(properties.getProperty("cache.enabled", ConfigConstants.DEFAULT_CACHE_ENABLED));
                     text = properties.getProperty("simText", ConfigConstants.DEFAULT_TXT_TYPE);
                     media = properties.getProperty("media", ConfigConstants.DEFAULT_MEDIA_TYPE);
-                    officePreviewType = properties.getProperty("office.preview.type", ConfigConstants.DEFAULT_OFFICE_PREVIEW_TYPE);
-                    officePreviewSwitchDisabled = properties.getProperty("office.preview.switch.disabled", ConfigConstants.DEFAULT_OFFICE_PREVIEW_SWITCH_DISABLED);
+                    officePreviewType =
+                        properties.getProperty("office.preview.type", ConfigConstants.DEFAULT_OFFICE_PREVIEW_TYPE);
+                    officePreviewSwitchDisabled = properties.getProperty("office.preview.switch.disabled",
+                        ConfigConstants.DEFAULT_OFFICE_PREVIEW_SWITCH_DISABLED);
                     ftpUsername = properties.getProperty("ftp.username", ConfigConstants.DEFAULT_FTP_USERNAME);
                     ftpPassword = properties.getProperty("ftp.password", ConfigConstants.DEFAULT_FTP_PASSWORD);
-                    ftpControlEncoding = properties.getProperty("ftp.control.encoding", ConfigConstants.DEFAULT_FTP_CONTROL_ENCODING);
+                    ftpControlEncoding =
+                        properties.getProperty("ftp.control.encoding", ConfigConstants.DEFAULT_FTP_CONTROL_ENCODING);
                     textArray = text.split(",");
                     mediaArray = media.split(",");
                     baseUrl = properties.getProperty("base.url", ConfigConstants.DEFAULT_BASE_URL);
                     trustHost = properties.getProperty("trust.host", ConfigConstants.DEFAULT_TRUST_HOST);
-                    pdfPresentationModeDisable = properties.getProperty("pdf.presentationMode.disable", ConfigConstants.DEFAULT_PDF_PRESENTATION_MODE_DISABLE);
-                    pdfOpenFileDisable = properties.getProperty("pdf.openFile.disable", ConfigConstants.DEFAULT_PDF_OPEN_FILE_DISABLE);
-                    pdfPrintDisable = properties.getProperty("pdf.print.disable", ConfigConstants.DEFAULT_PDF_PRINT_DISABLE);
-                    pdfDownloadDisable = properties.getProperty("pdf.download.disable", ConfigConstants.DEFAULT_PDF_DOWNLOAD_DISABLE);
-                    pdfBookmarkDisable = properties.getProperty("pdf.bookmark.disable", ConfigConstants.DEFAULT_PDF_BOOKMARK_DISABLE);
-                    fileUploadDisable = Boolean.parseBoolean(properties.getProperty("file.upload.disable", ConfigConstants.DEFAULT_FILE_UPLOAD_DISABLE));
-                    tifPreviewType = properties.getProperty("tif.preview.type", ConfigConstants.DEFAULT_TIF_PREVIEW_TYPE);
-                    cadPreviewType = properties.getProperty("cad.preview.type", ConfigConstants.DEFAULT_CAD_PREVIEW_TYPE);
-                    size = properties.getProperty("spring.servlet.multipart.max-file-size", ConfigConstants.DEFAULT_SIZE);
+                    pdfPresentationModeDisable = properties.getProperty("pdf.presentationMode.disable",
+                        ConfigConstants.DEFAULT_PDF_PRESENTATION_MODE_DISABLE);
+                    pdfOpenFileDisable =
+                        properties.getProperty("pdf.openFile.disable", ConfigConstants.DEFAULT_PDF_OPEN_FILE_DISABLE);
+                    pdfPrintDisable =
+                        properties.getProperty("pdf.print.disable", ConfigConstants.DEFAULT_PDF_PRINT_DISABLE);
+                    pdfDownloadDisable =
+                        properties.getProperty("pdf.download.disable", ConfigConstants.DEFAULT_PDF_DOWNLOAD_DISABLE);
+                    pdfBookmarkDisable =
+                        properties.getProperty("pdf.bookmark.disable", ConfigConstants.DEFAULT_PDF_BOOKMARK_DISABLE);
+                    fileUploadDisable = Boolean.parseBoolean(
+                        properties.getProperty("file.upload.disable", ConfigConstants.DEFAULT_FILE_UPLOAD_DISABLE));
+                    tifPreviewType =
+                        properties.getProperty("tif.preview.type", ConfigConstants.DEFAULT_TIF_PREVIEW_TYPE);
+                    cadPreviewType =
+                        properties.getProperty("cad.preview.type", ConfigConstants.DEFAULT_CAD_PREVIEW_TYPE);
+                    size =
+                        properties.getProperty("spring.servlet.multipart.max-file-size", ConfigConstants.DEFAULT_SIZE);
                     beian = properties.getProperty("beian", ConfigConstants.DEFAULT_BEIAN);
                     prohibit = properties.getProperty("prohibit", ConfigConstants.DEFAULT_PROHIBIT);
                     password = properties.getProperty("delete.password", ConfigConstants.DEFAULT_PASSWORD);
-                    pdf2JpgDpi = Integer.parseInt(properties.getProperty("pdf2jpg.dpi", ConfigConstants.DEFAULT_PDF2_JPG_DPI));
+                    pdf2JpgDpi =
+                        Integer.parseInt(properties.getProperty("pdf2jpg.dpi", ConfigConstants.DEFAULT_PDF2_JPG_DPI));
                     officeTypeWeb = properties.getProperty("office.type.web", ConfigConstants.DEFAULT_OFFICE_TYPE_WEB);
-                    deleteSourceFile = Boolean.parseBoolean(properties.getProperty("delete.source.file", ConfigConstants.DEFAULT_DELETE_SOURCE_FILE));
-                    deleteCaptcha = Boolean.parseBoolean(properties.getProperty("delete.captcha", ConfigConstants.DEFAULT_DELETE_CAPTCHA));
-                    officPageRange = properties.getProperty("office.pagerange", ConfigConstants.DEFAULT_OFFICE_PAQERANQE);
-                    officWatermark = properties.getProperty("office.watermark", ConfigConstants.DEFAULT_OFFICE_WATERMARK);
+                    deleteSourceFile = Boolean.parseBoolean(
+                        properties.getProperty("delete.source.file", ConfigConstants.DEFAULT_DELETE_SOURCE_FILE));
+                    deleteCaptcha = Boolean
+                        .parseBoolean(properties.getProperty("delete.captcha", ConfigConstants.DEFAULT_DELETE_CAPTCHA));
+                    officPageRange =
+                        properties.getProperty("office.pagerange", ConfigConstants.DEFAULT_OFFICE_PAQERANQE);
+                    officWatermark =
+                        properties.getProperty("office.watermark", ConfigConstants.DEFAULT_OFFICE_WATERMARK);
                     officQuality = properties.getProperty("office.quality", ConfigConstants.DEFAULT_OFFICE_QUALITY);
-                    officMaxImageResolution = properties.getProperty("office.maximageresolution", ConfigConstants.DEFAULT_OFFICE_MAXIMAQERESOLUTION);
-                    officExportBookmarks = Boolean.parseBoolean(properties.getProperty("office.exportbookmarks", ConfigConstants.DEFAULT_OFFICE_EXPORTBOOKMARKS));
-                    officeExportNotes = Boolean.parseBoolean(properties.getProperty("office.exportnotes", ConfigConstants.DEFAULT_OFFICE_EXPORTNOTES));
-                    officeDocumentOpenPasswords = Boolean.parseBoolean(properties.getProperty("office.documentopenpasswords", ConfigConstants.DEFAULT_OFFICE_EOCUMENTOPENPASSWORDS));
+                    officMaxImageResolution = properties.getProperty("office.maximageresolution",
+                        ConfigConstants.DEFAULT_OFFICE_MAXIMAQERESOLUTION);
+                    officExportBookmarks = Boolean.parseBoolean(properties.getProperty("office.exportbookmarks",
+                        ConfigConstants.DEFAULT_OFFICE_EXPORTBOOKMARKS));
+                    officeExportNotes = Boolean.parseBoolean(
+                        properties.getProperty("office.exportnotes", ConfigConstants.DEFAULT_OFFICE_EXPORTNOTES));
+                    officeDocumentOpenPasswords =
+                        Boolean.parseBoolean(properties.getProperty("office.documentopenpasswords",
+                            ConfigConstants.DEFAULT_OFFICE_EOCUMENTOPENPASSWORDS));
                     cadTimeout = properties.getProperty("cad.timeout", ConfigConstants.DEFAULT_CAD_TIMEOUT);
-                    cadThread = Integer.parseInt(properties.getProperty("cad.thread", ConfigConstants.DEFAULT_CAD_THREAD));
+                    cadThread =
+                        Integer.parseInt(properties.getProperty("cad.thread", ConfigConstants.DEFAULT_CAD_THREAD));
                     prohibitArray = prohibit.split(",");
 
                     ConfigConstants.setCacheEnabledValueValue(cacheEnabled);
@@ -160,16 +183,26 @@ public class ConfigRefreshComponent {
         }
 
         private void setWatermarkConfig(Properties properties) {
-            String watermarkTxt = properties.getProperty("watermark.txt", WatermarkConfigConstants.DEFAULT_WATERMARK_TXT);
-            String watermarkXSpace = properties.getProperty("watermark.x.space", WatermarkConfigConstants.DEFAULT_WATERMARK_X_SPACE);
-            String watermarkYSpace = properties.getProperty("watermark.y.space", WatermarkConfigConstants.DEFAULT_WATERMARK_Y_SPACE);
-            String watermarkFont = properties.getProperty("watermark.font", WatermarkConfigConstants.DEFAULT_WATERMARK_FONT);
-            String watermarkFontsize = properties.getProperty("watermark.fontsize", WatermarkConfigConstants.DEFAULT_WATERMARK_FONTSIZE);
-            String watermarkColor = properties.getProperty("watermark.color", WatermarkConfigConstants.DEFAULT_WATERMARK_COLOR);
-            String watermarkAlpha = properties.getProperty("watermark.alpha", WatermarkConfigConstants.DEFAULT_WATERMARK_ALPHA);
-            String watermarkWidth = properties.getProperty("watermark.width", WatermarkConfigConstants.DEFAULT_WATERMARK_WIDTH);
-            String watermarkHeight = properties.getProperty("watermark.height", WatermarkConfigConstants.DEFAULT_WATERMARK_HEIGHT);
-            String watermarkAngle = properties.getProperty("watermark.angle", WatermarkConfigConstants.DEFAULT_WATERMARK_ANGLE);
+            String watermarkTxt =
+                properties.getProperty("watermark.txt", WatermarkConfigConstants.DEFAULT_WATERMARK_TXT);
+            String watermarkXSpace =
+                properties.getProperty("watermark.x.space", WatermarkConfigConstants.DEFAULT_WATERMARK_X_SPACE);
+            String watermarkYSpace =
+                properties.getProperty("watermark.y.space", WatermarkConfigConstants.DEFAULT_WATERMARK_Y_SPACE);
+            String watermarkFont =
+                properties.getProperty("watermark.font", WatermarkConfigConstants.DEFAULT_WATERMARK_FONT);
+            String watermarkFontsize =
+                properties.getProperty("watermark.fontsize", WatermarkConfigConstants.DEFAULT_WATERMARK_FONTSIZE);
+            String watermarkColor =
+                properties.getProperty("watermark.color", WatermarkConfigConstants.DEFAULT_WATERMARK_COLOR);
+            String watermarkAlpha =
+                properties.getProperty("watermark.alpha", WatermarkConfigConstants.DEFAULT_WATERMARK_ALPHA);
+            String watermarkWidth =
+                properties.getProperty("watermark.width", WatermarkConfigConstants.DEFAULT_WATERMARK_WIDTH);
+            String watermarkHeight =
+                properties.getProperty("watermark.height", WatermarkConfigConstants.DEFAULT_WATERMARK_HEIGHT);
+            String watermarkAngle =
+                properties.getProperty("watermark.angle", WatermarkConfigConstants.DEFAULT_WATERMARK_ANGLE);
             WatermarkConfigConstants.setWatermarkTxtValue(watermarkTxt);
             WatermarkConfigConstants.setWatermarkXSpaceValue(watermarkXSpace);
             WatermarkConfigConstants.setWatermarkYSpaceValue(watermarkYSpace);

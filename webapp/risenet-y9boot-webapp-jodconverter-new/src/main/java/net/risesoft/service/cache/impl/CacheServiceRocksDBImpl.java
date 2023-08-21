@@ -1,14 +1,5 @@
 package net.risesoft.service.cache.impl;
 
-import net.risesoft.service.cache.CacheService;
-import net.risesoft.utils.ConfigUtils;
-import org.rocksdb.RocksDB;
-import org.rocksdb.RocksDBException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.stereotype.Service;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -21,6 +12,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.stereotype.Service;
+
+import net.risesoft.service.cache.CacheService;
+import net.risesoft.utils.ConfigUtils;
 
 @ConditionalOnExpression("'${cache.type:default}'.equals('default')")
 @Service
@@ -56,7 +57,6 @@ public class CacheServiceRocksDBImpl implements CacheService {
             LOGGER.error("Uable to init RocksDB" + e);
         }
     }
-
 
     @Override
     public void initPDFCachePool(Integer capacity) {
@@ -105,7 +105,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
     public Map<String, String> getPDFCache() {
         Map<String, String> result = new HashMap<>();
         try {
-            result = (Map<String, String>) toObject(db.get(FILE_PREVIEW_PDF_KEY.getBytes()));
+            result = (Map<String, String>)toObject(db.get(FILE_PREVIEW_PDF_KEY.getBytes()));
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
             LOGGER.error("Get from RocksDB Exception" + e);
         }
@@ -117,7 +117,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
     public String getPDFCache(String key) {
         String result = "";
         try {
-            Map<String, String> map = (Map<String, String>) toObject(db.get(FILE_PREVIEW_PDF_KEY.getBytes()));
+            Map<String, String> map = (Map<String, String>)toObject(db.get(FILE_PREVIEW_PDF_KEY.getBytes()));
             result = map.get(key);
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
             LOGGER.error("Get from RocksDB Exception" + e);
@@ -130,7 +130,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
     public Map<String, List<String>> getImgCache() {
         Map<String, List<String>> result = new HashMap<>();
         try {
-            result = (Map<String, List<String>>) toObject(db.get(FILE_PREVIEW_IMGS_KEY.getBytes()));
+            result = (Map<String, List<String>>)toObject(db.get(FILE_PREVIEW_IMGS_KEY.getBytes()));
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
             LOGGER.error("Get from RocksDB Exception" + e);
         }
@@ -143,7 +143,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
         List<String> result = new ArrayList<>();
         Map<String, List<String>> map;
         try {
-            map = (Map<String, List<String>>) toObject(db.get(FILE_PREVIEW_IMGS_KEY.getBytes()));
+            map = (Map<String, List<String>>)toObject(db.get(FILE_PREVIEW_IMGS_KEY.getBytes()));
             result = map.get(key);
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
             LOGGER.error("Get from RocksDB Exception" + e);
@@ -157,7 +157,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
         Integer result = 0;
         Map<String, Integer> map;
         try {
-            map = (Map<String, Integer>) toObject(db.get(FILE_PREVIEW_PDF_IMGS_KEY.getBytes()));
+            map = (Map<String, Integer>)toObject(db.get(FILE_PREVIEW_PDF_IMGS_KEY.getBytes()));
             result = map.get(key);
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
             LOGGER.error("Get from RocksDB Exception" + e);
@@ -181,7 +181,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
     public Map<String, String> getMediaConvertCache() {
         Map<String, String> result = new HashMap<>();
         try {
-            result = (Map<String, String>) toObject(db.get(FILE_PREVIEW_MEDIA_CONVERT_KEY.getBytes()));
+            result = (Map<String, String>)toObject(db.get(FILE_PREVIEW_MEDIA_CONVERT_KEY.getBytes()));
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
             LOGGER.error("Get from RocksDB Exception" + e);
         }
@@ -204,7 +204,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
     public String getMediaConvertCache(String key) {
         String result = "";
         try {
-            Map<String, String> map = (Map<String, String>) toObject(db.get(FILE_PREVIEW_MEDIA_CONVERT_KEY.getBytes()));
+            Map<String, String> map = (Map<String, String>)toObject(db.get(FILE_PREVIEW_MEDIA_CONVERT_KEY.getBytes()));
             result = map.get(key);
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
             LOGGER.error("Get from RocksDB Exception" + e);
@@ -237,13 +237,12 @@ public class CacheServiceRocksDBImpl implements CacheService {
     private Map<String, Integer> getPdfImageCaches() {
         Map<String, Integer> map = new HashMap<>();
         try {
-            map = (Map<String, Integer>) toObject(db.get(FILE_PREVIEW_PDF_IMGS_KEY.getBytes()));
+            map = (Map<String, Integer>)toObject(db.get(FILE_PREVIEW_PDF_IMGS_KEY.getBytes()));
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
             LOGGER.error("Get from RocksDB Exception" + e);
         }
         return map;
     }
-
 
     private byte[] toByteArray(Object obj) throws IOException {
         byte[] bytes;

@@ -1,5 +1,10 @@
 package net.risesoft.utils;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -8,18 +13,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-
-
 @Component
 public class ConfigUtils {
 
     private static ResourceLoader resourceLoader;
-
 
     @Autowired
     public ConfigUtils(ResourceLoader resourceLoader) {
@@ -82,7 +79,7 @@ public class ConfigUtils {
 
         } else {
             return firstExists(new File(pluginPath, MAIN_DIRECTORY_NAME),
-                    new File(pluginPath.getParentFile(), MAIN_DIRECTORY_NAME));
+                new File(pluginPath.getParentFile(), MAIN_DIRECTORY_NAME));
         }
     }
 
@@ -93,7 +90,7 @@ public class ConfigUtils {
         String homePath = getHomePath();
         String separator = java.io.File.separator;
 
-        System.out.println("配置文件路径"+":::"+absolutePath + separator + "application.yml");
+        System.out.println("配置文件路径" + ":::" + absolutePath + separator + "application.yml");
 
         return absolutePath + separator + "application.yml";
     }

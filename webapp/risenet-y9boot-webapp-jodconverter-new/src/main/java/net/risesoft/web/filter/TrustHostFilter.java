@@ -1,10 +1,8 @@
 package net.risesoft.web.filter;
 
-import net.risesoft.config.ConfigConstants;
-import net.risesoft.utils.WebUtils;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -15,6 +13,8 @@ import javax.servlet.ServletResponse;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
 
+import net.risesoft.config.ConfigConstants;
+import net.risesoft.utils.WebUtils;
 
 public class TrustHostFilter implements Filter {
 
@@ -33,10 +33,12 @@ public class TrustHostFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
         String url = WebUtils.getSourceUrl(request);
         String host = WebUtils.getHost(url);
-        if (host != null && !ConfigConstants.getTrustHostSet().isEmpty() && !ConfigConstants.getTrustHostSet().contains(host)) {
+        if (host != null && !ConfigConstants.getTrustHostSet().isEmpty()
+            && !ConfigConstants.getTrustHostSet().contains(host)) {
             String html = this.notTrustHost.replace("${current_host}", host);
             response.getWriter().write(html);
             response.getWriter().close();

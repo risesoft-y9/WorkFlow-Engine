@@ -1,9 +1,9 @@
 package net.risesoft.service;
 
-import net.risesoft.model.FileAttribute;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import net.risesoft.model.FileAttribute;
 
 @Service
 public class FilePreviewFactory {

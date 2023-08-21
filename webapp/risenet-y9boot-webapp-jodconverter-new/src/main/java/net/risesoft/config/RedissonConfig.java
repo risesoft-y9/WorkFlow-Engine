@@ -1,6 +1,5 @@
 package net.risesoft.config;
 
-import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.client.codec.Codec;
 import org.redisson.config.Config;
@@ -10,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
 
+import io.netty.channel.nio.NioEventLoopGroup;
 
 @ConditionalOnExpression("'${cache.type:default}'.equals('redis')")
 @ConfigurationProperties(prefix = "spring.redisson")
@@ -36,33 +36,24 @@ public class RedissonConfig {
     private boolean dnsMonitoring = false;
     private int dnsMonitoringInterval = 5000;
 
-    private int thread; //当前处理核数量 * 2
+    private int thread; // 当前处理核数量 * 2
 
     private String codec = "org.redisson.codec.JsonJacksonCodec";
 
     @Bean
     Config config() throws Exception {
         Config config = new Config();
-        config.useSingleServer().setAddress(address)
-                .setConnectionMinimumIdleSize(connectionMinimumIdleSize)
-                .setConnectionPoolSize(connectionPoolSize)
-                .setDatabase(database)
-                .setDnsMonitoring(dnsMonitoring)
-                .setDnsMonitoringInterval(dnsMonitoringInterval)
-                .setSubscriptionConnectionMinimumIdleSize(subscriptionConnectionMinimumIdleSize)
-                .setSubscriptionConnectionPoolSize(subscriptionConnectionPoolSize)
-                .setSubscriptionsPerConnection(subscriptionsPerConnection)
-                .setClientName(clientName)
-                .setFailedAttempts(failedAttempts)
-                .setRetryAttempts(retryAttempts)
-                .setRetryInterval(retryInterval)
-                .setReconnectionTimeout(reconnectionTimeout)
-                .setTimeout(timeout)
-                .setConnectTimeout(connectTimeout)
-                .setIdleConnectionTimeout(idleConnectionTimeout)
-                .setPingTimeout(pingTimeout)
-                .setPassword(StringUtils.trimToNull(password));
-        Codec codec = (Codec) ClassUtils.forName(getCodec(), ClassUtils.getDefaultClassLoader()).newInstance();
+        config.useSingleServer().setAddress(address).setConnectionMinimumIdleSize(connectionMinimumIdleSize)
+            .setConnectionPoolSize(connectionPoolSize).setDatabase(database).setDnsMonitoring(dnsMonitoring)
+            .setDnsMonitoringInterval(dnsMonitoringInterval)
+            .setSubscriptionConnectionMinimumIdleSize(subscriptionConnectionMinimumIdleSize)
+            .setSubscriptionConnectionPoolSize(subscriptionConnectionPoolSize)
+            .setSubscriptionsPerConnection(subscriptionsPerConnection).setClientName(clientName)
+            .setFailedAttempts(failedAttempts).setRetryAttempts(retryAttempts).setRetryInterval(retryInterval)
+            .setReconnectionTimeout(reconnectionTimeout).setTimeout(timeout).setConnectTimeout(connectTimeout)
+            .setIdleConnectionTimeout(idleConnectionTimeout).setPingTimeout(pingTimeout)
+            .setPassword(StringUtils.trimToNull(password));
+        Codec codec = (Codec)ClassUtils.forName(getCodec(), ClassUtils.getDefaultClassLoader()).newInstance();
         config.setCodec(codec);
         config.setThreads(thread);
         config.setEventLoopGroup(new NioEventLoopGroup());

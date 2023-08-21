@@ -1,8 +1,6 @@
 package net.risesoft.web.filter;
 
-import net.risesoft.config.ConfigConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.context.request.RequestContextHolder;
+import java.io.IOException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -11,8 +9,11 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+
+import net.risesoft.config.ConfigConstants;
 
 public class BaseUrlFilter implements Filter {
 
@@ -21,13 +22,12 @@ public class BaseUrlFilter implements Filter {
     public static String getBaseUrl() {
         String baseUrl;
         try {
-            baseUrl = (String) RequestContextHolder.currentRequestAttributes().getAttribute("baseUrl", 0);
+            baseUrl = (String)RequestContextHolder.currentRequestAttributes().getAttribute("baseUrl", 0);
         } catch (Exception e) {
             baseUrl = BASE_URL;
         }
         return baseUrl;
     }
-
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -35,23 +35,24 @@ public class BaseUrlFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+        throws IOException, ServletException {
 
         String baseUrl;
         String configBaseUrl = ConfigConstants.getBaseUrl();
 
-        final HttpServletRequest servletRequest = (HttpServletRequest) request;
-        //1、支持通过 http header 中 X-Base-Url 来动态设置 baseUrl 以支持多个域名/项目的共享使用
+        final HttpServletRequest servletRequest = (HttpServletRequest)request;
+        // 1、支持通过 http header 中 X-Base-Url 来动态设置 baseUrl 以支持多个域名/项目的共享使用
         final String urlInHeader = servletRequest.getHeader("X-Base-Url");
         if (StringUtils.isNotEmpty(urlInHeader)) {
             baseUrl = urlInHeader;
         } else if (configBaseUrl != null && !ConfigConstants.DEFAULT_BASE_URL.equalsIgnoreCase(configBaseUrl)) {
-            //2、如果配置文件中配置了 baseUrl 且不为 default 则以配置文件为准
+            // 2、如果配置文件中配置了 baseUrl 且不为 default 则以配置文件为准
             baseUrl = configBaseUrl;
         } else {
-            //3、默认动态拼接 baseUrl
+            // 3、默认动态拼接 baseUrl
             baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
-                    + servletRequest.getContextPath() + "/";
+                + servletRequest.getContextPath() + "/";
         }
 
         if (!baseUrl.endsWith("/")) {

@@ -3,11 +3,10 @@ package net.risesoft.service.cache;
 import java.util.List;
 import java.util.Map;
 
-
 public interface CacheService {
 
     String FILE_PREVIEW_PDF_KEY = "converted-preview-pdf-file";
-    String FILE_PREVIEW_IMGS_KEY = "converted-preview-imgs-file";//压缩包内图片文件集合
+    String FILE_PREVIEW_IMGS_KEY = "converted-preview-imgs-file";// 压缩包内图片文件集合
     String FILE_PREVIEW_PDF_IMGS_KEY = "converted-preview-pdfimgs-file";
     String FILE_PREVIEW_MEDIA_CONVERT_KEY = "converted-preview-media-file";
     String TASK_QUEUE_NAME = "convert-task";

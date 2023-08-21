@@ -1,5 +1,16 @@
 package net.risesoft.service.impl;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.List;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.poi.EncryptedDocumentException;
+import org.jodconverter.core.office.OfficeException;
+import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.FileAttribute;
 import net.risesoft.model.ReturnResponse;
@@ -10,16 +21,6 @@ import net.risesoft.utils.DownloadUtils;
 import net.risesoft.utils.KkFileUtils;
 import net.risesoft.utils.OfficeUtils;
 import net.risesoft.web.filter.BaseUrlFilter;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.poi.EncryptedDocumentException;
-import org.jodconverter.core.office.OfficeException;
-import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
-
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.List;
 
 /**
  * Content :处理office文件
@@ -36,7 +37,8 @@ public class OfficeFilePreviewImpl implements FilePreview {
     private final OfficeToPdfService officeToPdfService;
     private final OtherFilePreviewImpl otherFilePreview;
 
-    public OfficeFilePreviewImpl(FileHandlerService fileHandlerService, OfficeToPdfService officeToPdfService, OtherFilePreviewImpl otherFilePreview) {
+    public OfficeFilePreviewImpl(FileHandlerService fileHandlerService, OfficeToPdfService officeToPdfService,
+        OtherFilePreviewImpl otherFilePreview) {
         this.fileHandlerService = fileHandlerService;
         this.officeToPdfService = officeToPdfService;
         this.otherFilePreview = otherFilePreview;
@@ -52,8 +54,12 @@ public class OfficeFilePreviewImpl implements FilePreview {
         String filePassword = fileAttribute.getFilePassword();
         boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
         String userToken = fileAttribute.getUserToken();
-        boolean isHtml = suffix.equalsIgnoreCase("xls") || suffix.equalsIgnoreCase("xlsx") || suffix.equalsIgnoreCase("csv") || suffix.equalsIgnoreCase("xlsm") || suffix.equalsIgnoreCase("xlt") || suffix.equalsIgnoreCase("xltm") || suffix.equalsIgnoreCase("et") || suffix.equalsIgnoreCase("ett") || suffix.equalsIgnoreCase("xlam");
-        String pdfName = fileName.substring(0, fileName.lastIndexOf(".")) + suffix + "." + (isHtml ? "html" : "pdf"); //生成文件添加类型后缀 防止同名文件
+        boolean isHtml =
+            suffix.equalsIgnoreCase("xls") || suffix.equalsIgnoreCase("xlsx") || suffix.equalsIgnoreCase("csv")
+                || suffix.equalsIgnoreCase("xlsm") || suffix.equalsIgnoreCase("xlt") || suffix.equalsIgnoreCase("xltm")
+                || suffix.equalsIgnoreCase("et") || suffix.equalsIgnoreCase("ett") || suffix.equalsIgnoreCase("xlam");
+        String pdfName = fileName.substring(0, fileName.lastIndexOf(".")) + suffix + "." + (isHtml ? "html" : "pdf"); // 生成文件添加类型后缀
+                                                                                                                      // 防止同名文件
         String cacheFileName = userToken == null ? pdfName : userToken + "_" + pdfName;
         String outFilePath = FILE_DIR + cacheFileName;
         if (!officePreviewType.equalsIgnoreCase("html")) {
@@ -64,7 +70,8 @@ public class OfficeFilePreviewImpl implements FilePreview {
                 }
             }
         }
-        if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(pdfName) || !ConfigConstants.isCacheEnabled()) {
+        if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(pdfName)
+            || !ConfigConstants.isCacheEnabled()) {
             // 下载远程文件到本地，如果文件在本地已存在不会重复下载
             ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);
             if (response.isFailure()) {
@@ -121,27 +128,32 @@ public class OfficeFilePreviewImpl implements FilePreview {
                             // 对转换后的文件进行操作(改变编码方式)
                             fileHandlerService.doActionConvertedFile(outFilePath);
                         }
-                        //是否保留OFFICE源文件
+                        // 是否保留OFFICE源文件
                         if (ConfigConstants.getDeleteSourceFile()) {
                             KkFileUtils.deleteFileByPath(filePath);
                         }
                         if (isUseCached) {
                             // 加入缓存
-                            fileHandlerService.addConvertedFile(cacheFileName, fileHandlerService.getRelativePath(outFilePath));
+                            fileHandlerService.addConvertedFile(cacheFileName,
+                                fileHandlerService.getRelativePath(outFilePath));
                         }
                     }
                 }
             }
         }
-        if (!isHtml && baseUrl != null && (OFFICE_PREVIEW_TYPE_IMAGE.equals(officePreviewType) || OFFICE_PREVIEW_TYPE_ALL_IMAGES.equals(officePreviewType))) {
-            return getPreviewType(model, fileAttribute, officePreviewType, baseUrl, cacheFileName, outFilePath, fileHandlerService, OFFICE_PREVIEW_TYPE_IMAGE, otherFilePreview);
+        if (!isHtml && baseUrl != null && (OFFICE_PREVIEW_TYPE_IMAGE.equals(officePreviewType)
+            || OFFICE_PREVIEW_TYPE_ALL_IMAGES.equals(officePreviewType))) {
+            return getPreviewType(model, fileAttribute, officePreviewType, baseUrl, cacheFileName, outFilePath,
+                fileHandlerService, OFFICE_PREVIEW_TYPE_IMAGE, otherFilePreview);
         }
         cacheFileName = URLEncoder.encode(cacheFileName).replaceAll("\\+", "%20");
         model.addAttribute("pdfUrl", cacheFileName);
         return isHtml ? EXEL_FILE_PREVIEW_PAGE : PDF_FILE_PREVIEW_PAGE;
     }
 
-    static String getPreviewType(Model model, FileAttribute fileAttribute, String officePreviewType, String baseUrl, String pdfName, String outFilePath, FileHandlerService fileHandlerService, String officePreviewTypeImage, OtherFilePreviewImpl otherFilePreview) {
+    static String getPreviewType(Model model, FileAttribute fileAttribute, String officePreviewType, String baseUrl,
+        String pdfName, String outFilePath, FileHandlerService fileHandlerService, String officePreviewTypeImage,
+        OtherFilePreviewImpl otherFilePreview) {
         String suffix = fileAttribute.getSuffix();
         boolean isPPT = suffix.equalsIgnoreCase("ppt") || suffix.equalsIgnoreCase("pptx");
         List<String> imageUrls = null;

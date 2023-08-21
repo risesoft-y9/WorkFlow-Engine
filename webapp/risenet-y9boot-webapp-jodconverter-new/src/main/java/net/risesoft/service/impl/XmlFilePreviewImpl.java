@@ -1,9 +1,10 @@
 package net.risesoft.service.impl;
 
-import net.risesoft.model.FileAttribute;
-import net.risesoft.service.FilePreview;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+
+import net.risesoft.model.FileAttribute;
+import net.risesoft.service.FilePreview;
 
 @Service
 public class XmlFilePreviewImpl implements FilePreview {

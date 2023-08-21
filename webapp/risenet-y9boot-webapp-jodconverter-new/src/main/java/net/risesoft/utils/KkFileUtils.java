@@ -1,17 +1,18 @@
 package net.risesoft.utils;
 
-import net.risesoft.config.ConfigConstants;
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.HtmlUtils;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import net.risesoft.config.ConfigConstants;
 
 public class KkFileUtils {
 
@@ -104,17 +105,15 @@ public class KkFileUtils {
         }
     }
 
-
     public static String htmlEscape(String input) {
         if (StringUtils.hasText(input)) {
-            //input = input.replaceAll("\\{", "%7B").replaceAll("}", "%7D").replaceAll("\\\\", "%5C");
+            // input = input.replaceAll("\\{", "%7B").replaceAll("}", "%7D").replaceAll("\\\\", "%5C");
             String htmlStr = HtmlUtils.htmlEscape(input, "UTF-8");
-            //& -> &amp;
+            // & -> &amp;
             return htmlStr.replace("&amp;", "&");
         }
         return input;
     }
-
 
     /**
      * 通过文件名获取文件后缀
@@ -125,7 +124,6 @@ public class KkFileUtils {
     public static String suffixFromFileName(String fileName) {
         return fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
     }
-
 
     /**
      * 根据文件路径删除文件

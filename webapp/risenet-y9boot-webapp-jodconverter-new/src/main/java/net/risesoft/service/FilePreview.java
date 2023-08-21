@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import net.risesoft.model.FileAttribute;
 import org.springframework.ui.Model;
 
+import net.risesoft.model.FileAttribute;
 
 public interface FilePreview {
 

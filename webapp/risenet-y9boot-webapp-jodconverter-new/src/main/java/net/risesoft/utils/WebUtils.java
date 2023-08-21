@@ -1,14 +1,5 @@
 package net.risesoft.utils;
 
-import io.mola.galimatias.GalimatiasParseException;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.Base64Utils;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.HtmlUtils;
-
-import javax.servlet.ServletRequest;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -17,6 +8,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.Base64Utils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.HtmlUtils;
+
+import io.mola.galimatias.GalimatiasParseException;
 
 public class WebUtils {
 
@@ -36,7 +37,7 @@ public class WebUtils {
     /**
      * 获取url中的参数
      *
-     * @param url  url
+     * @param url url
      * @param name 参数名
      * @return 参数值
      */
@@ -46,22 +47,21 @@ public class WebUtils {
         if (strUrlParam == null) {
             return "";
         }
-        //每个键值为一组
+        // 每个键值为一组
         String[] arrSplit = strUrlParam.split("[&]");
         for (String strSplit : arrSplit) {
             String[] arrSplitEqual = strSplit.split("[=]");
-            //解析出键值
+            // 解析出键值
             if (arrSplitEqual.length > 1) {
-                //正确解析
+                // 正确解析
                 mapRequest.put(arrSplitEqual[0], arrSplitEqual[1]);
             } else if (!arrSplitEqual[0].equals("")) {
-                //只有参数没有值，不加入
+                // 只有参数没有值，不加入
                 mapRequest.put(arrSplitEqual[0], "");
             }
         }
         return mapRequest.get(name);
     }
-
 
     /**
      * 去掉url中的路径，留下请求参数部分
@@ -86,7 +86,8 @@ public class WebUtils {
     /**
      * 从url中剥离出文件名
      *
-     * @param url 格式如：http://www.com.cn/20231113164107_月度绩效表模板(新).xls?UCloudPublicKey=ucloudtangshd@weifenf.com14355492830001993909323&Expires=&Signature=I D1NOFtAJSPT16E6imv6JWuq0k=
+     * @param url 格式如：http://www.com.cn/20231113164107_月度绩效表模板(新).xls?UCloudPublicKey=ucloudtangshd@weifenf.com14355492830001993909323&Expires=&Signature=I
+     *            D1NOFtAJSPT16E6imv6JWuq0k=
      * @return 文件名
      */
     public static String getFileNameFromURL(String url) {
@@ -112,7 +113,7 @@ public class WebUtils {
      */
     public static String getFileNameFromMultipartFile(MultipartFile file) {
         String fileName = file.getOriginalFilename();
-        //判断是否为IE浏览器的文件名，IE浏览器下文件名会带有盘符信
+        // 判断是否为IE浏览器的文件名，IE浏览器下文件名会带有盘符信
         // escaping dangerous characters to prevent XSS
         assert fileName != null;
         fileName = HtmlUtils.htmlEscape(fileName, KkFileUtils.DEFAULT_FILE_ENCODING);
@@ -128,7 +129,6 @@ public class WebUtils {
         }
         return fileName;
     }
-
 
     /**
      * 从url中获取文件后缀
@@ -149,20 +149,20 @@ public class WebUtils {
      * @return 文件名编码后的url
      */
     public static String encodeUrlFileName(String url) {
-//        String encodedFileName;
-//        String noQueryUrl = url.substring(0, url.contains("?") ? url.indexOf("?") : url.length());
-//        int fileNameStartIndex = noQueryUrl.lastIndexOf('/') + 1;
-//        int fileNameEndIndex = noQueryUrl.lastIndexOf('.');
-//        if (fileNameEndIndex < fileNameStartIndex) {
-//            return url;
-//        }
-//        try {
-//            encodedFileName = URLEncoder.encode(noQueryUrl.substring(fileNameStartIndex, fileNameEndIndex), "UTF-8");
-//        } catch (UnsupportedEncodingException e) {
-//            return null;
-//        }
-//        return url.substring(0, fileNameStartIndex) + encodedFileName + url.substring(fileNameEndIndex);
-    return url;
+        // String encodedFileName;
+        // String noQueryUrl = url.substring(0, url.contains("?") ? url.indexOf("?") : url.length());
+        // int fileNameStartIndex = noQueryUrl.lastIndexOf('/') + 1;
+        // int fileNameEndIndex = noQueryUrl.lastIndexOf('.');
+        // if (fileNameEndIndex < fileNameStartIndex) {
+        // return url;
+        // }
+        // try {
+        // encodedFileName = URLEncoder.encode(noQueryUrl.substring(fileNameStartIndex, fileNameEndIndex), "UTF-8");
+        // } catch (UnsupportedEncodingException e) {
+        // return null;
+        // }
+        // return url.substring(0, fileNameStartIndex) + encodedFileName + url.substring(fileNameEndIndex);
+        return url;
     }
 
     /**
@@ -194,17 +194,16 @@ public class WebUtils {
     }
 
     /**
-     * 判断地址是否正确
-     * 高 2022/12/17
+     * 判断地址是否正确 高 2022/12/17
      */
     public static boolean isValidUrl(String url) {
-        String regStr = "^((https|http|ftp|rtsp|mms|file)://)";//[.?*]表示匹配的就是本身
+        String regStr = "^((https|http|ftp|rtsp|mms|file)://)";// [.?*]表示匹配的就是本身
         Pattern pattern = Pattern.compile(regStr);
         Matcher matcher = pattern.matcher(url);
         return matcher.find();
     }
 
-    public static boolean kuayu(String host, String wjl) {  //查询域名是否相同
+    public static boolean kuayu(String host, String wjl) { // 查询域名是否相同
         if (wjl.contains(host)) {
             return true;
         } else {
@@ -217,8 +216,9 @@ public class WebUtils {
      *
      * @param source 原始 Base64 字符串
      * @return decoded string
-     * <p>
-     * aHR0cHM6Ly9maWxlLmtla2luZy5jbi9kZW1vL%2BS4reaWhy5wcHR4 -> https://file.keking.cn/demo/%E4%B8%AD%E6%96%87.pptx -> https://file.keking.cn/demo/中文.pptx
+     *         <p>
+     *         aHR0cHM6Ly9maWxlLmtla2luZy5jbi9kZW1vL%2BS4reaWhy5wcHR4 ->
+     *         https://file.keking.cn/demo/%E4%B8%AD%E6%96%87.pptx -> https://file.keking.cn/demo/中文.pptx
      */
     public static String decodeUrl(String source) {
         String url = source;
@@ -232,7 +232,7 @@ public class WebUtils {
     /**
      * 将 Base64 字符串使用指定字符集解码
      *
-     * @param source   原始 Base64 字符串
+     * @param source 原始 Base64 字符串
      * @param charsets 字符集
      * @return decoded string
      */
