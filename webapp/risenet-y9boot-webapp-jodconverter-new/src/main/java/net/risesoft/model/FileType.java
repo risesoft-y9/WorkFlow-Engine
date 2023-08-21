@@ -1,9 +1,9 @@
 package net.risesoft.model;
 
-import net.risesoft.config.ConfigConstants;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import net.risesoft.config.ConfigConstants;
 
 /**
  *
@@ -11,33 +11,22 @@ import java.util.Map;
  */
 public enum FileType {
 
-    PICTURE("pictureFilePreviewImpl"),
-    COMPRESS("compressFilePreviewImpl"),
-    OFFICE("officeFilePreviewImpl"),
-    SIMTEXT("simTextFilePreviewImpl"),
-    PDF("pdfFilePreviewImpl"),
-    CODE("codeFilePreviewImpl"),
-    OTHER("otherFilePreviewImpl"),
-    MEDIA("mediaFilePreviewImpl"),
-    MARKDOWN("markdownFilePreviewImpl"),
-    XML("xmlFilePreviewImpl"),
-    FLV("flvFilePreviewImpl"),
-    CAD("cadFilePreviewImpl"),
-    TIFF("tiffFilePreviewImpl"),
-    OFD("ofdFilePreviewImpl"),
-    EML("emlFilePreviewImpl"),
-    ONLINE3D("online3DFilePreviewImpl"),
-    XMIND("xmindFilePreviewImpl"),
-    SVG("svgFilePreviewImpl"),
-    EPUB("epubFilePreviewImpl"),
-    BPMN("bpmnFilePreviewImpl"),
-    DCM("dcmFilePreviewImpl"),
-    DRAWIO("drawioFilePreviewImpl");
+    PICTURE("pictureFilePreviewImpl"), COMPRESS("compressFilePreviewImpl"), OFFICE("officeFilePreviewImpl"),
+    SIMTEXT("simTextFilePreviewImpl"), PDF("pdfFilePreviewImpl"), CODE("codeFilePreviewImpl"),
+    OTHER("otherFilePreviewImpl"), MEDIA("mediaFilePreviewImpl"), MARKDOWN("markdownFilePreviewImpl"),
+    XML("xmlFilePreviewImpl"), FLV("flvFilePreviewImpl"), CAD("cadFilePreviewImpl"), TIFF("tiffFilePreviewImpl"),
+    OFD("ofdFilePreviewImpl"), EML("emlFilePreviewImpl"), ONLINE3D("online3DFilePreviewImpl"),
+    XMIND("xmindFilePreviewImpl"), SVG("svgFilePreviewImpl"), EPUB("epubFilePreviewImpl"), BPMN("bpmnFilePreviewImpl"),
+    DCM("dcmFilePreviewImpl"), DRAWIO("drawioFilePreviewImpl");
 
-    private static final String[] OFFICE_TYPES = {"docx", "wps", "doc", "docm", "xls", "xlsx", "csv", "xlsm", "ppt", "pptx", "vsd", "rtf", "odt", "wmf", "emf", "dps", "et", "ods", "ots", "tsv", "odp", "otp", "sxi", "ott", "vsdx", "fodt", "fods", "xltx", "tga", "psd", "dotm", "ett", "xlt", "xltm", "wpt", "dot", "xlam", "dotx", "xla", "pages", "eps"};
+    private static final String[] OFFICE_TYPES =
+        {"docx", "wps", "doc", "docm", "xls", "xlsx", "csv", "xlsm", "ppt", "pptx", "vsd", "rtf", "odt", "wmf", "emf",
+            "dps", "et", "ods", "ots", "tsv", "odp", "otp", "sxi", "ott", "vsdx", "fodt", "fods", "xltx", "tga", "psd",
+            "dotm", "ett", "xlt", "xltm", "wpt", "dot", "xlam", "dotx", "xla", "pages", "eps"};
     private static final String[] PICTURE_TYPES = {"jpg", "jpeg", "png", "gif", "bmp", "ico", "jfif", "webp"};
     private static final String[] ARCHIVE_TYPES = {"rar", "zip", "jar", "7-zip", "tar", "gzip", "7z"};
-    private static final String[] ONLINE3D_TYPES = {"obj", "3ds", "stl", "ply", "off", "3dm", "fbx", "dae", "wrl", "3mf", "ifc", "glb", "o3dv", "gltf", "stp", "bim", "fcstd", "step", "iges", "brep"};
+    private static final String[] ONLINE3D_TYPES = {"obj", "3ds", "stl", "ply", "off", "3dm", "fbx", "dae", "wrl",
+        "3mf", "ifc", "glb", "o3dv", "gltf", "stp", "bim", "fcstd", "step", "iges", "brep"};
     private static final String[] EML_TYPES = {"eml"};
     private static final String[] XMIND_TYPES = {"xmind"};
     private static final String[] EPUB_TYPES = {"epub"};
@@ -47,9 +36,11 @@ public enum FileType {
     private static final String[] TIFF_TYPES = {"tif", "tiff"};
     private static final String[] OFD_TYPES = {"ofd"};
     private static final String[] SVG_TYPES = {"svg"};
-    private static final String[] CAD_TYPES = {"dwg", "dxf", "dwf", "iges", "igs", "dwt", "dng", "ifc", "dwfx", "stl", "cf2", "plt"};
+    private static final String[] CAD_TYPES =
+        {"dwg", "dxf", "dwf", "iges", "igs", "dwt", "dng", "ifc", "dwfx", "stl", "cf2", "plt"};
     private static final String[] SSIM_TEXT_TYPES = ConfigConstants.getSimText();
-    private static final String[] CODES = {"java", "c", "php", "go", "python", "py", "js", "html", "ftl", "css", "lua", "sh", "rb", "yaml", "yml", "json", "h", "cpp", "cs", "aspx", "jsp", "sql"};
+    private static final String[] CODES = {"java", "c", "php", "go", "python", "py", "js", "html", "ftl", "css", "lua",
+        "sh", "rb", "yaml", "yml", "json", "h", "cpp", "cs", "aspx", "jsp", "sql"};
     private static final String[] MEDIA_TYPES = ConfigConstants.getMedia();
     public static final String[] MEDIA_TYPES_CONVERT = ConfigConstants.getConvertMedias();
     private static final Map<String, FileType> FILE_TYPE_MAPPER = new HashMap<>();

@@ -1,19 +1,20 @@
 package net.risesoft.service.impl;
 
-import net.risesoft.config.ConfigConstants;
-import net.risesoft.model.FileAttribute;
-import net.risesoft.model.ReturnResponse;
-import net.risesoft.service.FilePreview;
-import net.risesoft.utils.DownloadUtils;
-import net.risesoft.service.FileHandlerService;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.List;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.List;
+import net.risesoft.config.ConfigConstants;
+import net.risesoft.model.FileAttribute;
+import net.risesoft.model.ReturnResponse;
+import net.risesoft.service.FileHandlerService;
+import net.risesoft.service.FilePreview;
+import net.risesoft.utils.DownloadUtils;
 
 /**
  * Content :处理pdf文件
@@ -38,9 +39,11 @@ public class PdfFilePreviewImpl implements FilePreview {
         boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
         String pdfName = fileName.substring(0, fileName.lastIndexOf(".") + 1) + "pdf";
         String outFilePath = FILE_DIR + pdfName;
-        if (OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_IMAGE.equals(officePreviewType) || OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_ALL_IMAGES.equals(officePreviewType)) {
-            //当文件不存在时，就去下载
-            if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(pdfName) || !ConfigConstants.isCacheEnabled()) {
+        if (OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_IMAGE.equals(officePreviewType)
+            || OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_ALL_IMAGES.equals(officePreviewType)) {
+            // 当文件不存在时，就去下载
+            if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(pdfName)
+                || !ConfigConstants.isCacheEnabled()) {
                 ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);
                 if (response.isFailure()) {
                     return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
@@ -79,7 +82,8 @@ public class PdfFilePreviewImpl implements FilePreview {
         } else {
             // 不是http开头，浏览器不能直接访问，需下载到本地
             if (url != null && !url.toLowerCase().startsWith("http")) {
-                if (!fileHandlerService.listConvertedFiles().containsKey(pdfName) || !ConfigConstants.isCacheEnabled()) {
+                if (!fileHandlerService.listConvertedFiles().containsKey(pdfName)
+                    || !ConfigConstants.isCacheEnabled()) {
                     ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, pdfName);
                     if (response.isFailure()) {
                         return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());

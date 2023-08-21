@@ -1,5 +1,17 @@
 package net.risesoft.service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+import org.springframework.stereotype.Component;
+
 import net.risesoft.model.FileType;
 import net.risesoft.utils.RarUtils;
 import net.risesoft.web.filter.BaseUrlFilter;
@@ -10,18 +22,6 @@ import net.sf.sevenzipjbinding.SevenZipException;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchive;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
-import org.apache.commons.io.IOUtils;
-import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Component
 public class CompressFileReader {
@@ -54,13 +54,14 @@ public class CompressFileReader {
                             if (RarUtils.isMessyCode(str[0])) {
                                 str[0] = new String(item.getPath().getBytes(StandardCharsets.ISO_8859_1), "gbk");
                             }
-                            str[0] = str[0].replace("\\", File.separator); //Linux 下路径错误
+                            str[0] = str[0].replace("\\", File.separator); // Linux 下路径错误
                             String str1 = str[0].substring(0, str[0].lastIndexOf(File.separator) + 1);
                             File file = new File(extractPath, folderName + "_" + File.separator + str1);
                             if (!file.exists()) {
                                 file.mkdirs();
                             }
-                            OutputStream out = new FileOutputStream(extractPath + folderName + "_" + File.separator + str[0], true);
+                            OutputStream out =
+                                new FileOutputStream(extractPath + folderName + "_" + File.separator + str[0], true);
                             IOUtils.write(data, out);
                             out.close();
                         } catch (Exception e) {

@@ -1,5 +1,8 @@
 package net.risesoft.utils;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,9 +16,6 @@ import org.springframework.stereotype.Component;
 import com.sun.star.document.UpdateDocMode;
 
 import net.risesoft.extend.ControlDocumentFormatRegistry;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 
 /**
  * 创建文件转换器

@@ -1,8 +1,5 @@
 package net.risesoft.utils;
 
-import net.risesoft.config.ConfigConstants;
-import net.risesoft.service.ZtreeNodeVo;
-
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -12,6 +9,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.risesoft.config.ConfigConstants;
+import net.risesoft.service.ZtreeNodeVo;
 
 public class RarUtils {
     private static final String fileDir = ConfigConstants.getFileDir();
@@ -23,12 +22,12 @@ public class RarUtils {
         for (int i = 0; i < n; i++) {
             int m = gbkStr.charAt(i);
             if (m < 128 && m >= 0) {
-                utfBytes[k++] = (byte) m;
+                utfBytes[k++] = (byte)m;
                 continue;
             }
-            utfBytes[k++] = (byte) (0xe0 | (m >> 12));
-            utfBytes[k++] = (byte) (0x80 | ((m >> 6) & 0x3f));
-            utfBytes[k++] = (byte) (0x80 | (m & 0x3f));
+            utfBytes[k++] = (byte)(0xe0 | (m >> 12));
+            utfBytes[k++] = (byte)(0x80 | ((m >> 6) & 0x3f));
+            utfBytes[k++] = (byte)(0x80 | (m & 0x3f));
         }
         if (k < utfBytes.length) {
             byte[] tmp = new byte[k];
@@ -66,11 +65,11 @@ public class RarUtils {
     private static boolean isChinese(char c) {
         Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
         return ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
-                || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
-                || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
-                || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
-                || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
-                || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS;
+            || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+            || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+            || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
+            || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+            || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS;
     }
 
     public static boolean judge(char c) {
@@ -78,25 +77,25 @@ public class RarUtils {
     }
 
     public static boolean isMessyCode(String strName) {
-        //去除字符串中的空格 制表符 换行 回车
+        // 去除字符串中的空格 制表符 换行 回车
         Pattern p = Pattern.compile("\\s*|\t*|\r*|\n*");
         Matcher m = p.matcher(strName);
         String after = m.replaceAll("").replaceAll("\\+", "").replaceAll("#", "").replaceAll("&", "");
-        //去除字符串中的标点符号
+        // 去除字符串中的标点符号
         String temp = after.replaceAll("\\p{P}", "");
-        //处理之后转换成字符数组
+        // 处理之后转换成字符数组
         char[] ch = temp.trim().toCharArray();
         for (char c : ch) {
-            //判断是否是数字或者英文字符
+            // 判断是否是数字或者英文字符
             if (!judge(c)) {
-                //判断是否是中日韩文
+                // 判断是否是中日韩文
                 if (!isChinese(c)) {
-                    //如果不是数字或者英文字符也不是中日韩文则表示是乱码返回true
+                    // 如果不是数字或者英文字符也不是中日韩文则表示是乱码返回true
                     return true;
                 }
             }
         }
-        //表示不是乱码 返回false
+        // 表示不是乱码 返回false
         return false;
     }
 

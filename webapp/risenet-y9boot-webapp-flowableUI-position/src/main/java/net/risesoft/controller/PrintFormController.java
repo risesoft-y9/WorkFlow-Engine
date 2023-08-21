@@ -1,5 +1,8 @@
 package net.risesoft.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -27,8 +30,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.json.Y9JsonUtil;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jodd.util.Base64;
 
 @Controller
@@ -70,8 +71,8 @@ public class PrintFormController {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
             String time = sdf.format(date);
             String str2 = request.getServletContext().getRealPath("/") + "static" + File.separator + "screenshot.js";
-            String str3 = request.getServletContext().getRealPath("/") + "static" + File.separator + "formToImg" + File.separator + "img"
-                + temp_Id + "-" + time + ".png";
+            String str3 = request.getServletContext().getRealPath("/") + "static" + File.separator + "formToImg"
+                + File.separator + "img" + temp_Id + "-" + time + ".png";
             String url = y9Config.getCommon().getFlowableBaseUrl() + "/eform/engine/getTemplate?temp_Id=" + temp_Id
                 + "&edittype=1" + "&guid=" + guid + "&taskDefKey=" + taskDefKey + "&activitiUser=" + activitiUser
                 + "&itemId=" + itemId + "&formToPDF=formToPDF" + "&ctx=" + y9Config.getCommon().getFlowableBaseUrl()
@@ -119,8 +120,8 @@ public class PrintFormController {
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String time = sdf.format(date);
-        String str3 = request.getServletContext().getRealPath("/") + "static" + File.separator + "formToPDF" + File.separator + "pdf_"
-            + formId + "_" + time + ".pdf";
+        String str3 = request.getServletContext().getRealPath("/") + "static" + File.separator + "formToPDF"
+            + File.separator + "pdf_" + formId + "_" + time + ".pdf";
         try {
             String[] json = printUrl.split("jsonData=");
             Map<String, Object> json_map = Y9JsonUtil.readHashMap(json[1]);
@@ -136,13 +137,13 @@ public class PrintFormController {
                 + activitiUser + "&processInstanceId=" + processInstanceId;
             LOGGER.info("printUrl:{}", printUrl);
             String BLANK = "  ";
-            String str1 = request.getServletContext().getRealPath("/") + "static" + File.separator + "phantomjs" + File.separator + "bin"
-                + File.separator + "phantomjs.exe";
+            String str1 = request.getServletContext().getRealPath("/") + "static" + File.separator + "phantomjs"
+                + File.separator + "bin" + File.separator + "phantomjs.exe";
             String os = System.getProperty("os.name");
             if ((os != null && os.toLowerCase().indexOf("win") > -1)) {// window
                 // 根据phantomjs.exe的路径而定，如“C:\Users\Think\Desktop\phantomjs-2.1.1-windows\bin\phantomjs.exe”
-                str1 = request.getServletContext().getRealPath("/") + "static" + File.separator + "phantomjs" + File.separator + "bin"
-                    + File.separator + "phantomjs.exe";
+                str1 = request.getServletContext().getRealPath("/") + "static" + File.separator + "phantomjs"
+                    + File.separator + "bin" + File.separator + "phantomjs.exe";
             } else if (os != null && os.toLowerCase().indexOf("linux") > -1) {// linux
                 str1 = "phantomjs";// 根据phantomjs的安装路径而定，当前是安装在“/root”目录下
             }

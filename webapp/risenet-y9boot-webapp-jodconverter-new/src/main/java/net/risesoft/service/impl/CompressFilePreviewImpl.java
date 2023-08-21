@@ -1,13 +1,7 @@
 package net.risesoft.service.impl;
 
-import net.risesoft.config.ConfigConstants;
-import net.risesoft.model.FileAttribute;
-import net.risesoft.model.ReturnResponse;
-import net.risesoft.service.FilePreview;
-import net.risesoft.utils.DownloadUtils;
-import net.risesoft.service.FileHandlerService;
-import net.risesoft.service.CompressFileReader;
-import net.risesoft.utils.KkFileUtils;
+import java.io.IOException;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.springframework.stereotype.Service;
@@ -15,8 +9,14 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-
+import net.risesoft.config.ConfigConstants;
+import net.risesoft.model.FileAttribute;
+import net.risesoft.model.ReturnResponse;
+import net.risesoft.service.CompressFileReader;
+import net.risesoft.service.FileHandlerService;
+import net.risesoft.service.FilePreview;
+import net.risesoft.utils.DownloadUtils;
+import net.risesoft.utils.KkFileUtils;
 
 @Service
 public class CompressFilePreviewImpl implements FilePreview {
@@ -26,7 +26,8 @@ public class CompressFilePreviewImpl implements FilePreview {
     private final OtherFilePreviewImpl otherFilePreview;
     private static final String Rar_PASSWORD_MSG = "password";
 
-    public CompressFilePreviewImpl(FileHandlerService fileHandlerService, CompressFileReader compressFileReader, OtherFilePreviewImpl otherFilePreview) {
+    public CompressFilePreviewImpl(FileHandlerService fileHandlerService, CompressFileReader compressFileReader,
+        OtherFilePreviewImpl otherFilePreview) {
         this.fileHandlerService = fileHandlerService;
         this.compressFileReader = compressFileReader;
         this.otherFilePreview = otherFilePreview;
@@ -39,7 +40,8 @@ public class CompressFilePreviewImpl implements FilePreview {
         boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
         String fileTree = null;
         // 判断文件名是否存在(redis缓存读取)
-        if (forceUpdatedCache || !StringUtils.hasText(fileHandlerService.getConvertedFile(fileName)) || !ConfigConstants.isCacheEnabled()) {
+        if (forceUpdatedCache || !StringUtils.hasText(fileHandlerService.getConvertedFile(fileName))
+            || !ConfigConstants.isCacheEnabled()) {
             ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);
             if (response.isFailure()) {
                 return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
@@ -59,7 +61,7 @@ public class CompressFilePreviewImpl implements FilePreview {
                 }
             }
             if (!ObjectUtils.isEmpty(fileTree)) {
-                //是否保留压缩包源文件
+                // 是否保留压缩包源文件
                 if (ConfigConstants.getDeleteSourceFile()) {
                     KkFileUtils.deleteFileByPath(filePath);
                 }

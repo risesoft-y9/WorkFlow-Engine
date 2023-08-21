@@ -1,6 +1,8 @@
 package net.risesoft.service.cache.impl;
 
-import net.risesoft.service.cache.CacheService;
+import java.util.List;
+import java.util.Map;
+
 import org.redisson.Redisson;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RMapCache;
@@ -9,8 +11,7 @@ import org.redisson.config.Config;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import net.risesoft.service.cache.CacheService;
 
 @ConditionalOnExpression("'${cache.type:default}'.equals('redis')")
 @Service
@@ -23,16 +24,13 @@ public class CacheServiceRedisImpl implements CacheService {
     }
 
     @Override
-    public void initPDFCachePool(Integer capacity) {
-    }
+    public void initPDFCachePool(Integer capacity) {}
 
     @Override
-    public void initIMGCachePool(Integer capacity) {
-    }
+    public void initIMGCachePool(Integer capacity) {}
 
     @Override
-    public void initPdfImagesCachePool(Integer capacity) {
-    }
+    public void initPdfImagesCachePool(Integer capacity) {}
 
     @Override
     public void initMediaConvertCachePool(Integer capacity) {

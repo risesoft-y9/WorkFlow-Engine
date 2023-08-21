@@ -1,8 +1,8 @@
 package net.risesoft.nosql.elastic.entity;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Id;
+
+import java.io.Serializable;
 
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;

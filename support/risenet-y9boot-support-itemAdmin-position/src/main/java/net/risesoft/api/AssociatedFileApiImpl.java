@@ -1,9 +1,9 @@
 package net.risesoft.api;
 
+import jakarta.annotation.Resource;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import jakarta.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

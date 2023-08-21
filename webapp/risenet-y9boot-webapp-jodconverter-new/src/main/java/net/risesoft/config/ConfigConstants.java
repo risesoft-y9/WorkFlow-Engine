@@ -1,20 +1,20 @@
 package net.risesoft.config;
 
-import net.risesoft.utils.ConfigUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import net.risesoft.utils.ConfigUtils;
 
 @Component
 public class ConfigConstants {
 
     static {
-        //pdfbox兼容低版本jdk
+        // pdfbox兼容低版本jdk
         System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
     }
 
@@ -59,7 +59,8 @@ public class ConfigConstants {
     private static int cadThread;
 
     public static final String DEFAULT_CACHE_ENABLED = "true";
-    public static final String DEFAULT_TXT_TYPE = "txt,html,htm,asp,jsp,xml,json,properties,md,gitignore,log,java,py,c,cpp,sql,sh,bat,m,bas,prg,cmd,xbrl";
+    public static final String DEFAULT_TXT_TYPE =
+        "txt,html,htm,asp,jsp,xml,json,properties,md,gitignore,log,java,py,c,cpp,sql,sh,bat,m,bas,prg,cmd,xbrl";
     public static final String DEFAULT_MEDIA_TYPE = "mp3,wav,mp4,flv";
     public static final String DEFAULT_OFFICE_PREVIEW_TYPE = "image";
     public static final String DEFAULT_OFFICE_PREVIEW_SWITCH_DISABLED = "false";
@@ -86,7 +87,6 @@ public class ConfigConstants {
     public static final String DEFAULT_OFFICE_TYPE_WEB = "web";
     public static final String DEFAULT_DELETE_SOURCE_FILE = "true";
     public static final String DEFAULT_DELETE_CAPTCHA = "false";
-
 
     public static final String DEFAULT_CAD_TIMEOUT = "90";
     public static final String DEFAULT_CAD_THREAD = "5";
@@ -157,7 +157,6 @@ public class ConfigConstants {
     public static String getMediaConvertDisable() {
         return mediaConvertDisable;
     }
-
 
     @Value("${media.convert.disable:true}")
     public void setMediaConvertDisable(String mediaConvertDisable) {
@@ -385,7 +384,6 @@ public class ConfigConstants {
         ConfigConstants.fileUploadDisable = fileUploadDisable;
     }
 
-
     public static String getTifPreviewType() {
         return tifPreviewType;
     }
@@ -452,7 +450,6 @@ public class ConfigConstants {
         ConfigConstants.password = password;
     }
 
-
     public static int getPdf2JpgDpi() {
         return pdf2JpgDpi;
     }
@@ -478,7 +475,6 @@ public class ConfigConstants {
     public static void setOfficeTypeWebValue(String officeTypeWeb) {
         ConfigConstants.officeTypeWeb = officeTypeWeb;
     }
-
 
     public static Boolean getDeleteSourceFile() {
         return deleteSourceFile;
@@ -523,7 +519,6 @@ public class ConfigConstants {
         ConfigConstants.cadPreviewType = cadPreviewType;
     }
 
-
     public static String getCadTimeout() {
         return cadTimeout;
     }
@@ -536,7 +531,6 @@ public class ConfigConstants {
     public static void setCadTimeoutValue(String cadTimeout) {
         ConfigConstants.cadTimeout = cadTimeout;
     }
-
 
     public static int getCadThread() {
         return cadThread;

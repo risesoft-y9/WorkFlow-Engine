@@ -1,10 +1,8 @@
 package net.risesoft.config;
 
-import net.risesoft.web.filter.AttributeSetFilter;
-import net.risesoft.web.filter.BaseUrlFilter;
-import net.risesoft.web.filter.ChinesePathFilter;
-import net.risesoft.web.filter.TrustDirFilter;
-import net.risesoft.web.filter.TrustHostFilter;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -13,9 +11,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import net.risesoft.web.filter.AttributeSetFilter;
+import net.risesoft.web.filter.BaseUrlFilter;
+import net.risesoft.web.filter.ChinesePathFilter;
+import net.risesoft.web.filter.TrustDirFilter;
+import net.risesoft.web.filter.TrustHostFilter;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -29,7 +29,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String filePath = ConfigConstants.getFileDir();
         LOGGER.info("Add resource locations: {}", filePath);
-        registry.addResourceHandler("/**").addResourceLocations("classpath:/META-INF/resources/", "classpath:/resources/", "classpath:/static/", "classpath:/public/", "file:" + filePath);
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/META-INF/resources/",
+            "classpath:/resources/", "classpath:/static/", "classpath:/public/", "file:" + filePath);
     }
 
     @Bean

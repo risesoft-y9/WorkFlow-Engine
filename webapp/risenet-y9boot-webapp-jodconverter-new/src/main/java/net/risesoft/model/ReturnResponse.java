@@ -16,16 +16,12 @@ public class ReturnResponse<T> implements Serializable {
     public static final String FAILURE_MSG = "FAILURE";
 
     /**
-     * 返回状态
-     * 0. 成功
-     * 1. 失败
+     * 返回状态 0. 成功 1. 失败
      */
     private int code;
 
     /**
-     * 返回状态描述
-     * XXX成功
-     * XXX失败
+     * 返回状态描述 XXX成功 XXX失败
      */
     private String msg;
 

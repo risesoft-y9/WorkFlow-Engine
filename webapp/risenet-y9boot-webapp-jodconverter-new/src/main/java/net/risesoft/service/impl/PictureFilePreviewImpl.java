@@ -1,14 +1,15 @@
 package net.risesoft.service.impl;
 
-import net.risesoft.model.FileAttribute;
-import net.risesoft.service.FileHandlerService;
-import net.risesoft.utils.KkFileUtils;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.risesoft.model.FileAttribute;
+import net.risesoft.service.FileHandlerService;
+import net.risesoft.utils.KkFileUtils;
 
 /**
  * Content :图片文件处理

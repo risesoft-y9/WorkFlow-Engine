@@ -1,5 +1,7 @@
 package net.risesoft.service;
 
+import jakarta.annotation.Resource;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -34,8 +36,6 @@ import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.util.form.DbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
-
-import jakarta.annotation.Resource;
 
 /**
  * @author qinman

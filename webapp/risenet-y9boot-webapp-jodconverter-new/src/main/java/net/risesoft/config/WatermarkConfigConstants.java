@@ -2,7 +2,6 @@ package net.risesoft.config;
 
 import org.springframework.beans.factory.annotation.Value;
 
-
 public class WatermarkConfigConstants {
 
     private static String WATERMARK_TXT;
@@ -156,6 +155,5 @@ public class WatermarkConfigConstants {
     public void setWatermarkAngle(String watermarkAngle) {
         WATERMARK_ANGLE = watermarkAngle;
     }
-
 
 }

@@ -288,77 +288,77 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     // FIXME elasticsearch
     // @Override
     // public Map<String, Object> getAllList(String positionId, String documentTitle, int rows, int page) {
-    //     String tenantId = Y9LoginUserHolder.getTenantId();
-    //     Map<String, Object> retMap = new HashMap<String, Object>(16);
-    //     List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
-    //     if (page < 1) {
-    //         page = 1;
-    //     }
-    //     Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+    // String tenantId = Y9LoginUserHolder.getTenantId();
+    // Map<String, Object> retMap = new HashMap<String, Object>(16);
+    // List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
+    // if (page < 1) {
+    // page = 1;
+    // }
+    // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
     //
-    //     BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("userId", positionId));
-    //     builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
-    //     if (StringUtils.isNotBlank(documentTitle)) {
-    //         builder.must(QueryBuilders.wildcardQuery("title", "*" + documentTitle + "*"));
-    //     }
+    // BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("userId", positionId));
+    // builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
+    // if (StringUtils.isNotBlank(documentTitle)) {
+    // builder.must(QueryBuilders.wildcardQuery("title", "*" + documentTitle + "*"));
+    // }
     //
-    //     IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-    //     NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
-    //     NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
-    //     searchQuery.setTrackTotalHits(true);
-    //     SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
-    //     List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-    //     Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
+    // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+    // NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
+    // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
+    // searchQuery.setTrackTotalHits(true);
+    // SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
+    // List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+    // Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
     //
-    //     // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
-    //     // pageable);
-    //     csList = pageList.getContent();
-    //     SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-    //     SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    //     int num = (page - 1) * rows;
-    //     HistoricProcessInstanceModel hpi = null;
-    //     ProcessParam processParam = null;
-    //     List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-    //     for (ChaoSongInfo cs : csList) {
-    //         Map<String, Object> map = new HashMap<String, Object>(16);
-    //         map.put("id", cs.getId());
-    //         try {
-    //             String processInstanceId = cs.getProcessInstanceId();
-    //             map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
-    //             processParam = processParamService.findByProcessInstanceId(processInstanceId);
-    //             map.put("processInstanceId", processInstanceId);
-    //             map.put("senderName", cs.getSenderName());
-    //             map.put("sendDeptId", cs.getSendDeptId());
-    //             map.put("sendDeptName", cs.getSendDeptName());
-    //             map.put("readTime", sdf.format(sdf1.parse(cs.getReadTime())));
-    //             map.put("title", processParam.getTitle());
-    //             map.put("status", cs.getStatus());
-    //             map.put("banjie", false);
-    //             map.put("itemId", cs.getItemId());
-    //             map.put("itemName", cs.getItemName());
-    //             map.put("processSerialNumber", processParam.getProcessSerialNumber());
-    //             map.put("number", processParam.getCustomNumber());
-    //             map.put("level", processParam.getCustomLevel());
-    //             int chaosongNum =
-    //                 chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
-    //             map.put("chaosongNum", chaosongNum);
-    //             hpi = historicProcessManager.getById(tenantId, processInstanceId);
-    //             boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
-    //             if (banjie) {
-    //                 map.put("banjie", true);
-    //             }
-    //         } catch (Exception e) {
-    //             e.printStackTrace();
-    //         }
-    //         map.put("serialNumber", num + 1);
-    //         num += 1;
-    //         listMap.add(map);
-    //     }
-    //     retMap.put("currpage", page);
-    //     retMap.put("totalpages", pageList.getTotalPages());
-    //     retMap.put("total", pageList.getTotalElements());
-    //     retMap.put("rows", listMap);
-    //     return retMap;
+    // // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
+    // // pageable);
+    // csList = pageList.getContent();
+    // SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
+    // SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    // int num = (page - 1) * rows;
+    // HistoricProcessInstanceModel hpi = null;
+    // ProcessParam processParam = null;
+    // List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+    // for (ChaoSongInfo cs : csList) {
+    // Map<String, Object> map = new HashMap<String, Object>(16);
+    // map.put("id", cs.getId());
+    // try {
+    // String processInstanceId = cs.getProcessInstanceId();
+    // map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
+    // processParam = processParamService.findByProcessInstanceId(processInstanceId);
+    // map.put("processInstanceId", processInstanceId);
+    // map.put("senderName", cs.getSenderName());
+    // map.put("sendDeptId", cs.getSendDeptId());
+    // map.put("sendDeptName", cs.getSendDeptName());
+    // map.put("readTime", sdf.format(sdf1.parse(cs.getReadTime())));
+    // map.put("title", processParam.getTitle());
+    // map.put("status", cs.getStatus());
+    // map.put("banjie", false);
+    // map.put("itemId", cs.getItemId());
+    // map.put("itemName", cs.getItemName());
+    // map.put("processSerialNumber", processParam.getProcessSerialNumber());
+    // map.put("number", processParam.getCustomNumber());
+    // map.put("level", processParam.getCustomLevel());
+    // int chaosongNum =
+    // chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
+    // map.put("chaosongNum", chaosongNum);
+    // hpi = historicProcessManager.getById(tenantId, processInstanceId);
+    // boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
+    // if (banjie) {
+    // map.put("banjie", true);
+    // }
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // map.put("serialNumber", num + 1);
+    // num += 1;
+    // listMap.add(map);
+    // }
+    // retMap.put("currpage", page);
+    // retMap.put("totalpages", pageList.getTotalPages());
+    // retMap.put("total", pageList.getTotalElements());
+    // retMap.put("rows", listMap);
+    // return retMap;
     // }
 
     @Override
@@ -397,320 +397,320 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     // FIXME elasticsearch
     // @Override
     // public Map<String, Object> getDoneList(String positionId, String documentTitle, int rows, int page) {
-    //     String tenantId = Y9LoginUserHolder.getTenantId();
-    //     Map<String, Object> retMap = new HashMap<String, Object>(16);
-    //     List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
-    //     if (page < 1) {
-    //         page = 1;
-    //     }
-    //     Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-    //     BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("userId", positionId));
-    //     builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
-    //     builder.must(QueryBuilders.termQuery("status", 1));
-    //     if (StringUtils.isNotBlank(documentTitle)) {
-    //         builder.must(QueryBuilders.wildcardQuery("title", "*" + documentTitle + "*"));
-    //     }
+    // String tenantId = Y9LoginUserHolder.getTenantId();
+    // Map<String, Object> retMap = new HashMap<String, Object>(16);
+    // List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
+    // if (page < 1) {
+    // page = 1;
+    // }
+    // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+    // BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("userId", positionId));
+    // builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
+    // builder.must(QueryBuilders.termQuery("status", 1));
+    // if (StringUtils.isNotBlank(documentTitle)) {
+    // builder.must(QueryBuilders.wildcardQuery("title", "*" + documentTitle + "*"));
+    // }
     //
-    //     IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-    //     NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
-    //     NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
-    //     searchQuery.setTrackTotalHits(true);
-    //     SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
-    //     List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-    //     Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
-    //     csList = pageList.getContent();
-    //     SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-    //     SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    //     int num = (page - 1) * rows;
-    //     HistoricProcessInstanceModel hpi = null;
-    //     ProcessParam processParam = null;
-    //     List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-    //     for (ChaoSongInfo cs : csList) {
-    //         Map<String, Object> map = new HashMap<String, Object>(16);
-    //         map.put("id", cs.getId());
-    //         try {
-    //             String processInstanceId = cs.getProcessInstanceId();
-    //             map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
-    //             processParam = processParamService.findByProcessInstanceId(processInstanceId);
-    //             map.put("processInstanceId", processInstanceId);
-    //             map.put("senderName", cs.getSenderName());
-    //             map.put("sendDeptId", cs.getSendDeptId());
-    //             map.put("sendDeptName", cs.getSendDeptName());
-    //             map.put("readTime", sdf.format(sdf1.parse(cs.getReadTime())));
-    //             map.put("title", processParam.getTitle());
-    //             map.put("status", cs.getStatus());
-    //             map.put("banjie", false);
-    //             map.put("itemId", cs.getItemId());
-    //             map.put("itemName", cs.getItemName());
-    //             map.put("processSerialNumber", processParam.getProcessSerialNumber());
-    //             map.put("number", processParam.getCustomNumber());
-    //             map.put("level", processParam.getCustomLevel());
-    //             int chaosongNum =
-    //                 chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
-    //             map.put("chaosongNum", chaosongNum);
-    //             hpi = historicProcessManager.getById(tenantId, processInstanceId);
-    //             boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
-    //             if (banjie) {
-    //                 map.put("banjie", true);
-    //             }
-    //             int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
-    //             map.put("follow", countFollow > 0 ? true : false);
-    //         } catch (Exception e) {
-    //             e.printStackTrace();
-    //         }
-    //         map.put("serialNumber", num + 1);
-    //         num += 1;
-    //         listMap.add(map);
-    //     }
-    //     retMap.put("currpage", page);
-    //     retMap.put("totalpages", pageList.getTotalPages());
-    //     retMap.put("total", pageList.getTotalElements());
-    //     retMap.put("rows", listMap);
-    //     return retMap;
+    // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+    // NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
+    // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
+    // searchQuery.setTrackTotalHits(true);
+    // SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
+    // List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+    // Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
+    // csList = pageList.getContent();
+    // SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
+    // SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    // int num = (page - 1) * rows;
+    // HistoricProcessInstanceModel hpi = null;
+    // ProcessParam processParam = null;
+    // List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+    // for (ChaoSongInfo cs : csList) {
+    // Map<String, Object> map = new HashMap<String, Object>(16);
+    // map.put("id", cs.getId());
+    // try {
+    // String processInstanceId = cs.getProcessInstanceId();
+    // map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
+    // processParam = processParamService.findByProcessInstanceId(processInstanceId);
+    // map.put("processInstanceId", processInstanceId);
+    // map.put("senderName", cs.getSenderName());
+    // map.put("sendDeptId", cs.getSendDeptId());
+    // map.put("sendDeptName", cs.getSendDeptName());
+    // map.put("readTime", sdf.format(sdf1.parse(cs.getReadTime())));
+    // map.put("title", processParam.getTitle());
+    // map.put("status", cs.getStatus());
+    // map.put("banjie", false);
+    // map.put("itemId", cs.getItemId());
+    // map.put("itemName", cs.getItemName());
+    // map.put("processSerialNumber", processParam.getProcessSerialNumber());
+    // map.put("number", processParam.getCustomNumber());
+    // map.put("level", processParam.getCustomLevel());
+    // int chaosongNum =
+    // chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
+    // map.put("chaosongNum", chaosongNum);
+    // hpi = historicProcessManager.getById(tenantId, processInstanceId);
+    // boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
+    // if (banjie) {
+    // map.put("banjie", true);
+    // }
+    // int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
+    // map.put("follow", countFollow > 0 ? true : false);
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // map.put("serialNumber", num + 1);
+    // num += 1;
+    // listMap.add(map);
+    // }
+    // retMap.put("currpage", page);
+    // retMap.put("totalpages", pageList.getTotalPages());
+    // retMap.put("total", pageList.getTotalElements());
+    // retMap.put("rows", listMap);
+    // return retMap;
     // }
 
     // FIXME elasticsearch
     // @Override
     // public Map<String, Object> getListByProcessInstanceId(String processInstanceId, String userName, int rows,
-    //     int page) {
-    //     Map<String, Object> retMap = new HashMap<String, Object>(16);
-    //     String tenantId = Y9LoginUserHolder.getTenantId();
-    //     String senderId = Y9LoginUserHolder.getPositionId();
-    //     List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
-    //     List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-    //     try {
-    //         if (page < 1) {
-    //             page = 1;
-    //         }
-    //         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+    // int page) {
+    // Map<String, Object> retMap = new HashMap<String, Object>(16);
+    // String tenantId = Y9LoginUserHolder.getTenantId();
+    // String senderId = Y9LoginUserHolder.getPositionId();
+    // List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
+    // List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+    // try {
+    // if (page < 1) {
+    // page = 1;
+    // }
+    // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
     //
-    //         BoolQueryBuilder builder =
-    //             QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("processInstanceId", processInstanceId));
-    //         builder.must(QueryBuilders.termsQuery("tenantId", tenantId));
-    //         builder.mustNot(QueryBuilders.termsQuery("senderId", senderId));
-    //         if (StringUtils.isNotBlank(userName)) {
-    //             builder.must(QueryBuilders.wildcardQuery("userName", "*" + userName + "*"));
-    //         }
+    // BoolQueryBuilder builder =
+    // QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("processInstanceId", processInstanceId));
+    // builder.must(QueryBuilders.termsQuery("tenantId", tenantId));
+    // builder.mustNot(QueryBuilders.termsQuery("senderId", senderId));
+    // if (StringUtils.isNotBlank(userName)) {
+    // builder.must(QueryBuilders.wildcardQuery("userName", "*" + userName + "*"));
+    // }
     //
-    //         IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-    //         NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
-    //         NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
-    //         searchQuery.setTrackTotalHits(true);
-    //         SearchHits<ChaoSongInfo> searchHits =
-    //             elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
-    //         List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-    //         Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
+    // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+    // NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
+    // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
+    // searchQuery.setTrackTotalHits(true);
+    // SearchHits<ChaoSongInfo> searchHits =
+    // elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
+    // List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+    // Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
     //
-    //         csList = pageList.getContent();
-    //         SimpleDateFormat sdf0 = new SimpleDateFormat("yy/MM/dd HH:mm");
-    //         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    //         int startRow = (page - 1) * rows;
-    //         for (ChaoSongInfo info : csList) {
-    //             Map<String, Object> map = new HashMap<String, Object>(16);
-    //             map.put("id", info.getId());
-    //             try {
-    //                 map.put("createTime", sdf0.format(sdf1.parse(info.getCreateTime())));
-    //                 map.put("processInstanceId", processInstanceId);
-    //                 map.put("senderName", info.getSenderName());
-    //                 map.put("sendDeptId", info.getSendDeptId());
-    //                 map.put("sendDeptName", info.getSendDeptName());
-    //                 if (StringUtils.isBlank(info.getReadTime())) {
-    //                     map.put("readTime", "");
-    //                 } else {
-    //                     map.put("readTime", sdf0.format(sdf1.parse(info.getReadTime())));
-    //                 }
-    //                 map.put("userName", info.getUserName());
-    //                 map.put("userDeptName", info.getUserDeptName());
-    //                 map.put("title", info.getTitle());
-    //             } catch (Exception e) {
-    //                 e.printStackTrace();
-    //             }
-    //             map.put("serialNumber", startRow + 1);
-    //             startRow += 1;
-    //             listMap.add(map);
-    //         }
-    //         // 获取总页数
-    //         retMap.put("currpage", page);
-    //         retMap.put("totalpages", pageList.getTotalPages());
-    //         retMap.put("total", pageList.getTotalElements());
-    //         retMap.put("rows", listMap);
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    //     // 获取总页数
-    //     retMap.put("currpage", page);
-    //     retMap.put("totalpages", 0);
-    //     retMap.put("total", 0);
-    //     retMap.put("rows", listMap);
-    //     return retMap;
+    // csList = pageList.getContent();
+    // SimpleDateFormat sdf0 = new SimpleDateFormat("yy/MM/dd HH:mm");
+    // SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    // int startRow = (page - 1) * rows;
+    // for (ChaoSongInfo info : csList) {
+    // Map<String, Object> map = new HashMap<String, Object>(16);
+    // map.put("id", info.getId());
+    // try {
+    // map.put("createTime", sdf0.format(sdf1.parse(info.getCreateTime())));
+    // map.put("processInstanceId", processInstanceId);
+    // map.put("senderName", info.getSenderName());
+    // map.put("sendDeptId", info.getSendDeptId());
+    // map.put("sendDeptName", info.getSendDeptName());
+    // if (StringUtils.isBlank(info.getReadTime())) {
+    // map.put("readTime", "");
+    // } else {
+    // map.put("readTime", sdf0.format(sdf1.parse(info.getReadTime())));
+    // }
+    // map.put("userName", info.getUserName());
+    // map.put("userDeptName", info.getUserDeptName());
+    // map.put("title", info.getTitle());
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // map.put("serialNumber", startRow + 1);
+    // startRow += 1;
+    // listMap.add(map);
+    // }
+    // // 获取总页数
+    // retMap.put("currpage", page);
+    // retMap.put("totalpages", pageList.getTotalPages());
+    // retMap.put("total", pageList.getTotalElements());
+    // retMap.put("rows", listMap);
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // // 获取总页数
+    // retMap.put("currpage", page);
+    // retMap.put("totalpages", 0);
+    // retMap.put("total", 0);
+    // retMap.put("rows", listMap);
+    // return retMap;
     // }
 
     // FIXME elasticsearch
     // @Override
     // public Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId,
-    //     String userName, int rows, int page) {
-    //     Map<String, Object> retMap = new HashMap<String, Object>(16);
-    //     List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-    //     try {
-    //         List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
-    //         if (page < 1) {
-    //             page = 1;
-    //         }
-    //         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+    // String userName, int rows, int page) {
+    // Map<String, Object> retMap = new HashMap<String, Object>(16);
+    // List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+    // try {
+    // List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
+    // if (page < 1) {
+    // page = 1;
+    // }
+    // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
     //
-    //         BoolQueryBuilder builder =
-    //             QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("processInstanceId", processInstanceId));
-    //         builder.must(QueryBuilders.termsQuery("senderId", senderId));
-    //         if (StringUtils.isNotBlank(userName)) {
-    //             builder.must(QueryBuilders.wildcardQuery("userName", "*" + userName + "*"));
-    //         }
+    // BoolQueryBuilder builder =
+    // QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("processInstanceId", processInstanceId));
+    // builder.must(QueryBuilders.termsQuery("senderId", senderId));
+    // if (StringUtils.isNotBlank(userName)) {
+    // builder.must(QueryBuilders.wildcardQuery("userName", "*" + userName + "*"));
+    // }
     //
-    //         IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-    //         NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
-    //         NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
-    //         searchQuery.setTrackTotalHits(true);
-    //         SearchHits<ChaoSongInfo> searchHits =
-    //             elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
-    //         List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-    //         Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
+    // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+    // NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
+    // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
+    // searchQuery.setTrackTotalHits(true);
+    // SearchHits<ChaoSongInfo> searchHits =
+    // elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
+    // List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+    // Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
     //
-    //         // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
-    //         // pageable);
-    //         csList = pageList.getContent();
-    //         SimpleDateFormat sdf0 = new SimpleDateFormat("yy/MM/dd HH:mm");
-    //         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    //         int startRow = (page - 1) * rows;
-    //         for (ChaoSongInfo cs : csList) {
-    //             Map<String, Object> map = new HashMap<String, Object>(16);
-    //             map.put("id", cs.getId());
-    //             try {
-    //                 map.put("createTime", sdf0.format(sdf1.parse(cs.getCreateTime())));
-    //                 map.put("processInstanceId", processInstanceId);
-    //                 map.put("senderName", cs.getSenderName());
-    //                 map.put("sendDeptId", cs.getSendDeptId());
-    //                 map.put("sendDeptName", cs.getSendDeptName());
-    //                 if (StringUtils.isBlank(cs.getReadTime())) {
-    //                     map.put("readTime", "");
-    //                 } else {
-    //                     map.put("readTime", sdf0.format(sdf1.parse(cs.getReadTime())));
-    //                 }
-    //                 map.put("userName", cs.getUserName());
-    //                 map.put("userDeptName", cs.getUserDeptName());
-    //                 map.put("title", cs.getTitle());
-    //             } catch (Exception e) {
-    //                 e.printStackTrace();
-    //             }
-    //             map.put("serialNumber", startRow + 1);
-    //             startRow += 1;
-    //             listMap.add(map);
-    //         }
-    //         // 获取总页数
-    //         retMap.put("currpage", page);
-    //         retMap.put("totalpages", pageList.getTotalPages());
-    //         retMap.put("total", pageList.getTotalElements());
-    //         retMap.put("rows", listMap);
-    //         return retMap;
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    //     // 获取总页数
-    //     retMap.put("currpage", page);
-    //     retMap.put("totalpages", 0);
-    //     retMap.put("total", 0);
-    //     retMap.put("rows", listMap);
-    //     return retMap;
+    // // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
+    // // pageable);
+    // csList = pageList.getContent();
+    // SimpleDateFormat sdf0 = new SimpleDateFormat("yy/MM/dd HH:mm");
+    // SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    // int startRow = (page - 1) * rows;
+    // for (ChaoSongInfo cs : csList) {
+    // Map<String, Object> map = new HashMap<String, Object>(16);
+    // map.put("id", cs.getId());
+    // try {
+    // map.put("createTime", sdf0.format(sdf1.parse(cs.getCreateTime())));
+    // map.put("processInstanceId", processInstanceId);
+    // map.put("senderName", cs.getSenderName());
+    // map.put("sendDeptId", cs.getSendDeptId());
+    // map.put("sendDeptName", cs.getSendDeptName());
+    // if (StringUtils.isBlank(cs.getReadTime())) {
+    // map.put("readTime", "");
+    // } else {
+    // map.put("readTime", sdf0.format(sdf1.parse(cs.getReadTime())));
+    // }
+    // map.put("userName", cs.getUserName());
+    // map.put("userDeptName", cs.getUserDeptName());
+    // map.put("title", cs.getTitle());
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // map.put("serialNumber", startRow + 1);
+    // startRow += 1;
+    // listMap.add(map);
+    // }
+    // // 获取总页数
+    // retMap.put("currpage", page);
+    // retMap.put("totalpages", pageList.getTotalPages());
+    // retMap.put("total", pageList.getTotalElements());
+    // retMap.put("rows", listMap);
+    // return retMap;
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // // 获取总页数
+    // retMap.put("currpage", page);
+    // retMap.put("totalpages", 0);
+    // retMap.put("total", 0);
+    // retMap.put("rows", listMap);
+    // return retMap;
     // }
 
     // FIXME elasticsearch
     // @Override
     // public Map<String, Object> getOpinionChaosongByUserId(String userId, String documentTitle, int rows, int page) {
-    //     String tenantId = Y9LoginUserHolder.getTenantId();
-    //     Map<String, Object> retMap = new HashMap<String, Object>(16);
+    // String tenantId = Y9LoginUserHolder.getTenantId();
+    // Map<String, Object> retMap = new HashMap<String, Object>(16);
     //
-    //     List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
-    //     if (page < 1) {
-    //         page = 1;
-    //     }
-    //     List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-    //     try {
-    //         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+    // List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
+    // if (page < 1) {
+    // page = 1;
+    // }
+    // List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+    // try {
+    // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
     //
-    //         BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("userId", userId));
-    //         builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
-    //         builder.must(QueryBuilders.termsQuery("opinionState", "1"));
-    //         if (StringUtils.isNotBlank(documentTitle)) {
-    //             builder.must(QueryBuilders.wildcardQuery("title", "*" + documentTitle + "*"));
-    //         }
+    // BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("userId", userId));
+    // builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
+    // builder.must(QueryBuilders.termsQuery("opinionState", "1"));
+    // if (StringUtils.isNotBlank(documentTitle)) {
+    // builder.must(QueryBuilders.wildcardQuery("title", "*" + documentTitle + "*"));
+    // }
     //
-    //         IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-    //         NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
-    //         NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
-    //         searchQuery.setTrackTotalHits(true);
-    //         SearchHits<ChaoSongInfo> searchHits =
-    //             elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
-    //         List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-    //         Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
+    // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+    // NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
+    // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
+    // searchQuery.setTrackTotalHits(true);
+    // SearchHits<ChaoSongInfo> searchHits =
+    // elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
+    // List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+    // Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
     //
-    //         // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
-    //         // pageable);
-    //         csList = pageList.getContent();
-    //         SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-    //         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    //         HistoricProcessInstanceModel hpi = null;
-    //         ProcessParam processParam = null;
-    //         int num = (page - 1) * rows;
-    //         for (ChaoSongInfo cs : csList) {
-    //             Map<String, Object> map = new HashMap<String, Object>(16);
-    //             map.put("id", cs.getId());
-    //             try {
-    //                 String processInstanceId = cs.getProcessInstanceId();
-    //                 map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
-    //                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
-    //                 map.put("processInstanceId", processInstanceId);
-    //                 map.put("senderName", cs.getSenderName());
-    //                 map.put("sendDeptId", cs.getSendDeptId());
-    //                 map.put("sendDeptName", cs.getSendDeptName());
-    //                 map.put("readTime", sdf.format(sdf1.parse(cs.getReadTime())));
-    //                 map.put("title", processParam.getTitle());
-    //                 map.put("status", cs.getStatus());
-    //                 map.put("banjie", false);
-    //                 map.put("itemId", cs.getItemId());
-    //                 map.put("itemName", cs.getItemName());
-    //                 map.put("processSerialNumber", processParam.getProcessSerialNumber());
-    //                 map.put("number", processParam.getCustomNumber());
-    //                 map.put("level", processParam.getCustomLevel());
-    //                 int chaosongNum =
-    //                     chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(userId, processInstanceId);
-    //                 map.put("chaosongNum", chaosongNum);
-    //                 hpi = historicProcessManager.getById(tenantId, processInstanceId);
-    //                 boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
-    //                 if (banjie) {
-    //                     map.put("banjie", true);
-    //                 }
-    //                 int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
-    //                 map.put("follow", countFollow > 0 ? true : false);
-    //             } catch (Exception e) {
-    //                 e.printStackTrace();
-    //             }
-    //             map.put("serialNumber", num + 1);
-    //             num += 1;
-    //             listMap.add(map);
-    //         }
-    //         // 获取总页数
-    //         retMap.put("currpage", page);
-    //         retMap.put("totalpages", pageList.getTotalPages());
-    //         retMap.put("total", pageList.getTotalElements());
-    //         retMap.put("rows", listMap);
-    //         return retMap;
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    //     // 获取总页数
-    //     retMap.put("currpage", page);
-    //     retMap.put("totalpages", 0);
-    //     retMap.put("total", 0);
-    //     retMap.put("rows", listMap);
-    //     return retMap;
+    // // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
+    // // pageable);
+    // csList = pageList.getContent();
+    // SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
+    // SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    // HistoricProcessInstanceModel hpi = null;
+    // ProcessParam processParam = null;
+    // int num = (page - 1) * rows;
+    // for (ChaoSongInfo cs : csList) {
+    // Map<String, Object> map = new HashMap<String, Object>(16);
+    // map.put("id", cs.getId());
+    // try {
+    // String processInstanceId = cs.getProcessInstanceId();
+    // map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
+    // processParam = processParamService.findByProcessInstanceId(processInstanceId);
+    // map.put("processInstanceId", processInstanceId);
+    // map.put("senderName", cs.getSenderName());
+    // map.put("sendDeptId", cs.getSendDeptId());
+    // map.put("sendDeptName", cs.getSendDeptName());
+    // map.put("readTime", sdf.format(sdf1.parse(cs.getReadTime())));
+    // map.put("title", processParam.getTitle());
+    // map.put("status", cs.getStatus());
+    // map.put("banjie", false);
+    // map.put("itemId", cs.getItemId());
+    // map.put("itemName", cs.getItemName());
+    // map.put("processSerialNumber", processParam.getProcessSerialNumber());
+    // map.put("number", processParam.getCustomNumber());
+    // map.put("level", processParam.getCustomLevel());
+    // int chaosongNum =
+    // chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(userId, processInstanceId);
+    // map.put("chaosongNum", chaosongNum);
+    // hpi = historicProcessManager.getById(tenantId, processInstanceId);
+    // boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
+    // if (banjie) {
+    // map.put("banjie", true);
+    // }
+    // int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
+    // map.put("follow", countFollow > 0 ? true : false);
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // map.put("serialNumber", num + 1);
+    // num += 1;
+    // listMap.add(map);
+    // }
+    // // 获取总页数
+    // retMap.put("currpage", page);
+    // retMap.put("totalpages", pageList.getTotalPages());
+    // retMap.put("total", pageList.getTotalElements());
+    // retMap.put("rows", listMap);
+    // return retMap;
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // // 获取总页数
+    // retMap.put("currpage", page);
+    // retMap.put("totalpages", 0);
+    // retMap.put("total", 0);
+    // retMap.put("rows", listMap);
+    // return retMap;
     // }
 
     @Override
@@ -726,81 +726,81 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     // FIXME elasticsearch
     // @Override
     // public Map<String, Object> getTodoList(String positionId, String documentTitle, int rows, int page) {
-    //     String tenantId = Y9LoginUserHolder.getTenantId();
-    //     Map<String, Object> retMap = new HashMap<String, Object>(16);
-    //     List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
-    //     List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-    //     if (page < 1) {
-    //         page = 1;
-    //     }
-    //     Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+    // String tenantId = Y9LoginUserHolder.getTenantId();
+    // Map<String, Object> retMap = new HashMap<String, Object>(16);
+    // List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
+    // List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+    // if (page < 1) {
+    // page = 1;
+    // }
+    // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
     //
-    //     BoolQueryBuilder builder =
-    //         QueryBuilders.boolQuery().must(QueryBuilders.queryStringQuery(positionId).field("userId"));
-    //     builder.must(QueryBuilders.queryStringQuery(Y9LoginUserHolder.getTenantId()).field("tenantId"));
-    //     builder.must(QueryBuilders.termQuery("status", 2));
-    //     if (StringUtils.isNotBlank(documentTitle)) {
-    //         builder.must(QueryBuilders.wildcardQuery("title", "*" + documentTitle + "*"));
-    //     }
+    // BoolQueryBuilder builder =
+    // QueryBuilders.boolQuery().must(QueryBuilders.queryStringQuery(positionId).field("userId"));
+    // builder.must(QueryBuilders.queryStringQuery(Y9LoginUserHolder.getTenantId()).field("tenantId"));
+    // builder.must(QueryBuilders.termQuery("status", 2));
+    // if (StringUtils.isNotBlank(documentTitle)) {
+    // builder.must(QueryBuilders.wildcardQuery("title", "*" + documentTitle + "*"));
+    // }
     //
-    //     IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-    //     NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
-    //     NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
-    //     searchQuery.setTrackTotalHits(true);
-    //     SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
-    //     List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-    //     Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
+    // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+    // NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
+    // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
+    // searchQuery.setTrackTotalHits(true);
+    // SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
+    // List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+    // Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
     //
-    //     // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
-    //     // pageable);
-    //     csList = pageList.getContent();
-    //     SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-    //     SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    //     int num = (page - 1) * rows;
-    //     HistoricProcessInstanceModel hpi = null;
-    //     ProcessParam processParam = null;
-    //     for (ChaoSongInfo cs : csList) {
-    //         Map<String, Object> map = new HashMap<String, Object>(16);
-    //         map.put("id", cs.getId());
-    //         try {
-    //             String processInstanceId = cs.getProcessInstanceId();
-    //             map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
-    //             processParam = processParamService.findByProcessInstanceId(processInstanceId);
-    //             map.put("processInstanceId", processInstanceId);
-    //             map.put("senderName", cs.getSenderName());
-    //             map.put("sendDeptId", cs.getSendDeptId());
-    //             map.put("sendDeptName", cs.getSendDeptName());
-    //             map.put("readTime", cs.getReadTime());
-    //             map.put("title", processParam.getTitle());
-    //             map.put("status", cs.getStatus());
-    //             map.put("banjie", false);
-    //             map.put("itemId", cs.getItemId());
-    //             map.put("itemName", cs.getItemName());
-    //             map.put("processSerialNumber", processParam.getProcessSerialNumber());
-    //             map.put("number", processParam.getCustomNumber());
-    //             map.put("level", processParam.getCustomLevel());
-    //             int chaosongNum =
-    //                 chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
-    //             map.put("chaosongNum", chaosongNum);
-    //             hpi = historicProcessManager.getById(tenantId, processInstanceId);
-    //             boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
-    //             if (banjie) {
-    //                 map.put("banjie", true);
-    //             }
-    //             int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
-    //             map.put("follow", countFollow > 0 ? true : false);
-    //         } catch (Exception e) {
-    //             e.printStackTrace();
-    //         }
-    //         map.put("serialNumber", num + 1);
-    //         num += 1;
-    //         listMap.add(map);
-    //     }
-    //     retMap.put("currpage", page);
-    //     retMap.put("totalpages", pageList.getTotalPages());
-    //     retMap.put("total", pageList.getTotalElements());
-    //     retMap.put("rows", listMap);
-    //     return retMap;
+    // // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
+    // // pageable);
+    // csList = pageList.getContent();
+    // SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
+    // SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    // int num = (page - 1) * rows;
+    // HistoricProcessInstanceModel hpi = null;
+    // ProcessParam processParam = null;
+    // for (ChaoSongInfo cs : csList) {
+    // Map<String, Object> map = new HashMap<String, Object>(16);
+    // map.put("id", cs.getId());
+    // try {
+    // String processInstanceId = cs.getProcessInstanceId();
+    // map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
+    // processParam = processParamService.findByProcessInstanceId(processInstanceId);
+    // map.put("processInstanceId", processInstanceId);
+    // map.put("senderName", cs.getSenderName());
+    // map.put("sendDeptId", cs.getSendDeptId());
+    // map.put("sendDeptName", cs.getSendDeptName());
+    // map.put("readTime", cs.getReadTime());
+    // map.put("title", processParam.getTitle());
+    // map.put("status", cs.getStatus());
+    // map.put("banjie", false);
+    // map.put("itemId", cs.getItemId());
+    // map.put("itemName", cs.getItemName());
+    // map.put("processSerialNumber", processParam.getProcessSerialNumber());
+    // map.put("number", processParam.getCustomNumber());
+    // map.put("level", processParam.getCustomLevel());
+    // int chaosongNum =
+    // chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
+    // map.put("chaosongNum", chaosongNum);
+    // hpi = historicProcessManager.getById(tenantId, processInstanceId);
+    // boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
+    // if (banjie) {
+    // map.put("banjie", true);
+    // }
+    // int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
+    // map.put("follow", countFollow > 0 ? true : false);
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // map.put("serialNumber", num + 1);
+    // num += 1;
+    // listMap.add(map);
+    // }
+    // retMap.put("currpage", page);
+    // retMap.put("totalpages", pageList.getTotalPages());
+    // retMap.put("total", pageList.getTotalElements());
+    // retMap.put("rows", listMap);
+    // return retMap;
     // }
 
     @Override
@@ -933,198 +933,198 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     // FIXME elasticsearch
     // @Override
     // public Map<String, Object> searchAllByUserId(String searchName, String itemId, String userName, String state,
-    //     String year, Integer page, Integer rows) {
-    //     String tenantId = Y9LoginUserHolder.getTenantId();
-    //     String userId = Y9LoginUserHolder.getPositionId();
-    //     Map<String, Object> retMap = new HashMap<String, Object>(16);
-    //     List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-    //     try {
-    //         List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
-    //         if (page < 1) {
-    //             page = 1;
-    //         }
-    //         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+    // String year, Integer page, Integer rows) {
+    // String tenantId = Y9LoginUserHolder.getTenantId();
+    // String userId = Y9LoginUserHolder.getPositionId();
+    // Map<String, Object> retMap = new HashMap<String, Object>(16);
+    // List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+    // try {
+    // List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
+    // if (page < 1) {
+    // page = 1;
+    // }
+    // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
     //
-    //         BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("userId", userId));
-    //         builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
-    //         if (StringUtils.isNotBlank(searchName)) {
-    //             builder.must(QueryBuilders.wildcardQuery("title", "*" + searchName + "*"));
-    //         }
-    //         if (StringUtils.isNotBlank(itemId)) {
-    //             builder.must(QueryBuilders.termQuery("itemId", itemId));
-    //         }
-    //         if (StringUtils.isNotBlank(userName)) {
-    //             builder.must(QueryBuilders.wildcardQuery("senderName", "*" + userName + "*"));
-    //         }
-    //         if (StringUtils.isNotBlank(state)) {
-    //             builder.must(QueryBuilders.termQuery("status", Integer.parseInt(state)));
-    //         }
-    //         if (StringUtils.isNotBlank(year)) {
-    //             builder.must(QueryBuilders.wildcardQuery("createTime", year + "*"));
-    //         }
+    // BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("userId", userId));
+    // builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
+    // if (StringUtils.isNotBlank(searchName)) {
+    // builder.must(QueryBuilders.wildcardQuery("title", "*" + searchName + "*"));
+    // }
+    // if (StringUtils.isNotBlank(itemId)) {
+    // builder.must(QueryBuilders.termQuery("itemId", itemId));
+    // }
+    // if (StringUtils.isNotBlank(userName)) {
+    // builder.must(QueryBuilders.wildcardQuery("senderName", "*" + userName + "*"));
+    // }
+    // if (StringUtils.isNotBlank(state)) {
+    // builder.must(QueryBuilders.termQuery("status", Integer.parseInt(state)));
+    // }
+    // if (StringUtils.isNotBlank(year)) {
+    // builder.must(QueryBuilders.wildcardQuery("createTime", year + "*"));
+    // }
     //
-    //         IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-    //         NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
-    //         NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
-    //         searchQuery.setTrackTotalHits(true);
-    //         SearchHits<ChaoSongInfo> searchHits =
-    //             elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
-    //         List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-    //         Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
+    // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+    // NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
+    // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
+    // searchQuery.setTrackTotalHits(true);
+    // SearchHits<ChaoSongInfo> searchHits =
+    // elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
+    // List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+    // Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
     //
-    //         // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
-    //         // pageable);
-    //         csList = pageList.getContent();
-    //         SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-    //         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    //         int num = (page - 1) * rows;
-    //         HistoricProcessInstanceModel hpi = null;
-    //         ProcessParam processParam = null;
-    //         for (ChaoSongInfo cs : csList) {
-    //             Map<String, Object> map = new HashMap<String, Object>(16);
-    //             map.put("id", cs.getId());
-    //             try {
-    //                 String processInstanceId = cs.getProcessInstanceId();
-    //                 map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
-    //                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
-    //                 map.put("processInstanceId", processInstanceId);
-    //                 map.put("senderName", cs.getSenderName());
-    //                 map.put("sendDeptId", cs.getSendDeptId());
-    //                 map.put("sendDeptName", cs.getSendDeptName());
-    //                 map.put("readTime",
-    //                     StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf1.parse(cs.getReadTime())) : "--");
-    //                 map.put("title", processParam.getTitle());
-    //                 map.put("status", cs.getStatus());
-    //                 map.put("banjie", false);
-    //                 map.put("itemId", cs.getItemId());
-    //                 map.put("itemName", cs.getItemName());
-    //                 map.put("processSerialNumber", processParam.getProcessSerialNumber());
-    //                 map.put("number", processParam.getCustomNumber());
-    //                 map.put("level", processParam.getCustomLevel());
-    //                 hpi = historicProcessManager.getById(tenantId, processInstanceId);
-    //                 boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
-    //                 if (banjie) {
-    //                     map.put("banjie", true);
-    //                 }
-    //                 int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
-    //                 map.put("follow", countFollow > 0 ? true : false);
-    //             } catch (Exception e) {
-    //                 e.printStackTrace();
-    //             }
-    //             map.put("serialNumber", num + 1);
-    //             num += 1;
-    //             listMap.add(map);
-    //         }
-    //         retMap.put("currpage", page);
-    //         retMap.put("totalpages", pageList.getTotalPages());
-    //         retMap.put("total", pageList.getTotalElements());
-    //         retMap.put("rows", listMap);
-    //         return retMap;
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    //     retMap.put("currpage", page);
-    //     retMap.put("totalpages", 0);
-    //     retMap.put("total", 0);
-    //     retMap.put("rows", listMap);
-    //     return retMap;
+    // // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
+    // // pageable);
+    // csList = pageList.getContent();
+    // SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
+    // SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    // int num = (page - 1) * rows;
+    // HistoricProcessInstanceModel hpi = null;
+    // ProcessParam processParam = null;
+    // for (ChaoSongInfo cs : csList) {
+    // Map<String, Object> map = new HashMap<String, Object>(16);
+    // map.put("id", cs.getId());
+    // try {
+    // String processInstanceId = cs.getProcessInstanceId();
+    // map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
+    // processParam = processParamService.findByProcessInstanceId(processInstanceId);
+    // map.put("processInstanceId", processInstanceId);
+    // map.put("senderName", cs.getSenderName());
+    // map.put("sendDeptId", cs.getSendDeptId());
+    // map.put("sendDeptName", cs.getSendDeptName());
+    // map.put("readTime",
+    // StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf1.parse(cs.getReadTime())) : "--");
+    // map.put("title", processParam.getTitle());
+    // map.put("status", cs.getStatus());
+    // map.put("banjie", false);
+    // map.put("itemId", cs.getItemId());
+    // map.put("itemName", cs.getItemName());
+    // map.put("processSerialNumber", processParam.getProcessSerialNumber());
+    // map.put("number", processParam.getCustomNumber());
+    // map.put("level", processParam.getCustomLevel());
+    // hpi = historicProcessManager.getById(tenantId, processInstanceId);
+    // boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
+    // if (banjie) {
+    // map.put("banjie", true);
+    // }
+    // int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
+    // map.put("follow", countFollow > 0 ? true : false);
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // map.put("serialNumber", num + 1);
+    // num += 1;
+    // listMap.add(map);
+    // }
+    // retMap.put("currpage", page);
+    // retMap.put("totalpages", pageList.getTotalPages());
+    // retMap.put("total", pageList.getTotalElements());
+    // retMap.put("rows", listMap);
+    // return retMap;
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // retMap.put("currpage", page);
+    // retMap.put("totalpages", 0);
+    // retMap.put("total", 0);
+    // retMap.put("rows", listMap);
+    // return retMap;
     // }
 
     // FIXME elasticsearch
     // @Override
     // public Map<String, Object> searchAllList(String searchName, String itemId, String senderName, String userName,
-    //     String state, String year, Integer page, Integer rows) {
-    //     String tenantId = Y9LoginUserHolder.getTenantId();
-    //     Map<String, Object> retMap = new HashMap<String, Object>(16);
-    //     List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-    //     try {
-    //         List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
-    //         if (page < 1) {
-    //             page = 1;
-    //         }
-    //         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-    //         BoolQueryBuilder builder =
-    //             QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
-    //         if (StringUtils.isNotBlank(searchName)) {
-    //             builder.must(QueryBuilders.wildcardQuery("title", "*" + searchName + "*"));
-    //         }
-    //         if (StringUtils.isNotBlank(itemId)) {
-    //             builder.must(QueryBuilders.termQuery("itemId", itemId));
-    //         }
-    //         if (StringUtils.isNotBlank(senderName)) {
-    //             builder.must(QueryBuilders.wildcardQuery("senderName", "*" + senderName + "*"));
-    //         }
-    //         if (StringUtils.isNotBlank(userName)) {
-    //             builder.must(QueryBuilders.wildcardQuery("userName", "*" + userName + "*"));
-    //         }
-    //         if (StringUtils.isNotBlank(state)) {
-    //             builder.must(QueryBuilders.termQuery("status", Integer.parseInt(state)));
-    //         }
-    //         if (StringUtils.isNotBlank(year)) {
-    //             builder.must(QueryBuilders.wildcardQuery("createTime", year + "*"));
-    //         }
-    //         IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-    //         NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
-    //         NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
-    //         searchQuery.setTrackTotalHits(true);
-    //         SearchHits<ChaoSongInfo> searchHits =
-    //             elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
-    //         List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-    //         Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
-    //         csList = pageList.getContent();
-    //         SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-    //         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    //         int num = (page - 1) * rows;
-    //         HistoricProcessInstanceModel hpi = null;
-    //         ProcessParam processParam = null;
-    //         for (ChaoSongInfo cs : csList) {
-    //             Map<String, Object> map = new HashMap<String, Object>(16);
-    //             map.put("id", cs.getId());
-    //             try {
-    //                 String processInstanceId = cs.getProcessInstanceId();
-    //                 map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
-    //                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
-    //                 map.put("processInstanceId", processInstanceId);
-    //                 map.put("senderName", cs.getSenderName());
-    //                 map.put("sendDeptId", cs.getSendDeptId());
-    //                 map.put("sendDeptName", cs.getSendDeptName());
-    //                 map.put("readTime",
-    //                     StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf1.parse(cs.getReadTime())) : "--");
-    //                 map.put("title", processParam.getTitle());
-    //                 map.put("status", cs.getStatus());
-    //                 map.put("banjie", false);
-    //                 map.put("itemId", cs.getItemId());
-    //                 map.put("itemName", cs.getItemName());
-    //                 map.put("userName", cs.getUserName());
-    //                 map.put("deptName", cs.getUserDeptName());
-    //                 map.put("processSerialNumber", processParam.getProcessSerialNumber());
-    //                 map.put("number", processParam.getCustomNumber());
-    //                 map.put("level", processParam.getCustomLevel());
-    //                 hpi = historicProcessManager.getById(tenantId, processInstanceId);
-    //                 boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
-    //                 if (banjie) {
-    //                     map.put("banjie", true);
-    //                 }
-    //             } catch (Exception e) {
-    //                 e.printStackTrace();
-    //             }
-    //             map.put("serialNumber", num + 1);
-    //             num += 1;
-    //             listMap.add(map);
-    //         }
-    //         retMap.put("currpage", page);
-    //         retMap.put("totalpages", pageList.getTotalPages());
-    //         retMap.put("total", pageList.getTotalElements());
-    //         retMap.put("rows", listMap);
-    //         return retMap;
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    //     retMap.put("currpage", page);
-    //     retMap.put("totalpages", 0);
-    //     retMap.put("total", 0);
-    //     retMap.put("rows", listMap);
-    //     return retMap;
+    // String state, String year, Integer page, Integer rows) {
+    // String tenantId = Y9LoginUserHolder.getTenantId();
+    // Map<String, Object> retMap = new HashMap<String, Object>(16);
+    // List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+    // try {
+    // List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
+    // if (page < 1) {
+    // page = 1;
+    // }
+    // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+    // BoolQueryBuilder builder =
+    // QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
+    // if (StringUtils.isNotBlank(searchName)) {
+    // builder.must(QueryBuilders.wildcardQuery("title", "*" + searchName + "*"));
+    // }
+    // if (StringUtils.isNotBlank(itemId)) {
+    // builder.must(QueryBuilders.termQuery("itemId", itemId));
+    // }
+    // if (StringUtils.isNotBlank(senderName)) {
+    // builder.must(QueryBuilders.wildcardQuery("senderName", "*" + senderName + "*"));
+    // }
+    // if (StringUtils.isNotBlank(userName)) {
+    // builder.must(QueryBuilders.wildcardQuery("userName", "*" + userName + "*"));
+    // }
+    // if (StringUtils.isNotBlank(state)) {
+    // builder.must(QueryBuilders.termQuery("status", Integer.parseInt(state)));
+    // }
+    // if (StringUtils.isNotBlank(year)) {
+    // builder.must(QueryBuilders.wildcardQuery("createTime", year + "*"));
+    // }
+    // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+    // NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
+    // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
+    // searchQuery.setTrackTotalHits(true);
+    // SearchHits<ChaoSongInfo> searchHits =
+    // elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
+    // List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+    // Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
+    // csList = pageList.getContent();
+    // SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
+    // SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    // int num = (page - 1) * rows;
+    // HistoricProcessInstanceModel hpi = null;
+    // ProcessParam processParam = null;
+    // for (ChaoSongInfo cs : csList) {
+    // Map<String, Object> map = new HashMap<String, Object>(16);
+    // map.put("id", cs.getId());
+    // try {
+    // String processInstanceId = cs.getProcessInstanceId();
+    // map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
+    // processParam = processParamService.findByProcessInstanceId(processInstanceId);
+    // map.put("processInstanceId", processInstanceId);
+    // map.put("senderName", cs.getSenderName());
+    // map.put("sendDeptId", cs.getSendDeptId());
+    // map.put("sendDeptName", cs.getSendDeptName());
+    // map.put("readTime",
+    // StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf1.parse(cs.getReadTime())) : "--");
+    // map.put("title", processParam.getTitle());
+    // map.put("status", cs.getStatus());
+    // map.put("banjie", false);
+    // map.put("itemId", cs.getItemId());
+    // map.put("itemName", cs.getItemName());
+    // map.put("userName", cs.getUserName());
+    // map.put("deptName", cs.getUserDeptName());
+    // map.put("processSerialNumber", processParam.getProcessSerialNumber());
+    // map.put("number", processParam.getCustomNumber());
+    // map.put("level", processParam.getCustomLevel());
+    // hpi = historicProcessManager.getById(tenantId, processInstanceId);
+    // boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
+    // if (banjie) {
+    // map.put("banjie", true);
+    // }
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // map.put("serialNumber", num + 1);
+    // num += 1;
+    // listMap.add(map);
+    // }
+    // retMap.put("currpage", page);
+    // retMap.put("totalpages", pageList.getTotalPages());
+    // retMap.put("total", pageList.getTotalElements());
+    // retMap.put("rows", listMap);
+    // return retMap;
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // retMap.put("currpage", page);
+    // retMap.put("totalpages", 0);
+    // retMap.put("total", 0);
+    // retMap.put("rows", listMap);
+    // return retMap;
     // }
 
     @Override

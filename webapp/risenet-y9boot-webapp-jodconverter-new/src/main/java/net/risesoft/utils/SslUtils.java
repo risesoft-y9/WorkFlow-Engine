@@ -1,13 +1,13 @@
 package net.risesoft.utils;
 
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-
 
 public class SslUtils {
 
@@ -25,11 +25,9 @@ public class SslUtils {
             return null;
         }
 
-        public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
-        }
+        public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {}
 
-        public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
-        }
+        public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {}
     }
 
     /**

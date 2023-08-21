@@ -58,17 +58,18 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         try {
             // FIXME elasticsearch
             // BoolQueryBuilder builder =
-            //     QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
+            // QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
             // builder.must(QueryBuilders.existsQuery("endTime"));
             // if (StringUtils.isNotBlank(itemId)) {
-            //     builder.must(QueryBuilders.termsQuery("itemId", itemId));
+            // builder.must(QueryBuilders.termsQuery("itemId", itemId));
             // }
             // SearchRequest searchRequest = new SearchRequest(Y9EsIndexConst.OFFICE_DONEINFO);
             // searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
             // SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
             // searchSourceBuilder.query(builder);
             // searchRequest.source(searchSourceBuilder);
-            // long count = elasticsearchClient.search(searchRequest, RequestOptions.DEFAULT).getHits().getHits().length;
+            // long count = elasticsearchClient.search(searchRequest,
+            // RequestOptions.DEFAULT).getHits().getHits().length;
             // return (int)count;
         } catch (Exception e) {
             e.printStackTrace();
@@ -81,18 +82,19 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         try {
             // FIXME elasticsearch
             // BoolQueryBuilder builder =
-            //     QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("allUserId", "*" + userId + "*"));
+            // QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("allUserId", "*" + userId + "*"));
             // builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
             // builder.must(QueryBuilders.existsQuery("endTime"));
             // if (StringUtils.isNotBlank(itemId)) {
-            //     builder.must(QueryBuilders.termsQuery("itemId", itemId));
+            // builder.must(QueryBuilders.termsQuery("itemId", itemId));
             // }
             // SearchRequest searchRequest = new SearchRequest(Y9EsIndexConst.OFFICE_DONEINFO);
             // searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
             // SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
             // searchSourceBuilder.query(builder);
             // searchRequest.source(searchSourceBuilder);
-            // long count = elasticsearchClient.search(searchRequest, RequestOptions.DEFAULT).getHits().getHits().length;
+            // long count = elasticsearchClient.search(searchRequest,
+            // RequestOptions.DEFAULT).getHits().getHits().length;
             // return (int)count;
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,17 +107,18 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         try {
             // FIXME elasticsearch
             // BoolQueryBuilder builder =
-            //     QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
+            // QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
             // builder.mustNot(QueryBuilders.existsQuery("endTime"));
             // if (StringUtils.isNotBlank(itemId)) {
-            //     builder.must(QueryBuilders.termsQuery("itemId", itemId));
+            // builder.must(QueryBuilders.termsQuery("itemId", itemId));
             // }
             // SearchRequest searchRequest = new SearchRequest(Y9EsIndexConst.OFFICE_DONEINFO);
             // searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
             // SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
             // searchSourceBuilder.query(builder);
             // searchRequest.source(searchSourceBuilder);
-            // long count = elasticsearchClient.search(searchRequest, RequestOptions.DEFAULT).getHits().getHits().length;
+            // long count = elasticsearchClient.search(searchRequest,
+            // RequestOptions.DEFAULT).getHits().getHits().length;
             // return (int)count;
         } catch (Exception e) {
             e.printStackTrace();
@@ -204,44 +207,44 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // FIXME elasticsearch
             // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
             // BoolQueryBuilder builder =
-            //     QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("deptId", "*" + deptId + "*"));
+            // QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("deptId", "*" + deptId + "*"));
             // builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
             // if (StringUtils.isNotBlank(title)) {
-            //     BoolQueryBuilder builder2 =
-            //         QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
-            //     builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
-            //     builder.must(builder2);
+            // BoolQueryBuilder builder2 =
+            // QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
+            // builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
+            // builder.must(builder2);
             // }
             // if (StringUtils.isNotBlank(itemId)) {
-            //     builder.must(QueryBuilders.termsQuery("itemId", itemId));
+            // builder.must(QueryBuilders.termsQuery("itemId", itemId));
             // }
             // if (StringUtils.isNotBlank(userName)) {
-            //     builder.must(QueryBuilders.wildcardQuery("creatUserName", "*" + userName + "*"));
+            // builder.must(QueryBuilders.wildcardQuery("creatUserName", "*" + userName + "*"));
             // }
             // if (StringUtils.isNotBlank(year)) {
-            //     builder.must(QueryBuilders.wildcardQuery("startTime", year + "*"));
+            // builder.must(QueryBuilders.wildcardQuery("startTime", year + "*"));
             // }
             // if (StringUtils.isNotBlank(state)) {
-            //     if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-            //         builder.mustNot(QueryBuilders.existsQuery("endTime"));
-            //     } else if (ItemBoxTypeEnum.DONE.getValue().equals(state)) {
-            //         builder.must(QueryBuilders.existsQuery("endTime"));
-            //     }
+            // if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
+            // builder.mustNot(QueryBuilders.existsQuery("endTime"));
+            // } else if (ItemBoxTypeEnum.DONE.getValue().equals(state)) {
+            // builder.must(QueryBuilders.existsQuery("endTime"));
+            // }
             // }
             // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
             // NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
             // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
             // searchQuery.setTrackTotalHits(true);
             // SearchHits<OfficeDoneInfo> searchHits =
-            //     elasticsearchOperations.search(searchQuery, OfficeDoneInfo.class, index);
+            // elasticsearchOperations.search(searchQuery, OfficeDoneInfo.class, index);
             // List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             // Page<OfficeDoneInfo> pageList = new PageImpl<OfficeDoneInfo>(list0, pageable, searchHits.getTotalHits());
             // List<OfficeDoneInfo> list = pageList.getContent();
             // OfficeDoneInfoModel officeDoneInfoModel = null;
             // for (OfficeDoneInfo officeDoneInfo : list) {
-            //     officeDoneInfoModel = new OfficeDoneInfoModel();
-            //     Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
-            //     list1.add(officeDoneInfoModel);
+            // officeDoneInfoModel = new OfficeDoneInfoModel();
+            // Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+            // list1.add(officeDoneInfoModel);
             // }
             // totalPages = pageList != null ? pageList.getTotalPages() : 1;
             // total = pageList != null ? pageList.getTotalElements() : 0;
@@ -271,29 +274,29 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // FIXME elasticsearch
             // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
             // BoolQueryBuilder builder =
-            //     QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("allUserId", "*" + userId + "*"));
+            // QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("allUserId", "*" + userId + "*"));
             // builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
             // if (StringUtils.isNotBlank(title)) {
-            //     BoolQueryBuilder builder2 =
-            //         QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
-            //     builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
-            //     builder.must(builder2);
+            // BoolQueryBuilder builder2 =
+            // QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
+            // builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
+            // builder.must(builder2);
             // }
             // if (StringUtils.isNotBlank(itemId)) {
-            //     builder.must(QueryBuilders.termsQuery("itemId", itemId));
+            // builder.must(QueryBuilders.termsQuery("itemId", itemId));
             // }
             // if (StringUtils.isNotBlank(userName)) {
-            //     builder.must(QueryBuilders.wildcardQuery("creatUserName", "*" + userName + "*"));
+            // builder.must(QueryBuilders.wildcardQuery("creatUserName", "*" + userName + "*"));
             // }
             // if (StringUtils.isNotBlank(year)) {
-            //     builder.must(QueryBuilders.wildcardQuery("startTime", year + "*"));
+            // builder.must(QueryBuilders.wildcardQuery("startTime", year + "*"));
             // }
             // if (StringUtils.isNotBlank(state)) {
-            //     if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-            //         builder.mustNot(QueryBuilders.existsQuery("endTime"));
-            //     } else if (ItemBoxTypeEnum.DONE.getValue().equals(state)) {
-            //         builder.must(QueryBuilders.existsQuery("endTime"));
-            //     }
+            // if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
+            // builder.mustNot(QueryBuilders.existsQuery("endTime"));
+            // } else if (ItemBoxTypeEnum.DONE.getValue().equals(state)) {
+            // builder.must(QueryBuilders.existsQuery("endTime"));
+            // }
             // }
             //
             // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
@@ -301,7 +304,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
             // searchQuery.setTrackTotalHits(true);
             // SearchHits<OfficeDoneInfo> searchHits =
-            //     elasticsearchOperations.search(searchQuery, OfficeDoneInfo.class, index);
+            // elasticsearchOperations.search(searchQuery, OfficeDoneInfo.class, index);
             // List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             // Page<OfficeDoneInfo> pageList = new PageImpl<OfficeDoneInfo>(list0, pageable, searchHits.getTotalHits());
             //
@@ -310,9 +313,9 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // List<OfficeDoneInfo> list = pageList.getContent();
             // OfficeDoneInfoModel officeDoneInfoModel = null;
             // for (OfficeDoneInfo officeDoneInfo : list) {
-            //     officeDoneInfoModel = new OfficeDoneInfoModel();
-            //     Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
-            //     list1.add(officeDoneInfoModel);
+            // officeDoneInfoModel = new OfficeDoneInfoModel();
+            // Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+            // list1.add(officeDoneInfoModel);
             // }
             // totalPages = pageList != null ? pageList.getTotalPages() : 1;
             // total = pageList != null ? pageList.getTotalElements() : 0;
@@ -342,28 +345,28 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // FIXME elasticsearch
             // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
             // BoolQueryBuilder builder =
-            //     QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
+            // QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
             // if (StringUtils.isNotBlank(searchName)) {
-            //     BoolQueryBuilder builder2 =
-            //         QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + searchName + "*"));
-            //     builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + searchName + "*"));
-            //     builder.must(builder2);
+            // BoolQueryBuilder builder2 =
+            // QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + searchName + "*"));
+            // builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + searchName + "*"));
+            // builder.must(builder2);
             // }
             // if (StringUtils.isNotBlank(itemId)) {
-            //     builder.must(QueryBuilders.termsQuery("itemId", itemId));
+            // builder.must(QueryBuilders.termsQuery("itemId", itemId));
             // }
             // if (StringUtils.isNotBlank(userName)) {
-            //     builder.must(QueryBuilders.wildcardQuery("creatUserName", "*" + userName + "*"));
+            // builder.must(QueryBuilders.wildcardQuery("creatUserName", "*" + userName + "*"));
             // }
             // if (StringUtils.isNotBlank(year)) {
-            //     builder.must(QueryBuilders.wildcardQuery("startTime", year + "*"));
+            // builder.must(QueryBuilders.wildcardQuery("startTime", year + "*"));
             // }
             // if (StringUtils.isNotBlank(state)) {
-            //     if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-            //         builder.mustNot(QueryBuilders.existsQuery("endTime"));
-            //     } else if (ItemBoxTypeEnum.DONE.getValue().equals(state)) {
-            //         builder.must(QueryBuilders.existsQuery("endTime"));
-            //     }
+            // if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
+            // builder.mustNot(QueryBuilders.existsQuery("endTime"));
+            // } else if (ItemBoxTypeEnum.DONE.getValue().equals(state)) {
+            // builder.must(QueryBuilders.existsQuery("endTime"));
+            // }
             // }
             //
             // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
@@ -371,16 +374,16 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
             // searchQuery.setTrackTotalHits(true);
             // SearchHits<OfficeDoneInfo> searchHits =
-            //     elasticsearchOperations.search(searchQuery, OfficeDoneInfo.class, index);
+            // elasticsearchOperations.search(searchQuery, OfficeDoneInfo.class, index);
             // List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             // Page<OfficeDoneInfo> pageList = new PageImpl<OfficeDoneInfo>(list0, pageable, searchHits.getTotalHits());
             //
             // List<OfficeDoneInfo> list = pageList.getContent();
             // OfficeDoneInfoModel officeDoneInfoModel = null;
             // for (OfficeDoneInfo officeDoneInfo : list) {
-            //     officeDoneInfoModel = new OfficeDoneInfoModel();
-            //     Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
-            //     list1.add(officeDoneInfoModel);
+            // officeDoneInfoModel = new OfficeDoneInfoModel();
+            // Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+            // list1.add(officeDoneInfoModel);
             // }
             // totalPages = pageList != null ? pageList.getTotalPages() : 1;
             // total = pageList != null ? pageList.getTotalElements() : 0;
@@ -413,31 +416,31 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             // FIXME elasticsearch
             // BoolQueryBuilder builder = QueryBuilders.boolQuery()
-            //     .must(QueryBuilders.wildcardQuery("tenantId", Y9LoginUserHolder.getTenantId()));
+            // .must(QueryBuilders.wildcardQuery("tenantId", Y9LoginUserHolder.getTenantId()));
             // if (StringUtils.isNotBlank(state)) {
-            //     if (state.equals(ItemBoxTypeEnum.DOING.getValue())) {
-            //         builder.mustNot(QueryBuilders.existsQuery("endTime"));
-            //     } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-            //         builder.must(QueryBuilders.existsQuery("endTime"));
-            //     }
+            // if (state.equals(ItemBoxTypeEnum.DOING.getValue())) {
+            // builder.mustNot(QueryBuilders.existsQuery("endTime"));
+            // } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
+            // builder.must(QueryBuilders.existsQuery("endTime"));
+            // }
             // }
             // if (StringUtils.isNotBlank(title)) {
-            //     BoolQueryBuilder builder2 =
-            //         QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
-            //     builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
-            //     builder2.should(QueryBuilders.wildcardQuery("creatUserName", "*" + title + "*"));
-            //     builder.must(builder2);
+            // BoolQueryBuilder builder2 =
+            // QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
+            // builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
+            // builder2.should(QueryBuilders.wildcardQuery("creatUserName", "*" + title + "*"));
+            // builder.must(builder2);
             // }
             // if (StringUtils.isNotBlank(itemId)) {
-            //     builder.must(QueryBuilders.termsQuery("itemId", itemId));
+            // builder.must(QueryBuilders.termsQuery("itemId", itemId));
             // }
             // if (StringUtils.isNotBlank(startdate)) {
-            //     startdate = startdate + " 00:00:00";
-            //     builder.must(QueryBuilders.rangeQuery("startTime").gte(startdate));
+            // startdate = startdate + " 00:00:00";
+            // builder.must(QueryBuilders.rangeQuery("startTime").gte(startdate));
             // }
             // if (StringUtils.isNotBlank(enddate)) {
-            //     enddate = enddate + " 23:59:59";
-            //     builder.must(QueryBuilders.rangeQuery("startTime").lte(enddate));
+            // enddate = enddate + " 23:59:59";
+            // builder.must(QueryBuilders.rangeQuery("startTime").lte(enddate));
             // }
             //
             // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
@@ -445,7 +448,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
             // searchQuery.setTrackTotalHits(true);
             // SearchHits<OfficeDoneInfo> searchHits =
-            //     elasticsearchOperations.search(searchQuery, OfficeDoneInfo.class, index);
+            // elasticsearchOperations.search(searchQuery, OfficeDoneInfo.class, index);
             // List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             // Page<OfficeDoneInfo> pageList = new PageImpl<OfficeDoneInfo>(list0, pageable, searchHits.getTotalHits());
             //
@@ -454,9 +457,9 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // List<OfficeDoneInfo> list = pageList.getContent();
             // OfficeDoneInfoModel officeDoneInfoModel = null;
             // for (OfficeDoneInfo officeDoneInfo : list) {
-            //     officeDoneInfoModel = new OfficeDoneInfoModel();
-            //     Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
-            //     list1.add(officeDoneInfoModel);
+            // officeDoneInfoModel = new OfficeDoneInfoModel();
+            // Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+            // list1.add(officeDoneInfoModel);
             // }
             // totalPages = pageList != null ? pageList.getTotalPages() : 1;
             // total = pageList != null ? pageList.getTotalElements() : 0;
@@ -486,25 +489,25 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // FIXME elasticsearch
             // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
             // BoolQueryBuilder builder =
-            //     QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("allUserId", "*" + userId + "*"));
+            // QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("allUserId", "*" + userId + "*"));
             // builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
             // builder.must(QueryBuilders.existsQuery("endTime"));
             // if (StringUtils.isNotBlank(title)) {
-            //     BoolQueryBuilder builder2 =
-            //         QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
-            //     builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
-            //     builder.must(builder2);
+            // BoolQueryBuilder builder2 =
+            // QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
+            // builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
+            // builder.must(builder2);
             // }
             // if (StringUtils.isNotBlank(itemId)) {
-            //     builder.must(QueryBuilders.termsQuery("itemId", itemId));
+            // builder.must(QueryBuilders.termsQuery("itemId", itemId));
             // }
             // if (StringUtils.isNotBlank(startdate)) {
-            //     startdate = startdate + " 00:00:00";
-            //     builder.must(QueryBuilders.rangeQuery("startTime").gte(startdate));
+            // startdate = startdate + " 00:00:00";
+            // builder.must(QueryBuilders.rangeQuery("startTime").gte(startdate));
             // }
             // if (StringUtils.isNotBlank(enddate)) {
-            //     enddate = enddate + " 23:59:59";
-            //     builder.must(QueryBuilders.rangeQuery("startTime").lte(enddate));
+            // enddate = enddate + " 23:59:59";
+            // builder.must(QueryBuilders.rangeQuery("startTime").lte(enddate));
             // }
             //
             // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
@@ -512,7 +515,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
             // searchQuery.setTrackTotalHits(true);
             // SearchHits<OfficeDoneInfo> searchHits =
-            //     elasticsearchOperations.search(searchQuery, OfficeDoneInfo.class, index);
+            // elasticsearchOperations.search(searchQuery, OfficeDoneInfo.class, index);
             // List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             // Page<OfficeDoneInfo> pageList = new PageImpl<OfficeDoneInfo>(list0, pageable, searchHits.getTotalHits());
             //
@@ -521,9 +524,9 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // List<OfficeDoneInfo> list = pageList.getContent();
             // OfficeDoneInfoModel officeDoneInfoModel = null;
             // for (OfficeDoneInfo officeDoneInfo : list) {
-            //     officeDoneInfoModel = new OfficeDoneInfoModel();
-            //     Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
-            //     list1.add(officeDoneInfoModel);
+            // officeDoneInfoModel = new OfficeDoneInfoModel();
+            // Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+            // list1.add(officeDoneInfoModel);
             // }
             // totalPages = pageList != null ? pageList.getTotalPages() : 1;
             // total = pageList != null ? pageList.getTotalElements() : 0;

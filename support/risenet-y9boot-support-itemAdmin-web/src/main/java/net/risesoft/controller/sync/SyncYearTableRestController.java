@@ -1,11 +1,11 @@
 package net.risesoft.controller.sync;
 
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

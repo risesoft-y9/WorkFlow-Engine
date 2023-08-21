@@ -1,8 +1,18 @@
 package net.risesoft.web.filter;
 
-import io.mola.galimatias.GalimatiasParseException;
-import net.risesoft.config.ConfigConstants;
-import net.risesoft.utils.WebUtils;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+
 import org.jodconverter.core.util.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,24 +20,15 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Locale;
+import net.risesoft.config.ConfigConstants;
+import net.risesoft.utils.WebUtils;
 
+import io.mola.galimatias.GalimatiasParseException;
 
 public class TrustDirFilter implements Filter {
 
     private String notTrustDirView;
     private final Logger logger = LoggerFactory.getLogger(TrustDirFilter.class);
-
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -42,7 +43,8 @@ public class TrustDirFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
         String url = WebUtils.getSourceUrl(request);
         if (!allowPreview(url)) {
             response.getWriter().write(this.notTrustDirView);
@@ -58,7 +60,7 @@ public class TrustDirFilter implements Filter {
     }
 
     private boolean allowPreview(String urlPath) {
-        //判断URL是否合法
+        // 判断URL是否合法
         if (!StringUtils.hasText(urlPath) || !WebUtils.isValidUrl(urlPath)) {
             return false;
         }
@@ -69,7 +71,8 @@ public class TrustDirFilter implements Filter {
                 if (OSUtils.IS_OS_WINDOWS) {
                     filePath = filePath.replaceAll("/", "\\\\");
                 }
-                return filePath.startsWith(ConfigConstants.getFileDir()) || filePath.startsWith(ConfigConstants.getLocalPreviewDir());
+                return filePath.startsWith(ConfigConstants.getFileDir())
+                    || filePath.startsWith(ConfigConstants.getLocalPreviewDir());
             }
             return true;
         } catch (IOException | GalimatiasParseException e) {

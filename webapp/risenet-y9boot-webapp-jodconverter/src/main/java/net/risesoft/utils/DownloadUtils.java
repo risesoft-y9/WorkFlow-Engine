@@ -1,5 +1,7 @@
 package net.risesoft.utils;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,8 +25,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import net.risesoft.model.ReturnResponse;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author qinman

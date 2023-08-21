@@ -12,7 +12,10 @@
 //
 package org.artofsolving.jodconverter;
 
-import static org.artofsolving.jodconverter.office.OfficeUtils.*;
+import static org.artofsolving.jodconverter.office.OfficeUtils.SERVICE_DESKTOP;
+import static org.artofsolving.jodconverter.office.OfficeUtils.cast;
+import static org.artofsolving.jodconverter.office.OfficeUtils.toUnoProperties;
+import static org.artofsolving.jodconverter.office.OfficeUtils.toUrl;
 
 import java.io.File;
 import java.util.Map;

@@ -1,5 +1,7 @@
 package net.risesoft.service;
 
+import jakarta.annotation.Resource;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -7,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.Future;
 
-import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;

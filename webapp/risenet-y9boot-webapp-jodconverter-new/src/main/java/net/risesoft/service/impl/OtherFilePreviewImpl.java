@@ -1,17 +1,17 @@
 package net.risesoft.service.impl;
 
+import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+
 import net.risesoft.model.FileAttribute;
 import net.risesoft.service.FilePreview;
 import net.risesoft.utils.KkFileUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 /**
  * Content :其他文件
  */
 @Service
 public class OtherFilePreviewImpl implements FilePreview {
-
 
     @Override
     public String filePreviewHandle(String url, Model model, FileAttribute fileAttribute) {
@@ -46,6 +46,5 @@ public class OtherFilePreviewImpl implements FilePreview {
         model.addAttribute("msg", KkFileUtils.htmlEscape(errMsg));
         return NOT_SUPPORTED_FILE_PAGE;
     }
-
 
 }
