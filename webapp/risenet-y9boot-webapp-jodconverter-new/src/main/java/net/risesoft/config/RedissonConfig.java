@@ -32,7 +32,7 @@ public class RedissonConfig {
     private int subscriptionConnectionMinimumIdleSize = 1;
     private int subscriptionConnectionPoolSize = 50;
     private int connectionPoolSize = 64;
-    private int database = 0;
+    private int database;
     private boolean dnsMonitoring = false;
     private int dnsMonitoringInterval = 5000;
 

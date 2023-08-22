@@ -9,14 +9,14 @@ server:
 simText: txt,html,htm,asp,jsp,xml,json,properties,md,gitignore,log,java,py,c,cpp,sql,sh,bat,m,bas,prg,cmd
 
 base:
-    url: https://dev.youshengyun.com/jodconverter
+    url: default
 beian: default
 cache:
     clean:
         cron: 0 0 3 * * ?
         enabled: true
     enabled: true
-    type: jdk    # 缓存类型 jdk/redis
+    type: redis    # 缓存类型 jdk/redis
 cad:
     preview:
         type: svg
