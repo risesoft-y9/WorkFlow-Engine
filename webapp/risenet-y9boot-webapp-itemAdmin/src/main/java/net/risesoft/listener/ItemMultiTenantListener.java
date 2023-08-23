@@ -28,6 +28,7 @@ import net.risesoft.util.InitTableDataService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
+import net.risesoft.y9.pubsub.constant.Y9CommonEventConst;
 import net.risesoft.y9.pubsub.event.Y9EventCommon;
 import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
 
@@ -117,8 +118,8 @@ public class ItemMultiTenantListener implements ApplicationListener<Y9EventCommo
     @Override
     public void onApplicationEvent(Y9EventCommon event) {
         String eventType = event.getEventType();
-        String tsi = "TENANT_SYSTEM_ITEMADMIN";
-        if (tsi.equals(eventType)) {
+        String target = event.getTarget();
+        if (Y9CommonEventConst.TENANT_SYSTEM_REGISTERED.equals(eventType) && Y9Context.getSystemName().equals(target)) {
             String tenantId = event.getEventObject().toString();
             LOGGER.info("租户:{}租用itemAdmin 初始化数据.........", tenantId);
             Tenant tenant = tenantApi.getById(tenantId);
