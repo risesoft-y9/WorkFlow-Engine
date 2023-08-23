@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.CalendarConfigApi;
-import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.CalendarConfigModel;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -37,9 +36,6 @@ import net.risesoft.y9.util.Y9Util;
 @RequestMapping("/mobile/sign")
 @Slf4j
 public class MobileSignController {
-
-    @Autowired
-    private PersonApi personManager;
 
     @Autowired
     private CalendarConfigApi calendarConfigManager;
