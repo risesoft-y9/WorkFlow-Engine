@@ -11,10 +11,12 @@ import org.springframework.context.ApplicationListener;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.model.TenantSystem;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.service.MultiTenantProcessEngineConfiguration;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.pubsub.constant.Y9CommonEventConst;
 import net.risesoft.y9.pubsub.event.Y9EventCommon;
 
 /**
@@ -55,10 +57,10 @@ public class FlowableMultiTenantListener implements ApplicationListener<Y9EventC
     @Override
     public void onApplicationEvent(Y9EventCommon event) {
         String eventType = event.getEventType();
-        String tenantId = event.getEventObject().toString();
-        String tsp = "TENANT_SYSTEM_PROCESSADMIN";
-        if (tsp.equals(eventType)) {
-            LOGGER.info("租户:{} 租用processAdmin 初始化数据.........", tenantId);
+        String target = event.getTarget();
+        TenantSystem tenantSystem = (TenantSystem)event.getEventObject();
+        if (Y9CommonEventConst.TENANT_SYSTEM_REGISTERED.equals(eventType) && Y9Context.getSystemName().equals(target)) {
+            LOGGER.info("租户:{} 租用processAdmin 初始化数据.........", tenantSystem.getTenantId());
             if (this.multiTenantProcessEngineConfiguration == null) {
                 try {
                     this.multiTenantProcessEngineConfiguration = Y9Context.getBean("processEngineConfiguration");
@@ -68,7 +70,7 @@ public class FlowableMultiTenantListener implements ApplicationListener<Y9EventC
                 }
             }
             this.multiTenantProcessEngineConfiguration.buildProcessEngine();
-            createDeployment("ziyouliucheng", tenantId);
+            createDeployment("ziyouliucheng", tenantSystem.getTenantId());
             LOGGER.info(Y9Context.getSystemName() + ", 同步租户数据源信息, 成功！");
         }
     }
