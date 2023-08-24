@@ -59,7 +59,7 @@ public class BasicButton implements Comparable<BasicButton>, Serializable {
         super();
         this.id = id;
         this.name = name;
-        icon = icon;
+        this.icon = icon;
         this.type = type;
         this.show = show;
     }
@@ -103,7 +103,7 @@ public class BasicButton implements Comparable<BasicButton>, Serializable {
     }
 
     public void setIcon(String icon) {
-        icon = icon;
+        this.icon = icon;
     }
 
     public void setId(String id) {
