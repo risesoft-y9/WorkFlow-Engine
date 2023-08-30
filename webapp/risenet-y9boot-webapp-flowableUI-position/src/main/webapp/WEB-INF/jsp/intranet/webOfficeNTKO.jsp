@@ -86,7 +86,7 @@
 	function initDocument() {
 		fileType="${fileType}";
 		wordReadOnly = '${wordReadOnly}';
-		openWordOrPDF = '${openWordOrPDF}';
+		openWordOrPDF = '${openWordOrPdf}';
 		fileDocumentId = '${fileDocumentId}';
 		userName = '${userName}';
 		itembox = "${itembox}";
@@ -523,7 +523,6 @@
 				flag.innerHTML = '转PDF并上传';
 				revokepdf("1");
 			}
-			
 		} else {
 			layer.open({
 				type: 2,
@@ -535,7 +534,7 @@
 				maxmin: false,
 				skin:'layui-layer-lan',
 				offset: 't',
-				content: '${ctx}/transactionWord/showDownPdfTool'
+				content: '${ctx}/services/ntkoForm/showDownPdfTool'
 			}) 
 			
 			/* if(browser=='IE'){
