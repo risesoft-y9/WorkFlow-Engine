@@ -15,8 +15,7 @@ import net.risesoft.entity.form.Y9FormField;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface Y9FormFieldRepository
-    extends JpaRepository<Y9FormField, String>, JpaSpecificationExecutor<Y9FormField> {
+public interface Y9FormFieldRepository extends JpaRepository<Y9FormField, String>, JpaSpecificationExecutor<Y9FormField> {
 
     @Modifying
     @Transactional(readOnly = false)
