@@ -74,6 +74,14 @@ public interface ActRuDetailService {
     boolean endByProcessSerialNumber(String processSerialNumber);
 
     /**
+     * 根据流程实例id获取列表
+     *
+     * @param processInstanceId
+     * @return
+     */
+    List<ActRuDetail> findByProcessInstanceId(String processInstanceId);
+
+    /**
      * 根据流程实例Id和办理人查找
      *
      * @param processInstanceId
@@ -137,8 +145,7 @@ public interface ActRuDetailService {
      * @param sort
      * @return
      */
-    Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows, int page,
-        Sort sort);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows, int page, Sort sort);
 
     /**
      * 查找个人待办，在办列表
@@ -151,8 +158,7 @@ public interface ActRuDetailService {
      * @param sort
      * @return
      */
-    Page<ActRuDetail> findBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status, int rows,
-        int page, Sort sort);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status, int rows, int page, Sort sort);
 
     /**
      * 标记流程为归档

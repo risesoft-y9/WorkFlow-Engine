@@ -56,4 +56,16 @@ public class Y9FormField implements Serializable {
     @Comment("字段类型")
     private String fieldType;
 
+    @Column(name = "QUERYSIGN", length = 2)
+    @Comment("开启查询条件")
+    private String querySign = "0";
+
+    @Column(name = "QUERYTYPE", length = 50)
+    @Comment("查询类型") // 文本框，多选框，单选框，日期
+    private String queryType;
+
+    @Column(name = "OPTIONVALUE", length = 500)
+    @Comment("选项值") // 多选框，单选框选项值
+    private String optionValue;
+
 }
