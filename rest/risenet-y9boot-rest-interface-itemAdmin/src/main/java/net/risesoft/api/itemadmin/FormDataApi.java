@@ -3,6 +3,8 @@ package net.risesoft.api.itemadmin;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.model.itemadmin.Y9FormFieldModel;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -31,8 +33,7 @@ public interface FormDataApi {
      * @param processDefinitionId
      * @return
      */
-    List<Map<String, Object>> getAllFieldPerm(String tenantId, String userId, String formId, String taskDefKey,
-        String processDefinitionId);
+    List<Map<String, Object>> getAllFieldPerm(String tenantId, String userId, String formId, String taskDefKey, String processDefinitionId);
 
     /**
      * 获取子表数据
@@ -44,8 +45,7 @@ public interface FormDataApi {
      * @return
      * @throws Exception
      */
-    public List<Map<String, Object>> getChildTableData(String tenantId, String formId, String tableId,
-        String processSerialNumber) throws Exception;
+    public List<Map<String, Object>> getChildTableData(String tenantId, String formId, String tableId, String processSerialNumber) throws Exception;
 
     /**
      * 根据事项id和流程序列号获取数据
@@ -68,8 +68,16 @@ public interface FormDataApi {
      * @param processDefinitionId
      * @return
      */
-    Map<String, Object> getFieldPerm(String tenantId, String userId, String formId, String fieldName, String taskDefKey,
-        String processDefinitionId);
+    Map<String, Object> getFieldPerm(String tenantId, String userId, String formId, String fieldName, String taskDefKey, String processDefinitionId);
+
+    /**
+     * 获取表单绑定字段
+     *
+     * @param tenantId
+     * @param itemId
+     * @return
+     */
+    public List<Y9FormFieldModel> getFormField(String tenantId, String itemId);
 
     /**
      * 根据表单id获取绑定字段信息
@@ -110,8 +118,7 @@ public interface FormDataApi {
      * @param jsonData
      * @throws Exception
      */
-    public void saveChildTableData(String tenantId, String formId, String tableId, String processSerialNumber,
-        String jsonData) throws Exception;
+    public void saveChildTableData(String tenantId, String formId, String tableId, String processSerialNumber, String jsonData) throws Exception;
 
     /**
      * 保存表单数据

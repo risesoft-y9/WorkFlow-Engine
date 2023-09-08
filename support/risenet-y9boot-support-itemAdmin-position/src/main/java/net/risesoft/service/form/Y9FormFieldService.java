@@ -22,7 +22,7 @@ public interface Y9FormFieldService {
 
     /**
      * Description:
-     * 
+     *
      * @param id
      * @return
      */
@@ -37,8 +37,17 @@ public interface Y9FormFieldService {
     public List<Y9FormField> findByTableName(String tableName);
 
     /**
+     * 根据表名和表单id获取绑定字段
+     *
+     * @param tableName
+     * @param formId
+     * @return
+     */
+    public List<Y9FormField> findByTableNameAndFormId(String tableName, String formId);
+
+    /**
      * Description:
-     * 
+     *
      * @param formField
      * @return
      */

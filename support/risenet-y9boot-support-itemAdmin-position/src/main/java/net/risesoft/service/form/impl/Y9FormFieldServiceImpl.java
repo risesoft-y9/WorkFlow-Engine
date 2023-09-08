@@ -44,6 +44,11 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
     }
 
     @Override
+    public List<Y9FormField> findByTableNameAndFormId(String tableName, String formId) {
+        return y9FormFieldRepository.findByFormIdAndTableName(tableName, formId);
+    }
+
+    @Override
     @Transactional(readOnly = false)
     public Map<String, Object> saveOrUpdate(Y9FormField formField) {
         Map<String, Object> map = new HashMap<>(16);
