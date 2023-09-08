@@ -31,6 +31,6 @@ public interface QueryListApi {
      */
     @GetMapping("/getQueryList")
     public ItemPage<ActRuDetailModel> getQueryList(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("userId") @NotBlank String userId, @RequestParam("systemName") @NotBlank String systemName, @RequestParam("state") String state, @RequestParam("createDate") String createDate,
-        @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr, @RequestParam("page") @NotBlank Integer page, @RequestParam("rows") @NotBlank Integer rows);
+        @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
 }
