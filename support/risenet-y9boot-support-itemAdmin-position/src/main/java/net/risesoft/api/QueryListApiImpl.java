@@ -57,6 +57,10 @@ public class QueryListApiImpl implements QueryListApi {
                             }
                             sql2 += " ) ";
                             sql1 += sql2;
+                        } else if (queryType.equals("date")) {// 日期搜索
+                            String[] values = value.split(",");
+                            sql1 += " AND F." + columnName.toUpperCase() + " >= '" + values[0] + "' ";
+                            sql1 += " AND F." + columnName.toUpperCase() + " < '" + values[1] + " 23:59:59' ";
                         } else {
                             sql1 += " AND INSTR(F." + columnName.toUpperCase() + ",'" + value + "') > 0 ";
                         }
@@ -86,6 +90,8 @@ public class QueryListApiImpl implements QueryListApi {
 
             String orderBy = " T.STARTTIME DESC";
             String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.DELETED = FALSE " + stateSql + dateSql + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + sql1 + " ORDER BY " + orderBy;
+            System.out.println(sql);
+
             String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.SYSTEMNAME= ? " + stateSql + dateSql + " AND T.ASSIGNEE= ? AND T.DELETED = FALSE " + sql1;
             Object[] args = new Object[2];
             args[0] = systemName;
