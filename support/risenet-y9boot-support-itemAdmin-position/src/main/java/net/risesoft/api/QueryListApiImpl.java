@@ -47,16 +47,20 @@ public class QueryListApiImpl implements QueryListApi {
                             sql1 += " AND F." + columnName.toUpperCase() + " = '" + value + "' ";
                         } else if (queryType.equals("checkbox")) {// 多选框搜索
                             String[] values = value.split(",");
-                            String sql2 = "";
-                            for (String val : values) {
-                                if (sql2.equals("")) {
-                                    sql2 += " AND ( INSTR(F." + columnName.toUpperCase() + ",'" + val + "') > 0 ";
-                                } else {
-                                    sql2 += " OR INSTR(F." + columnName.toUpperCase() + ",'" + val + "') > 0 ";
+                            if (values.length == 1) {// 单个值
+                                sql1 += " AND INSTR(F." + columnName.toUpperCase() + ",'" + values[0] + "') > 0 ";
+                            } else {
+                                String sql2 = "";
+                                for (String val : values) {// 多个值
+                                    if (sql2.equals("")) {
+                                        sql2 += " AND ( INSTR(F." + columnName.toUpperCase() + ",'" + val + "') > 0 ";
+                                    } else {
+                                        sql2 += " OR INSTR(F." + columnName.toUpperCase() + ",'" + val + "') > 0 ";
+                                    }
                                 }
+                                sql2 += " ) ";
+                                sql1 += sql2;
                             }
-                            sql2 += " ) ";
-                            sql1 += sql2;
                         } else if (queryType.equals("date")) {// 日期搜索
                             String[] values = value.split(",");
                             sql1 += " AND F." + columnName.toUpperCase() + " >= '" + values[0] + "' ";
