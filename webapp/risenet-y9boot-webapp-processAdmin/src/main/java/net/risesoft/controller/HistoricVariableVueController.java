@@ -36,7 +36,7 @@ public class HistoricVariableVueController {
     @ResponseBody
     @RequestMapping(value = "/getAllHistoricVariable")
     public Y9Page<Map<String, Object>> getAllHistoricVariable(@RequestParam int page, @RequestParam int rows) {
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         long totalCount = historyService.createHistoricVariableInstanceQuery().count();
         List<HistoricVariableInstance> hviList =
             historyService.createHistoricVariableInstanceQuery().listPage((page - 1) * rows, rows);
@@ -71,8 +71,8 @@ public class HistoricVariableVueController {
     @RequestMapping(value = "/searchHistoricVariable", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> searchHistoricVariable(@RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String variableName,
-        @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        @RequestParam int page, @RequestParam int rows) {
+        List<Map<String, Object>> items = new ArrayList<>();
         long totalCount = 0;
         List<HistoricVariableInstance> hviList = null;
         if (StringUtils.isBlank(processInstanceId)) {

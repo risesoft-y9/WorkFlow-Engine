@@ -74,8 +74,8 @@ public class Y9FormItemBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/bindList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Y9FormItemBind>> bindList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String procDefId, @RequestParam(required = false) String taskDefKey) {
+    public Y9Result<List<Y9FormItemBind>> bindList(@RequestParam String itemId, @RequestParam String procDefId,
+        @RequestParam(required = false) String taskDefKey) {
         List<Y9FormItemBind> eformItemList =
             y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, procDefId, taskDefKey);
         return Y9Result.success(eformItemList, "获取成功");
@@ -89,8 +89,7 @@ public class Y9FormItemBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/copyForm", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyForm(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> copyForm(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         y9FormItemBindService.copyEform(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }
@@ -103,7 +102,7 @@ public class Y9FormItemBindRestController {
      */
     @RequestMapping(value = "/deleteBind", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> delete(@RequestParam(required = true) String id) {
+    public Y9Result<String> delete(@RequestParam String id) {
         Map<String, Object> map = y9FormItemBindService.delete(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -118,7 +117,7 @@ public class Y9FormItemBindRestController {
      * @return
      */
     @RequestMapping(value = "/deleteMobileBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteMobileBind(@RequestParam(required = true) String id) {
+    public Y9Result<String> deleteMobileBind(@RequestParam String id) {
         y9FormItemMobileBindRepository.deleteById(id);
         return Y9Result.successMsg("删除成功");
     }
@@ -134,15 +133,15 @@ public class Y9FormItemBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/formList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> formList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey,
-        @RequestParam(required = true) String systemName) {
-        List<Map<String, Object>> listmap = new ArrayList<Map<String, Object>>();
+    public Y9Result<List<Map<String, Object>>> formList(@RequestParam String itemId,
+        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey,
+        @RequestParam String systemName) {
+        List<Map<String, Object>> listMap = new ArrayList<>();
         List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(systemName, "%%");
         List<Y9FormItemBind> bindList =
             y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
         for (Y9Form y9Form : list) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             boolean isbind = false;
             for (Y9FormItemBind bind : bindList) {
                 if (bind.getFormId().equals(y9Form.getId())) {
@@ -153,10 +152,10 @@ public class Y9FormItemBindRestController {
             if (!isbind) {
                 map.put("formName", y9Form.getFormName());
                 map.put("formId", y9Form.getId());
-                listmap.add(map);
+                listMap.add(map);
             }
         }
-        return Y9Result.success(listmap, "获取成功");
+        return Y9Result.success(listMap, "获取成功");
     }
 
     /**
@@ -168,7 +167,7 @@ public class Y9FormItemBindRestController {
      */
     @RequestMapping(value = "/getBindForm", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Y9FormItemBind> getBindForm(@RequestParam(required = false) String id,
-        @RequestParam(required = true) String procDefId) {
+        @RequestParam String procDefId) {
         Y9FormItemBind eformItemBind = null;
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(id)) {
@@ -193,14 +192,14 @@ public class Y9FormItemBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String processDefinitionId,
-        @RequestParam(required = true) String itemId) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+    public Y9Result<Map<String, Object>> getBpmList(@RequestParam String processDefinitionId,
+        @RequestParam String itemId) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
-        List<Y9FormItemBind> eibList = new ArrayList<Y9FormItemBind>();
-        List<Y9FormItemMobileBind> eibList1 = new ArrayList<Y9FormItemMobileBind>();
+        List<Y9FormItemBind> eibList = new ArrayList<>();
+        List<Y9FormItemMobileBind> eibList1 = new ArrayList<>();
         for (Map<String, Object> map : list) {
             String eformNames = "";
             String mobileFormName = "";
@@ -236,16 +235,16 @@ public class Y9FormItemBindRestController {
      * @return
      */
     @RequestMapping(value = "/getformList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getformList(@RequestParam(required = true) String systemName) {
-        List<Map<String, Object>> listmap = new ArrayList<Map<String, Object>>();
+    public Y9Result<List<Map<String, Object>>> getformList(@RequestParam String systemName) {
+        List<Map<String, Object>> listMap = new ArrayList<>();
         List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(systemName, "%%");
         for (Y9Form y9Form : list) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("formName", y9Form.getFormName());
             map.put("formId", y9Form.getId());
-            listmap.add(map);
+            listMap.add(map);
         }
-        return Y9Result.success(listmap, "获取成功");
+        return Y9Result.success(listMap, "获取成功");
     }
 
     /**
@@ -257,16 +256,16 @@ public class Y9FormItemBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getPrintFormList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getFormList(@RequestParam(required = true) String itemId,
+    public Y9Result<List<Map<String, Object>>> getFormList(@RequestParam String itemId,
         @RequestParam(required = false) String formName) {
-        List<Map<String, Object>> listmap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         SpmApproveItem spmApproveItem = spmApproveItemService.findById(itemId);
         List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(spmApproveItem.getSystemName(),
             StringUtils.isNotBlank(formName) ? "%" + formName + "%" : "%%");
         List<ItemPrintTemplateBind> bindList = printTemplateService.getTemplateBindList(itemId);
         ItemPrintTemplateBind itemPrintTemplateBind = bindList.size() > 0 ? bindList.get(0) : null;
         for (Y9Form y9Form : list) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             boolean isbind = false;
             if (itemPrintTemplateBind != null && itemPrintTemplateBind.getTemplateId().equals(y9Form.getId())) {
                 isbind = true;
@@ -274,10 +273,10 @@ public class Y9FormItemBindRestController {
             if (!isbind) {
                 map.put("formName", y9Form.getFormName());
                 map.put("formId", y9Form.getId());
-                listmap.add(map);
+                listMap.add(map);
             }
         }
-        return Y9Result.success(listmap, "获取成功");
+        return Y9Result.success(listMap, "获取成功");
     }
 
     /**

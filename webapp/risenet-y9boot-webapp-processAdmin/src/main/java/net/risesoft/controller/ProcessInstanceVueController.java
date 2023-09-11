@@ -102,9 +102,9 @@ public class ProcessInstanceVueController {
     @RequestMapping(value = "/runningList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public Y9Page<Map<String, Object>> runningList(@RequestParam(required = false) String processInstanceId,
-        @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
+        @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         long totalCount = 0;
         List<ProcessInstance> processInstanceList = null;
         if (StringUtils.isBlank(processInstanceId)) {
@@ -121,7 +121,7 @@ public class ProcessInstanceVueController {
         Map<String, Object> map = null;
         for (ProcessInstance processInstance : processInstanceList) {
             processInstanceId = processInstance.getId();
-            map = new HashMap<String, Object>(16);
+            map = new HashMap<>(16);
             map.put("processInstanceId", processInstanceId);
             map.put("processDefinitionId", processInstance.getProcessDefinitionId());
             map.put("processDefinitionName", processInstance.getProcessDefinitionName());
@@ -173,8 +173,7 @@ public class ProcessInstanceVueController {
      */
     @RequestMapping(value = "/switchSuspendOrActive", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> switchSuspendOrActive(@RequestParam(required = true) String state,
-        @RequestParam(required = true) String processInstanceId) {
+    public Y9Result<String> switchSuspendOrActive(@RequestParam String state, @RequestParam String processInstanceId) {
         if (ItemProcessStateTypeEnum.ACTIVE.equals(state)) {
             runtimeService.activateProcessInstanceById(processInstanceId);
             return Y9Result.successMsg("已激活ID为[" + processInstanceId + "]的流程实例。");

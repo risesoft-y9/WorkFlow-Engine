@@ -34,10 +34,9 @@ public class ItemOpinionFrameRoleRestController {
      */
     @RequestMapping(value = "/bindRole", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> bindRole(@RequestParam(required = true) String roleIds,
-        @RequestParam(required = true) String itemOpinionFrameId) {
-        String[] roleIdarr = roleIds.split(";");
-        for (String roleId : roleIdarr) {
+    public Y9Result<String> bindRole(@RequestParam String roleIds, @RequestParam String itemOpinionFrameId) {
+        String[] roleIdArr = roleIds.split(";");
+        for (String roleId : roleIdArr) {
             itemOpinionFrameRoleService.saveOrUpdate(itemOpinionFrameId, roleId);
         }
         return Y9Result.successMsg("修改成功");
@@ -51,7 +50,7 @@ public class ItemOpinionFrameRoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemOpinionFrameRole>> list(@RequestParam(required = true) String itemOpinionFrameId) {
+    public Y9Result<List<ItemOpinionFrameRole>> list(@RequestParam String itemOpinionFrameId) {
         List<ItemOpinionFrameRole> list =
             itemOpinionFrameRoleService.findByItemOpinionFrameIdContainRoleName(itemOpinionFrameId);
         return Y9Result.success(list, "获取成功");
@@ -65,7 +64,7 @@ public class ItemOpinionFrameRoleRestController {
      */
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> remove(@RequestParam(required = true) String[] ids) {
+    public Y9Result<String> remove(@RequestParam String[] ids) {
         itemOpinionFrameRoleService.remove(ids);
         return Y9Result.successMsg("删除成功");
     }

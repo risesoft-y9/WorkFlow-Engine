@@ -53,7 +53,7 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     @Override
     public Map<String, Object> getRecycleListByProcessDefinitionKey(String processDefinitionKey, Integer page,
         Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getRecycleCountByProcessDefinitionKey(processDefinitionKey);
         List<HistoricProcessInstance> list =
             historyService.createHistoricProcessInstanceQuery().processDefinitionKey(processDefinitionKey).deleted()
@@ -69,7 +69,7 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
 
     @Override
     public Map<String, Object> getRecycleListBySystemName(String systemName, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getRecycleCountBySystemName(systemName);
         List<HistoricProcessInstance> list =
             historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(systemName).deleted()
@@ -86,7 +86,7 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     @Override
     public Map<String, Object> getRecycleListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
         Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getRecycleCountByProcessDefinitionKey(processDefinitionKey);
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
             .processDefinitionKey(processDefinitionKey).deleted().orderByProcessInstanceStartTime().desc()
@@ -103,7 +103,7 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     @Override
     public Map<String, Object> getRecycleListByUserIdAndSystemName(String userId, String systemName, Integer page,
         Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getRecycleCountBySystemName(systemName);
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
             .processInstanceBusinessKey(systemName).deleted().orderByProcessInstanceStartTime().desc()
@@ -120,7 +120,7 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     @Override
     public Map<String, Object> searchRecycleListByProcessDefinitionKey(String processDefinitionKey, String searchTerm,
         Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = historyService.createHistoricProcessInstanceQuery().deleted()
             .processDefinitionKey(processDefinitionKey).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().deleted()
@@ -138,7 +138,7 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     @Override
     public Map<String, Object> searchRecycleListBySystemName(String systemName, String searchTerm, Integer page,
         Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = historyService.createHistoricProcessInstanceQuery().deleted()
             .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().deleted()
@@ -156,7 +156,7 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     @Override
     public Map<String, Object> searchRecycleListByUserIdAndProcessDefinitionKey(String userId,
         String processDefinitionKey, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = historyService.createHistoricProcessInstanceQuery().deleted().involvedUser(userId)
             .processDefinitionKey(processDefinitionKey).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<HistoricProcessInstance> list =
@@ -175,7 +175,7 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     @Override
     public Map<String, Object> searchRecycleListByUserIdAndSystemName(String userId, String systemName,
         String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = historyService.createHistoricProcessInstanceQuery().deleted().involvedUser(userId)
             .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<HistoricProcessInstance> list =

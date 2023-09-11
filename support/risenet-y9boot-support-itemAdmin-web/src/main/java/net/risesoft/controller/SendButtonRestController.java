@@ -33,7 +33,7 @@ public class SendButtonRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/checkCustomId", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Boolean> checkCustomId(@RequestParam(required = true) String customId) {
+    public Y9Result<Boolean> checkCustomId(@RequestParam String customId) {
         boolean b = sendButtonService.checkCustomId("common_" + customId);
         return Y9Result.success(b, "获取成功");
     }
@@ -46,7 +46,7 @@ public class SendButtonRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getSendButton", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<SendButton> getSendButton(@RequestParam(required = true) String id) {
+    public Y9Result<SendButton> getSendButton(@RequestParam String id) {
         SendButton sendButton = sendButtonService.findOne(id);
         return Y9Result.success(sendButton, "获取成功");
     }
@@ -71,7 +71,7 @@ public class SendButtonRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/removeSendButtons", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeSendButtons(@RequestParam(required = true) String[] sendButtonIds) {
+    public Y9Result<String> removeSendButtons(@RequestParam String[] sendButtonIds) {
         sendButtonService.removeSendButtons(sendButtonIds);
         return Y9Result.successMsg("删除成功");
     }

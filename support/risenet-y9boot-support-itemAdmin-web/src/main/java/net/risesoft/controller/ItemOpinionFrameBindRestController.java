@@ -60,8 +60,8 @@ public class ItemOpinionFrameBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/bindOpinionFrame", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> bindOpinionFrame(@RequestParam(required = true) String opinionFrameNameAndMarks,
-        @RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId,
+    public Y9Result<String> bindOpinionFrame(@RequestParam String opinionFrameNameAndMarks, @RequestParam String itemId,
+        @RequestParam String processDefinitionId,
         @RequestParam(required = false) String taskDefKey) {
         itemOpinionFrameBindService.save(opinionFrameNameAndMarks, itemId, processDefinitionId, taskDefKey);
         return Y9Result.successMsg("保存成功");
@@ -89,8 +89,7 @@ public class ItemOpinionFrameBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyBind(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> copyBind(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         itemOpinionFrameBindService.copyBind(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }
@@ -105,8 +104,8 @@ public class ItemOpinionFrameBindRestController {
      */
     @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Result<List<ItemOpinionFrameBind>> getBindList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
+    public Y9Result<List<ItemOpinionFrameBind>> getBindList(@RequestParam String itemId,
+        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         List<ItemOpinionFrameBind> oftrbList = itemOpinionFrameBindService
             .findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(itemId, processDefinitionId, taskDefKey);
         return Y9Result.success(oftrbList, "获取成功");
@@ -114,7 +113,7 @@ public class ItemOpinionFrameBindRestController {
 
     @RequestMapping(value = "/getBindListByMark", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Result<List<Map<String, Object>>> getBindListByMark(@RequestParam(required = true) String mark) {
+    public Y9Result<List<Map<String, Object>>> getBindListByMark(@RequestParam String mark) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemOpinionFrameBind> oftrbList = itemOpinionFrameBindService.findByMark(mark);
         List<Map<String, Object>> bindList = new ArrayList<>();
@@ -164,10 +163,10 @@ public class ItemOpinionFrameBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String processDefinitionId,
-        @RequestParam(required = true) String itemId) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+    public Y9Result<Map<String, Object>> getBpmList(@RequestParam String processDefinitionId,
+        @RequestParam String itemId) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
         List<ItemOpinionFrameBind> bindList = new ArrayList<>();
@@ -196,7 +195,7 @@ public class ItemOpinionFrameBindRestController {
      */
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> remove(@RequestParam(required = true) String[] ids) {
+    public Y9Result<String> remove(@RequestParam String[] ids) {
         itemOpinionFrameBindService.delete(ids);
         return Y9Result.successMsg("删除成功");
     }
@@ -210,8 +209,7 @@ public class ItemOpinionFrameBindRestController {
      */
     @RequestMapping(value = "/saveModify", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> saveModify(@RequestParam(required = true) String id,
-        @RequestParam(required = true) String opinionFrameNameAndMarks) {
+    public Y9Result<String> saveModify(@RequestParam String id, @RequestParam String opinionFrameNameAndMarks) {
         ItemOpinionFrameBind opinionBind = itemOpinionFrameBindService.findOne(id);
         String[] opinionFrameNameAndMark = opinionFrameNameAndMarks.split(":");
         String name = opinionFrameNameAndMark[0];

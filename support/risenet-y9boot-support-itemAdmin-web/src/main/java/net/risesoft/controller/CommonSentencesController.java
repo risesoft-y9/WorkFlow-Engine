@@ -30,7 +30,7 @@ public class CommonSentencesController {
     @RequestMapping("/list")
     @ResponseBody
     public List<Map<String, Object>> listSentencesService() {
-        List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> resList = new ArrayList<>();
         resList = commonSentencesService.listSentencesService();
         return resList;
     }
@@ -38,7 +38,7 @@ public class CommonSentencesController {
     @RequestMapping("/remove")
     @ResponseBody
     public Map<String, Object> remove(@RequestParam int tabIndex) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             commonSentencesService.removeCommonSentences(tabIndex);
             map.put(UtilConsts.SUCCESS, true);
@@ -53,7 +53,7 @@ public class CommonSentencesController {
     @RequestMapping("/save")
     @ResponseBody
     public Map<String, Object> save(@RequestParam String content) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             commonSentencesService.save(content);
             map.put(UtilConsts.SUCCESS, true);
@@ -68,7 +68,7 @@ public class CommonSentencesController {
     @RequestMapping("/saveEdit")
     @ResponseBody
     public Map<String, Object> saveEdit(@RequestParam String content, @RequestParam String tabIndex) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         String userId = Y9LoginUserHolder.getPersonId();
         try {
             commonSentencesService.saveCommonSentences(userId, content, Integer.parseInt(tabIndex));

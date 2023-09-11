@@ -34,7 +34,7 @@ public class ItemButtonRoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemButtonRole>> list(@RequestParam(required = true) String itemButtonId) {
+    public Y9Result<List<ItemButtonRole>> list(@RequestParam String itemButtonId) {
         List<ItemButtonRole> list = itemButtonRoleService.findByItemButtonIdContainRoleName(itemButtonId);
         return Y9Result.success(list, "获取成功");
     }
@@ -47,7 +47,7 @@ public class ItemButtonRoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> remove(@RequestParam(required = true) String[] ids) {
+    public Y9Result<String> remove(@RequestParam String[] ids) {
         itemButtonRoleService.remove(ids);
         return Y9Result.successMsg("删除成功");
     }
@@ -61,11 +61,10 @@ public class ItemButtonRoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveRole", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveRole(@RequestParam(required = true) String itemButtonId,
-        @RequestParam(required = true) String roleIds) {
+    public Y9Result<String> saveRole(@RequestParam String itemButtonId, @RequestParam String roleIds) {
         if (StringUtils.isNotEmpty(roleIds)) {
-            String[] roleIdarr = roleIds.split(";");
-            for (String roleId : roleIdarr) {
+            String[] roleIdArr = roleIds.split(";");
+            for (String roleId : roleIdArr) {
                 itemButtonRoleService.saveOrUpdate(itemButtonId, roleId);
             }
         }

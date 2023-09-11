@@ -59,8 +59,7 @@ public class ItemButtonBindRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyBind(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> copyBind(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         itemButtonBindService.copyBind(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }

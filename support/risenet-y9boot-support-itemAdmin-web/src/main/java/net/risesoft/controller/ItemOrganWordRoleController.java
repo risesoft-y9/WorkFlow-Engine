@@ -37,8 +37,8 @@ public class ItemOrganWordRoleController {
     @ResponseBody
     public Y9Result<String> bindRole(String roleIds, String itemOrganWordBindId) {
         if (StringUtils.isNotEmpty(roleIds)) {
-            String[] roleIdarr = roleIds.split(";");
-            for (String roleId : roleIdarr) {
+            String[] roleIdArr = roleIds.split(";");
+            for (String roleId : roleIdArr) {
                 itemOrganWordRoleService.saveOrUpdate(itemOrganWordBindId, roleId);
             }
         }
@@ -47,7 +47,7 @@ public class ItemOrganWordRoleController {
 
     @ResponseBody
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemOrganWordRole>> list(@RequestParam(required = true) String itemOrganWordBindId) {
+    public Y9Result<List<ItemOrganWordRole>> list(@RequestParam String itemOrganWordBindId) {
         List<ItemOrganWordRole> list =
             itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(itemOrganWordBindId);
         return Y9Result.success(list, "获取成功");

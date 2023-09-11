@@ -41,7 +41,7 @@ public class ProcessDefinitionController {
     @ResponseBody
     @RequestMapping(value = "/getBpmList")
     public List<Map<String, Object>> getBpmList(String processDefinitionId, Boolean isFilter) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
         try {
             list = workflowProcessDefinitionService.getBpmList(processDefinitionId, isFilter);
         } catch (Exception e) {
@@ -59,7 +59,7 @@ public class ProcessDefinitionController {
     @ResponseBody
     @RequestMapping(value = "/getBpmListContainStart")
     public List<Map<String, Object>> getBpmListContainStart(String processDefinitionId) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
         try {
             list = workflowProcessDefinitionService.getBpmListContainStart(processDefinitionId);
         } catch (Exception e) {
@@ -101,9 +101,9 @@ public class ProcessDefinitionController {
     @RequestMapping(value = "/getTaskList")
     @ResponseBody
     public Map<String, Object> getTaskByProcDef(@RequestParam String processDefinitionId) {
-        Map<String, Object> taskMap = new HashMap<String, Object>(16);
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        List<String> filterList = new ArrayList<String>();
+        Map<String, Object> taskMap = new HashMap<>(16);
+        List<Map<String, Object>> list = new ArrayList<>();
+        List<String> filterList = new ArrayList<>();
         filterList.add(SysVariables.STARTEVENT);
         List<FlowElement> activitieList =
             workflowProcessDefinitionService.getFilteredActivityImpls(processDefinitionId);
@@ -127,10 +127,10 @@ public class ProcessDefinitionController {
     @RequestMapping(value = "/getTaskMap", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> getTaskMap(@RequestParam(required = false) String processDefinitionId) {
-        Map<String, Object> taskMap = new LinkedHashMap<String, Object>();
+        Map<String, Object> taskMap = new LinkedHashMap<>();
         taskMap.put("", "--");
         if (StringUtils.isNotBlank(processDefinitionId)) {
-            List<String> filterList = new ArrayList<String>();
+            List<String> filterList = new ArrayList<>();
             filterList.add(SysVariables.STARTEVENT);
             List<FlowElement> list =
                 workflowProcessDefinitionService.getFilteredActivityImpls(processDefinitionId, filterList);

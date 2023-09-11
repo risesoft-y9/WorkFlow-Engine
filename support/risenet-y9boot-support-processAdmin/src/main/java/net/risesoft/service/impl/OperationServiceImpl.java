@@ -129,7 +129,7 @@ public class OperationServiceImpl implements OperationService {
             }
         }
         for (Task task : taskList) {
-            Map<String, Object> vars = new HashMap<String, Object>(16);
+            Map<String, Object> vars = new HashMap<>(16);
             vars.put(SysVariables.REPOSITION, true);
             if (SysVariables.PARALLEL.equals(multiInstance)) {
                 String ownerId = entrustManager.getEntrustOwnerId(Y9LoginUserHolder.getTenantId(), task.getId());
@@ -183,7 +183,7 @@ public class OperationServiceImpl implements OperationService {
             }
         }
         for (Task task : taskList) {
-            Map<String, Object> vars = new HashMap<String, Object>(16);
+            Map<String, Object> vars = new HashMap<>(16);
             vars.put(SysVariables.REPOSITION, true);
             if (SysVariables.PARALLEL.equals(multiInstance)) {
                 // String ownerId = entrust4PositionApi.getEntrustOwnerId(Y9LoginUserHolder.getTenantId(),
@@ -484,7 +484,7 @@ public class OperationServiceImpl implements OperationService {
         String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey(),
             processInstanceId = thePreviousTask.getProcessInstanceId();
 
-        List<String> users = new ArrayList<String>();
+        List<String> users = new ArrayList<>();
         users.add(userId);
 
         managementService
@@ -508,7 +508,7 @@ public class OperationServiceImpl implements OperationService {
          */
         customVariableService.setVariableLocal(taskId, SysVariables.ACTIONNAME, SysVariables.TAKEBACK);
         String user = Y9LoginUserHolder.getPositionId();
-        List<String> users = new ArrayList<String>();
+        List<String> users = new ArrayList<>();
         users.add(user);
         managementService.executeCommand(
             new JumpCommand4Position(taskId, targetTaskDefineKey, users, "该任务由" + userName + "撤回：" + reason));

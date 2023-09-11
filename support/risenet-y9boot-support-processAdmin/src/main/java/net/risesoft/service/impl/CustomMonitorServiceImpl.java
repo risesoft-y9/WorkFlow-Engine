@@ -41,7 +41,7 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
     @Override
     public Map<String, Object> getDoingListByProcessDefinitionKey(String processDefinitionKey, Integer page,
         Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getDoingCountByProcessDefinitionKey(processDefinitionKey);
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().notDeleted()
             .unfinished().processDefinitionKey(processDefinitionKey).orderByProcessInstanceStartTime().desc()
@@ -57,7 +57,7 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
 
     @Override
     public Map<String, Object> getDoingListBySystemName(String systemName, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getDoingCountBySystemName(systemName);
         List<HistoricProcessInstance> list =
             historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(systemName).notDeleted()
@@ -86,7 +86,7 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
     @Override
     public Map<String, Object> getDoneListByProcessDefinitionKey(String processDefinitionKey, Integer page,
         Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getDoneCountByProcessDefinitionKey(processDefinitionKey);
         List<HistoricProcessInstance> list =
             historyService.createHistoricProcessInstanceQuery().processDefinitionKey(processDefinitionKey).notDeleted()
@@ -102,7 +102,7 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
 
     @Override
     public Map<String, Object> getDoneListBySystemName(String systemName, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getDoneCountBySystemName(systemName);
         List<HistoricProcessInstance> list =
             historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(systemName).notDeleted()
@@ -119,7 +119,7 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
     @Override
     public Map<String, Object> searchDoingListByProcessDefinitionKey(String processDefinitionKey, String searchTerm,
         Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = historyService.createHistoricProcessInstanceQuery().notDeleted().unfinished()
             .processDefinitionKey(processDefinitionKey).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<HistoricProcessInstance> list =
@@ -138,7 +138,7 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
     @Override
     public Map<String, Object> searchDoingListBySystemName(String systemName, String searchTerm, Integer page,
         Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = historyService.createHistoricProcessInstanceQuery().notDeleted().unfinished()
             .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().notDeleted()
@@ -156,7 +156,7 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
     @Override
     public Map<String, Object> searchDoneListByProcessDefinitionKey(String processDefinitionKey, String searchTerm,
         Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = historyService.createHistoricProcessInstanceQuery().notDeleted().finished()
             .processDefinitionKey(processDefinitionKey).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().notDeleted().finished()
@@ -174,7 +174,7 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
     @Override
     public Map<String, Object> searchDoneListBySystemName(String systemName, String searchTerm, Integer page,
         Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = historyService.createHistoricProcessInstanceQuery().notDeleted().finished()
             .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().notDeleted().finished()

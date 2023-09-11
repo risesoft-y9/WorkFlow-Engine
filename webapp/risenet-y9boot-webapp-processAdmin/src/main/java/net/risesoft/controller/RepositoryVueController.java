@@ -46,7 +46,7 @@ public class RepositoryVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> delete(@RequestParam(required = true) String deploymentId) {
+    public Y9Result<String> delete(@RequestParam String deploymentId) {
         Map<String, Object> map = customRepositoryService.delete(deploymentId);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -95,9 +95,9 @@ public class RepositoryVueController {
      * @throws Exception
      */
     @RequestMapping(value = "/process-instance")
-    public void loadByProcessInstance(@RequestParam(required = true) String resourceType,
-        @RequestParam(required = false) String processInstanceId,
-        @RequestParam(required = true) String processDefinitionId, HttpServletResponse response) throws Exception {
+    public void loadByProcessInstance(@RequestParam String resourceType,
+        @RequestParam(required = false) String processInstanceId, @RequestParam String processDefinitionId,
+        HttpServletResponse response) throws Exception {
         InputStream resourceAsStream =
             customRepositoryService.getProcessInstance(resourceType, processInstanceId, processDefinitionId);
         int ii = 1024;
@@ -117,8 +117,8 @@ public class RepositoryVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/switchSuspendOrActive", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> switchSuspendOrActive(@RequestParam(required = true) String state,
-        @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> switchSuspendOrActive(@RequestParam String state,
+        @RequestParam String processDefinitionId) {
         Map<String, Object> map = customRepositoryService.switchSuspendOrActive(state, processDefinitionId);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -131,13 +131,12 @@ public class RepositoryVueController {
      *
      * @param processInstanceId
      * @return
-     * @throws Exception
      */
     @RequestMapping(value = "/trace")
     @ResponseBody
     public List<Map<String, Object>> traceProcess(@RequestParam("pid") String processInstanceId,
-        @RequestParam("processDefinitionId") String processDefinitionId) throws Exception {
-        List<Map<String, Object>> activityInfos = new ArrayList<Map<String, Object>>();
+        @RequestParam("processDefinitionId") String processDefinitionId) {
+        List<Map<String, Object>> activityInfos = new ArrayList<>();
         if (StringUtils.isNotBlank(processInstanceId) || StringUtils.isNotBlank(processDefinitionId)) {
             if (StringUtils.isNotBlank(processInstanceId)) {
 
@@ -158,9 +157,9 @@ public class RepositoryVueController {
      * @throws Exception
      */
     @RequestMapping(value = "/processInstanceXml")
-    public Y9Result<String> getXmlByProcessInstance(@RequestParam(required = true) String resourceType,
-        @RequestParam(required = false) String processInstanceId,
-        @RequestParam(required = true) String processDefinitionId, HttpServletResponse response) throws Exception {
+    public Y9Result<String> getXmlByProcessInstance(@RequestParam String resourceType,
+        @RequestParam(required = false) String processInstanceId, @RequestParam String processDefinitionId,
+        HttpServletResponse response) throws Exception {
         InputStream resourceAsStream =
             customRepositoryService.getProcessInstance(resourceType, processInstanceId, processDefinitionId);
         return Y9Result.success(IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8));
