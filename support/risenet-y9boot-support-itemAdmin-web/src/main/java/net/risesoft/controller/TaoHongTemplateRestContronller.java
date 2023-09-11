@@ -70,13 +70,13 @@ public class TaoHongTemplateRestContronller {
     @ResponseBody
     @RequestMapping(value = "/bureauTree", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> bureauTree(@RequestParam(required = false) String name) {
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         name = StringUtils.isBlank(name) ? "" : name;
         List<Map<String, Object>> orgUnitList = jdbcTemplate.queryForList(
             " SELECT ID,NAME,PARENT_ID FROM Y9_ORG_DEPARTMENT where bureau = 1 and deleted = 0 and name like '%" + name
                 + "%' and disabled = 0 order by tab_Index asc");
         for (Map<String, Object> dept : orgUnitList) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", dept.get("ID").toString());
             map.put("name", dept.get("NAME").toString());
             map.put("parentId", dept.get("PARENT_ID").toString());
@@ -94,8 +94,8 @@ public class TaoHongTemplateRestContronller {
      * @throws Exception
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam(required = true) String templateGuid, HttpServletRequest request,
-        HttpServletResponse response) throws Exception {
+    public void download(@RequestParam String templateGuid, HttpServletRequest request, HttpServletResponse response)
+        throws Exception {
         try {
             TaoHongTemplate taoHongTemplate = taoHongTemplateService.findOne(templateGuid);
             byte[] b = taoHongTemplate.getTemplateContent();
@@ -130,7 +130,7 @@ public class TaoHongTemplateRestContronller {
     public Y9Result<List<Map<String, Object>>> getList(@RequestParam(required = false) String name) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<TaoHongTemplate> list = new ArrayList<TaoHongTemplate>();
+        List<TaoHongTemplate> list = new ArrayList<>();
         if (userInfo.isGlobalManager()) {
             list = taoHongTemplateService.findByTenantId(Y9LoginUserHolder.getTenantId(),
                 StringUtils.isBlank(name) ? "%%" : "%" + name + "%");
@@ -138,9 +138,9 @@ public class TaoHongTemplateRestContronller {
             OrgUnit orgUnit = personManager.getBureau(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId());
             list = taoHongTemplateService.findByBureauGuid(orgUnit.getId());
         }
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("templateGuid", list.get(i).getTemplateGuid());
             map.put("templateFileName", list.get(i).getTemplateFileName());
             map.put("bureauName", list.get(i).getBureauName());
@@ -166,7 +166,7 @@ public class TaoHongTemplateRestContronller {
     public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = userInfo.getPersonId();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         List<TaoHongTemplateType> typeList = new ArrayList<>();
         map.put("tenantManager", userInfo.isGlobalManager());
         if (userInfo.isGlobalManager()) {
@@ -193,7 +193,7 @@ public class TaoHongTemplateRestContronller {
      */
     @ResponseBody
     @RequestMapping(value = "/removeTaoHongTemplate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeTaoHongTemplate(@RequestParam(required = true) String[] ids) {
+    public Y9Result<String> removeTaoHongTemplate(@RequestParam String[] ids) {
         taoHongTemplateService.removeTaoHongTemplate(ids);
         return Y9Result.successMsg("删除成功");
     }
@@ -208,8 +208,8 @@ public class TaoHongTemplateRestContronller {
     @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(@RequestParam(required = false) String templateGuid,
-        @RequestParam(required = true) String bureauGuid, @RequestParam(required = true) String bureauName,
-        @RequestParam(required = true) String templateType, MultipartFile file) {
+        @RequestParam String bureauGuid, @RequestParam String bureauName, @RequestParam String templateType,
+        MultipartFile file) {
         try {
             TaoHongTemplate taoHong = new TaoHongTemplate();
             taoHong.setBureauGuid(bureauGuid);

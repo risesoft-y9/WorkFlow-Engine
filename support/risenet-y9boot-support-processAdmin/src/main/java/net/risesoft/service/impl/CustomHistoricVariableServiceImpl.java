@@ -66,7 +66,7 @@ public class CustomHistoricVariableServiceImpl implements CustomHistoricVariable
     public Map<String, Object> getVariables(String tenantId, String processInstanceId, Collection<String> keys) {
         List<HistoricVariableInstance> hviList = historyService.createHistoricVariableInstanceQuery()
             .processInstanceId(processInstanceId).excludeTaskVariables().list();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         for (HistoricVariableInstance hvi : hviList) {
             for (String key : keys) {
                 if (hvi.getVariableName().equals(key)) {

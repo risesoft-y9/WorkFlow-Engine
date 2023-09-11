@@ -64,7 +64,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
      * @return
      */
     private List<FlowElement> getActivityImpls(BpmnModel bpmnModel) {
-        List<FlowElement> list = new ArrayList<FlowElement>();
+        List<FlowElement> list = new ArrayList<>();
         try {
             org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
             list = (List<FlowElement>)process.getFlowElements();
@@ -76,11 +76,11 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
 
     @Override
     public List<Map<String, String>> getContainEndEvent4UserTask(String processDefinitionId) {
-        List<Map<String, String>> userTaskList = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> userTaskList = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
-        List<SequenceFlow> list = new ArrayList<SequenceFlow>();
+        List<SequenceFlow> list = new ArrayList<>();
         for (int i = 0; i < flowElements.size(); i++) {
             FlowElement flowElement = flowElements.get(i);
             if (flowElement instanceof UserTask) {
@@ -94,7 +94,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                         for (SequenceFlow tr1 : list1) {
                             FlowElement element1 = tr1.getTargetFlowElement();
                             if (element1 instanceof EndEvent) {
-                                Map<String, String> map = new HashMap<String, String>(16);
+                                Map<String, String> map = new HashMap<>(16);
                                 map.put(SysVariables.TASKDEFKEY, event.getId());
                                 map.put(SysVariables.TASKDEFNAME, event.getName());
                                 userTaskList.add(map);
@@ -102,7 +102,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                             }
                         }
                     } else if (element instanceof EndEvent) {
-                        Map<String, String> map = new HashMap<String, String>(16);
+                        Map<String, String> map = new HashMap<>(16);
                         map.put(SysVariables.TASKDEFKEY, event.getId());
                         map.put(SysVariables.TASKDEFNAME, event.getName());
                         userTaskList.add(map);
@@ -133,7 +133,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
      */
     private List<FlowElement> getFilteredActivityImpls(BpmnModel bpmnModel) {
         List<FlowElement> list = getActivityImpls(bpmnModel);
-        List<FlowElement> resultList = new ArrayList<FlowElement>();
+        List<FlowElement> resultList = new ArrayList<>();
         if (list.size() > 0) {
             // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
             resultList.addAll(list);
@@ -155,7 +155,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
      * @return
      */
     public List<FlowElement> getFilteredActivityImpls(String processDefinitionId) {
-        List<FlowElement> list = new ArrayList<FlowElement>();
+        List<FlowElement> list = new ArrayList<>();
         try {
             BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
             list = getFilteredActivityImpls(bpmnModel);
@@ -167,10 +167,10 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
 
     @Override
     public List<Map<String, Object>> getNodes(String processDefinitionId, Boolean isContainStartNode) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        List<FlowElement> activitieList = new ArrayList<FlowElement>();
+        List<Map<String, Object>> list = new ArrayList<>();
+        List<FlowElement> activitieList = new ArrayList<>();
         if (!isContainStartNode) {
-            List<FlowElement> list1 = new ArrayList<FlowElement>();
+            List<FlowElement> list1 = new ArrayList<>();
             BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
             org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
             list1 = (List<FlowElement>)process.getFlowElements();
@@ -190,7 +190,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             activitieList = getFilteredActivityImpls(processDefinitionId);
         }
         for (FlowElement activity : activitieList) {
-            Map<String, Object> tempMap = new LinkedHashMap<String, Object>();
+            Map<String, Object> tempMap = new LinkedHashMap<>();
             tempMap.put("taskDefKey", activity.getId());
             tempMap.put("taskDefName", activity.getName());
             try {
@@ -209,7 +209,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             }
             list.add(tempMap);
         }
-        Map<String, Object> tempMap = new LinkedHashMap<String, Object>();
+        Map<String, Object> tempMap = new LinkedHashMap<>();
         tempMap.put("taskDefKey", "");
         tempMap.put("taskDefName", "流程");
         list.add(0, tempMap);
@@ -251,7 +251,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     public Integer getOutPutNodeCount(String taskId) {
         int count = 0;
         List<SequenceFlow> outTransitions = getPvmTransitions(taskId);
-        List<SequenceFlow> list = new ArrayList<SequenceFlow>();
+        List<SequenceFlow> list = new ArrayList<>();
         for (SequenceFlow tr : outTransitions) {
             if (tr.getTargetFlowElement() instanceof EndEvent) {
                 continue;
@@ -266,7 +266,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
 
     @Override
     public List<Map<String, String>> getParallelGatewayList(String processDefinitionId, String taskDefKey) {
-        List<Map<String, String>> targetNodes = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> targetNodes = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
@@ -274,7 +274,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         for (int i = 0; i < flowElements.size(); i++) {
             FlowElement flowElement = flowElements.get(i);
             if (taskDefKey.equals(flowElement.getId())) {
-                List<SequenceFlow> list = new ArrayList<SequenceFlow>();
+                List<SequenceFlow> list = new ArrayList<>();
                 if (flowElement instanceof UserTask) {
                     UserTask task = (UserTask)flowElement;
                     list = task.getOutgoingFlows();
@@ -284,7 +284,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 }
                 if (!isGateway) {
                     for (SequenceFlow tr : list) {
-                        Map<String, String> map = new HashMap<String, String>(16);
+                        Map<String, String> map = new HashMap<>(16);
                         String conditionText = tr.getConditionExpression();
                         FlowElement flowElementTemp = tr.getTargetFlowElement();
                         if (StringUtils.isNotBlank(conditionText) && flowElementTemp instanceof ParallelGateway) {
@@ -305,7 +305,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                     }
                 } else {
                     for (SequenceFlow tr : list) {
-                        Map<String, String> map = new HashMap<String, String>(16);
+                        Map<String, String> map = new HashMap<>(16);
                         String conditionText = tr.getConditionExpression();
                         FlowElement flowElementTemp = tr.getTargetFlowElement();
                         if (StringUtils.isNotBlank(conditionText) && (flowElementTemp instanceof ParallelGateway)) {
@@ -332,8 +332,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         BpmnModel bpmnModel = repositoryService.getBpmnModel(task.getProcessDefinitionId());
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
-        List<SequenceFlow> list = new ArrayList<SequenceFlow>();
-        List<SequenceFlow> flowList = new ArrayList<SequenceFlow>();
+        List<SequenceFlow> list = new ArrayList<>();
+        List<SequenceFlow> flowList = new ArrayList<>();
         Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
         String activitiId = execution.getActivityId();
         for (int i = 0; i < flowElements.size(); i++) {
@@ -414,7 +414,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
 
     @Override
     public List<Map<String, String>> getTargetNodes(String processDefinitionId, String taskDefKey) {
-        List<Map<String, String>> targetNodes = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> targetNodes = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
@@ -423,7 +423,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             FlowElement flowElement = flowElements.get(i);
             // 如果是任务节点
             if (taskDefKey.equals(flowElement.getId())) {
-                List<SequenceFlow> list = new ArrayList<SequenceFlow>();
+                List<SequenceFlow> list = new ArrayList<>();
                 if (flowElement instanceof StartEvent) {
                     StartEvent task = (StartEvent)flowElement;
                     list = task.getOutgoingFlows();
@@ -436,7 +436,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                 }
                 if (!isGateway) {
                     for (SequenceFlow tr : list) {
-                        Map<String, String> map = new HashMap<String, String>(16);
+                        Map<String, String> map = new HashMap<>(16);
                         FlowElement fe = tr.getTargetFlowElement();
                         if (tr.getTargetFlowElement() instanceof ParallelGateway) {
                             break;
@@ -472,7 +472,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                     }
                 } else {
                     for (SequenceFlow tr : list) {
-                        Map<String, String> map = new HashMap<String, String>(16);
+                        Map<String, String> map = new HashMap<>(16);
                         String conditionText = tr.getConditionExpression();
                         FlowElement fe = tr.getTargetFlowElement();
                         if (StringUtils.isNotBlank(conditionText) && !(fe instanceof EndEvent)
@@ -514,8 +514,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
 
     @Override
     public List<Map<String, String>> getTargetNodes1(String processDefinitionId, String taskDefKey) {
-        List<Map<String, String>> targetNodes = new ArrayList<Map<String, String>>();
-        List<String> nameListTemp = new ArrayList<String>();
+        List<Map<String, String>> targetNodes = new ArrayList<>();
+        List<String> nameListTemp = new ArrayList<>();
 
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
@@ -525,7 +525,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             FlowElement flowElement = flowElements.get(i);
             // 如果是任务节点
             if (taskDefKey.equals(flowElement.getId())) {
-                List<SequenceFlow> list = new ArrayList<SequenceFlow>();
+                List<SequenceFlow> list = new ArrayList<>();
                 if (flowElement instanceof StartEvent) {
                     StartEvent task = (StartEvent)flowElement;
                     list = task.getOutgoingFlows();
@@ -545,7 +545,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                             isGateway = true;
                             break;
                         } else {
-                            Map<String, String> map = new HashMap<String, String>(16);
+                            Map<String, String> map = new HashMap<>(16);
                             String name = tr.getName();
                             if (StringUtils.isNotBlank(name) && "skip".equals(name)) {
                                 // 忽略
@@ -567,7 +567,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                     }
                 } else {
                     for (SequenceFlow tr : list) {
-                        Map<String, String> map = new HashMap<String, String>(16);
+                        Map<String, String> map = new HashMap<>(16);
                         String conditionText = tr.getConditionExpression();
                         FlowElement fe = tr.getTargetFlowElement();
                         if (StringUtils.isNotBlank(conditionText) && !(fe instanceof EndEvent)) {
@@ -636,7 +636,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         for (int i = 0; i < flowElements.size(); i++) {
             FlowElement flowElement = flowElements.get(i);
             if (taskDefKey.equals(flowElement.getId())) {
-                List<SequenceFlow> list = new ArrayList<SequenceFlow>();
+                List<SequenceFlow> list = new ArrayList<>();
                 if (flowElement instanceof ParallelGateway) {
                     ParallelGateway task = (ParallelGateway)flowElement;
                     list = task.getOutgoingFlows();
@@ -665,13 +665,13 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         for (int i = 0; i < flowElements.size(); i++) {
             FlowElement flowElement = flowElements.get(i);
             if (taskDefKey.equals(flowElement.getId())) {
-                List<SequenceFlow> list = new ArrayList<SequenceFlow>();
+                List<SequenceFlow> list = new ArrayList<>();
                 if (flowElement instanceof UserTask) {
                     UserTask task = (UserTask)flowElement;
                     list = task.getOutgoingFlows();
                 }
                 for (SequenceFlow tr : list) {
-                    Map<String, String> map = new HashMap<String, String>(16);
+                    Map<String, String> map = new HashMap<>(16);
                     FlowElement flowElementTemp = tr.getTargetFlowElement();
                     if (flowElementTemp instanceof UserTask) {
                         map.put(SysVariables.TASKDEFKEY, flowElementTemp.getId());
@@ -682,7 +682,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                         ExclusiveGateway task = (ExclusiveGateway)flowElementTemp;
                         List<SequenceFlow> list0 = task.getOutgoingFlows();
                         for (SequenceFlow tr0 : list0) {
-                            Map<String, String> map0 = new HashMap<String, String>(16);
+                            Map<String, String> map0 = new HashMap<>(16);
                             FlowElement flowElementTemp0 = tr0.getTargetFlowElement();
                             if (flowElementTemp0 instanceof UserTask) {
                                 map0.put(SysVariables.TASKDEFKEY, flowElementTemp0.getId());
@@ -708,7 +708,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                         }
                     } else if (flowElementTemp instanceof EndEvent) {
                         if (isContainEndNode) {
-                            Map<String, String> map0 = new HashMap<String, String>(16);
+                            Map<String, String> map0 = new HashMap<>(16);
                             if (StringUtils.isNotBlank(tr.getName())) {
                                 map0.put(SysVariables.TASKDEFKEY, tr.getId());
                                 map0.put(SysVariables.TASKDEFNAME, tr.getName());

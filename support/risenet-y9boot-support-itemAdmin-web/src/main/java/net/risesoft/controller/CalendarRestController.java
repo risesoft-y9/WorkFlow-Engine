@@ -34,7 +34,7 @@ public class CalendarRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/delCalendar", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> delCalendar(@RequestParam(required = true) String startDate) {
+    public Y9Result<String> delCalendar(@RequestParam String startDate) {
         Map<String, Object> map = calendarConfigService.delCalendar(startDate);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("message"));
@@ -50,7 +50,7 @@ public class CalendarRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getCalendar", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getCalendar(@RequestParam(required = true) String month) {
+    public Y9Result<List<Map<String, Object>>> getCalendar(@RequestParam String month) {
         List<Map<String, Object>> list = calendarConfigService.getCalendar(month);
         return Y9Result.success(list, "获取成功");
     }
@@ -64,8 +64,7 @@ public class CalendarRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveCalendar", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveCalendar(@RequestParam(required = true) String startDate,
-        @RequestParam(required = true) Integer type) {
+    public Y9Result<String> saveCalendar(@RequestParam String startDate, @RequestParam Integer type) {
         Map<String, Object> map = calendarConfigService.saveCalendar(startDate, type);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("message"));

@@ -71,7 +71,7 @@ public class WordTemplateRestController {
     @ResponseBody
     @RequestMapping(value = "/bookMarKList")
     public Y9Result<List<Map<String, Object>>> bookMarkList(String wordTemplateId,
-        @RequestParam(required = true) String wordTemplateType) {
+        @RequestParam String wordTemplateType) {
         Map<String, Object> map = wordTemplateService.getBookMarkList(wordTemplateId, wordTemplateType);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.success((List<Map<String, Object>>)map.get("rows"), (String)map.get("msg"));
@@ -87,7 +87,7 @@ public class WordTemplateRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/deleteWordTemplate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteWordTemplate(@RequestParam(required = true) String id) {
+    public Y9Result<String> deleteWordTemplate(@RequestParam String id) {
         Map<String, Object> map = wordTemplateService.deleteWordTemplate(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -103,7 +103,7 @@ public class WordTemplateRestController {
      * @param request
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam(required = true) String id, HttpServletResponse response,
+    public void download(@RequestParam String id, HttpServletResponse response,
         HttpServletRequest request) {
         wordTemplateService.download(id, response, request);
     }
@@ -117,8 +117,8 @@ public class WordTemplateRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getBookMarkBind", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBookMarkBind(@RequestParam(required = true) String bookMarkName,
-        @RequestParam(required = true) String wordTemplateId) {
+    public Y9Result<Map<String, Object>> getBookMarkBind(@RequestParam String bookMarkName,
+        @RequestParam String wordTemplateId) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         List<Y9Table> tableList = y9TableService.getAllTable();
         List<String> columnList = new ArrayList<String>();
@@ -154,7 +154,7 @@ public class WordTemplateRestController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<String>> getColumns(@RequestParam(required = true) String tableId) {
+    public Y9Result<List<String>> getColumns(@RequestParam String tableId) {
         List<String> columnList = new ArrayList<>();
         Map<String, Object> map = y9TableFieldService.getFieldList(tableId);
         List<Y9TableField> fieldList = (List<Y9TableField>)map.get("rows");
@@ -198,9 +198,9 @@ public class WordTemplateRestController {
             list = wordTemplateService
                 .findByBureauIdOrderByUploadTimeDesc(personManager.getBureau(tenantId, personId).getId());
         }
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         for (WordTemplate wordTemplate : list) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", wordTemplate.getId());
             map.put("fileName", wordTemplate.getFileName());
             map.put("fileSize", wordTemplate.getFileSize());

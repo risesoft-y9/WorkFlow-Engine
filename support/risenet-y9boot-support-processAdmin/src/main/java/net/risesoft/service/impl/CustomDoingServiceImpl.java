@@ -47,7 +47,7 @@ public class CustomDoingServiceImpl implements CustomDoingService {
 
     @Override
     public Map<String, Object> getListByUserId(String userId, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getCountByUserId(userId);
         List<ProcessInstance> hpiList =
             runtimeService.createProcessInstanceQuery().involvedUser(userId).active().variableNotExists(userId)
@@ -63,7 +63,7 @@ public class CustomDoingServiceImpl implements CustomDoingService {
     @Override
     public Map<String, Object> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
         Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getCountByUserIdAndProcessDefinitionKey(userId, processDefinitionKey);
         List<ProcessInstance> hpiList = runtimeService.createProcessInstanceQuery().involvedUser(userId).active()
             .variableNotExists(userId).processDefinitionKey(processDefinitionKey)
@@ -79,7 +79,7 @@ public class CustomDoingServiceImpl implements CustomDoingService {
     @Override
     public Map<String, Object> getListByUserIdAndSystemName(String userId, String systemName, Integer page,
         Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getCountByUserIdAndSystemName(userId, systemName);
         List<ProcessInstance> hpiList = runtimeService.createProcessInstanceQuery().involvedUser(userId).active()
             .variableNotExists(userId).processInstanceBusinessKey(systemName)
@@ -94,7 +94,7 @@ public class CustomDoingServiceImpl implements CustomDoingService {
 
     @Override
     public Map<String, Object> searchListByUserId(String userId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = runtimeService.createProcessInstanceQuery().involvedUser(userId).active()
             .variableNotExists(userId).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<ProcessInstance> hpiList = runtimeService.createProcessInstanceQuery().involvedUser(userId).active()
@@ -111,7 +111,7 @@ public class CustomDoingServiceImpl implements CustomDoingService {
     @Override
     public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
         String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = runtimeService.createProcessInstanceQuery().involvedUser(userId).active()
             .variableNotExists(userId).processDefinitionKey(processDefinitionKey)
             .variableValueLike("searchTerm", "%" + searchTerm + "%").count();
@@ -130,7 +130,7 @@ public class CustomDoingServiceImpl implements CustomDoingService {
     @Override
     public Map<String, Object> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
         Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount =
             runtimeService.createProcessInstanceQuery().involvedUser(userId).active().variableNotExists(userId)
                 .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%").count();

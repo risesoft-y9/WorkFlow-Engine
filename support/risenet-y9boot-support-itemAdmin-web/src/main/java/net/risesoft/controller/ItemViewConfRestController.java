@@ -78,8 +78,7 @@ public class ItemViewConfRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/findByItemId", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String viewType) {
+    public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam String itemId, @RequestParam String viewType) {
         List<ItemViewConf> list = itemViewConfService.findByItemIdAndViewType(itemId, viewType);
         return Y9Result.success(list, "获取成功");
     }
@@ -92,9 +91,9 @@ public class ItemViewConfRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Y9FormField>> getColumns(@RequestParam(required = true) String tableName) {
-        List<Y9FormField> list = new ArrayList<Y9FormField>();
-        List<String> fieldNameList = new ArrayList<String>();
+    public Y9Result<List<Y9FormField>> getColumns(@RequestParam String tableName) {
+        List<Y9FormField> list = new ArrayList<>();
+        List<String> fieldNameList = new ArrayList<>();
         List<Y9FormField> formFieldList = y9FormFieldService.findByTableName(tableName);
         for (Y9FormField formField : formFieldList) {
             if (!fieldNameList.contains(formField.getFieldName()) && !"guid".equalsIgnoreCase(formField.getFieldName())
@@ -117,8 +116,8 @@ public class ItemViewConfRestController {
     @ResponseBody
     @RequestMapping(value = "/newOrModify", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id,
-        @RequestParam(required = true) String itemId) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+        @RequestParam String itemId) {
+        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
@@ -170,7 +169,7 @@ public class ItemViewConfRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/removeView", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeView(@RequestParam(required = true) String[] ids) {
+    public Y9Result<String> removeView(@RequestParam String[] ids) {
         itemViewConfService.removeItemViewConfs(ids);
         return Y9Result.successMsg("删除成功");
     }
@@ -182,7 +181,7 @@ public class ItemViewConfRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrder(@RequestParam(required = true) String[] idAndTabIndexs) {
+    public Y9Result<String> saveOrder(@RequestParam String[] idAndTabIndexs) {
         itemViewConfService.update4Order(idAndTabIndexs);
         return Y9Result.successMsg("保存成功");
     }

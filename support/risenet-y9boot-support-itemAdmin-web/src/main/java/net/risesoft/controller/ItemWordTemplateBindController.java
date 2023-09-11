@@ -72,7 +72,7 @@ public class ItemWordTemplateBindController {
      */
     @RequestMapping(value = "/getTemplateBind", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getTemplateBind(@RequestParam String itemId) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefinitionKey = item.getWorkflowGuid(), tenantId = Y9LoginUserHolder.getTenantId(),

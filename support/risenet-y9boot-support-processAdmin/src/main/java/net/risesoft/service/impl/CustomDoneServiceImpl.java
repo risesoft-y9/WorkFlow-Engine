@@ -45,7 +45,7 @@ public class CustomDoneServiceImpl implements CustomDoneService {
 
     @Override
     public Map<String, Object> getListByUserId(String userId, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
 
         long totalCount = this.getCountByUserId(userId);
         List<HistoricProcessInstance> hpiList = historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
@@ -63,7 +63,7 @@ public class CustomDoneServiceImpl implements CustomDoneService {
     @Override
     public Map<String, Object> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
         Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getCountByUserId(userId);
         List<HistoricProcessInstance> hpiList = historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
             .notDeleted().processDefinitionKey(processDefinitionKey).finished().orderByProcessInstanceEndTime().desc()
@@ -81,7 +81,7 @@ public class CustomDoneServiceImpl implements CustomDoneService {
     @Override
     public Map<String, Object> getListByUserIdAndSystemName(String userId, String systemName, Integer page,
         Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getCountByUserId(userId);
         List<HistoricProcessInstance> hpiList = historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
             .notDeleted().processInstanceBusinessKey(systemName).finished().orderByProcessInstanceEndTime().desc()
@@ -98,7 +98,7 @@ public class CustomDoneServiceImpl implements CustomDoneService {
 
     @Override
     public Map<String, Object> searchListByUserId(String userId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = historyService.createHistoricProcessInstanceQuery().involvedUser(userId).notDeleted()
             .finished().variableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<HistoricProcessInstance> hpiList = historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
@@ -116,7 +116,7 @@ public class CustomDoneServiceImpl implements CustomDoneService {
     @Override
     public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
         String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = historyService.createHistoricProcessInstanceQuery().involvedUser(userId).notDeleted()
             .finished().processDefinitionKey(processDefinitionKey)
             .variableValueLike("searchTerm", "%" + searchTerm + "%").count();
@@ -136,7 +136,7 @@ public class CustomDoneServiceImpl implements CustomDoneService {
     @Override
     public Map<String, Object> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
         Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount =
             historyService.createHistoricProcessInstanceQuery().involvedUser(userId).notDeleted().finished()
                 .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%").count();

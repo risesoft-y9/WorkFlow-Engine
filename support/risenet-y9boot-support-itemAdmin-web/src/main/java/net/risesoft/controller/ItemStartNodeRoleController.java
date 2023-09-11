@@ -38,8 +38,7 @@ public class ItemStartNodeRoleController {
 
     @ResponseBody
     @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyBind(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> copyBind(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         itemStartNodeRoleService.copyBind(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }
@@ -53,9 +52,9 @@ public class ItemStartNodeRoleController {
      */
     @ResponseBody
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+    public Y9Result<Map<String, Object>> getBpmList(@RequestParam String itemId,
+        @RequestParam String processDefinitionId) {
+        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemStartNodeRole> oldList =
             itemStartNodeRoleService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
@@ -100,8 +99,8 @@ public class ItemStartNodeRoleController {
 
     @ResponseBody
     @RequestMapping(value = "/getNodeList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemStartNodeRole>> getNodeList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<List<ItemStartNodeRole>> getNodeList(@RequestParam String itemId,
+        @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemStartNodeRole> oldList =
             itemStartNodeRoleService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
@@ -127,8 +126,8 @@ public class ItemStartNodeRoleController {
      */
     @ResponseBody
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Role>> list(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = true) String taskDefKey) {
+    public Y9Result<List<Role>> list(@RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey) {
         List<Role> roleList = itemStartNodeRoleService.getRoleList(itemId, processDefinitionId, taskDefKey);
         return Y9Result.success(roleList, "获取成功");
     }
@@ -141,16 +140,15 @@ public class ItemStartNodeRoleController {
      */
     @ResponseBody
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> remove(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = true) String taskDefKey,
-        @RequestParam(required = true) String roleIds) {
+    public Y9Result<String> remove(@RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey, @RequestParam String roleIds) {
         itemStartNodeRoleService.removeRole(itemId, processDefinitionId, taskDefKey, roleIds);
         return Y9Result.successMsg("删除成功");
     }
 
     @ResponseBody
     @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrder(@RequestParam(required = true) String[] idAndTabIndexs) {
+    public Y9Result<String> saveOrder(@RequestParam String[] idAndTabIndexs) {
         itemStartNodeRoleService.saveOrder(idAndTabIndexs);
         return Y9Result.successMsg("保存成功");
     }
@@ -164,9 +162,8 @@ public class ItemStartNodeRoleController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveRole", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveRole(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = true) String taskDefKey,
-        @RequestParam(required = true) String roleIds) {
+    public Y9Result<String> saveRole(@RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey, @RequestParam String roleIds) {
         itemStartNodeRoleService.saveRole(itemId, processDefinitionId, taskDefKey, roleIds);
         return Y9Result.successMsg("保存成功");
     }

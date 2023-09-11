@@ -76,7 +76,7 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
 
     @Override
     public Map<String, Object> deploy(MultipartFile file) {
-        HashMap<String, Object> retMap = new HashMap<String, Object>(16);
+        HashMap<String, Object> retMap = new HashMap<>(16);
         retMap.put("success", false);
         retMap.put("msg", "流程部署失败。");
         try {
@@ -167,7 +167,7 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
         Map<String, Object> retMap = new HashMap<>(16);
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String tenantId = userInfo.getTenantId(), personId = userInfo.getPersonId();
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         try {
             Y9LoginUserHolder.setTenantId(Y9LoginUserHolder.getTenantId());
             boolean tenantManager = userInfo.isGlobalManager();

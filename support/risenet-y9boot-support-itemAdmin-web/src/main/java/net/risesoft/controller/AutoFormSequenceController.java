@@ -36,13 +36,13 @@ public class AutoFormSequenceController {
 
     /**
      * 自动获取日期
-     * 
+     *
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/autoDate")
     public Map<String, String> autoDate() {
-        Map<String, String> map = new HashMap<String, String>(16);
+        Map<String, String> map = new HashMap<>(16);
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String dateStr = sdf.format(date);
@@ -52,7 +52,7 @@ public class AutoFormSequenceController {
 
     /**
      * 自动获取报销单号
-     * 
+     *
      * @return
      */
     @ResponseBody
@@ -84,7 +84,7 @@ public class AutoFormSequenceController {
 
     /**
      * 从后台获取页面的自动编号
-     * 
+     *
      * @param model
      * @return
      */
@@ -108,7 +108,7 @@ public class AutoFormSequenceController {
 
     /**
      * 更新指定的序列号
-     * 
+     *
      * @param labelName
      * @param tenantId
      */

@@ -54,10 +54,10 @@ public class DepartmentRestController {
     public Y9Result<List<Map<String, Object>>> findDeptAndUserById(@RequestParam(required = false) String id) {
         String personId = Y9LoginUserHolder.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         if (StringUtils.isBlank(id)) {
             OrgUnit orgUnit = orgUnitManager.getOrganization(tenantId, personId);
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", orgUnit.getId());
             map.put("parentId", orgUnit.getParentId());
             map.put("name", orgUnit.getName());
@@ -70,7 +70,7 @@ public class DepartmentRestController {
         items.addAll(genDeptTree(id));
         List<Person> employees = departmentManager.listPersons(tenantId, id);
         for (Person employee : employees) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", employee.getId());
             map.put("parentId", employee.getParentId());
             map.put("name", employee.getName());
@@ -92,7 +92,7 @@ public class DepartmentRestController {
     @RequestMapping(value = "/findDeptById", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public Y9Result<List<Map<String, Object>>> findDeptById(@RequestParam(required = false) String id) {
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         return Y9Result.success(items, "获取成功");
     }
 
@@ -109,7 +109,7 @@ public class DepartmentRestController {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(id)) {
             OrgUnit orgUnit = orgUnitManager.getOrganization(tenantId, personId);
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", orgUnit.getId());
             map.put("parentId", orgUnit.getParentId());
             map.put("name", orgUnit.getName());
@@ -121,7 +121,7 @@ public class DepartmentRestController {
         }
         List<Department> departments = departmentManager.listSubDepartments(tenantId, id);
         for (Department department : departments) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", department.getId());
             map.put("parentId", department.getParentId());
             map.put("name", department.getName());
@@ -155,11 +155,11 @@ public class DepartmentRestController {
      * @return
      */
     public List<Map<String, Object>> genDeptTree(String deptGuid) {
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         List<Department> deptList = departmentManager.listSubDepartments(Y9LoginUserHolder.getTenantId(), deptGuid);
-        List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
+        List<OrgUnit> orgUnitList = new ArrayList<>();
         orgUnitList.addAll(deptList);
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         for (OrgUnit entity : deptList) {
             Map<String, Object> map = Maps.newHashMap();
             map.put("id", entity.getId());
