@@ -1,6 +1,6 @@
 package net.risesoft.api;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,14 +26,16 @@ public class QuickSendApiImpl implements QuickSendApi {
     private QuickSendService quickSendService;
 
     @Override
-    public String getAssignee(@NotBlank String tenantId, @NotBlank String positionId, @NotBlank String itemId, @NotBlank String taskKey) {
+    public String getAssignee(@NotBlank String tenantId, @NotBlank String positionId, @NotBlank String itemId,
+        @NotBlank String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         return quickSendService.getAssignee(itemId, taskKey);
     }
 
     @Override
-    public void saveOrUpdate(@NotBlank String tenantId, @NotBlank String positionId, @NotBlank String itemId, @NotBlank String taskKey, String assignee) {
+    public void saveOrUpdate(@NotBlank String tenantId, @NotBlank String positionId, @NotBlank String itemId,
+        @NotBlank String taskKey, String assignee) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         quickSendService.saveOrUpdate(itemId, taskKey, assignee);

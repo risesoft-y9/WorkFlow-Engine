@@ -1,6 +1,6 @@
 package net.risesoft.api.itemadmin;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +30,10 @@ public interface QueryListApi {
      * @return
      */
     @GetMapping("/getQueryList")
-    public ItemPage<ActRuDetailModel> getQueryList(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("userId") @NotBlank String userId, @RequestParam("systemName") @NotBlank String systemName, @RequestParam("state") String state, @RequestParam("createDate") String createDate,
-        @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    public ItemPage<ActRuDetailModel> getQueryList(@RequestParam("tenantId") @NotBlank String tenantId,
+        @RequestParam("userId") @NotBlank String userId, @RequestParam("systemName") @NotBlank String systemName,
+        @RequestParam("state") String state, @RequestParam("createDate") String createDate,
+        @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
 }

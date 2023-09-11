@@ -1,6 +1,6 @@
 package net.risesoft.api.itemadmin;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +25,9 @@ public interface QuickSendApi {
      * @return
      */
     @GetMapping("/getAssignee")
-    public String getAssignee(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId, @RequestParam("taskKey") @NotBlank String taskKey);
+    public String getAssignee(@RequestParam("tenantId") @NotBlank String tenantId,
+        @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId,
+        @RequestParam("taskKey") @NotBlank String taskKey);
 
     /**
      * 保存快捷发送人
@@ -37,6 +39,8 @@ public interface QuickSendApi {
      * @param assignee 发送人
      */
     @PostMapping("/saveOrUpdate")
-    public void saveOrUpdate(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId, @RequestParam("taskKey") @NotBlank String taskKey, @RequestParam("assignee") String assignee);
+    public void saveOrUpdate(@RequestParam("tenantId") @NotBlank String tenantId,
+        @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId,
+        @RequestParam("taskKey") @NotBlank String taskKey, @RequestParam("assignee") String assignee);
 
 }
