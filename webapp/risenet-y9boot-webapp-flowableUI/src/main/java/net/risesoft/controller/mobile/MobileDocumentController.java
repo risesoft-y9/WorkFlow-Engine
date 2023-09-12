@@ -34,7 +34,7 @@ import net.risesoft.api.itemadmin.ItemRoleApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.todo.TodoTaskApi;
@@ -73,7 +73,7 @@ public class MobileDocumentController {
     private PersonApi personApi;
 
     @Autowired
-    private RoleApi roleApi;
+    private PersonRoleApi personRoleApi;
 
     @Autowired
     private DocumentApi documentManager;
@@ -150,7 +150,7 @@ public class MobileDocumentController {
                 opinionFrameMap.put("opinionFrameName", bind.getOpinionFrameName());
                 List<String> roleIds = bind.getRoleIds();
                 for (String roleId : roleIds) {
-                    Boolean hasRole = roleApi.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId, person.getId());
+                    Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, person.getId());
                     if (hasRole) {
                         opinionFrameMap.put("hasRole", hasRole);
                         break;

@@ -25,7 +25,7 @@ import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.WorkOrderApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.todo.TodoTaskApi;
@@ -84,7 +84,7 @@ public class DocumentRestController {
     private WorkOrderApi workOrderManager;
 
     @Autowired
-    private RoleApi roleApi;
+    private PersonRoleApi personRoleApi;
 
     @Autowired
     private SpeakInfoApi speakInfoManager;
@@ -200,7 +200,7 @@ public class DocumentRestController {
             int follow = officeFollowManager.countByProcessInstanceId(tenantId, userId, processInstanceId);
             map.put("follow", follow > 0 ? true : false);
             if (dzxhTenantId.equals(tenantId)) {
-                Boolean doneManage = roleApi.hasRole(tenantId, "itemAdmin", "", "办结角色", userId);
+                Boolean doneManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "办结角色", userId);
                 map.put("doneManage", doneManage);
             }
             return Y9Result.success(map, "获取成功");
@@ -274,7 +274,7 @@ public class DocumentRestController {
         try {
             List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
             listMap = itemManager.getItemList(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId());
-            Boolean workOrderManage = roleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", personId);
+            Boolean workOrderManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", personId);
             if (workOrderManage) {
                 int workOrdertodoCount = workOrderManager.getAdminTodoCount();
                 map.put("workOrdertodoCount", workOrdertodoCount);
@@ -291,7 +291,8 @@ public class DocumentRestController {
             map.put("youjianCount", youjianCount);
             int followCount = officeFollowManager.getFollowCount(tenantId, Y9LoginUserHolder.getPersonId());
             map.put("followCount", followCount);
-            boolean b = roleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", userInfo.getPersonId());
+            boolean b =
+                personRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", userInfo.getPersonId());
             map.put("monitorManage", b);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {

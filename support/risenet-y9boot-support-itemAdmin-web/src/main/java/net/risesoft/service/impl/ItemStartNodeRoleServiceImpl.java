@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.api.permission.RoleApi;
 import net.risesoft.entity.ItemStartNodeRole;
 import net.risesoft.entity.SpmApproveItem;
@@ -42,6 +43,9 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
 
     @Autowired
     private RoleApi roleManager;
+
+    @Autowired
+    private PersonRoleApi personRoleApi;
 
     @Autowired
     private SpmApproveItemService spmApproveItemService;
@@ -183,7 +187,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
                     if (StringUtils.isNotEmpty(roleIds)) {
                         String[] roleIdArr = roleIds.split(";");
                         for (String roleId : roleIdArr) {
-                            boolean has = roleManager.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId, userId);
+                            boolean has = personRoleApi.hasRole(tenantId, roleId, userId);
                             if (has) {
                                 startTaskDefKey = isnr.getTaskDefKey();
                                 break list;

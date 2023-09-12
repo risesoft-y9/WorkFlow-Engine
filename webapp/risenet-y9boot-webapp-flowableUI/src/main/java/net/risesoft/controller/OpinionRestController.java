@@ -21,7 +21,7 @@ import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.consts.TreeTypeConsts;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.OrgTypeEnum;
@@ -62,7 +62,7 @@ public class OpinionRestController {
     private OrganizationApi organizationApi;
 
     @Autowired
-    private RoleApi roleApi;
+    private PersonRoleApi personRoleApi;
 
     @RequestMapping(value = "/checkSignOpinion")
     public Map<String, Object> checkSignOpinion(@RequestParam(required = false) String taskId,
@@ -255,7 +255,7 @@ public class OpinionRestController {
             map.put("date", opinion.getCreateDate());
         }
         boolean hasRole =
-            roleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", userInfo.getPersonId());
+            personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", userInfo.getPersonId());
         map.put("hasRole", hasRole);
         return Y9Result.success(map, "获取成功");
     }

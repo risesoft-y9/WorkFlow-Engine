@@ -19,7 +19,7 @@ import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.WorkOrderApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.MonitorApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
@@ -54,7 +54,7 @@ public class MainRestController {
     private MonitorApi monitorManager;
 
     @Autowired
-    private RoleApi roleApi;
+    private PersonRoleApi personRoleApi;
 
     @Autowired
     private TaskApi taskManager;
@@ -186,7 +186,7 @@ public class MainRestController {
         map.put("itemModel", itemModel);
         map.put("tenantId", tenantId);
         map.put("dzxhTenantId", Y9Context.getProperty("y9.app.flowable.dzxhTenantId"));
-        boolean b = roleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", userInfo.getPersonId());
+        boolean b = personRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", userInfo.getPersonId());
         boolean deptManage = false;
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);
@@ -228,7 +228,7 @@ public class MainRestController {
             String processDefinitionKey = itemModel.getWorkflowGuid();
             if (itemModel != null && itemModel.getId() != null) {
                 model.addAttribute("processDefinitionKey", processDefinitionKey);
-                boolean hasOnlineAccess = roleApi.hasRole(tenantId, Y9Context.getSystemName(), "",
+                boolean hasOnlineAccess = personRoleApi.hasRole(tenantId, Y9Context.getSystemName(), "",
                     itemModel.getName() + "收件角色", userInfo.getPersonId());
 
                 Map<String, Object> countMap = todoManager.getCountByUserIdAndProcessDefinitionKey(
@@ -255,7 +255,7 @@ public class MainRestController {
             map.put("doneCount", doneCount);
             map.put("draftRecycleCount", draftRecycleCount);
 
-            b = roleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", userInfo.getPersonId());
+            b = personRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", userInfo.getPersonId());
             if (b) {
                 long monitorDoing = monitorManager.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey);
                 long monitorDone = monitorManager.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey);

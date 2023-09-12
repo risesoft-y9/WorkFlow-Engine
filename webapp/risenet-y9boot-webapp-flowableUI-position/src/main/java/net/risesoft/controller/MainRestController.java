@@ -21,7 +21,7 @@ import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.org.PositionApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.DoingApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
@@ -49,7 +49,7 @@ public class MainRestController {
     private HistoricProcessApi historicProcessManager;
 
     @Autowired
-    private RoleApi roleManager;
+    private PositionRoleApi positionRoleApi;
 
     @Autowired
     private TaskApi taskManager;
@@ -180,8 +180,8 @@ public class MainRestController {
         map.put("itemModel", itemModel);
         map.put("tenantId", tenantId);
         map.put("dzxhTenantId", Y9Context.getProperty("y9.app.flowable.dzxhTenantId"));
-        boolean b =
-            roleManager.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", Y9LoginUserHolder.getPositionId());
+        boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色",
+            Y9LoginUserHolder.getPositionId());
         boolean deptManage = false;
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);
@@ -289,8 +289,8 @@ public class MainRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("tenantManager", person.isGlobalManager());
-        boolean b =
-            roleManager.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", Y9LoginUserHolder.getPositionId());
+        boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色",
+            Y9LoginUserHolder.getPositionId());
         boolean deptManage = false;
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);

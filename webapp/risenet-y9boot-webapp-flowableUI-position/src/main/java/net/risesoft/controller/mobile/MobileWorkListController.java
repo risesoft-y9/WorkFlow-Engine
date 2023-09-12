@@ -25,7 +25,7 @@ import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 import net.risesoft.api.permission.PositionResourceApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.resource.ResourceApi;
 import net.risesoft.consts.UtilConsts;
@@ -81,7 +81,7 @@ public class MobileWorkListController {
     private PositionResourceApi positionResourceApi;
 
     @Autowired
-    private RoleApi roleManager;
+    private PositionRoleApi positionRoleApi;
 
     /**
      * 获取在办件列表
@@ -180,7 +180,7 @@ public class MobileWorkListController {
                     AuthorityEnum.BROWSE.getValue(), resourceId);
                 String url = "";
                 for (net.risesoft.model.Resource r : list0) {
-                    map = new HashMap<String, Object>(16);
+                    map = new HashMap<>(16);
                     url = r.getUrl();
                     if (StringUtils.isBlank(url)) {
                         continue;
@@ -209,7 +209,7 @@ public class MobileWorkListController {
                 // 系统工单为大有生租户专用,不创建应用,不生成资源,避免其他租户可租用,大有生租户添加系统工单
                 String riseTenantId = Y9Context.getProperty("y9.app.flowable.tenantId");
                 if (riseTenantId.equals(Y9LoginUserHolder.getTenantId())) {
-                    boolean workOrder = roleManager.hasRole(tenantId, "itemAdmin", "", "系统工单角色", positionId);
+                    boolean workOrder = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", positionId);
                     if (workOrder) {// 拥有系统工单角色,才在我的工作中显示系统工单事项
                         map = new HashMap<String, Object>(16);
                         String workOrderItemId = Y9Context.getProperty("y9.app.flowable.workOrderItemId");

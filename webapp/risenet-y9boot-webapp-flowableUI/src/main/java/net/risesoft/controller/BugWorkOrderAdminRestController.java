@@ -16,7 +16,7 @@ import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.WorkOrderApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.WorkOrderHandleTypeEnum;
@@ -55,7 +55,7 @@ public class BugWorkOrderAdminRestController {
     private String myTenantId;
 
     @Autowired
-    private RoleApi roleApi;
+    private PersonRoleApi personRoleApi;
 
     /**
      * 工单分配发送
@@ -160,7 +160,7 @@ public class BugWorkOrderAdminRestController {
         model.addAttribute("processSerialNumber", processSerialNumber);
         model.addAttribute("itemId", itemId);
         model.addAttribute("tenantManager", userInfo.isGlobalManager());
-        boolean workOrderManage = roleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId);
+        boolean workOrderManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId);
         model.addAttribute("workOrderManage", workOrderManage);
         ItemModel itemModel = itemManager.getByItemId(Y9LoginUserHolder.getTenantId(), itemId);
         if (itemModel != null && itemModel.getId() != null) {
