@@ -21,7 +21,7 @@ import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PositionRoleApi;
 import net.risesoft.consts.TreeTypeConsts;
 import net.risesoft.model.OrgUnit;
 import net.risesoft.model.Organization;
@@ -55,7 +55,7 @@ public class OpinionRestController {
     private OrganizationApi organizationManager;
 
     @Autowired
-    private RoleApi roleManager;
+    private PositionRoleApi positionRoleApi;
 
     @RequestMapping(value = "/checkSignOpinion")
     public Map<String, Object> checkSignOpinion(@RequestParam(required = false) String taskId,
@@ -246,7 +246,8 @@ public class OpinionRestController {
             map.put("opinion", opinion);
             map.put("date", opinion.getCreateDate());
         }
-        boolean hasRole = roleManager.hasRole(tenantId, "itemAdmin", "", "代录意见角色", Y9LoginUserHolder.getPositionId());
+        boolean hasRole =
+            positionRoleApi.hasRole(tenantId, "itemAdmin", "", "代录意见角色", Y9LoginUserHolder.getPositionId());
         map.put("hasRole", hasRole);
         return Y9Result.success(map, "获取成功");
     }

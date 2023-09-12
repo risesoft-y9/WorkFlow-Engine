@@ -26,7 +26,7 @@ import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.permission.PersonResourceApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.resource.ResourceApi;
 import net.risesoft.consts.UtilConsts;
@@ -87,7 +87,7 @@ public class MobileWorkListController {
     private PersonResourceApi personResourceApi;
 
     @Autowired
-    private RoleApi roleApi;
+    private PersonRoleApi personRoleApi;
 
     /**
      * 获取在办件列表
@@ -213,7 +213,7 @@ public class MobileWorkListController {
                 // 系统工单为大有生租户专用,不创建应用,不生成资源,避免其他租户可租用,大有生租户添加系统工单
                 String riseTenantId = Y9Context.getProperty("y9.app.flowable.tenantId");
                 if (riseTenantId.equals(Y9LoginUserHolder.getTenantId())) {
-                    boolean workOrder = roleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", userId);
+                    boolean workOrder = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", userId);
                     // 拥有系统工单角色,才在我的工作中显示系统工单事项
                     if (workOrder) {
                         map = new HashMap<String, Object>(16);

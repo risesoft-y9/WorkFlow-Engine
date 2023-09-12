@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.permission.PersonRoleApi;
+import net.risesoft.api.permission.PositionRoleApi;
 import net.risesoft.api.permission.RoleApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
@@ -77,6 +79,12 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Autowired
     private RoleApi roleManager;
+
+    @Autowired
+    private PositionRoleApi positionRoleApi;
+
+    @Autowired
+    private PersonRoleApi personRoleApi;
 
     @Autowired
     private TaskApi taskManager;
@@ -350,7 +358,7 @@ public class OpinionServiceImpl implements OpinionService {
                     boolean addable = (boolean)addableMap.get("addable");
                     if (!addable) {
                         // 没有意见框编辑权限时，增加代录权限
-                        boolean hasRole1 = roleManager.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "",
+                        boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "",
                             "代录意见角色", person.getPersonId());
                         if (hasRole1) {
                             addableMap.put("addAgent", true);
@@ -377,8 +385,7 @@ public class OpinionServiceImpl implements OpinionService {
                     List<String> roleIds = bind.getRoleIds();
                     if (!roleIds.isEmpty()) {
                         for (String roleId : roleIds) {
-                            Boolean hasRole =
-                                roleManager.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId, personId);
+                            Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId);
                             if (hasRole) {
                                 addableMap.put("addable", true);
                                 break;
@@ -391,7 +398,7 @@ public class OpinionServiceImpl implements OpinionService {
                 boolean addable = (boolean)addableMap.get("addable");
                 if (!addable) {
                     // 没有意见框编辑权限时，增加代录权限
-                    boolean hasRole1 = roleManager.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色",
+                    boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色",
                         person.getPersonId());
                     if (hasRole1) {
                         addableMap.put("addAgent", true);
@@ -489,23 +496,20 @@ public class OpinionServiceImpl implements OpinionService {
                                         /**
                                          * 把当前人换为委托改任务的人，委托人有意见签写意见，当前人就有签写意见的权限
                                          */
-                                        hasRole = roleManager.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId,
-                                            ownerId);
+                                        hasRole = positionRoleApi.hasRole(tenantId, roleId, ownerId);
                                         if (hasRole) {
                                             addableMap.put("addable", true);
                                             continue;
                                         }
                                     } else {
-                                        hasRole = roleManager.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId,
-                                            personId);
+                                        hasRole = personRoleApi.hasRole(tenantId, roleId, personId);
                                         if (hasRole) {
                                             addableMap.put("addable", true);
                                             continue;
                                         }
                                     }
                                 } else {
-                                    hasRole =
-                                        roleManager.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId, personId);
+                                    hasRole = personRoleApi.hasRole(tenantId, roleId, personId);
                                     if (hasRole) {
                                         addableMap.put("addable", true);
                                         continue;
@@ -517,7 +521,7 @@ public class OpinionServiceImpl implements OpinionService {
                 }
                 // 代录权限控制
                 if (StringUtils.isNotBlank(taskId)) {
-                    boolean hasRole = roleManager.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色",
+                    boolean hasRole = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色",
                         person.getPersonId());
                     if (hasRole) {
                         // 没有意见框编辑权限时，增加代录权限
@@ -609,10 +613,7 @@ public class OpinionServiceImpl implements OpinionService {
                             addableMap.put("addable", true);
                         } else {
                             for (String roleId : roleIds) {
-                                Boolean hasRole = false;
-                                // FIXME
-                                hasRole =
-                                    roleManager.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId, personId);
+                                Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId);
                                 if (hasRole) {
                                     addableMap.put("addable", true);
                                     continue;

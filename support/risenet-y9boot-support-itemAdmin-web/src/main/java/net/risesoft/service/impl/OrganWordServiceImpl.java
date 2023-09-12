@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.consts.PunctuationConsts;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemOrganWordBind;
@@ -75,7 +75,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     private PersonApi personManager;
 
     @Autowired
-    private RoleApi roleManager;
+    private PersonRoleApi personRoleApi;
 
     @Autowired
     private TaskApiClient taskManager;
@@ -313,8 +313,7 @@ public class OrganWordServiceImpl implements OrganWordService {
             if (null != bind) {
                 List<String> roleIds = bind.getRoleIds();
                 for (String roleId : roleIds) {
-                    hasPermission =
-                        roleManager.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId, userInfo.getParentId());
+                    hasPermission = personRoleApi.hasRole(tenantId, roleId, userInfo.getParentId());
                 }
             }
             if (!hasPermission) {
@@ -367,8 +366,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                     hasPermission = true;
                 } else {
                     for (String roleId : roleIds) {
-                        hasPermission = roleManager.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId,
-                            userInfo.getPersonId());
+                        hasPermission = personRoleApi.hasRole(tenantId, roleId, userInfo.getPersonId());
                         if (hasPermission) {
                             break;
                         }

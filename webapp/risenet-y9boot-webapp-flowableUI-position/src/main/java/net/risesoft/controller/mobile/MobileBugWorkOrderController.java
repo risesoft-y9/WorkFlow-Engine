@@ -30,7 +30,7 @@ import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.api.tenant.TenantApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
@@ -87,7 +87,7 @@ public class MobileBugWorkOrderController {
     private Attachment4PositionApi attachmentManager;
 
     @Autowired
-    private RoleApi roleManager;
+    private PersonRoleApi personRoleApi;
 
     @Autowired
     private TodoTaskApi todoTaskManager;
@@ -428,9 +428,9 @@ public class MobileBugWorkOrderController {
     @RequestMapping(value = "/getRole")
     public void getRole(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
         HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
-            boolean workOrderManage = roleManager.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId);
+            boolean workOrderManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId);
             map.put(UtilConsts.SUCCESS, true);
             map.put("workOrderManage", workOrderManage);
         } catch (Exception e) {
@@ -499,8 +499,7 @@ public class MobileBugWorkOrderController {
                 opinionFrameMap.put("opinionFrameName", bind.getOpinionFrameName());
                 List<String> roleIds = bind.getRoleIds();
                 for (String roleId : roleIds) {
-                    Boolean hasRole =
-                        roleManager.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId, person.getId());
+                    Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, person.getId());
                     if (hasRole) {
                         opinionFrameMap.put("hasRole", hasRole);
                         break;

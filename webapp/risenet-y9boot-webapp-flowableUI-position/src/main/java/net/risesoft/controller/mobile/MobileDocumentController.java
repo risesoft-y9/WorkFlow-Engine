@@ -33,7 +33,7 @@ import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
 import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.todo.TodoTaskApi;
@@ -73,7 +73,7 @@ public class MobileDocumentController {
     private PersonApi personManager;
 
     @Autowired
-    private RoleApi roleManager;
+    private PositionRoleApi positionRoleApi;
 
     @Autowired
     private Document4PositionApi documentManager;
@@ -146,7 +146,7 @@ public class MobileDocumentController {
                 opinionFrameMap.put("opinionFrameName", bind.getOpinionFrameName());
                 List<String> roleIds = bind.getRoleIds();
                 for (String roleId : roleIds) {
-                    Boolean hasRole = roleManager.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId, positionId);
+                    Boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, positionId);
                     if (hasRole) {
                         opinionFrameMap.put("hasRole", hasRole);
                         break;

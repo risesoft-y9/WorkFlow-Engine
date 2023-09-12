@@ -28,7 +28,7 @@ import net.risesoft.api.itemadmin.WorkOrderApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.org.OrgUnitApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PositionRoleApi;
 import net.risesoft.api.tenant.TenantApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
@@ -75,7 +75,7 @@ public class BugWorkOrderRestController {
     private String myTenantId;
 
     @Autowired
-    private RoleApi roleManager;
+    private PositionRoleApi positionRoleApi;
 
     @Autowired
     private TodoTaskApi todoTaskManager;
@@ -277,7 +277,7 @@ public class BugWorkOrderRestController {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            boolean workOrderManage = roleManager.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "系统工单管理员",
+            boolean workOrderManage = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "系统工单管理员",
                 Y9LoginUserHolder.getPositionId());
             if (workOrderManage && itembox.equals("wtodo")) {// 管理员打开待办工单,可走工作流
                 WorkOrderModel workOrderModel = workOrderManager.findByProcessSerialNumber(processSerialNumber);

@@ -30,7 +30,7 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.WorkOrderApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.api.tenant.TenantApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
@@ -84,7 +84,7 @@ public class MobileBugWorkOrderController {
     private AttachmentApi attachmentManager;
 
     @Autowired
-    private RoleApi roleApi;
+    private PersonRoleApi personRoleApi;
 
     @Autowired
     private TodoTaskApi todoTaskApi;
@@ -427,7 +427,7 @@ public class MobileBugWorkOrderController {
         HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            boolean workOrderManage = roleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId);
+            boolean workOrderManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId);
             map.put(UtilConsts.SUCCESS, true);
             map.put("workOrderManage", workOrderManage);
         } catch (Exception e) {
@@ -441,8 +441,6 @@ public class MobileBugWorkOrderController {
     /**
      * 工单列表打开工单，获取工单详情
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param processSerialNumber 编号
      * @param response
      */
@@ -498,7 +496,7 @@ public class MobileBugWorkOrderController {
                 opinionFrameMap.put("opinionFrameName", bind.getOpinionFrameName());
                 List<String> roleIds = bind.getRoleIds();
                 for (String roleId : roleIds) {
-                    Boolean hasRole = roleApi.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId, person.getId());
+                    Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, person.getId());
                     if (hasRole) {
                         opinionFrameMap.put("hasRole", hasRole);
                         break;

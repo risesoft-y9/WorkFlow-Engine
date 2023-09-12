@@ -25,6 +25,7 @@ import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.permission.PersonResourceApi;
+import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.api.permission.RoleApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ErrorLog;
@@ -157,6 +158,9 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Autowired
     private RoleApi roleManager;
+
+    @Autowired
+    private PersonRoleApi personRoleApi;
 
     @Autowired
     private DepartmentApi departmentManager;
@@ -745,7 +749,7 @@ public class DocumentServiceImpl implements DocumentService {
             // 系统工单为大有生租户专用,不创建应用,不生成资源,避免其他租户可租用,大有生租户添加系统工单
             String riseTenantId = y9Conf.getApp().getItemAdmin().getTenantId();
             if (riseTenantId.equals(Y9LoginUserHolder.getTenantId())) {
-                boolean workOrder = roleManager.hasRole(tenantId, "itemAdmin", "", "系统工单角色", userId);
+                boolean workOrder = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", userId);
                 // 拥有系统工单角色,才在我的工作中显示系统工单事项
                 if (workOrder) {
                     String workOrderItemId = y9Conf.getApp().getItemAdmin().getWorkOrderItemId();
@@ -814,7 +818,7 @@ public class DocumentServiceImpl implements DocumentService {
             // 系统工单为大有生租户专用,不创建应用,不生成资源,避免其他租户可租用,大有生租户添加系统工单
             String riseTenantId = y9Conf.getApp().getItemAdmin().getTenantId();
             if (riseTenantId.equals(Y9LoginUserHolder.getTenantId())) {
-                boolean workOrder = roleManager.hasRole(tenantId, "itemAdmin", "", "系统工单角色", userId);
+                boolean workOrder = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", userId);
                 // 拥有系统工单角色,才在我的工作中显示系统工单事项
                 if (workOrder) {
                     map = new HashMap<String, Object>(16);
@@ -828,7 +832,7 @@ public class DocumentServiceImpl implements DocumentService {
                     if (spmApproveitem != null && spmApproveitem.getId() != null) {
                         todoCount = todoManager.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, userId,
                             spmApproveitem.getWorkflowGuid());
-                        boolean workOrderManage = roleManager.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId);
+                        boolean workOrderManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId);
                         if (workOrderManage) {
                             int workOrdertodoCount = workOrderService.getAdminTodoCount();
                             todoCount += workOrdertodoCount;
@@ -882,7 +886,7 @@ public class DocumentServiceImpl implements DocumentService {
             // 系统工单为大有生租户专用,不创建应用,不生成资源,避免其他租户可租用,大有生租户添加系统工单
             String riseTenantId = y9Conf.getApp().getItemAdmin().getTenantId();
             if (riseTenantId.equals(Y9LoginUserHolder.getTenantId())) {
-                boolean workOrder = roleManager.hasRole(tenantId, "itemAdmin", "", "系统工单角色", userId);
+                boolean workOrder = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", userId);
                 // 拥有系统工单角色,才在我的工作中显示系统工单事项
                 if (workOrder) {
                     map = new HashMap<String, Object>(16);
@@ -991,8 +995,7 @@ public class DocumentServiceImpl implements DocumentService {
                             menuMap.add(mapTemp);
                         } else {
                             for (String roleId : roleIds) {
-                                boolean hasRole =
-                                    roleManager.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId, userId);
+                                boolean hasRole = personRoleApi.hasRole(tenantId, roleId, userId);
                                 if (hasRole) {
                                     Map<String, Object> mapTemp = new HashMap<String, Object>(16);
                                     mapTemp.put("menuName", buttonName);
@@ -1035,8 +1038,7 @@ public class DocumentServiceImpl implements DocumentService {
                             break;
                         } else {
                             for (String roleId : roleIds) {
-                                boolean hasrole =
-                                    roleManager.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId, userId);
+                                boolean hasrole = personRoleApi.hasRole(tenantId, roleId, userId);
                                 if (hasrole) {
                                     Map<String, Object> mapTemp = new HashMap<String, Object>(16);
                                     mapTemp.put("menuName", bib.getButtonName());
@@ -1095,8 +1097,7 @@ public class DocumentServiceImpl implements DocumentService {
                             sendMap.add(mapTemp);
                         } else {
                             for (String roleId : roleIds) {
-                                boolean hasrole =
-                                    roleManager.hasRoleByTenantIdAndRoleIdAndOrgUnitId(tenantId, roleId, userId);
+                                boolean hasrole = personRoleApi.hasRole(tenantId, roleId, userId);
                                 if (hasrole) {
                                     Map<String, Object> mapTemp = new HashMap<String, Object>(16);
                                     sendName = Y9Util.genCustomStr(sendName, buttonName);
@@ -1392,7 +1393,6 @@ public class DocumentServiceImpl implements DocumentService {
      * 启动流程发送
      *
      * @param taskId
-     * @param sponsorHandle
      * @param routeToTaskId
      * @param sponsorGuid
      * @param userList

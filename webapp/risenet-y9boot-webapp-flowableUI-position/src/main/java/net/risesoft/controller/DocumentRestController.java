@@ -24,7 +24,7 @@ import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.org.PositionApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.UtilConsts;
@@ -78,7 +78,7 @@ public class DocumentRestController {
     private WorkOrderApi workOrderManager;
 
     @Autowired
-    private RoleApi roleManager;
+    private PositionRoleApi positionRoleApi;
 
     @Autowired
     private SpeakInfoApi speakInfoManager;
@@ -188,7 +188,7 @@ public class DocumentRestController {
             map.put("follow", follow > 0 ? true : false);
             if (Y9Context.getProperty("y9.app.flowable.dzxhTenantId").equals(tenantId)) {// 地灾租户处理
                 Boolean doneManage =
-                    roleManager.hasRole(tenantId, "itemAdmin", "", "办结角色", Y9LoginUserHolder.getPositionId());
+                    positionRoleApi.hasRole(tenantId, "itemAdmin", "", "办结角色", Y9LoginUserHolder.getPositionId());
                 map.put("doneManage", doneManage);
             }
             return Y9Result.success(map, "获取成功");
@@ -261,7 +261,7 @@ public class DocumentRestController {
         try {
             List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
             listMap = itemManager.getItemList(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId());
-            Boolean workOrderManage = roleManager.hasRole(tenantId, "Y9OrgHierarchyManagement", null, "系统工单管理员",
+            Boolean workOrderManage = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", null, "系统工单管理员",
                 Y9LoginUserHolder.getPositionId());
             if (workOrderManage) {
                 int workOrdertodoCount = workOrderManager.getAdminTodoCount();
@@ -281,11 +281,12 @@ public class DocumentRestController {
             // int followCount = officeFollowManager.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId());
             // map.put("followCount", followCount);
             // 公共角色
-            boolean b = roleManager.hasRole(tenantId, "Y9OrgHierarchyManagement", null, "监控管理员角色",
+            boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", null, "监控管理员角色",
                 Y9LoginUserHolder.getPositionId());
             map.put("monitorManage", b);
 
-            boolean b1 = roleManager.hasRole(tenantId, "itemAdmin", "", "人事统计角色", Y9LoginUserHolder.getPositionId());
+            boolean b1 =
+                positionRoleApi.hasRole(tenantId, "itemAdmin", "", "人事统计角色", Y9LoginUserHolder.getPositionId());
             map.put("leaveManage", b1);
 
             return Y9Result.success(map, "获取成功");
