@@ -66,10 +66,10 @@ public class EntrustController {
      */
     @RequestMapping(value = "/deptTreeSearch", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = true) String name) {
+    public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
+        List<Map<String, Object>> item = new ArrayList<>();
+        List<OrgUnit> orgUnitList = new ArrayList<>();
         OrgUnit orgUnit = personManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId());
         if (OrgTypeEnum.DEPARTMENT.getEnName().equals(orgUnit.getOrgType())) {
             List<Person> personList =
@@ -109,13 +109,13 @@ public class EntrustController {
      */
     @RequestMapping(value = "/getDeptChildTree", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getDeptChildTree(@RequestParam(required = false) String id) {
-        List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(id)) {
-            List<OrgUnit> orgList = new ArrayList<OrgUnit>();
+            List<OrgUnit> orgList = new ArrayList<>();
             orgList = orgUnitManager.getSubTree(tenantId, id, TreeTypeConsts.TREE_TYPE_PERSON);
             for (OrgUnit orgunit : orgList) {
-                Map<String, Object> map = new HashMap<String, Object>(16);
+                Map<String, Object> map = new HashMap<>(16);
                 String orgunitId = orgunit.getId();
                 map.put("id", orgunitId);
                 map.put("parentId", id);
@@ -143,7 +143,7 @@ public class EntrustController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         OrgUnit orgUnit = personManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId());
         if (orgUnit != null && orgUnit.getId() != null) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", orgUnit.getId());
             map.put("parentId", orgUnit.getParentId());
             map.put("name", orgUnit.getName());
@@ -161,7 +161,7 @@ public class EntrustController {
      */
     @RequestMapping(value = "/getEntrustInfo", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getEntrustInfo(String id) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotEmpty(id)) {
             Entrust entrust = entrustService.findOne(id);
             if (entrust.getItemId().equals(Entrust.ITEMID4ALL)) {
@@ -173,7 +173,7 @@ public class EntrustController {
             map.put("entrust", entrust);
         }
         List<SpmApproveItem> itemList = spmApproveItemRepository.findAll();
-        List<SpmApproveItem> list = new ArrayList<SpmApproveItem>();
+        List<SpmApproveItem> list = new ArrayList<>();
         Integer count = entrustService.getCountByOwnerIdAndItemId(Y9LoginUserHolder.getPersonId(), Entrust.ITEMID4ALL);
         if (count == 0) {
             SpmApproveItem item = new SpmApproveItem();

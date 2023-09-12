@@ -48,16 +48,15 @@ public class ItemOrganWordBindController {
      */
     @ResponseBody
     @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyBind(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> copyBind(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         itemOrganWordBindService.copyBind(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }
 
     @ResponseBody
     @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemOrganWordBind>> getBindList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
+    public Y9Result<List<ItemOrganWordBind>> getBindList(@RequestParam String itemId,
+        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         List<ItemOrganWordBind> list = itemOrganWordBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
             processDefinitionId, taskDefKey);
         return Y9Result.success(list, "获取成功");
@@ -72,10 +71,10 @@ public class ItemOrganWordBindController {
      */
     @ResponseBody
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+    public Y9Result<Map<String, Object>> getBpmList(@RequestParam String itemId,
+        @RequestParam String processDefinitionId) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
         List<ItemOrganWordBind> bindList = new ArrayList<>();
@@ -98,9 +97,9 @@ public class ItemOrganWordBindController {
 
     @ResponseBody
     @RequestMapping(value = "/getOrganWordList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getOrganWordList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+    public Y9Result<Map<String, Object>> getOrganWordList(@RequestParam String itemId,
+        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
+        Map<String, Object> map = new HashMap<>(16);
         List<ItemOrganWordBind> bindList = itemOrganWordBindService
             .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         List<OrganWord> owList = organWordService.findAll();
@@ -139,9 +138,8 @@ public class ItemOrganWordBindController {
 
     @ResponseBody
     @RequestMapping(value = "/saveBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveBind(@RequestParam(required = true) String custom,
-        @RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId,
-        @RequestParam(required = false) String taskDefKey) {
+    public Y9Result<String> saveBind(@RequestParam String custom, @RequestParam String itemId,
+        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         itemOrganWordBindService.save(custom, itemId, processDefinitionId, taskDefKey);
         return Y9Result.successMsg("绑定成功");
     }

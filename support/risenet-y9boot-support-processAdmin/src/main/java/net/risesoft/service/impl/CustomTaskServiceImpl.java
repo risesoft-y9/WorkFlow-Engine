@@ -132,7 +132,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             if (list1.size() > 0) {
                 // 成功备份数据才办结
                 String endNodeKey = customProcessDefinitionService.getEndNodeKeyByTaskId(taskId);
-                Map<String, Object> vars = new HashMap<String, Object>(16);
+                Map<String, Object> vars = new HashMap<>(16);
                 vars.put(SysVariables.ROUTETOTASKID, endNodeKey);
                 this.completeWithVariables(taskId, vars);
                 // 保存到数据中心

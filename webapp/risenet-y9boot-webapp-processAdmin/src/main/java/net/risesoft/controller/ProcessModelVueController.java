@@ -3,6 +3,7 @@ package net.risesoft.controller;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -170,7 +171,7 @@ public class ProcessModelVueController {
      * @return
      */
     @RequestMapping(value = "/exportModel")
-    public void exportModel(@RequestParam(required = true) String modelId, HttpServletResponse response) {
+    public void exportModel(@RequestParam String modelId, HttpServletResponse response) {
         try {
             Model model = modelService.getModel(modelId);
             byte[] bpmnBytes = modelService.getBpmnXML(model);
@@ -197,13 +198,13 @@ public class ProcessModelVueController {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String tenantId = userInfo.getTenantId(), personId = userInfo.getPersonId();
         boolean tenantManager = userInfo.isGlobalManager();
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
         ProcessDefinition processDefinition = null;
         if (tenantManager || userInfo.getManagerLevel() == 1) {
             Map<String, Object> mapTemp = null;
             for (AbstractModel model : list) {
-                mapTemp = new HashMap<String, Object>(16);
+                mapTemp = new HashMap<>(16);
                 mapTemp.put("id", model.getId());
                 mapTemp.put("key", model.getKey());
                 mapTemp.put("name", model.getName());
@@ -224,7 +225,7 @@ public class ProcessModelVueController {
             for (AbstractModel model : list) {
                 for (Resource resource : resourceList) {
                     if (resource.getCustomId().equals(model.getKey())) {
-                        mapTemp = new HashMap<String, Object>(16);
+                        mapTemp = new HashMap<>(16);
                         mapTemp.put("id", model.getId());
                         mapTemp.put("key", model.getKey());
                         mapTemp.put("name", model.getName());
@@ -252,10 +253,9 @@ public class ProcessModelVueController {
      * @return
      */
     @RequestMapping(value = "/getModelXml")
-    public Y9Result<Map<String, Object>> getModelXml(@RequestParam(required = true) String modelId,
-        HttpServletResponse response) {
+    public Y9Result<Map<String, Object>> getModelXml(@RequestParam String modelId, HttpServletResponse response) {
         byte[] bpmnBytes = null;
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         try {
             Model model = modelService.getModel(modelId);
             map.put("key", model.getKey());
@@ -302,7 +302,7 @@ public class ProcessModelVueController {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId();
             XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
-            InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), "UTF-8");
+            InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
             XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
 
             BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
@@ -378,7 +378,7 @@ public class ProcessModelVueController {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId();
             XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
-            InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), "UTF-8");
+            InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
             XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
 
             BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();

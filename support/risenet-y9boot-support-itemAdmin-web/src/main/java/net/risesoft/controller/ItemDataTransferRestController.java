@@ -26,20 +26,20 @@ public class ItemDataTransferRestController {
 
     /**
      * 数据迁移
-     * 
+     *
      * @param processDefinitionId 流程定义id
      * @param processInstanceId 流程实例id
      * @return
      */
     @RequestMapping(value = "/dataTransfer", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> dataTransfer(@RequestParam(required = true) String processDefinitionId,
+    public Y9Result<String> dataTransfer(@RequestParam String processDefinitionId,
         @RequestParam(required = false) String processInstanceId) {
         return itemDataTransferService.dataTransfer(processDefinitionId, processInstanceId);
     }
 
     /**
      * 获取流程实例列表
-     * 
+     *
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param page 页码

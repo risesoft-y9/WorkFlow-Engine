@@ -48,7 +48,7 @@ public class DynamicRoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getDynamicRole", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<DynamicRole> getDynamicRole(@RequestParam(required = true) String id) {
+    public Y9Result<DynamicRole> getDynamicRole(@RequestParam String id) {
         DynamicRole dynamicRole = dynamicRoleService.findOne(id);
         return Y9Result.success(dynamicRole, "获取成功");
     }
@@ -61,10 +61,10 @@ public class DynamicRoleRestController {
     @ResponseBody
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> list() {
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         List<DynamicRole> dynamicRoleList = dynamicRoleService.findAll();
         for (DynamicRole dynamicRole : dynamicRoleList) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", dynamicRole.getId());
             map.put("name", dynamicRole.getName());
             map.put("isParent", "false");
@@ -82,7 +82,7 @@ public class DynamicRoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> remove(@RequestParam(required = true) String[] dynamicRoleIds) {
+    public Y9Result<String> remove(@RequestParam String[] dynamicRoleIds) {
         dynamicRoleService.removeDynamicRoles(dynamicRoleIds);
         return Y9Result.successMsg("删除成功");
     }

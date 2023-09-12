@@ -90,7 +90,7 @@ public class TaskEntrustServiceImpl implements TaskEntrustService {
                  */
                 @SuppressWarnings("unchecked")
                 List<String> users = (List<String>)vars.get(SysVariables.USERS);
-                List<String> usersTemp = new ArrayList<String>();
+                List<String> usersTemp = new ArrayList<>();
                 for (String user : users) {
                     if (user.equals(assigneeId)) {
                         usersTemp.add(entrustPersonId);

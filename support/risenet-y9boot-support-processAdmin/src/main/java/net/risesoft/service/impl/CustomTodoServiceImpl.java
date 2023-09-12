@@ -44,7 +44,7 @@ public class CustomTodoServiceImpl implements CustomTodoService {
 
     @Override
     public Map<String, Object> getListByUserId(String userId, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getCountByUserId(userId);
         List<Task> taskList = taskService.createTaskQuery().taskAssignee(userId).active().orderByTaskCreateTime().desc()
             .listPage((page - 1) * rows, rows);
@@ -60,7 +60,7 @@ public class CustomTodoServiceImpl implements CustomTodoService {
     @Override
     public Map<String, Object> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
         Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getCountByUserIdAndProcessDefinitionKey(userId, processDefinitionKey);
         List<Task> taskList =
             taskService.createTaskQuery().taskInvolvedUser(userId).active().processDefinitionKey(processDefinitionKey)
@@ -76,7 +76,7 @@ public class CustomTodoServiceImpl implements CustomTodoService {
     @Override
     public Map<String, Object> getListByUserIdAndSystemName(String userId, String systemName, Integer page,
         Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = this.getCountByUserIdAndSystemName(userId, systemName);
         List<Task> taskList = taskService.createTaskQuery().taskAssignee(userId).active().taskCategory(systemName)
             .orderByTaskPriority().desc().orderByTaskCreateTime().desc().listPage((page - 1) * rows, rows);
@@ -90,7 +90,7 @@ public class CustomTodoServiceImpl implements CustomTodoService {
 
     @Override
     public Map<String, Object> searchListByUserId(String userId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = taskService.createTaskQuery().taskAssignee(userId).active()
             .processVariableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<Task> taskList = taskService.createTaskQuery().taskAssignee(userId).active()
@@ -107,7 +107,7 @@ public class CustomTodoServiceImpl implements CustomTodoService {
     @Override
     public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
         String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount =
             taskService.createTaskQuery().taskInvolvedUser(userId).active().processDefinitionKey(processDefinitionKey)
                 .processVariableValueLike("searchTerm", "%" + searchTerm + "%").count();
@@ -125,7 +125,7 @@ public class CustomTodoServiceImpl implements CustomTodoService {
     @Override
     public Map<String, Object> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
         Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = taskService.createTaskQuery().taskAssignee(userId).active().taskCategory(systemName)
             .processVariableValueLike("searchTerm", "%" + searchTerm + "%").count();
         List<Task> taskList = taskService.createTaskQuery().taskAssignee(userId).active().taskCategory(systemName)

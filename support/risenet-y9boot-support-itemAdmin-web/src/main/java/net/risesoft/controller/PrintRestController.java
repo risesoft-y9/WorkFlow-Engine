@@ -48,7 +48,7 @@ public class PrintRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/deleteBindPrintTemplate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteBindPrintTemplate(@RequestParam(required = true) String id) {
+    public Y9Result<String> deleteBindPrintTemplate(@RequestParam String id) {
         Map<String, Object> map = printTemplateService.deleteBindPrintTemplate(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -64,7 +64,7 @@ public class PrintRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/deletePrintTemplate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deletePrintTemplate(@RequestParam(required = true) String id) {
+    public Y9Result<String> deletePrintTemplate(@RequestParam String id) {
         Map<String, Object> map = printTemplateService.deletePrintTemplate(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -80,7 +80,7 @@ public class PrintRestController {
      * @param request
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam(required = true) String id, HttpServletResponse response,
+    public void download(@RequestParam String id, HttpServletResponse response,
         HttpServletRequest request) {
         printTemplateService.download(id, response, request);
     }
@@ -95,15 +95,15 @@ public class PrintRestController {
     @RequestMapping(value = "/getPrintTemplateList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getPrintTemplateList(@RequestParam(required = false) String fileName) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<PrintTemplate> list = new ArrayList<PrintTemplate>();
+        List<PrintTemplate> list = new ArrayList<>();
         if (StringUtils.isNotBlank(fileName)) {
             list = printTemplateRepository.findByFileNameContaining(fileName);
         } else {
             list = printTemplateService.findAll();
         }
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", list.get(i).getId());
             map.put("fileName", list.get(i).getFileName());
             map.put("fileSize", list.get(i).getFileSize());
@@ -123,7 +123,7 @@ public class PrintRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getBindTemplateList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemPrintTemplateBind>> getTemplateList(@RequestParam(required = true) String itemId) {
+    public Y9Result<List<ItemPrintTemplateBind>> getTemplateList(@RequestParam String itemId) {
         List<ItemPrintTemplateBind> list = printTemplateService.getTemplateBindList(itemId);
         return Y9Result.success(list, "获取成功");
     }
@@ -140,9 +140,9 @@ public class PrintRestController {
      */
     @RequestMapping(value = "/saveBindTemplate", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> saveBindTemplate(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String templateId, @RequestParam(required = true) String templateName,
-        @RequestParam(required = false) String templateUrl, @RequestParam(required = true) String templateType) {
+    public Y9Result<String> saveBindTemplate(@RequestParam String itemId, @RequestParam String templateId,
+        @RequestParam String templateName, @RequestParam(required = false) String templateUrl,
+        @RequestParam String templateType) {
         Map<String, Object> map =
             printTemplateService.saveBindTemplate(itemId, templateId, templateName, templateUrl, templateType);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -159,7 +159,7 @@ public class PrintRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/uploadTemplate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> upload(@RequestParam(required = true) MultipartFile files) {
+    public Y9Result<String> upload(@RequestParam MultipartFile files) {
         Map<String, Object> map = printTemplateService.uploadTemplate(files);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));

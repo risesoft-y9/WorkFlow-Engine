@@ -64,7 +64,7 @@ public class ItemRestController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> delete(@RequestParam(required = true) String id) {
+    public Y9Result<String> delete(@RequestParam String id) {
         Map<String, Object> map = spmApproveItemService.delete(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -125,7 +125,7 @@ public class ItemRestController {
      */
     @RequestMapping(value = "/getDept")
     @ResponseBody
-    public String getDept(@RequestParam(required = true) String id, @RequestParam(required = false) String name) {
+    public String getDept(@RequestParam String id, @RequestParam(required = false) String name) {
         StringBuffer sb = new StringBuffer();
         getJson(sb, id);
         String json = "[" + sb.substring(0, sb.lastIndexOf(",")).toString() + "]";
@@ -193,10 +193,10 @@ public class ItemRestController {
             item = spmApproveItemService.findById(id);
         }
         map.put("item", item);
-        List<Map<String, Object>> workflowList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> workflowList = new ArrayList<>();
         List<ProcessDefinitionModel> pdModelList = repositoryManager.getLatestProcessDefinitionList(tenantId);
         for (ProcessDefinitionModel pdModel : pdModelList) {
-            Map<String, Object> row = new HashMap<String, Object>(16);
+            Map<String, Object> row = new HashMap<>(16);
             row.put("id", pdModel.getKey());
             row.put("name", pdModel.getName());
             workflowList.add(row);
@@ -213,7 +213,7 @@ public class ItemRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/publishToSystemApp", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> publishToSystemApp(@RequestParam(required = true) String itemId) {
+    public Y9Result<String> publishToSystemApp(@RequestParam String itemId) {
         Map<String, Object> map = spmApproveItemService.publishToSystemApp(itemId);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -234,14 +234,14 @@ public class ItemRestController {
         iconList = new ArrayList<Map<String, String>>();
         if (list != null) {
             for (AppIcon appicon : list) {
-                Map<String, String> filemap = new HashMap<String, String>(16);
+                Map<String, String> filemap = new HashMap<>(16);
                 filemap.put("path", appicon.getPath());
                 filemap.put("name", appicon.getName());
                 filemap.put("iconData", appicon.getIconData());
                 iconList.add(filemap);
             }
         }
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("iconList", iconList);
         return Y9Result.success(map, "获取成功");
     }
@@ -273,17 +273,17 @@ public class ItemRestController {
     @ResponseBody
     public Y9Result<Map<String, Object>> searchAppIcon(@RequestParam(required = false) String name) {
         List<AppIcon> list = appIconApi.searchAppIcon(name);
-        List<Map<String, String>> iconList = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> iconList = new ArrayList<>();
         if (list != null) {
             for (AppIcon appicon : list) {
-                Map<String, String> filemap = new HashMap<String, String>(16);
+                Map<String, String> filemap = new HashMap<>(16);
                 filemap.put("path", appicon.getPath());
                 filemap.put("name", appicon.getName());
                 filemap.put("iconData", appicon.getIconData());
                 iconList.add(filemap);
             }
         }
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("iconList", iconList);
         return Y9Result.success(map, "获取成功");
     }

@@ -29,7 +29,7 @@ public class ExtendedContentController {
 
     /**
      * 是否填写内容
-     * 
+     *
      * @param taskId
      * @param processSerialNumber
      * @return
@@ -38,7 +38,7 @@ public class ExtendedContentController {
     @RequestMapping(value = "/checkSignContent")
     public Map<String, Object> checkSignContent(@RequestParam(required = false) String taskId,
         @RequestParam(required = false) String category, @RequestParam(required = false) String processSerialNumber) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             int count = 0;
             count = extendedContentService.findByProcSerialNumberAndCategory(processSerialNumber, category);
@@ -55,7 +55,7 @@ public class ExtendedContentController {
 
     /**
      * 获取内容列表
-     * 
+     *
      * @param processSerialNumber
      * @param itembox
      * @param taskId
@@ -73,7 +73,7 @@ public class ExtendedContentController {
 
     /**
      * 删除内容
-     * 
+     *
      * @param id
      * @return
      */
@@ -86,7 +86,7 @@ public class ExtendedContentController {
 
     /**
      * 新增编辑内容
-     * 
+     *
      * @param processSerialNumber
      * @param processInstanceId
      * @param taskId
@@ -104,7 +104,7 @@ public class ExtendedContentController {
 
     /**
      * 保存内容
-     * 
+     *
      * @param content
      * @return
      */
