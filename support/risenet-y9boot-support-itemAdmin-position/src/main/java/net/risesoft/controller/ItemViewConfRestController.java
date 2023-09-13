@@ -77,8 +77,7 @@ public class ItemViewConfRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/findByItemId", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String viewType) {
+    public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam(required = true) String itemId, @RequestParam(required = true) String viewType) {
         List<ItemViewConf> list = itemViewConfService.findByItemIdAndViewType(itemId, viewType);
         return Y9Result.success(list, "获取成功");
     }
@@ -91,15 +90,21 @@ public class ItemViewConfRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Y9FormField>> getColumns(@RequestParam(required = true) String tableName) {
+    public Y9Result<List<Y9FormField>> getColumns(@RequestParam(required = true) String tableName, @RequestParam(required = true) String itemId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         List<Y9FormField> list = new ArrayList<Y9FormField>();
         List<String> fieldNameList = new ArrayList<String>();
-        List<Y9FormField> formFieldList = y9FormFieldService.findByTableName(tableName);
-        for (Y9FormField formField : formFieldList) {
-            if (!fieldNameList.contains(formField.getFieldName()) && !formField.getFieldName().equalsIgnoreCase("guid")
-                && !formField.getFieldName().equalsIgnoreCase("processInstanceId")) {
-                list.add(formField);
-                fieldNameList.add(formField.getFieldName());
+        SpmApproveItem item = spmApproveItemService.findById(itemId);
+        String processDefineKey = item.getWorkflowGuid();
+        ProcessDefinitionModel processDefinition = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey);
+        List<Y9FormItemBind> formList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+        for (Y9FormItemBind bind : formList) {
+            List<Y9FormField> formFieldList = y9FormFieldService.findByTableNameAndFormId(tableName, bind.getFormId());
+            for (Y9FormField formField : formFieldList) {
+                if (!fieldNameList.contains(formField.getFieldName()) && !formField.getFieldName().equalsIgnoreCase("guid") && !formField.getFieldName().equalsIgnoreCase("processInstanceId")) {
+                    list.add(formField);
+                    fieldNameList.add(formField.getFieldName());
+                }
             }
         }
         return Y9Result.success(list, "获取成功");
@@ -115,18 +120,16 @@ public class ItemViewConfRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/newOrModify", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id,
-        @RequestParam(required = true) String itemId) {
+    public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id, @RequestParam(required = true) String itemId) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
-        ProcessDefinitionModel processDefinition =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey);
-        List<Y9FormItemBind> formList =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+        ProcessDefinitionModel processDefinition = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey);
+        List<Y9FormItemBind> formList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         List<String> tableNameList = new ArrayList<>();
         List<Y9Table> tableList = new ArrayList<>();
+        List<Map<String, Object>> tablefield = new ArrayList<Map<String, Object>>();
         for (Y9FormItemBind bind : formList) {
             String formId = bind.getFormId();
             List<Y9FormField> formFieldList = y9FormFieldService.findByFormId(formId);
@@ -135,6 +138,16 @@ public class ItemViewConfRestController {
                     Y9Table y9Table = y9TableService.findById(formField.getTableId());
                     tableNameList.add(formField.getTableName());
                     tableList.add(y9Table);
+                    List<Y9FormField> fieldlist = new ArrayList<Y9FormField>();
+                    for (Y9FormField formField1 : formFieldList) {
+                        if (y9Table.getTableName().equals(formField1.getTableName())) {
+                            fieldlist.add(formField1);
+                        }
+                    }
+                    Map<String, Object> tableFieldMap = new HashMap<String, Object>();
+                    tableFieldMap.put("tableName", y9Table.getTableName());
+                    tableFieldMap.put("fieldlist", fieldlist);
+                    tablefield.add(tableFieldMap);
                 }
             }
         }
@@ -143,6 +156,7 @@ public class ItemViewConfRestController {
             resMap.put("itemViewConf", itemViewConf);
         }
         resMap.put("tableList", tableList);
+        resMap.put("tablefield", tablefield);
         return Y9Result.success(resMap, "获取成功");
     }
 

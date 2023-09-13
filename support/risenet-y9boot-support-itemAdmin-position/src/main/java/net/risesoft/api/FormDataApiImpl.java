@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.model.Person;
+import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.service.FormDataService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -61,8 +62,7 @@ public class FormDataApiImpl implements FormDataApi {
      */
     @Override
     @GetMapping(value = "/getAllFieldPerm", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getAllFieldPerm(String tenantId, String userId, String formId, String taskDefKey,
-        String processDefinitionId) {
+    public List<Map<String, Object>> getAllFieldPerm(String tenantId, String userId, String formId, String taskDefKey, String processDefinitionId) {
         Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
@@ -81,8 +81,7 @@ public class FormDataApiImpl implements FormDataApi {
      */
     @Override
     @GetMapping(value = "/getChildTableData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getChildTableData(String tenantId, String formId, String tableId,
-        String processSerialNumber) throws Exception {
+    public List<Map<String, Object>> getChildTableData(String tenantId, String formId, String tableId, String processSerialNumber) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         return formDataService.getChildTableData(formId, tableId, processSerialNumber);
     }
@@ -115,12 +114,25 @@ public class FormDataApiImpl implements FormDataApi {
      */
     @Override
     @GetMapping(value = "/getFieldPerm", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getFieldPerm(String tenantId, String userId, String formId, String fieldName,
-        String taskDefKey, String processDefinitionId) {
+    public Map<String, Object> getFieldPerm(String tenantId, String userId, String formId, String fieldName, String taskDefKey, String processDefinitionId) {
         Person person = personManager.getPerson(tenantId, userId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         return formDataService.getFieldPerm(formId, fieldName, taskDefKey, processDefinitionId);
+    }
+
+    /**
+     * 根据表单id获取绑定字段信息
+     *
+     * @param tenantId 租户id
+     * @param formId 表单id
+     * @return List<Y9FormFieldModel>
+     */
+    @Override
+    @GetMapping(value = "/getFormField", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Y9FormFieldModel> getFormField(String tenantId, String itemId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return formDataService.getFormField(itemId);
     }
 
     /**
@@ -178,8 +190,7 @@ public class FormDataApiImpl implements FormDataApi {
      */
     @Override
     @PostMapping(value = "/saveChildTableData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void saveChildTableData(String tenantId, String formId, String tableId, String processSerialNumber,
-        String jsonData) throws Exception {
+    public void saveChildTableData(String tenantId, String formId, String tableId, String processSerialNumber, String jsonData) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         formDataService.saveChildTableData(formId, tableId, processSerialNumber, jsonData);
 

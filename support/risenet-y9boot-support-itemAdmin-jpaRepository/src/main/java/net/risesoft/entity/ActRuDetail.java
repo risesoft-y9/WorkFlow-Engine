@@ -66,6 +66,10 @@ public class ActRuDetail implements Serializable {
     @Column(name = "SYSTEMNAME", length = 100)
     private String systemName;
 
+    @Comment("流程启动时间")
+    @Column(name = "STARTTIME", length = 50)
+    private String startTime;
+
     /** 1是在办、0是待办 */
     @Comment("状态")
     @Column(name = "STATUS", length = 100)
@@ -107,22 +111,22 @@ public class ActRuDetail implements Serializable {
     @Column(name = "LASTTIME", length = 50)
     private Date lastTime;
 
-    @ColumnDefault("true")
+    @ColumnDefault("1")
     @Comment("流程是否开始")
     @Column(name = "STARTED")
     private boolean started;
 
-    @ColumnDefault("false")
+    @ColumnDefault("0")
     @Comment("流程是否结束")
     @Column(name = "ENDED")
     private boolean ended;
 
-    @ColumnDefault("false")
+    @ColumnDefault("0")
     @Comment("是否删除")
     @Column(name = "DELETED")
     private boolean deleted;
 
-    @ColumnDefault("false")
+    @ColumnDefault("0")
     @Comment("是否归档")
     @Column(name = "PLACEONFILE")
     private boolean placeOnFile;

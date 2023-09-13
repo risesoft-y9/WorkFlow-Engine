@@ -1,12 +1,14 @@
 package net.risesoft.controller;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.ProcessEngineConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,5 +146,23 @@ public class RepositoryVueController {
             }
         }
         return activityInfos;
+    }
+
+    /**
+     * 获取流程实例的xml
+     *
+     * @param resourceType
+     * @param processInstanceId 流程实例id
+     * @param processDefinitionId 流程定义id
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping(value = "/processInstanceXml")
+    public Y9Result<String> getXmlByProcessInstance(@RequestParam(required = true) String resourceType,
+        @RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = true) String processDefinitionId, HttpServletResponse response) throws Exception {
+        InputStream resourceAsStream =
+            customRepositoryService.getProcessInstance(resourceType, processInstanceId, processDefinitionId);
+        return Y9Result.success(IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8));
     }
 }
