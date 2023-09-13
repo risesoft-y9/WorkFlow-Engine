@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import com.alibaba.druid.pool.DruidDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -137,7 +137,7 @@ public class ItemMultiTenantListener implements ApplicationListener<Y9EventCommo
     }
 
     private void updateTenantSchema() {
-        Map<String, DruidDataSource> map = y9TenantDataSourceLookup.getDataSources();
+        Map<String, HikariDataSource> map = y9TenantDataSourceLookup.getDataSources();
         Set<String> list = map.keySet();
         for (String tenantId : list) {
             Y9LoginUserHolder.setTenantId(tenantId);

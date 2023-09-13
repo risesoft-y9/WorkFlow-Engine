@@ -111,11 +111,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
@@ -215,6 +210,25 @@
                                     <action>
                                         <ignore></ignore>
                                     </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                	<pluginExecutionFilter>
+                                		<groupId>
+                                			com.github.shalousun
+                                		</groupId>
+                                		<artifactId>
+                                			smart-doc-maven-plugin
+                                		</artifactId>
+                                		<versionRange>
+                                			[2.7.2,)
+                                		</versionRange>
+                                		<goals>
+                                			<goal>html</goal>
+                                		</goals>
+                                	</pluginExecutionFilter>
+                                	<action>
+                                		<ignore></ignore>
+                                	</action>
                                 </pluginExecution>
                             </pluginExecutions>
                         </lifecycleMappingMetadata>

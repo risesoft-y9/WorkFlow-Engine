@@ -35,74 +35,53 @@ spring:
         proxy-target-class: false
     autoconfigure:
         exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+    data:
+        redis:
+            database: 8
+            host: localhost
+            port: 6379
+            username: default
+            password: '12345678'
+            ssl:
+                enabled: false
+            lettuce:
+                pool:
+                    max-active: 8
+                    max-idle: 8
+                    max-wait: -1
+                    min-idle: 1
+            repositories:
+                enabled: false
     datasource:
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        druid:
-            filter:
-                stat:
-                    db-type: mysql
-                    enabled: false
-                    log-slow-sql: true
-                    merge-sql: true
-                    slow-sql-millis: 1000
+        hikari:
             y9-public:
-                driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false
+                driverClassName: com.mysql.cj.jdbc.Driver
+                jdbcUrl: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
                 username: root
-                #driver-class-name: oracle.jdbc.OracleDriver
-                #url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
-                #username: Y9_PUBLIC
-                password: 111111
-                initialSize: 1
-                maxActive: 20
-                maxPoolPreparedStatementPerConnectionSize: 100
-                maxWait: 60000
-                minEvictableIdleTimeMillis: 300000
-                minIdle: 1
-                poolPreparedStatements: true
-                testOnBorrow: false
-                testOnReturn: false
-                testWhileIdle: true
-                timeBetweenEvictionRunsMillis: 60000
-                useGlobalDataSourceStat: true
-                validationQuery: SELECT 1 FROM DUAL
+                password: '12345678'
+                maximumPoolSize: 20
+                minimumIdle: 1
     jpa:
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL8Dialect
+                hbm2ddl:
+                    auto: update
+                jdbc:
+                    batchSize: 100
+                showSql: true
         hibernate:
+            ddl-auto: update
             naming:
                 implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
                 physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         open-in-view: false
-        properties:
-            hibernate:
-                cache:
-                    use_query_cache: false
-                    use_second_level_cache: false
-                dialect: org.hibernate.dialect.MySQL8Dialect
-                hbm2ddl:
-                    auto: none
-                jdbc:
-                    batch_size: 100
-                show_sql: true
     main:
         allow-bean-definition-overriding: true
     mvc:
         view:
             prefix: /WEB-INF/jsp/
             suffix: .jsp
-    redis:
-        database: 8
-        host: localhost
-        lettuce:
-            pool:
-                max-active: 8
-                max-idle: 8
-                max-wait: -1
-                min-idle: 0
-            shutdown-timeout: 100ms
-        password: y9i-83204585
-        port: 6379
-        ssl: false
-        timeout: 10000
     servlet:
         multipart:
             max-file-size: 200MB

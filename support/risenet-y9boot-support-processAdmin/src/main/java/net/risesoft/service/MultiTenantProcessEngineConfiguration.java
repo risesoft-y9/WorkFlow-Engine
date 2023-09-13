@@ -19,7 +19,7 @@ import org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureExcepti
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.druid.pool.DruidDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 
 import net.risesoft.consts.DefaultIdConsts;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -49,7 +49,7 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
     private JdbcTemplate jdbcTemplate;
 
     @Resource(name = "y9FlowableDS")
-    private DruidDataSource defaultDataSource;
+    private HikariDataSource defaultDataSource;
 
     @Autowired
     private Y9Properties y9Config;
@@ -174,7 +174,7 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
         String jndiName = (String)dsMap.get("JNDI_NAME");
         if (type == 1) {
             try {
-                DruidDataSource dataSource = (DruidDataSource)this.jndiDataSourceLookup.getDataSource(jndiName);
+                HikariDataSource dataSource = (HikariDataSource)this.jndiDataSourceLookup.getDataSource(jndiName);
                 registerTenant(tenantId, dataSource);
             } catch (DataSourceLookupFailureException e) {
                 logger.error(e.getMessage());
@@ -186,23 +186,17 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
             String driver = dsMap.get("DRIVER") != null ? (String)dsMap.get("DRIVER") : "";
             password = Y9Base64Util.decode(password);
 
-            Integer initialSize = Integer.valueOf(dsMap.get("INITIAL_SIZE").toString());
+            //Integer initialSize = Integer.valueOf(dsMap.get("INITIAL_SIZE").toString());
             Integer maxActive = Integer.valueOf(dsMap.get("MAX_ACTIVE").toString());
             Integer minIdle = Integer.valueOf(dsMap.get("MIN_IDLE").toString());
 
-            DruidDataSource ds = new DruidDataSource();
-            ds.setTestOnBorrow(true);
-            ds.setTestOnReturn(true);
-            ds.setTestWhileIdle(true);
-            ds.setInitialSize(initialSize);
-            ds.setMaxActive(maxActive);
-            ds.setMinIdle(minIdle);
-            ds.setValidationQuery("SELECT 1 FROM DUAL");
-            ds.setUrl(url);
+            HikariDataSource ds = new HikariDataSource();
+            ds.setMaximumPoolSize(maxActive);
+            ds.setMinimumIdle(minIdle);
+            ds.setJdbcUrl(url);
             ds.setUsername(username);
             ds.setPassword(password);
-            ds.setTimeBetweenConnectErrorMillis(60000);
-            if (!"".equals(driver)) {
+            if (driver.length()>0) {
                 ds.setDriverClassName(driver);
             }
             registerTenant(tenantId, ds);

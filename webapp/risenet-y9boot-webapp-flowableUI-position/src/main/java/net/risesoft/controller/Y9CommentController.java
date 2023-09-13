@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.alibaba.druid.pool.DruidDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -27,11 +27,11 @@ public class Y9CommentController {
 
     @Autowired
     @Qualifier("y9PublicDS")
-    private DruidDataSource y9PublicDS;
+    private HikariDataSource y9PublicDS;
 
     @Autowired
     @Qualifier("defaultDataSource")
-    private DruidDataSource y9FlowableDS;
+    private HikariDataSource y9FlowableDS;
 
     @Autowired
     @Qualifier("y9TenantDataSource")

@@ -32,8 +32,7 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceBuilder;
+import com.zaxxer.hikari.HikariDataSource;
 
 import net.risesoft.filter.ProcessAdminCheckUserLoginFilter;
 import net.risesoft.filter.RemoveUrlJsessionIdFilter;
@@ -106,7 +105,8 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     }
 
     @Bean(name = {"jdbcTemplate4Public"})
-    public JdbcTemplate jdbcTemplate(@Qualifier("y9PublicDS") DruidDataSource y9PublicDs) {
+    @ConditionalOnMissingBean(name = "jdbcTemplate4Public")
+    public JdbcTemplate jdbcTemplate4Public(@Qualifier("y9PublicDS") HikariDataSource y9PublicDs) {
         return new JdbcTemplate(y9PublicDs);
     }
 
@@ -153,7 +153,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     }
 
     @Bean(name = {"sqlSessionFactory"})
-    public SqlSessionFactory sqlSessionFactory(@Qualifier("y9FlowableDS") DruidDataSource dataSource) throws Exception {
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("y9FlowableDS") HikariDataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
 
@@ -174,29 +174,29 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     }
 
     @Primary
-    @ConfigurationProperties("spring.datasource.druid.flowable")
+    @ConfigurationProperties("spring.datasource.hikari.flowable")
     @Bean(name = {"y9FlowableDS"})
-    public DruidDataSource y9FlowableDs() {
-        DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
+    public HikariDataSource y9FlowableDs() {
+    	HikariDataSource dataSource = new HikariDataSource();
         return dataSource;
     }
 
-    @ConfigurationProperties("spring.datasource.druid.y9-public")
+    @ConfigurationProperties("spring.datasource.hikari.y9-public")
     @Bean(name = {"y9PublicDS"})
     @ConditionalOnMissingBean(name = "y9PublicDS")
-    public DruidDataSource y9PublicDs() {
-        DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
+    public HikariDataSource y9PublicDs() {
+    	HikariDataSource dataSource = new HikariDataSource();
         return dataSource;
     }
 
     @Bean("y9TenantDataSource")
-    public DataSource y9TenantDataSource(@Qualifier("y9FlowableDS") DruidDataSource y9FlowableDs,
+    public DataSource y9TenantDataSource(@Qualifier("y9FlowableDS") HikariDataSource y9FlowableDs,
         @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
         return new Y9TenantDataSource(y9FlowableDs, y9TenantDataSourceLookup);
     }
 
     @Bean("y9TenantDataSourceLookup")
-    public Y9TenantDataSourceLookup y9TenantDataSourceLookup(@Qualifier("y9PublicDS") DruidDataSource ds) {
+    public Y9TenantDataSourceLookup y9TenantDataSourceLookup(@Qualifier("y9PublicDS") HikariDataSource ds) {
         return new Y9TenantDataSourceLookup(ds, environment.getProperty("y9.systemName"));
     }
 }
