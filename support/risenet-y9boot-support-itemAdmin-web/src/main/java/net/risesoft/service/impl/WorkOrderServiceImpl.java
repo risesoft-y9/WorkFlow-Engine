@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.WorkOrderEntity;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -63,7 +63,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     private TodoTaskApiClient todoTaskManager;
 
     @Autowired
-    private RoleApi roleManager;
+    private PersonRoleApi personRoleApi;
 
     @Override
     @Transactional(readOnly = false)
@@ -219,7 +219,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
                 List<Role> roleList = new ArrayList<>();
                 if (roleList != null && roleList.size() > 0) {
                     Role role = roleList.get(0);
-                    List<Person> personList = roleManager.listAllPersonsById(myTenantId, role.getId());
+                    List<Person> personList = personRoleApi.listPersonsByRoleId(myTenantId, role.getId());
                     TodoTask todo = new TodoTask();
                     todo.setTenantId(myTenantId);
                     todo.setSystemName("systemWorkOrder");
