@@ -85,11 +85,8 @@ public class Process4CompleteUtilService {
         String sql3 = "DELETE from ACT_HI_TASKINST where PROC_INST_ID_ = '" + processInstanceId + "'";
         jdbcTemplate.execute(sql3);
 
-        sql3 = "DELETE" + " FROM" + "	ACT_GE_BYTEARRAY" + " WHERE" + "	ID_ IN (" + "		SELECT" + "			*"
-            + "		FROM ( " + "         SELECT" + "			b.ID_" + "		  FROM" + "			 ACT_GE_BYTEARRAY b"
-            + "		  LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_" + "		  WHERE"
-            + "			 v.PROC_INST_ID_ = '" + processInstanceId + "'" + "		  AND v.NAME_ = 'users'" + "       ) TT"
-            + "	)";
+        sql3 = "DELETE" + " FROM" + "	ACT_GE_BYTEARRAY" + " WHERE" + "	ID_ IN (" + "		SELECT" + "			*" + "		FROM ( " + "         SELECT" + "			b.ID_" + "		  FROM" + "			 ACT_GE_BYTEARRAY b" + "		  LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_"
+            + "		  WHERE" + "			 v.PROC_INST_ID_ = '" + processInstanceId + "'" + "		  AND v.NAME_ = 'users'" + "       ) TT" + "	)";
         jdbcTemplate.execute(sql3);
 
         sql3 = "DELETE from ACT_HI_VARINST where PROC_INST_ID_ = '" + processInstanceId + "'";
@@ -106,75 +103,44 @@ public class Process4CompleteUtilService {
     }
 
     private String getActGeBytearraySql(String year, String processInstanceId) {
-        String sql = "INSERT INTO ACT_GE_BYTEARRAY_" + year + " (" + "	ID_," + "	REV_," + "	NAME_,"
-            + "	DEPLOYMENT_ID_," + "	BYTES_," + "	GENERATED_" + " ) SELECT " + "	b.ID_," + "	b.REV_,"
-            + "	b.NAME_," + "	b.DEPLOYMENT_ID_," + "	b.BYTES_," + "	b.GENERATED_" + " FROM" + "	ACT_GE_BYTEARRAY b"
-            + " LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_" + " WHERE" + "	v.PROC_INST_ID_ = '"
-            + processInstanceId + "'" + " AND v.NAME_ = 'users'";
+        String sql = "INSERT INTO ACT_GE_BYTEARRAY_" + year + " (" + "	ID_," + "	REV_," + "	NAME_," + "	DEPLOYMENT_ID_," + "	BYTES_," + "	GENERATED_" + " ) SELECT " + "	b.ID_," + "	b.REV_," + "	b.NAME_," + "	b.DEPLOYMENT_ID_," + "	b.BYTES_," + "	b.GENERATED_" + " FROM"
+            + "	ACT_GE_BYTEARRAY b" + " LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_" + " WHERE" + "	v.PROC_INST_ID_ = '" + processInstanceId + "'" + " AND v.NAME_ = 'users'";
         return sql;
     }
 
     private String getActHiActinstSql(String year, String processInstanceId) {
-        String sql3 = "INSERT INTO ACT_HI_ACTINST_" + year + " (" + "	ID_," + "	REV_," + "	PROC_DEF_ID_,"
-            + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	ACT_ID_," + "	TASK_ID_," + "	CALL_PROC_INST_ID_,"
-            + "	ACT_NAME_," + "	ACT_TYPE_," + "	ASSIGNEE_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_,"
-            + "	DELETE_REASON_," + "	TENANT_ID_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_DEF_ID_,"
-            + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	ACT_ID_," + "	TASK_ID_," + "	CALL_PROC_INST_ID_,"
-            + "	ACT_NAME_," + "	ACT_TYPE_," + "	ASSIGNEE_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_,"
-            + "	DELETE_REASON_," + "	TENANT_ID_" + " FROM" + "	ACT_HI_ACTINST A" + " WHERE"
-            + "	A.PROC_INST_ID_ = '" + processInstanceId + "'";
+        String sql3 = "INSERT INTO ACT_HI_ACTINST_" + year + " (" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	ACT_ID_," + "	TASK_ID_," + "	CALL_PROC_INST_ID_," + "	ACT_NAME_," + "	ACT_TYPE_," + "	ASSIGNEE_," + "	START_TIME_," + "	END_TIME_,"
+            + "	DURATION_," + "	DELETE_REASON_," + "	TENANT_ID_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	ACT_ID_," + "	TASK_ID_," + "	CALL_PROC_INST_ID_," + "	ACT_NAME_," + "	ACT_TYPE_," + "	ASSIGNEE_," + "	START_TIME_,"
+            + "	END_TIME_," + "	DURATION_," + "	DELETE_REASON_," + "	TENANT_ID_" + " FROM" + "	ACT_HI_ACTINST A" + " WHERE" + "	A.PROC_INST_ID_ = '" + processInstanceId + "'";
         return sql3;
     }
 
     private String getActHiIdentiyLinkSql(String year, String processInstanceId) {
-        String sql3 = "INSERT INTO ACT_HI_IDENTITYLINK_" + year + " (" + "	ID_," + "	GROUP_ID_," + "	TYPE_,"
-            + "	USER_ID_," + "	TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_,"
-            + "	SCOPE_DEFINITION_ID_" + " ) SELECT" + "	ID_," + "	GROUP_ID_," + "	TYPE_," + "	USER_ID_,"
-            + "	TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_,"
-            + "	SCOPE_DEFINITION_ID_" + " FROM" + "	ACT_HI_IDENTITYLINK i" + " WHERE" + "	i.PROC_INST_ID_ = '"
-            + processInstanceId + "'";
+        String sql3 = "INSERT INTO ACT_HI_IDENTITYLINK_" + year + " (" + "	ID_," + "	GROUP_ID_," + "	TYPE_," + "	USER_ID_," + "	TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_" + " ) SELECT" + "	ID_," + "	GROUP_ID_," + "	TYPE_,"
+            + "	USER_ID_," + "	TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_" + " FROM" + "	ACT_HI_IDENTITYLINK i" + " WHERE" + "	i.PROC_INST_ID_ = '" + processInstanceId + "'";
         return sql3;
     }
 
     private String getActHiProcinstSql(String year, String processInstanceId) {
-        String sql = "INSERT INTO ACT_HI_PROCINST_" + year + " (" + "	ID_," + "	REV_," + "	PROC_INST_ID_,"
-            + "	BUSINESS_KEY_," + "	PROC_DEF_ID_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_,"
-            + "	START_USER_ID_," + "	START_ACT_ID_," + "	END_ACT_ID_," + "	SUPER_PROCESS_INSTANCE_ID_,"
-            + "	DELETE_REASON_," + "	TENANT_ID_," + "	NAME_," + "	CALLBACK_ID_," + "	CALLBACK_TYPE_" + ") SELECT"
-            + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	BUSINESS_KEY_," + "	PROC_DEF_ID_," + "	START_TIME_,"
-            + "	END_TIME_," + "	DURATION_," + "	START_USER_ID_," + "	START_ACT_ID_," + "	END_ACT_ID_,"
-            + "	SUPER_PROCESS_INSTANCE_ID_," + "	DELETE_REASON_," + "	TENANT_ID_," + "	NAME_,"
-            + "	CALLBACK_ID_," + "	CALLBACK_TYPE_" + " FROM" + "	ACT_HI_PROCINST RES" + " WHERE"
-            + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'";
+        String sql = "INSERT INTO ACT_HI_PROCINST_" + year + " (" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	BUSINESS_KEY_," + "	PROC_DEF_ID_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_," + "	START_USER_ID_," + "	START_ACT_ID_," + "	END_ACT_ID_," + "	SUPER_PROCESS_INSTANCE_ID_,"
+            + "	DELETE_REASON_," + "	TENANT_ID_," + "	NAME_," + "	CALLBACK_ID_," + "	CALLBACK_TYPE_" + ") SELECT" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	BUSINESS_KEY_," + "	PROC_DEF_ID_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_," + "	START_USER_ID_,"
+            + "	START_ACT_ID_," + "	END_ACT_ID_," + "	SUPER_PROCESS_INSTANCE_ID_," + "	DELETE_REASON_," + "	TENANT_ID_," + "	NAME_," + "	CALLBACK_ID_," + "	CALLBACK_TYPE_" + " FROM" + "	ACT_HI_PROCINST RES" + " WHERE" + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'";
         return sql;
     }
 
     private String getActHiTaskinstSql(String year, String processInstanceId) {
-        String sql = "INSERT INTO ACT_HI_TASKINST_" + year + " (" + "	ID_," + "	REV_," + "	PROC_DEF_ID_,"
-            + "	TASK_DEF_ID_," + "	TASK_DEF_KEY_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	SCOPE_ID_,"
-            + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_," + "	PARENT_TASK_ID_," + "	NAME_,"
-            + "	DESCRIPTION_," + "	OWNER_," + "	ASSIGNEE_," + "	START_TIME_," + "	CLAIM_TIME_," + "	END_TIME_,"
-            + "	DURATION_," + "	DELETE_REASON_," + "	PRIORITY_," + "	DUE_DATE_," + "	FORM_KEY_," + "	CATEGORY_,"
-            + "	TENANT_ID_," + "	LAST_UPDATED_TIME_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_DEF_ID_,"
-            + "	TASK_DEF_ID_," + "	TASK_DEF_KEY_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	SCOPE_ID_,"
-            + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_," + "	PARENT_TASK_ID_," + "	NAME_,"
-            + "	DESCRIPTION_," + "	OWNER_," + "	ASSIGNEE_," + "	START_TIME_," + "	CLAIM_TIME_," + "	END_TIME_,"
-            + "	DURATION_," + "	DELETE_REASON_," + "	PRIORITY_," + "	DUE_DATE_," + "	FORM_KEY_," + "	CATEGORY_,"
-            + "	TENANT_ID_," + "	LAST_UPDATED_TIME_" + " FROM" + "	ACT_HI_TASKINST T" + " WHERE"
+        String sql = "INSERT INTO ACT_HI_TASKINST_" + year + " (" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	TASK_DEF_ID_," + "	TASK_DEF_KEY_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_," + "	PARENT_TASK_ID_,"
+            + "	NAME_," + "	DESCRIPTION_," + "	OWNER_," + "	ASSIGNEE_," + "	START_TIME_," + "	CLAIM_TIME_," + "	END_TIME_," + "	DURATION_," + "	DELETE_REASON_," + "	PRIORITY_," + "	DUE_DATE_," + "	FORM_KEY_," + "	CATEGORY_," + "	TENANT_ID_," + "	LAST_UPDATED_TIME_" + " ) SELECT"
+            + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	TASK_DEF_ID_," + "	TASK_DEF_KEY_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_," + "	PARENT_TASK_ID_," + "	NAME_," + "	DESCRIPTION_," + "	OWNER_,"
+            + "	ASSIGNEE_," + "	START_TIME_," + "	CLAIM_TIME_," + "	END_TIME_," + "	DURATION_," + "	DELETE_REASON_," + "	PRIORITY_," + "	DUE_DATE_," + "	FORM_KEY_," + "	CATEGORY_," + "	TENANT_ID_," + "	LAST_UPDATED_TIME_" + " FROM" + "	ACT_HI_TASKINST T" + " WHERE"
             + "	T .PROC_INST_ID_ = '" + processInstanceId + "'";
         return sql;
     }
 
     private String getActHiVarinstSql(String year, String processInstanceId) {
-        String sql3 = "INSERT INTO ACT_HI_VARINST_" + year + " (" + "	ID_," + "	REV_," + "	PROC_INST_ID_,"
-            + "	EXECUTION_ID_," + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_,"
-            + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_,"
-            + "	CREATE_TIME_," + "	LAST_UPDATED_TIME_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_INST_ID_,"
-            + "	EXECUTION_ID_," + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_,"
-            + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_,"
-            + "	CREATE_TIME_," + "	LAST_UPDATED_TIME_" + " FROM" + "	ACT_HI_VARINST v" + " WHERE"
-            + "	v.PROC_INST_ID_ = '" + processInstanceId
-            + "' and v.NAME_ not in ('nrOfActiveInstances','nrOfCompletedInstances','nrOfInstances','loopCounter','elementUser')";
+        String sql3 = "INSERT INTO ACT_HI_VARINST_" + year + " (" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_,"
+            + "	TEXT2_," + "	CREATE_TIME_," + "	LAST_UPDATED_TIME_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_,"
+            + "	TEXT_," + "	TEXT2_," + "	CREATE_TIME_," + "	LAST_UPDATED_TIME_" + " FROM" + "	ACT_HI_VARINST v" + " WHERE" + "	v.PROC_INST_ID_ = '" + processInstanceId + "' and v.NAME_ not in ('nrOfActiveInstances','nrOfCompletedInstances','nrOfInstances','loopCounter','elementUser')";
         return sql3;
     }
 
@@ -188,18 +154,15 @@ public class Process4CompleteUtilService {
      * @return
      */
     @Async
-    public void saveToDataCenter(final String tenantId, final String year, final String userId,
-        final String processInstanceId, final String personName) {
+    public void saveToDataCenter(final String tenantId, final String year, final String userId, final String processInstanceId, final String personName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Connection connection = null;
         try {
-            ProcessParamModel processParamModel =
-                processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+            ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
             try {
-                String sql0 = "UPDATE ff_process_param f set f.COMPLETER = '" + personName
-                    + "' where f.PROCESSINSTANCEID = '" + processInstanceId + "'";
+                String sql0 = "UPDATE ff_process_param f set f.COMPLETER = '" + personName + "' where f.PROCESSINSTANCEID = '" + processInstanceId + "'";
                 jdbcTemplate.execute(sql0);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -207,17 +170,13 @@ public class Process4CompleteUtilService {
             // 消息提醒
             process4MsgRemindService.processComplete(processParamModel, personName);
 
-            String sql0 = "SELECT" + "	P .PROC_INST_ID_,TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
-                + " TO_CHAR(P .END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_" + " FROM"
-                + "	ACT_HI_PROCINST P" + " WHERE" + " P.PROC_INST_ID_ = '" + processInstanceId + "'";
+            String sql0 = "SELECT" + "	P .PROC_INST_ID_,TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_," + " TO_CHAR(P .END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_" + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + " P.PROC_INST_ID_ = '" + processInstanceId + "'";
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             connection = dataSource.getConnection();
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
-                sql0 = "SELECT"
-                    + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P .END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
-                    + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + " P.PROC_INST_ID_ = '" + processInstanceId + "'";
+                sql0 = "SELECT" + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P .END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_" + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + " P.PROC_INST_ID_ = '" + processInstanceId + "'";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql0);
             Map<String, Object> map = list.get(0);
@@ -229,11 +188,9 @@ public class Process4CompleteUtilService {
                 if (dataCenterSwitch != null && dataCenterSwitch) {
                     boolean b = dataCenterManager.saveToDateCenter(processInstanceId, tenantId, userId);
                     if (b) {
-                        LOGGER
-                            .info("#################保存办结数据到数据中心成功：2-HISTORIC_PROCESS_INSTANCE_ENDED#################");
+                        LOGGER.info("#################保存办结数据到数据中心成功：2-HISTORIC_PROCESS_INSTANCE_ENDED#################");
                     } else {
-                        LOGGER
-                            .info("#################保存办结数据到数据中心失败：2-HISTORIC_PROCESS_INSTANCE_ENDED#################");
+                        LOGGER.info("#################保存办结数据到数据中心失败：2-HISTORIC_PROCESS_INSTANCE_ENDED#################");
                     }
                 } else {
                     LOGGER.info("######################数据中心开关已关闭,如需保存数据到数据中心请更改配置文件######################");
@@ -250,45 +207,32 @@ public class Process4CompleteUtilService {
             officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             if (processParamModel != null && StringUtils.isNotBlank(processParamModel.getId())) {
                 // ----------------------------------------------------数据中心办结信息
-                officeDoneInfo.setBureauId(
-                    StringUtils.isNotBlank(processParamModel.getBureauIds()) ? processParamModel.getBureauIds() : "");
-                officeDoneInfo.setDeptId(
-                    StringUtils.isNotBlank(processParamModel.getDeptIds()) ? processParamModel.getDeptIds() : "");
-                officeDoneInfo.setDocNumber(StringUtils.isNotBlank(processParamModel.getCustomNumber())
-                    ? processParamModel.getCustomNumber() : "");
-                officeDoneInfo.setItemId(
-                    StringUtils.isNotBlank(processParamModel.getItemId()) ? processParamModel.getItemId() : "");
-                officeDoneInfo.setItemName(
-                    StringUtils.isNotBlank(processParamModel.getItemName()) ? processParamModel.getItemName() : "");
-                officeDoneInfo.setProcessSerialNumber(StringUtils.isNotBlank(processParamModel.getProcessSerialNumber())
-                    ? processParamModel.getProcessSerialNumber() : "");
-                officeDoneInfo.setSystemCnName(StringUtils.isNotBlank(processParamModel.getSystemCnName())
-                    ? processParamModel.getSystemCnName() : "");
-                officeDoneInfo.setSystemName(
-                    StringUtils.isNotBlank(processParamModel.getSystemName()) ? processParamModel.getSystemName() : "");
-                officeDoneInfo
-                    .setTitle(StringUtils.isNotBlank(processParamModel.getTitle()) ? processParamModel.getTitle() : "");
-                officeDoneInfo.setUrgency(StringUtils.isNotBlank(processParamModel.getCustomLevel())
-                    ? processParamModel.getCustomLevel() : "");
+                officeDoneInfo.setBureauId(StringUtils.isNotBlank(processParamModel.getBureauIds()) ? processParamModel.getBureauIds() : "");
+                officeDoneInfo.setDeptId(StringUtils.isNotBlank(processParamModel.getDeptIds()) ? processParamModel.getDeptIds() : "");
+                officeDoneInfo.setDocNumber(StringUtils.isNotBlank(processParamModel.getCustomNumber()) ? processParamModel.getCustomNumber() : "");
+                officeDoneInfo.setItemId(StringUtils.isNotBlank(processParamModel.getItemId()) ? processParamModel.getItemId() : "");
+                officeDoneInfo.setItemName(StringUtils.isNotBlank(processParamModel.getItemName()) ? processParamModel.getItemName() : "");
+                officeDoneInfo.setProcessSerialNumber(StringUtils.isNotBlank(processParamModel.getProcessSerialNumber()) ? processParamModel.getProcessSerialNumber() : "");
+                officeDoneInfo.setSystemCnName(StringUtils.isNotBlank(processParamModel.getSystemCnName()) ? processParamModel.getSystemCnName() : "");
+                officeDoneInfo.setSystemName(StringUtils.isNotBlank(processParamModel.getSystemName()) ? processParamModel.getSystemName() : "");
+                officeDoneInfo.setTitle(StringUtils.isNotBlank(processParamModel.getTitle()) ? processParamModel.getTitle() : "");
+                officeDoneInfo.setUrgency(StringUtils.isNotBlank(processParamModel.getCustomLevel()) ? processParamModel.getCustomLevel() : "");
                 officeDoneInfo.setUserComplete(personName);
-                officeDoneInfo.setCreatUserId(
-                    StringUtils.isNotBlank(processParamModel.getStartor()) ? processParamModel.getStartor() : "");
-                officeDoneInfo.setCreatUserName(StringUtils.isNotBlank(processParamModel.getStartorName())
-                    ? processParamModel.getStartorName() : "");
+                officeDoneInfo.setCreatUserId(StringUtils.isNotBlank(processParamModel.getStartor()) ? processParamModel.getStartor() : "");
+                officeDoneInfo.setCreatUserName(StringUtils.isNotBlank(processParamModel.getStartorName()) ? processParamModel.getStartorName() : "");
             }
-
+            String sql = "";
             // 处理委托人
-            String sql =
-                "SELECT e.OWNERID from FF_ENTRUSTDETAIL e where e.PROCESSINSTANCEID = '" + processInstanceId + "'";
-            List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
-            String entrustUserId = "";
-            for (Map<String, Object> m : list2) {
-                String ownerId = (String)m.get("OWNERID");
-                if (!entrustUserId.contains(ownerId)) {
-                    entrustUserId = Y9Util.genCustomStr(entrustUserId, ownerId);
-                }
-            }
-            officeDoneInfo.setEntrustUserId(entrustUserId);
+            // sql = "SELECT e.OWNERID from FF_ENTRUSTDETAIL e where e.PROCESSINSTANCEID = '" + processInstanceId + "'";
+            // List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
+            // String entrustUserId = "";
+            // for (Map<String, Object> m : list2) {
+            // String ownerId = (String)m.get("OWNERID");
+            // if (!entrustUserId.contains(ownerId)) {
+            // entrustUserId = Y9Util.genCustomStr(entrustUserId, ownerId);
+            // }
+            // }
+            // officeDoneInfo.setEntrustUserId(entrustUserId);
 
             // 处理参与人
             sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId + "'";

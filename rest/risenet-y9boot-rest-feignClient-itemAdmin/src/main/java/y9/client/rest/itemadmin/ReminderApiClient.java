@@ -16,8 +16,7 @@ import net.risesoft.api.itemadmin.ReminderApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ReminderApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/reminder")
+@FeignClient(contextId = "ReminderApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/reminder")
 public interface ReminderApiClient extends ReminderApi {
 
     /**
@@ -31,9 +30,9 @@ public interface ReminderApiClient extends ReminderApi {
     public void deleteList(@RequestParam("tenantId") String tenantId, @RequestBody String[] ids);
 
     /**
-     * 
+     *
      * Description: 根据唯一标示查找催办信息
-     * 
+     *
      * @param tenantId
      * @param id
      * @return
@@ -53,9 +52,7 @@ public interface ReminderApiClient extends ReminderApi {
      */
     @Override
     @GetMapping("/findByProcessInstanceId")
-    public Map<String, Object> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("page") int page,
-        @RequestParam("rows") int rows);
+    public Map<String, Object> findByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("page") int page, @RequestParam("rows") int rows);
 
     /**
      * 获取当前催办人的在办任务的催办信息
@@ -69,14 +66,12 @@ public interface ReminderApiClient extends ReminderApi {
      */
     @Override
     @GetMapping("/findBySenderIdAndProcessInstanceIdAndActive")
-    public Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(@RequestParam("tenantId") String tenantId,
-        @RequestParam("senderId") String senderId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("page") int page, @RequestParam("rows") int rows);
+    public Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(@RequestParam("tenantId") String tenantId, @RequestParam("senderId") String senderId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("page") int page, @RequestParam("rows") int rows);
 
     /**
-     * 
+     *
      * Description: 获取待办的提醒页面的数据
-     * 
+     *
      * @param tenantId
      * @param taskId
      * @param page
@@ -85,8 +80,7 @@ public interface ReminderApiClient extends ReminderApi {
      */
     @Override
     @GetMapping("/findByTaskId")
-    public Map<String, Object> findByTaskId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("taskId") String taskId, @RequestParam("page") int page, @RequestParam("rows") int rows);
+    public Map<String, Object> findByTaskId(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("page") int page, @RequestParam("rows") int rows);
 
     /**
      * 查看催办信息
@@ -99,14 +93,12 @@ public interface ReminderApiClient extends ReminderApi {
      */
     @Override
     @GetMapping("/getReminder")
-    public Map<String, Object> getReminder(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("taskId") String taskId,
-        @RequestParam("type") String type);
+    public Map<String, Object> getReminder(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("taskId") String taskId, @RequestParam("type") String type);
 
     /**
-     * 
+     *
      * Description: 保存催办信息
-     * 
+     *
      * @param tenantId
      * @param userId
      * @param processInstanceId
@@ -116,9 +108,7 @@ public interface ReminderApiClient extends ReminderApi {
      */
     @Override
     @PostMapping(value = "/saveReminder", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveReminder(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestBody String[] taskIds, @RequestParam("msgContent") String msgContent);
+    public Map<String, Object> saveReminder(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId, @RequestBody String[] taskIds, @RequestParam("msgContent") String msgContent);
 
     /**
      * 发送催办信息
@@ -136,11 +126,8 @@ public interface ReminderApiClient extends ReminderApi {
      */
     @Override
     @PostMapping("/sendReminderMessage")
-    public Map<String, Object> sendReminderMessage(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("remType") String remType,
-        @RequestParam("procInstId") String procInstId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("documentTitle") String documentTitle, @RequestParam("taskId") String taskId,
-        @RequestParam("taskAssigneeId") String taskAssigneeId, @RequestParam("msgContent") String msgContent);
+    public Map<String, Object> sendReminderMessage(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("remType") String remType, @RequestParam("procInstId") String procInstId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("documentTitle") String documentTitle, @RequestParam("taskId") String taskId, @RequestParam("taskAssigneeId") String taskAssigneeId, @RequestParam("msgContent") String msgContent);
 
     /**
      * 设置为查看状态
@@ -155,16 +142,13 @@ public interface ReminderApiClient extends ReminderApi {
     /**
      * 更新催办信息
      *
-     * @param tenantId 租户滴
-     * @param userId 人员id
+     * @param tenantId 租户id
      * @param id 催办id
      * @param msgContent 催办信息
      * @return Map&lt;String, Object&gt;
      */
     @Override
     @PostMapping("/updateReminder")
-    public Map<String, Object> updateReminder(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("id") String id,
-        @RequestParam("msgContent") String msgContent);
+    public Map<String, Object> updateReminder(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id, @RequestParam("msgContent") String msgContent);
 
 }

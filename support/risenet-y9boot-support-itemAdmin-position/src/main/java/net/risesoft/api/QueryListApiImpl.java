@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,14 +18,13 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
 @RestController
-@RequestMapping(value = "/services/rest/queryList")
+@RequestMapping(value = "/services/rest/queryList", produces = MediaType.APPLICATION_JSON_VALUE)
 public class QueryListApiImpl implements QueryListApi {
 
     @Autowired
     private ItemPageService itemPageService;
 
     @Override
-    @GetMapping(value = "/getQueryList", produces = MediaType.APPLICATION_JSON_VALUE)
     public ItemPage<ActRuDetailModel> getQueryList(String tenantId, String userId, String systemName, String state, String createDate, String tableName, String searchMapStr, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {

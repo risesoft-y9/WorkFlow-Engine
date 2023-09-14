@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.risesoft.entity.Entrust;
+import net.risesoft.model.itemadmin.EntrustModel;
 
 /**
  * @author qinman
@@ -15,7 +16,7 @@ public interface EntrustService {
 
     /**
      * Description: 销假:删除ownerId所有的正在使用中的、或者已经过期的出差委托，并放入委托历史表
-     * 
+     *
      * @param id
      */
     void destroyEntrust(String id);
@@ -45,7 +46,7 @@ public interface EntrustService {
 
     /**
      * Description: 获取某个用户没有删除的委托对象
-     * 
+     *
      * @param ownerId
      * @return
      */
@@ -53,7 +54,7 @@ public interface EntrustService {
 
     /**
      * 根据唯一标示获取委托对象
-     * 
+     *
      * @param id
      * @return
      */
@@ -61,7 +62,7 @@ public interface EntrustService {
 
     /**
      * Description:
-     * 
+     *
      * @param ownerId
      * @param itemId
      * @return
@@ -70,7 +71,7 @@ public interface EntrustService {
 
     /**
      * Description:
-     * 
+     *
      * @param ownerId
      * @param itemId
      * @param dateTime
@@ -88,6 +89,22 @@ public interface EntrustService {
     Integer getCountByOwnerIdAndItemId(String ownerId, String itemId);
 
     /**
+     * 获取委托列表
+     *
+     * @param positionId
+     * @return
+     */
+    List<EntrustModel> getEntrustList(String positionId);
+
+    /**
+     * 获取当前岗被委托记录
+     *
+     * @param positionId
+     * @return
+     */
+    List<EntrustModel> getMyEntrustList(String positionId);
+
+    /**
      * 获取事项列表
      *
      * @param userId
@@ -99,7 +116,7 @@ public interface EntrustService {
 
     /**
      * Description:
-     * 
+     *
      * @param ownerId
      * @return
      */
