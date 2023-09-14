@@ -30,7 +30,6 @@ import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -351,7 +350,6 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     @Override
     @Transactional(readOnly = false)
     public boolean saveOrUpdate(ActRuDetail actRuDetail) {
-        System.out.println("2222222222222222:" + Y9JsonUtil.writeValueAsString(actRuDetail));
         String processSerialNumber = actRuDetail.getProcessSerialNumber();
         String assignee = actRuDetail.getAssignee();
         try {
