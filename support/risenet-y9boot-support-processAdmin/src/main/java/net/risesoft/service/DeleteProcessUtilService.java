@@ -157,8 +157,7 @@ public class DeleteProcessUtilService {
     }
 
     @Async
-    public Future<Boolean> deleteProcess4Position(final String tenantId, final String processInstanceId,
-        final String year) {
+    public Future<Boolean> deleteProcess4Position(final String tenantId, final String processInstanceId, final String year) {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
@@ -215,6 +214,12 @@ public class DeleteProcessUtilService {
             } catch (Exception e) {
                 LOGGER.warn("************************************删除消息提醒数据失败", e);
             }
+
+            try {
+                actRuDetailApi.removeByProcessInstanceId(tenantId, processInstanceId);
+            } catch (Exception e) {
+                LOGGER.warn("************************************删除办理情况数据失败", e);
+            }
             return new AsyncResult<>(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -238,11 +243,8 @@ public class DeleteProcessUtilService {
             String sql3 = "DELETE from ACT_HI_TASKINST_" + year + " where PROC_INST_ID_ = '" + processInstanceId + "'";
             jdbcTemplate.execute(sql3);
 
-            sql3 = "DELETE" + " FROM" + "	ACT_GE_BYTEARRAY_" + year + "" + " WHERE" + "	ID_ IN (" + "		SELECT"
-                + "			*" + "		FROM ( " + "         SELECT" + "			b.ID_" + "		  FROM"
-                + "			 ACT_GE_BYTEARRAY_" + year + " b" + "		  LEFT JOIN ACT_HI_VARINST_" + year
-                + " v ON v.BYTEARRAY_ID_ = b.ID_" + "		  WHERE" + "			 v.PROC_INST_ID_ = '"
-                + processInstanceId + "'" + "		  AND v.NAME_ = 'users'" + "       ) TT" + "	)";
+            sql3 = "DELETE" + " FROM" + "	ACT_GE_BYTEARRAY_" + year + "" + " WHERE" + "	ID_ IN (" + "		SELECT" + "			*" + "		FROM ( " + "         SELECT" + "			b.ID_" + "		  FROM" + "			 ACT_GE_BYTEARRAY_" + year + " b" + "		  LEFT JOIN ACT_HI_VARINST_"
+                + year + " v ON v.BYTEARRAY_ID_ = b.ID_" + "		  WHERE" + "			 v.PROC_INST_ID_ = '" + processInstanceId + "'" + "		  AND v.NAME_ = 'users'" + "       ) TT" + "	)";
             jdbcTemplate.execute(sql3);
 
             sql3 = "DELETE from ACT_HI_VARINST_" + year + " where PROC_INST_ID_ = '" + processInstanceId + "'";

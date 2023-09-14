@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.api.itemadmin.EntrustApi;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
@@ -89,9 +88,6 @@ public class OperationServiceImpl implements OperationService {
 
     @Autowired
     private ErrorLogApi errorLogManager;
-
-    @Autowired
-    private EntrustApi entrustManager;
 
     @Autowired
     private ProcessParamApi processParamManager;

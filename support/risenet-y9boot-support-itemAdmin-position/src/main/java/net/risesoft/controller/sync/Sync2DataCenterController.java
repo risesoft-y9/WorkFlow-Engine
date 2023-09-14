@@ -455,11 +455,10 @@ public class Sync2DataCenterController {
             for (Map<String, Object> map : list) {
                 try {
                     processInstanceId = (String)map.get("PROCESSINSTANCEID");
-                    List<ActRuDetail> list1 = actRuDetailService.findByProcessInstanceId(processInstanceId);
-                    for (ActRuDetail hti : list1) {
-                        OfficeDoneInfo info = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-                        hti.setStartTime(info.getStartTime());
-                        actRuDetailService.saveOrUpdate(hti);
+                    OfficeDoneInfo info = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                    if (info != null) {
+                        sql = "update FF_ACT_RU_DETAIL set STARTTIME = '" + info.getStartTime() + "' where PROCESSINSTANCEID = '" + processInstanceId + "'";
+                        jdbcTemplate.execute(sql);
                     }
                 } catch (Exception e) {
                     i = i + 1;
