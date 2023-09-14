@@ -20,13 +20,9 @@ import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.permission.PersonRoleApi;
-import net.risesoft.api.permission.PositionRoleApi;
-import net.risesoft.api.permission.RoleApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
-import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.entity.EntrustDetail;
 import net.risesoft.entity.ItemOpinionFrameBind;
 import net.risesoft.entity.Opinion;
 import net.risesoft.entity.OpinionHistory;
@@ -42,14 +38,12 @@ import net.risesoft.model.Position;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
-import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.OpinionHistoryRepository;
 import net.risesoft.repository.jpa.OpinionRepository;
 import net.risesoft.service.AsyncHandleService;
-import net.risesoft.service.EntrustDetailService;
 import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.OpinionService;
 import net.risesoft.service.ProcessParamService;
@@ -78,12 +72,6 @@ public class OpinionServiceImpl implements OpinionService {
     private ProcessTrackService processTrackService;
 
     @Autowired
-    private RoleApi roleManager;
-
-    @Autowired
-    private PositionRoleApi positionRoleApi;
-
-    @Autowired
     private PersonRoleApi personRoleApi;
 
     @Autowired
@@ -100,12 +88,6 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Autowired
     private OrgUnitApi orgUnitManager;
-
-    @Autowired
-    private EntrustDetailService entrustDetailService;
-
-    @Autowired
-    private HistoricTaskApi historicTaskManager;
 
     @Autowired
     private HistoricProcessApi historicProcessManager;
@@ -143,8 +125,7 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     @Transactional(readOnly = false)
-    public void copy(String oldProcessSerialNumber, String oldOpinionFrameMark, String newProcessSerialNumber,
-        String newOpinionFrameMark, String newProcessInstanceId, String newTaskId) throws Exception {
+    public void copy(String oldProcessSerialNumber, String oldOpinionFrameMark, String newProcessSerialNumber, String newOpinionFrameMark, String newProcessInstanceId, String newTaskId) throws Exception {
         try {
             List<Opinion> oldOpinionList = this.findByProcessSerialNumber(oldProcessSerialNumber);
             for (Opinion oldOpinion : oldOpinionList) {
@@ -161,8 +142,7 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     public int countOpinionHistory(String processSerialNumber, String opinionFrameMark) {
-        return opinionHistoryRepository.countByProcessSerialNumberAndOpinionFrameMark(processSerialNumber,
-            opinionFrameMark);
+        return opinionHistoryRepository.countByProcessSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
     }
 
     @Override
@@ -184,10 +164,8 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public Opinion findByPsnsAndTaskIdAndOfidAndUserId(String processSerialNumber, String taskId, String opinionFrameId,
-        String userId) {
-        return opinionRepository.findByPsnsAndTaskIdAndOfidAndUserId(processSerialNumber, taskId, opinionFrameId,
-            userId);
+    public Opinion findByPsnsAndTaskIdAndOfidAndUserId(String processSerialNumber, String taskId, String opinionFrameId, String userId) {
+        return opinionRepository.findByPsnsAndTaskIdAndOfidAndUserId(processSerialNumber, taskId, opinionFrameId, userId);
     }
 
     @Override
@@ -234,10 +212,8 @@ public class OpinionServiceImpl implements OpinionService {
     public List<OpinionHistoryModel> opinionHistoryList(String processSerialNumber, String opinionFrameMark) {
         List<OpinionHistoryModel> resList = new ArrayList<OpinionHistoryModel>();
         try {
-            List<OpinionHistory> list = opinionHistoryRepository
-                .findByProcessSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
-            List<Opinion> list1 =
-                opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
+            List<OpinionHistory> list = opinionHistoryRepository.findByProcessSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
+            List<Opinion> list1 = opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
             for (OpinionHistory his : list) {
                 OpinionHistoryModel historyModel = new OpinionHistoryModel();
                 Y9BeanUtil.copyProperties(his, historyModel);
@@ -310,8 +286,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public List<Map<String, Object>> personCommentList(String processSerialNumber, String taskId, String itembox,
-        String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser) {
+    public List<Map<String, Object>> personCommentList(String processSerialNumber, String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser) {
         List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -324,10 +299,8 @@ public class OpinionServiceImpl implements OpinionService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            List<Opinion> list =
-                opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
-            if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue())
-                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.ADD.getValue())) {
+            List<Opinion> list = opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
+            if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.ADD.getValue())) {
                 if (list.size() >= 1) {
                     addableMap.put("addable", true);
                     for (Opinion opinion : list) {
@@ -341,14 +314,12 @@ public class OpinionServiceImpl implements OpinionService {
                             addableMap.put("addable", false);
                         }
                         // 代录意见
-                        if (StringUtils.isNotBlank(opinion.getAgentUserId())
-                            && personId.equals(opinion.getAgentUserId())) {
+                        if (StringUtils.isNotBlank(opinion.getAgentUserId()) && personId.equals(opinion.getAgentUserId())) {
                             map.put("editAgent", true);
                         }
                         OpinionModel opinionModel = new OpinionModel();
                         Y9BeanUtil.copyProperties(opinion, opinionModel);
-                        if (StringUtils.isNotBlank(opinion.getPositionId())
-                            && StringUtils.isBlank(opinion.getPositionName())) {
+                        if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
                             Position position = positionManager.getPosition(tenantId, opinion.getPositionId());
                             opinionModel.setPositionName(position != null ? position.getName() : "");
                         }
@@ -358,8 +329,7 @@ public class OpinionServiceImpl implements OpinionService {
                     boolean addable = (boolean)addableMap.get("addable");
                     if (!addable) {
                         // 没有意见框编辑权限时，增加代录权限
-                        boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "",
-                            "代录意见角色", person.getPersonId());
+                        boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", person.getPersonId());
                         if (hasRole1) {
                             addableMap.put("addAgent", true);
                         }
@@ -373,12 +343,9 @@ public class OpinionServiceImpl implements OpinionService {
                 addableMap.put("addable", false);
                 SpmApproveItem item = spmApproveItemService.findById(itemId);
                 String proDefKey = item.getWorkflowGuid();
-                ProcessDefinitionModel latestpd =
-                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey);
+                ProcessDefinitionModel latestpd = repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey);
                 String processDefinitionId = latestpd.getId();
-                ItemOpinionFrameBind bind =
-                    itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
-                        itemId, processDefinitionId, taskDefinitionKey, opinionFrameMark);
+                ItemOpinionFrameBind bind = itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId, processDefinitionId, taskDefinitionKey, opinionFrameMark);
                 if (null != bind) {
                     // 是否必填意见，与addable一起判定，都为true时提示必填。
                     addableMap.put("signOpinion", bind.isSignOpinion());
@@ -398,8 +365,7 @@ public class OpinionServiceImpl implements OpinionService {
                 boolean addable = (boolean)addableMap.get("addable");
                 if (!addable) {
                     // 没有意见框编辑权限时，增加代录权限
-                    boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色",
-                        person.getPersonId());
+                    boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", person.getPersonId());
                     if (hasRole1) {
                         addableMap.put("addAgent", true);
                     }
@@ -422,8 +388,7 @@ public class OpinionServiceImpl implements OpinionService {
                         map.put("editable", false);
                         OpinionModel opinionModel = new OpinionModel();
                         Y9BeanUtil.copyProperties(opinion, opinionModel);
-                        if (StringUtils.isNotBlank(opinion.getPositionId())
-                            && StringUtils.isBlank(opinion.getPositionName())) {
+                        if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
                             Position position = positionManager.getPosition(tenantId, opinion.getPositionId());
                             opinionModel.setPositionName(position != null ? position.getName() : "");
                         }
@@ -445,8 +410,7 @@ public class OpinionServiceImpl implements OpinionService {
                     opinion.setCreateDate(sdf1.format(sdf.parse(opinion.getCreateDate())));
                     OpinionModel opinionModel = new OpinionModel();
                     Y9BeanUtil.copyProperties(opinion, opinionModel);
-                    if (StringUtils.isNotBlank(opinion.getPositionId())
-                        && StringUtils.isBlank(opinion.getPositionName())) {
+                    if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
                         Position position = positionManager.getPosition(tenantId, opinion.getPositionId());
                         opinionModel.setPositionName(position != null ? position.getName() : "");
                     }
@@ -459,8 +423,7 @@ public class OpinionServiceImpl implements OpinionService {
                             addableMap.put("addable", false);
                         }
                         // 代录意见
-                        if (StringUtils.isNotBlank(opinion.getAgentUserId())
-                            && personId.equals(opinion.getAgentUserId())) {
+                        if (StringUtils.isNotBlank(opinion.getAgentUserId()) && personId.equals(opinion.getAgentUserId())) {
                             map.put("editAgent", true);
                         }
                     }
@@ -473,9 +436,7 @@ public class OpinionServiceImpl implements OpinionService {
                 if (addableTemp) {
                     addableMap.put("addable", false);
                     TaskModel task = taskManager.findById(tenantId, taskId);
-                    ItemOpinionFrameBind bind =
-                        itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
-                            itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
+                    ItemOpinionFrameBind bind = itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
                     if (null != bind) {
                         // 是否必填意见，与addable一起判定，都为true时提示必填。
                         addableMap.put("signOpinion", bind.isSignOpinion());
@@ -489,25 +450,25 @@ public class OpinionServiceImpl implements OpinionService {
                                  * 处理todo时，当前任务为委托产生时的情况-开始
                                  */
                                 if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
-                                    boolean isEntrust = entrustDetailService.haveEntrustDetailByTaskId(taskId);
+                                    /*boolean isEntrust = entrustDetailService.haveEntrustDetailByTaskId(taskId);
                                     if (isEntrust) {
                                         EntrustDetail entrustDetail = entrustDetailService.findByTaskId(taskId);
                                         String ownerId = entrustDetail.getOwnerId();
-                                        /**
-                                         * 把当前人换为委托改任务的人，委托人有意见签写意见，当前人就有签写意见的权限
-                                         */
-                                        hasRole = positionRoleApi.hasRole(tenantId, roleId, ownerId);
-                                        if (hasRole) {
-                                            addableMap.put("addable", true);
-                                            continue;
-                                        }
-                                    } else {
-                                        hasRole = personRoleApi.hasRole(tenantId, roleId, personId);
-                                        if (hasRole) {
-                                            addableMap.put("addable", true);
-                                            continue;
-                                        }
+                                        *//**
+                                            * 把当前人换为委托改任务的人，委托人有意见签写意见，当前人就有签写意见的权限
+                                            *//*
+                                              hasRole = positionRoleApi.hasRole(tenantId, roleId, ownerId);
+                                              if (hasRole) {
+                                               addableMap.put("addable", true);
+                                               continue;
+                                              }
+                                              } else {*/
+                                    hasRole = personRoleApi.hasRole(tenantId, roleId, personId);
+                                    if (hasRole) {
+                                        addableMap.put("addable", true);
+                                        continue;
                                     }
+                                    // }
                                 } else {
                                     hasRole = personRoleApi.hasRole(tenantId, roleId, personId);
                                     if (hasRole) {
@@ -521,8 +482,7 @@ public class OpinionServiceImpl implements OpinionService {
                 }
                 // 代录权限控制
                 if (StringUtils.isNotBlank(taskId)) {
-                    boolean hasRole = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色",
-                        person.getPersonId());
+                    boolean hasRole = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", person.getPersonId());
                     if (hasRole) {
                         // 没有意见框编辑权限时，增加代录权限
                         Boolean addable = (Boolean)addableMap.get("addable");
@@ -531,8 +491,7 @@ public class OpinionServiceImpl implements OpinionService {
                         }
                     }
                 }
-            } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())
-                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())) {
+            } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())) {
                 addableMap.put("addable", false);
                 for (Opinion opinion : list) {
                     Map<String, Object> map = new HashMap<String, Object>(16);
@@ -545,8 +504,7 @@ public class OpinionServiceImpl implements OpinionService {
                     opinion.setCreateDate(sdf1.format(sdf.parse(opinion.getCreateDate())));
                     OpinionModel opinionModel = new OpinionModel();
                     Y9BeanUtil.copyProperties(opinion, opinionModel);
-                    if (StringUtils.isNotBlank(opinion.getPositionId())
-                        && StringUtils.isBlank(opinion.getPositionName())) {
+                    if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
                         Position position = positionManager.getPosition(tenantId, opinion.getPositionId());
                         opinionModel.setPositionName(position != null ? position.getName() : "");
                     }
@@ -561,10 +519,8 @@ public class OpinionServiceImpl implements OpinionService {
                     ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
                     // 办结件，阅件不可填写意见
                     if (processParam != null) {
-                        HistoricProcessInstanceModel historicProcessInstanceModel =
-                            historicProcessManager.getById(tenantId, processParam.getProcessInstanceId());
-                        boolean b = historicProcessInstanceModel == null || (historicProcessInstanceModel != null
-                            && historicProcessInstanceModel.getEndTime() != null);
+                        HistoricProcessInstanceModel historicProcessInstanceModel = historicProcessManager.getById(tenantId, processParam.getProcessInstanceId());
+                        boolean b = historicProcessInstanceModel == null || (historicProcessInstanceModel != null && historicProcessInstanceModel.getEndTime() != null);
                         if (b) {
                             addableMap.put("addable", false);
                             isEnd = true;
@@ -584,8 +540,7 @@ public class OpinionServiceImpl implements OpinionService {
                     opinion.setCreateDate(sdf1.format(sdf.parse(opinion.getCreateDate())));
                     OpinionModel opinionModel = new OpinionModel();
                     Y9BeanUtil.copyProperties(opinion, opinionModel);
-                    if (StringUtils.isNotBlank(opinion.getPositionId())
-                        && StringUtils.isBlank(opinion.getPositionName())) {
+                    if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
                         Position position = positionManager.getPosition(tenantId, opinion.getPositionId());
                         opinionModel.setPositionName(position != null ? position.getName() : "");
                     }
@@ -604,9 +559,7 @@ public class OpinionServiceImpl implements OpinionService {
                 if (addableTemp) {
                     addableMap.put("addable", false);
                     TaskModel task = taskManager.findById(tenantId, taskId);
-                    ItemOpinionFrameBind bind =
-                        itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
-                            itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
+                    ItemOpinionFrameBind bind = itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
                     if (null != bind) {
                         List<String> roleIds = bind.getRoleIds();
                         if (roleIds.isEmpty()) {
@@ -624,7 +577,9 @@ public class OpinionServiceImpl implements OpinionService {
                 }
             }
             resList.add(addableMap);
-        } catch (ParseException e) {
+        } catch (
+
+        ParseException e) {
             e.printStackTrace();
         }
         return resList;
@@ -697,9 +652,8 @@ public class OpinionServiceImpl implements OpinionService {
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
-                try {
-                    HistoricTaskInstanceModel historicTaskInstanceModel =
-                        historicTaskManager.getById(tenantId, entity.getTaskId());
+                /*try {
+                    HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskManager.getById(tenantId, entity.getTaskId());
                     EntrustDetail entrustDetail = entrustDetailService.findByTaskId(historicTaskInstanceModel.getId());
                     if (entrustDetail != null) {
                         if (historicTaskInstanceModel.getAssignee().contains(positionId)) {
@@ -714,11 +668,10 @@ public class OpinionServiceImpl implements OpinionService {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
+                }*/
             }
             opinionRepository.save(o);
-            asyncHandleService.sendMsgRemind(tenantId, positionId, entity.getProcessSerialNumber(),
-                entity.getContent());
+            asyncHandleService.sendMsgRemind(tenantId, positionId, entity.getProcessSerialNumber(), entity.getContent());
             return o;
         }
         Opinion opinion = opinionRepository.findById(id).orElse(null);
@@ -750,10 +703,9 @@ public class OpinionServiceImpl implements OpinionService {
             OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, position.getParentId());
             opinion.setAgentUserDeptName(orgUnit != null ? orgUnit.getName() : "");
         }
-        if (StringUtils.isNotBlank(entity.getTaskId())) {
+        /*if (StringUtils.isNotBlank(entity.getTaskId())) {
             try {
-                HistoricTaskInstanceModel historicTaskInstanceModel =
-                    historicTaskManager.getById(tenantId, entity.getTaskId());
+                HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskManager.getById(tenantId, entity.getTaskId());
                 EntrustDetail entrustDetail = entrustDetailService.findByTaskId(historicTaskInstanceModel.getId());
                 if (entrustDetail != null) {
                     if (historicTaskInstanceModel.getAssignee().contains(positionId)) {
@@ -769,7 +721,7 @@ public class OpinionServiceImpl implements OpinionService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         opinionRepository.save(opinion);
         asyncHandleService.sendMsgRemind(tenantId, positionId, entity.getProcessSerialNumber(), entity.getContent());
         // 修改意见保存历史记录

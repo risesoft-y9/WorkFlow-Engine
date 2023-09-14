@@ -9,7 +9,6 @@ import org.flowable.task.service.delegate.DelegateTask;
 
 import net.risesoft.service.Task4ActRuDetaillService;
 import net.risesoft.service.Task4ListenerService;
-import net.risesoft.service.TaskEntrustService;
 import net.risesoft.service.TodoTaskService;
 import net.risesoft.y9.Y9Context;
 
@@ -57,8 +56,8 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             /**
              * 出差委托
              */
-            TaskEntrustService taskEntrustService = Y9Context.getBean(TaskEntrustService.class);
-            task = taskEntrustService.entrust(task, variables);
+            // TaskEntrustService taskEntrustService = Y9Context.getBean(TaskEntrustService.class);
+            // task = taskEntrustService.entrust(task, variables);
 
             /**
              * 保存已办件详情
@@ -73,8 +72,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             /**
              * 统一待办-新建这一步不使用异步方式保存
              */
-            boolean b = "xinjian".equals(task.getTaskDefinitionKey()) || "faqiren".equals(task.getTaskDefinitionKey())
-                || "qicao".equals(task.getTaskDefinitionKey()) || "fenpei".equals(task.getTaskDefinitionKey());
+            boolean b = "xinjian".equals(task.getTaskDefinitionKey()) || "faqiren".equals(task.getTaskDefinitionKey()) || "qicao".equals(task.getTaskDefinitionKey()) || "fenpei".equals(task.getTaskDefinitionKey());
             if (b) {
                 TodoTaskService todoTaskService = Y9Context.getBean(TodoTaskService.class);
                 todoTaskService.saveTodoTask(task, variables);

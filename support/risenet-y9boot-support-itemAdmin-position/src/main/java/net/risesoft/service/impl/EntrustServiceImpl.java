@@ -12,19 +12,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.org.PositionApi;
 import net.risesoft.entity.Entrust;
 import net.risesoft.entity.EntrustHistory;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.EntrustItemModel;
-import net.risesoft.model.Person;
+import net.risesoft.model.Position;
+import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.repository.jpa.EntrustHistoryRepository;
 import net.risesoft.repository.jpa.EntrustRepository;
 import net.risesoft.service.EntrustService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * @author qinman
@@ -49,7 +51,7 @@ public class EntrustServiceImpl implements EntrustService {
     private SpmApproveItemService spmApproveItemService;
 
     @Autowired
-    private PersonApi personManager;
+    private PositionApi positionApi;
 
     @Override
     @Transactional(readOnly = false)
@@ -69,6 +71,8 @@ public class EntrustServiceImpl implements EntrustService {
             entrustHistoryRepository.save(eh);
 
             entrustRepository.delete(entrust);
+        } else {
+            entrustRepository.deleteById(id);
         }
     }
 
@@ -118,12 +122,12 @@ public class EntrustServiceImpl implements EntrustService {
     public List<Entrust> findAll() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll();
-        Person pTemp = null;
+        Position pTemp = null;
         SpmApproveItem itemTemp = null;
         for (Entrust entrust : entrustList) {
-            pTemp = personManager.getPerson(tenantId, entrust.getAssigneeId());
+            pTemp = positionApi.getPosition(tenantId, entrust.getAssigneeId());
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = personManager.getPerson(tenantId, entrust.getOwnerId());
+            pTemp = positionApi.getPosition(tenantId, entrust.getOwnerId());
             entrust.setOwnerName(pTemp.getName());
 
             String itemId = entrust.getItemId();
@@ -151,9 +155,7 @@ public class EntrustServiceImpl implements EntrustService {
                 startTime4Date = sdf2.parse(startTime);
                 endTime4Date = sdf2.parse(endTime);
                 currentDate = sdf2.parse(sdf2.format(new Date()));
-                boolean b =
-                    startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
-                        || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
+                boolean b = startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime() || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
                     entrust.setUsed(Entrust.USING);
                 } else if (currentDate.after(endTime4Date)) {
@@ -170,12 +172,12 @@ public class EntrustServiceImpl implements EntrustService {
     public List<Entrust> findByAssigneeId(String assigneeId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findByAssigneeIdOrderByStartTimeDesc(assigneeId);
-        Person pTemp = null;
+        Position pTemp = null;
         SpmApproveItem itemTemp = null;
         for (Entrust entrust : entrustList) {
-            pTemp = personManager.getPerson(tenantId, entrust.getAssigneeId());
+            pTemp = positionApi.getPosition(tenantId, entrust.getAssigneeId());
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = personManager.getPerson(tenantId, entrust.getOwnerId());
+            pTemp = positionApi.getPosition(tenantId, entrust.getOwnerId());
             entrust.setOwnerName(pTemp.getName());
 
             String itemId = entrust.getItemId();
@@ -203,9 +205,7 @@ public class EntrustServiceImpl implements EntrustService {
                 startTime4Date = sdf2.parse(startTime);
                 endTime4Date = sdf2.parse(endTime);
                 currentDate = sdf2.parse(sdf2.format(new Date()));
-                boolean b =
-                    startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
-                        || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
+                boolean b = startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime() || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
                     entrust.setUsed(Entrust.USING);
                 } else if (currentDate.after(endTime4Date)) {
@@ -223,9 +223,9 @@ public class EntrustServiceImpl implements EntrustService {
         Entrust entrust = entrustRepository.findById(id).orElse(null);
         if (null != entrust) {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Person pTemp = personManager.getPerson(tenantId, entrust.getAssigneeId());
+            Position pTemp = positionApi.getPosition(tenantId, entrust.getAssigneeId());
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = personManager.getPerson(tenantId, entrust.getOwnerId());
+            pTemp = positionApi.getPosition(tenantId, entrust.getOwnerId());
             entrust.setOwnerName(pTemp.getName());
 
             String itemId = entrust.getItemId();
@@ -253,9 +253,7 @@ public class EntrustServiceImpl implements EntrustService {
                 startTime4Date = sdf2.parse(startTime);
                 endTime4Date = sdf2.parse(endTime);
                 currentDate = sdf2.parse(sdf2.format(new Date()));
-                boolean b =
-                    startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
-                        || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
+                boolean b = startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime() || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
                     entrust.setUsed(Entrust.USING);
                 } else if (currentDate.after(endTime4Date)) {
@@ -285,9 +283,7 @@ public class EntrustServiceImpl implements EntrustService {
                 startTime4Date = sdf2.parse(startTime);
                 endTime4Date = sdf2.parse(endTime);
                 currentDate = sdf2.parse(sdf2.format(new Date()));
-                boolean b =
-                    startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
-                        || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
+                boolean b = startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime() || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
                     entrust.setUsed(Entrust.USING);
                 } else if (currentDate.after(endTime4Date)) {
@@ -311,6 +307,74 @@ public class EntrustServiceImpl implements EntrustService {
     @Override
     public Integer getCountByOwnerIdAndItemId(String ownerId, String itemId) {
         return entrustRepository.getCountByOwnerIdAndItemId(ownerId, itemId);
+    }
+
+    @Override
+    public List<EntrustModel> getEntrustList(String positionId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<Entrust> entrustList = entrustRepository.findAll(positionId);
+        List<EntrustModel> list = new ArrayList<EntrustModel>();
+        Position pTemp = null;
+        for (Entrust entrust : entrustList) {
+            pTemp = positionApi.getPosition(tenantId, entrust.getAssigneeId());
+            entrust.setAssigneeName(pTemp.getName());
+            pTemp = positionApi.getPosition(tenantId, entrust.getOwnerId());
+            entrust.setOwnerName(pTemp.getName());
+            entrust.setUsed(Entrust.NOTUSED);// 判断是否使用
+            String startTime = entrust.getStartTime();
+            String endTime = entrust.getEndTime();
+            Date startTime4Date = null;
+            Date endTime4Date = null;
+            Date currentDate = null;
+            try {
+                startTime4Date = sdf2.parse(startTime);
+                endTime4Date = sdf2.parse(endTime);
+                currentDate = sdf2.parse(sdf2.format(new Date()));
+                boolean b = startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime() || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
+                if (b) {
+                    entrust.setUsed(Entrust.USING);
+                } else if (currentDate.after(endTime4Date)) {
+                    entrust.setUsed(Entrust.USED);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            EntrustModel model = new EntrustModel();
+            Y9BeanUtil.copyProperties(entrust, model);
+            list.add(model);
+        }
+        return list;
+    }
+
+    @Override
+    public List<EntrustModel> getMyEntrustList(String positionId) {
+        List<Entrust> entrustList = entrustRepository.findByAssigneeIdOrderByStartTimeDesc(positionId);
+        List<EntrustModel> list = new ArrayList<EntrustModel>();
+        for (Entrust entrust : entrustList) {
+            entrust.setUsed(Entrust.NOTUSED);// 判断是否使用
+            String startTime = entrust.getStartTime();
+            String endTime = entrust.getEndTime();
+            Date startTime4Date = null;
+            Date endTime4Date = null;
+            Date currentDate = null;
+            try {
+                startTime4Date = sdf2.parse(startTime);
+                endTime4Date = sdf2.parse(endTime);
+                currentDate = sdf2.parse(sdf2.format(new Date()));
+                boolean b = startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime() || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
+                if (b) {
+                    entrust.setUsed(Entrust.USING);
+                } else if (currentDate.after(endTime4Date)) {
+                    entrust.setUsed(Entrust.USED);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            EntrustModel model = new EntrustModel();
+            Y9BeanUtil.copyProperties(entrust, model);
+            list.add(model);
+        }
+        return list;
     }
 
     @SuppressWarnings("unchecked")
@@ -355,12 +419,12 @@ public class EntrustServiceImpl implements EntrustService {
     public List<Entrust> list(String ownerId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll(ownerId);
-        Person pTemp = null;
+        Position pTemp = null;
         SpmApproveItem itemTemp = null;
         for (Entrust entrust : entrustList) {
-            pTemp = personManager.getPerson(tenantId, entrust.getAssigneeId());
+            pTemp = positionApi.getPosition(tenantId, entrust.getAssigneeId());
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = personManager.getPerson(tenantId, entrust.getOwnerId());
+            pTemp = positionApi.getPosition(tenantId, entrust.getOwnerId());
             entrust.setOwnerName(pTemp.getName());
 
             String itemId = entrust.getItemId();
@@ -388,9 +452,7 @@ public class EntrustServiceImpl implements EntrustService {
                 startTime4Date = sdf2.parse(startTime);
                 endTime4Date = sdf2.parse(endTime);
                 currentDate = sdf2.parse(sdf2.format(new Date()));
-                boolean b =
-                    startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
-                        || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
+                boolean b = startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime() || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
                     entrust.setUsed(Entrust.USING);
                 } else if (currentDate.after(endTime4Date)) {
@@ -426,7 +488,7 @@ public class EntrustServiceImpl implements EntrustService {
         Entrust newEntrust = new Entrust();
         newEntrust.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         newEntrust.setItemId(entrust.getItemId());
-        newEntrust.setOwnerId(Y9LoginUserHolder.getPersonId());
+        newEntrust.setOwnerId(Y9LoginUserHolder.getPositionId());
         newEntrust.setAssigneeId(entrust.getAssigneeId());
         newEntrust.setStartTime(entrust.getStartTime());
         newEntrust.setEndTime(entrust.getEndTime());

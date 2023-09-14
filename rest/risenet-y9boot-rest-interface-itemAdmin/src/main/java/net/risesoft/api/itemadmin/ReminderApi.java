@@ -11,16 +11,16 @@ public interface ReminderApi {
 
     /**
      * 删除催办
-     * 
+     *
      * @param tenantId 租户id
      * @param ids ids
      */
     public void deleteList(String tenantId, String[] ids);
 
     /**
-     * 
+     *
      * Description: 查找催办
-     * 
+     *
      * @param tenantId
      * @param id
      * @return
@@ -29,7 +29,7 @@ public interface ReminderApi {
 
     /**
      * 获取当前催办人的在办任务的催办信息
-     * 
+     *
      * @param tenantId
      * @param processInstanceId
      * @param page
@@ -40,7 +40,7 @@ public interface ReminderApi {
 
     /**
      * 获取当前催办人的在办任务的催办信息
-     * 
+     *
      * @param tenantId
      * @param senderId
      * @param processInstanceId
@@ -48,13 +48,12 @@ public interface ReminderApi {
      * @param rows
      * @return
      */
-    public Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String tenantId, String senderId,
-        String processInstanceId, int page, int rows);
+    public Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String tenantId, String senderId, String processInstanceId, int page, int rows);
 
     /**
-     * 
+     *
      * Description: 获取待办的提醒页面的数据
-     * 
+     *
      * @param tenantId
      * @param taskId
      * @param page
@@ -65,7 +64,7 @@ public interface ReminderApi {
 
     /**
      * 查看催办信息
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param taskId 任务id
@@ -75,9 +74,9 @@ public interface ReminderApi {
     public Map<String, Object> getReminder(String tenantId, String userId, String taskId, String type);
 
     /**
-     * 
+     *
      * Description: 保存催办信息
-     * 
+     *
      * @param tenantId
      * @param userId
      * @param processInstanceId
@@ -85,12 +84,11 @@ public interface ReminderApi {
      * @param msgContent
      * @return
      */
-    public Map<String, Object> saveReminder(String tenantId, String userId, String processInstanceId, String[] taskIds,
-        String msgContent);
+    public Map<String, Object> saveReminder(String tenantId, String userId, String processInstanceId, String[] taskIds, String msgContent);
 
     /**
      * 发送催办信息
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param remType 催办类型，"1":短信,"2":邮件",3":站内信",4":待办列表中
@@ -102,12 +100,11 @@ public interface ReminderApi {
      * @param msgContent 催办信息
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> sendReminderMessage(String tenantId, String userId, String remType, String procInstId,
-        String processInstanceId, String documentTitle, String taskId, String taskAssigneeId, String msgContent);
+    public Map<String, Object> sendReminderMessage(String tenantId, String userId, String remType, String procInstId, String processInstanceId, String documentTitle, String taskId, String taskAssigneeId, String msgContent);
 
     /**
      * 设置为查看状态
-     * 
+     *
      * @param tenantId 租户id
      * @param ids ids
      */
@@ -115,13 +112,12 @@ public interface ReminderApi {
 
     /**
      * 更新催办信息
-     * 
+     *
      * @param tenantId 租户滴
-     * @param userId 人员id
      * @param id 催办id
      * @param msgContent 催办信息
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> updateReminder(String tenantId, String userId, String id, String msgContent);
+    public Map<String, Object> updateReminder(String tenantId, String id, String msgContent);
 
 }
