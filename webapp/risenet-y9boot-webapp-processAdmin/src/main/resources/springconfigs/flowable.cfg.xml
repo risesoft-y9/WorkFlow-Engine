@@ -55,6 +55,9 @@
 	    <property name="processEngineConfiguration" ref="processEngineConfiguration" />
 	</bean>
 	
+	<bean id="eventRegistryEngine" class="org.flowable.eventregistry.impl.EventRegistryEngineImpl">
+	</bean>
+	
 	<bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService" primary="true" />
 	<bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService" primary="true" />
 	<bean id="taskService" factory-bean="processEngine" factory-method="getTaskService" primary="true" />
