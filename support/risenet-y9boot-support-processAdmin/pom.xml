@@ -18,7 +18,7 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <maven.javadoc.skip>true</maven.javadoc.skip>
 
-        <flowable.version>7.0.0.M2</flowable.version>
+        <flowable.version>7.0.0</flowable.version>
     </properties>
 
     <dependencies>
