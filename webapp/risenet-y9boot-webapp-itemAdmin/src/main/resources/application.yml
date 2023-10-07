@@ -29,10 +29,10 @@ spring:
     cloud:
         nacos:
             config:
-                enabled: false
+                enabled: true
                 group: DEFAULT_GROUP
-                namespace: vue
-                server-addr: https://vue.youshengyun.com:443
+                namespace: dev
+                server-addr: https://dev.youshengyun.com:443
                 username: nacos
                 password: Risesoft@2022
     config:

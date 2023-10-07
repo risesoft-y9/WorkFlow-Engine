@@ -89,7 +89,7 @@ spring:
                 #username: Y9_PUBLIC
                 #password: '111111'
                 driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://127.0.0.1:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                url: jdbc:mysql://127.0.0.1:3306/y9_public_new?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
                 username: root
                 password: 111111
                 initialSize: 1
@@ -107,7 +107,7 @@ spring:
                 validationQuery: SELECT 1 FROM DUAL
             flowable:
                 driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://127.0.0.1:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                url: jdbc:mysql://127.0.0.1:3306/y9_flowable_new1?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
                 username: root
                 password: 111111
                 initialSize: 1
@@ -136,12 +136,12 @@ spring:
                     use_second_level_cache: false
                 dialect: org.hibernate.dialect.MySQL8Dialect
                 hbm2ddl:
-                    auto: none
+                    auto: update
                 jdbc:
                     batch_size: 100
                 show_sql: false
     kafka:
-        bootstrap-servers: localhost:9092
+        bootstrap-servers: dev.youshengyun.com:9092
         consumer:
             auto-commit-interval: 1000
             enable-auto-commit: true
@@ -157,7 +157,7 @@ spring:
             suffix: .jsp
     redis:
         database: 8
-        host: localhost
+        host: dev.youshengyun.com
         lettuce:
             pool:
                 max-active: 8
