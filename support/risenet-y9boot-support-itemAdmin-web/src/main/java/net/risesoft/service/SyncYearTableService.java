@@ -160,7 +160,7 @@ public class SyncYearTableService {
                 buffer = bos.toByteArray();
                 String s = new String(buffer, "UTF-8");
                 s = s.replace("Year4Table", year);
-                List<String> sqlList = Y9FileUtil.loadSql(s, dialectName);
+                List<String> sqlList = Y9FileUtil.loadSql(s);
                 if (DialectEnum.KINGBASE.getValue().equals(dialectName)) {
                     dbMetaDataUtil.batchexecuteDdl4Kingbase(connection, sqlList);
                 } else if (DialectEnum.ORACLE.getValue().equals(dialectName)) {
