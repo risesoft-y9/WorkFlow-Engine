@@ -1,26 +1,8 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.WorkOrderApi;
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
-import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
+import net.risesoft.api.itemadmin.position.*;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.DoingApi;
@@ -39,6 +21,20 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/vue/mian")
@@ -260,7 +256,7 @@ public class MainRestController {
             // 获取当前岗被委托记录
             List<EntrustModel> list1 = entrust4PositionApi.getMyEntrustList(tenantId, p.getId());
             for (EntrustModel model : list1) {
-                if (model.getUsed() == 1) {// 使用中的委托，将委托岗位加入岗位列表
+                if (model.getUsed().equals(1)) {// 使用中的委托，将委托岗位加入岗位列表
                     Map<String, Object> map1 = new HashMap<String, Object>(16);
                     String positionId = model.getOwnerId();
                     Position position = positionApi.getPosition(tenantId, positionId);
@@ -331,9 +327,9 @@ public class MainRestController {
     /**
      * 获取流程任务信息
      *
-     * @param taskId 任务id
+     * @param taskId            任务id
      * @param processInstanceId 流程实例id
-     * @param type 类型
+     * @param type              类型
      * @return
      */
     @ResponseBody
