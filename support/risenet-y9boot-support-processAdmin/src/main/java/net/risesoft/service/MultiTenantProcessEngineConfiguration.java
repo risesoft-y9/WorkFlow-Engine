@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-import net.risesoft.consts.DefaultIdConsts;
+import net.risesoft.consts.InitDataConsts;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.base64.Y9Base64Util;
 
@@ -73,55 +73,56 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
 		 */
 		registerTenant(AbstractEngineConfiguration.NO_TENANT_ID, defaultDataSource);
 
-		ProcessEngine processEngine = super.buildProcessEngine();
-		/**
-		 * 2系统存在的话查看租户租用系统的数据源
-		 */
-		List<Map<String, Object>> systems = jdbcTemplate.queryForList(
-			"SELECT ID FROM Y9_COMMON_SYSTEM T WHERE T.NAME=?", y9Config.getApp().getProcessAdmin().getSystemName());
-		if (systems.size() > 0) {
-			Map<String, Object> map = systems.get(0);
-			String systemId = (String) map.get("ID");
-			List<Map<String, Object>> tenantSystems = jdbcTemplate.queryForList(
-				"SELECT TENANT_ID, TENANT_DATA_SOURCE FROM Y9_COMMON_TENANT_SYSTEM T WHERE T.SYSTEM_ID = ?", systemId);
-			if (tenantSystems.isEmpty()) {
-				createDefaultTenantDataSource();
-			} else {
-				boolean isCreateDefaultTenantDataSource = false;
-				for (Map<String, Object> tenantSystem : tenantSystems) {
-					String tenantId = (String) tenantSystem.get("TENANT_ID");
-					String dataSourceId = (String) tenantSystem.get("TENANT_DATA_SOURCE");
-					List<Map<String, Object>> list3 = jdbcTemplate.queryForList("select * from Y9_COMMON_DATASOURCE t where t.id = ?", dataSourceId);
-					if (list3.size() > 0) {
-						registerTenant(tenantId, list3.get(0));
-						if (tenantId.equals(DefaultIdConsts.TENANT_ID)) {
-							isCreateDefaultTenantDataSource = true;
-						}
-					}
-				}
-				if (!isCreateDefaultTenantDataSource) {
-					createDefaultTenantDataSource();
-				}
-			}
-		} else {
-			createDefaultTenantDataSource();
-		}
-		return processEngine;
-	}
+        ProcessEngine processEngine = super.buildProcessEngine();
+        /**
+         * 2系统存在的话查看租户租用系统的数据源
+         */
+        List<Map<String, Object>> systems = jdbcTemplate.queryForList(
+            "SELECT ID FROM Y9_COMMON_SYSTEM T WHERE T.NAME=?", y9Config.getApp().getProcessAdmin().getSystemName());
+        if (systems.size() > 0) {
+            Map<String, Object> map = systems.get(0);
+            String systemId = (String)map.get("ID");
+            List<Map<String, Object>> tenantSystems = jdbcTemplate.queryForList(
+                "SELECT TENANT_ID, TENANT_DATA_SOURCE FROM Y9_COMMON_TENANT_SYSTEM T WHERE T.SYSTEM_ID = ?", systemId);
+            if (tenantSystems.isEmpty()) {
+                createDefaultTenantDataSource();
+            } else {
+                boolean isCreateDefaultTenantDataSource = false;
+                for (Map<String, Object> tenantSystem : tenantSystems) {
+                    String tenantId = (String)tenantSystem.get("TENANT_ID");
+                    String dataSourceId = (String)tenantSystem.get("TENANT_DATA_SOURCE");
+                    List<Map<String, Object>> list3 =
+                        jdbcTemplate.queryForList("select * from Y9_COMMON_DATASOURCE t where t.id = ?", dataSourceId);
+                    if (list3.size() > 0) {
+                        registerTenant(tenantId, list3.get(0));
+                        if (tenantId.equals(InitDataConsts.TENANT_ID)) {
+                            isCreateDefaultTenantDataSource = true;
+                        }
+                    }
+                }
+                if (!isCreateDefaultTenantDataSource) {
+                    createDefaultTenantDataSource();
+                }
+            }
+        } else {
+            createDefaultTenantDataSource();
+        }
+        return processEngine;
+    }
 
-	/**
-	 * 初始化默认租户数据源
-	 */
-	private void createDefaultTenantDataSource() {
-		List<Map<String, Object>> defaultTenant = jdbcTemplate.queryForList(
-			"SELECT ID, DEFAULT_DATA_SOURCE_ID FROM Y9_COMMON_TENANT WHERE ID=?", DefaultIdConsts.TENANT_ID);
-		List<Map<String, Object>> defaultDataSource = jdbcTemplate
-			.queryForList("SELECT * FROM Y9_COMMON_DATASOURCE T WHERE T.ID = ?", DefaultIdConsts.DATASOURCE_ID);
-		if (!defaultTenant.isEmpty() && !defaultDataSource.isEmpty()) {
-			String defaultTenantId = defaultTenant.get(0).get("ID").toString();
-			registerTenant(defaultTenantId, defaultDataSource.get(0));
-		}
-	}
+    /**
+     * 初始化默认租户数据源
+     */
+    private void createDefaultTenantDataSource() {
+        List<Map<String, Object>> defaultTenant = jdbcTemplate.queryForList(
+            "SELECT ID, DEFAULT_DATA_SOURCE_ID FROM Y9_COMMON_TENANT WHERE ID=?", InitDataConsts.TENANT_ID);
+        List<Map<String, Object>> defaultDataSource = jdbcTemplate
+            .queryForList("SELECT * FROM Y9_COMMON_DATASOURCE T WHERE T.ID = ?", InitDataConsts.DATASOURCE_ID);
+        if (!defaultTenant.isEmpty() && !defaultDataSource.isEmpty()) {
+            String defaultTenantId = defaultTenant.get(0).get("ID").toString();
+            registerTenant(defaultTenantId, defaultDataSource.get(0));
+        }
+    }
 
 	private void createSystem(String systemName) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
