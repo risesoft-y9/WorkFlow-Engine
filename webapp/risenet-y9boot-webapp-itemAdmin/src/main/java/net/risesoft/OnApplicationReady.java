@@ -18,7 +18,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.consts.DefaultIdConsts;
+import net.risesoft.enums.ManagerLevelEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.Tenant;
@@ -118,8 +118,8 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
                         "INSERT INTO y9_common_tenant_app (ID, TENANT_ID, TENANT_NAME, SYSTEM_ID, APP_ID,APP_NAME,CREATE_TIME,APPLY_NAME,APPLY_ID,APPLY_REASON,VERIFY_STATUS,TENANCY) VALUES ('"
                             + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', '" + tenant.getId() + "', '"
                             + tenant.getName() + "', '" + smap.get("ID").toString() + "', '" + amap.get("ID").toString()
-                            + "','" + amap.get("NAME").toString() + "','" + sdf.format(new Date()) + "','系统管理员','"
-                            + DefaultIdConsts.SYSTEM_MANAGER_ID + "','微内核默认租用',1,1)";
+                            + "','" + amap.get("NAME").toString() + "','" + sdf.format(new Date()) + "','"
+                            + ManagerLevelEnum.SYSTEM_MANAGER.getName() + "','','微内核默认租用',1,1)";
                     jdbcTemplate.execute(sql1);
                 }
             }

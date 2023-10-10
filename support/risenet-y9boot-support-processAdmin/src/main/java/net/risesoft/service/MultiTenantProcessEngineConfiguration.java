@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
-import net.risesoft.consts.DefaultIdConsts;
+import net.risesoft.consts.InitDataConsts;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.base64.Y9Base64Util;
 
@@ -95,7 +95,7 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
                         jdbcTemplate.queryForList("select * from Y9_COMMON_DATASOURCE t where t.id = ?", dataSourceId);
                     if (list3.size() > 0) {
                         registerTenant(tenantId, list3.get(0));
-                        if (tenantId.equals(DefaultIdConsts.TENANT_ID)) {
+                        if (tenantId.equals(InitDataConsts.TENANT_ID)) {
                             isCreateDefaultTenantDataSource = true;
                         }
                     }
@@ -115,9 +115,9 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
      */
     private void createDefaultTenantDataSource() {
         List<Map<String, Object>> defaultTenant = jdbcTemplate.queryForList(
-            "SELECT ID, DEFAULT_DATA_SOURCE_ID FROM Y9_COMMON_TENANT WHERE ID=?", DefaultIdConsts.TENANT_ID);
+            "SELECT ID, DEFAULT_DATA_SOURCE_ID FROM Y9_COMMON_TENANT WHERE ID=?", InitDataConsts.TENANT_ID);
         List<Map<String, Object>> defaultDataSource = jdbcTemplate
-            .queryForList("SELECT * FROM Y9_COMMON_DATASOURCE T WHERE T.ID = ?", DefaultIdConsts.DATASOURCE_ID);
+            .queryForList("SELECT * FROM Y9_COMMON_DATASOURCE T WHERE T.ID = ?", InitDataConsts.DATASOURCE_ID);
         if (!defaultTenant.isEmpty() && !defaultDataSource.isEmpty()) {
             String defaultTenantId = defaultTenant.get(0).get("ID").toString();
             registerTenant(defaultTenantId, defaultDataSource.get(0));

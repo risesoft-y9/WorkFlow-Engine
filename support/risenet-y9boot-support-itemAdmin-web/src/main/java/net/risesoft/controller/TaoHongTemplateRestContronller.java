@@ -148,7 +148,7 @@ public class TaoHongTemplateRestContronller {
             map.put("uploadTime", sdf.format(list.get(i).getUploadTime()));
 
             String userId = list.get(i).getUserId();
-            Manager manger = managerApi.getManager(Y9LoginUserHolder.getTenantId(), userId);
+            Manager manger = managerApi.getManagerById(Y9LoginUserHolder.getTenantId(), userId);
             map.put("userName", manger != null ? manger.getName() : "人员不存在");
             map.put("tabIndex", list.get(i).getTabIndex());
             items.add(map);
