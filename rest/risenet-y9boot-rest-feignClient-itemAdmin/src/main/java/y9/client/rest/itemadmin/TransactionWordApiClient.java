@@ -17,8 +17,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "TransactionWordApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/transactionWord")
+@FeignClient(contextId = "TransactionWordApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/transactionWord")
 public interface TransactionWordApiClient extends TransactionWordApi {
 
     /**
@@ -29,8 +28,7 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @PostMapping(value = "/delBatchByProcessSerialNumbers", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void delBatchByProcessSerialNumbers(@RequestParam("tenantId") String tenantId,
-        @RequestBody List<String> processSerialNumbers);
+    public void delBatchByProcessSerialNumbers(@RequestParam("tenantId") String tenantId, @RequestBody List<String> processSerialNumbers);
 
     /**
      * 删除撤销PDF文件
@@ -43,8 +41,7 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @PostMapping("/deleteByIsTaoHong")
-    public void deleteByIsTaoHong(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("isTaoHong") String isTaoHong);
+    public void deleteByIsTaoHong(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("isTaoHong") String isTaoHong);
 
     /**
      * 获取正文文件信息（数据传输）
@@ -56,13 +53,12 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @GetMapping("/exchangeFindWordByProcessSerialNumber")
-    public List<Map<String, Object>> exchangeFindWordByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
+    public List<Map<String, Object>> exchangeFindWordByProcessSerialNumber(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
-     * 
+     *
      * Description: 打开历史文件
-     * 
+     *
      * @param tenantId
      * @param userId
      * @param taskId
@@ -70,8 +66,7 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @GetMapping("/findHistoryVersionDoc")
-    public Map<String, Object> findHistoryVersionDoc(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("taskId") String taskId);
+    public Map<String, Object> findHistoryVersionDoc(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("taskId") String taskId);
 
     /**
      * 获取正文文件信息
@@ -82,8 +77,7 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @GetMapping("/findWordByProcessSerialNumber")
-    public Map<String, Object> findWordByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    public Map<String, Object> findWordByProcessSerialNumber(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 获取正文列表
@@ -95,8 +89,7 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @GetMapping("/getWordList")
-    public List<Map<String, Object>> getWordList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
+    public List<Map<String, Object>> getWordList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 打开正文
@@ -109,21 +102,19 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @GetMapping("/openDocument")
-    public String openDocument(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("itemId") String itemId);
+    public String openDocument(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("itemId") String itemId);
 
     /**
-     * 
+     *
      * Description: 打开历史文件
-     * 
+     *
      * @param tenantId
      * @param processSerialNumber
      * @return
      */
     @Override
     @GetMapping("/openDocumentByProcessSerialNumber")
-    public String openDocumentByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    public String openDocumentByProcessSerialNumber(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 套红模板
@@ -135,8 +126,7 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @GetMapping("/openDocumentTemplate")
-    public String openDocumentTemplate(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("templateGUID") String templateGuid);
+    public String openDocumentTemplate(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("templateGuid") String templateGuid);
 
     /**
      * 打开历史文件
@@ -147,8 +137,7 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @GetMapping("/openHistoryVersionDoc")
-    public void openHistoryVersionDoc(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("taskId") String taskId);
+    public void openHistoryVersionDoc(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("taskId") String taskId);
 
     /**
      * 打开PDF
@@ -160,8 +149,7 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @GetMapping("/openPdf")
-    public String openPdf(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    public String openPdf(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 打开撤销PDF后的正文
@@ -174,9 +162,7 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @GetMapping("/openRevokePDFAfterDocument")
-    public String openRevokePdfAfterDocument(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("isTaoHong") String isTaoHong);
+    public String openRevokePdfAfterDocument(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("isTaoHong") String isTaoHong);
 
     /**
      * 选择套红
@@ -188,8 +174,7 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @GetMapping("/openTaoHong")
-    public Map<String, Object> openTaoHong(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("activitiUser") String activitiUser);
+    public Map<String, Object> openTaoHong(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("activitiUser") String activitiUser);
 
     /**
      * 保存公文传输转入工作流的正文信息
@@ -202,9 +187,7 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @PostMapping("/saveImportTransationWord")
-    public Boolean saveImportTransationWord(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("docjson") String docjson,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    public Boolean saveImportTransationWord(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("docjson") String docjson, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 获取正文
@@ -219,9 +202,7 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @GetMapping("/showWord")
-    public Map<String, Object> showWord(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("itemId") String itemId, @RequestParam("itembox") String itembox,
+    public Map<String, Object> showWord(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("itemId") String itemId, @RequestParam("itembox") String itembox,
         @RequestParam("taskId") String taskId);
 
     /**
@@ -234,13 +215,12 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @GetMapping("/taoHongTemplateList")
-    public List<Map<String, Object>> taoHongTemplateList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("currentBureauGuid") String currentBureauGuid);
+    public List<Map<String, Object>> taoHongTemplateList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("currentBureauGuid") String currentBureauGuid);
 
     /**
-     * 
+     *
      * Description: 草稿箱保存正文
-     * 
+     *
      * @param tenantId
      * @param userId
      * @param documentTitle
@@ -254,11 +234,8 @@ public interface TransactionWordApiClient extends TransactionWordApi {
      */
     @Override
     @PostMapping("/uploadWord")
-    public String uploadWord(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("documentTitle") String documentTitle, @RequestParam("fileType") String fileType,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("isTaoHong") String isTaoHong,
-        @RequestParam("taskId") String taskId, @RequestParam("fileSizeString") String fileSizeString,
-        @RequestParam("fileStoreId") String fileStoreId);
+    public String uploadWord(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("documentTitle") String documentTitle, @RequestParam("fileType") String fileType, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("isTaoHong") String isTaoHong, @RequestParam("taskId") String taskId, @RequestParam("fileSizeString") String fileSizeString, @RequestParam("fileStoreId") String fileStoreId);
 
     /**
      * 下载正文
