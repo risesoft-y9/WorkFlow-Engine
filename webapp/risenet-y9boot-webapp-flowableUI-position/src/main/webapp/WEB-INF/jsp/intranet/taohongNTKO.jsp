@@ -56,7 +56,7 @@
 						if(item.hasTaoHongTemplate==0){
 							$(".ui-layout-content").prepend(divtemp);
 						}else{
-							trtemp=trtemp+"<tr><td class=\"li2_td_left\" style=\"width: 140px;\"><input type=\"radio\" name=\"taohong\" onclick=\"setValue(this)\" value=\""+item.template_guid+"|"+item.template_fileName+"|"+item.template_type+" \"> "+item.template_fileName+"  </td></tr>"
+							trtemp=trtemp+"<tr><td class=\"li2_td_left\" style=\"width: 140px;\"><input type=\"radio\" name=\"taohong\" onclick=\"setValue(this)\" value=\""+item.templateGuid+"|"+item.template_fileName+"|"+item.templateType+" \"> "+item.template_fileName+"  </td></tr>"
 						}
 				 });
 				 $(".simple").prepend(trtemp);
