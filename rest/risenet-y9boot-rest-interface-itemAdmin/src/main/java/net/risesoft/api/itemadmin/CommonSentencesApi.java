@@ -14,10 +14,9 @@ public interface CommonSentencesApi {
      * 删除常用语
      *
      * @param tenantId 租户id
-     * @param userId 人员id
      * @param id 常用语id
      */
-    public void delete(String tenantId, String id);
+    void delete(String tenantId, String id);
 
     /**
      * 获取常用语字符串
@@ -26,7 +25,7 @@ public interface CommonSentencesApi {
      * @param userId 人员id
      * @return String
      */
-    public String getCommonSentencesStr(String tenantId, String userId);
+    String getCommonSentencesStr(String tenantId, String userId);
 
     /**
      * 获取常用语
@@ -44,7 +43,7 @@ public interface CommonSentencesApi {
      * @param userId 人员id
      * @param tabIndex 排序号
      */
-    public void removeCommonSentences(String tenantId, String userId, int tabIndex);
+    void removeCommonSentences(String tenantId, String userId, int tabIndex);
 
     /**
      * 根据id保存更新常用语
@@ -54,7 +53,7 @@ public interface CommonSentencesApi {
      * @param id 常用语的唯一标识
      * @param content 内容
      */
-    public void save(String tenantId, String userId, String id, String content);
+    void save(String tenantId, String userId, String id, String content);
 
     /**
      * 根据排序号tabIndex保存更新常用语
@@ -64,5 +63,5 @@ public interface CommonSentencesApi {
      * @param content 常用语内容
      * @param tabIndex 排序号
      */
-    public void saveCommonSentences(String tenantId, String userId, String content, int tabIndex);
+    void saveCommonSentences(String tenantId, String userId, String content, int tabIndex);
 }

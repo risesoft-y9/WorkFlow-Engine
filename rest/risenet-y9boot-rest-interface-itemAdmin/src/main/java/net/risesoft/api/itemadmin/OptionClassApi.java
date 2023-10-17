@@ -12,10 +12,10 @@ public interface OptionClassApi {
 
     /**
      * 获取数据字典列表
-     * 
-     * @param tenantId
-     * @param type
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param type 字典类型
+     * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
     List<Map<String, Object>> getOptionValueList(String tenantId, String type);
 

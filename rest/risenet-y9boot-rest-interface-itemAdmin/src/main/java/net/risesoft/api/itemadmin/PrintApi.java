@@ -9,12 +9,12 @@ public interface PrintApi {
 
     /**
      * 打开打印模板
-     * 
-     * @param tenantId
-     * @param userId
-     * @param itemId
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param itemId 事项id
+     * @return String
      */
-    public String openDocument(String tenantId, String userId, String itemId);
+    String openDocument(String tenantId, String userId, String itemId);
 
 }

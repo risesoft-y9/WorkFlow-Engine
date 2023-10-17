@@ -21,10 +21,9 @@ public interface RuntimeApi {
      * @param activityId 执行实例id
      * @param parentExecutionId 父执行实例id
      * @param map 参数
-     * @throws Exception
+     * @throws Exception 异常
      */
-    void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId,
-        Map<String, Object> map) throws Exception;
+    void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId, Map<String, Object> map) throws Exception;
 
     /**
      * 加签/岗位
@@ -35,8 +34,7 @@ public interface RuntimeApi {
      * @param taskId 任务id
      * @throws Exception Exception
      */
-    void complete4Position(String tenantId, String positionId, String processInstanceId, String taskId)
-        throws Exception;
+    void complete4Position(String tenantId, String positionId, String processInstanceId, String taskId) throws Exception;
 
     /**
      *
@@ -104,8 +102,7 @@ public interface RuntimeApi {
      * @param rows 行数
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getProcessInstancesByDefId(String tenantId, String processDefinitionId, Integer page,
-        Integer rows);
+    Map<String, Object> getProcessInstancesByDefId(String tenantId, String processDefinitionId, Integer page, Integer rows);
 
     /**
      * 根据流程定义Key获取流程实例列表
@@ -124,7 +121,7 @@ public interface RuntimeApi {
      * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @throws Exception
+     * @throws Exception 异常
      */
     void recovery4Completed(String tenantId, String userId, String processInstanceId, String year) throws Exception;
 
@@ -150,10 +147,9 @@ public interface RuntimeApi {
      * 根据流程实例id设置流程变量
      *
      * @param tenantId 租户id
-     * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @param key 变量key
-     * @param val 变量值
+     * @param map 变量值
      * @throws Exception Exception
      */
     void setVariable(String tenantId, String processInstanceId, String key, Map<String, Object> map) throws Exception;
@@ -177,8 +173,7 @@ public interface RuntimeApi {
      * @param map 变量map
      * @return ProcessInstanceModel
      */
-    ProcessInstanceModel startProcessInstanceByKey(String tenantId, String userId, String processDefinitionKey,
-        String systemName, Map<String, Object> map);
+    ProcessInstanceModel startProcessInstanceByKey(String tenantId, String userId, String processDefinitionKey, String systemName, Map<String, Object> map);
 
     /**
      * 判断是否是挂起实例

@@ -11,11 +11,11 @@ public interface TaskVariableApi {
 
     /**
      * 根据任务id,变量名获取变量值
-     * 
-     * @param tenantId
-     * @param taskId
-     * @param keyName
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param taskId 任务id
+     * @param keyName keyName
+     * @return TaskVariableModel
      */
     TaskVariableModel findByTaskIdAndKeyName(String tenantId, String taskId, String keyName);
 }

@@ -19,7 +19,7 @@ public interface Attachment4PositionApi {
      * @param id 附件id
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> attachmentDownload(String tenantId, String id);
+    Map<String, Object> attachmentDownload(String tenantId, String id);
 
     /**
      * 根据流程编号删除附件
@@ -27,7 +27,7 @@ public interface Attachment4PositionApi {
      * @param tenantId 租户id
      * @param processSerialNumbers 流程编号
      */
-    public void delBatchByProcessSerialNumbers(String tenantId, List<String> processSerialNumbers);
+    void delBatchByProcessSerialNumbers(String tenantId, List<String> processSerialNumbers);
 
     /**
      * 删除附件
@@ -36,7 +36,7 @@ public interface Attachment4PositionApi {
      * @param ids 附件ids
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> delFile(String tenantId, String ids);
+    Map<String, Object> delFile(String tenantId, String ids);
 
     /**
      * 附件数
@@ -45,7 +45,7 @@ public interface Attachment4PositionApi {
      * @param processSerialNumber 流程编号
      * @return Integer Integer
      */
-    public Integer fileCounts(String tenantId, String processSerialNumber);
+    Integer fileCounts(String tenantId, String processSerialNumber);
 
     /**
      * 获取附件数
@@ -56,7 +56,7 @@ public interface Attachment4PositionApi {
      * @param fileType 文件类型
      * @return int
      */
-    public int getAttachmentCount(String tenantId, String processSerialNumber, String fileSource, String fileType);
+    int getAttachmentCount(String tenantId, String processSerialNumber, String fileSource, String fileType);
 
     /**
      * 获取附件列表
@@ -68,8 +68,7 @@ public interface Attachment4PositionApi {
      * @param rows 行数
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> getAttachmentList(String tenantId, String processSerialNumber, String fileSource,
-        int page, int rows);
+    Map<String, Object> getAttachmentList(String tenantId, String processSerialNumber, String fileSource, int page, int rows);
 
     /**
      * 获取附件列表(model)
@@ -79,7 +78,7 @@ public interface Attachment4PositionApi {
      * @param fileSource 附件来源
      * @return List&lt;AttachmentModel&gt;
      */
-    public List<AttachmentModel> getAttachmentModelList(String tenantId, String processSerialNumber, String fileSource);
+    List<AttachmentModel> getAttachmentModelList(String tenantId, String processSerialNumber, String fileSource);
 
     /**
      * 保存附件信息
@@ -90,7 +89,7 @@ public interface Attachment4PositionApi {
      * @param processSerialNumber 流程编号
      * @return Boolean 是否保存成功
      */
-    public Boolean saveAttachment(String tenantId, String positionId, String attachjson, String processSerialNumber);
+    Boolean saveAttachment(String tenantId, String positionId, String attachjson, String processSerialNumber);
 
     /**
      * 保存附件信息
@@ -107,9 +106,7 @@ public interface Attachment4PositionApi {
      * @param y9FileStoreId 附件上传id
      * @return String String
      */
-    public String saveOrUpdateUploadInfo(String tenantId, String userId, String fileName, String fileType,
-        String fileSizeString, String fileSource, String processInstanceId, String processSerialNumber, String taskId,
-        String y9FileStoreId);
+    String saveOrUpdateUploadInfo(String tenantId, String userId, String fileName, String fileType, String fileSizeString, String fileSource, String processInstanceId, String processSerialNumber, String taskId, String y9FileStoreId);
 
     /**
      * 上传附件
@@ -127,9 +124,7 @@ public interface Attachment4PositionApi {
      * @param y9FileStoreId 附件上传id
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> upload(String tenantId, String userId, String positionId, String fileName,
-        String fileSize, String processInstanceId, String taskId, String describes, String processSerialNumber,
-        String fileSource, String y9FileStoreId);
+    Map<String, Object> upload(String tenantId, String userId, String positionId, String fileName, String fileSize, String processInstanceId, String taskId, String describes, String processSerialNumber, String fileSource, String y9FileStoreId);
 
     /**
      * 上传附件(model)
@@ -140,5 +135,5 @@ public interface Attachment4PositionApi {
      * @return boolean
      * @throws Exception Exception
      */
-    public boolean uploadModel(String tenantId, String positionId, AttachmentModel attachmentModel) throws Exception;
+    boolean uploadModel(String tenantId, String positionId, AttachmentModel attachmentModel) throws Exception;
 }

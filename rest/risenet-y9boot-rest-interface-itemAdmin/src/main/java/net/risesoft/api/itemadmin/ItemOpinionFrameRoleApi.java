@@ -16,7 +16,7 @@ public interface ItemOpinionFrameRoleApi {
      *
      * @param tenantId 租户id
      * @param itemOpinionFrameId 意见框绑定id
-     * @return List<ItemOpinionFrameRoleModel>
+     * @return List&lt;ItemOpinionFrameRoleModel&gt;
      */
-    public List<ItemOpinionFrameRoleModel> findByItemOpinionFrameId(String tenantId, String itemOpinionFrameId);
+    List<ItemOpinionFrameRoleModel> findByItemOpinionFrameId(String tenantId, String itemOpinionFrameId);
 }

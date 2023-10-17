@@ -4,7 +4,7 @@ import java.util.Map;
 
 /**
  * 关联文件接口
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -14,9 +14,9 @@ public interface AssociatedFile4PositionApi {
     /**
      * 关联文件计数
      *
-     * @param tenantId
-     * @param processSerialNumber
-     * @return
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程编号
+     * @return int
      */
     int countAssociatedFile(String tenantId, String processSerialNumber);
 
@@ -67,6 +67,5 @@ public interface AssociatedFile4PositionApi {
      * @param processInstanceIds 关联的流程实例ids
      * @return boolean 是否保存成功
      */
-    public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber,
-        String processInstanceIds);
+    public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber, String processInstanceIds);
 }

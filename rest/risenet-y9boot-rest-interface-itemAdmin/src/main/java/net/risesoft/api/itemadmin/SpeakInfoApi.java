@@ -14,7 +14,7 @@ public interface SpeakInfoApi {
 
     /**
      * 逻辑删除发言信息
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param id id
@@ -24,7 +24,7 @@ public interface SpeakInfoApi {
 
     /**
      * 根据唯一标示超找发言信息
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param id id
@@ -34,7 +34,7 @@ public interface SpeakInfoApi {
 
     /**
      * 根据流程实例查找某一个流程的所有发言信息，根据时间倒叙排列
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processInstanceId 流程实例id
@@ -44,17 +44,17 @@ public interface SpeakInfoApi {
 
     /**
      * 获取未读消息计数
-     * 
-     * @param tenantId
-     * @param userId
-     * @param processInstanceId
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param processInstanceId 流程实例id
+     * @return int
      */
     int getNotReadCount(String tenantId, String userId, String processInstanceId);
 
     /**
      * 保存或者更新发言信息
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param speakInfoModel speakInfoModel

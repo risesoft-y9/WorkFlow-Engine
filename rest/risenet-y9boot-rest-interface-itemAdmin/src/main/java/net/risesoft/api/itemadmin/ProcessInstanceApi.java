@@ -7,7 +7,7 @@ import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
 
 /**
  * 协作状态接口
- * 
+ *
  * @author zhangchongjie
  * @date 2023/02/06
  */
@@ -18,7 +18,7 @@ public interface ProcessInstanceApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return
+     * @return boolean
      */
     boolean deleteProcessInstance(String tenantId, String processInstanceId);
 
@@ -30,7 +30,7 @@ public interface ProcessInstanceApi {
      * @param title 标题或文号
      * @param page 页码
      * @param rows 条数
-     * @return
+     * @return Map&lt;String, Object&gt;
      */
     Map<String, Object> processInstanceList(String tenantId, String userId, String title, int page, int rows);
 
@@ -39,7 +39,7 @@ public interface ProcessInstanceApi {
      *
      * @param tenantId 租户id
      * @param model 状态详情
-     * @return
+     * @return boolean
      */
     boolean saveProcessInstanceDetails(String tenantId, ProcessInstanceDetailsModel model);
 
@@ -50,10 +50,9 @@ public interface ProcessInstanceApi {
      * @param assigneeId 受让人id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
-     * @param itembox 状态
+     * @param itembox 办件状态，todo（待办）,doing（在办）,done（办结）
      * @param endTime 结束时间
-     * @return
+     * @return boolean
      */
-    boolean updateProcessInstanceDetails(String tenantId, String assigneeId, String processInstanceId, String taskId,
-        String itembox, Date endTime);
+    boolean updateProcessInstanceDetails(String tenantId, String assigneeId, String processInstanceId, String taskId, String itembox, Date endTime);
 }

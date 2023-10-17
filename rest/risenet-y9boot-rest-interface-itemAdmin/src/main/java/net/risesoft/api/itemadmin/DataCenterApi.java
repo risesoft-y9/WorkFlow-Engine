@@ -15,5 +15,5 @@ public interface DataCenterApi {
      * @param userId 人员id
      * @return boolean
      */
-    public boolean saveToDateCenter(String processInstanceId, String tenantId, String userId);
+    boolean saveToDateCenter(String processInstanceId, String tenantId, String userId);
 }

@@ -22,7 +22,7 @@ public interface Entrust4PositionApi {
      *
      * @param tenantId 租户id
      * @param id 委托id
-     * @throws Exception
+     * @throws Exception Exception
      */
     @PostMapping(value = "/deleteEntrust")
     void deleteEntrust(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id) throws Exception;
@@ -32,6 +32,7 @@ public interface Entrust4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
+     * @return List&lt;EntrustModel&gt;
      * @throws Exception Exception
      */
     @GetMapping(value = "/getEntrustList")
@@ -42,7 +43,7 @@ public interface Entrust4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return
+     * @return List&lt;EntrustModel&gt;
      */
     @GetMapping(value = "/getMyEntrustList")
     List<EntrustModel> getMyEntrustList(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId);

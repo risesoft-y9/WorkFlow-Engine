@@ -11,11 +11,11 @@ public interface CalendarConfigApi {
 
     /**
      * 获取年节假日配置信息
-     * 
-     * @param tenantId
-     * @param year
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param year 年份
+     * @return CalendarConfigModel
      */
-    public CalendarConfigModel findByYear(String tenantId, String year);
+    CalendarConfigModel findByYear(String tenantId, String year);
 
 }
