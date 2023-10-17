@@ -15,112 +15,110 @@ public interface OpinionApi {
 
     /**
      * 检查当前taskId任务节点是否已经签写意见
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param taskId 任务id
      * @return Boolean
      */
-    public Boolean checkSignOpinion(String tenantId, String userId, String processSerialNumber, String taskId);
+    Boolean checkSignOpinion(String tenantId, String userId, String processSerialNumber, String taskId);
 
     /**
      * 获取意见框历史记录数量
-     * 
-     * @param tenantId
-     * @param processSerialNumber
-     * @param opinionFrameMark
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程编号
+     * @param opinionFrameMark 意见框Id
+     * @return int
      */
     int countOpinionHistory(String tenantId, String processSerialNumber, String opinionFrameMark);
 
     /**
      * 删除意见
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param id 唯一标识
      * @throws Exception Exception
      */
-    public void delete(String tenantId, String userId, String id) throws Exception;
+    void delete(String tenantId, String userId, String id) throws Exception;
 
     /**
      * 获取事项绑定的意见框列表
-     * 
-     * @param tenantId
-     * @param itemId
-     * @param processDefinitionId
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义Id
+     * @return List&lt;String&gt;
      */
-    public List<String> getBindOpinionFrame(String tenantId, String itemId, String processDefinitionId);
+    List<String> getBindOpinionFrame(String tenantId, String itemId, String processDefinitionId);
 
     /**
      * 根据id获取意见
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param id 唯一标识
      * @return OpinionModel
      */
-    public OpinionModel getById(String tenantId, String userId, String id);
+    OpinionModel getById(String tenantId, String userId, String id);
 
     /**
      * 根据任务id获取意见
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param taskId 任务id
      * @return OpinionModel
      */
-    public OpinionModel getByTaskId(String tenantId, String userId, String taskId);
+    OpinionModel getByTaskId(String tenantId, String userId, String taskId);
 
     /**
      * 获取意见框历史记录
-     * 
-     * @param tenantId
-     * @param processSerialNumber
-     * @param opinionFrameMark
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程编号
+     * @param opinionFrameMark 意见框Id
+     * @return List&lt;OpinionHistoryModel&gt;
      */
     List<OpinionHistoryModel> opinionHistoryList(String tenantId, String processSerialNumber, String opinionFrameMark);
 
     /**
      * 获取个人意见列表
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param taskId 任务id
-     * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
+     * @param itembox 办件状态，todo（待办）,doing（在办）,done（办结）
      * @param opinionFrameMark opinionFrameMark
      * @param itemId 事项id
      * @param taskDefinitionKey 任务定义key
      * @param activitiUser activitiUser
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    public List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber,
-        String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey,
-        String activitiUser);
+    List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber, String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser);
 
     /**
      * 保存意见
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param opinion OpinionModel
      * @throws Exception Exception
      */
-    public void save(String tenantId, String userId, OpinionModel opinion) throws Exception;
+    void save(String tenantId, String userId, OpinionModel opinion) throws Exception;
 
     /**
-     * 
+     *
      * Description: 保存或更新意见
-     * 
-     * @param tenantId
-     * @param userId
-     * @param opinion
-     * @return
-     * @throws Exception
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param opinion 意见实体
+     * @return OpinionModel
+     * @throws Exception Exception
      */
-    public OpinionModel saveOrUpdate(String tenantId, String userId, OpinionModel opinion) throws Exception;
+    OpinionModel saveOrUpdate(String tenantId, String userId, OpinionModel opinion) throws Exception;
 }

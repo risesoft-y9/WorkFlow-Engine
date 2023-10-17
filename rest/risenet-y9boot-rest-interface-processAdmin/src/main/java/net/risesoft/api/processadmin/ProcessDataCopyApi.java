@@ -12,7 +12,8 @@ public interface ProcessDataCopyApi {
      *
      * @param sourceTenantId 源租户Id
      * @param targetTenantId 目标租户Id
-     * @return modelKey 流程定义key;
+     * @param modelKey 流程定义key
+     * @throws Exception 异常
      */
     void copyModel(String sourceTenantId, String targetTenantId, String modelKey) throws Exception;
 

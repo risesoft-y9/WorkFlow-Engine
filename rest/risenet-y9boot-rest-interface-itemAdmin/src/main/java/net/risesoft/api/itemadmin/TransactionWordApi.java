@@ -13,21 +13,20 @@ public interface TransactionWordApi {
     /**
      * 根据流程编号删除正文，同时删除文件系统的文件
      *
-     * @param tenantId
-     * @param processSerialNumbers
+     * @param tenantId 租户id
+     * @param processSerialNumbers 流程序列号列表
      */
-    public void delBatchByProcessSerialNumbers(String tenantId, List<String> processSerialNumbers);
+    void delBatchByProcessSerialNumbers(String tenantId, List<String> processSerialNumbers);
 
     /**
      * 删除撤销PDF文件
      *
-     * @param tenantId
-     * @param userId
-     * @param processSerialNumber
-     * @param isTaoHong
-     * @return
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param processSerialNumber 流程序列号
+     * @param isTaoHong 是否套红
      */
-    public void deleteByIsTaoHong(String tenantId, String userId, String processSerialNumber, String isTaoHong);
+    void deleteByIsTaoHong(String tenantId, String userId, String processSerialNumber, String isTaoHong);
 
     /**
      * 获取正文文件信息（数据传输）
@@ -37,29 +36,28 @@ public interface TransactionWordApi {
      * @param processSerialNumber 流程编号
      * @return Map&lt;String, Object&gt;
      */
-    public List<Map<String, Object>> exchangeFindWordByProcessSerialNumber(String tenantId, String userId,
-        String processSerialNumber);
+    List<Map<String, Object>> exchangeFindWordByProcessSerialNumber(String tenantId, String userId, String processSerialNumber);
 
     /**
-     * 
+     *
      * Description: 打开历史文件
-     * 
-     * @param tenantId
-     * @param userId
-     * @param taskId
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param taskId 任务id
+     * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> findHistoryVersionDoc(String tenantId, String userId, String taskId);
+    Map<String, Object> findHistoryVersionDoc(String tenantId, String userId, String taskId);
 
     /**
-     * 
+     *
      * Description: 获取正文文件信息
-     * 
-     * @param tenantId
-     * @param processSerialNumber
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程编号
+     * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> findWordByProcessSerialNumber(String tenantId, String processSerialNumber);
+    Map<String, Object> findWordByProcessSerialNumber(String tenantId, String processSerialNumber);
 
     /**
      * 获取正文列表
@@ -69,7 +67,7 @@ public interface TransactionWordApi {
      * @param processSerialNumber 流程编号
      * @return List&lt;Map&lt;String, Object&gt; &gt;
      */
-    public List<Map<String, Object>> getWordList(String tenantId, String userId, String processSerialNumber);
+    List<Map<String, Object>> getWordList(String tenantId, String userId, String processSerialNumber);
 
     /**
      * 打开正文
@@ -80,28 +78,28 @@ public interface TransactionWordApi {
      * @param itemId 事项id
      * @return String
      */
-    public String openDocument(String tenantId, String userId, String processSerialNumber, String itemId);
+    String openDocument(String tenantId, String userId, String processSerialNumber, String itemId);
 
     /**
-     * 
+     *
      * Description:
-     * 
-     * @param tenantId
-     * @param processSerialNumber
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程编号
+     * @return String
      */
-    public String openDocumentByProcessSerialNumber(String tenantId, String processSerialNumber);
+    String openDocumentByProcessSerialNumber(String tenantId, String processSerialNumber);
 
     /**
-     * 
+     *
      * Description: 套红模板
-     * 
-     * @param tenantId
-     * @param userId
-     * @param templateGuid
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param templateGuid 模板id
+     * @return String
      */
-    public String openDocumentTemplate(String tenantId, String userId, String templateGuid);
+    String openDocumentTemplate(String tenantId, String userId, String templateGuid);
 
     /**
      * 打开历史文件
@@ -110,7 +108,7 @@ public interface TransactionWordApi {
      * @param userId 人员id
      * @param taskId 任务id
      */
-    public void openHistoryVersionDoc(String tenantId, String userId, String taskId);
+    void openHistoryVersionDoc(String tenantId, String userId, String taskId);
 
     /**
      * 打开PDF
@@ -120,19 +118,18 @@ public interface TransactionWordApi {
      * @param processSerialNumber 流程编号
      * @return String
      */
-    public String openPdf(String tenantId, String userId, String processSerialNumber);
+    String openPdf(String tenantId, String userId, String processSerialNumber);
 
     /**
      * 打开撤销PDF后的正文
      *
-     * @param tenantId
-     * @param userId
-     * @param processSerialNumber
-     * @param isTaoHong
-     * @return
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param processSerialNumber 流程编号
+     * @param isTaoHong 是否套红
+     * @return String
      */
-    public String openRevokePdfAfterDocument(String tenantId, String userId, String processSerialNumber,
-        String isTaoHong);
+    String openRevokePdfAfterDocument(String tenantId, String userId, String processSerialNumber, String isTaoHong);
 
     /**
      * 选择套红
@@ -140,9 +137,9 @@ public interface TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param activitiUser activitiUser
-     * @return Map<String, Object>
+     * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> openTaoHong(String tenantId, String userId, String activitiUser);
+    Map<String, Object> openTaoHong(String tenantId, String userId, String activitiUser);
 
     /**
      * 保存公文传输转入工作流的正文信息
@@ -153,7 +150,7 @@ public interface TransactionWordApi {
      * @param processSerialNumber 流程序列号
      * @return Boolean
      */
-    public Boolean saveImportTransationWord(String tenantId, String userId, String docjson, String processSerialNumber);
+    Boolean saveImportTransationWord(String tenantId, String userId, String docjson, String processSerialNumber);
 
     /**
      * 获取正文
@@ -166,8 +163,7 @@ public interface TransactionWordApi {
      * @param taskId 任务id
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> showWord(String tenantId, String userId, String processSerialNumber, String itemId,
-        String itembox, String taskId);
+    Map<String, Object> showWord(String tenantId, String userId, String processSerialNumber, String itemId, String itembox, String taskId);
 
     /**
      * 获取套红模板列表
@@ -177,25 +173,24 @@ public interface TransactionWordApi {
      * @param currentBureauGuid 委办局id
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    public List<Map<String, Object>> taoHongTemplateList(String tenantId, String userId, String currentBureauGuid);
+    List<Map<String, Object>> taoHongTemplateList(String tenantId, String userId, String currentBureauGuid);
 
     /**
-     * 
+     *
      * Description: 草稿箱保存正文
-     * 
-     * @param tenantId
-     * @param userId
-     * @param documentTitle
-     * @param fileType
-     * @param processSerialNumber
-     * @param isTaoHong
-     * @param taskId
-     * @param fileSizeString
-     * @param fileStoreId
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param documentTitle 文件标题
+     * @param fileType 文件类型
+     * @param processSerialNumber 流程编号
+     * @param isTaoHong 是否套红
+     * @param taskId 任务id
+     * @param fileSizeString 文件大小
+     * @param fileStoreId 文件id
+     * @return String
      */
-    public String uploadWord(String tenantId, String userId, String documentTitle, String fileType,
-        String processSerialNumber, String isTaoHong, String taskId, String fileSizeString, String fileStoreId);
+    String uploadWord(String tenantId, String userId, String documentTitle, String fileType, String processSerialNumber, String isTaoHong, String taskId, String fileSizeString, String fileStoreId);
 
     /**
      * 下载正文
@@ -204,5 +199,5 @@ public interface TransactionWordApi {
      * @param id id
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> wordDownload(String tenantId, String id);
+    Map<String, Object> wordDownload(String tenantId, String id);
 }

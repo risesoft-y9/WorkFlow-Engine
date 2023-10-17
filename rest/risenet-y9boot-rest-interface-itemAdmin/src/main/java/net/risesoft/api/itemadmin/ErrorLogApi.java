@@ -11,9 +11,9 @@ public interface ErrorLogApi {
 
     /**
      * 保存错误日志
-     * 
-     * @param tenantId
-     * @param errorLogModel
+     *
+     * @param tenantId 租户id
+     * @param errorLogModel 错误日志
      */
     void saveErrorLog(String tenantId, ErrorLogModel errorLogModel);
 

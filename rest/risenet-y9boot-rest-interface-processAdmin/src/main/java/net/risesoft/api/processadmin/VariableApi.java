@@ -75,8 +75,7 @@ public interface VariableApi {
      * @param keys 变量keys
      * @return Map
      */
-    Map<String, Object> getVariablesByProcessInstanceId(String tenantId, String processInstanceId,
-        Collection<String> keys);
+    Map<String, Object> getVariablesByProcessInstanceId(String tenantId, String processInstanceId, Collection<String> keys);
 
     /**
      * 获取所有任务变量
@@ -93,7 +92,7 @@ public interface VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
-     * @param val 变量值
+     * @param map 变量值
      */
     void setVariable(String tenantId, String taskId, String key, Map<String, Object> map);
 
@@ -103,7 +102,7 @@ public interface VariableApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param key 变量key
-     * @param val 变量值
+     * @param map 变量值
      */
     void setVariableByProcessInstanceId(String tenantId, String processInstanceId, String key, Map<String, Object> map);
 
@@ -113,7 +112,7 @@ public interface VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
-     * @param val 变量值
+     * @param map 变量值
      */
     void setVariableLocal(String tenantId, String taskId, String key, Map<String, Object> map);
 

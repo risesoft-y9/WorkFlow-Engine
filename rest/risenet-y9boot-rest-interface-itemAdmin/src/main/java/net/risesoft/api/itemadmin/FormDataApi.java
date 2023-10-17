@@ -15,118 +15,118 @@ public interface FormDataApi {
     /**
      * 删除子表数据
      *
-     * @param tenantId
-     * @param formId
-     * @param tableId
-     * @param guid
-     * @return
+     * @param tenantId 租户id
+     * @param formId 表单Id
+     * @param tableId 对应的表id
+     * @param guid guid
+     * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> delChildTableRow(String tenantId, String formId, String tableId, String guid);
+    Map<String, Object> delChildTableRow(String tenantId, String formId, String tableId, String guid);
 
     /**
      * 获取表单所有字段权限
      *
-     * @param tenantId
-     * @param userId
-     * @param formId
-     * @param taskDefKey
-     * @param processDefinitionId
-     * @return
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param formId 表单Id
+     * @param taskDefKey taskDefKey
+     * @param processDefinitionId 流程定义id
+     * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
     List<Map<String, Object>> getAllFieldPerm(String tenantId, String userId, String formId, String taskDefKey, String processDefinitionId);
 
     /**
      * 获取子表数据
      *
-     * @param tenantId
-     * @param formId
-     * @param tableId
-     * @param processSerialNumber
-     * @return
-     * @throws Exception
+     * @param tenantId 租户id
+     * @param formId 表单Id
+     * @param tableId 对应的表id
+     * @param processSerialNumber 流程序列号
+     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @throws Exception Exception
      */
-    public List<Map<String, Object>> getChildTableData(String tenantId, String formId, String tableId, String processSerialNumber) throws Exception;
+    List<Map<String, Object>> getChildTableData(String tenantId, String formId, String tableId, String processSerialNumber) throws Exception;
 
     /**
      * 根据事项id和流程序列号获取数据
      *
-     * @param tenantId
-     * @param itemId
-     * @param processSerialNumber
-     * @return
+     * @param tenantId 租户id
+     * @param itemId 事项id
+     * @param processSerialNumber 流程序列号
+     * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> getData(String tenantId, String itemId, String processSerialNumber);
+    Map<String, Object> getData(String tenantId, String itemId, String processSerialNumber);
 
     /**
      * 获取字段权限
      *
-     * @param tenantId
-     * @param userId
-     * @param formId
-     * @param fieldName
-     * @param taskDefKey
-     * @param processDefinitionId
-     * @return
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param formId 表单Id
+     * @param fieldName 字段名称
+     * @param taskDefKey 任务定义key
+     * @param processDefinitionId 流程定义id
+     * @return Map&lt;String, Object&gt;
      */
     Map<String, Object> getFieldPerm(String tenantId, String userId, String formId, String fieldName, String taskDefKey, String processDefinitionId);
 
     /**
      * 获取表单绑定字段
      *
-     * @param tenantId
-     * @param itemId
-     * @return
+     * @param tenantId 租户id
+     * @param itemId 事项id
+     * @return List&lt;Y9FormFieldModel&gt;
      */
-    public List<Y9FormFieldModel> getFormField(String tenantId, String itemId);
+    List<Y9FormFieldModel> getFormField(String tenantId, String itemId);
 
     /**
      * 根据表单id获取绑定字段信息
      *
-     * @param tenantId
-     * @param formId
-     * @return
+     * @param tenantId 租户id
+     * @param formId 表单Id
+     * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
     List<Map<String, String>> getFormFieldDefine(String tenantId, String formId);
 
     /**
      * 获取表单json数据
      *
-     * @param tenantId
-     * @param formId
-     * @return
+     * @param tenantId 租户id
+     * @param formId 表单Id
+     * @return String
      */
-    public String getFormJson(String tenantId, String formId);
+    String getFormJson(String tenantId, String formId);
 
     /**
      * 根据表单id获取表单数据
      *
-     * @param tenantId
-     * @param formId
-     * @param processSerialNumber
-     * @return
+     * @param tenantId 租户id
+     * @param formId 表单Id
+     * @param processSerialNumber 流程序列号
+     * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> getFromData(String tenantId, String formId, String processSerialNumber);
+    Map<String, Object> getFromData(String tenantId, String formId, String processSerialNumber);
 
     /**
      *
      * Description: 保存子表数据
      *
-     * @param tenantId
-     * @param formId
-     * @param tableId
-     * @param processSerialNumber
-     * @param jsonData
-     * @throws Exception
+     * @param tenantId 租户id
+     * @param formId 表单Id
+     * @param tableId 对应的表id
+     * @param processSerialNumber 流程序列号
+     * @param jsonData 数据
+     * @throws Exception Exception
      */
-    public void saveChildTableData(String tenantId, String formId, String tableId, String processSerialNumber, String jsonData) throws Exception;
+    void saveChildTableData(String tenantId, String formId, String tableId, String processSerialNumber, String jsonData) throws Exception;
 
     /**
      * 保存表单数据
      *
-     * @param tenantId
-     * @param formId
-     * @param formJsonData
-     * @throws Exception
+     * @param tenantId 租户id
+     * @param formId 表单Id
+     * @param formJsonData 表单数据
+     * @throws Exception Exception
      */
     void saveFormData(String tenantId, String formId, String formJsonData) throws Exception;
 }

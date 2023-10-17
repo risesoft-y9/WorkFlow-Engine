@@ -19,19 +19,17 @@ public interface HistoricTaskApi {
      * @param year 年份
      * @return List&lt;HistoricTaskInstanceModel&gt;
      */
-    List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrByEndTimeAsc(String tenantId, String processInstanceId,
-        String year);
+    List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrByEndTimeAsc(String tenantId, String processInstanceId, String year);
 
     /**
      * 根据开始时间升序获取
      *
-     * @param tenantId
-     * @param processInstanceId
-     * @param string
-     * @return
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @param year 年份
+     * @return List&lt;HistoricTaskInstanceModel&gt;
      */
-    List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrderByStartTimeAsc(String tenantId,
-        String processInstanceId, String string);
+    List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrderByStartTimeAsc(String tenantId, String processInstanceId, String year);
 
     /**
      * 根据任务Id获取任务实例
@@ -58,17 +56,16 @@ public interface HistoricTaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return List&lt;HistoricTaskInstanceModel&gt;
+     * @return List&lt;HistoricTaskInstanceModel&gt; 任务实例列表
      */
-    List<HistoricTaskInstanceModel> getByProcessInstanceIdOrderByEndTimeDesc(String tenantId, String processInstanceId,
-        String year);
+    List<HistoricTaskInstanceModel> getByProcessInstanceIdOrderByEndTimeDesc(String tenantId, String processInstanceId, String year);
 
     /**
      * 根据执行实例获取已经办理完成的任务数量
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @return long
+     * @return long 任务数量
      */
     long getFinishedCountByExecutionId(String tenantId, String executionId);
 
@@ -77,7 +74,7 @@ public interface HistoricTaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return HistoricTaskInstanceModel
+     * @return HistoricTaskInstanceModel 任务实例
      */
     HistoricTaskInstanceModel getThePreviousTask(String tenantId, String taskId);
 
@@ -86,7 +83,7 @@ public interface HistoricTaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return List&lt;HistoricTaskInstanceModel&gt;
+     * @return List&lt;HistoricTaskInstanceModel&gt; 任务实例列表
      */
     List<HistoricTaskInstanceModel> getThePreviousTasks(String tenantId, String taskId);
 

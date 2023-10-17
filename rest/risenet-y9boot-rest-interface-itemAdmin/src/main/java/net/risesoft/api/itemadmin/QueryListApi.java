@@ -25,12 +25,14 @@ public interface QueryListApi {
      * @param systemName 系统名称
      * @param state 状态
      * @param createDate 开始日期
+     * @param tableName 表名称
+     * @param searchMapStr 搜索条件
      * @param page 页面
      * @param rows 条数
-     * @return
+     * @return ItemPage&lt;ActRuDetailModel&gt;
      */
     @GetMapping("/getQueryList")
-    public ItemPage<ActRuDetailModel> getQueryList(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("userId") @NotBlank String userId, @RequestParam("systemName") @NotBlank String systemName, @RequestParam("state") String state, @RequestParam("createDate") String createDate,
+    ItemPage<ActRuDetailModel> getQueryList(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("userId") @NotBlank String userId, @RequestParam("systemName") @NotBlank String systemName, @RequestParam("state") String state, @RequestParam("createDate") String createDate,
         @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
 }

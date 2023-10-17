@@ -12,7 +12,7 @@ public interface OrganWordApi {
 
     /**
      * 检查编号是否已经被使用了
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param characterValue 机关代字
@@ -25,44 +25,40 @@ public interface OrganWordApi {
      * @return Integer
      * @throws Exception Exception
      */
-    public Integer checkNumberStr(String tenantId, String userId, String characterValue, String custom, Integer year,
-        Integer numberTemp, String itemId, Integer common, String processSerialNumber) throws Exception;
+    Integer checkNumberStr(String tenantId, String userId, String characterValue, String custom, Integer year, Integer numberTemp, String itemId, Integer common, String processSerialNumber) throws Exception;
 
     /**
      * 判断机构代字custom在某个流程实例中是否已经编号,没有编号的话就查找有权限的编号的机关代字
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param custom 机关代字标志
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id
-     * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
-     * 
+     * @param itembox 办件状态:todo(待办),doing(在办),done(办结)
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    public Map<String, Object> exist(String tenantId, String userId, String custom, String processSerialNumber,
-        String processInstanceId, String itembox) throws Exception;
+    Map<String, Object> exist(String tenantId, String userId, String custom, String processSerialNumber, String processInstanceId, String itembox) throws Exception;
 
     /**
-     * 
+     *
      * Description: 查找有权限的机构代字
-     * 
-     * @param tenantId
-     * @param userId
-     * @param custom
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @return
-     * @throws Exception
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param custom 机关代字标志
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务定义key
+     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @throws Exception Exception
      */
-    public List<Map<String, Object>> findByCustom(String tenantId, String userId, String custom, String itemId,
-        String processDefinitionId, String taskDefKey) throws Exception;
+    List<Map<String, Object>> findByCustom(String tenantId, String userId, String custom, String itemId, String processDefinitionId, String taskDefKey) throws Exception;
 
     /**
      * 获取编号
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 人员id
      * @param custom 机关代字标志
@@ -73,23 +69,21 @@ public interface OrganWordApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    public Map<String, Object> getNumber(String tenantId, String userId, String custom, String characterValue,
-        Integer year, Integer common, String itemId) throws Exception;
+    Map<String, Object> getNumber(String tenantId, String userId, String custom, String characterValue, Integer year, Integer common, String itemId) throws Exception;
 
     /**
      * 获取编号的数字
-     * 
-     * @param tenantId
-     * @param userId
-     * @param custom
-     * @param characterValue
-     * @param year
-     * @param common
-     * @param itemId
-     * @return
-     * @throws Exception
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param custom 机关代字标志
+     * @param characterValue 机关代字
+     * @param year 文号年份
+     * @param common common
+     * @param itemId 事项id
+     * @return Integer
+     * @throws Exception Exception
      */
-    public Integer getNumberOnly(String tenantId, String userId, String custom, String characterValue, Integer year,
-        Integer common, String itemId) throws Exception;
+    Integer getNumberOnly(String tenantId, String userId, String custom, String characterValue, Integer year, Integer common, String itemId) throws Exception;
 
 }

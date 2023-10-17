@@ -16,7 +16,7 @@ public interface Draft4PositionApi {
      * @param ids ids
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> deleteDraft(String tenantId, String ids);
+    Map<String, Object> deleteDraft(String tenantId, String ids);
 
     /**
      * 根据岗位id和事项id获取删除草稿统计
@@ -26,7 +26,7 @@ public interface Draft4PositionApi {
      * @param itemId 事项id
      * @return int
      */
-    public int getDeleteDraftCount(String tenantId, String positionId, String itemId);
+    int getDeleteDraftCount(String tenantId, String positionId, String itemId);
 
     /**
      * 根据流程序列号获取草稿
@@ -35,7 +35,7 @@ public interface Draft4PositionApi {
      * @param processSerialNumber 流程序列号
      * @return Map
      */
-    public Map<String, Object> getDraftByProcessSerialNumber(String tenantId, String processSerialNumber);
+    Map<String, Object> getDraftByProcessSerialNumber(String tenantId, String processSerialNumber);
 
     /**
      * 根据岗位id和事项id获取草稿统计
@@ -45,7 +45,7 @@ public interface Draft4PositionApi {
      * @param itemId 事项id
      * @return int
      */
-    public int getDraftCount(String tenantId, String positionId, String itemId);
+    int getDraftCount(String tenantId, String positionId, String itemId);
 
     /**
      * 获取草稿列表
@@ -59,21 +59,19 @@ public interface Draft4PositionApi {
      * @param delFlag 是否删除
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> getDraftList(String tenantId, String positionId, int page, int rows, String title,
-        String itemId, boolean delFlag);
+    Map<String, Object> getDraftList(String tenantId, String positionId, int page, int rows, String title, String itemId, boolean delFlag);
 
     /**
      * 编辑草稿
      *
-     * @param tenantId
-     * @param positionId
-     * @param itemId
-     * @param processSerialNumber
-     * @param mobile
-     * @return
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param itemId 事项id
+     * @param processSerialNumber 流程序列号
+     * @param mobile 是否发送手机端
+     * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> openDraft4Position(String tenantId, String positionId, String itemId,
-        String processSerialNumber, boolean mobile);
+    Map<String, Object> openDraft4Position(String tenantId, String positionId, String itemId, String processSerialNumber, boolean mobile);
 
     /**
      * 还原草稿
@@ -82,7 +80,7 @@ public interface Draft4PositionApi {
      * @param ids ids
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> reduction(String tenantId, String ids);
+    Map<String, Object> reduction(String tenantId, String ids);
 
     /**
      * 删除草稿
@@ -91,7 +89,7 @@ public interface Draft4PositionApi {
      * @param ids ids
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> removeDraft(String tenantId, String ids);
+    Map<String, Object> removeDraft(String tenantId, String ids);
 
     /**
      * 保存草稿
@@ -106,7 +104,6 @@ public interface Draft4PositionApi {
      * @param title 标题
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber,
-        String processDefinitionKey, String number, String level, String title);
+    Map<String, Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String title);
 
 }

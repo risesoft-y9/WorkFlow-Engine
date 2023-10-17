@@ -22,10 +22,10 @@ public interface QuickSendApi {
      * @param positionId 岗位id
      * @param itemId 事项id
      * @param taskKey 任务key
-     * @return
+     * @return String
      */
     @GetMapping("/getAssignee")
-    public String getAssignee(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId, @RequestParam("taskKey") @NotBlank String taskKey);
+    String getAssignee(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId, @RequestParam("taskKey") @NotBlank String taskKey);
 
     /**
      * 保存快捷发送人
@@ -37,6 +37,6 @@ public interface QuickSendApi {
      * @param assignee 发送人
      */
     @PostMapping("/saveOrUpdate")
-    public void saveOrUpdate(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId, @RequestParam("taskKey") @NotBlank String taskKey, @RequestParam("assignee") String assignee);
+    void saveOrUpdate(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId, @RequestParam("taskKey") @NotBlank String taskKey, @RequestParam("assignee") String assignee);
 
 }

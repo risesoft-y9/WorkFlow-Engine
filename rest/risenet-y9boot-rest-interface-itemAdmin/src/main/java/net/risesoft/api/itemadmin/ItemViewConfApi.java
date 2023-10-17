@@ -13,11 +13,11 @@ public interface ItemViewConfApi {
 
     /**
      * 获取事项视图配置列表
-     * 
+     *
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param viewType 视图类型
-     * @return
+     * @return List&lt;ItemViewConfModel&gt;
      */
     List<ItemViewConfModel> findByItemIdAndViewType(String tenantId, String itemId, String viewType);
 }

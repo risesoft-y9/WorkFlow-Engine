@@ -7,11 +7,11 @@ package net.risesoft.api.itemadmin;
  */
 public interface WordTemplateApi {
     /**
-     * 
+     *
      * Description: 根据唯一标示获取模板辣眼睛
      * 
-     * @param id
-     * @return
+     * @param id id
+     * @return String
      */
     String getFilePathById(String id);
 }

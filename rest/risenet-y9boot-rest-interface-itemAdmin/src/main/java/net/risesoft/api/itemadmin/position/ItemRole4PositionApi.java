@@ -11,19 +11,18 @@ import java.util.Map;
 public interface ItemRole4PositionApi {
 
     /**
-     * 
+     *
      * Description: 根据id获取发送选人
-     * 
-     * @param tenantId
-     * @param userId
-     * @param positionId
-     * @param id
-     * @param principalType
-     * @param processInstanceId
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param positionId 岗位id
+     * @param id id
+     * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
+     * @param processInstanceId 流程实例id
+     * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    public List<Map<String, Object>> findCsUser(String tenantId, String userId, String positionId, String id,
-        Integer principalType, String processInstanceId);
+    List<Map<String, Object>> findCsUser(String tenantId, String userId, String positionId, String id, Integer principalType, String processInstanceId);
 
     /**
      * 查询委办局下的部门
@@ -32,10 +31,9 @@ public interface ItemRole4PositionApi {
      * @param userId 人员id
      * @param positionId 岗位id
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
-     * @return
+     * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    public List<Map<String, Object>> findCsUserBureau(String tenantId, String userId, String positionId,
-        Integer principalType);
+    List<Map<String, Object>> findCsUserBureau(String tenantId, String userId, String positionId, Integer principalType);
 
     /**
      * 抄送搜索
@@ -46,10 +44,9 @@ public interface ItemRole4PositionApi {
      * @param name 人员名称
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param processInstanceId 流程实例Id
-     * @return
+     * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    public List<Map<String, Object>> findCsUserSearch(String tenantId, String userId, String positionId, String name,
-        Integer principalType, String processInstanceId);
+    List<Map<String, Object>> findCsUserSearch(String tenantId, String userId, String positionId, String name, Integer principalType, String processInstanceId);
 
     /**
      * 获取发送人
@@ -65,8 +62,7 @@ public interface ItemRole4PositionApi {
      * @param processInstanceId 流程实例Id
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    public List<Map<String, Object>> findPermUser(String tenantId, String userId, String positionId, String itemId,
-        String processDefinitionId, String taskDefKey, Integer principalType, String id, String processInstanceId);
+    List<Map<String, Object>> findPermUser(String tenantId, String userId, String positionId, String itemId, String processDefinitionId, String taskDefKey, Integer principalType, String id, String processInstanceId);
 
     /**
      * 发送选人搜索
@@ -83,19 +79,18 @@ public interface ItemRole4PositionApi {
      *
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    public List<Map<String, Object>> findPermUserByName(String tenantId, String userId, String positionId, String name,
-        Integer principalType, String itemId, String processDefinitionId, String taskDefKey, String processInstanceId);
+    List<Map<String, Object>> findPermUserByName(String tenantId, String userId, String positionId, String name, Integer principalType, String itemId, String processDefinitionId, String taskDefKey, String processInstanceId);
 
     /**
-     * 
+     *
      * Description: 获取发送人（收发单位）
-     * 
-     * @param tenantId
-     * @param positionId
-     * @param id
-     * @return
+     *
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param id id
+     * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    public List<Map<String, Object>> findPermUserSendReceive(String tenantId, String positionId, String id);
+    List<Map<String, Object>> findPermUserSendReceive(String tenantId, String positionId, String id);
 
     /**
      * 获取组织机构树
@@ -109,6 +104,5 @@ public interface ItemRole4PositionApi {
      *
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    public List<Map<String, Object>> getOrgTree(String tenantId, String positionId, String id, String treeType,
-        String name);
+    List<Map<String, Object>> getOrgTree(String tenantId, String positionId, String id, String treeType, String name);
 }

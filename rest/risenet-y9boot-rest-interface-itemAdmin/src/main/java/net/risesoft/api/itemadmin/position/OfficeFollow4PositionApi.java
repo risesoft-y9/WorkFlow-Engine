@@ -14,69 +14,68 @@ public interface OfficeFollow4PositionApi {
     /**
      * 根据流程实例id获取是否有关注
      *
-     * @param tenantId
-     * @param positionId
-     * @param processInstanceId
-     * @return
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param processInstanceId 流程实例id
+     * @return int
      */
-    public int countByProcessInstanceId(String tenantId, String positionId, String processInstanceId);
+    int countByProcessInstanceId(String tenantId, String positionId, String processInstanceId);
 
     /**
      * 根据流程实例id删除关注
      *
-     * @param tenantId
-     * @param processInstanceId
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
      */
-    public void deleteByProcessInstanceId(String tenantId, String processInstanceId);
+    void deleteByProcessInstanceId(String tenantId, String processInstanceId);
 
     /**
      * 取消关注
      *
-     * @param tenantId
-     * @param positionId
-     * @param processInstanceIds
-     * @return
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param processInstanceIds 流程实例ids
+     * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> delOfficeFollow(String tenantId, String positionId, String processInstanceIds);
+    Map<String, Object> delOfficeFollow(String tenantId, String positionId, String processInstanceIds);
 
     /**
      * 获取我的关注数量
      *
-     * @param tenantId
-     * @param positionId
-     * @return
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @return int
      */
-    public int getFollowCount(String tenantId, String positionId);
+    int getFollowCount(String tenantId, String positionId);
 
     /**
      * 获取关注列表
      *
-     * @param tenantId
-     * @param positionId
-     * @param searchName
-     * @param page
-     * @param rows
-     * @return
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param searchName 搜索内容
+     * @param page page
+     * @param rows rows
+     * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> getOfficeFollowList(String tenantId, String positionId, String searchName, int page,
-        int rows);
+    Map<String, Object> getOfficeFollowList(String tenantId, String positionId, String searchName, int page, int rows);
 
     /**
      * 保存办件关注信息
      *
-     * @param tenantId
-     * @param officeFollow
-     * @return
+     * @param tenantId 租户id
+     * @param officeFollow 办件关注信息
+     * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> saveOfficeFollow(String tenantId, OfficeFollowModel officeFollow);
+    Map<String, Object> saveOfficeFollow(String tenantId, OfficeFollowModel officeFollow);
 
     /**
      * 更新标题
      *
-     * @param tenantId
-     * @param processInstanceId
-     * @param documentTitle
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @param documentTitle 文档标题
      */
-    public void updateTitle(String tenantId, String processInstanceId, String documentTitle);
+    void updateTitle(String tenantId, String processInstanceId, String documentTitle);
 
 }
