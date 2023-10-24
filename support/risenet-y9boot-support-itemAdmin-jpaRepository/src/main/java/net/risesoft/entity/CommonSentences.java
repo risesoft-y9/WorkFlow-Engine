@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -46,6 +47,11 @@ public class CommonSentences implements Serializable {
     @Comment("排序号")
     @Column(name = "TABINDEX")
     private Integer tabIndex;
+
+    @Comment("使用次数，点击次数")
+    @Column(name = "USENUMGER")
+    @ColumnDefault("0")
+    private Integer useNumber;
 
     @Comment("租户Id")
     @Column(name = "TENANTID", length = 50, nullable = false)

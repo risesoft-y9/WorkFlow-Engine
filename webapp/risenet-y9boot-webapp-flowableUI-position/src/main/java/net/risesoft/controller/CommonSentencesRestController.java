@@ -55,13 +55,30 @@ public class CommonSentencesRestController {
     public Y9Result<String> remove(@RequestParam(required = true) int tabIndex) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
-            commonSentencesManager.removeCommonSentences(Y9LoginUserHolder.getTenantId(), person.getPersonId(),
-                tabIndex);
+            commonSentencesManager.removeCommonSentences(Y9LoginUserHolder.getTenantId(), person.getPersonId(), tabIndex);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
         return Y9Result.failure("删除失败");
+    }
+
+    /**
+     * 清除常用语使用次数
+     *
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/removeUseNumber", method = RequestMethod.POST, produces = "application/json")
+    public Y9Result<String> removeUseNumber() {
+        try {
+            UserInfo person = Y9LoginUserHolder.getUserInfo();
+            commonSentencesManager.removeUseNumber(Y9LoginUserHolder.getTenantId(), person.getPersonId());
+            return Y9Result.successMsg("操作成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Y9Result.failure("操作失败");
     }
 
     /**
@@ -93,13 +110,29 @@ public class CommonSentencesRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveEdit", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveEdit(@RequestParam(required = true) String content,
-        @RequestParam(required = true) String tabIndex) {
+    public Y9Result<String> saveEdit(@RequestParam(required = true) String content, @RequestParam(required = true) String tabIndex) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         try {
-            commonSentencesManager.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content,
-                Integer.parseInt(tabIndex));
+            commonSentencesManager.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content, Integer.parseInt(tabIndex));
+            return Y9Result.successMsg("保存成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Y9Result.failure("保存失败");
+    }
+
+    /**
+     * 更新常用语使用次数
+     *
+     * @param id 常用语id
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/updateUseNumber", method = RequestMethod.POST, produces = "application/json")
+    public Y9Result<String> updateUseNumber(@RequestParam(required = true) String id) {
+        try {
+            commonSentencesManager.updateUseNumber(Y9LoginUserHolder.getTenantId(), id);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();

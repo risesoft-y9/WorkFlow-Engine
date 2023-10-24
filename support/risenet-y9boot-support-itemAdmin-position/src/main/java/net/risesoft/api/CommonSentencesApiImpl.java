@@ -100,6 +100,14 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
         commonSentencesService.removeCommonSentences(tabIndex);
     }
 
+    @Override
+    @PostMapping(value = "/removeUseNumber", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void removeUseNumber(String tenantId, String userId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPersonId(userId);
+        commonSentencesService.removeUseNumber();
+    }
+
     /**
      * 根据id保存更新常用语
      *
@@ -133,4 +141,13 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
         Y9LoginUserHolder.setPerson(person);
         commonSentencesService.saveCommonSentences(userId, content, tabIndex);
     }
+
+    @Override
+    @PostMapping(value = "/updateUseNumber", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void updateUseNumber(String tenantId, String id) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        commonSentencesService.updateUseNumber(id);
+
+    }
+
 }
