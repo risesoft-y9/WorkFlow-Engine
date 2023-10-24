@@ -263,7 +263,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>com.github.shalousun</groupId>
+                <groupId>com.ly.smart-doc</groupId>
                 <artifactId>smart-doc-maven-plugin</artifactId>
                 <configuration>
                     <projectName>flowableUI</projectName>
@@ -283,7 +283,7 @@
                                 <pluginExecution>
                                     <pluginExecutionFilter>
                                         <groupId>
-                                            com.github.shalousun
+                                            com.ly.smart-doc
                                         </groupId>
                                         <artifactId>
                                             smart-doc-maven-plugin
@@ -302,10 +302,10 @@
                                 <pluginExecution>
                                     <pluginExecutionFilter>
                                         <groupId>
-                                            com.github.shalousun
+                                            com.ly.smart-doc
                                         </groupId>
                                         <artifactId>
-                                            risenet-smart-doc-maven-plugin
+                                            smart-doc-maven-plugin
                                         </artifactId>
                                         <versionRange>
                                             [2.4.3,)
