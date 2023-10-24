@@ -40,14 +40,13 @@ public class MobileItemController {
      *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @param positionId 岗位id
      * @param request
      * @param response
      */
     @ResponseBody
     @RequestMapping(value = "/getItemList")
-    public void getItemList(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        HttpServletRequest request, HttpServletResponse response) {
+    public void getItemList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);

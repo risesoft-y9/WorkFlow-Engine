@@ -98,13 +98,12 @@ public class MobileButtonOperationController {
      *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @param positionId 岗位id
      * @param taskId 任务id
      * @param response
      */
     @RequestMapping(value = "/claim")
-    public void claim(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId,
-        HttpServletResponse response) {
+    public void claim(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -135,14 +134,13 @@ public class MobileButtonOperationController {
      *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @param positionId 岗位id
      * @param taskId 任务id
      * @param request
      * @param response
      */
     @RequestMapping(value = "/complete")
-    public void complete(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, HttpServletRequest request,
-        HttpServletResponse response) {
+    public void complete(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
@@ -173,15 +171,15 @@ public class MobileButtonOperationController {
      *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @param positionId 岗位id
      * @param taskId 任务id
      * @param processInstanceId 流程实例id
      * @param request
      * @param response
      */
     @RequestMapping(value = "/getItemBox")
-    public void getItemBox(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId,
-        @RequestParam String processInstanceId, HttpServletRequest request, HttpServletResponse response) {
+    public void getItemBox(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, @RequestParam String processInstanceId, HttpServletRequest request,
+        HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         String itembox = ItemBoxTypeEnum.TODO.getValue();
@@ -214,14 +212,13 @@ public class MobileButtonOperationController {
      *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @param positionId 岗位id
      * @param taskId 任务id
      * @param response
      */
     @SuppressWarnings("unchecked")
     @RequestMapping("/handleParallel")
-    public void handleParallel(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
+    public void handleParallel(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -241,8 +238,7 @@ public class MobileButtonOperationController {
                      */
                     try {
                         String userObj = variableManager.getVariable(tenantId, taskId, SysVariables.USERS);
-                        List<String> users =
-                            userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
+                        List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
                         if (users.size() == 0) {
                             List<String> usersTemp = new ArrayList<String>();
                             for (TaskModel t : list) {
@@ -272,13 +268,12 @@ public class MobileButtonOperationController {
      *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @param positionId 岗位id
      * @param taskId 任务id
      * @param response
      */
     @RequestMapping(value = "/handleSerial")
-    public void handleSerial(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
+    public void handleSerial(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -313,15 +308,14 @@ public class MobileButtonOperationController {
      *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @param positionId 岗位id
      * @param taskId 任务id
      * @param processInstanceId 流程实例id
      * @param desc 描述
      * @param response
      */
     @RequestMapping(value = "/multipleResumeToDo")
-    public void multipleResumeToDo(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String desc,
+    public void multipleResumeToDo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String desc,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.getPosition(tenantId, positionId);
@@ -346,15 +340,14 @@ public class MobileButtonOperationController {
      *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @param positionId 岗位id
      * @param taskId 任务id
      * @param isLastPerson4RefuseClaim 是否最后一人拒签
      * @param response
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/refuseClaim")
-    public void refuseClaim(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, @RequestParam Boolean isLastPerson4RefuseClaim, HttpServletResponse response) {
+    public void refuseClaim(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, @RequestParam Boolean isLastPerson4RefuseClaim, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         String activitiUser = "";
@@ -406,22 +399,21 @@ public class MobileButtonOperationController {
      *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @param positionId 岗位id
      * @param taskId 任务id
      * @param repositionToTaskId 定位路由key
      * @param userChoice 人员id
      * @param response
      */
     @RequestMapping(value = "/reposition")
-    public void reposition(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId,
-        @RequestParam String repositionToTaskId, @RequestParam String userChoice, HttpServletResponse response) {
+    public void reposition(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, @RequestParam String repositionToTaskId, @RequestParam String userChoice,
+        HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
             if (StringUtils.isNotBlank(taskId)) {
-                specialOperationManager.reposition4Position(tenantId, positionId, taskId, repositionToTaskId,
-                    Y9Util.stringToList(userChoice, ","), "重定向", "");
+                specialOperationManager.reposition4Position(tenantId, positionId, taskId, repositionToTaskId, Y9Util.stringToList(userChoice, ","), "重定向", "");
                 map.put("msg", "重定向成功");
             } else {
                 map.put(UtilConsts.SUCCESS, false);
@@ -441,22 +433,19 @@ public class MobileButtonOperationController {
      *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @param positionId 岗位id
      * @param taskId 任务id
      * @param userChoice 人员id
      * @param request
      * @param response
      */
     @RequestMapping(value = "/reposition1")
-    public void reposition1(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, @RequestParam String userChoice, HttpServletRequest request,
-        HttpServletResponse response) {
+    public void reposition1(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, @RequestParam String userChoice, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             TaskModel task = taskManager.findById(tenantId, taskId);
-            buttonOperationManager.reposition(tenantId, positionId, taskId, "", Y9Util.stringToList(userChoice, ","),
-                "重定向", "");
+            buttonOperationManager.reposition(tenantId, positionId, taskId, "", Y9Util.stringToList(userChoice, ","), "重定向", "");
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
         } catch (Exception e) {
             e.printStackTrace();
@@ -472,13 +461,12 @@ public class MobileButtonOperationController {
      *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @param positionId 岗位id
      * @param taskId 任务id
      * @param response
      */
     @RequestMapping(value = "/rollback")
-    public void rollback(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId,
-        HttpServletResponse response) {
+    public void rollback(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "退回成功");
@@ -488,8 +476,7 @@ public class MobileButtonOperationController {
             Y9LoginUserHolder.setPosition(position);
             TaskModel task = taskManager.findById(tenantId, taskId);
             List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, task.getProcessInstanceId());
-            String type = processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(),
-                task.getTaskDefinitionKey());
+            String type = processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey());
             String reason = "";
             if (SysVariables.PARALLEL.equals(type) && taskList.size() > 1) {// 并行退回，并行多于2人时，退回使用减签方式
                 if (StringUtils.isEmpty(reason)) {
@@ -516,15 +503,14 @@ public class MobileButtonOperationController {
     /**
      * 返回发起人
      *
-     * @param tenantId
-     * @param userId
-     * @param taskId
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param positionId 岗位id
+     * @param taskId 任务id
      * @param response
      */
     @RequestMapping(value = "/rollbackToStartor")
-    public void rollbackToStartor(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
+    public void rollbackToStartor(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "返回发起人失败");
@@ -543,15 +529,14 @@ public class MobileButtonOperationController {
     /**
      * 返回发送人
      *
-     * @param tenantId
-     * @param userId
-     * @param taskId
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param positionId 岗位id
+     * @param taskId 任务id
      * @param response
      */
     @RequestMapping(value = "/sendToSender")
-    public void sendToSender(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
+    public void sendToSender(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "返回发送人失败");
@@ -570,15 +555,14 @@ public class MobileButtonOperationController {
     /**
      * 发送拟稿人
      *
-     * @param tenantId
-     * @param userId
-     * @param taskId
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param positionId 岗位id
+     * @param taskId 任务id
      * @param response
      */
     @RequestMapping(value = "/sendToStartor")
-    public void sendToStartor(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
+    public void sendToStartor(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "发送拟稿人失败");
@@ -588,8 +572,7 @@ public class MobileButtonOperationController {
             String routeToTaskId = taskModel.getTaskDefinitionKey();
             String processInstanceId = taskModel.getProcessInstanceId();
             String processDefinitionKey = taskModel.getProcessDefinitionId().split(":")[0];
-            ProcessParamModel processParamModel =
-                processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+            ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
             String itemId = processParamModel.getItemId();
             String processSerialNumber = processParamModel.getProcessSerialNumber();
             Map<String, Object> variables = new HashMap<String, Object>(16);
@@ -597,14 +580,12 @@ public class MobileButtonOperationController {
             String user = variableManager.getVariableLocal(tenantId, taskId, SysVariables.TASKSENDERID);
             String userChoice = "3:" + user;
 
-            String multiInstance =
-                processDefinitionManager.getNodeType(tenantId, taskModel.getProcessDefinitionId(), routeToTaskId);
+            String multiInstance = processDefinitionManager.getNodeType(tenantId, taskModel.getProcessDefinitionId(), routeToTaskId);
             String sponsorHandle = "";
             if (multiInstance.equals(SysVariables.PARALLEL)) {
                 sponsorHandle = "true";
             }
-            documentManager.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId,
-                processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
+            documentManager.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "发送拟稿人成功");
         } catch (Exception e) {
@@ -619,13 +600,12 @@ public class MobileButtonOperationController {
      *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @param positionId 岗位id
      * @param taskId 任务id
      * @param response
      */
     @RequestMapping(value = "/takeback")
-    public void takeback(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId,
-        HttpServletResponse response) {
+    public void takeback(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -646,13 +626,12 @@ public class MobileButtonOperationController {
      *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @param positionId 岗位id
      * @param taskId 任务id
      * @param response
      */
     @RequestMapping(value = "/unclaim")
-    public void unclaim(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId,
-        HttpServletResponse response) {
+    public void unclaim(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
