@@ -46,6 +46,14 @@ public interface CommonSentencesApi {
     void removeCommonSentences(String tenantId, String userId, int tabIndex);
 
     /**
+     * 清空常用语使用次数
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     */
+    void removeUseNumber(String tenantId, String userId);
+
+    /**
      * 根据id保存更新常用语
      *
      * @param tenantId 租户id
@@ -64,4 +72,12 @@ public interface CommonSentencesApi {
      * @param tabIndex 排序号
      */
     void saveCommonSentences(String tenantId, String userId, String content, int tabIndex);
+
+    /**
+     * 更新常用语使用次数
+     *
+     * @param tenantId 租户id
+     * @param id 常用语id
+     */
+    void updateUseNumber(String tenantId, String id);
 }

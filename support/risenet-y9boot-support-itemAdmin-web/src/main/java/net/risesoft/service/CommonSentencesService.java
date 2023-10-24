@@ -109,6 +109,15 @@ public class CommonSentencesService {
         commonSentencesRepository.delete(commonSentences);
     }
 
+    @Transactional(readOnly = false)
+    public void removeUseNumber() {
+        List<CommonSentences> list = commonSentencesRepository.findByUserId(Y9LoginUserHolder.getPersonId());
+        for (CommonSentences info : list) {
+            info.setUseNumber(0);
+            commonSentencesRepository.save(info);
+        }
+    }
+
     /**
      * 保存常用语
      *
@@ -160,6 +169,15 @@ public class CommonSentencesService {
         commonSentences.setContent(content);
         commonSentences.setTabIndex(tabIndex);
         return commonSentencesRepository.save(commonSentences);
+    }
+
+    @Transactional(readOnly = false)
+    public void updateUseNumber(String id) {
+        CommonSentences info = commonSentencesRepository.findById(id).orElse(null);
+        if (info != null) {
+            info.setUseNumber(info.getUseNumber() == null ? 1 : info.getUseNumber() + 1);
+            commonSentencesRepository.save(info);
+        }
     }
 
 }

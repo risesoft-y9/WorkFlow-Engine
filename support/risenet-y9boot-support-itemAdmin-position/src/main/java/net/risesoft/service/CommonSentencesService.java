@@ -62,7 +62,7 @@ public class CommonSentencesService {
     public List<Map<String, Object>> listSentencesService() {
         List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
         String userId = Y9LoginUserHolder.getPersonId();
-        List<CommonSentences> list = this.getByUserId(userId);
+        List<CommonSentences> list = commonSentencesRepository.findAllByUserId(userId);
         List<CommonSentencesInit> listInit = commonSentencesInitRepository.findByUserId(userId);
         try {
             if (list.isEmpty() && listInit.isEmpty()) {
@@ -107,6 +107,15 @@ public class CommonSentencesService {
         String userId = Y9LoginUserHolder.getPersonId();
         CommonSentences commonSentences = commonSentencesRepository.findByUserIdAndTabIndex(userId, tabIndex);
         commonSentencesRepository.delete(commonSentences);
+    }
+
+    @Transactional(readOnly = false)
+    public void removeUseNumber() {
+        List<CommonSentences> list = commonSentencesRepository.findByUserId(Y9LoginUserHolder.getPersonId());
+        for (CommonSentences info : list) {
+            info.setUseNumber(0);
+            commonSentencesRepository.save(info);
+        }
     }
 
     /**
@@ -160,6 +169,15 @@ public class CommonSentencesService {
         commonSentences.setContent(content);
         commonSentences.setTabIndex(tabIndex);
         return commonSentencesRepository.save(commonSentences);
+    }
+
+    @Transactional(readOnly = false)
+    public void updateUseNumber(String id) {
+        CommonSentences info = commonSentencesRepository.findById(id).orElse(null);
+        if (info != null) {
+            info.setUseNumber(info.getUseNumber() == null ? 1 : info.getUseNumber() + 1);
+            commonSentencesRepository.save(info);
+        }
     }
 
 }
