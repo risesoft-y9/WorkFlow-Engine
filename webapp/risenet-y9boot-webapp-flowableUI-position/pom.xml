@@ -269,6 +269,14 @@
                 <configuration>
                     <projectName>flowableUI</projectName>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>html</goal>
+                            <goal>markdown</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
         <pluginManagement>
@@ -294,6 +302,7 @@
                                         </versionRange>
                                         <goals>
                                             <goal>html</goal>
+                                            <goal>markdown</goal>
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
@@ -313,6 +322,7 @@
                                         </versionRange>
                                         <goals>
                                             <goal>html</goal>
+                                            <goal>markdown</goal>
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
