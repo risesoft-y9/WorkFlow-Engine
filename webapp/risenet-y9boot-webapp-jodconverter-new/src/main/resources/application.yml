@@ -7,7 +7,7 @@ server:
         mime-types: application/javascript,text/css,application/json,application/xml,text/html,text/xml,text/plain,font/woff,application/font-woff,font/eot,image/svg+xml,image/x-icon #压缩格式
         min-response-size: 2048
 simText: txt,html,htm,asp,jsp,xml,json,properties,md,gitignore,log,java,py,c,cpp,sql,sh,bat,m,bas,prg,cmd
-
+# 请求的根路径,若为http协议无需更改。若为https协议需修改为全路径(例如：https://dev.youshengyun.com/jodconverter)
 base:
     url: default
 beian: default
@@ -29,7 +29,7 @@ delete:
     source:
         file: true
 file:
-    dir: default #预览生成资源路径（默认为打包根路径下的file目录下）
+    dir: /jodconverter/file #预览生成资源路径（默认为打包根路径下的file目录下）
     upload:
         disable: false
 ftp:
@@ -47,7 +47,7 @@ office:
     exportbookmarks: true
     exportnotes: true
     # home: /opt/openoffice4
-    home: D:/LibreOfficePortable/App/libreoffice  # Libreoffice/Openoffice  驱动的绝对路径
+    home: /opt/libreoffice7  # Libreoffice/Openoffice  驱动的绝对路径
     maximageresolution: 150
     pagerange: false
     plugin:
@@ -92,6 +92,7 @@ spring:
     redisson:
         address: 127.0.0.1:6379
         password:
+        database: 11
     servlet:
         multipart:
             max-file-size: 500MB # 文件上传限制前端
