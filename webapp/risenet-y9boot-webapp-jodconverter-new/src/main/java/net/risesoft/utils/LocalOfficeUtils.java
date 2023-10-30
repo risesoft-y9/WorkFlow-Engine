@@ -29,7 +29,6 @@ public class LocalOfficeUtils {
         properties = factoryBean.getObject();
         String officeHome = properties.getProperty(OFFICE_HOME_KEY);
         if (officeHome != null && !DEFAULT_OFFICE_HOME_VALUE.equals(officeHome)) {
-            officeHome = officeHome.replace('.', '/');
             return new File(officeHome);
         }
         if (OSUtils.IS_OS_WINDOWS) {
@@ -60,12 +59,12 @@ public class LocalOfficeUtils {
             return homeDir;
         } else {
             // Linux or other *nix variants
-            return findOfficeHome(EXECUTABLE_DEFAULT, "/opt/libreoffice6.0", "/opt/libreoffice6.1",
-                "/opt/libreoffice6.2", "/opt/libreoffice6.3", "/opt/libreoffice6.4", "/opt/libreoffice7.0",
-                "/opt/libreoffice7.1", "/opt/libreoffice7.2", "/opt/libreoffice7.3", "/opt/libreoffice7.4",
-                "/opt/libreoffice7.5", "/opt/libreoffice7.6", "/usr/lib64/libreoffice", "/usr/lib/libreoffice",
-                "/usr/local/lib64/libreoffice", "/usr/local/lib/libreoffice", "/opt/libreoffice",
-                "/usr/lib64/openoffice", "/usr/lib64/openoffice.org3", "/usr/lib64/openoffice.org",
+            return findOfficeHome(EXECUTABLE_DEFAULT, "/opt/libreoffice6", "/opt/libreoffice7", "/opt/libreoffice6.0",
+                "/opt/libreoffice6.1", "/opt/libreoffice6.2", "/opt/libreoffice6.3", "/opt/libreoffice6.4",
+                "/opt/libreoffice7.0", "/opt/libreoffice7.1", "/opt/libreoffice7.2", "/opt/libreoffice7.3",
+                "/opt/libreoffice7.4", "/opt/libreoffice7.5", "/opt/libreoffice7.6", "/usr/lib64/libreoffice",
+                "/usr/lib/libreoffice", "/usr/local/lib64/libreoffice", "/usr/local/lib/libreoffice",
+                "/opt/libreoffice", "/usr/lib64/openoffice", "/usr/lib64/openoffice.org3", "/usr/lib64/openoffice.org",
                 "/usr/lib/openoffice", "/usr/lib/openoffice.org3", "/usr/lib/openoffice.org", "/opt/openoffice4",
                 "/opt/openoffice.org3");
         }
