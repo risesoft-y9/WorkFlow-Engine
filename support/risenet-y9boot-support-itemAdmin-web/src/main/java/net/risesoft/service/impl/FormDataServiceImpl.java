@@ -173,7 +173,7 @@ public class FormDataServiceImpl implements FormDataService {
             String roleId = y9FieldPerm.getWriteRoleId();
             String[] roleIds = roleId.split(",");
             for (String id : roleIds) {
-                boolean b = personRoleApi.hasRole(tenantId, id, userInfo.getPersonId());
+                boolean b = personRoleApi.hasRole(tenantId, id, userInfo.getPersonId()).getData();
                 if (b) {
                     resMap.put("writePerm", true);
                     break;

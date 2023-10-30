@@ -334,7 +334,7 @@ public class BugWorkOrderRestController {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId();
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            boolean workOrderManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId);
+            boolean workOrderManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId).getData();
             // 管理员打开待办工单,可走工作流
             // FIXME
             boolean b = workOrderManage && "wtodo".equals(itembox);
@@ -466,8 +466,8 @@ public class BugWorkOrderRestController {
             attachmentModel.setDescribes("");
             attachmentModel.setPersonName(userInfo.getName());
             attachmentModel.setPersonId(userInfo.getPersonId());
-            OrgUnit orgUnit =
-                orgUnitApi.getParent(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId());
+            OrgUnit orgUnit = orgUnitApi
+                .getParent(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
             attachmentModel.setDeptId(orgUnit != null ? orgUnit.getId() : "");
             attachmentModel.setDeptName(orgUnit != null ? orgUnit.getName() : "");
             attachmentModel.setFileStoreId(y9FileStore.getId());
@@ -534,7 +534,7 @@ public class BugWorkOrderRestController {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId();
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Tenant tenant = tenantApi.getById(tenantId);
+            Tenant tenant = tenantApi.getById(tenantId).getData();
             Map<String, Object> keyValue = Y9JsonUtil.readValue(formdata, Map.class);
             WorkOrderModel workOrderModel = new WorkOrderModel();
             workOrderModel.setCreateDate(keyValue.get("createDate") != null ? (String)keyValue.get("createDate") : "");

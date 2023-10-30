@@ -1323,7 +1323,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 String orgUnitId = orgUnitArr[1];
                 List<Person> personListTemp = new ArrayList<Person>();
                 if (ItemPrincipalTypeEnum.DEPT.getValue() == type) {
-                    personListTemp = departmentManager.listAllPersonsByDisabled(tenantId, orgUnitId, false);
+                    personListTemp = departmentManager.listAllPersonsByDisabled(tenantId, orgUnitId, false).getData();
                     for (Person personTemp : personListTemp) {
                         userIdListAdd.add(personTemp.getId() + ":" + orgUnitId);
                     }
@@ -1331,21 +1331,21 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                     userIdListAdd.add(orgUnitId + ":" + orgUnitArr[2]);
                 } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue() == type) {
                     List<CustomGroupMember> customGroupMemberList = customGroupApi
-                        .listCustomGroupMemberByGroupIdAndMemberType(tenantId, personId, orgUnitId, "Person");
+                        .listCustomGroupMemberByGroupIdAndMemberType(tenantId, personId, orgUnitId, "Person").getData();
                     for (CustomGroupMember member : customGroupMemberList) {
                         userIdListAdd.add(member.getMemberId() + ":" + member.getParentId());
                     }
                 }
             }
             // 保存抄送
-            OrgUnit dept = departmentManager.getDepartment(tenantId, userInfo.getParentId());
+            OrgUnit dept = departmentManager.getDepartment(tenantId, userInfo.getParentId()).getData();
             if (null == dept || null == dept.getId()) {
-                dept = organizationManager.getOrganization(tenantId, userInfo.getParentId());
+                dept = organizationManager.getOrganization(tenantId, userInfo.getParentId()).getData();
             }
             List<String> mobile = new ArrayList<String>();
             for (String userIds : userIdListAdd) {
                 String[] id = userIds.split(SysVariables.COLON);
-                Person personTemp = personManager.getPerson(tenantId, id[0]);
+                Person personTemp = personManager.getPerson(tenantId, id[0]).getData();
                 ChaoSong cs = new ChaoSong();
                 cs.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 cs.setCreateTime(sdf.format(new Date()));
@@ -1359,7 +1359,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 cs.setTitle(title);
                 cs.setUserId(personTemp.getId());
                 cs.setUserName(personTemp.getName());
-                Department department = departmentManager.getDepartment(tenantId, id[1]);
+                Department department = departmentManager.getDepartment(tenantId, id[1]).getData();
                 cs.setUserDeptId(department.getId());
                 cs.setUserDeptName(department.getName());
                 cs.setItemId(itemId);

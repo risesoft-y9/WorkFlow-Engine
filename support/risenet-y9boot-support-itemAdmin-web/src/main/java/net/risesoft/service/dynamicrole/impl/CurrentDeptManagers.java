@@ -27,6 +27,6 @@ public class CurrentDeptManagers extends AbstractDynamicRoleMember {
     public List<OrgUnit> getOrgUnitList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String deptId = Y9LoginUserHolder.getDeptId();
-        return departmentManager.listManagers(tenantId, deptId);
+        return departmentManager.listManagers(tenantId, deptId).getData();
     }
 }

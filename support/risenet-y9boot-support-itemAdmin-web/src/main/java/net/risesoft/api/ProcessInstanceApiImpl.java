@@ -59,7 +59,7 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
     public boolean updateProcessInstanceDetails(String tenantId, String assigneeId, String processInstanceId,
         String taskId, String itembox, Date endTime) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, assigneeId);
+        Person person = personApi.getPerson(tenantId, assigneeId).getData();
         Y9LoginUserHolder.setPerson(person);
         return processInstanceDetailsService.updateProcessInstanceDetails(processInstanceId, taskId, itembox, endTime);
     }

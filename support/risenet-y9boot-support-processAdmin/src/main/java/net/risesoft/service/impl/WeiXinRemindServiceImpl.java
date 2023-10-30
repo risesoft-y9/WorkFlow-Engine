@@ -84,10 +84,10 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
             if (StringUtils.isBlank(sended) || UtilConsts.FALSE.equals(sended)) {
                 return;
             }
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             if (person == null || StringUtils.isBlank(person.getId())) {
-                List<Person> list = positionApi.listPersons(tenantId, assignee);
-                Position position = positionApi.getPosition(tenantId, userId);
+                List<Person> list = positionApi.listPersons(tenantId, assignee).getData();
+                Position position = positionApi.getPosition(tenantId, userId).getData();
                 String url = y9Conf.getApp().getProcessAdmin().getWeiXinUrl();
                 for (Person p : list) {
                     try {

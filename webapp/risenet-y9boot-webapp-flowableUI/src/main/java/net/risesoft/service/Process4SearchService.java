@@ -108,7 +108,7 @@ public class Process4SearchService {
                         allUserId = Y9Util.genCustomStr(allUserId, userId);
                     }
                     if (StringUtils.isNotEmpty(userId)) {
-                        Person person = personApi.getPerson(tenantId, userId);
+                        Person person = personApi.getPerson(tenantId, userId).getData();
                         if (person != null && person.getId() != null) {
                             if (!deptIds.contains(person.getParentId())) {
                                 deptIds = Y9Util.genCustomStr(deptIds, person.getParentId());
@@ -197,7 +197,7 @@ public class Process4SearchService {
                         allUserId = Y9Util.genCustomStr(allUserId, userId);
                     }
                     if (StringUtils.isNotEmpty(userId)) {
-                        Person person = personApi.getPerson(tenantId, userId);
+                        Person person = personApi.getPerson(tenantId, userId).getData();
                         if (person != null && person.getId() != null) {
                             if (!deptIds.contains(person.getParentId())) {
                                 deptIds = Y9Util.genCustomStr(deptIds, person.getParentId());

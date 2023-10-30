@@ -47,7 +47,7 @@ public class TaoHongTemplateTypeRestController {
         if (userInfo.isGlobalManager()) {
             list = taoHongTemplateTypeService.findAll();
         } else {
-            OrgUnit orgUnit = personManager.getBureau(tenantId, personId);
+            OrgUnit orgUnit = personManager.getBureau(tenantId, personId).getData();
             list = taoHongTemplateTypeService.findByBureauId(orgUnit.getId());
         }
         return Y9Result.success(list, "获取成功");

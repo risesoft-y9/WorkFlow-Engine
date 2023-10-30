@@ -180,8 +180,8 @@ public class Y9FormRestController {
         String year = yearsdf.format(date);
         String second = sesdf.format(date);
         String itemNumber = "〔" + year + "〕" + second + "号";
-        OrgUnit parent = personApi.getParent(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId());
-        Tenant tenant = tenantApi.getById(Y9LoginUserHolder.getTenantId());
+        OrgUnit parent = personApi.getParent(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId()).getData();
+        Tenant tenant = tenantApi.getById(Y9LoginUserHolder.getTenantId()).getData();
         /** 办件表单数据初始化 **/
         map.put("deptName", parent.getName());
         map.put("userName", userInfo.getName());

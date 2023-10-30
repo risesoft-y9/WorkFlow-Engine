@@ -114,7 +114,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
     @GetMapping(value = "/processTrackList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> processTrackList(String tenantId, String positionId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         retMap.put(UtilConsts.SUCCESS, false);
@@ -144,7 +144,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
     @GetMapping(value = "/processTrackList4Simple", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> processTrackList4Simple(String tenantId, String positionId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         retMap.put(UtilConsts.SUCCESS, false);

@@ -42,7 +42,7 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
     @PostMapping(value = "/deleteAllAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean deleteAllAssociatedFile(String tenantId, String userId, String processSerialNumber, String delIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         boolean b = associatedFileService.deleteAllAssociatedFile(processSerialNumber, delIds);
         return b;
@@ -52,7 +52,7 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
     @PostMapping(value = "/deleteAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean deleteAssociatedFile(String tenantId, String userId, String processSerialNumber, String delId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         boolean b = associatedFileService.deleteAssociatedFile(processSerialNumber, delId);
         return b;
@@ -62,7 +62,7 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
     @GetMapping(value = "/getAssociatedFileAllList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getAssociatedFileAllList(String tenantId, String userId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = associatedFileService.getAssociatedFileAllList(processSerialNumber);
@@ -73,7 +73,7 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
     @GetMapping(value = "/getAssociatedFileList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getAssociatedFileList(String tenantId, String userId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = associatedFileService.getAssociatedFileList(processSerialNumber);
@@ -85,7 +85,7 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
     public boolean saveAssociatedFile(String tenantId, String userId, String processSerialNumber,
         String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         boolean b = associatedFileService.saveAssociatedFile(processSerialNumber, processInstanceIds);
         return b;

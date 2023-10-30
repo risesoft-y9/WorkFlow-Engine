@@ -215,7 +215,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
             String roleNames = "";
             for (ItemOpinionFrameRole role : roleList) {
                 roleIds.add(role.getId());
-                Role r = roleManager.getRole(role.getRoleId());
+                Role r = roleManager.getRole(role.getRoleId()).getData();
                 if (StringUtils.isEmpty(roleNames)) {
                     roleNames = null == r ? "角色不存在" : r.getName();
                 } else {

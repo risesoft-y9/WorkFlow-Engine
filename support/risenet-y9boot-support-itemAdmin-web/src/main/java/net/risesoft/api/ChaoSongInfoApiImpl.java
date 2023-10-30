@@ -89,7 +89,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongInfoApi {
     public Map<String, Object> detail(String tenantId, String userId, String id, String processInstanceId,
         Integer status, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = chaoSongInfoService.detail(processInstanceId, status, mobile);
@@ -178,7 +178,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongInfoApi {
     public Map<String, Object> save(String tenantId, String userId, String processInstanceId, String users,
         String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map =
             chaoSongInfoService.save(processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
@@ -190,7 +190,7 @@ public class ChaoSongInfoApiImpl implements ChaoSongInfoApi {
     public Map<String, Object> searchAllByUserId(String tenantId, String userId, String searchName, String itemId,
         String userName, String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map =
             chaoSongInfoService.searchAllByUserId(searchName, itemId, userName, state, year, page, rows);

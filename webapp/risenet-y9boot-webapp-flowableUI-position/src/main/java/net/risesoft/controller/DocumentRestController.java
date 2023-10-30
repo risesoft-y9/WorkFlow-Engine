@@ -187,8 +187,8 @@ public class DocumentRestController {
                 processInstanceId);
             map.put("follow", follow > 0 ? true : false);
             if (Y9Context.getProperty("y9.app.flowable.dzxhTenantId").equals(tenantId)) {// 地灾租户处理
-                Boolean doneManage =
-                    positionRoleApi.hasRole(tenantId, "itemAdmin", "", "办结角色", Y9LoginUserHolder.getPositionId());
+                Boolean doneManage = positionRoleApi
+                    .hasRole(tenantId, "itemAdmin", "", "办结角色", Y9LoginUserHolder.getPositionId()).getData();
                 map.put("doneManage", doneManage);
             }
             return Y9Result.success(map, "获取成功");
@@ -261,8 +261,9 @@ public class DocumentRestController {
         try {
             List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
             listMap = itemManager.getItemList(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId());
-            Boolean workOrderManage = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", null, "系统工单管理员",
-                Y9LoginUserHolder.getPositionId());
+            Boolean workOrderManage = positionRoleApi
+                .hasRole(tenantId, "Y9OrgHierarchyManagement", null, "系统工单管理员", Y9LoginUserHolder.getPositionId())
+                .getData();
             if (workOrderManage) {
                 int workOrdertodoCount = workOrderManager.getAdminTodoCount();
                 map.put("workOrdertodoCount", workOrdertodoCount);
@@ -281,12 +282,13 @@ public class DocumentRestController {
             // int followCount = officeFollowManager.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId());
             // map.put("followCount", followCount);
             // 公共角色
-            boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", null, "监控管理员角色",
-                Y9LoginUserHolder.getPositionId());
+            boolean b = positionRoleApi
+                .hasRole(tenantId, "Y9OrgHierarchyManagement", null, "监控管理员角色", Y9LoginUserHolder.getPositionId())
+                .getData();
             map.put("monitorManage", b);
 
-            boolean b1 =
-                positionRoleApi.hasRole(tenantId, "itemAdmin", "", "人事统计角色", Y9LoginUserHolder.getPositionId());
+            boolean b1 = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "人事统计角色", Y9LoginUserHolder.getPositionId())
+                .getData();
             map.put("leaveManage", b1);
 
             return Y9Result.success(map, "获取成功");
@@ -321,7 +323,7 @@ public class DocumentRestController {
                 for (TaskModel task : list) {
                     if (i < 5) {
                         String assigneeId = task.getAssignee();
-                        Position employee = positionManager.getPosition(tenantId, assigneeId);
+                        Position employee = positionManager.getPosition(tenantId, assigneeId).getData();
                         if (employee != null && !employee.getId().equals(positionId)) { // 协办人员
                             if (StringUtils.isBlank(parallelDoing)) {
                                 parallelDoing = employee.getName();

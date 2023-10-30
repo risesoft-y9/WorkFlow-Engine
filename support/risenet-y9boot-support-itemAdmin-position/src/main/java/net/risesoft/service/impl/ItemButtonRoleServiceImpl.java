@@ -45,7 +45,7 @@ public class ItemButtonRoleServiceImpl implements ItemButtonRoleService {
     public List<ItemButtonRole> findByItemButtonIdContainRoleName(String itemButtonId) {
         List<ItemButtonRole> roleList = itemButtonRoleRepository.findByItemButtonId(itemButtonId);
         for (ItemButtonRole role : roleList) {
-            Role r = roleManager.getRole(role.getRoleId());
+            Role r = roleManager.getRole(role.getRoleId()).getData();
             role.setRoleName(r == null ? "角色已删除" : r.getName());
         }
         return roleList;

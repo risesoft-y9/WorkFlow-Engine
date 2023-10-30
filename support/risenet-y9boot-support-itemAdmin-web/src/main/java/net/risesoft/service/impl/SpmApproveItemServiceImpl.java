@@ -157,7 +157,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
         try {
             SpmApproveItem item = this.findById(itemId);
             map.put("msg", "发布应用失败");
-            System system = systemEntityManager.getByName(Y9Context.getSystemName());
+            System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
             if (null == system) {
                 map.put("msg", "发布为系统[" + Y9Context.getSystemName() + "]的应用失败:没有找到英文名为[" + Y9Context.getSystemName()
                     + "]的系统,请先创建系统后再发布");
@@ -167,7 +167,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
              * 1、判断应用是否存在，不存在则创建应用，存在则修改应用
              */
             String systemId = system.getId(), customId = itemId;
-            App app = appApi.findBySystemIdAndCustomId(systemId, customId);
+            App app = appApi.findBySystemIdAndCustomId(systemId, customId).getData();
             if (null == app) {
                 app = new App();
                 app.setName(item.getName());

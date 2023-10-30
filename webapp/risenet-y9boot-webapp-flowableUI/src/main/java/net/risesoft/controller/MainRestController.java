@@ -186,7 +186,8 @@ public class MainRestController {
         map.put("itemModel", itemModel);
         map.put("tenantId", tenantId);
         map.put("dzxhTenantId", Y9Context.getProperty("y9.app.flowable.dzxhTenantId"));
-        boolean b = personRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", userInfo.getPersonId());
+        boolean b = personRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", userInfo.getPersonId())
+            .getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);
@@ -229,7 +230,7 @@ public class MainRestController {
             if (itemModel != null && itemModel.getId() != null) {
                 model.addAttribute("processDefinitionKey", processDefinitionKey);
                 boolean hasOnlineAccess = personRoleApi.hasRole(tenantId, Y9Context.getSystemName(), "",
-                    itemModel.getName() + "收件角色", userInfo.getPersonId());
+                    itemModel.getName() + "收件角色", userInfo.getPersonId()).getData();
 
                 Map<String, Object> countMap = todoManager.getCountByUserIdAndProcessDefinitionKey(
                     Y9LoginUserHolder.getTenantId(), userInfo.getPersonId(), processDefinitionKey);
@@ -255,7 +256,8 @@ public class MainRestController {
             map.put("doneCount", doneCount);
             map.put("draftRecycleCount", draftRecycleCount);
 
-            b = personRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", userInfo.getPersonId());
+            b = personRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", userInfo.getPersonId())
+                .getData();
             if (b) {
                 long monitorDoing = monitorManager.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey);
                 long monitorDone = monitorManager.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey);

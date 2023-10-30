@@ -121,9 +121,9 @@ public class EntrustServiceImpl implements EntrustService {
         Person pTemp = null;
         SpmApproveItem itemTemp = null;
         for (Entrust entrust : entrustList) {
-            pTemp = personManager.getPerson(tenantId, entrust.getAssigneeId());
+            pTemp = personManager.getPerson(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = personManager.getPerson(tenantId, entrust.getOwnerId());
+            pTemp = personManager.getPerson(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
 
             String itemId = entrust.getItemId();
@@ -173,9 +173,9 @@ public class EntrustServiceImpl implements EntrustService {
         Person pTemp = null;
         SpmApproveItem itemTemp = null;
         for (Entrust entrust : entrustList) {
-            pTemp = personManager.getPerson(tenantId, entrust.getAssigneeId());
+            pTemp = personManager.getPerson(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = personManager.getPerson(tenantId, entrust.getOwnerId());
+            pTemp = personManager.getPerson(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
 
             String itemId = entrust.getItemId();
@@ -223,9 +223,9 @@ public class EntrustServiceImpl implements EntrustService {
         Entrust entrust = entrustRepository.findById(id).orElse(null);
         if (null != entrust) {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Person pTemp = personManager.getPerson(tenantId, entrust.getAssigneeId());
+            Person pTemp = personManager.getPerson(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = personManager.getPerson(tenantId, entrust.getOwnerId());
+            pTemp = personManager.getPerson(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
 
             String itemId = entrust.getItemId();
@@ -358,9 +358,9 @@ public class EntrustServiceImpl implements EntrustService {
         Person pTemp = null;
         SpmApproveItem itemTemp = null;
         for (Entrust entrust : entrustList) {
-            pTemp = personManager.getPerson(tenantId, entrust.getAssigneeId());
+            pTemp = personManager.getPerson(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = personManager.getPerson(tenantId, entrust.getOwnerId());
+            pTemp = personManager.getPerson(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
 
             String itemId = entrust.getItemId();

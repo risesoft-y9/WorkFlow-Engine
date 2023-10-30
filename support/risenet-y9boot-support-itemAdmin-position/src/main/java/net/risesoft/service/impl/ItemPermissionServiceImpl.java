@@ -120,12 +120,12 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             .findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId, processDefinitionId, taskDefKey);
         for (ItemPermission ip : ipList) {
             if ((ip.getRoleType() == 1)) {
-                Role role = roleManager.getRole(ip.getRoleId());
+                Role role = roleManager.getRole(ip.getRoleId()).getData();
                 if (null != role) {
                     ip.setRoleName(role.getName());
                 }
             } else if (ip.getRoleType() == 2 || ip.getRoleType() == 3 || ip.getRoleType() == 6) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, ip.getRoleId());
+                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, ip.getRoleId()).getData();
                 if (null != orgUnit) {
                     ip.setRoleName(orgUnit.getName());
                 }
@@ -163,12 +163,12 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                     ip.setRoleName(dr.getName());
                 }
             } else if (ip.getRoleType() == 2 || ip.getRoleType() == 3) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, ip.getRoleId());
+                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, ip.getRoleId()).getData();
                 if (null != orgUnit) {
                     ip.setRoleName(orgUnit.getName());
                 }
             } else if ((ip.getRoleType() == 1)) {
-                Role role = roleManager.getRole(ip.getRoleId());
+                Role role = roleManager.getRole(ip.getRoleId()).getData();
                 if (null != role) {
                     ip.setRoleName(role.getName());
                 }
@@ -188,7 +188,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         map.put("existDepartment", false);
         for (ItemPermission o : objectPermList) {
             if (o.getRoleType() == ItemPermissionEnum.DEPARTMENT.getValue()) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId());
+                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData();
                 if (null != orgUnit) {
                     map.put("existDepartment", true);
                     continue;
@@ -196,19 +196,19 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             }
 
             if (o.getRoleType() == ItemPermissionEnum.POSITION.getValue()) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId());
+                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData();
                 if (null != orgUnit) {
                     map.put("existPosition", true);
                     continue;
                 }
             }
             if (o.getRoleType() == ItemPermissionEnum.ROLE.getValue()) {
-                Integer positionSize =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION.getEnName()).size();
-                Integer departmentSize =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT.getEnName()).size();
-                Integer organizationSize =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION.getEnName()).size();
+                Integer positionSize = roleManager
+                    .listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION.getEnName()).getData().size();
+                Integer departmentSize = roleManager
+                    .listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT.getEnName()).getData().size();
+                Integer organizationSize = roleManager
+                    .listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION.getEnName()).getData().size();
                 if (positionSize > 0) {
                     map.put("existPosition", true);
                 }
@@ -246,11 +246,13 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                 break;
             }
             if (o.getRoleType() == ItemPermissionEnum.ROLE.getValue()) {
-                Integer positionSize = roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Position").size();
+                Integer positionSize =
+                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Position").getData().size();
                 if (positionSize > 0) {
                     existPosition = true;
                 }
-                Integer departmentSize = roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Department").size();
+                Integer departmentSize =
+                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Department").getData().size();
                 if (departmentSize > 0) {
                     existDepartment = true;
                 }

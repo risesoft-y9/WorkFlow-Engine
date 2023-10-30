@@ -115,7 +115,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         // 由于需要获取call Activity类型的节点，将查询方法改为如下
-        List<HistoricTaskInstanceModel> results = historicTaskManager.getByProcessInstanceId(tenantId, processInstanceId, "");
+        List<HistoricTaskInstanceModel> results =
+            historicTaskManager.getByProcessInstanceId(tenantId, processInstanceId, "");
         String year = "";
         if (results == null || results.size() == 0) {
             OfficeDoneInfo officeDoneInfoModel = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
@@ -153,7 +154,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             // 收件人
             String assignee = hai.getAssignee();
             if (StringUtils.isNotBlank(assignee)) {
-                Position employee = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assignee);
+                Position employee = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
                 if (employee != null) {
                     map.put("assigneeId", assignee);
                     // 承办人id,用于数据中心保存
@@ -162,7 +163,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     String employeeName = employee.getName();
                     // 恢复待办，如不是办结人恢复，Owner有值，需显示Owner
                     if (StringUtils.isNotBlank(ownerId)) {
-                        Position ownerUser = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), ownerId);
+                        Position ownerUser =
+                            positionManager.getPosition(Y9LoginUserHolder.getTenantId(), ownerId).getData();
                         employeeName = ownerUser.getName();
                         map.put("undertakerId", ownerUser.getId());
                     }
@@ -175,7 +177,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     }*/
                     HistoricVariableInstanceModel zhuBan = null;
                     try {
-                        zhuBan = historicVariableManager.getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLELSPONSOR, year);
+                        zhuBan = historicVariableManager.getByTaskIdAndVariableName(tenantId, taskId,
+                            SysVariables.PARALLELSPONSOR, year);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -192,7 +195,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     int j = 0;
                     for (IdentityLinkModel identityLink : iList) {
                         String assigneeId = identityLink.getUserId();
-                        Position ownerUser = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId);
+                        Position ownerUser =
+                            positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                         if (j < 5) {
                             assignees = Y9Util.genCustomStr(assignees, ownerUser.getName(), "、");
                         } else {
@@ -219,12 +223,15 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             if (null != description && !(description.equals("MI_END"))) {
                 map.put("description", description);
                 if (description.contains("Delete MI execution")) {
-                    HistoricVariableInstanceModel taskSenderModel = historicVariableManager.getByTaskIdAndVariableName(tenantId, hai.getId(), SysVariables.TASKSENDER, year);
+                    HistoricVariableInstanceModel taskSenderModel = historicVariableManager
+                        .getByTaskIdAndVariableName(tenantId, hai.getId(), SysVariables.TASKSENDER, year);
                     if (taskSenderModel != null) {
-                        String taskSender = taskSenderModel.getValue() == null ? "" : (String)taskSenderModel.getValue();
+                        String taskSender =
+                            taskSenderModel.getValue() == null ? "" : (String)taskSenderModel.getValue();
                         map.put("description", "该任务由" + taskSender + "删除");
                         // 并行退回以减签的方式退回，需获取退回原因,替换减签的描述
-                        HistoricVariableInstanceModel rollBackReason = historicVariableManager.getByTaskIdAndVariableName(tenantId, hai.getId(), "rollBackReason", year);
+                        HistoricVariableInstanceModel rollBackReason = historicVariableManager
+                            .getByTaskIdAndVariableName(tenantId, hai.getId(), "rollBackReason", year);
                         if (rollBackReason != null) {
                             map.put("description", rollBackReason.getValue());
                         }
@@ -236,7 +243,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 }
             }
             // 意见
-            List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(taskId, StringUtils.isBlank(assignee) ? "" : assignee);
+            List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(taskId,
+                StringUtils.isBlank(assignee) ? "" : assignee);
             map.put("opinion", opinion.size() > 0 ? opinion.get(0).getContent() : "");
             map.put("startTime", hai.getStartTime() == null ? "" : sdf.format(hai.getStartTime()));
             try {
@@ -276,7 +284,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 mapTemp.put("assignee", pt.getReceiverName() == null ? "" : pt.getReceiverName());
                 mapTemp.put("name", pt.getTaskDefName() == null ? "" : pt.getTaskDefName());
                 mapTemp.put("description", pt.getDescribed() == null ? "" : pt.getDescribed());
-                List<Opinion> opinionProcessTrack = opinionRepository.findByTaskIdAndProcessTrackIdOrderByCreateDateDesc(taskId, pt.getId());
+                List<Opinion> opinionProcessTrack =
+                    opinionRepository.findByTaskIdAndProcessTrackIdOrderByCreateDateDesc(taskId, pt.getId());
                 mapTemp.put("opinion", opinionProcessTrack.isEmpty() ? "" : opinionProcessTrack.get(0).getContent());
                 mapTemp.put("historyVersion", pt.getDocVersion() == null ? "" : pt.getDocVersion());
                 mapTemp.put("taskId", taskId);
@@ -285,7 +294,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 mapTemp.put("endTime", pt.getEndTime() == null ? "" : pt.getEndTime());
                 try {
                     mapTemp.put("startTimes", sdf.parse(pt.getStartTime()).getTime());
-                    mapTemp.put("endTimes", StringUtils.isBlank(pt.getEndTime()) ? 0 : sdf.parse(pt.getEndTime()).getTime());
+                    mapTemp.put("endTimes",
+                        StringUtils.isBlank(pt.getEndTime()) ? 0 : sdf.parse(pt.getEndTime()).getTime());
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -338,7 +348,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         String name = (String)items.get(items.size() - 1).get("name");
         String seq = "串行办理";
         if (seq.equals(name)) {
-            HistoricVariableInstanceModel users = historicVariableManager.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, SysVariables.USERS, "");
+            HistoricVariableInstanceModel users = historicVariableManager
+                .getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, SysVariables.USERS, "");
             List<String> list = users != null ? (ArrayList<String>)users.getValue() : new ArrayList<String>();
             boolean start = false;
             String assigneeId = (String)items.get(items.size() - 1).get("assigneeId");
@@ -351,7 +362,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     }
                     if (start) {
                         Map<String, Object> map = new HashMap<String, Object>(16);
-                        Position employee = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), user);
+                        Position employee =
+                            positionManager.getPosition(Y9LoginUserHolder.getTenantId(), user).getData();
                         map.put("assignee", employee.getName());
                         map.put("name", "串行办理");
                         map.put("endTime", "");
@@ -372,7 +384,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     public List<Map<String, Object>> getListMap4Simple(String processInstanceId) {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<HistoricTaskInstanceModel> results = historicTaskManager.getByProcessInstanceId(tenantId, processInstanceId, "");
+        List<HistoricTaskInstanceModel> results =
+            historicTaskManager.getByProcessInstanceId(tenantId, processInstanceId, "");
         String year = "";
         if (results == null || results.size() == 0) {
             OfficeDoneInfo officeDoneInfoModel = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
@@ -399,16 +412,18 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             // 收件人
             String assignee = hai.getAssignee();
             if (StringUtils.isNotBlank(assignee)) {
-                Position employee = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assignee);
+                Position employee = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
                 String ownerId = hai.getOwner();
                 String employeeName = employee.getName();
                 // 恢复待办，如不是办结人恢复，Owner有值，需显示Owner
                 if (StringUtils.isNotBlank(ownerId)) {
-                    Position ownerUser = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), ownerId);
+                    Position ownerUser =
+                        positionManager.getPosition(Y9LoginUserHolder.getTenantId(), ownerId).getData();
                     employeeName = ownerUser.getName();
                 }
                 if (employee != null) {
-                    HistoricVariableInstanceModel zhuBan = historicVariableManager.getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLELSPONSOR, year);
+                    HistoricVariableInstanceModel zhuBan = historicVariableManager.getByTaskIdAndVariableName(tenantId,
+                        taskId, SysVariables.PARALLELSPONSOR, year);
                     if (zhuBan != null) {
                         map.put("assignee", employeeName + "(主办)");
                     } else {
@@ -423,7 +438,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     int j = 0;
                     for (IdentityLinkModel identityLink : iList) {
                         String assigneeId = identityLink.getUserId();
-                        Position ownerUser = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId);
+                        Position ownerUser =
+                            positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                         if (j < 5) {
                             assignees = Y9Util.genCustomStr(assignees, ownerUser.getName(), "、");
                         } else {
@@ -503,7 +519,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         String name = (String)items.get(items.size() - 1).get("name");
         String seq = "串行办理";
         if (name.equals(seq)) {
-            HistoricVariableInstanceModel users = historicVariableManager.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, SysVariables.USERS, "");
+            HistoricVariableInstanceModel users = historicVariableManager
+                .getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, SysVariables.USERS, "");
             List<String> list = users != null ? (ArrayList<String>)users.getValue() : new ArrayList<String>();
             boolean start = false;
             String assigneeId = (String)items.get(items.size() - 1).get("assigneeId");
@@ -516,7 +533,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     }
                     if (start) {
                         Map<String, Object> map = new HashMap<String, Object>(16);
-                        Position employee = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), user);
+                        Position employee =
+                            positionManager.getPosition(Y9LoginUserHolder.getTenantId(), user).getData();
                         map.put("assignee", employee.getName());
                         map.put("name", "串行办理");
                         map.put("endTime", "");

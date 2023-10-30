@@ -327,7 +327,7 @@ public class ButtonOperationRestController {
             String userNames = "";
             for (Object obj : users) {// 获取下一任务的所有办理人，办理顺序为list的顺序
                 String userId = obj.toString();
-                Position employee = positionManager.getPosition(tenantId, userId);
+                Position employee = positionManager.getPosition(tenantId, userId).getData();
                 if (userId.equals(taskModel.getAssignee())) {
                     userNames = "<font color='red'>" + employee.getName() + "</font>";
                 } else {
@@ -403,7 +403,8 @@ public class ButtonOperationRestController {
             if (multiInstance.equals(SysVariables.COMMON)) {// 普通单实例
                 for (int i = 0; i < users.size(); i++) {
                     Map<String, Object> map = new HashMap<String, Object>(16);
-                    Position employee = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), users.get(i));
+                    Position employee =
+                        positionManager.getPosition(Y9LoginUserHolder.getTenantId(), users.get(i)).getData();
                     map.put("user", employee.getName());
                     map.put("order", "");
                     if (StringUtils.isBlank(taskModel.getAssignee())) {// 办理人为空，改件未被签收
@@ -421,7 +422,8 @@ public class ButtonOperationRestController {
                 Boolean isEnd = true;
                 for (int i = 0; i < users.size(); i++) {// 获取下一任务的所有办理人，办理顺序为list的顺序
                     Map<String, Object> map = new HashMap<String, Object>(16);
-                    Position employee = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), users.get(i));
+                    Position employee =
+                        positionManager.getPosition(Y9LoginUserHolder.getTenantId(), users.get(i)).getData();
                     map.put("user", employee.getName());
                     map.put("order", i + 1);
                     if (users.get(i).equals(taskModel.getAssignee())) {
@@ -458,7 +460,7 @@ public class ButtonOperationRestController {
                     if (((timediff >= -3000 && timediff <= 3000) && taskModel.getName().equals(hai.getName()))
                         || hai.getEndTime() == null) {
                         Map<String, Object> map = new HashMap<String, Object>(16);
-                        Position employee = positionManager.getPosition(tenantId, hai.getAssignee());
+                        Position employee = positionManager.getPosition(tenantId, hai.getAssignee()).getData();
                         map.put("user", employee.getName());
                         Date endTime = hai.getEndTime();
                         String parallelSponsorObj = null;

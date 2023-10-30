@@ -82,7 +82,7 @@ public class TaoHongTemplateTypeServiceImpl implements TaoHongTemplateTypeServic
 
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
-        OrgUnit orgUnit = personManager.getBureau(tenantId, personId);
+        OrgUnit orgUnit = personManager.getBureau(tenantId, personId).getData();
         TaoHongTemplateType thtNew = new TaoHongTemplateType();
         thtNew.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         thtNew.setBureauId(orgUnit.getId());

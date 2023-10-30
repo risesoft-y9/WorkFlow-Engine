@@ -220,8 +220,8 @@ public class ProcessModelVueController {
             }
         } else {
             Map<String, Object> mapTemp = null;
-            List<Resource> resourceList =
-                personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId);
+            List<Resource> resourceList = personResourceApi
+                .listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
             for (AbstractModel model : list) {
                 for (Resource resource : resourceList) {
                     if (resource.getCustomId().equals(model.getKey())) {

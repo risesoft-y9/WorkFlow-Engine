@@ -148,7 +148,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 m.put("personId", transactionFile.getPersonId());
                 m.put("personName", transactionFile.getPersonName());
                 m.put("positionId", transactionFile.getPositionId());
-                Position position = positionManager.getPosition(processSerialNumber, transactionFile.getPositionId());
+                Position position =
+                    positionManager.getPosition(processSerialNumber, transactionFile.getPositionId()).getData();
                 m.put("positionName", position != null ? position.getName() : "");
                 m.put("deptId", transactionFile.getDeptId());
                 m.put("deptName", transactionFile.getDeptName());
@@ -252,8 +253,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 file.setName(map.get("fileName").toString());
                 file.setPersonId(map.get("personId") == null ? "" : map.get("personId").toString());
                 file.setPersonName(map.get("personName") == null ? "" : map.get("personName").toString());
-                Department department =
-                    departmentManager.getDepartment(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId());
+                Department department = departmentManager
+                    .getDepartment(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
                 file.setDeptId(Y9LoginUserHolder.getDeptId());
                 file.setDeptName(department != null ? department.getName() : "");
                 file.setProcessSerialNumber(processSerialNumber);
@@ -314,8 +315,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             transactionFile.setPersonId(person.getPersonId());
             transactionFile.setFileStoreId(y9FileStore.getId());
             transactionFile.setFileType(fileType);
-            Department department =
-                departmentManager.getDepartment(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId());
+            Department department = departmentManager
+                .getDepartment(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
             transactionFile.setDeptId(Y9LoginUserHolder.getDeptId());
             transactionFile.setDeptName(department != null ? department.getName() : "");
             transactionFileRepository.save(transactionFile);
@@ -352,8 +353,9 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             transactionFile.setPersonName(Y9LoginUserHolder.getUserInfo().getName());
             transactionFile.setPersonId(Y9LoginUserHolder.getPersonId());
             transactionFile.setPositionId(Y9LoginUserHolder.getPositionId());
-            Department department = departmentManager.getDepartment(Y9LoginUserHolder.getTenantId(),
-                Y9LoginUserHolder.getPosition().getParentId());
+            Department department = departmentManager
+                .getDepartment(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPosition().getParentId())
+                .getData();
             transactionFile.setDeptId(department != null ? department.getId() : "");
             transactionFile.setDeptName(department != null ? department.getName() : "");
             transactionFile.setFileStoreId(y9FileStoreId);

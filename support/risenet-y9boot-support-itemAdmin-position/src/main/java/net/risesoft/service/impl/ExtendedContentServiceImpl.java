@@ -194,7 +194,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId();
             String departmentId = person.getParentId();
-            OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, departmentId);
+            OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, departmentId).getData();
             if (StringUtils.isBlank(id)) {
                 ExtendedContent extendedContent = new ExtendedContent();
                 extendedContent.setDepartmentName(orgUnit.getName());

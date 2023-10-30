@@ -118,7 +118,7 @@ public class ReminderServiceImpl implements ReminderService {
             if (null != historicTaskTemp) {
                 map.put("taskName", historicTaskTemp.getName());
                 if (StringUtils.isNotBlank(historicTaskTemp.getAssignee())) {
-                    personTemp = personManager.getPerson(tenantId, historicTaskTemp.getAssignee());
+                    personTemp = personManager.getPerson(tenantId, historicTaskTemp.getAssignee()).getData();
                     if (null != personTemp) {
                         map.put("userName", personTemp.getName() + (personTemp.getDisabled() ? "(已禁用)" : ""));
                     }
@@ -172,7 +172,7 @@ public class ReminderServiceImpl implements ReminderService {
             if (null != taskTemp) {
                 map.put("taskName", taskTemp.getName());
                 if (StringUtils.isNotBlank(taskTemp.getAssignee())) {
-                    personTemp = personManager.getPerson(tenantId, taskTemp.getAssignee());
+                    personTemp = personManager.getPerson(tenantId, taskTemp.getAssignee()).getData();
                     if (null != personTemp) {
                         map.put("userName", personTemp.getName() + (personTemp.getDisabled() ? "(已禁用)" : ""));
                     }
@@ -207,7 +207,7 @@ public class ReminderServiceImpl implements ReminderService {
         SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         TaskModel taskTemp = taskManager.findById(tenantId, taskId);
-        Person personTemp = personManager.getPerson(tenantId, taskTemp.getAssignee());
+        Person personTemp = personManager.getPerson(tenantId, taskTemp.getAssignee()).getData();
         for (Reminder reminder : reminderList) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("id", reminder.getId());
@@ -276,7 +276,8 @@ public class ReminderServiceImpl implements ReminderService {
                 try {
                 } catch (Exception e) {
                     logger.error("email error", e.getMessage());
-                    Person errEmployee = personManager.getPerson(Y9LoginUserHolder.getTenantId(), taskAssigneeIds[i]);
+                    Person errEmployee =
+                        personManager.getPerson(Y9LoginUserHolder.getTenantId(), taskAssigneeIds[i]).getData();
                     emailErr += errEmployee.getName() + "、";
                 }
             }

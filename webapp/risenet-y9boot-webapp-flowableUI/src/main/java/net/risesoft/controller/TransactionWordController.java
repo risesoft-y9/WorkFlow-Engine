@@ -378,7 +378,7 @@ public class TransactionWordController {
     /**
      * 套红模板
      *
-     * @param templateGUID
+     * @param templateGuid
      */
     @RequestMapping(value = "/openTaohongTemplate")
     @ResponseBody
@@ -566,7 +566,7 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/openTaoHong")
     public String openTaoHong(@RequestParam String activitiUser, Model model) {
-        OrgUnit currentBureau = personApi.getBureau(Y9LoginUserHolder.getTenantId(), activitiUser);
+        OrgUnit currentBureau = personApi.getBureau(Y9LoginUserHolder.getTenantId(), activitiUser).getData();
         model.addAttribute("currentBureauGuid", currentBureau.getId());
         model.addAttribute("tenantId", Y9LoginUserHolder.getTenantId());
         model.addAttribute("userId", Y9LoginUserHolder.getPersonId());

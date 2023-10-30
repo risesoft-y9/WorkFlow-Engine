@@ -132,7 +132,7 @@ public class OfficeFollowRestController {
                 ProcessParamModel processParamModel =
                     processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                 officeFollow.setGuid(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                OrgUnit orgUnit = departmentApi.getBureau(tenantId, userInfo.getParentId());
+                OrgUnit orgUnit = departmentApi.getBureau(tenantId, userInfo.getParentId()).getData();
                 officeFollow.setBureauId(orgUnit != null ? orgUnit.getId() : "");
                 officeFollow.setBureauName(orgUnit != null ? orgUnit.getName() : "");
                 officeFollow.setCreateTime(sdf.format(new Date()));
