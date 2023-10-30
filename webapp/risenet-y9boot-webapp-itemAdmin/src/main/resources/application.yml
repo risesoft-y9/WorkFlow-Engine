@@ -29,7 +29,7 @@ spring:
     cloud:
         nacos:
             config:
-                enabled: true
+                enabled: false
                 group: DEFAULT_GROUP
                 namespace: dev
                 server-addr: https://dev.youshengyun.com:443
