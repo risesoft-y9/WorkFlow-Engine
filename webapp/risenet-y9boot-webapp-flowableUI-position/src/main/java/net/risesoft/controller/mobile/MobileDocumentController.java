@@ -1,13 +1,16 @@
 package net.risesoft.controller.mobile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.tenant.TenantApi;
+import net.risesoft.model.OrgUnit;
+import net.risesoft.model.Tenant;
+import net.risesoft.model.user.UserInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +70,12 @@ public class MobileDocumentController {
 
     @Autowired
     private PositionRoleApi positionRoleApi;
+
+    @Autowired
+    private TenantApi tenantManager;
+
+    @Autowired
+    private PositionApi positionApi;
 
     @Autowired
     private Document4PositionApi documentManager;
@@ -156,6 +165,53 @@ public class MobileDocumentController {
             e.printStackTrace();
             map.put("msg", "发生异常");
             map.put(UtilConsts.SUCCESS, false);
+        }
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+        return;
+    }
+
+    /**
+     * 获取表单初始化的数据
+     * @param tenantId
+     * @param userId
+     * @param positionId
+     * @param response
+     */
+    @RequestMapping(value = "/getFormInitData")
+    public void getFormInitData(@RequestHeader("auth-tenantId") String tenantId,
+                                @RequestHeader("auth-userId") String userId,
+                                @RequestHeader("auth-positionId") String positionId,
+                                HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("msg", "获取表单初始化数据失败");
+        map.put("success", false);
+        try{
+            Person person = personManager.getPerson(tenantId,userId);
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String nowDate = sdf.format(date);
+            SimpleDateFormat yearsdf = new SimpleDateFormat("yyyyMMdd");
+            SimpleDateFormat sesdf = new SimpleDateFormat("HHmmss");
+            String year = yearsdf.format(date);
+            String second = sesdf.format(date);
+            String itemNumber = "〔" + year + "〕" + second + "号";
+            OrgUnit parent = positionApi.getParent(tenantId, positionId);
+            Tenant tenant = tenantManager.getById(tenantId);
+            /** 办件表单数据初始化 **/
+            map.put("deptName", parent.getName());// 创建部门
+            map.put("userName", person.getName());// 创建人
+            map.put("createDate", nowDate);// 创建日期
+            map.put("mobile", person.getMobile());// 联系电话
+            map.put("number", itemNumber);// 编号
+            map.put("tenantName", tenant.getName());// 租户名称
+            map.put("tenantId", tenant.getId());// 租户名称
+            map.put("number", itemNumber);// 编号
+            /** 办件表单数据初始化 **/
+            map.put("zihao", second + "号");// 编号
+            map.put("msg", "获取表单初始化数据成功");
+            map.put("success", true);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
         return;
