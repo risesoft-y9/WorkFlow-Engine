@@ -173,7 +173,7 @@ public class RemindInstanceRestController {
                 String taskName = task.getName();
                 mapTemp.put("taskId", taskId);
                 mapTemp.put("userName", StringUtils.isBlank(task.getAssignee()) ? ""
-                    : personApi.getPerson(tenantId, task.getAssignee()).getName());
+                    : personApi.getPerson(tenantId, task.getAssignee()).getData().getName());
                 mapTemp.put("taskName", taskName);
                 mapTemp.put("createTime", sdf.format(task.getCreateTime()));
                 mapTemp.put("duration", longTime(task.getCreateTime(), currentTime));

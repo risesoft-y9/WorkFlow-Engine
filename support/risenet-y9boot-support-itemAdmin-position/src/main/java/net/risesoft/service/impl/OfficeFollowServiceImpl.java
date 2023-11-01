@@ -109,7 +109,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position position = positionManager.getPosition(tenantId, assignee);
+                        Position position = positionManager.getPosition(tenantId, assignee).getData();
                         if (position != null) {
                             assigneeNames = position.getName();
                         }
@@ -124,7 +124,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Position position = positionManager.getPosition(tenantId, assignee);
+                            Position position = positionManager.getPosition(tenantId, assignee).getData();
                             if (position != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, position.getName(), "、");
                             }

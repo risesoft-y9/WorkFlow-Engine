@@ -124,10 +124,11 @@ public class OpinionRestController {
     public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = false) String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        OrgUnit bureau = personApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId());
+        OrgUnit bureau = personApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
         if (bureau != null) {
             List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
-            orgUnitList = orgUnitApi.treeSearchByDn(tenantId, name, TreeTypeConsts.TREE_TYPE_PERSON, bureau.getDn());
+            orgUnitList =
+                orgUnitApi.treeSearchByDn(tenantId, name, TreeTypeConsts.TREE_TYPE_PERSON, bureau.getDn()).getData();
             for (OrgUnit orgUnit : orgUnitList) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 map.put("id", orgUnit.getId());
@@ -136,7 +137,7 @@ public class OpinionRestController {
                 map.put("parentId", orgUnit.getParentId());
                 map.put("isParent", true);
                 if ("Person".equals(orgUnit.getOrgType())) {
-                    Person per = personApi.getPerson(Y9LoginUserHolder.getTenantId(), orgUnit.getId());
+                    Person per = personApi.getPerson(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                     if (per.getDisabled()) {
                         continue;
                     }
@@ -177,7 +178,7 @@ public class OpinionRestController {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(id)) {
-            OrgUnit orgUnit = personApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId());
+            OrgUnit orgUnit = personApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
             if (orgUnit != null) {
                 Map<String, Object> m = new HashMap<String, Object>(16);
                 id = orgUnit.getId();
@@ -189,7 +190,7 @@ public class OpinionRestController {
                 item.add(m);
             }
         } else {
-            List<OrgUnit> list = orgUnitApi.getSubTree(tenantId, id, "tree_type_org");
+            List<OrgUnit> list = orgUnitApi.getSubTree(tenantId, id, "tree_type_org").getData();
             for (OrgUnit orgUnit : list) {
                 Map<String, Object> m = new HashMap<String, Object>(16);
                 m.put("id", orgUnit.getId());
@@ -199,7 +200,7 @@ public class OpinionRestController {
                 m.put("isParent", true);
                 if (orgUnit.getOrgType().equals("Person")) {
                     m.put("isParent", false);
-                    Person person = personApi.getPerson(tenantId, orgUnit.getId());
+                    Person person = personApi.getPerson(tenantId, orgUnit.getId()).getData();
                     if (person.getDisabled()) {
                         continue;
                     }
@@ -214,8 +215,8 @@ public class OpinionRestController {
     }
 
     public OrgUnit getParent(String tenantId, String nodeId, String parentId) {
-        Organization parent = organizationApi.getOrganization(tenantId, parentId);
-        return parent.getId() != null ? parent : departmentApi.getDepartment(tenantId, parentId);
+        Organization parent = organizationApi.getOrganization(tenantId, parentId).getData();
+        return parent.getId() != null ? parent : departmentApi.getDepartment(tenantId, parentId).getData();
     }
 
     /**
@@ -254,8 +255,8 @@ public class OpinionRestController {
             map.put("opinion", opinion);
             map.put("date", opinion.getCreateDate());
         }
-        boolean hasRole =
-            personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", userInfo.getPersonId());
+        boolean hasRole = personRoleApi
+            .hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", userInfo.getPersonId()).getData();
         map.put("hasRole", hasRole);
         return Y9Result.success(map, "获取成功");
     }

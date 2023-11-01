@@ -52,7 +52,7 @@ public class KafkaConsumer {
                 tenantId = targetTenantId;
                 String itemId = (String)map.get("itemId");
                 String personId = (String)map.get("personId");
-                OrgUnit orgUnit = orgUnitApi.getOrgUnit(targetTenantId, personId);
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(targetTenantId, personId).getData();
                 UserInfo userInfo = new UserInfo();
                 userInfo.setPersonId(orgUnit.getId());
                 userInfo.setName(orgUnit.getName());
@@ -69,7 +69,7 @@ public class KafkaConsumer {
                 tenantId = targetTenantId;
                 String systemName = (String)map.get("systemName");
                 String personId = (String)map.get("personId");
-                OrgUnit orgUnit = orgUnitApi.getOrgUnit(targetTenantId, personId);
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(targetTenantId, personId).getData();
                 UserInfo userInfo = new UserInfo();
                 userInfo.setPersonId(orgUnit.getId());
                 userInfo.setName(orgUnit.getName());

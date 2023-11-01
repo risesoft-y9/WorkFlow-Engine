@@ -88,7 +88,7 @@ public class Y9ValidTypeServiceImpl implements Y9ValidTypeService {
                 m.put("validName", y9VlidType.getValidName());
                 m.put("validType", y9VlidType.getValidType());
                 String personId = y9VlidType.getPersonId();
-                Person person = personManager.getPerson(Y9LoginUserHolder.getTenantId(), personId);
+                Person person = personManager.getPerson(Y9LoginUserHolder.getTenantId(), personId).getData();
                 m.put("personName", person.getName());
                 m.put("updateTime", sdf.format(y9VlidType.getUpdateTime()));
                 resList.add(m);

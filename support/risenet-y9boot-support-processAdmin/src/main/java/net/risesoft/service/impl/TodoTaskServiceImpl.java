@@ -169,13 +169,13 @@ public class TodoTaskServiceImpl implements TodoTaskService {
                 String senderDepartmentId = "";
                 String receiverDepartmentId = "";
                 String assigneeName = "";
-                OrgUnit receiverPerson = orgUnitManager.getOrgUnit(tenantId, assignee);
-                OrgUnit senderPerson = orgUnitManager.getOrgUnit(tenantId, taskSenderId);
+                OrgUnit receiverPerson = orgUnitManager.getOrgUnit(tenantId, assignee).getData();
+                OrgUnit senderPerson = orgUnitManager.getOrgUnit(tenantId, taskSenderId).getData();
                 senderDepartmentId = senderPerson.getParentId();
                 receiverDepartmentId = receiverPerson.getParentId();
                 assigneeName = receiverPerson.getName();
-                OrgUnit senderOrgUnit = orgUnitManager.getOrgUnit(tenantId, senderDepartmentId);
-                OrgUnit receiverOrgUnit = orgUnitManager.getOrgUnit(tenantId, receiverDepartmentId);
+                OrgUnit senderOrgUnit = orgUnitManager.getOrgUnit(tenantId, senderDepartmentId).getData();
+                OrgUnit receiverOrgUnit = orgUnitManager.getOrgUnit(tenantId, receiverDepartmentId).getData();
                 String systemName = processParamModel.getSystemName();
                 String systemCnName = processParamModel.getSystemCnName();
                 String todoTaskUrlPrefix = processParamModel.getTodoTaskUrlPrefix();

@@ -103,8 +103,7 @@ public class WordTemplateRestController {
      * @param request
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam String id, HttpServletResponse response,
-        HttpServletRequest request) {
+    public void download(@RequestParam String id, HttpServletResponse response, HttpServletRequest request) {
         wordTemplateService.download(id, response, request);
     }
 
@@ -196,7 +195,7 @@ public class WordTemplateRestController {
             list = wordTemplateService.findAll();
         } else {
             list = wordTemplateService
-                .findByBureauIdOrderByUploadTimeDesc(personManager.getBureau(tenantId, personId).getId());
+                .findByBureauIdOrderByUploadTimeDesc(personManager.getBureau(tenantId, personId).getData().getId());
         }
         List<Map<String, Object>> items = new ArrayList<>();
         for (WordTemplate wordTemplate : list) {

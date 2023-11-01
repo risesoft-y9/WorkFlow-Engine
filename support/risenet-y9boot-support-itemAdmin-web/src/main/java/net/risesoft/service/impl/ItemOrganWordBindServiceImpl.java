@@ -173,7 +173,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             String roleNames = "";
             for (ItemOrganWordRole role : roleList) {
                 roleIds.add(role.getId());
-                Role r = roleManager.getRole(role.getRoleId());
+                Role r = roleManager.getRole(role.getRoleId()).getData();
                 if (StringUtils.isEmpty(roleNames)) {
                     roleNames = null == r ? "角色不存在" : r.getName();
                 } else {

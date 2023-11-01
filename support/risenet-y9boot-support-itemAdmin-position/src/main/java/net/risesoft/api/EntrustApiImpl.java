@@ -54,10 +54,12 @@ public class EntrustApiImpl implements Entrust4PositionApi {
     }
 
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void saveOrUpdate(String tenantId, String positionId, @RequestBody EntrustModel entrustModel) throws Exception {
+    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void saveOrUpdate(String tenantId, String positionId, @RequestBody EntrustModel entrustModel)
+        throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.getPosition(tenantId, positionId);
+        Position position = positionApi.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Entrust entrust = new Entrust();
         Y9BeanUtil.copyProperties(entrustModel, entrust);

@@ -177,7 +177,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
         if (StringUtils.isNotEmpty(id)) {
             WordTemplate oldWord = this.findById(id);
             if (null != oldWord) {
-                oldWord.setBureauId(personManager.getBureau(tenantId, personId).getId());
+                oldWord.setBureauId(personManager.getBureau(tenantId, personId).getData().getId());
                 oldWord.setDescribes(wordTemplate.getDescribes());
                 oldWord.setFileName(wordTemplate.getFileName());
                 oldWord.setFilePath(wordTemplate.getFilePath());
@@ -196,7 +196,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
 
         WordTemplate newWord = new WordTemplate();
         newWord.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newWord.setBureauId(personManager.getBureau(tenantId, personId).getId());
+        newWord.setBureauId(personManager.getBureau(tenantId, personId).getData().getId());
         newWord.setDescribes(wordTemplate.getDescribes());
         newWord.setFileName(wordTemplate.getFileName());
         newWord.setFilePath(wordTemplate.getFilePath());
@@ -234,7 +234,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
                 Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
                 wordTemplate.setPersonId(userInfo.getPersonId());
                 wordTemplate.setPersonName(userInfo.getName());
-                wordTemplate.setBureauId(personManager.getBureau(tenantId, personId).getId());
+                wordTemplate.setBureauId(personManager.getBureau(tenantId, personId).getData().getId());
                 wordTemplate.setUploadTime(new Date());
                 wordTemplate.setDescribes("");
                 wordTemplate.setFilePath(y9FileStore.getId());

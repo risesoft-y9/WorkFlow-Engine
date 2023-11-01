@@ -66,7 +66,7 @@ public class MobileChaoSongController {
         String ids, String processInstanceId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         try {
             String[] id = ids.split(",");
@@ -97,7 +97,7 @@ public class MobileChaoSongController {
         @RequestParam(required = false) String id, @RequestParam(required = false) String processInstanceId,
         Integer status, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -140,7 +140,7 @@ public class MobileChaoSongController {
         @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         try {
@@ -171,7 +171,7 @@ public class MobileChaoSongController {
         @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         try {
@@ -202,7 +202,7 @@ public class MobileChaoSongController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             String senderId = person.getId();
             boolean b = "my".equals(type);
@@ -237,7 +237,7 @@ public class MobileChaoSongController {
         @RequestParam(required = false) String year, @RequestParam(required = false) String documentTitle,
         Integer status, int rows, int page, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -275,7 +275,7 @@ public class MobileChaoSongController {
         @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing,
         @RequestParam(required = false) String smsContent, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<>(1);
         try {

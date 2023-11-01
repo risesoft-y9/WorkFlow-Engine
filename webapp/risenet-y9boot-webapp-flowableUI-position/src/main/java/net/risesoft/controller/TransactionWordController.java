@@ -565,7 +565,7 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/openTaoHong")
     public String openTaoHong(@RequestParam String activitiUser, Model model) {
-        OrgUnit currentBureau = personManager.getBureau(Y9LoginUserHolder.getTenantId(), activitiUser);
+        OrgUnit currentBureau = personManager.getBureau(Y9LoginUserHolder.getTenantId(), activitiUser).getData();
         model.addAttribute("currentBureauGuid", currentBureau.getId());
         model.addAttribute("tenantId", Y9LoginUserHolder.getTenantId());
         model.addAttribute("userId", Y9LoginUserHolder.getPersonId());

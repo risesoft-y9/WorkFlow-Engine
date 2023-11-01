@@ -216,7 +216,7 @@ public class WpsRestController {
     public List<Map<String, Object>> taoHongTemplateList(@RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        OrgUnit currentBureau = personManager.getBureau(tenantId, userId);
+        OrgUnit currentBureau = personManager.getBureau(tenantId, userId).getData();
         String currentBureauGuid = currentBureau != null ? currentBureau.getId() : "";
         if (StringUtils.isBlank(currentBureauGuid)) {
             currentBureauGuid = person.getParentId();

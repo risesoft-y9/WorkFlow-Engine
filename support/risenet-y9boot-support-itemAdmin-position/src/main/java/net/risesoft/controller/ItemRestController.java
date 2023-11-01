@@ -134,11 +134,13 @@ public class ItemRestController {
     public void getJson(StringBuffer sb, String deptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(deptId)) {
-            List<Organization> orgList = organizationManager.listAllOrganizations(tenantId);
+            List<Organization> orgList = organizationManager.listAllOrganizations(tenantId).getData();
             if (orgList != null && orgList.size() > 0) {
-                List<Department> deptList = organizationManager.listDepartments(tenantId, orgList.get(0).getId());
+                List<Department> deptList =
+                    organizationManager.listDepartments(tenantId, orgList.get(0).getId()).getData();
                 for (Department dept : deptList) {
-                    List<Department> subDeptList = departmentManager.listSubDepartments(tenantId, dept.getId());
+                    List<Department> subDeptList =
+                        departmentManager.listSubDepartments(tenantId, dept.getId()).getData();
                     boolean isParent = false;
                     if (subDeptList != null && subDeptList.size() > 0) {
                         isParent = true;
@@ -148,9 +150,9 @@ public class ItemRestController {
                 }
             }
         } else {
-            List<Department> deptList = departmentManager.listSubDepartments(tenantId, deptId);
+            List<Department> deptList = departmentManager.listSubDepartments(tenantId, deptId).getData();
             for (Department dept : deptList) {
-                List<Department> subDeptList = departmentManager.listSubDepartments(tenantId, dept.getId());
+                List<Department> subDeptList = departmentManager.listSubDepartments(tenantId, dept.getId()).getData();
                 boolean isParent = false;
                 if (subDeptList != null && subDeptList.size() > 0) {
                     isParent = true;
@@ -229,7 +231,7 @@ public class ItemRestController {
     @RequestMapping(value = "/readAppIconFile", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> readAppIconFile() {
         List<Map<String, String>> iconList = null;
-        List<AppIcon> list = appIconManager.listAllIcon();
+        List<AppIcon> list = appIconManager.listAllIcon().getData();
         iconList = new ArrayList<Map<String, String>>();
         if (list != null) {
             for (AppIcon appicon : list) {
@@ -248,7 +250,7 @@ public class ItemRestController {
     /**
      * 保存事项
      *
-     * @param item 事项信息
+     * @param itemJson 事项信息json
      * @return
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
@@ -271,7 +273,7 @@ public class ItemRestController {
     @RequestMapping(value = "/searchAppIcon", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public Y9Result<Map<String, Object>> searchAppIcon(@RequestParam(required = false) String name) {
-        List<AppIcon> list = appIconManager.searchAppIcon("%" + name + "%");
+        List<AppIcon> list = appIconManager.searchAppIcon("%" + name + "%").getData();
         List<Map<String, String>> iconList = new ArrayList<Map<String, String>>();
         if (list != null) {
             for (AppIcon appicon : list) {

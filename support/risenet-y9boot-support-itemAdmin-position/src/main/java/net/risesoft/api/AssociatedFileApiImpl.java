@@ -127,7 +127,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber,
         String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         boolean b = associatedFileService.saveAssociatedFile(processSerialNumber, processInstanceIds);
         return b;

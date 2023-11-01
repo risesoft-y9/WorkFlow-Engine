@@ -130,7 +130,7 @@ public class MobileDocumentController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map = documentManager.add(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), itemId, true);
             // 意见框？？？？？？？？？？
@@ -150,7 +150,7 @@ public class MobileDocumentController {
                 opinionFrameMap.put("opinionFrameName", bind.getOpinionFrameName());
                 List<String> roleIds = bind.getRoleIds();
                 for (String roleId : roleIds) {
-                    Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, person.getId());
+                    Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, person.getId()).getData();
                     if (hasRole) {
                         opinionFrameMap.put("hasRole", hasRole);
                         break;
@@ -193,7 +193,7 @@ public class MobileDocumentController {
         @RequestHeader("auth-userId") String userId, String processSerialNumber, String processInstanceId,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<>(16);
         boolean b =
@@ -223,7 +223,7 @@ public class MobileDocumentController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId));
+            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId).getData());
             if (StringUtils.isNotBlank(processInstanceId)) {
                 map = documentManager.edit(tenantId, userId, itembox, taskId, processInstanceId, itemId, true);
             } else {// 打开草稿
@@ -268,7 +268,7 @@ public class MobileDocumentController {
         map.put(UtilConsts.SUCCESS, false);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId));
+            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId).getData());
             if (StringUtils.isNotBlank(taskId)) {
                 TaskModel taskModel = taskManager.findById(tenantId, taskId);
                 if (taskModel != null && taskModel.getId() != null) {
@@ -325,7 +325,7 @@ public class MobileDocumentController {
         @RequestParam String processInstanceId, @RequestParam(required = false) String id, @RequestParam String itemId,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(processDefinitionId) || StringUtils.isBlank(itemId)) {
@@ -345,7 +345,7 @@ public class MobileDocumentController {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param itemId 事项id
-     * @param temp_Ids 表单ids
+     * @param tempIds 表单ids
      * @param taskId 任务id
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
@@ -373,7 +373,7 @@ public class MobileDocumentController {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "发送成功");
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(Y9LoginUserHolder.getTenantId(), userId);
+            Person person = personApi.getPerson(Y9LoginUserHolder.getTenantId(), userId).getData();
             Y9LoginUserHolder.setPerson(person);
             formJsonData = formJsonData.replace("\n", "\\n");
             formJsonData = formJsonData.replace("\r", "\\r");
@@ -437,7 +437,7 @@ public class MobileDocumentController {
         @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String processSerialNumber,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<>(16);
         map = associatedFileManager.getAssociatedFileList(tenantId, userId, processSerialNumber);
@@ -463,7 +463,7 @@ public class MobileDocumentController {
         map.put(UtilConsts.SUCCESS, true);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId));
+            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId).getData());
             if (StringUtils.isNotBlank(taskId)) {
                 TaskModel taskModel = taskManager.findById(tenantId, taskId);
                 ProcessParamModel processParam =
@@ -522,7 +522,7 @@ public class MobileDocumentController {
         @RequestParam String taskId, @RequestParam String taskDefKey, @RequestParam String itemId,
         @RequestParam String processInstanceId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<>(16);
         try {
@@ -557,7 +557,7 @@ public class MobileDocumentController {
         String userId = "a0077f35d2384f738f07ba8e70e7be3b";
         String userName = "翟宏伟";
         String deptId = "2a84e7666816419f950a03b9a9b0d07b";
-        Department department = departmentApi.getDepartment(tenantId, deptId);
+        Department department = departmentApi.getDepartment(tenantId, deptId).getData();
         String deptName = department.getName();
         String itemId = Y9Context.getProperty("y9.app.flowable.dzxhLyspItemId");
         String tempIds = Y9Context.getProperty("y9.app.flowable.dzxhLyspFormId");
@@ -587,7 +587,7 @@ public class MobileDocumentController {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "发送成功");
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             formJsonData = formJsonData.replace("\n", "\\n");
             formJsonData = formJsonData.replace("\r", "\\r");
@@ -641,7 +641,7 @@ public class MobileDocumentController {
         @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String processSerialNumber,
         @RequestParam(required = false) String processInstanceIds, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<>(16);
         boolean b = associatedFileManager.saveAssociatedFile(tenantId, userId, processSerialNumber, processInstanceIds);
@@ -656,7 +656,7 @@ public class MobileDocumentController {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param itemId 事项id
-     * @param temp_Ids 表单ids
+     * @param tempIds 表单ids
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
      * @param processInstanceId 流程实例id
@@ -676,7 +676,7 @@ public class MobileDocumentController {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "保存成功");
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(Y9LoginUserHolder.getTenantId(), userId);
+            Person person = personApi.getPerson(Y9LoginUserHolder.getTenantId(), userId).getData();
             Y9LoginUserHolder.setPerson(person);
             formJsonData = formJsonData.replace("\n", "\\n");
             formJsonData = formJsonData.replace("\r", "\\r");

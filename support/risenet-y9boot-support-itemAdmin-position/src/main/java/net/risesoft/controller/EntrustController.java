@@ -69,17 +69,17 @@ public class EntrustController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
-        OrgUnit orgUnit = personManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId());
+        OrgUnit orgUnit = personManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
         if (OrgTypeEnum.DEPARTMENT.getEnName().equals(orgUnit.getOrgType())) {
             List<Person> personList =
-                departmentManager.listAllPersonsByDisabledAndName(tenantId, orgUnit.getId(), false, name);
+                departmentManager.listAllPersonsByDisabledAndName(tenantId, orgUnit.getId(), false, name).getData();
             for (Person person : personList) {
                 orgUnitList.add(person);
-                Person p = personManager.getPerson(tenantId, person.getId());
+                Person p = personManager.getPerson(tenantId, person.getId()).getData();
                 this.recursionUpToOrg(tenantId, orgUnit.getId(), p.getParentId(), orgUnitList, false);
             }
         } else {
-            orgUnitList = orgUnitManager.treeSearch(tenantId, name, TreeTypeConsts.TREE_TYPE_PERSON);
+            orgUnitList = orgUnitManager.treeSearch(tenantId, name, TreeTypeConsts.TREE_TYPE_PERSON).getData();
         }
         for (OrgUnit orgUnit0 : orgUnitList) {
             Map<String, Object> map = new HashMap<String, Object>(16);
@@ -89,7 +89,7 @@ public class EntrustController {
             map.put("parentID", orgUnit0.getParentId());
             map.put("isParent", true);
             if ("Person".equals(orgUnit0.getOrgType())) {
-                Person per = personManager.getPerson(Y9LoginUserHolder.getTenantId(), orgUnit0.getId());
+                Person per = personManager.getPerson(Y9LoginUserHolder.getTenantId(), orgUnit0.getId()).getData();
                 map.put("sex", per.getSex());
                 map.put("duty", per.getDuty());
                 map.put("isParent", false);
@@ -110,7 +110,7 @@ public class EntrustController {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(id)) {
-            OrgUnit orgUnit = personManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId());
+            OrgUnit orgUnit = personManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
             if (orgUnit != null && orgUnit.getId() != null) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 id = orgUnit.getId();
@@ -124,7 +124,7 @@ public class EntrustController {
         }
         if (StringUtils.isNotBlank(id)) {
             List<OrgUnit> orgList = new ArrayList<OrgUnit>();
-            orgList = orgUnitManager.getSubTree(tenantId, id, TreeTypeConsts.TREE_TYPE_PERSON);
+            orgList = orgUnitManager.getSubTree(tenantId, id, TreeTypeConsts.TREE_TYPE_PERSON).getData();
             for (OrgUnit orgunit : orgList) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 String orgunitId = orgunit.getId();
@@ -135,7 +135,7 @@ public class EntrustController {
                 if ("Department".equals(orgunit.getOrgType())) {
                     map.put("isParent", true);
                 } else if ("Person".equals(orgunit.getOrgType())) {
-                    Person person = personManager.getPerson(tenantId, orgunit.getId());
+                    Person person = personManager.getPerson(tenantId, orgunit.getId()).getData();
                     map.put("isParent", false);
                     map.put("sex", person.getSex());
                     map.put("duty", person.getDuty());
@@ -187,8 +187,8 @@ public class EntrustController {
     }
 
     public OrgUnit getParent(String tenantId, String nodeId, String parentId) {
-        Organization parent = organizationManager.getOrganization(tenantId, parentId);
-        return parent.getId() != null ? parent : departmentManager.getDepartment(tenantId, parentId);
+        Organization parent = organizationManager.getOrganization(tenantId, parentId).getData();
+        return parent.getId() != null ? parent : departmentManager.getDepartment(tenantId, parentId).getData();
     }
 
     /**

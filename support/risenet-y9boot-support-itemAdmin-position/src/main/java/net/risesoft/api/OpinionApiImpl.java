@@ -164,7 +164,7 @@ public class OpinionApiImpl implements Opinion4PositionApi {
     public List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber,
         String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey,
         String activitiUser) {
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = opinionService.personCommentList(processSerialNumber, taskId, itembox,
@@ -203,10 +203,10 @@ public class OpinionApiImpl implements Opinion4PositionApi {
         consumes = MediaType.APPLICATION_JSON_VALUE)
     public OpinionModel saveOrUpdate(String tenantId, String userId, String positionId,
         @RequestBody OpinionModel opinionModel) throws Exception {
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Opinion opinion = new Opinion();
         Y9BeanUtil.copyProperties(opinionModel, opinion);

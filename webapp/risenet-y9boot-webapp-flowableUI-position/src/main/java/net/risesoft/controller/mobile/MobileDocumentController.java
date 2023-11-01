@@ -149,7 +149,7 @@ public class MobileDocumentController {
                 opinionFrameMap.put("opinionFrameName", bind.getOpinionFrameName());
                 List<String> roleIds = bind.getRoleIds();
                 for (String roleId : roleIds) {
-                    Boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, positionId);
+                    Boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, positionId).getData();
                     if (hasRole) {
                         opinionFrameMap.put("hasRole", hasRole);
                         break;
@@ -193,7 +193,7 @@ public class MobileDocumentController {
         map.put("msg", "获取表单初始化数据失败");
         map.put("success", false);
         try {
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             Date date = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String nowDate = sdf.format(date);
@@ -202,8 +202,8 @@ public class MobileDocumentController {
             String year = yearsdf.format(date);
             String second = sesdf.format(date);
             String itemNumber = "〔" + year + "〕" + second + "号";
-            OrgUnit parent = positionApi.getParent(tenantId, positionId);
-            Tenant tenant = tenantManager.getById(tenantId);
+            OrgUnit parent = positionApi.getParent(tenantId, positionId).getData();
+            Tenant tenant = tenantManager.getById(tenantId).getData();
             /** 办件表单数据初始化 **/
             map.put("deptName", parent.getName());// 创建部门
             map.put("userName", person.getName());// 创建人
@@ -268,7 +268,7 @@ public class MobileDocumentController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             if (StringUtils.isNotBlank(processInstanceId)) {// 打开办件
                 map = documentManager.edit(tenantId, positionId, itembox, taskId, processInstanceId, itemId, true);
@@ -315,7 +315,7 @@ public class MobileDocumentController {
         map.put(UtilConsts.SUCCESS, false);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Y9LoginUserHolder.setPerson(personManager.getPerson(tenantId, userId));
+            Y9LoginUserHolder.setPerson(personManager.getPerson(tenantId, userId).getData());
             if (StringUtils.isNotBlank(taskId)) {// 打开办件
                 TaskModel taskModel = taskManager.findById(tenantId, taskId);
                 if (taskModel != null && taskModel.getId() != null) {

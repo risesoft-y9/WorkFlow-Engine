@@ -72,9 +72,9 @@ public class ItemMultiTenantListener implements ApplicationListener<Y9EventCommo
     private void creatApp(String systemName) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            net.risesoft.model.System y9System = systemApi.getByName(systemName);
+            net.risesoft.model.System y9System = systemApi.getByName(systemName).getData();
             if (null != y9System) {
-                App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian");
+                App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian").getData();
                 if (null == app) {
                     String sql =
                         "INSERT INTO y9_common_app_store (ID,NAME, TAB_INDEX, URL, CHECKED, OPEN_TYPE,SYSTEM_ID,CREATE_TIME,CUSTOM_ID,TYPE,INHERIT,RESOURCE_TYPE,SHOW_NUMBER,ENABLED,HIDDEN) VALUES ('"
@@ -91,9 +91,9 @@ public class ItemMultiTenantListener implements ApplicationListener<Y9EventCommo
 
     private void createTenantApp(String systemName, Tenant tenant) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        net.risesoft.model.System y9System = systemApi.getByName(systemName);
+        net.risesoft.model.System y9System = systemApi.getByName(systemName).getData();
         if (null != y9System) {
-            App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian");
+            App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian").getData();
             if (null != app) {
                 String sql = "select ID from y9_common_tenant_app where TENANT_ID = '" + tenant.getId()
                     + "' and APP_ID = '" + app.getId() + "'";
@@ -122,7 +122,7 @@ public class ItemMultiTenantListener implements ApplicationListener<Y9EventCommo
         if (Y9CommonEventConst.TENANT_SYSTEM_REGISTERED.equals(eventType) && Y9Context.getSystemName().equals(target)) {
             String tenantId = event.getEventObject().toString();
             LOGGER.info("租户:{}租用itemAdmin 初始化数据.........", tenantId);
-            Tenant tenant = tenantApi.getById(tenantId);
+            Tenant tenant = tenantApi.getById(tenantId).getData();
             creatApp("itemAdmin");
             createTenantApp("itemAdmin", tenant);
             try {

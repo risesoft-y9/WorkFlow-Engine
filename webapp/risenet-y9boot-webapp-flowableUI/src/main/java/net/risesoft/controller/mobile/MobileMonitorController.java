@@ -148,7 +148,7 @@ public class MobileMonitorController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
         } catch (Exception e) {
             map.put("msg", "发生异常");
@@ -206,7 +206,7 @@ public class MobileMonitorController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
         } catch (Exception e) {
             map.put("msg", "发生异常");
@@ -235,7 +235,7 @@ public class MobileMonitorController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map = monitorService.monitorRecycleList(itemId, title, page, rows);
         } catch (Exception e) {

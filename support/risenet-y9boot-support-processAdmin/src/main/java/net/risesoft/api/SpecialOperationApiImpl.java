@@ -55,7 +55,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
     public void reposition(String tenantId, String userId, String taskId, String targetTaskDefineKey,
         @RequestBody List<String> users, String reason, String sponsorGuid) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
         operationService.reposition(taskId, targetTaskDefineKey, users, reason, sponsorGuid);
@@ -80,7 +80,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         operationService.reposition4Position(taskId, repositionToTaskId, userChoice, reason, sponsorGuid);
     }
@@ -99,7 +99,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
     public void rollBack(String tenantId, String userId, String taskId, String reason) throws Exception {
         try {
             FlowableTenantInfoHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Y9LoginUserHolder.setTenantId(tenantId);
             operationService.rollBack(taskId, reason);
@@ -123,7 +123,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         try {
             FlowableTenantInfoHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setTenantId(tenantId);
-            Position position = positionManager.getPosition(tenantId, positionId);
+            Position position = positionManager.getPosition(tenantId, positionId).getData();
             Y9LoginUserHolder.setPosition(position);
             operationService.rollBack4Position(taskId, reason);
         } catch (Exception e) {
@@ -143,7 +143,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
     @PostMapping(value = "/rollbackToSender", produces = MediaType.APPLICATION_JSON_VALUE)
     public void rollbackToSender(String tenantId, String userId, String taskId) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
         operationService.rollbackToSender(taskId);
@@ -162,7 +162,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
     public void rollbackToSender4Position(String tenantId, String positionId, String taskId) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         operationService.rollbackToSender4Position(taskId);
     }
@@ -180,7 +180,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
     @PostMapping(value = "/rollbackToStartor", produces = MediaType.APPLICATION_JSON_VALUE)
     public void rollbackToStartor(String tenantId, String userId, String taskId, String reason) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
 
@@ -202,7 +202,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         operationService.rollbackToStartor4Position(taskId, reason);
     }
@@ -220,7 +220,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
     @PostMapping(value = "/specialComplete", produces = MediaType.APPLICATION_JSON_VALUE)
     public void specialComplete(String tenantId, String userId, String taskId, String reason) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
         operationService.specialComplete(taskId, reason);
@@ -241,7 +241,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         operationService.specialComplete4Position(taskId, reason);
     }
@@ -259,7 +259,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
     @PostMapping(value = "/takeBack", produces = MediaType.APPLICATION_JSON_VALUE)
     public void takeBack(String tenantId, String userId, String taskId, String reason) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
         operationService.takeBack(taskId, reason);
@@ -279,7 +279,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
     public void takeBack4Position(String tenantId, String positionId, String taskId, String reason) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         operationService.takeBack4Position(taskId, reason);
     }

@@ -187,9 +187,9 @@ public class RoleRestController {
 
     private void recursionAllPosition(String parentID, List<Position> list) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        list.addAll(departmentManager.listPositions(tenantId, parentID));
+        list.addAll(departmentManager.listPositions(tenantId, parentID).getData());
         if (list.size() < 101) {
-            List<Department> deptList = departmentManager.listSubDepartments(tenantId, parentID);
+            List<Department> deptList = departmentManager.listSubDepartments(tenantId, parentID).getData();
             for (Department dept : deptList) {
                 recursionAllPosition(dept.getId(), list);
             }

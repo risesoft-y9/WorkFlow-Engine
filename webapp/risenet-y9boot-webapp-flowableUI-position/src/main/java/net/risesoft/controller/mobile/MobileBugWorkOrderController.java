@@ -121,7 +121,7 @@ public class MobileBugWorkOrderController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
 
             Date date = new Date();
@@ -133,7 +133,7 @@ public class MobileBugWorkOrderController {
             String second = sesdf.format(date);
             String itemNumber = "〔" + year + "〕" + second + "号";
 
-            Tenant tenant = tenantManager.getById(Y9LoginUserHolder.getTenantId());
+            Tenant tenant = tenantManager.getById(Y9LoginUserHolder.getTenantId()).getData();
             WorkOrderModel workOrderModel = new WorkOrderModel();
             workOrderModel.setGuid(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             workOrderModel.setNumber(itemNumber);
@@ -304,7 +304,7 @@ public class MobileBugWorkOrderController {
         map.put("msg", "发送成功");
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             WorkOrderModel workOrderModel = workOrderManager.findByProcessSerialNumber(processSerialNumber);
             if (!workOrderModel.getHandleType().equals("1")) {
@@ -430,7 +430,7 @@ public class MobileBugWorkOrderController {
         HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
-            boolean workOrderManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId);
+            boolean workOrderManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId).getData();
             map.put(UtilConsts.SUCCESS, true);
             map.put("workOrderManage", workOrderManage);
         } catch (Exception e) {
@@ -479,7 +479,7 @@ public class MobileBugWorkOrderController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map = documentManager.add(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), itemId, true);
             // 意见框？？？？？？？？？？
@@ -499,7 +499,7 @@ public class MobileBugWorkOrderController {
                 opinionFrameMap.put("opinionFrameName", bind.getOpinionFrameName());
                 List<String> roleIds = bind.getRoleIds();
                 for (String roleId : roleIds) {
-                    Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, person.getId());
+                    Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, person.getId()).getData();
                     if (hasRole) {
                         opinionFrameMap.put("hasRole", hasRole);
                         break;
@@ -577,7 +577,7 @@ public class MobileBugWorkOrderController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "上传附件成功");
@@ -602,7 +602,7 @@ public class MobileBugWorkOrderController {
             attachmentModel.setDescribes("");
             attachmentModel.setPersonName(person.getName());
             attachmentModel.setPersonId(person.getId());
-            OrgUnit orgUnit = orgUnitManager.getParent(tenantId, person.getParentId());
+            OrgUnit orgUnit = orgUnitManager.getParent(tenantId, person.getParentId()).getData();
             attachmentModel.setDeptId(person.getParentId());
             attachmentModel.setDeptName(orgUnit != null ? orgUnit.getName() : "");
             attachmentModel.setFileStoreId(y9FileStore.getId());

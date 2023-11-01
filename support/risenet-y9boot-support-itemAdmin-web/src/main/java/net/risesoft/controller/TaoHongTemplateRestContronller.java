@@ -135,7 +135,8 @@ public class TaoHongTemplateRestContronller {
             list = taoHongTemplateService.findByTenantId(Y9LoginUserHolder.getTenantId(),
                 StringUtils.isBlank(name) ? "%%" : "%" + name + "%");
         } else {
-            OrgUnit orgUnit = personManager.getBureau(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId());
+            OrgUnit orgUnit =
+                personManager.getBureau(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId()).getData();
             list = taoHongTemplateService.findByBureauGuid(orgUnit.getId());
         }
         List<Map<String, Object>> items = new ArrayList<>();
@@ -148,7 +149,7 @@ public class TaoHongTemplateRestContronller {
             map.put("uploadTime", sdf.format(list.get(i).getUploadTime()));
 
             String userId = list.get(i).getUserId();
-            Manager manger = managerApi.getManagerById(Y9LoginUserHolder.getTenantId(), userId);
+            Manager manger = managerApi.getManagerById(Y9LoginUserHolder.getTenantId(), userId).getData();
             map.put("userName", manger != null ? manger.getName() : "人员不存在");
             map.put("tabIndex", list.get(i).getTabIndex());
             items.add(map);
@@ -172,7 +173,7 @@ public class TaoHongTemplateRestContronller {
         if (userInfo.isGlobalManager()) {
             typeList = taoHongTemplateTypeService.findAll();
         } else {
-            OrgUnit orgUnit = personManager.getBureau(tenantId, personId);
+            OrgUnit orgUnit = personManager.getBureau(tenantId, personId).getData();
             map.put("bureauGuid", orgUnit.getId());
             map.put("bureauName", orgUnit.getName());
             typeList = taoHongTemplateTypeService.findByBureauId(orgUnit.getId());
