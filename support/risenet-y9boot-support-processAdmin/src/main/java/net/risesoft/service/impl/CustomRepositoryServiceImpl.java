@@ -40,13 +40,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Service(value = "customRepositoryService")
 public class CustomRepositoryServiceImpl implements CustomRepositoryService {
 
-    public static void main(String[] args) {
-        Integer a = 2;
-        Integer b = 2;
-        System.out.println(a--);
-        System.out.println(--b);
-    }
-
     @Autowired
     private PersonResourceApi personResourceApi;
 
