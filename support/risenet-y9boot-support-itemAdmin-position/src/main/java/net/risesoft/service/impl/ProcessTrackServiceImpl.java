@@ -239,7 +239,11 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(taskId, StringUtils.isBlank(assignee) ? "" : assignee);
             map.put("opinion", opinion.size() > 0 ? opinion.get(0).getContent() : "");
             map.put("startTime", hai.getStartTime() == null ? "" : sdf.format(hai.getStartTime()));
-            map.put("startTimes", hai.getStartTime() == null ? 0 : hai.getStartTime().getTime());
+            try {
+                map.put("startTimes", hai.getStartTime() == null ? 0 : sdf.parse(sdf.format(hai.getStartTime())).getTime());
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
 
             /**
              * 手动设置流程办结的时候, 流程最后一个任务结束的时间就是第一个手动设置的流程跟踪的时间
@@ -249,11 +253,19 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             ptList = this.findByTaskId(taskId);
             if (ptList.size() >= 1) {
                 map.put("endTime", endTime1 == null ? "" : sdf.format(endTime1));
-                map.put("endTimes", endTime1 == null ? 0 : endTime1.getTime());
+                try {
+                    map.put("endTimes", endTime1 == null ? 0 : sdf.parse(sdf.format(endTime1)).getTime());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 map.put("time", longTime(hai.getStartTime(), endTime1));
             } else {
                 map.put("endTime", endTime1 == null ? "" : sdf.format(endTime1));
-                map.put("endTimes", endTime1 == null ? 0 : endTime1.getTime());
+                try {
+                    map.put("endTimes", endTime1 == null ? 0 : sdf.parse(sdf.format(endTime1)).getTime());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 map.put("time", longTime(hai.getStartTime(), endTime1));
             }
             items.add(map);
