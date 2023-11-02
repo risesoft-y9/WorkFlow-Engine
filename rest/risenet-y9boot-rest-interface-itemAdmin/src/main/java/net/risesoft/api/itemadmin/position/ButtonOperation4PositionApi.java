@@ -20,7 +20,8 @@ public interface ButtonOperation4PositionApi {
      * @param elementUser elementUser
      * @throws Exception exception
      */
-    void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId, String taskId, String elementUser) throws Exception;
+    void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId, String taskId,
+        String elementUser) throws Exception;
 
     /**
      * 减签
@@ -31,7 +32,8 @@ public interface ButtonOperation4PositionApi {
      * @param elementUser elementUser
      * @throws Exception exception
      */
-    void deleteMultiInstanceExecution(String tenantId, String executionId, String taskId, String elementUser) throws Exception;
+    void deleteMultiInstanceExecution(String tenantId, String executionId, String taskId, String elementUser)
+        throws Exception;
 
     /**
      * 直接发送至流程启动人
@@ -67,7 +69,8 @@ public interface ButtonOperation4PositionApi {
      * @param sponsorGuid sponsorGuid
      * @throws Exception exception
      */
-    void reposition(String tenantId, String positionId, String taskId, String repositionToTaskId, List<String> userChoice, String reason, String sponsorGuid) throws Exception;
+    void reposition(String tenantId, String positionId, String taskId, String repositionToTaskId,
+        List<String> userChoice, String reason, String sponsorGuid) throws Exception;
 
     /**
      * 退回操作

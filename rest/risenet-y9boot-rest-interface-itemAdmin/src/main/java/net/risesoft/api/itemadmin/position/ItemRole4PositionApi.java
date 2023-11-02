@@ -22,7 +22,8 @@ public interface ItemRole4PositionApi {
      * @param processInstanceId 流程实例id
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> findCsUser(String tenantId, String userId, String positionId, String id, Integer principalType, String processInstanceId);
+    List<Map<String, Object>> findCsUser(String tenantId, String userId, String positionId, String id,
+        Integer principalType, String processInstanceId);
 
     /**
      * 查询委办局下的部门
@@ -33,7 +34,8 @@ public interface ItemRole4PositionApi {
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> findCsUserBureau(String tenantId, String userId, String positionId, Integer principalType);
+    List<Map<String, Object>> findCsUserBureau(String tenantId, String userId, String positionId,
+        Integer principalType);
 
     /**
      * 抄送搜索
@@ -46,7 +48,8 @@ public interface ItemRole4PositionApi {
      * @param processInstanceId 流程实例Id
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> findCsUserSearch(String tenantId, String userId, String positionId, String name, Integer principalType, String processInstanceId);
+    List<Map<String, Object>> findCsUserSearch(String tenantId, String userId, String positionId, String name,
+        Integer principalType, String processInstanceId);
 
     /**
      * 获取发送人
@@ -62,7 +65,8 @@ public interface ItemRole4PositionApi {
      * @param processInstanceId 流程实例Id
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> findPermUser(String tenantId, String userId, String positionId, String itemId, String processDefinitionId, String taskDefKey, Integer principalType, String id, String processInstanceId);
+    List<Map<String, Object>> findPermUser(String tenantId, String userId, String positionId, String itemId,
+        String processDefinitionId, String taskDefKey, Integer principalType, String id, String processInstanceId);
 
     /**
      * 发送选人搜索
@@ -79,7 +83,8 @@ public interface ItemRole4PositionApi {
      *
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> findPermUserByName(String tenantId, String userId, String positionId, String name, Integer principalType, String itemId, String processDefinitionId, String taskDefKey, String processInstanceId);
+    List<Map<String, Object>> findPermUserByName(String tenantId, String userId, String positionId, String name,
+        Integer principalType, String itemId, String processDefinitionId, String taskDefKey, String processInstanceId);
 
     /**
      *

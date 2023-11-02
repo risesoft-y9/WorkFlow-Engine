@@ -40,7 +40,8 @@ public interface EntrustApi {
      * @param itemId 事项id
      * @throws Exception Exception
      */
-    void destroyEntrustByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId) throws Exception;
+    void destroyEntrustByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId)
+        throws Exception;
 
     /**
      * 根据用户唯一标示和事项唯一标示查找委托对象
@@ -52,7 +53,8 @@ public interface EntrustApi {
      * @return EntrustModel
      * @throws Exception Exception
      */
-    EntrustModel findOneByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId) throws Exception;
+    EntrustModel findOneByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId)
+        throws Exception;
 
     /**
      * 根据用户唯一标示和事项唯一标示查找委托对象
@@ -64,7 +66,8 @@ public interface EntrustApi {
      * @return EntrustModel
      * @throws Exception Exception
      */
-    EntrustModel findOneByOwnerIdAndItemIdAndTime(String tenantId, String ownerId, String itemId, String currentTime) throws Exception;
+    EntrustModel findOneByOwnerIdAndItemIdAndTime(String tenantId, String ownerId, String itemId, String currentTime)
+        throws Exception;
 
     /**
      * 通过唯一标示获取委托对象
@@ -97,7 +100,8 @@ public interface EntrustApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> getItemList(String tenantId, String userId, String ownerId, Integer page, Integer rows) throws Exception;
+    Map<String, Object> getItemList(String tenantId, String userId, String ownerId, Integer page, Integer rows)
+        throws Exception;
 
     /**
      * 查询任务是否有委托

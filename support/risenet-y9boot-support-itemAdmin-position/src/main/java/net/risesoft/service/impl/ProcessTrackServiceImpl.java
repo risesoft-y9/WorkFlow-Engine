@@ -248,7 +248,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             map.put("opinion", opinion.size() > 0 ? opinion.get(0).getContent() : "");
             map.put("startTime", hai.getStartTime() == null ? "" : sdf.format(hai.getStartTime()));
             try {
-                map.put("startTimes", hai.getStartTime() == null ? 0 : sdf.parse(sdf.format(hai.getStartTime())).getTime());
+                map.put("startTimes",
+                    hai.getStartTime() == null ? 0 : sdf.parse(sdf.format(hai.getStartTime())).getTime());
             } catch (Exception e2) {
                 e2.printStackTrace();
             }

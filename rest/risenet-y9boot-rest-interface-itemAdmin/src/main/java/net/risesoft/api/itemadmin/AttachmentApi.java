@@ -60,7 +60,8 @@ public interface AttachmentApi {
      * @param fileType 文件类型
      * @return int
      */
-    int getAttachmentCount(String tenantId, String userId, String processSerialNumber, String fileSource, String fileType);
+    int getAttachmentCount(String tenantId, String userId, String processSerialNumber, String fileSource,
+        String fileType);
 
     /**
      * 获取附件列表
@@ -73,7 +74,8 @@ public interface AttachmentApi {
      * @param rows 行数
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getAttachmentList(String tenantId, String userId, String processSerialNumber, String fileSource, int page, int rows);
+    Map<String, Object> getAttachmentList(String tenantId, String userId, String processSerialNumber, String fileSource,
+        int page, int rows);
 
     /**
      * 获取附件列表(model)
@@ -84,7 +86,8 @@ public interface AttachmentApi {
      * @param fileSource 附件来源
      * @return List&lt;AttachmentModel&gt;
      */
-    List<AttachmentModel> getAttachmentModelList(String tenantId, String userId, String processSerialNumber, String fileSource);
+    List<AttachmentModel> getAttachmentModelList(String tenantId, String userId, String processSerialNumber,
+        String fileSource);
 
     /**
      * 保存附件信息
@@ -112,7 +115,9 @@ public interface AttachmentApi {
      * @param y9FileStoreId 附件上传id
      * @return String String
      */
-    String saveOrUpdateUploadInfo(String tenantId, String userId, String fileName, String fileType, String fileSizeString, String fileSource, String processInstanceId, String processSerialNumber, String taskId, String y9FileStoreId);
+    String saveOrUpdateUploadInfo(String tenantId, String userId, String fileName, String fileType,
+        String fileSizeString, String fileSource, String processInstanceId, String processSerialNumber, String taskId,
+        String y9FileStoreId);
 
     /**
      * 上传附件
@@ -129,7 +134,9 @@ public interface AttachmentApi {
      * @param y9FileStoreId 附件上传id
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> upload(String tenantId, String userId, String fileName, String fileSize, String processInstanceId, String taskId, String describes, String processSerialNumber, String fileSource, String y9FileStoreId);
+    Map<String, Object> upload(String tenantId, String userId, String fileName, String fileSize,
+        String processInstanceId, String taskId, String describes, String processSerialNumber, String fileSource,
+        String y9FileStoreId);
 
     /**
      * 上传附件(model)

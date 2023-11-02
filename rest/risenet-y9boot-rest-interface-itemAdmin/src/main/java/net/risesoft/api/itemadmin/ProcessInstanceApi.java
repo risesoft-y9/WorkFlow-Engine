@@ -54,5 +54,6 @@ public interface ProcessInstanceApi {
      * @param endTime 结束时间
      * @return boolean
      */
-    boolean updateProcessInstanceDetails(String tenantId, String assigneeId, String processInstanceId, String taskId, String itembox, Date endTime);
+    boolean updateProcessInstanceDetails(String tenantId, String assigneeId, String processInstanceId, String taskId,
+        String itembox, Date endTime);
 }

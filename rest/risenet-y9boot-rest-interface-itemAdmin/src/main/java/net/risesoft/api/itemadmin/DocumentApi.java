@@ -44,7 +44,8 @@ public interface DocumentApi {
      * @param processInstanceId 流程实例id
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> docUserChoise(String tenantId, String userId, String itemId, String processDefinitionKey, String processDefinitionId, String taskId, String routeToTask, String processInstanceId);
+    Map<String, Object> docUserChoise(String tenantId, String userId, String itemId, String processDefinitionKey,
+        String processDefinitionId, String taskId, String routeToTask, String processInstanceId);
 
     /**
      *
@@ -59,7 +60,8 @@ public interface DocumentApi {
      * @param mobile 是否发送手机端
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> edit(String tenantId, String userId, String itembox, String taskId, String processInstanceId, String itemId, boolean mobile);
+    Map<String, Object> edit(String tenantId, String userId, String itembox, String taskId, String processInstanceId,
+        String itemId, boolean mobile);
 
     /**
      *
@@ -73,7 +75,8 @@ public interface DocumentApi {
      * @param variables 变量
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> forwardingSendReceive(String tenantId, String userId, String taskId, String userChoice, String routeToTaskId, Map<String, Object> variables);
+    Map<String, Object> forwardingSendReceive(String tenantId, String userId, String taskId, String userChoice,
+        String routeToTaskId, Map<String, Object> variables);
 
     /**
      * 带自定义变量发送
@@ -92,8 +95,9 @@ public interface DocumentApi {
      * @param variables 保存变量
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> saveAndForwarding(String tenantId, String userId, String processInstanceId, String taskId, String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId,
-        Map<String, Object> variables);
+    Map<String, Object> saveAndForwarding(String tenantId, String userId, String processInstanceId, String taskId,
+        String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey, String userChoice,
+        String sponsorGuid, String routeToTaskId, Map<String, Object> variables);
 
     /**
      *
@@ -114,8 +118,10 @@ public interface DocumentApi {
      * @param variables variables
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> saveAndForwardingByTaskKey(String tenantId, String userId, String processInstanceId, String taskId, String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId,
-        String startRouteToTaskId, Map<String, Object> variables);
+    Map<String, Object> saveAndForwardingByTaskKey(String tenantId, String userId, String processInstanceId,
+        String taskId, String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey,
+        String userChoice, String sponsorGuid, String routeToTaskId, String startRouteToTaskId,
+        Map<String, Object> variables);
 
     /**
      * 获取签收任务配置
@@ -128,7 +134,8 @@ public interface DocumentApi {
      * @param processSerialNumber 流程编号
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> signTaskConfig(String tenantId, String userId, String itemId, String processDefinitionId, String taskDefinitionKey, String processSerialNumber);
+    Map<String, Object> signTaskConfig(String tenantId, String userId, String itemId, String processDefinitionId,
+        String taskDefinitionKey, String processSerialNumber);
 
     /**
      * 启动流程
@@ -141,7 +148,8 @@ public interface DocumentApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> startProcess(String tenantId, String userId, String itemId, String processSerialNumber, String processDefinitionKey) throws Exception;
+    Map<String, Object> startProcess(String tenantId, String userId, String itemId, String processSerialNumber,
+        String processDefinitionKey) throws Exception;
 
     /**
      * 启动流程，多人
@@ -155,6 +163,7 @@ public interface DocumentApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception 异常
      */
-    Map<String, Object> startProcess(String tenantId, String userId, String itemId, String processSerialNumber, String processDefinitionKey, String userIds) throws Exception;
+    Map<String, Object> startProcess(String tenantId, String userId, String itemId, String processSerialNumber,
+        String processDefinitionKey, String userIds) throws Exception;
 
 }

@@ -27,7 +27,8 @@ public interface ItemTodoApi {
      * @return ItemPage&lt;ActRuDetailModel&gt;
      * @throws Exception Exception
      */
-    ItemPage<ActRuDetailModel> findByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page, Integer rows) throws Exception;
+    ItemPage<ActRuDetailModel> findByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        Integer page, Integer rows) throws Exception;
 
     /**
      * 查询待办任务，以发送时间排序
@@ -42,6 +43,7 @@ public interface ItemTodoApi {
      * @return ItemPage&lt;ActRuDetailModel&gt;
      * @throws Exception Exception
      */
-    ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(String tenantId, String userId, String systemName, String tableName, String searchMapStr, Integer page, Integer rows) throws Exception;
+    ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        String tableName, String searchMapStr, Integer page, Integer rows) throws Exception;
 
 }

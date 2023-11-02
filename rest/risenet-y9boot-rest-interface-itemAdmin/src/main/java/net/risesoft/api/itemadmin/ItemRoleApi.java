@@ -21,7 +21,8 @@ public interface ItemRoleApi {
      * @param processInstanceId 流程实例Id
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> findCsUser(String tenantId, String userId, String id, Integer principalType, String processInstanceId);
+    List<Map<String, Object>> findCsUser(String tenantId, String userId, String id, Integer principalType,
+        String processInstanceId);
 
     /**
      *
@@ -45,7 +46,8 @@ public interface ItemRoleApi {
      * @param processInstanceId 流程实例Id
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> findCsUserSearch(String tenantId, String userId, String name, Integer principalType, String processInstanceId);
+    List<Map<String, Object>> findCsUserSearch(String tenantId, String userId, String name, Integer principalType,
+        String processInstanceId);
 
     /**
      * 获取发送人
@@ -60,7 +62,8 @@ public interface ItemRoleApi {
      * @param processInstanceId 流程实例Id
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> findPermUser(String tenantId, String userId, String itemId, String processDefinitionId, String taskDefKey, Integer principalType, String id, String processInstanceId);
+    List<Map<String, Object>> findPermUser(String tenantId, String userId, String itemId, String processDefinitionId,
+        String taskDefKey, Integer principalType, String id, String processInstanceId);
 
     /**
      * Description: 发送选人搜索
@@ -75,7 +78,8 @@ public interface ItemRoleApi {
      * @param processInstanceId 流程实例id
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> findPermUserByName(String tenantId, String userId, String name, Integer principalType, String itemId, String processDefinitionId, String taskDefKey, String processInstanceId);
+    List<Map<String, Object>> findPermUserByName(String tenantId, String userId, String name, Integer principalType,
+        String itemId, String processDefinitionId, String taskDefKey, String processInstanceId);
 
     /**
      *

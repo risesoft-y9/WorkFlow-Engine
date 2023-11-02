@@ -15,7 +15,8 @@ package org.artofsolving.jodconverter.office;
 /**
  * An OfficeManager knows how to execute {@link org.artofsolving.jodconverter.office.OfficeTask}s.
  * <p>
- * An OfficeManager implementation will typically manage one or more {@link org.artofsolving.jodconverter.office.OfficeConnection}s.
+ * An OfficeManager implementation will typically manage one or more
+ * {@link org.artofsolving.jodconverter.office.OfficeConnection}s.
  */
 /**
  * @author qinman
