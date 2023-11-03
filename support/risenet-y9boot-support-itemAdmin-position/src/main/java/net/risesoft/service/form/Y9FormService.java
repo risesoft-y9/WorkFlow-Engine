@@ -84,6 +84,15 @@ public interface Y9FormService {
      * @return
      */
     public Map<String, Object> getFormData(String formId, String guid);
+    
+    /**
+     * 获取表单数据
+     *
+     * @param formId
+     * @param guid
+     * @return
+     */
+    public Map<String, Object> getFormData4Var(String formId, String guid);
 
     /**
      * 获取表单绑定字段信息
