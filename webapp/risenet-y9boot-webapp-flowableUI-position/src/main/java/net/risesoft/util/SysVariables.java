@@ -33,6 +33,7 @@ public class SysVariables {
     public static final String NUMBER = "number";// 自定义变量名称 文档编号
     public static final String LEVEL = "level";// 级别
     public static final String TASKDEFKEY = "taskDefKey";// 自定义变量名称 taskDefKey是流程图中节点的Id
+    public static final String CONDITIONEXPRESSION = "conditionExpression";
     public static final String TASKDEFNAME = "taskDefName";// 自定义变量名称 taskDefName是流程图中节点的name
     public static final String ROUTETOTASKID = "routeToTaskId";// 目标节点的Id（例如 outerflow）
     public static final String PARALLELSPONSOR = "parallelSponsor";// 并行的时候增加参数parallelSponsor，用以标识主协办，值为主办人员guid
