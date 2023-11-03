@@ -813,7 +813,7 @@ public class DocumentServiceImpl implements DocumentService {
     public Map<String, Object> menuControl(String itemId, String processDefinitionId, String taskDefKey, String taskId, Map<String, Object> returnMap, String itembox) {
         ButtonUtil buttonUtil = new ButtonUtil();
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-        Map<String, Object> map = buttonUtil.showButton(itemId,taskId, itembox);
+        Map<String, Object> map = buttonUtil.showButton(itemId, taskId, itembox);
         String[] buttonIds = (String[])map.get("buttonIds");
         String[] buttonNames = (String[])map.get("buttonNames");
         String sponsorHandle = (String)map.get("sponsorHandle");
@@ -1455,6 +1455,12 @@ public class DocumentServiceImpl implements DocumentService {
             vars.put("tenantId", tenantId);
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             vars.put("routeToTaskId", startTaskDefKey);
+            if (item.isShowSubmitButton()) {
+                ProcessDefinitionModel processDefinitionModel = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+                List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionModel.getId(), "");
+                Map<String, Object> variables = y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
+                vars.putAll(variables);
+            }
             TaskModel task = activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(), vars);
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             processParam.setProcessInstanceId(task.getProcessInstanceId());
