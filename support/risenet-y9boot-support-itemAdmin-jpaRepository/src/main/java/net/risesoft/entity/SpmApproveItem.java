@@ -171,4 +171,9 @@ public class SpmApproveItem implements Serializable {
     @Column(name = "CUSTOMITEM", nullable = false)
     @ColumnDefault("0")
     private Boolean customItem = false;
+    
+    @Comment("显示提交按钮")
+    @Column(name = "SHOWSUBMITBUTTON", nullable = false)
+    @ColumnDefault("0")
+    private boolean showSubmitButton = false;
 }
