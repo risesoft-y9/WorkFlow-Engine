@@ -414,7 +414,7 @@ public class DocumentServiceImpl implements DocumentService {
             String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, taskDefKey);
             Map<String, Object> tabMap =
                 itemPermissionService.getTabMap(itemId, processDefinitionId, taskDefKey, processInstanceId);
-            List<CustomGroup> customGrouplist = customGroupApi.listCustomGroupByUserId(tenantId, userId).getData();
+            List<CustomGroup> customGrouplist = customGroupApi.listCustomGroupByPersonId(tenantId, userId).getData();
             returnMap.put("existPerson", tabMap.get("existPerson"));
             returnMap.put("existDepartment", tabMap.get("existDepartment"));
             returnMap.put("existCustomGroup", customGrouplist != null && customGrouplist.size() > 0 ? true : false);
