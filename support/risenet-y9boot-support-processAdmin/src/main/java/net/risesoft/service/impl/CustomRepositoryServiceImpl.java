@@ -194,8 +194,8 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
                     items.add(mapTemp);
                 }
             } else {
-                List<Resource> resourceList =
-                    personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId);
+                List<Resource> resourceList = personResourceApi
+                    .listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
                 for (ProcessDefinition processDefinition : processDefinitionList) {
                     for (Resource resource : resourceList) {
                         if (resource.getCustomId().equals(processDefinition.getKey())) {

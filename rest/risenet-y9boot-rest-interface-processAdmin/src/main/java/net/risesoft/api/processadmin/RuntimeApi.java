@@ -23,7 +23,8 @@ public interface RuntimeApi {
      * @param map 参数
      * @throws Exception 异常
      */
-    void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId, Map<String, Object> map) throws Exception;
+    void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId,
+        Map<String, Object> map) throws Exception;
 
     /**
      * 加签/岗位
@@ -34,7 +35,8 @@ public interface RuntimeApi {
      * @param taskId 任务id
      * @throws Exception Exception
      */
-    void complete4Position(String tenantId, String positionId, String processInstanceId, String taskId) throws Exception;
+    void complete4Position(String tenantId, String positionId, String processInstanceId, String taskId)
+        throws Exception;
 
     /**
      *
@@ -102,7 +104,8 @@ public interface RuntimeApi {
      * @param rows 行数
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getProcessInstancesByDefId(String tenantId, String processDefinitionId, Integer page, Integer rows);
+    Map<String, Object> getProcessInstancesByDefId(String tenantId, String processDefinitionId, Integer page,
+        Integer rows);
 
     /**
      * 根据流程定义Key获取流程实例列表
@@ -173,7 +176,8 @@ public interface RuntimeApi {
      * @param map 变量map
      * @return ProcessInstanceModel
      */
-    ProcessInstanceModel startProcessInstanceByKey(String tenantId, String userId, String processDefinitionKey, String systemName, Map<String, Object> map);
+    ProcessInstanceModel startProcessInstanceByKey(String tenantId, String userId, String processDefinitionKey,
+        String systemName, Map<String, Object> map);
 
     /**
      * 判断是否是挂起实例

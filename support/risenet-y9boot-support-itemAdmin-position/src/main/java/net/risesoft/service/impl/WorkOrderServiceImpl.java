@@ -211,8 +211,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         try {
             String handleType = "1";
             if (workOrder.getHandleType().equals(handleType)) {
-                List<OrgUnit> orgUnitList =
-                    roleManager.listOrgUnitsById(myTenantId, workOrderRoleId, OrgTypeEnum.POSITION.getEnName());
+                List<OrgUnit> orgUnitList = roleManager
+                    .listOrgUnitsById(myTenantId, workOrderRoleId, OrgTypeEnum.POSITION.getEnName()).getData();
                 TodoTask todo = new TodoTask();
                 todo.setTenantId(myTenantId);
                 todo.setSystemName("systemWorkOrder");
@@ -240,7 +240,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
                     todo.setReceiverId(orgUnit.getId());
                     todo.setReceiverName(orgUnit.getName());
                     todo.setReceiverDepartmentId(orgUnit.getParentId());
-                    OrgUnit orgUnit1 = orgUnitApi.getParent(myTenantId, orgUnit.getId());
+                    OrgUnit orgUnit1 = orgUnitApi.getParent(myTenantId, orgUnit.getId()).getData();
                     todo.setReceiverDepartmentName(orgUnit1.getName());
                     todoTaskManager.saveTodoTask(myTenantId, todo);
                 }

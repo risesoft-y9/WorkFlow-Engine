@@ -52,7 +52,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     @GetMapping(value = "/attachmentDownload", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> attachmentDownload(String tenantId, String userId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = transactionFileService.download(id);
         return map;
@@ -71,7 +71,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     @PostMapping(value = "/delFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> delFile(String tenantId, String userId, String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = transactionFileService.delFile(ids);
@@ -90,7 +90,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     public int getAttachmentCount(String tenantId, String userId, String processSerialNumber, String fileSource,
         String fileType) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         fileType = fileType.toLowerCase();
         int count = transactionFileService.getTransactionFileCount(processSerialNumber, fileSource, fileType);
@@ -102,7 +102,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     public Map<String, Object> getAttachmentList(String tenantId, String userId, String processSerialNumber,
         String fileSource, int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = transactionFileService.getAttachmentList(processSerialNumber, fileSource, page, rows);
@@ -114,7 +114,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     public List<AttachmentModel> getAttachmentModelList(String tenantId, String userId, String processSerialNumber,
         String fileSource) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<TransactionFile> transactionFileList =
             transactionFileService.getAttachmentModelList(processSerialNumber, fileSource);
@@ -128,7 +128,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     @PostMapping(value = "/saveAttachment", produces = MediaType.APPLICATION_JSON_VALUE)
     public Boolean saveAttachment(String tenantId, String userId, String attachjson, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Boolean checkSave = false;
         try {
@@ -164,7 +164,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         String y9FileStoreId) {
         String msg = null;
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
         try {
@@ -209,7 +209,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         String processInstanceId, String taskId, String describes, String processSerialNumber, String fileSource,
         String y9FileStoreId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = transactionFileService.uploadRest(fileName, fileSize, processInstanceId, taskId, processSerialNumber,
@@ -223,7 +223,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     public boolean uploadModel(String tenantId, String userId, @RequestBody AttachmentModel attachmentModel)
         throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         boolean success = false;
 

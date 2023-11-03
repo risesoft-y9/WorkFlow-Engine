@@ -30,7 +30,8 @@ public interface CustomProcessInfoApi {
      * @param taskList 任务ids
      * @return boolean
      */
-    boolean saveOrUpdate(String tenantId, String itemId, String processSerialNumber, List<Map<String, Object>> taskList);
+    boolean saveOrUpdate(String tenantId, String itemId, String processSerialNumber,
+        List<Map<String, Object>> taskList);
 
     /**
      * 更新当前运行节点

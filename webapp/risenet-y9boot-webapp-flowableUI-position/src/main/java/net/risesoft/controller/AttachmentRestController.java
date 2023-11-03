@@ -61,7 +61,8 @@ public class AttachmentRestController {
      * @param request
      */
     @RequestMapping(value = "/attachmentDownload", method = RequestMethod.GET, produces = "application/json")
-    public void attachmentDownload(@RequestParam(required = true) String id, HttpServletResponse response, HttpServletRequest request) {
+    public void attachmentDownload(@RequestParam(required = true) String id, HttpServletResponse response,
+        HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map = attachmentManager.attachmentDownload(tenantId, id);
@@ -119,13 +120,17 @@ public class AttachmentRestController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getAttachmentList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Page<Map<String, Object>> getAttachmentList(@RequestParam(required = true) String processSerialNumber, @RequestParam(required = false) String fileSource, @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
+    public Y9Page<Map<String, Object>> getAttachmentList(@RequestParam(required = true) String processSerialNumber,
+        @RequestParam(required = false) String fileSource, @RequestParam(required = true) int page,
+        @RequestParam(required = true) int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map = attachmentManager.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+                return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()),
+                    Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"),
+                    "获取列表成功");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,10 +147,12 @@ public class AttachmentRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/packDownload", method = RequestMethod.GET, produces = "application/json")
-    public void packDownload(@RequestParam(required = true) String processSerialNumber, String fileSource, HttpServletResponse response, HttpServletRequest request) {
+    public void packDownload(@RequestParam(required = true) String processSerialNumber, String fileSource,
+        HttpServletResponse response, HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            Map<String, Object> filemap = attachmentManager.getAttachmentList(tenantId, processSerialNumber, fileSource, 1, 100);
+            Map<String, Object> filemap =
+                attachmentManager.getAttachmentList(tenantId, processSerialNumber, fileSource, 1, 100);
             List<Map<String, Object>> list = (List<Map<String, Object>>)filemap.get("rows");
             // 拼接zip文件,之后下载下来的压缩文件的名字
             String base_name = "附件" + new Date().getTime();
@@ -227,8 +234,9 @@ public class AttachmentRestController {
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> upload(MultipartFile file, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes, @RequestParam(required = true) String processSerialNumber,
-        @RequestParam(required = false) String fileSource) {
+    public Y9Result<String> upload(MultipartFile file, @RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes,
+        @RequestParam(required = true) String processSerialNumber, @RequestParam(required = false) String fileSource) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -238,11 +246,14 @@ public class AttachmentRestController {
             }
             String originalFilename = file.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);
-            String fullPath = "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
+            String fullPath =
+                "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             String storeId = y9FileStore.getId();
-            String fileSize = Y9FileUtil.getDisplayFileSize(y9FileStore.getFileSize() != null ? y9FileStore.getFileSize() : 0);
-            map = attachmentManager.upload(tenantId, userId, Y9LoginUserHolder.getPositionId(), fileName, fileSize, processInstanceId, taskId, describes, processSerialNumber, fileSource, storeId);
+            String fileSize =
+                Y9FileUtil.getDisplayFileSize(y9FileStore.getFileSize() != null ? y9FileStore.getFileSize() : 0);
+            map = attachmentManager.upload(tenantId, userId, Y9LoginUserHolder.getPositionId(), fileName, fileSize,
+                processInstanceId, taskId, describes, processSerialNumber, fileSource, storeId);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("上传成功");
             }

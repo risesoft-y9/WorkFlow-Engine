@@ -65,7 +65,7 @@ public class TaoHongTemplateServiceImpl implements TaoHongTemplateService {
     public TaoHongTemplate saveOrUpdate(TaoHongTemplate t) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        String bureauName = orgUnitManager.getOrgUnit(tenantId, t.getBureauGuid()).getName();
+        String bureauName = orgUnitManager.getOrgUnit(tenantId, t.getBureauGuid()).getData().getName();
         String id = t.getTemplateGuid();
         if (StringUtils.isNotBlank(id)) {
             TaoHongTemplate oldtt = taoHongTemplateRepository.findById(id).orElse(null);

@@ -45,7 +45,7 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
         List<ItemOpinionFrameRole> roleList =
             itemOpinionFrameRoleRepository.findByItemOpinionFrameId(itemOpinionFrameId);
         for (ItemOpinionFrameRole role : roleList) {
-            Role r = roleManager.getRole(role.getRoleId());
+            Role r = roleManager.getRole(role.getRoleId()).getData();
             role.setRoleName(r == null ? "角色已删除" : r.getName());
         }
         return roleList;

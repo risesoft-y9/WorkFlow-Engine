@@ -73,16 +73,16 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             String userId = map.get(SysVariables.TASKSENDERID).toString();
             String assigneeName = "";
             String senderName = "";
-            Person person = personManager.getPerson(tenantId, assigneeId);
+            Person person = personManager.getPerson(tenantId, assigneeId).getData();
             if (person == null || StringUtils.isBlank(person.getId())) {
-                Position position = positionApi.getPosition(tenantId, assigneeId);
+                Position position = positionApi.getPosition(tenantId, assigneeId).getData();
                 assigneeName = position.getName();
 
-                position = positionApi.getPosition(tenantId, userId);
+                position = positionApi.getPosition(tenantId, userId).getData();
                 senderName = position.getName();
             } else {
                 assigneeName = person.getName();
-                person = personManager.getPerson(tenantId, userId);
+                person = personManager.getPerson(tenantId, userId).getData();
                 senderName = person.getName();
             }
             String processInstanceId = task.getProcessInstanceId();

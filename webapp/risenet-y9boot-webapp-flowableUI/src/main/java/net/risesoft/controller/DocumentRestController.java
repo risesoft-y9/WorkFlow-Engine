@@ -200,7 +200,7 @@ public class DocumentRestController {
             int follow = officeFollowManager.countByProcessInstanceId(tenantId, userId, processInstanceId);
             map.put("follow", follow > 0 ? true : false);
             if (dzxhTenantId.equals(tenantId)) {
-                Boolean doneManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "办结角色", userId);
+                Boolean doneManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "办结角色", userId).getData();
                 map.put("doneManage", doneManage);
             }
             return Y9Result.success(map, "获取成功");
@@ -274,7 +274,7 @@ public class DocumentRestController {
         try {
             List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
             listMap = itemManager.getItemList(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId());
-            Boolean workOrderManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", personId);
+            Boolean workOrderManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", personId).getData();
             if (workOrderManage) {
                 int workOrdertodoCount = workOrderManager.getAdminTodoCount();
                 map.put("workOrdertodoCount", workOrdertodoCount);
@@ -291,8 +291,8 @@ public class DocumentRestController {
             map.put("youjianCount", youjianCount);
             int followCount = officeFollowManager.getFollowCount(tenantId, Y9LoginUserHolder.getPersonId());
             map.put("followCount", followCount);
-            boolean b =
-                personRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", userInfo.getPersonId());
+            boolean b = personRoleApi
+                .hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", userInfo.getPersonId()).getData();
             map.put("monitorManage", b);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
@@ -327,7 +327,7 @@ public class DocumentRestController {
                 for (TaskModel task : list) {
                     if (i < 5) {
                         String assigneeId = task.getAssignee();
-                        Person employee = personApi.getPerson(tenantId, assigneeId);
+                        Person employee = personApi.getPerson(tenantId, assigneeId).getData();
                         if (employee != null && !employee.getId().equals(userId)) {
                             if (StringUtils.isBlank(parallelDoing)) {
                                 parallelDoing.append(employee.getName());

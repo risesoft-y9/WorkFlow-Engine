@@ -597,8 +597,9 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     private void getAllPosition(List<Position> list, String deptId) {
-        List<Department> deptList = departmentManager.listSubDepartments(Y9LoginUserHolder.getTenantId(), deptId);
-        List<Position> list0 = departmentManager.listPositions(Y9LoginUserHolder.getTenantId(), deptId);
+        List<Department> deptList =
+            departmentManager.listSubDepartments(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        List<Position> list0 = departmentManager.listPositions(Y9LoginUserHolder.getTenantId(), deptId).getData();
         if (!list0.isEmpty()) {
             list.addAll(list0);
         }
@@ -612,8 +613,8 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             String resourceId = "";
-            List<Resource> list =
-                positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE.getValue(), resourceId);
+            List<Resource> list = positionResourceApi
+                .listSubResources(tenantId, positionId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
             String url = "";
             for (Resource r : list) {
                 url = r.getUrl();
@@ -629,7 +630,7 @@ public class DocumentServiceImpl implements DocumentService {
             // 系统工单为大有生租户专用,不创建应用,不生成资源,避免其他租户可租用,大有生租户添加系统工单
             String riseTenantId = y9Conf.getApp().getItemAdmin().getTenantId();
             if (riseTenantId.equals(Y9LoginUserHolder.getTenantId())) {
-                boolean workOrder = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", positionId);
+                boolean workOrder = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", positionId).getData();
                 // 拥有系统工单角色,才在我的工作中显示系统工单事项
                 if (workOrder) {
                     String workOrderItemId = y9Conf.getApp().getItemAdmin().getWorkOrderItemId();
@@ -665,8 +666,8 @@ public class DocumentServiceImpl implements DocumentService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String resourceId = "";
             //////////////////////////////////
-            List<Resource> list =
-                positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE.getValue(), resourceId);
+            List<Resource> list = positionResourceApi
+                .listSubResources(tenantId, positionId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
             Map<String, Object> map = null;
             String url = "";
             long todoCount = 0;
@@ -699,7 +700,7 @@ public class DocumentServiceImpl implements DocumentService {
             // 系统工单为大有生租户专用,不创建应用,不生成资源,避免其他租户可租用,大有生租户添加系统工单
             String riseTenantId = y9Conf.getApp().getItemAdmin().getTenantId();
             if (riseTenantId.equals(Y9LoginUserHolder.getTenantId())) {
-                boolean workOrder = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", positionId);
+                boolean workOrder = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", positionId).getData();
                 // 拥有系统工单角色,才在我的工作中显示系统工单事项
                 if (workOrder) {
                     map = new HashMap<String, Object>(16);
@@ -714,7 +715,7 @@ public class DocumentServiceImpl implements DocumentService {
                         todoCount = todoManager.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId,
                             spmApproveitem.getWorkflowGuid());
                         boolean workOrderManage =
-                            positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", positionId);
+                            positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", positionId).getData();
                         if (workOrderManage) {
                             int workOrdertodoCount = workOrderService.getAdminTodoCount();
                             todoCount += workOrdertodoCount;
@@ -738,8 +739,8 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             String resourceId = "";
-            List<Resource> list =
-                positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE.getValue(), resourceId);
+            List<Resource> list = positionResourceApi
+                .listSubResources(tenantId, positionId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
             Map<String, Object> map = null;
             String url = "";
             for (Resource r : list) {
@@ -767,7 +768,7 @@ public class DocumentServiceImpl implements DocumentService {
             // 系统工单为大有生租户专用,不创建应用,不生成资源,避免其他租户可租用,大有生租户添加系统工单
             String riseTenantId = y9Conf.getApp().getItemAdmin().getTenantId();
             if (riseTenantId.equals(Y9LoginUserHolder.getTenantId())) {
-                boolean workOrder = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", positionId);
+                boolean workOrder = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", positionId).getData();
                 // 拥有系统工单角色,才在我的工作中显示系统工单事项
                 if (workOrder) {
                     map = new HashMap<String, Object>(16);
@@ -798,18 +799,18 @@ public class DocumentServiceImpl implements DocumentService {
         List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
         for (ItemPermission o : list) {
             if (o.getRoleType() == ItemPermissionEnum.DEPARTMENT.getValue()) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId());
+                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData();
                 if (null != orgUnit) {
                     orgUnitList.add(orgUnit);
                 }
             } else if (o.getRoleType() == ItemPermissionEnum.POSITION.getValue()) {
-                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId());
+                OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData();
                 if (null != orgUnit) {
                     orgUnitList.add(orgUnit);
                 }
             } else if (o.getRoleType() == ItemPermissionEnum.ROLE.getValue()) {
-                List<OrgUnit> deptList = roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Department");
-                List<OrgUnit> personList = roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Position");
+                List<OrgUnit> deptList = roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Department").getData();
+                List<OrgUnit> personList = roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Position").getData();
                 orgUnitList.addAll(deptList);
                 orgUnitList.addAll(personList);
             } else if (o.getRoleType() == ItemPermissionEnum.DYNAMICROLE.getValue()) {
@@ -818,7 +819,7 @@ public class DocumentServiceImpl implements DocumentService {
                     // if (orgUnit.getOrgType().equals("Department") || orgUnit.getOrgType().equals("Position")) {
                     orgUnitList.add(orgUnit);
                     if (orgUnit.getOrgType().equals("Position")) {
-                        Position position = positionManager.getPosition(tenantId, orgUnit.getId());
+                        Position position = positionManager.getPosition(tenantId, orgUnit.getId()).getData();
                         if (position != null && !position.getDisabled()) {
                             orgUnitList.add(orgUnit);
                         }
@@ -876,7 +877,7 @@ public class DocumentServiceImpl implements DocumentService {
                             menuMap.add(mapTemp);
                         } else {
                             for (String roleId : roleIds) {
-                                boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, positionId);
+                                boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, positionId).getData();
                                 if (hasRole) {
                                     Map<String, Object> mapTemp = new HashMap<String, Object>(16);
                                     mapTemp.put("menuName", buttonName);
@@ -919,7 +920,7 @@ public class DocumentServiceImpl implements DocumentService {
                             break;
                         } else {
                             for (String roleId : roleIds) {
-                                boolean hasrole = positionRoleApi.hasRole(tenantId, roleId, positionId);
+                                boolean hasrole = positionRoleApi.hasRole(tenantId, roleId, positionId).getData();
                                 if (hasrole) {
                                     Map<String, Object> mapTemp = new HashMap<String, Object>(16);
                                     mapTemp.put("menuName", bib.getButtonName());
@@ -978,7 +979,7 @@ public class DocumentServiceImpl implements DocumentService {
                             sendMap.add(mapTemp);
                         } else {
                             for (String roleId : roleIds) {
-                                boolean hasrole = positionRoleApi.hasRole(tenantId, roleId, positionId);
+                                boolean hasrole = positionRoleApi.hasRole(tenantId, roleId, positionId).getData();
                                 if (hasrole) {
                                     Map<String, Object> mapTemp = new HashMap<String, Object>(16);
                                     sendName = Y9Util.genCustomStr(sendName, buttonName);
@@ -1058,7 +1059,7 @@ public class DocumentServiceImpl implements DocumentService {
                 Integer principalType = Integer.parseInt(s2[0]);
                 String userIdTemp = s2[1];
                 if (principalType == ItemPermissionEnum.POSITION.getValue()) {
-                    Position position = positionManager.getPosition(tenantId, s2[1]);
+                    Position position = positionManager.getPosition(tenantId, s2[1]).getData();
                     if (null == position) {
                         continue;
                     }
@@ -1071,9 +1072,9 @@ public class DocumentServiceImpl implements DocumentService {
                     }
                 } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
                     List<CustomGroupMember> list = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                        Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION.getEnName());
+                        Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION.getEnName()).getData();
                     for (CustomGroupMember pTemp : list) {
-                        Position position = positionManager.getPosition(tenantId, pTemp.getMemberId());
+                        Position position = positionManager.getPosition(tenantId, pTemp.getMemberId()).getData();
                         if (position != null && StringUtils.isNotBlank(position.getId())) {
                             users = this.addUserId(users, position.getId());
                         }
@@ -1293,7 +1294,6 @@ public class DocumentServiceImpl implements DocumentService {
      * 启动流程发送
      *
      * @param taskId
-     * @param sponsorHandle
      * @param routeToTaskId
      * @param sponsorGuid
      * @param userList

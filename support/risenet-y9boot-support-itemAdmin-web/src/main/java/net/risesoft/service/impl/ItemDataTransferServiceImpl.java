@@ -135,7 +135,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
                 String assignee = task.getAssignee();
                 if (i < 5) {
                     if (StringUtils.isNotBlank(assignee)) {
-                        Person personTemp = personManager.getPerson(tenantId, assignee);
+                        Person personTemp = personManager.getPerson(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             i += 1;

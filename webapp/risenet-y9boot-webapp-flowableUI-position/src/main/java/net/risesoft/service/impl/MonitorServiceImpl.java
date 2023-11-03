@@ -149,7 +149,7 @@ public class MonitorServiceImpl implements MonitorService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionManager.getPosition(tenantId, assignee);
+                        Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                             i += 1;
@@ -161,7 +161,7 @@ public class MonitorServiceImpl implements MonitorService {
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
                                 Position ownerUser =
-                                    positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId);
+                                    positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -179,7 +179,7 @@ public class MonitorServiceImpl implements MonitorService {
                     if (i < 5) {
                         if (StringUtils.isNotBlank(assignee)) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, task.getAssignee(), SysVariables.COMMA);// 并行时，领导选取时存在顺序，因此这里也存在顺序
-                            Position personTemp = positionManager.getPosition(tenantId, assignee);
+                            Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");// 并行时，领导选取时存在顺序，因此这里也存在顺序
                                 i += 1;
@@ -227,7 +227,7 @@ public class MonitorServiceImpl implements MonitorService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionManager.getPosition(tenantId, assignee);
+                        Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                         }
@@ -243,7 +243,7 @@ public class MonitorServiceImpl implements MonitorService {
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
                                 Position ownerUser =
-                                    positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId);
+                                    positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -260,7 +260,7 @@ public class MonitorServiceImpl implements MonitorService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Position personTemp = positionManager.getPosition(tenantId, assignee);
+                            Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             }

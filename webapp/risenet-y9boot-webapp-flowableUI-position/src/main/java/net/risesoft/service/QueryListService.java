@@ -18,5 +18,6 @@ public interface QueryListService {
      * @param rows 条数
      * @return
      */
-    Y9Page<Map<String, Object>> queryList(String itemId, String state, String createDate, String tableName, String searchMapStr, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> queryList(String itemId, String state, String createDate, String tableName,
+        String searchMapStr, Integer page, Integer rows);
 }

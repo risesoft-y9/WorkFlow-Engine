@@ -339,8 +339,9 @@ public class OpinionServiceImpl implements OpinionService {
                     boolean b = (boolean)addableMap.get("addable");
                     if (!b) {
                         // 没有意见框编辑权限时，增加代录权限
-                        boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "",
-                            "代录意见角色", userInfo.getPersonId());
+                        boolean hasRole1 = personRoleApi
+                            .hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", userInfo.getPersonId())
+                            .getData();
                         if (hasRole1) {
                             addableMap.put("addAgent", true);
                         }
@@ -366,7 +367,7 @@ public class OpinionServiceImpl implements OpinionService {
                     List<String> roleIds = bind.getRoleIds();
                     if (!roleIds.isEmpty()) {
                         for (String roleId : roleIds) {
-                            Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId);
+                            Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
                             if (hasRole) {
                                 addableMap.put("addable", true);
                                 break;
@@ -379,8 +380,9 @@ public class OpinionServiceImpl implements OpinionService {
                 boolean b = (boolean)addableMap.get("addable");
                 if (!b) {
                     // 没有意见框编辑权限时，增加代录权限
-                    boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色",
-                        userInfo.getPersonId());
+                    boolean hasRole1 = personRoleApi
+                        .hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", userInfo.getPersonId())
+                        .getData();
                     if (hasRole1) {
                         addableMap.put("addAgent", true);
                     }
@@ -467,20 +469,20 @@ public class OpinionServiceImpl implements OpinionService {
                                         /**
                                          * 把当前人换为委托改任务的人，委托人有意见签写意见，当前人就有签写意见的权限
                                          */
-                                        hasRole = positionRoleApi.hasRole(tenantId, roleId, ownerId);
+                                        hasRole = positionRoleApi.hasRole(tenantId, roleId, ownerId).getData();
                                         if (hasRole) {
                                             addableMap.put("addable", true);
                                             continue;
                                         }
                                     } else {
-                                        hasRole = personRoleApi.hasRole(tenantId, roleId, personId);
+                                        hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
                                         if (hasRole) {
                                             addableMap.put("addable", true);
                                             continue;
                                         }
                                     }
                                 } else {
-                                    hasRole = personRoleApi.hasRole(tenantId, roleId, personId);
+                                    hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
                                     if (hasRole) {
                                         addableMap.put("addable", true);
                                         continue;
@@ -492,8 +494,9 @@ public class OpinionServiceImpl implements OpinionService {
                 }
                 // 代录权限控制
                 if (StringUtils.isNotBlank(taskId)) {
-                    boolean hasRole = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色",
-                        userInfo.getPersonId());
+                    boolean hasRole = personRoleApi
+                        .hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", userInfo.getPersonId())
+                        .getData();
                     if (hasRole) {
                         // 没有意见框编辑权限时，增加代录权限
                         Boolean addable = (Boolean)addableMap.get("addable");
@@ -595,7 +598,7 @@ public class OpinionServiceImpl implements OpinionService {
             o.setUserId(userInfo.getPersonId());
             o.setUserName(userName);
             o.setDeptId(userInfo.getParentId());
-            OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, userInfo.getParentId());
+            OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, userInfo.getParentId()).getData();
             o.setDeptName(orgUnit.getName());
             o.setProcessSerialNumber(entity.getProcessSerialNumber());
             o.setProcessInstanceId(entity.getProcessInstanceId());
@@ -607,15 +610,15 @@ public class OpinionServiceImpl implements OpinionService {
             o.setModifyDate(sdf.format(new Date()));
             Integer isAgent = entity.getIsAgent();
             if (isAgent == 1) {
-                Person p = personManager.getPerson(tenantId, entity.getUserId());
+                Person p = personManager.getPerson(tenantId, entity.getUserId()).getData();
                 o.setUserId(p.getId());
                 o.setUserName(p.getName());
                 o.setDeptId(entity.getDeptId());
-                o.setDeptName(orgUnitManager.getOrgUnit(tenantId, entity.getDeptId()).getName());
+                o.setDeptName(orgUnitManager.getOrgUnit(tenantId, entity.getDeptId()).getData().getName());
                 o.setAgentUserId(userInfo.getPersonId());
                 o.setAgentUserName(userInfo.getName());
                 o.setAgentUserDeptId(userInfo.getParentId());
-                OrgUnit orgUnit1 = orgUnitManager.getOrgUnit(tenantId, userInfo.getParentId());
+                OrgUnit orgUnit1 = orgUnitManager.getOrgUnit(tenantId, userInfo.getParentId()).getData();
                 o.setAgentUserDeptName(orgUnit1 != null ? orgUnit1.getName() : "");
                 o.setIsAgent(1);
                 o.setCreateDate(entity.getCreateDate());
@@ -637,7 +640,7 @@ public class OpinionServiceImpl implements OpinionService {
                     if (entrustDetail != null) {
                         if (historicTaskInstanceModel.getAssignee().contains(personId)) {
                             String idTemp = entrustDetail.getOwnerId();
-                            Person p = personManager.getPerson(tenantId, idTemp);
+                            Person p = personManager.getPerson(tenantId, idTemp).getData();
                             if (isAgent != 1) {
                                 o.setUserName(userName + "(" + p.getName() + "委托)");
                             } else {
@@ -664,21 +667,21 @@ public class OpinionServiceImpl implements OpinionService {
         opinion.setContent(entity.getContent());
         opinion.setProcessInstanceId(entity.getProcessInstanceId());
         opinion.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);
-        OrgUnit orgUnit0 = orgUnitManager.getOrgUnit(tenantId, userInfo.getParentId());
+        OrgUnit orgUnit0 = orgUnitManager.getOrgUnit(tenantId, userInfo.getParentId()).getData();
         opinion.setDeptId(userInfo.getParentId());
         opinion.setDeptName(orgUnit0.getName());
         Integer isAgent = entity.getIsAgent();
         if (isAgent == 1) {
-            Person p = personManager.getPerson(tenantId, entity.getUserId());
+            Person p = personManager.getPerson(tenantId, entity.getUserId()).getData();
             opinion.setUserId(p.getId());
             opinion.setUserName(p.getName());
             opinion.setDeptId(entity.getDeptId());
-            opinion.setDeptName(orgUnitManager.getOrgUnit(tenantId, entity.getDeptId()).getName());
+            opinion.setDeptName(orgUnitManager.getOrgUnit(tenantId, entity.getDeptId()).getData().getName());
             opinion.setCreateDate(entity.getCreateDate());
             opinion.setAgentUserId(userInfo.getPersonId());
             opinion.setAgentUserName(userInfo.getName());
             opinion.setAgentUserDeptId(userInfo.getParentId());
-            OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, userInfo.getParentId());
+            OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, userInfo.getParentId()).getData();
             opinion.setAgentUserDeptName(orgUnit != null ? orgUnit.getName() : "");
         }
         if (StringUtils.isNotBlank(entity.getTaskId())) {
@@ -689,7 +692,7 @@ public class OpinionServiceImpl implements OpinionService {
                 if (entrustDetail != null) {
                     if (historicTaskInstanceModel.getAssignee().contains(personId)) {
                         String idTemp = entrustDetail.getOwnerId();
-                        Person p = personManager.getPerson(tenantId, idTemp);
+                        Person p = personManager.getPerson(tenantId, idTemp).getData();
                         if (isAgent != 1) {
                             opinion.setUserName(userName + "(" + p.getName() + "委托)");
                         } else {

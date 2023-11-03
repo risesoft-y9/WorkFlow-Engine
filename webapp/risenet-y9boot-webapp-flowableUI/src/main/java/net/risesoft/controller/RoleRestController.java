@@ -191,10 +191,10 @@ public class RoleRestController {
 
     private void recursionAllPersons(String parentId, List<Person> personList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        personList.addAll(departmentApi.listPersonsByDisabled(tenantId, parentId, false));
+        personList.addAll(departmentApi.listPersonsByDisabled(tenantId, parentId, false).getData());
         boolean b = personList.size() < 101;
         if (b) {
-            List<Department> deptList = departmentApi.listSubDepartments(tenantId, parentId);
+            List<Department> deptList = departmentApi.listSubDepartments(tenantId, parentId).getData();
             for (Department dept : deptList) {
                 recursionAllPersons(dept.getId(), personList);
             }

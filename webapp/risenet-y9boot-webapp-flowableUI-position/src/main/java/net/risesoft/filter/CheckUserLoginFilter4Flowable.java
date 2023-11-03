@@ -43,13 +43,14 @@ public class CheckUserLoginFilter4Flowable implements Filter {
                     session.setAttribute("positionId", positionId);
                     Y9LoginUserHolder.setPositionId(positionId);
                     PositionApi positionManager = Y9Context.getBean(PositionApi.class);
-                    Position position = positionManager.getPosition(loginPerson.getTenantId(), positionId);
+                    Position position = positionManager.getPosition(loginPerson.getTenantId(), positionId).getData();
                     if (position != null) {
                         Y9LoginUserHolder.setPosition(position);
                     }
                 } else {
                     PersonApi personApi = Y9Context.getBean(PersonApi.class);
-                    List<Position> list = personApi.listPositions(loginPerson.getTenantId(), loginPerson.getPersonId());
+                    List<Position> list =
+                        personApi.listPositions(loginPerson.getTenantId(), loginPerson.getPersonId()).getData();
                     if (list.size() > 0) {
                         Y9LoginUserHolder.setPosition(list.get(0));
                     }

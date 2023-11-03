@@ -113,7 +113,7 @@ public class Process4SearchService {
                     StringUtils.isNotBlank(processParam.getStartorName()) ? processParam.getStartorName() : "");
             }
             officeDoneInfo.setUserComplete("");
-            OrgUnit bureau = personManager.getBureau(tenantId, person.getPersonId());
+            OrgUnit bureau = personManager.getBureau(tenantId, person.getPersonId()).getData();
             officeDoneInfo.setBureauId(bureau != null ? bureau.getId() : "");
             officeDoneInfo.setDeptId(person.getParentId());
             officeDoneInfo.setEntrustUserId("");
@@ -248,7 +248,7 @@ public class Process4SearchService {
                     allUserId = Y9Util.genCustomStr(allUserId, userId);
                 }
                 if (!"".equals(userId)) {
-                    Person person = personManager.getPerson(tenantId, userId);
+                    Person person = personManager.getPerson(tenantId, userId).getData();
                     if (person != null && person.getId() != null) {
                         if (!deptIds.contains(person.getParentId())) {
                             deptIds = Y9Util.genCustomStr(deptIds, person.getParentId());

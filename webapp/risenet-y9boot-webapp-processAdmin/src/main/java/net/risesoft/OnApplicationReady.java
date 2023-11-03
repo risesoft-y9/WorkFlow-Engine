@@ -38,7 +38,7 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
 
     private void createDeployment(String processDefinitionKey) {
         try {
-            List<Tenant> tlist = tenantApi.listByTenantType(3);
+            List<Tenant> tlist = tenantApi.listByTenantType(3).getData();
             for (Tenant tenant : tlist) {
                 Y9LoginUserHolder.setTenantId(tenant.getId());
                 FlowableTenantInfoHolder.setTenantId(tenant.getId());

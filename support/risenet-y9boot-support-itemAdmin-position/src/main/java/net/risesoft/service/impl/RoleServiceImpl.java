@@ -77,8 +77,9 @@ public class RoleServiceImpl implements RoleService {
         try {
             if (StringUtils.isBlank(id) || UtilConsts.NULL.equals(id)) {
                 if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
-                    Organization organization = orgUnitManager.getOrganization(tenantId, userId);
-                    List<Department> deptList = organizationManager.listDepartments(tenantId, organization.getId());
+                    Organization organization = orgUnitManager.getOrganization(tenantId, userId).getData();
+                    List<Department> deptList =
+                        organizationManager.listDepartments(tenantId, organization.getId()).getData();
                     for (Department dept : deptList) {
                         Map<String, Object> map = new HashMap<>(16);
                         map.put("id", dept.getId());
@@ -90,7 +91,7 @@ public class RoleServiceImpl implements RoleService {
                         item.add(map);
                     }
                 } else {
-                    List<CustomGroup> grouplist = customGroupApi.listCustomGroupByUserId(tenantId, userId);
+                    List<CustomGroup> grouplist = customGroupApi.listCustomGroupByUserId(tenantId, userId).getData();
                     for (CustomGroup customGroup : grouplist) {
                         Map<String, Object> map = new HashMap<>();
                         map.put("id", customGroup.getId());
@@ -108,8 +109,8 @@ public class RoleServiceImpl implements RoleService {
             } else {
                 if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
                     List<OrgUnit> orgList = new ArrayList<>();
-                    orgList.addAll(departmentManager.listSubDepartments(tenantId, id));
-                    orgList.addAll(departmentManager.listPositions(tenantId, id));
+                    orgList.addAll(departmentManager.listSubDepartments(tenantId, id).getData());
+                    orgList.addAll(departmentManager.listPositions(tenantId, id).getData());
                     for (OrgUnit orgunit : orgList) {
                         Map<String, Object> map = new HashMap<>(16);
                         String orgunitId = orgunit.getId();
@@ -132,10 +133,11 @@ public class RoleServiceImpl implements RoleService {
                 } else {
                     List<CustomGroupMember> customGroupMemberList =
                         customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId, userId, id,
-                            OrgTypeEnum.POSITION.getEnName());
+                            OrgTypeEnum.POSITION.getEnName()).getData();
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                            Position position = positionManager.getPosition(tenantId, customGroupMember.getMemberId());
+                            Position position =
+                                positionManager.getPosition(tenantId, customGroupMember.getMemberId()).getData();
                             Map<String, Object> map = new HashMap<>();
                             map.put("id", customGroupMember.getMemberId());
                             map.put("parentId", id);
@@ -180,12 +182,13 @@ public class RoleServiceImpl implements RoleService {
         String userId = Y9LoginUserHolder.getPersonId();
         List<Map<String, Object>> item = new ArrayList<>();
         if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
-            Organization organization = orgUnitManager.getOrganization(tenantId, userId);
-            List<Department> deptList = organizationManager.listDepartments(tenantId, organization.getId());
+            Organization organization = orgUnitManager.getOrganization(tenantId, userId).getData();
+            List<Department> deptList = organizationManager.listDepartments(tenantId, organization.getId()).getData();
             List<OrgUnit> orgUnitListTemp = new ArrayList<>();
             for (OrgUnit orgUnitTemp : deptList) {
-                orgUnitListTemp.addAll(orgUnitManager.treeSearchByDn(tenantId, name,
-                    TreeTypeConsts.TREE_TYPE_ORG_POSITION, orgUnitTemp.getDn()));
+                orgUnitListTemp.addAll(orgUnitManager
+                    .treeSearchByDn(tenantId, name, TreeTypeConsts.TREE_TYPE_ORG_POSITION, orgUnitTemp.getDn())
+                    .getData());
             }
             for (OrgUnit orgUnitTemp : orgUnitListTemp) {
                 Map<String, Object> map = new HashMap<>(16);
@@ -213,7 +216,7 @@ public class RoleServiceImpl implements RoleService {
             }
         } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue().equals(principalType)) {
             try {
-                List<CustomGroup> grouplist = customGroupApi.listCustomGroupByUserId(tenantId, userId);
+                List<CustomGroup> grouplist = customGroupApi.listCustomGroupByUserId(tenantId, userId).getData();
                 for (CustomGroup customGroup : grouplist) {
                     Map<String, Object> map = new HashMap<>();
                     map.put("id", customGroup.getId());
@@ -228,10 +231,11 @@ public class RoleServiceImpl implements RoleService {
                     boolean b = false;
                     List<CustomGroupMember> customGroupMemberList =
                         customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId, userId,
-                            customGroup.getId(), OrgTypeEnum.POSITION.getEnName());
+                            customGroup.getId(), OrgTypeEnum.POSITION.getEnName()).getData();
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                            Position position = positionManager.getPosition(tenantId, customGroupMember.getMemberId());
+                            Position position =
+                                positionManager.getPosition(tenantId, customGroupMember.getMemberId()).getData();
                             if (position != null && position.getName().contains(name)) {
                                 Map<String, Object> map0 = new HashMap<>();
                                 map0.put("id", customGroupMember.getMemberId());
@@ -275,13 +279,15 @@ public class RoleServiceImpl implements RoleService {
                     List<OrgUnit> deptList = new ArrayList<>();
                     for (ItemPermission o : list) {
                         if (o.getRoleType() == 1) {
-                            deptList.addAll(roleManager.listOrgUnitsById(tenantId, o.getRoleId(),
-                                OrgTypeEnum.DEPARTMENT.getEnName()));
-                            deptList.addAll(roleManager.listOrgUnitsById(tenantId, o.getRoleId(),
-                                OrgTypeEnum.ORGANIZATION.getEnName()));
+                            deptList.addAll(roleManager
+                                .listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT.getEnName())
+                                .getData());
+                            deptList.addAll(roleManager
+                                .listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION.getEnName())
+                                .getData());
                         }
                         if (o.getRoleType() == 2) {
-                            deptList.add(orgUnitManager.getOrgUnit(tenantId, o.getRoleId()));
+                            deptList.add(orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData());
                         }
                         if (o.getRoleType() == 4) {
                             List<OrgUnit> orgUnitList =
@@ -296,8 +302,10 @@ public class RoleServiceImpl implements RoleService {
                     }
                     for (OrgUnit org : deptList) {
                         if (OrgTypeEnum.ORGANIZATION.getEnName().equals(org.getOrgType())) {
-                            List<Department> deptList1 = organizationManager.listDepartments(tenantId, org.getId());
-                            List<Position> personList1 = organizationManager.listPositions(tenantId, org.getId());
+                            List<Department> deptList1 =
+                                organizationManager.listDepartments(tenantId, org.getId()).getData();
+                            List<Position> personList1 =
+                                organizationManager.listPositions(tenantId, org.getId()).getData();
                             for (Department dept : deptList1) {
                                 Map<String, Object> map = new HashMap<>(16);
                                 map.put("id", dept.getId());
@@ -343,8 +351,8 @@ public class RoleServiceImpl implements RoleService {
                 } else {
                     // 取部门下的部门或人员
                     List<OrgUnit> orgList = new ArrayList<>();
-                    orgList.addAll(departmentManager.listSubDepartments(tenantId, id));
-                    orgList.addAll(departmentManager.listPositions(tenantId, id));
+                    orgList.addAll(departmentManager.listSubDepartments(tenantId, id).getData());
+                    orgList.addAll(departmentManager.listPositions(tenantId, id).getData());
                     for (OrgUnit orgunit : orgList) {
                         Map<String, Object> map = new HashMap<>(16);
                         String orgunitId = orgunit.getId();
@@ -371,11 +379,11 @@ public class RoleServiceImpl implements RoleService {
                 List<OrgUnit> orgList = new ArrayList<>();
                 for (ItemPermission o : list) {
                     if (o.getRoleType() == 1) {
-                        orgList.addAll(
-                            roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION.getEnName()));
+                        orgList.addAll(roleManager
+                            .listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION.getEnName()).getData());
                     }
                     if (o.getRoleType() == 6) {
-                        orgList.add(orgUnitManager.getOrgUnit(tenantId, o.getRoleId()));
+                        orgList.add(orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData());
                     }
                     if (o.getRoleType() == 4) {
                         List<OrgUnit> orgUnitList =
@@ -403,7 +411,7 @@ public class RoleServiceImpl implements RoleService {
                 }
             } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue().equals(principalType)) {
                 List<CustomGroup> customGrouplist =
-                    customGroupApi.listCustomGroupByUserId(tenantId, Y9LoginUserHolder.getPersonId());
+                    customGroupApi.listCustomGroupByUserId(tenantId, Y9LoginUserHolder.getPersonId()).getData();
                 if (StringUtils.isBlank(id)) {
                     for (CustomGroup customGroup : customGrouplist) {
                         Map<String, Object> map = new HashMap<>();
@@ -421,10 +429,11 @@ public class RoleServiceImpl implements RoleService {
                 } else {
                     List<CustomGroupMember> customGroupMemberList =
                         customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                            Y9LoginUserHolder.getPersonId(), id, OrgTypeEnum.POSITION.getEnName());
+                            Y9LoginUserHolder.getPersonId(), id, OrgTypeEnum.POSITION.getEnName()).getData();
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                            Position position = positionManager.getPosition(tenantId, customGroupMember.getMemberId());
+                            Position position =
+                                positionManager.getPosition(tenantId, customGroupMember.getMemberId()).getData();
                             Map<String, Object> map = new HashMap<>();
                             map.put("id", customGroupMember.getMemberId());
                             map.put("parentId", id);
@@ -458,10 +467,10 @@ public class RoleServiceImpl implements RoleService {
             List<OrgUnit> deptList = new ArrayList<>();
             for (ItemPermission o : list) {
                 if (o.getRoleType() == 1) {
-                    deptList.addAll(
-                        roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT.getEnName()));
-                    deptList.addAll(
-                        roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION.getEnName()));
+                    deptList.addAll(roleManager
+                        .listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT.getEnName()).getData());
+                    deptList.addAll(roleManager
+                        .listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION.getEnName()).getData());
                 }
                 if (o.getRoleType() == 4) {
                     List<OrgUnit> orgUnitList =
@@ -474,7 +483,7 @@ public class RoleServiceImpl implements RoleService {
                     }
                 }
                 if (o.getRoleType() == 2) {
-                    Department dept = departmentManager.getDepartment(tenantId, o.getRoleId());
+                    Department dept = departmentManager.getDepartment(tenantId, o.getRoleId()).getData();
                     if (dept != null) {
                         deptList.add(dept);
                     }
@@ -484,8 +493,9 @@ public class RoleServiceImpl implements RoleService {
                 if (OrgTypeEnum.DEPARTMENT.getEnName().equals(org.getOrgType())) {
                     List<OrgUnit> orgUnitList = new ArrayList<>();
                     for (OrgUnit orgUnitTemp : deptList) {
-                        orgUnitList.addAll(orgUnitManager.treeSearchByDn(tenantId, name,
-                            TreeTypeConsts.TREE_TYPE_ORG_POSITION, orgUnitTemp.getDn()));
+                        orgUnitList.addAll(orgUnitManager
+                            .treeSearchByDn(tenantId, name, TreeTypeConsts.TREE_TYPE_ORG_POSITION, orgUnitTemp.getDn())
+                            .getData());
                     }
                     for (OrgUnit orgUnitTemp : orgUnitList) {
                         Map<String, Object> map = new HashMap<>(16);
@@ -509,7 +519,7 @@ public class RoleServiceImpl implements RoleService {
                 } else if (OrgTypeEnum.ORGANIZATION.getEnName().equals(org.getOrgType())) {
                     // 租户组织机构树查询，会查询多个组织机构
                     List<OrgUnit> orgUnitList =
-                        orgUnitManager.treeSearch(tenantId, name, TreeTypeConsts.TREE_TYPE_ORG_POSITION);
+                        orgUnitManager.treeSearch(tenantId, name, TreeTypeConsts.TREE_TYPE_ORG_POSITION).getData();
                     for (int i = 0; i < orgUnitList.size(); i++) {
                         if (OrgTypeEnum.ORGANIZATION.getEnName().equals(orgUnitList.get(i).getOrgType())) {
                             continue;// 不显示组织机构
@@ -537,8 +547,8 @@ public class RoleServiceImpl implements RoleService {
             List<OrgUnit> orgList = new ArrayList<>();
             for (ItemPermission o : list) {
                 if (o.getRoleType() == 1) {
-                    orgList.addAll(
-                        roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION.getEnName()));
+                    orgList.addAll(roleManager
+                        .listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION.getEnName()).getData());
                 }
                 if (o.getRoleType() == 4) {
                     List<OrgUnit> orgUnitList =
@@ -550,7 +560,7 @@ public class RoleServiceImpl implements RoleService {
                     }
                 }
                 if (o.getRoleType() == 6) {
-                    OrgUnit per = orgUnitManager.getOrgUnit(tenantId, o.getRoleId());
+                    OrgUnit per = orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData();
                     orgList.add(per);
                 }
             }
@@ -573,7 +583,7 @@ public class RoleServiceImpl implements RoleService {
         } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue().equals(principalType)) {
             try {
                 List<CustomGroup> grouplist =
-                    customGroupApi.listCustomGroupByUserId(tenantId, Y9LoginUserHolder.getPersonId());
+                    customGroupApi.listCustomGroupByUserId(tenantId, Y9LoginUserHolder.getPersonId()).getData();
                 for (CustomGroup customGroup : grouplist) {
                     Map<String, Object> map = new HashMap<>();
                     map.put("id", customGroup.getId());
@@ -586,12 +596,14 @@ public class RoleServiceImpl implements RoleService {
                         continue;// 去重
                     }
                     boolean b = false;
-                    List<CustomGroupMember> customGroupMemberList =
-                        customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                            Y9LoginUserHolder.getPersonId(), customGroup.getId(), OrgTypeEnum.POSITION.getEnName());
+                    List<CustomGroupMember> customGroupMemberList = customGroupApi
+                        .listCustomGroupMemberByGroupIdAndMemberType(tenantId, Y9LoginUserHolder.getPersonId(),
+                            customGroup.getId(), OrgTypeEnum.POSITION.getEnName())
+                        .getData();
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                            Position position = positionManager.getPosition(tenantId, customGroupMember.getMemberId());
+                            Position position =
+                                positionManager.getPosition(tenantId, customGroupMember.getMemberId()).getData();
                             if (position != null && position.getName().contains(name)) {
                                 Map<String, Object> map0 = new HashMap<>();
                                 map0.put("id", customGroupMember.getMemberId());
@@ -628,7 +640,8 @@ public class RoleServiceImpl implements RoleService {
             if (StringUtils.isBlank(id)) {
                 List<ReceiveDepartment> list = receiveDepartmentRepository.findAll();
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Department department = departmentManager.getDepartment(tenantId, receiveDepartment.getDeptId());
+                    Department department =
+                        departmentManager.getDepartment(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }
@@ -646,7 +659,8 @@ public class RoleServiceImpl implements RoleService {
             } else {
                 List<ReceiveDepartment> list = receiveDepartmentRepository.findByParentIdOrderByTabIndex(id);
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Department department = departmentManager.getDepartment(tenantId, receiveDepartment.getDeptId());
+                    Department department =
+                        departmentManager.getDepartment(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }

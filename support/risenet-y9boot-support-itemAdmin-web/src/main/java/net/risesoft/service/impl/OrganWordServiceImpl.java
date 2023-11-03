@@ -163,7 +163,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         Integer common, String processSerialNumber) {
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-            OrgUnit bureau = personManager.getBureau(Y9LoginUserHolder.getTenantId(), userInfo.getParentId());
+            OrgUnit bureau = personManager.getBureau(Y9LoginUserHolder.getTenantId(), userInfo.getParentId()).getData();
             String deptName = bureau.getName();
             if (1 == common) {
                 itemId = "common";
@@ -313,7 +313,7 @@ public class OrganWordServiceImpl implements OrganWordService {
             if (null != bind) {
                 List<String> roleIds = bind.getRoleIds();
                 for (String roleId : roleIds) {
-                    hasPermission = personRoleApi.hasRole(tenantId, roleId, userInfo.getParentId());
+                    hasPermission = personRoleApi.hasRole(tenantId, roleId, userInfo.getParentId()).getData();
                 }
             }
             if (!hasPermission) {
@@ -366,7 +366,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                     hasPermission = true;
                 } else {
                     for (String roleId : roleIds) {
-                        hasPermission = personRoleApi.hasRole(tenantId, roleId, userInfo.getPersonId());
+                        hasPermission = personRoleApi.hasRole(tenantId, roleId, userInfo.getPersonId()).getData();
                         if (hasPermission) {
                             break;
                         }
@@ -492,7 +492,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         Integer numberTemp = 0;
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-            OrgUnit bureau = personManager.getBureau(Y9LoginUserHolder.getTenantId(), userInfo.getParentId());
+            OrgUnit bureau = personManager.getBureau(Y9LoginUserHolder.getTenantId(), userInfo.getParentId()).getData();
             String deptName = bureau.getName();
             if (1 == common) {
                 itemId = "common";

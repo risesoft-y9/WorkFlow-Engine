@@ -111,7 +111,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Person personTemp = personManager.getPerson(tenantId, assignee);
+                        Person personTemp = personManager.getPerson(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                         }
@@ -126,7 +126,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Person personTemp = personManager.getPerson(tenantId, assignee);
+                            Person personTemp = personManager.getPerson(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             }

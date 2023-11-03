@@ -113,7 +113,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
                                 oldRoleIds = newRoleId;
                             } else {
                                 if (!oldRoleIds.contains(newRoleId)) {
-                                    role = roleManager.getRole(newRoleId);
+                                    role = roleManager.getRole(newRoleId).getData();
                                     if (null != role) {
                                         oldRoleIds += ";" + newRoleId;
                                     }
@@ -156,7 +156,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             String[] roleIdArr = roleIds.split(";");
             Role role = null;
             for (String roleId : roleIdArr) {
-                role = roleManager.getRole(roleId);
+                role = roleManager.getRole(roleId).getData();
                 if (null != role) {
                     list.add(role);
                 } else {
@@ -186,7 +186,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
                     if (StringUtils.isNotEmpty(roleIds)) {
                         String[] roleIdArr = roleIds.split(";");
                         for (String roleId : roleIdArr) {
-                            boolean has = positionRoleApi.hasRole(tenantId, roleId, positionId);
+                            boolean has = positionRoleApi.hasRole(tenantId, roleId, positionId).getData();
                             if (has) {
                                 startTaskDefKey = isnr.getTaskDefKey();
                                 break list;

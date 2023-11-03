@@ -256,8 +256,8 @@ public class DataCenterService {
             SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
             String startProUserId = processInstance.getStartUserId();
             String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
-            Position startProUser = positionApi.getPosition(tenantId, startUserId);
-            OrgUnit dept = departmentApi.getBureau(tenantId, startProUser.getParentId());
+            Position startProUser = positionApi.getPosition(tenantId, startUserId).getData();
+            OrgUnit dept = departmentApi.getBureau(tenantId, startProUser.getParentId()).getData();
 
             // 获取历程
             Map<String, Object> map = this.historyExcel(processSerialNumber, processInstanceId);
@@ -357,8 +357,8 @@ public class DataCenterService {
             SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
             String startProUserId = processParam.getStartor();
             String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
-            Position startProUser = positionApi.getPosition(tenantId, startUserId);
-            OrgUnit dept = departmentApi.getBureau(tenantId, startProUser.getParentId());
+            Position startProUser = positionApi.getPosition(tenantId, startUserId).getData();
+            OrgUnit dept = departmentApi.getBureau(tenantId, startProUser.getParentId()).getData();
 
             // 获取历程
             Map<String, Object> map = this.historyExcel(processSerialNumber, processInstanceId);

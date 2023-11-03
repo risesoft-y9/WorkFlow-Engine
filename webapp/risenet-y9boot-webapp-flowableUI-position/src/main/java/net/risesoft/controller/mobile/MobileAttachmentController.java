@@ -59,7 +59,9 @@ public class MobileAttachmentController {
      * @throws Exception
      */
     @RequestMapping(value = "/download")
-    public void attachmentDownload(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String id, HttpServletResponse response, HttpServletRequest request) throws Exception {
+    public void attachmentDownload(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String id, HttpServletResponse response, HttpServletRequest request) throws Exception {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Map<String, Object> map = attachmentManager.attachmentDownload(tenantId, id);
@@ -95,7 +97,9 @@ public class MobileAttachmentController {
      * @param rows 行数
      */
     @RequestMapping(value = "/list")
-    public void attachmentList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processSerialNumber, @RequestParam(required = false) String fileSource, int page, int rows,
+    public void attachmentList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String processSerialNumber, @RequestParam(required = false) String fileSource, int page, int rows,
         HttpServletResponse response) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -125,8 +129,11 @@ public class MobileAttachmentController {
      * @throws Exception
      */
     @RequestMapping(value = "/upload")
-    public void attachmentUpload(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) MultipartFile file, @RequestParam String processInstanceId, @RequestParam String taskId,
-        @RequestParam String describes, @RequestParam String processSerialNumber, @RequestParam(required = false) String fileSource, HttpServletResponse response) throws Exception {
+    public void attachmentUpload(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam(required = false) MultipartFile file, @RequestParam String processInstanceId,
+        @RequestParam String taskId, @RequestParam String describes, @RequestParam String processSerialNumber,
+        @RequestParam(required = false) String fileSource, HttpServletResponse response) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -136,9 +143,11 @@ public class MobileAttachmentController {
             String originalFilename = file.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);
             fileName = URLDecoder.decode(fileName, "UTF-8");
-            String fullPath = Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
+            String fullPath =
+                Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
-            map = attachmentManager.upload(tenantId, userId, positionId, fileName, y9FileStore.getDisplayFileSize(), processInstanceId, taskId, describes, processSerialNumber, fileSource, y9FileStore.getId());
+            map = attachmentManager.upload(tenantId, userId, positionId, fileName, y9FileStore.getDisplayFileSize(),
+                processInstanceId, taskId, describes, processSerialNumber, fileSource, y9FileStore.getId());
         } catch (Exception e) {
             e.printStackTrace();
             map.put(UtilConsts.SUCCESS, false);
@@ -158,7 +167,8 @@ public class MobileAttachmentController {
      * @param response
      */
     @RequestMapping(value = "/delFile")
-    public void delFile(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String ids, HttpServletResponse response) {
+    public void delFile(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestHeader("auth-positionId") String positionId, @RequestParam String ids, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -184,11 +194,14 @@ public class MobileAttachmentController {
      * @throws Exception
      */
     @RequestMapping(value = "/downloadWord")
-    public void downloadWord(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processSerialNumber, @RequestParam String itemId, HttpServletResponse response,
+    public void downloadWord(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String processSerialNumber, @RequestParam String itemId, HttpServletResponse response,
         HttpServletRequest request) throws Exception {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Map<String, Object> fileDocument = transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
+            Map<String, Object> fileDocument =
+                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
             String filename = fileDocument.get("fileName") != null ? (String)fileDocument.get("fileName") : "正文.doc";
             String fileStoreId = transactionWordManager.openDocument(tenantId, userId, processSerialNumber, itemId);
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
@@ -227,13 +240,18 @@ public class MobileAttachmentController {
      * @return
      */
     @RequestMapping(value = "/uploadWord")
-    public String uploadWord(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String documentTitle, @RequestParam(required = false) MultipartFile file,
-        @RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String taskId) {
+    public String uploadWord(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam(required = false) String documentTitle, @RequestParam(required = false) MultipartFile file,
+        @RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String taskId) {
         String result = "";
         try {
-            String fullPath = Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
+            String fullPath =
+                Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, "正文.doc");
-            result = transactionWordManager.uploadWord(tenantId, userId, documentTitle, fileType, processSerialNumber, "0", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
+            result = transactionWordManager.uploadWord(tenantId, userId, documentTitle, fileType, processSerialNumber,
+                "0", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
         } catch (Exception e) {
             e.printStackTrace();
         }

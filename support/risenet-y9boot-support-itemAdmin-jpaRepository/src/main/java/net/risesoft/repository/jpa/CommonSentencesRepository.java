@@ -15,7 +15,8 @@ import net.risesoft.entity.CommonSentences;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface CommonSentencesRepository extends JpaRepository<CommonSentences, String>, JpaSpecificationExecutor<CommonSentences> {
+public interface CommonSentencesRepository
+    extends JpaRepository<CommonSentences, String>, JpaSpecificationExecutor<CommonSentences> {
 
     @Query("from CommonSentences t where t.userId=?1 order by t.useNumber desc, t.tabIndex asc")
     public List<CommonSentences> findAllByUserId(String userId);

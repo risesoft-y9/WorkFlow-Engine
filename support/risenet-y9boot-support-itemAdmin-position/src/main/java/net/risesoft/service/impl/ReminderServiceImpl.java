@@ -120,7 +120,7 @@ public class ReminderServiceImpl implements ReminderService {
             if (null != historicTaskTemp) {
                 map.put("taskName", historicTaskTemp.getName());
                 if (StringUtils.isNotBlank(historicTaskTemp.getAssignee())) {
-                    pTemp = positionApi.getPosition(tenantId, historicTaskTemp.getAssignee());
+                    pTemp = positionApi.getPosition(tenantId, historicTaskTemp.getAssignee()).getData();
                     if (null != pTemp) {
                         map.put("userName", pTemp.getName());
                     }
@@ -138,7 +138,8 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    public Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId, int page, int rows) {
+    public Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId,
+        int page, int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         List<Reminder> reminderList = new ArrayList<Reminder>();
@@ -173,7 +174,7 @@ public class ReminderServiceImpl implements ReminderService {
             if (null != taskTemp) {
                 map.put("taskName", taskTemp.getName());
                 if (StringUtils.isNotBlank(taskTemp.getAssignee())) {
-                    pTemp = positionApi.getPosition(tenantId, taskTemp.getAssignee());
+                    pTemp = positionApi.getPosition(tenantId, taskTemp.getAssignee()).getData();
                     if (null != pTemp) {
                         map.put("userName", pTemp.getName());
                     }
@@ -208,7 +209,7 @@ public class ReminderServiceImpl implements ReminderService {
         SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         TaskModel taskTemp = taskManager.findById(tenantId, taskId);
-        Position pTemp = positionApi.getPosition(tenantId, taskTemp.getAssignee());
+        Position pTemp = positionApi.getPosition(tenantId, taskTemp.getAssignee()).getData();
         for (Reminder reminder : reminderList) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("id", reminder.getId());
@@ -245,7 +246,8 @@ public class ReminderServiceImpl implements ReminderService {
 
     @Override
     @Transactional(readOnly = false)
-    public String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType, String taskId, String taskAssigneeId, String documentTitle) {
+    public String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType,
+        String taskId, String taskAssigneeId, String documentTitle) {
         String smsErr = "";
         String emailErr = "";
         UserInfo person = Y9LoginUserHolder.getUserInfo();

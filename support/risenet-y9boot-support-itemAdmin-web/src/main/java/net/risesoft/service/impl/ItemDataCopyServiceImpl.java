@@ -283,9 +283,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         /**
          * 3.2、获取目标租户的事项管理系统的角色
          */
-        System system = systemEntityManager.getByName(Y9Context.getSystemName());
-        Role tenantRole = roleManager.getRole(targetTenantId);
-        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId());
+        System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
+        Role tenantRole = roleManager.getRole(targetTenantId).getData();
+        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
 
         /**
@@ -296,7 +296,8 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         List<ItemButtonRole> roleList = null;
         Role oldRole = null, newRoleTemp = null;
         String newRoleId = null, roleId = null;
-        Organization organization = orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId());
+        Organization organization =
+            orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (ItemButtonBind bind : sourceBindList) {
             /** 保存绑定关系 */
             bind.setProcessDefinitionId(targetpdId);
@@ -306,9 +307,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             roleList = itemButtonRoleService.findByItemButtonId(bind.getId());
             for (ItemButtonRole role : roleList) {
                 roleId = role.getId();
-                oldRole = roleManager.getRole(roleId);
+                oldRole = roleManager.getRole(roleId).getData();
                 if (null != oldRole && null != oldRole.getId()) {
-                    newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId);
+                    newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
                     if (null == newRoleTemp || null == newRoleTemp.getId()) {
                         newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                         // TODO
@@ -617,18 +618,19 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         /**
          * 5、保存源租户该事项最新流程定义的绑定的角色并把角色在租户角色中创建
          */
-        System system = systemEntityManager.getByName(Y9Context.getSystemName());
-        Role tenantRole = roleManager.getRole(targetTenantId);
-        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId());
+        System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
+        Role tenantRole = roleManager.getRole(targetTenantId).getData();
+        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
         Role oldRole = null, newRoleTemp = null;
         String newRoleId = null, roleId = null;
-        Organization organization = orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId());
+        Organization organization =
+            orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (ItemOpinionFrameRole iRole : targetRoleList) {
             roleId = iRole.getRoleId();
-            oldRole = roleManager.getRole(roleId);
+            oldRole = roleManager.getRole(roleId).getData();
             if (null != oldRole && null != oldRole.getId()) {
-                newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId);
+                newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
                 if (null == newRoleTemp || null == newRoleTemp.getId()) {
                     newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                     // TODO
@@ -690,9 +692,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         /**
          * 3.2、获取目标租户的事项管理系统的角色
          */
-        System system = systemEntityManager.getByName(Y9Context.getSystemName());
-        Role tenantRole = roleManager.getRole(targetTenantId);
-        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId());
+        System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
+        Role tenantRole = roleManager.getRole(targetTenantId).getData();
+        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
 
         /**
@@ -703,7 +705,8 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Role oldRole = null, newRoleTemp = null;
         String newRoleId = null;
         List<String> roleIdList = null;
-        Organization organization = orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId());
+        Organization organization =
+            orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (ItemOrganWordBind bind : sourceBindList) {
             /** 保存绑定关系 */
             bind.setProcessDefinitionId(targetpdId);
@@ -712,9 +715,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             /** 更新绑定角色 */
             roleIdList = bind.getRoleIds();
             for (String roleId : roleIdList) {
-                oldRole = roleManager.getRole(roleId);
+                oldRole = roleManager.getRole(roleId).getData();
                 if (null != oldRole && null != oldRole.getId()) {
-                    newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId);
+                    newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
                     if (null == newRoleTemp || null == newRoleTemp.getId()) {
                         newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                         // TODO
@@ -864,9 +867,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         /**
          * 3.2、获取目标租户的事项管理系统的角色
          */
-        System system = systemEntityManager.getByName(Y9Context.getSystemName());
-        Role tenantRole = roleManager.getRole(targetTenantId);
-        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId());
+        System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
+        Role tenantRole = roleManager.getRole(targetTenantId).getData();
+        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
 
         /**
@@ -877,7 +880,8 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         List<ItemButtonRole> roleList = null;
         Role oldRole = null, newRoleTemp = null;
         String newRoleId = null, roleId = null;
-        Organization organization = orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId());
+        Organization organization =
+            orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (ItemButtonBind bind : sourceBindList) {
             bind.setProcessDefinitionId(targetpdId);
             itemButtonBindService.save(bind);
@@ -886,9 +890,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             roleList = itemButtonRoleService.findByItemButtonId(bind.getId());
             for (ItemButtonRole role : roleList) {
                 roleId = role.getId();
-                oldRole = roleManager.getRole(roleId);
+                oldRole = roleManager.getRole(roleId).getData();
                 if (null != oldRole && null != oldRole.getId()) {
-                    newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId);
+                    newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
                     if (null == newRoleTemp || null == newRoleTemp.getId()) {
                         newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                         // TODO
@@ -973,7 +977,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        OrgUnit orgUnit = personManager.getBureau(targetTenantId, userInfo.getPersonId());
+        OrgUnit orgUnit = personManager.getBureau(targetTenantId, userInfo.getPersonId()).getData();
         String bureauId = orgUnit.getId(), bureauName = orgUnit.getName();
         for (TaoHongTemplate tt : sourcettList) {
             tt.setBureauGuid(bureauId);
@@ -1010,9 +1014,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         /**
          * 2、获取目标租户的事项管理系统的角色
          */
-        System system = systemEntityManager.getByName(Y9Context.getSystemName());
-        Role tenantRole = roleManager.getRole(targetTenantId);
-        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId());
+        System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
+        Role tenantRole = roleManager.getRole(targetTenantId).getData();
+        Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
         /**
          * 3、把1中查出的角色复制到目标租户中去，父节点为2中获取的角色，目标租户创建新角色时，为了避免重复创建的问题，用源角色id作为新角色的customId，每次要创建的时候，查找一下是否存在
@@ -1021,11 +1025,12 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Map<String, String> roleIdMap = new HashMap<>(16);
         Role oldRole = null, newRoleTemp = null;
         String newRoleId = null;
-        Organization organization = orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId());
+        Organization organization =
+            orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (String roleId : roleIdList) {
-            oldRole = roleManager.getRole(roleId);
+            oldRole = roleManager.getRole(roleId).getData();
             if (null != oldRole && null != oldRole.getId()) {
-                newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId);
+                newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
                 if (null == newRoleTemp || null == newRoleTemp.getId()) {
                     newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                     // TODO

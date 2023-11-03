@@ -136,17 +136,16 @@ public class ProcessInstanceVueController {
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
                     String[] userIdAndDeptId = processInstance.getStartUserId().split(":");
                     if (userIdAndDeptId.length == 1) {
-                        position = positionApi.getPosition(tenantId, userIdAndDeptId[0]);
-                        orgUnit = positionApi.getParent(tenantId, position.getId());
+                        position = positionApi.getPosition(tenantId, userIdAndDeptId[0]).getData();
+                        orgUnit = positionApi.getParent(tenantId, position.getId()).getData();
                         if (null != position) {
                             map.put("startUserName", position.getName() + "(" + orgUnit.getName() + ")");
                         }
                     } else {
-                        position = positionApi.getPosition(tenantId, userIdAndDeptId[0]);
+                        position = positionApi.getPosition(tenantId, userIdAndDeptId[0]).getData();
                         if (null != position) {
-                            orgUnitManager.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1]);
-                            orgUnit =
-                                orgUnitManager.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1]);
+                            orgUnit = orgUnitManager
+                                .getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1]).getData();
                             if (null == orgUnit) {
                                 map.put("startUserName", position.getName());
                             } else {

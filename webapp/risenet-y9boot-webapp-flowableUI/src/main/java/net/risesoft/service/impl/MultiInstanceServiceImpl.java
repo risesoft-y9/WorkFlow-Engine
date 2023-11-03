@@ -142,7 +142,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
             mapTemp.put("taskId", tm.getId());
             mapTemp.put("executionId", tm.getExecutionId());
             mapTemp.put("assigneeId", tm.getAssignee());
-            personTemp = personApi.getPerson(tenantId, tm.getAssignee());
+            personTemp = personApi.getPerson(tenantId, tm.getAssignee()).getData();
             mapTemp.put("assigneeName", personTemp == null ? "" : personTemp.getName());
             mapTemp.put("name", tm.getName());
             mapTemp.put("isZhuBan", "否");
@@ -173,7 +173,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         int num = 0;
         for (Object obj : users) {
             String user = obj.toString();
-            personTemp = personApi.getPerson(tenantId, user);
+            personTemp = personApi.getPerson(tenantId, user).getData();
             mapTemp = new HashMap<>(16);
             mapTemp.put("num", num + 1);
             mapTemp.put("taskId", taskId);

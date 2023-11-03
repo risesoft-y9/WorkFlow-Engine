@@ -56,7 +56,7 @@ public class DepartmentRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(id)) {
-            List<Organization> list = organizationApi.listAllOrganizations(tenantId);
+            List<Organization> list = organizationApi.listAllOrganizations(tenantId).getData();
             for (Organization orgUnit : list) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 map.put("id", orgUnit.getId());
@@ -69,7 +69,7 @@ public class DepartmentRestController {
             }
         }
         /** items.addAll(genDeptTree(id)); */
-        List<OrgUnit> employees = orgUnitManager.getSubTree(tenantId, id, TreeTypeConsts.TREE_TYPE_POSITION);
+        List<OrgUnit> employees = orgUnitManager.getSubTree(tenantId, id, TreeTypeConsts.TREE_TYPE_POSITION).getData();
         for (OrgUnit employee : employees) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("id", employee.getId());
@@ -107,7 +107,7 @@ public class DepartmentRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(id)) {
-            List<Organization> list = organizationApi.listAllOrganizations(tenantId);
+            List<Organization> list = organizationApi.listAllOrganizations(tenantId).getData();
             for (Organization orgUnit : list) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 map.put("id", orgUnit.getId());
@@ -119,7 +119,7 @@ public class DepartmentRestController {
                 items.add(map);
             }
         }
-        List<Department> departments = departmentManager.listSubDepartments(tenantId, id);
+        List<Department> departments = departmentManager.listSubDepartments(tenantId, id).getData();
         for (Department department : departments) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("id", department.getId());
@@ -134,7 +134,7 @@ public class DepartmentRestController {
                     map.put("isParent", true);
                 }
             } else {
-                if (departmentManager.listSubDepartments(tenantId, department.getId()).size() > 0) {
+                if (departmentManager.listSubDepartments(tenantId, department.getId()).getData().size() > 0) {
                     map.put("isParent", true);
                 } else {
                     map.put("isParent", false);
@@ -156,7 +156,8 @@ public class DepartmentRestController {
      */
     public List<Map<String, Object>> genDeptTree(String deptGuid) {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
-        List<Department> deptList = departmentManager.listSubDepartments(Y9LoginUserHolder.getTenantId(), deptGuid);
+        List<Department> deptList =
+            departmentManager.listSubDepartments(Y9LoginUserHolder.getTenantId(), deptGuid).getData();
         List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
         orgUnitList.addAll(deptList);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
@@ -184,7 +185,7 @@ public class DepartmentRestController {
     @ResponseBody
     public Y9Result<List<Organization>> getOrgList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Organization> list = organizationApi.listAllOrganizations(tenantId);
+        List<Organization> list = organizationApi.listAllOrganizations(tenantId).getData();
         return Y9Result.success(list, "获取成功");
     }
 
@@ -192,7 +193,7 @@ public class DepartmentRestController {
     @ResponseBody
     public Y9Result<List<OrgUnit>> getOrgTree(String id, String treeType) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, treeType);
+        List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, treeType).getData();
         return Y9Result.success(list, "获取成功");
     }
 
@@ -201,7 +202,7 @@ public class DepartmentRestController {
     public Y9Result<List<Map<String, Object>>> searchDept(@RequestParam(required = false) String name) {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> employees = orgUnitManager.treeSearch(tenantId, name, TreeTypeConsts.TREE_TYPE_DEPT);
+        List<OrgUnit> employees = orgUnitManager.treeSearch(tenantId, name, TreeTypeConsts.TREE_TYPE_DEPT).getData();
         for (OrgUnit employee : employees) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("id", employee.getId());
@@ -220,7 +221,8 @@ public class DepartmentRestController {
     public Y9Result<List<Map<String, Object>>> searchDeptAndPosition(@RequestParam(required = false) String name) {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> employees = orgUnitManager.treeSearch(tenantId, name, TreeTypeConsts.TREE_TYPE_ORG_POSITION);
+        List<OrgUnit> employees =
+            orgUnitManager.treeSearch(tenantId, name, TreeTypeConsts.TREE_TYPE_ORG_POSITION).getData();
         for (OrgUnit employee : employees) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("id", employee.getId());
@@ -238,7 +240,7 @@ public class DepartmentRestController {
     @ResponseBody
     public Y9Result<List<OrgUnit>> treeSearch(String name, String treeType) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> list = orgUnitManager.treeSearch(tenantId, name, treeType);
+        List<OrgUnit> list = orgUnitManager.treeSearch(tenantId, name, treeType).getData();
         return Y9Result.success(list, "获取成功");
     }
 }

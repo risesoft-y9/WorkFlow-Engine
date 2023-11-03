@@ -156,7 +156,7 @@ public class MonitorServiceImpl implements MonitorService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Person personTemp = personApi.getPerson(tenantId, assignee);
+                        Person personTemp = personApi.getPerson(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames.append(personTemp.getName());
                             i += 1;
@@ -168,7 +168,8 @@ public class MonitorServiceImpl implements MonitorService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Person ownerUser = personApi.getPerson(Y9LoginUserHolder.getTenantId(), assigneeId);
+                                Person ownerUser =
+                                    personApi.getPerson(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames,
                                         ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : ""), "、");
@@ -187,7 +188,7 @@ public class MonitorServiceImpl implements MonitorService {
                     if (i < 5) {
                         if (StringUtils.isNotBlank(assignee)) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, task.getAssignee(), SysVariables.COMMA);
-                            Person personTemp = personApi.getPerson(tenantId, assignee);
+                            Person personTemp = personApi.getPerson(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                                 i += 1;
@@ -236,7 +237,7 @@ public class MonitorServiceImpl implements MonitorService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Person personTemp = personApi.getPerson(tenantId, assignee);
+                        Person personTemp = personApi.getPerson(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames.append(personTemp.getName());
                         }
@@ -251,7 +252,8 @@ public class MonitorServiceImpl implements MonitorService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Person ownerUser = personApi.getPerson(Y9LoginUserHolder.getTenantId(), assigneeId);
+                                Person ownerUser =
+                                    personApi.getPerson(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames,
                                         ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : ""), "、");
@@ -269,7 +271,7 @@ public class MonitorServiceImpl implements MonitorService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Person personTemp = personApi.getPerson(tenantId, assignee);
+                            Person personTemp = personApi.getPerson(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             }

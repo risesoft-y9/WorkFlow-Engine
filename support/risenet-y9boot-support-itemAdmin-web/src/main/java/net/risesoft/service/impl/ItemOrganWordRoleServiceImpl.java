@@ -43,7 +43,7 @@ public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
     public List<ItemOrganWordRole> findByItemOrganWordBindIdContainRoleName(String itemOrganWordBindId) {
         List<ItemOrganWordRole> roleList = itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
         for (ItemOrganWordRole role : roleList) {
-            Role r = roleManager.getRole(role.getRoleId());
+            Role r = roleManager.getRole(role.getRoleId()).getData();
             role.setRoleName(r == null ? "角色已删除" : r.getName());
         }
         return roleList;

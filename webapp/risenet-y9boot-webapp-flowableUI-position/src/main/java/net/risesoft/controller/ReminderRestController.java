@@ -54,10 +54,12 @@ public class ReminderRestController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/reminderMeList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getReminderList(@RequestParam(required = true) String taskId, @RequestParam(required = true) int rows, @RequestParam(required = true) int page) {
+    public Y9Page<Map<String, Object>> getReminderList(@RequestParam(required = true) String taskId,
+        @RequestParam(required = true) int rows, @RequestParam(required = true) int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = reminderManager.findByTaskId(tenantId, taskId, page, rows);
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
+            Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
     }
 
     /**
@@ -72,15 +74,19 @@ public class ReminderRestController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/reminderList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> myReminder(@RequestParam(required = true) String type, @RequestParam(required = true) String processInstanceId, @RequestParam(required = true) int rows, @RequestParam(required = true) int page) {
+    public Y9Page<Map<String, Object>> myReminder(@RequestParam(required = true) String type,
+        @RequestParam(required = true) String processInstanceId, @RequestParam(required = true) int rows,
+        @RequestParam(required = true) int page) {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = new HashMap<>(16);
         if ("my".equals(type)) {
-            map = reminderManager.findBySenderIdAndProcessInstanceIdAndActive(tenantId, userId, processInstanceId, page, rows);
+            map = reminderManager.findBySenderIdAndProcessInstanceIdAndActive(tenantId, userId, processInstanceId, page,
+                rows);
         } else {
             map = reminderManager.findByProcessInstanceId(tenantId, processInstanceId, page, rows);
         }
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
+            Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
     }
 
     /**
@@ -93,7 +99,8 @@ public class ReminderRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveReminder", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveReminder(@RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String[] taskIds, @RequestParam(required = true) String msgContent) {
+    public Y9Result<String> saveReminder(@RequestParam(required = true) String processInstanceId,
+        @RequestParam(required = true) String[] taskIds, @RequestParam(required = true) String msgContent) {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPositionId();
         try {
             Map<String, Object> map = new HashMap<>(16);
@@ -131,7 +138,8 @@ public class ReminderRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/taskList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> taskList(@RequestParam(required = true) String processInstanceId, @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
+    public Y9Page<Map<String, Object>> taskList(@RequestParam(required = true) String processInstanceId,
+        @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
         return flowableReminderService.findTaskListByProcessInstanceId(processInstanceId, page, rows);
     }
 
@@ -144,7 +152,8 @@ public class ReminderRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/updateReminder", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> updateReminder(@RequestParam(required = true) String id, @RequestParam(required = true) String msgContent) {
+    public Y9Result<String> updateReminder(@RequestParam(required = true) String id,
+        @RequestParam(required = true) String msgContent) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map = new HashMap<>(16);

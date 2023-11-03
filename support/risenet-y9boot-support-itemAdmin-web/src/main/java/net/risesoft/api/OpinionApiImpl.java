@@ -104,7 +104,7 @@ public class OpinionApiImpl implements OpinionApi {
     public List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber,
         String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey,
         String activitiUser) {
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = opinionService.personCommentList(processSerialNumber, taskId, itembox,
@@ -116,7 +116,7 @@ public class OpinionApiImpl implements OpinionApi {
     @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
     public void save(String tenantId, String userId, @RequestBody OpinionModel opinionModel) throws Exception {
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         Opinion opinion = ItemAdminModelConvertUtil.opinionModel2Opinion(opinionModel);
@@ -128,7 +128,7 @@ public class OpinionApiImpl implements OpinionApi {
         consumes = MediaType.APPLICATION_JSON_VALUE)
     public OpinionModel saveOrUpdate(String tenantId, String userId, @RequestBody OpinionModel opinionModel)
         throws Exception {
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         Opinion opinion = ItemAdminModelConvertUtil.opinionModel2Opinion(opinionModel);
