@@ -123,7 +123,7 @@ public class RoleServiceImpl implements RoleService {
                         item.add(map);
                     }
                 } else {
-                    List<CustomGroup> grouplist = customGroupApi.listCustomGroupByUserId(tenantId, userId).getData();
+                    List<CustomGroup> grouplist = customGroupApi.listCustomGroupByPersonId(tenantId, userId).getData();
                     for (CustomGroup customGroup : grouplist) {
                         Map<String, Object> map = new HashMap<>(16);
                         map.put("id", customGroup.getId());
@@ -253,7 +253,7 @@ public class RoleServiceImpl implements RoleService {
         } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue().equals(principalType)) {
             try {
                 List<CustomGroup> grouplist = customGroupApi
-                    .listCustomGroupByUserId(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
+                    .listCustomGroupByPersonId(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
                 for (CustomGroup customGroup : grouplist) {
                     Map<String, Object> map = new HashMap<>(16);
                     map.put("id", customGroup.getId());
@@ -477,7 +477,8 @@ public class RoleServiceImpl implements RoleService {
                     item.add(map);
                 }
             } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue().equals(principalType)) {
-                List<CustomGroup> customGrouplist = customGroupApi.listCustomGroupByUserId(tenantId, userId).getData();
+                List<CustomGroup> customGrouplist =
+                    customGroupApi.listCustomGroupByPersonId(tenantId, userId).getData();
                 if (StringUtils.isBlank(id)) {
                     for (CustomGroup customGroup : customGrouplist) {
                         Map<String, Object> map = new HashMap<>(16);
@@ -739,7 +740,7 @@ public class RoleServiceImpl implements RoleService {
         } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue().equals(principalType)) {
             try {
                 List<CustomGroup> grouplist = customGroupApi
-                    .listCustomGroupByUserId(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
+                    .listCustomGroupByPersonId(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
                 for (CustomGroup customGroup : grouplist) {
                     Map<String, Object> map = new HashMap<>(16);
                     map.put("id", customGroup.getId());

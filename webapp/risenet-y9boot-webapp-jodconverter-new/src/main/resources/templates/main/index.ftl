@@ -217,7 +217,7 @@
             var password = $("#_code").val();
 //console.log(password);
             $.ajax({
-                url: '${baseUrl}deleteFile?fileName=' + fileName + '&password=' + password,
+                url: '${baseUrl}deleteFile?fileName=' + fileName + '&base64EncodedPassword=' + password,
                 success: function (data) {
                     // console.log(data);
                     // 删除完成，刷新table
@@ -277,7 +277,7 @@
             password = prompt("请输入默认密码:123456");
             </#if>
             $.ajax({
-                url: '${baseUrl}deleteFile?fileName=' + fileName + '&password=' + password,
+                url: '${baseUrl}deleteFile?fileName=' + fileName + '&base64EncodedPassword=' + password,
                 success: function (data) {
                     // console.log(data);
                     // 删除完成，刷新table
