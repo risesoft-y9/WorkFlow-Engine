@@ -813,7 +813,7 @@ public class DocumentServiceImpl implements DocumentService {
     public Map<String, Object> menuControl(String itemId, String processDefinitionId, String taskDefKey, String taskId, Map<String, Object> returnMap, String itembox) {
         ButtonUtil buttonUtil = new ButtonUtil();
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-        Map<String, Object> map = buttonUtil.showButton(taskId, itembox);
+        Map<String, Object> map = buttonUtil.showButton(itemId,taskId, itembox);
         String[] buttonIds = (String[])map.get("buttonIds");
         String[] buttonNames = (String[])map.get("buttonNames");
         String sponsorHandle = (String)map.get("sponsorHandle");
