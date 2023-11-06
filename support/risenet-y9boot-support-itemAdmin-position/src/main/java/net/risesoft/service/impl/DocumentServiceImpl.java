@@ -1159,29 +1159,35 @@ public class DocumentServiceImpl implements DocumentService {
         Map<String, Object> map = new HashMap<>();
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "提交失败");
-        SpmApproveItem item = spmApproveitemService.findById(itemId);
-        String processDefinitionKey = item.getWorkflowGuid();
-        ProcessDefinitionModel processDefinitionModel = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
-        String processDefinitionId = processDefinitionModel.getId();
-        String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
-        Y9Result<Map<String, String>> routeToTaskIdResult = this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey);
-        if (!routeToTaskIdResult.isSuccess()) {
-            map.put("msg", routeToTaskIdResult.getMsg());
-            return map;
+        try {
+            SpmApproveItem item = spmApproveitemService.findById(itemId);
+            String processDefinitionKey = item.getWorkflowGuid();
+            ProcessDefinitionModel processDefinitionModel = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+            String processDefinitionId = processDefinitionModel.getId();
+            String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
+            Y9Result<Map<String, String>> routeToTaskIdResult = this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey);
+            if (!routeToTaskIdResult.isSuccess()) {
+                map.put("msg", routeToTaskIdResult.getMsg());
+                return map;
+            }
+            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY), routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.TASKDEFNAME);
+            String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
+            Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
+            if (!userResult.isSuccess()) {
+                map.put("msg", userResult.getMsg());
+                return map;
+            }
+            Map<String, Object> startProcessMap = this.startProcess(itemId, processSerialNumber, processDefinitionKey);
+            String taskId = (String)startProcessMap.get("taskId"), processInstanceId = (String)startProcessMap.get("processInstanceId");
+            ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
+            List<String> userList = userResult.getData();
+            Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
+            asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, "", "", taskId, multiInstance, variables, userList);
+            map.put(UtilConsts.SUCCESS, true);
+            map.put("msg", "提交成功");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY), routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.TASKDEFNAME);
-        String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
-        Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
-        if (!userResult.isSuccess()) {
-            map.put("msg", userResult.getMsg());
-            return map;
-        }
-        Map<String, Object> startProcessMap = this.startProcess(itemId, processSerialNumber, processDefinitionKey);
-        String taskId = (String)startProcessMap.get("taskId"), processInstanceId = (String)startProcessMap.get("processInstanceId");
-        ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-        List<String> userList = userResult.getData();
-        Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
-        asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, "", "", taskId, multiInstance, variables, userList);
         return map;
     }
 
@@ -1190,27 +1196,33 @@ public class DocumentServiceImpl implements DocumentService {
         Map<String, Object> map = new HashMap<>();
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "提交失败");
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-        Position position = Y9LoginUserHolder.getPosition();
-        ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-        String itemId = processParam.getItemId();
-        TaskModel task = taskManager.findById(tenantId, taskId);
-        String processDefinitionId = task.getProcessDefinitionId(), taskDefKey = task.getTaskDefinitionKey(), processInstanceId = task.getProcessInstanceId();
-        Y9Result<Map<String, String>> routeToTaskIdResult = this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey);
-        if (!routeToTaskIdResult.isSuccess()) {
-            map.put("msg", routeToTaskIdResult.getMsg());
-            return map;
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            Position position = Y9LoginUserHolder.getPosition();
+            ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
+            String itemId = processParam.getItemId();
+            TaskModel task = taskManager.findById(tenantId, taskId);
+            String processDefinitionId = task.getProcessDefinitionId(), taskDefKey = task.getTaskDefinitionKey(), processInstanceId = task.getProcessInstanceId();
+            Y9Result<Map<String, String>> routeToTaskIdResult = this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey);
+            if (!routeToTaskIdResult.isSuccess()) {
+                map.put("msg", routeToTaskIdResult.getMsg());
+                return map;
+            }
+            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY), routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.TASKDEFNAME);
+            String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
+            Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
+            if (!userResult.isSuccess()) {
+                map.put("msg", userResult.getMsg());
+                return map;
+            }
+            List<String> userList = userResult.getData();
+            Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
+            asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, "", "", taskId, multiInstance, variables, userList);
+            map.put(UtilConsts.SUCCESS, true);
+            map.put("msg", "提交成功");
+        } catch (Exception e) {
+             e.printStackTrace();
         }
-        String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY), routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.TASKDEFNAME);
-        String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
-        Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
-        if (!userResult.isSuccess()) {
-            map.put("msg", userResult.getMsg());
-            return map;
-        }
-        List<String> userList = userResult.getData();
-        Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
-        asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, "", "", taskId, multiInstance, variables, userList);
         return map;
     }
 

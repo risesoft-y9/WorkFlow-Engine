@@ -306,7 +306,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                     if (datamap.size() > 0) {
                         List<Y9TableField> tableFieldList = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(y9Table.getId());
                         for (Y9TableField tableField : tableFieldList) {
-                            if (1 == tableField.getIsVar()) {
+                            if (null != tableField.getIsVar() && 1 == tableField.getIsVar()) {
                                 String fieldName = tableField.getFieldName();
                                 map.put(fieldName, datamap.get(0).get(fieldName) != null ? datamap.get(0).get(fieldName).toString() : "");
                             }
