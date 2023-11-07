@@ -1221,7 +1221,7 @@ public class DocumentServiceImpl implements DocumentService {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "提交成功");
         } catch (Exception e) {
-             e.printStackTrace();
+            e.printStackTrace();
         }
         return map;
     }
@@ -1232,6 +1232,11 @@ public class DocumentServiceImpl implements DocumentService {
         List<Map<String, String>> targetNodes = processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
         if (targetNodes.isEmpty()) {
             result.setMsg("目标路由不存在");
+            return result;
+        }
+        if (1 == targetNodes.size()) {
+            result.setData(targetNodes.get(0));
+            result.setSuccess(true);
             return result;
         }
         List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
