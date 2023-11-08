@@ -1210,7 +1210,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
             String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY), routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.TASKDEFNAME);
             String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
-            Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
+            Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, processInstanceId, multiInstance);
             if (!userResult.isSuccess()) {
                 map.put("msg", userResult.getMsg());
                 return map;
@@ -1229,35 +1229,40 @@ public class DocumentServiceImpl implements DocumentService {
     public Y9Result<Map<String, String>> parserRouteToTaskId(String itemId, String processSerialNumber, String processDefinitionId, String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Y9Result<Map<String, String>> result = Y9Result.failure("解析目标路由失败");
-        List<Map<String, String>> targetNodes = processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
-        if (targetNodes.isEmpty()) {
-            result.setMsg("目标路由不存在");
-            return result;
-        }
-        if (1 == targetNodes.size()) {
-            result.setData(targetNodes.get(0));
-            result.setSuccess(true);
-            return result;
-        }
-        List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
-        Map<String, Object> variables = y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
-        List<Map<String, String>> targetNodesTemp = new ArrayList<>();
-        for (Map<String, String> targetNode : targetNodes) {
-            boolean b = conditionParserApi.parser(tenantId, targetNode.get(SysVariables.CONDITIONEXPRESSION), variables);
-            if (b) {
-                targetNodesTemp.add(targetNode);
+        try {
+            List<Map<String, String>> targetNodes = processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
+            if (targetNodes.isEmpty()) {
+                result.setMsg("目标路由不存在");
+                return result;
             }
+            if (1 == targetNodes.size()) {
+                result.setData(targetNodes.get(0));
+                result.setSuccess(true);
+                return result;
+            }
+            List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            Map<String, Object> variables = y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
+            List<Map<String, String>> targetNodesTemp = new ArrayList<>();
+            for (Map<String, String> targetNode : targetNodes) {
+                boolean b = conditionParserApi.parser(tenantId, targetNode.get(SysVariables.CONDITIONEXPRESSION), variables);
+                if (b) {
+                    targetNodesTemp.add(targetNode);
+                }
+            }
+            if (targetNodesTemp.isEmpty()) {
+                result.setMsg("未找到符合要求的目标路由");
+                return result;
+            }
+            if (targetNodesTemp.size() > 1) {
+                result.setMsg("符合要求的目标路由过多");
+                return result;
+            }
+            result.setData(targetNodesTemp.get(0));
+            result.setMsg("解析目标路由成功");
+            result.setSuccess(true);
+        } catch (Exception e) {
+             e.printStackTrace();
         }
-        if (targetNodesTemp.isEmpty()) {
-            result.setMsg("未找到符合要求的目标路由");
-            return result;
-        }
-        if (targetNodesTemp.size() > 1) {
-            result.setMsg("符合要求的目标路由过多");
-            return result;
-        }
-        result.setData(targetNodesTemp.get(0));
-        result.setSuccess(true);
         return result;
     }
 
