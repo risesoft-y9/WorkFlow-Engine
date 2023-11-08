@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.risesoft.api.org.DepartmentApi;
-import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.org.PersonApi;
 import net.risesoft.model.OrgUnit;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
@@ -26,7 +26,7 @@ import y9.client.rest.processadmin.RuntimeApiClient;
 public class StarterDeptLeader extends AbstractDynamicRoleMember {
 
     @Autowired
-    private PositionApi positionManager;
+    private PersonApi personManager;
 
     @Autowired
     private DepartmentApi departmentApi;
@@ -43,7 +43,7 @@ public class StarterDeptLeader extends AbstractDynamicRoleMember {
             String userIdAndDeptId = processInstance.getStartUserId();
             if (StringUtils.isNotEmpty(userIdAndDeptId)) {
                 String userId = userIdAndDeptId.split(":")[0];
-                OrgUnit orgUnit = positionManager.getPosition(tenantId, userId).getData();
+                OrgUnit orgUnit = personManager.getPerson(tenantId, userId).getData();
                 List<OrgUnit> leaders = departmentApi.listLeaders(tenantId, orgUnit.getParentId()).getData();
                 orgUnitList.addAll(leaders);
             }
