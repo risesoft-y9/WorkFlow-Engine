@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.Y9FormItemBind;
+import net.risesoft.entity.Y9FormItemMobileBind;
 import net.risesoft.entity.form.Y9FieldPerm;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FieldPermRepository;
 import net.risesoft.repository.jpa.Y9FormItemBindRepository;
+import net.risesoft.repository.jpa.Y9FormItemMobileBindRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -32,6 +34,9 @@ public class Y9FieldPermController {
 
     @Autowired
     private Y9FormItemBindRepository y9FormItemBindRepository;
+
+    @Autowired
+    private Y9FormItemMobileBindRepository y9FormItemMobileBindRepository;
 
     @Autowired
     private Y9FieldPermRepository y9FieldPermRepository;
@@ -122,6 +127,12 @@ public class Y9FieldPermController {
         if (bindList.size() > 0) {
             processDefinitionId = bindList.get(0).getProcessDefinitionId();
         }
+        if (bindList.size() == 0) {// 手机端表单
+            List<Y9FormItemMobileBind> bindList1 = y9FormItemMobileBindRepository.findByFormIdList(list);
+            if (bindList1.size() > 0) {
+                processDefinitionId = bindList1.get(0).getProcessDefinitionId();
+            }
+        }
         if (StringUtils.isNotBlank(processDefinitionId)) {
             resList = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
             for (Map<String, Object> map : resList) {
@@ -151,6 +162,12 @@ public class Y9FieldPermController {
         List<Y9FormItemBind> bindList = y9FormItemBindRepository.findByFormIdList(list);
         if (bindList.size() > 0) {
             processDefinitionId = bindList.get(0).getProcessDefinitionId();
+        }
+        if (bindList.size() == 0) {// 手机端表单
+            List<Y9FormItemMobileBind> bindList1 = y9FormItemMobileBindRepository.findByFormIdList(list);
+            if (bindList1.size() > 0) {
+                processDefinitionId = bindList1.get(0).getProcessDefinitionId();
+            }
         }
         y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(formId, fieldName, processDefinitionId, taskDefKey);
         if (y9FieldPerm == null) {
