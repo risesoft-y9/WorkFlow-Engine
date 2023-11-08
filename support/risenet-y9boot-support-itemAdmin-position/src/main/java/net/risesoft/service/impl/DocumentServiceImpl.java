@@ -1213,7 +1213,7 @@ public class DocumentServiceImpl implements DocumentService {
             String processDefinitionId = processDefinitionModel.getId();
             String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             Y9Result<Map<String, String>> routeToTaskIdResult =
-            this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey);
+            this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, "");
             if (!routeToTaskIdResult.isSuccess()) {
                 map.put("msg", routeToTaskIdResult.getMsg());
                 return map;
@@ -1258,7 +1258,7 @@ public class DocumentServiceImpl implements DocumentService {
             String processDefinitionId = task.getProcessDefinitionId(), taskDefKey = task.getTaskDefinitionKey(),
             processInstanceId = task.getProcessInstanceId();
             Y9Result<Map<String, String>> routeToTaskIdResult =
-            this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey);
+            this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, taskId);
             if (!routeToTaskIdResult.isSuccess()) {
                 map.put("msg", routeToTaskIdResult.getMsg());
                 return map;
@@ -1286,7 +1286,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     public Y9Result<Map<String, String>> parserRouteToTaskId(String itemId, String processSerialNumber,
-        String processDefinitionId, String taskDefKey) {
+        String processDefinitionId, String taskDefKey, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Y9Result<Map<String, String>> result = Y9Result.failure("解析目标路由失败");
         try {
@@ -1321,11 +1321,14 @@ public class DocumentServiceImpl implements DocumentService {
                 result.setMsg("符合要求的目标路由过多");
                 return result;
             }
+            if (StringUtils.isNotBlank(taskId)) {
+                variableManager.setVariables(tenantId, taskId, variables);
+            }
             result.setData(targetNodesTemp.get(0));
             result.setMsg("解析目标路由成功");
             result.setSuccess(true);
         } catch (Exception e) {
-             e.printStackTrace();
+            e.printStackTrace();
         }
         return result;
     }
