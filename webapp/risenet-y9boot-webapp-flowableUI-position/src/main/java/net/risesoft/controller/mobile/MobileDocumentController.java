@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
@@ -381,6 +380,77 @@ public class MobileDocumentController {
             } else {
                 map = documentManager.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
             }
+        } catch (Exception e) {
+            map.put(UtilConsts.SUCCESS, false);
+            map.put("msg", "发送失败");
+            e.printStackTrace();
+        }
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+        return;
+    }
+
+    /**
+     * 发送，同时保存表单数据
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param positionId 岗位id
+     * @param itemId 事项id
+     * @param temp_Ids 表单ids
+     * @param taskId 任务id
+     * @param processSerialNumber 流程编号
+     * @param processDefinitionKey 流程定义key
+     * @param userChoice 选择人员
+     * @param sponsorGuid 主办人id，并行区分主协办设值，其他为""
+     * @param sponsorHandle 是否主办办理
+     * @param routeToTaskId 任务路由key
+     * @param processInstanceId 流程实例id
+     * @param formJsonData 表单数据json字符串
+     * @param response
+     */
+    @SuppressWarnings("unchecked")
+    @ResponseBody
+    @RequestMapping("/submitTo")
+    public void submitTo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = true) String itemId, @RequestParam(required = true) String temp_Ids,
+        @RequestParam(required = true) String taskId, @RequestParam(required = true) String processSerialNumber, @RequestParam String formJsonData, HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        try {
+            map.put(UtilConsts.SUCCESS, true);
+            map.put("msg", "发送成功");
+            Y9LoginUserHolder.setTenantId(tenantId);
+            formJsonData = formJsonData.replace("\n", "\\n");
+            formJsonData = formJsonData.replace("\r", "\\r");
+            Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formJsonData, Map.class);
+            String title = (String)mapFormJsonData.get("title");
+            String number = (String)mapFormJsonData.get("number");
+            String level = (String)mapFormJsonData.get("level");
+            if (StringUtils.isBlank(level)) {
+                level = (String)mapFormJsonData.get("workLevel");
+            }
+            String processInstanceId = "";
+            if (StringUtils.isBlank(taskId)) {// 保存草稿
+                draftManager.saveDraft(tenantId, positionId, itemId, processSerialNumber, "", number, level, title);
+            } else {
+                TaskModel task = taskManager.findById(tenantId, taskId);
+                if (null != task) {
+                    processInstanceId = task.getProcessInstanceId();
+                }
+            }
+            Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, title, number, level, false);
+            if (!map1.isSuccess()) {
+                map.put(UtilConsts.SUCCESS, false);
+                map.put("msg", "发生异常");
+                Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+                return;
+            }
+            if (StringUtils.isNotBlank(temp_Ids)) {
+                List<String> TempIdList = Y9Util.stringToList(temp_Ids, SysVariables.COMMA);
+                LOGGER.debug("****************表单数据：{}*******************", formJsonData);
+                for (String formId : TempIdList) {
+                    formDataManager.saveFormData(tenantId, formId, formJsonData);
+                }
+            }
+            map = documentManager.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "发送失败");
