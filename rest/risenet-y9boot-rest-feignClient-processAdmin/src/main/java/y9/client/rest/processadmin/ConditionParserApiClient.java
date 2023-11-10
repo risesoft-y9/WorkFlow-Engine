@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.processadmin.ConditionParserApi;
 
@@ -12,7 +13,8 @@ import net.risesoft.api.processadmin.ConditionParserApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ConditionParserApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}", path = "/services/rest/conditionParser")
+@FeignClient(contextId = "ConditionParserApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
+    path = "/services/rest/conditionParser")
 public interface ConditionParserApiClient extends ConditionParserApi {
 
     /**
@@ -25,5 +27,7 @@ public interface ConditionParserApiClient extends ConditionParserApi {
      */
     @Override
     @GetMapping("/parser")
-    Boolean parser(String tenantId, String conditionExpression, Map<String, Object> variables);
+    Boolean parser(@RequestParam("tenantId") String tenantId,
+        @RequestParam("conditionExpression") String conditionExpression,
+        @RequestParam("variables") Map<String, Object> variables);
 }
