@@ -86,7 +86,9 @@ public interface Opinion4PositionApi {
      * @param activitiUser activitiUser
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber, String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser);
+    List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber,
+        String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey,
+        String activitiUser);
 
     /**
      * 保存意见

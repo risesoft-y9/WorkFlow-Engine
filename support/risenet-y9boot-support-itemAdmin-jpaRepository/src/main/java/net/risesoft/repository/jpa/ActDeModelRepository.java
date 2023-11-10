@@ -16,15 +16,15 @@ import net.risesoft.entity.ActDeModel;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public interface ActDeModelRepository extends JpaRepository<ActDeModel, String>, JpaSpecificationExecutor<ActDeModel> {
 
-	/**
-	 * @return
-	 */
-	List<ActDeModel> findAllByOrderByLastUpdatedDesc();
+    /**
+     * @return
+     */
+    List<ActDeModel> findAllByOrderByLastUpdatedDesc();
 
-	/**
-	 * @param modelKey
-	 * @return
-	 */
-	ActDeModel findByModelKey(String modelKey);
+    /**
+     * @param modelKey
+     * @return
+     */
+    ActDeModel findByModelKey(String modelKey);
 
 }

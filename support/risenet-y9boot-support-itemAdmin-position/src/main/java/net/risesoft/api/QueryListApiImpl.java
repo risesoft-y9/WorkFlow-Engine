@@ -25,7 +25,8 @@ public class QueryListApiImpl implements QueryListApi {
     private ItemPageService itemPageService;
 
     @Override
-    public ItemPage<ActRuDetailModel> getQueryList(String tenantId, String userId, String systemName, String state, String createDate, String tableName, String searchMapStr, Integer page, Integer rows) {
+    public ItemPage<ActRuDetailModel> getQueryList(String tenantId, String userId, String systemName, String state,
+        String createDate, String tableName, String searchMapStr, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             String sql0 = "";
@@ -91,14 +92,17 @@ public class QueryListApiImpl implements QueryListApi {
             }
 
             String orderBy = " T.STARTTIME DESC";
-            String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.DELETED = FALSE " + stateSql + dateSql + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + sql1 + " ORDER BY " + orderBy;
+            String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.DELETED = FALSE " + stateSql + dateSql
+                + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + sql1 + " ORDER BY " + orderBy;
             System.out.println(sql);
 
-            String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.SYSTEMNAME= ? " + stateSql + dateSql + " AND T.ASSIGNEE= ? AND T.DELETED = FALSE " + sql1;
+            String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.SYSTEMNAME= ? " + stateSql
+                + dateSql + " AND T.ASSIGNEE= ? AND T.DELETED = FALSE " + sql1;
             Object[] args = new Object[2];
             args[0] = systemName;
             args[1] = userId;
-            ItemPage<ActRuDetailModel> pageList = itemPageService.page(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+            ItemPage<ActRuDetailModel> pageList = itemPageService.page(sql, args,
+                new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
             return pageList;
         } catch (Exception e) {
             e.printStackTrace();

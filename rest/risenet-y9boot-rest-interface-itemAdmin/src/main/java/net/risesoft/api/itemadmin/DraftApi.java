@@ -71,7 +71,8 @@ public interface DraftApi {
      * @param delFlag 是否删除
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getDraftList(String tenantId, String userId, int page, int rows, String title, String itemId, boolean delFlag);
+    Map<String, Object> getDraftList(String tenantId, String userId, int page, int rows, String title, String itemId,
+        boolean delFlag);
 
     /**
      *
@@ -86,7 +87,8 @@ public interface DraftApi {
      * @param delFlag 是否删除
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getDraftListBySystemName(String tenantId, String userId, int page, int rows, String title, String systemName, boolean delFlag);
+    Map<String, Object> getDraftListBySystemName(String tenantId, String userId, int page, int rows, String title,
+        String systemName, boolean delFlag);
 
     /**
      *
@@ -99,7 +101,8 @@ public interface DraftApi {
      * @param mobile 是否发送手机端
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> openDraft(String tenantId, String userId, String itemId, String processSerialNumber, boolean mobile);
+    Map<String, Object> openDraft(String tenantId, String userId, String itemId, String processSerialNumber,
+        boolean mobile);
 
     /**
      * 还原草稿
@@ -134,7 +137,8 @@ public interface DraftApi {
      * @param title 标题
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> saveDraft(String tenantId, String userId, String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String title);
+    Map<String, Object> saveDraft(String tenantId, String userId, String itemId, String processSerialNumber,
+        String processDefinitionKey, String number, String level, String title);
 
     /**
      * 保存草稿
@@ -150,7 +154,8 @@ public interface DraftApi {
      * @param title 标题
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> saveDraft(String tenantId, String userId, String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String jijian, String title);
+    Map<String, Object> saveDraft(String tenantId, String userId, String itemId, String processSerialNumber,
+        String processDefinitionKey, String number, String level, String jijian, String title);
 
     /**
      * 保存草稿(带类型)
@@ -166,5 +171,6 @@ public interface DraftApi {
      * @param type 类型
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> saveDraftAndType(String tenantId, String userId, String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String title, String type);
+    Map<String, Object> saveDraftAndType(String tenantId, String userId, String itemId, String processSerialNumber,
+        String processDefinitionKey, String number, String level, String title, String type);
 }

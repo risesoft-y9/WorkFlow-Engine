@@ -1,5 +1,7 @@
 package net.risesoft.api.itemadmin;
 
+import jakarta.validation.constraints.NotBlank;
+
 import java.util.List;
 
 import org.springframework.validation.annotation.Validated;
@@ -10,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.ActDeModel;
 
-import jakarta.validation.constraints.NotBlank;
-
 /**
  * 流程设计模型接口
  *
@@ -21,41 +21,43 @@ import jakarta.validation.constraints.NotBlank;
 @Validated
 public interface ActDeModelApi {
 
-	/**
-	 * 删除模型
-	 *
-	 * @param tenantId 租户id
-	 * @param modelId  模型id
-	 */
-	@PostMapping("/deleteModel")
-	public void deleteModel(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("modelId") @NotBlank String modelId);
+    /**
+     * 删除模型
+     *
+     * @param tenantId 租户id
+     * @param modelId 模型id
+     */
+    @PostMapping("/deleteModel")
+    public void deleteModel(@RequestParam("tenantId") @NotBlank String tenantId,
+        @RequestParam("modelId") @NotBlank String modelId);
 
-	/**
-	 * 获取模型信息
-	 *
-	 * @param tenantId 租户id
-	 * @param modelId  模型id
-	 * @return
-	 */
-	@GetMapping("/getModel")
-	public ActDeModel getModel(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("modelId") @NotBlank String modelId);
+    /**
+     * 获取模型信息
+     *
+     * @param tenantId 租户id
+     * @param modelId 模型id
+     * @return
+     */
+    @GetMapping("/getModel")
+    public ActDeModel getModel(@RequestParam("tenantId") @NotBlank String tenantId,
+        @RequestParam("modelId") @NotBlank String modelId);
 
-	/**
-	 * 获取模型列表
-	 *
-	 * @param tenantId 租户id
-	 * @return
-	 */
-	@GetMapping("/getModelList")
-	public List<ActDeModel> getModelList(@RequestParam("tenantId") @NotBlank String tenantId);
+    /**
+     * 获取模型列表
+     *
+     * @param tenantId 租户id
+     * @return
+     */
+    @GetMapping("/getModelList")
+    public List<ActDeModel> getModelList(@RequestParam("tenantId") @NotBlank String tenantId);
 
-	/**
-	 * 保存模型
-	 *
-	 * @param tenantId 租户id
-	 * @param newModel 模型信息
-	 * @return
-	 */
-	public void saveModel(@RequestParam("tenantId") @NotBlank String tenantId, @RequestBody ActDeModel newModel);
+    /**
+     * 保存模型
+     *
+     * @param tenantId 租户id
+     * @param newModel 模型信息
+     * @return
+     */
+    public void saveModel(@RequestParam("tenantId") @NotBlank String tenantId, @RequestBody ActDeModel newModel);
 
 }

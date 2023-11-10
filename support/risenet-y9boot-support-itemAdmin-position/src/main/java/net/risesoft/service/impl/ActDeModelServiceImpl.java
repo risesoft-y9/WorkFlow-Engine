@@ -21,39 +21,39 @@ import net.risesoft.service.ActDeModelService;
 @Service(value = "actDeModelService")
 public class ActDeModelServiceImpl implements ActDeModelService {
 
-	@Autowired
-	private ActDeModelRepository actDeModelRepository;
+    @Autowired
+    private ActDeModelRepository actDeModelRepository;
 
-	@Transactional(readOnly = false)
-	@Override
-	public void deleteModel(String modelId) {
-		actDeModelRepository.deleteById(modelId);
-	}
+    @Transactional(readOnly = false)
+    @Override
+    public void deleteModel(String modelId) {
+        actDeModelRepository.deleteById(modelId);
+    }
 
-	@Override
-	public ActDeModel getModel(String modelId) {
-		return actDeModelRepository.findById(modelId).orElse(null);
-	}
+    @Override
+    public ActDeModel getModel(String modelId) {
+        return actDeModelRepository.findById(modelId).orElse(null);
+    }
 
-	@Override
-	public List<ActDeModel> getModelList() {
-		return actDeModelRepository.findAllByOrderByLastUpdatedDesc();
-	}
+    @Override
+    public List<ActDeModel> getModelList() {
+        return actDeModelRepository.findAllByOrderByLastUpdatedDesc();
+    }
 
-	@Override
-	public void saveModel(ActDeModel actDeModel) {
-		ActDeModel model = actDeModelRepository.findByModelKey(actDeModel.getModelKey());
-		if (model != null) {
-			model.setDescription(actDeModel.getDescription());
-			model.setLastUpdated(actDeModel.getLastUpdated());
-			model.setLastUpdatedBy(actDeModel.getLastUpdatedBy());
-			model.setModelByte(actDeModel.getModelByte());
-			model.setName(actDeModel.getName());
-			actDeModelRepository.save(model);
-			return;
-		}
-		actDeModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-		actDeModelRepository.save(actDeModel);
-	}
+    @Override
+    public void saveModel(ActDeModel actDeModel) {
+        ActDeModel model = actDeModelRepository.findByModelKey(actDeModel.getModelKey());
+        if (model != null) {
+            model.setDescription(actDeModel.getDescription());
+            model.setLastUpdated(actDeModel.getLastUpdated());
+            model.setLastUpdatedBy(actDeModel.getLastUpdatedBy());
+            model.setModelByte(actDeModel.getModelByte());
+            model.setName(actDeModel.getName());
+            actDeModelRepository.save(model);
+            return;
+        }
+        actDeModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        actDeModelRepository.save(actDeModel);
+    }
 
 }

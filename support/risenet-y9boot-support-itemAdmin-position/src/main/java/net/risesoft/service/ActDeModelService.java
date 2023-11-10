@@ -11,33 +11,33 @@ import net.risesoft.entity.ActDeModel;
  */
 public interface ActDeModelService {
 
-	/**
-	 * 删除模型
-	 *
-	 * @param modelId
-	 */
-	void deleteModel(String modelId);
+    /**
+     * 删除模型
+     *
+     * @param modelId
+     */
+    void deleteModel(String modelId);
 
-	/**
-	 * 获取模型信息
-	 *
-	 * @param modelId
-	 * @return
-	 */
-	ActDeModel getModel(String modelId);
+    /**
+     * 获取模型信息
+     *
+     * @param modelId
+     * @return
+     */
+    ActDeModel getModel(String modelId);
 
-	/**
-	 * 获取模型列表
-	 *
-	 * @return
-	 */
-	List<ActDeModel> getModelList();
+    /**
+     * 获取模型列表
+     *
+     * @return
+     */
+    List<ActDeModel> getModelList();
 
-	/**
-	 * 保存模型
-	 *
-	 * @param actDeModel
-	 */
-	void saveModel(ActDeModel actDeModel);
+    /**
+     * 保存模型
+     *
+     * @param actDeModel
+     */
+    void saveModel(ActDeModel actDeModel);
 
 }

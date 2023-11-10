@@ -84,7 +84,8 @@ public interface ChaoSong4PositionApi {
      * @param mobile 是否发送手机端
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> detail(String tenantId, String positionId, String id, String processInstanceId, Integer status, boolean mobile);
+    Map<String, Object> detail(String tenantId, String positionId, String id, String processInstanceId, Integer status,
+        boolean mobile);
 
     /**
      * 获取批阅件计数
@@ -129,7 +130,8 @@ public interface ChaoSong4PositionApi {
      * @param page page
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getListByProcessInstanceId(String tenantId, String positionId, String processInstanceId, String userName, int rows, int page);
+    Map<String, Object> getListByProcessInstanceId(String tenantId, String positionId, String processInstanceId,
+        String userName, int rows, int page);
 
     /**
      *
@@ -143,7 +145,8 @@ public interface ChaoSong4PositionApi {
      * @param page page
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId, String processInstanceId, String userName, int rows, int page);
+    Map<String, Object> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId,
+        String processInstanceId, String userName, int rows, int page);
 
     /**
      * 批阅件
@@ -155,7 +158,8 @@ public interface ChaoSong4PositionApi {
      * @param page page
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getOpinionChaosongByUserId(String tenantId, String positionId, String documentTitle, int rows, int page);
+    Map<String, Object> getOpinionChaosongByUserId(String tenantId, String positionId, String documentTitle, int rows,
+        int page);
 
     /**
      * 根据人员id获取抄送已阅件统计
@@ -194,7 +198,8 @@ public interface ChaoSong4PositionApi {
      * @param smsPersonId 短信人员id
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> save(String tenantId, String userId, String positionId, String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId);
+    Map<String, Object> save(String tenantId, String userId, String positionId, String processInstanceId, String users,
+        String isSendSms, String isShuMing, String smsContent, String smsPersonId);
 
     /**
      *
@@ -211,7 +216,8 @@ public interface ChaoSong4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchAllByUserId(String tenantId, String positionId, String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllByUserId(String tenantId, String positionId, String searchName, String itemId,
+        String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 监控阅件列表
@@ -227,7 +233,8 @@ public interface ChaoSong4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String senderName,
+        String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 更新抄送件标题

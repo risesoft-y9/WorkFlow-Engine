@@ -61,8 +61,7 @@ public class ItemOpinionFrameBindRestController {
     @ResponseBody
     @RequestMapping(value = "/bindOpinionFrame", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> bindOpinionFrame(@RequestParam String opinionFrameNameAndMarks, @RequestParam String itemId,
-        @RequestParam String processDefinitionId,
-        @RequestParam(required = false) String taskDefKey) {
+        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         itemOpinionFrameBindService.save(opinionFrameNameAndMarks, itemId, processDefinitionId, taskDefKey);
         return Y9Result.successMsg("保存成功");
     }

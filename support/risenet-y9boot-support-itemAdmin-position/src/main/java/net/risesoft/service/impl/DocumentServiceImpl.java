@@ -1209,33 +1209,33 @@ public class DocumentServiceImpl implements DocumentService {
             SpmApproveItem item = spmApproveitemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinitionModel =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
             String processDefinitionId = processDefinitionModel.getId();
             String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             Y9Result<Map<String, String>> routeToTaskIdResult =
-            this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, "");
+                this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, "");
             if (!routeToTaskIdResult.isSuccess()) {
                 map.put("msg", routeToTaskIdResult.getMsg());
                 return map;
             }
             String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY),
-            routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.TASKDEFNAME);
+                routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.TASKDEFNAME);
             String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
             Y9Result<List<String>> userResult =
-            this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
+                this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
             if (!userResult.isSuccess()) {
                 map.put("msg", userResult.getMsg());
                 return map;
             }
             Map<String, Object> startProcessMap = this.startProcess(itemId, processSerialNumber, processDefinitionKey);
             String taskId = (String)startProcessMap.get("taskId"),
-            processInstanceId = (String)startProcessMap.get("processInstanceId");
+                processInstanceId = (String)startProcessMap.get("processInstanceId");
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             List<String> userList = userResult.getData();
             Map<String, Object> variables =
-            CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
+                CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
             asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, "", "", taskId,
-            multiInstance, variables, userList);
+                multiInstance, variables, userList);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "提交成功");
         } catch (Exception e) {
@@ -1256,27 +1256,27 @@ public class DocumentServiceImpl implements DocumentService {
             String itemId = processParam.getItemId();
             TaskModel task = taskManager.findById(tenantId, taskId);
             String processDefinitionId = task.getProcessDefinitionId(), taskDefKey = task.getTaskDefinitionKey(),
-            processInstanceId = task.getProcessInstanceId();
+                processInstanceId = task.getProcessInstanceId();
             Y9Result<Map<String, String>> routeToTaskIdResult =
-            this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, taskId);
+                this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, taskId);
             if (!routeToTaskIdResult.isSuccess()) {
                 map.put("msg", routeToTaskIdResult.getMsg());
                 return map;
             }
             String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY),
-            routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.TASKDEFNAME);
+                routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.TASKDEFNAME);
             String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
-            Y9Result<List<String>> userResult =
-            this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, processInstanceId, multiInstance);
+            Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId,
+                routeToTaskName, processInstanceId, multiInstance);
             if (!userResult.isSuccess()) {
                 map.put("msg", userResult.getMsg());
                 return map;
             }
             List<String> userList = userResult.getData();
             Map<String, Object> variables =
-            CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
+                CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
             asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, "", "", taskId,
-            multiInstance, variables, userList);
+                multiInstance, variables, userList);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "提交成功");
         } catch (Exception e) {
@@ -1291,7 +1291,7 @@ public class DocumentServiceImpl implements DocumentService {
         Y9Result<Map<String, String>> result = Y9Result.failure("解析目标路由失败");
         try {
             List<Map<String, String>> targetNodes =
-            processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
+                processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
             if (targetNodes.isEmpty()) {
                 result.setMsg("目标路由不存在");
                 return result;
@@ -1302,13 +1302,13 @@ public class DocumentServiceImpl implements DocumentService {
                 return result;
             }
             List<Y9FormItemBind> eformTaskBinds =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+                y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
             Map<String, Object> variables =
-            y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
+                y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
             List<Map<String, String>> targetNodesTemp = new ArrayList<>();
             for (Map<String, String> targetNode : targetNodes) {
                 boolean b =
-                conditionParserApi.parser(tenantId, targetNode.get(SysVariables.CONDITIONEXPRESSION), variables);
+                    conditionParserApi.parser(tenantId, targetNode.get(SysVariables.CONDITIONEXPRESSION), variables);
                 if (b) {
                     targetNodesTemp.add(targetNode);
                 }

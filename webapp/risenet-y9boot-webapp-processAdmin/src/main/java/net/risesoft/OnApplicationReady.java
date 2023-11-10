@@ -30,44 +30,44 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Slf4j
 public class OnApplicationReady implements ApplicationListener<ApplicationReadyEvent> {
 
-	@Autowired
-	private TenantApi tenantApi;
+    @Autowired
+    private TenantApi tenantApi;
 
-	@Autowired
-	private RepositoryService repositoryService;
+    @Autowired
+    private RepositoryService repositoryService;
 
-	private void createDeployment(String processDefinitionKey) {
-		try {
-			List<Tenant> tlist = tenantApi.listByTenantType(3).getData();
-			for (Tenant tenant : tlist) {
-				Y9LoginUserHolder.setTenantId(tenant.getId());
-				FlowableTenantInfoHolder.setTenantId(tenant.getId());
-				try {
-					ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
-						.processDefinitionKey(processDefinitionKey).latestVersion().singleResult();
-					if (null == processDefinition) {
-						String xmlPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "processXml"
-							+ File.separator + "ziyouliucheng.bpmn";
-						File file = new File(xmlPath);
-						InputStream fileInputStream = new FileInputStream(file);
-						repositoryService.createDeployment().addInputStream("ziyouliucheng.bpmn", fileInputStream)
-							.deploy();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    private void createDeployment(String processDefinitionKey) {
+        try {
+            List<Tenant> tlist = tenantApi.listByTenantType(3).getData();
+            for (Tenant tenant : tlist) {
+                Y9LoginUserHolder.setTenantId(tenant.getId());
+                FlowableTenantInfoHolder.setTenantId(tenant.getId());
+                try {
+                    ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+                        .processDefinitionKey(processDefinitionKey).latestVersion().singleResult();
+                    if (null == processDefinition) {
+                        String xmlPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "processXml"
+                            + File.separator + "ziyouliucheng.bpmn";
+                        File file = new File(xmlPath);
+                        InputStream fileInputStream = new FileInputStream(file);
+                        repositoryService.createDeployment().addInputStream("ziyouliucheng.bpmn", fileInputStream)
+                            .deploy();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void onApplicationEvent(ApplicationReadyEvent event) {
-		LOGGER.info("processAdmin ApplicationReady...");
-		// createSystem("processAdmin");
-		// createTenantSystem("processAdmin");
-//		createDeployment("ziyouliucheng");
-	}
+    @Override
+    public void onApplicationEvent(ApplicationReadyEvent event) {
+        LOGGER.info("processAdmin ApplicationReady...");
+        // createSystem("processAdmin");
+        // createTenantSystem("processAdmin");
+        // createDeployment("ziyouliucheng");
+    }
 
 }

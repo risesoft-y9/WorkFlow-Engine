@@ -18,82 +18,82 @@ import net.risesoft.entity.ActRuDetail;
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public interface ActRuDetailRepository
-	extends JpaRepository<ActRuDetail, String>, JpaSpecificationExecutor<ActRuDetail> {
+    extends JpaRepository<ActRuDetail, String>, JpaSpecificationExecutor<ActRuDetail> {
 
-	int countBySystemNameAndAssigneeAndDeletedTrue(String systemName, String assignee);
+    int countBySystemNameAndAssigneeAndDeletedTrue(String systemName, String assignee);
 
-	int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalse(String systemName, String assignee);
+    int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalse(String systemName, String assignee);
 
-	int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndCreateTimeAndPlaceOnFileFalse(String systemName,
-		String assignee, Date createTime);
+    int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndCreateTimeAndPlaceOnFileFalse(String systemName,
+        String assignee, Date createTime);
 
-	int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee);
+    int countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee);
 
-	int countBySystemNameAndAssigneeAndStatusAndCreateTimeAndDeletedFalse(String systemName, String assignee,
-		int status, Date createTime);
+    int countBySystemNameAndAssigneeAndStatusAndCreateTimeAndDeletedFalse(String systemName, String assignee,
+        int status, Date createTime);
 
-	int countBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee, int status);
+    int countBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee, int status);
 
-	int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndCreateTimeAndDeletedFalse(String systemName,
-		String assignee, int status, Date createTime);
+    int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndCreateTimeAndDeletedFalse(String systemName,
+        String assignee, int status, Date createTime);
 
-	int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName, String assignee,
-		int status);
+    int countBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName, String assignee,
+        int status);
 
-	int countBySystemNameAndDeletedTrue(String systemName);
+    int countBySystemNameAndDeletedTrue(String systemName);
 
-	int countBySystemNameAndDeptIdAndDeletedTrue(String systemName, String deptId);
+    int countBySystemNameAndDeptIdAndDeletedTrue(String systemName, String deptId);
 
-	int countBySystemNameAndDeptIdAndEndedTrueAndDeletedTrue(String systemName, String deptId);
+    int countBySystemNameAndDeptIdAndEndedTrueAndDeletedTrue(String systemName, String deptId);
 
-	int countBySystemNameAndEndedFalse(String systemName);
+    int countBySystemNameAndEndedFalse(String systemName);
 
-	int countBySystemNameAndEndedTrueAndDeletedFalse(String systemName);
+    int countBySystemNameAndEndedTrueAndDeletedFalse(String systemName);
 
-	int countBySystemNameAndEndedTrueAndDeletedTrue(String systemName);
+    int countBySystemNameAndEndedTrueAndDeletedTrue(String systemName);
 
-	List<ActRuDetail> findByProcessInstanceId(String processInstanceId);
+    List<ActRuDetail> findByProcessInstanceId(String processInstanceId);
 
-	ActRuDetail findByProcessInstanceIdAndAssignee(String processInstanceId, String assignee);
+    ActRuDetail findByProcessInstanceIdAndAssignee(String processInstanceId, String assignee);
 
-	List<ActRuDetail> findByProcessInstanceIdAndStatusOrderByCreateTimeAsc(String processInstanceId, int status);
+    List<ActRuDetail> findByProcessInstanceIdAndStatusOrderByCreateTimeAsc(String processInstanceId, int status);
 
-	List<ActRuDetail> findByProcessSerialNumber(String processSerialNumber);
+    List<ActRuDetail> findByProcessSerialNumber(String processSerialNumber);
 
-	ActRuDetail findByProcessSerialNumberAndAssignee(String processSerialNumber, String assignee);
+    ActRuDetail findByProcessSerialNumberAndAssignee(String processSerialNumber, String assignee);
 
-	List<ActRuDetail> findByProcessSerialNumberAndEnded(String processSerialNumber, boolean ended);
+    List<ActRuDetail> findByProcessSerialNumberAndEnded(String processSerialNumber, boolean ended);
 
-	List<ActRuDetail> findByProcessSerialNumberAndStatusOrderByCreateTimeAsc(String processSerialNumber, int status);
+    List<ActRuDetail> findByProcessSerialNumberAndStatusOrderByCreateTimeAsc(String processSerialNumber, int status);
 
-	Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalse(String systemName, String assignee, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalse(String systemName, String assignee, Pageable pageable);
 
-	Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee,
-		Pageable pageable);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndDeletedFalseAndPlaceOnFileFalse(String systemName, String assignee,
+        Pageable pageable);
 
-	Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalse(String systemName, String assignee,
-		Pageable pageable);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalse(String systemName, String assignee,
+        Pageable pageable);
 
-	Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(String systemName,
-		String assignee, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(String systemName,
+        String assignee, Pageable pageable);
 
-	List<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
-		int status);
+    List<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
+        int status);
 
-	Page<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
-		int status, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
+        int status, Pageable pageable);
 
-	Page<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName,
-		String assignee, int status, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(String systemName,
+        String assignee, int status, Pageable pageable);
 
-	Page<ActRuDetail> findBySystemNameAndStatusAndEndedFalse(String systemName, int status, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameAndStatusAndEndedFalse(String systemName, int status, Pageable pageable);
 
-	Page<ActRuDetail> findBySystemNameInAndAssigneeAndStatusAndDeletedFalse(List<String> systemNameList,
-		String assignee, int status, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameInAndAssigneeAndStatusAndDeletedFalse(List<String> systemNameList,
+        String assignee, int status, Pageable pageable);
 
-	Page<ActRuDetail> findBySystemNameNotAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
-		int status, Pageable pageable);
+    Page<ActRuDetail> findBySystemNameNotAndAssigneeAndStatusAndDeletedFalse(String systemName, String assignee,
+        int status, Pageable pageable);
 
-	List<ActRuDetail> findBySystemNameNotAndAssigneeAndStatusAndDeletedFalseOrderByCreateTimeDesc(String systemName,
-		String assignee, int status);
+    List<ActRuDetail> findBySystemNameNotAndAssigneeAndStatusAndDeletedFalseOrderByCreateTimeDesc(String systemName,
+        String assignee, int status);
 }

@@ -85,7 +85,8 @@ public interface ChaoSongApi {
      * @param mobile 是否发送手机
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> detail(String tenantId, String userId, String id, String processInstanceId, Integer status, boolean mobile);
+    Map<String, Object> detail(String tenantId, String userId, String id, String processInstanceId, Integer status,
+        boolean mobile);
 
     /**
      * 获取批阅件计数
@@ -136,7 +137,8 @@ public interface ChaoSongApi {
      * @param page page
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getDoneListByUserId(String tenantId, String userId, String year, String documentTitle, int rows, int page);
+    Map<String, Object> getDoneListByUserId(String tenantId, String userId, String year, String documentTitle, int rows,
+        int page);
 
     /**
      * 获取抄送已阅件列表
@@ -160,7 +162,8 @@ public interface ChaoSongApi {
      * @param page page
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getDoneListByUserIdAndSystemName(String tenantId, String userId, String systemName, int rows, int page);
+    Map<String, Object> getDoneListByUserIdAndSystemName(String tenantId, String userId, String systemName, int rows,
+        int page);
 
     /**
      * 根据流程实例获取除当前人外的其他抄送件
@@ -172,7 +175,8 @@ public interface ChaoSongApi {
      * @param page page
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getListByProcessInstanceId(String tenantId, String processInstanceId, String userName, int rows, int page);
+    Map<String, Object> getListByProcessInstanceId(String tenantId, String processInstanceId, String userName, int rows,
+        int page);
 
     /**
      * 根据流程实例获取当前人的抄送件
@@ -185,7 +189,8 @@ public interface ChaoSongApi {
      * @param page page
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId, String processInstanceId, String userName, int rows, int page);
+    Map<String, Object> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId,
+        String processInstanceId, String userName, int rows, int page);
 
     /**
      * 批阅件
@@ -198,7 +203,8 @@ public interface ChaoSongApi {
      * @param page page
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getOpinionChaosongByUserId(String tenantId, String userId, String year, String documentTitle, int rows, int page);
+    Map<String, Object> getOpinionChaosongByUserId(String tenantId, String userId, String year, String documentTitle,
+        int rows, int page);
 
     /**
      * 根据人员id获取抄送已阅件统计
@@ -264,7 +270,8 @@ public interface ChaoSongApi {
      * @param page page
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getTodoListByUserIdAndSystemName(String tenantId, String userId, String systemName, String title, int rows, int page);
+    Map<String, Object> getTodoListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        String title, int rows, int page);
 
     /**
      * 点击抄送按钮之后保存
@@ -279,7 +286,8 @@ public interface ChaoSongApi {
      * @param smsPersonId 发送人
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> save(String tenantId, String userId, String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId);
+    Map<String, Object> save(String tenantId, String userId, String processInstanceId, String users, String isSendSms,
+        String isShuMing, String smsContent, String smsPersonId);
 
     /**
      * 更新抄送件标题

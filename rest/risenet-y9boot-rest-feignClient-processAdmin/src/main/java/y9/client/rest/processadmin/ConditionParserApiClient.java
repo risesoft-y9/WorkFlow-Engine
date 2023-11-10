@@ -29,6 +29,5 @@ public interface ConditionParserApiClient extends ConditionParserApi {
     @Override
     @GetMapping("/parser")
     Boolean parser(@RequestParam("tenantId") String tenantId,
-        @RequestParam("conditionExpression") String conditionExpression,
-        @RequestBody Map<String, Object> variables);
+        @RequestParam("conditionExpression") String conditionExpression, @RequestBody Map<String, Object> variables);
 }

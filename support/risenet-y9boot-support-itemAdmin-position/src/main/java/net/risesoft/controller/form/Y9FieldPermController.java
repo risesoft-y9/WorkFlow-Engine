@@ -52,7 +52,8 @@ public class Y9FieldPermController {
      * @return
      */
     @RequestMapping(value = "/countPerm", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Boolean> countPerm(@RequestParam(required = true) String formId, @RequestParam(required = true) String fieldName) {
+    public Y9Result<Boolean> countPerm(@RequestParam(required = true) String formId,
+        @RequestParam(required = true) String fieldName) {
         int count = y9FieldPermRepository.countByFormIdAndFieldName(formId, fieldName);
         return Y9Result.success(count != 0 ? true : false, "获取成功");
     }
@@ -66,7 +67,8 @@ public class Y9FieldPermController {
      * @return
      */
     @RequestMapping(value = "/deleteRole", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteRole(@RequestParam(required = true) String formId, @RequestParam(required = true) String fieldName, @RequestParam(required = false) String taskDefKey) {
+    public Y9Result<String> deleteRole(@RequestParam(required = true) String formId,
+        @RequestParam(required = true) String fieldName, @RequestParam(required = false) String taskDefKey) {
         String processDefinitionId = "";
         Y9FieldPerm y9FieldPerm = null;
         List<String> list = new ArrayList<String>();
@@ -75,7 +77,8 @@ public class Y9FieldPermController {
         if (bindList.size() > 0) {
             processDefinitionId = bindList.get(0).getProcessDefinitionId();
         }
-        y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(formId, fieldName, processDefinitionId, taskDefKey);
+        y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(formId,
+            fieldName, processDefinitionId, taskDefKey);
         if (y9FieldPerm != null) {
             y9FieldPerm.setWriteRoleId("");
             y9FieldPerm.setWriteRoleName("");
@@ -93,7 +96,8 @@ public class Y9FieldPermController {
      * @return
      */
     @RequestMapping(value = "/delNodePerm", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> delNodePerm(@RequestParam(required = true) String formId, @RequestParam(required = true) String fieldName, @RequestParam(required = false) String taskDefKey) {
+    public Y9Result<String> delNodePerm(@RequestParam(required = true) String formId,
+        @RequestParam(required = true) String fieldName, @RequestParam(required = false) String taskDefKey) {
         String processDefinitionId = "";
         Y9FieldPerm y9FieldPerm = null;
         List<String> list = new ArrayList<String>();
@@ -102,7 +106,8 @@ public class Y9FieldPermController {
         if (bindList.size() > 0) {
             processDefinitionId = bindList.get(0).getProcessDefinitionId();
         }
-        y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(formId, fieldName, processDefinitionId, taskDefKey);
+        y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(formId,
+            fieldName, processDefinitionId, taskDefKey);
         if (y9FieldPerm != null) {
             y9FieldPermRepository.delete(y9FieldPerm);
         }
@@ -117,7 +122,8 @@ public class Y9FieldPermController {
      * @return
      */
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam(required = true) String formId, @RequestParam(required = true) String fieldName) {
+    public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam(required = true) String formId,
+        @RequestParam(required = true) String fieldName) {
         List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<String> list = new ArrayList<String>();
@@ -136,7 +142,9 @@ public class Y9FieldPermController {
         if (StringUtils.isNotBlank(processDefinitionId)) {
             resList = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
             for (Map<String, Object> map : resList) {
-                Y9FieldPerm y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(formId, fieldName, processDefinitionId, (String)map.get("taskDefKey"));
+                Y9FieldPerm y9FieldPerm =
+                    y9FieldPermRepository.findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(formId, fieldName,
+                        processDefinitionId, (String)map.get("taskDefKey"));
                 map.put("writeRoleId", y9FieldPerm != null ? y9FieldPerm.getWriteRoleId() : "");
                 map.put("writeRoleName", y9FieldPerm != null ? y9FieldPerm.getWriteRoleName() : "");
                 map.put("id", y9FieldPerm != null ? y9FieldPerm.getId() : "");
@@ -154,7 +162,8 @@ public class Y9FieldPermController {
      * @return
      */
     @RequestMapping(value = "/saveNodePerm", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveNodePerm(@RequestParam(required = true) String formId, @RequestParam(required = true) String fieldName, @RequestParam(required = false) String taskDefKey) {
+    public Y9Result<String> saveNodePerm(@RequestParam(required = true) String formId,
+        @RequestParam(required = true) String fieldName, @RequestParam(required = false) String taskDefKey) {
         String processDefinitionId = "";
         Y9FieldPerm y9FieldPerm = null;
         List<String> list = new ArrayList<String>();
@@ -169,7 +178,8 @@ public class Y9FieldPermController {
                 processDefinitionId = bindList1.get(0).getProcessDefinitionId();
             }
         }
-        y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(formId, fieldName, processDefinitionId, taskDefKey);
+        y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(formId,
+            fieldName, processDefinitionId, taskDefKey);
         if (y9FieldPerm == null) {
             y9FieldPerm = new Y9FieldPerm();
             y9FieldPerm.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -193,7 +203,9 @@ public class Y9FieldPermController {
      * @return
      */
     @RequestMapping(value = "/saveRoleChoice", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveRoleChoice(@RequestParam(required = true) String formId, @RequestParam(required = true) String fieldName, @RequestParam(required = false) String taskDefKey, @RequestParam(required = true) String roleNames, @RequestParam(required = true) String roleIds) {
+    public Y9Result<String> saveRoleChoice(@RequestParam(required = true) String formId,
+        @RequestParam(required = true) String fieldName, @RequestParam(required = false) String taskDefKey,
+        @RequestParam(required = true) String roleNames, @RequestParam(required = true) String roleIds) {
         String processDefinitionId = "";
         Y9FieldPerm y9FieldPerm = null;
         List<String> list = new ArrayList<String>();
@@ -202,7 +214,8 @@ public class Y9FieldPermController {
         if (bindList.size() > 0) {
             processDefinitionId = bindList.get(0).getProcessDefinitionId();
         }
-        y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(formId, fieldName, processDefinitionId, taskDefKey);
+        y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndProcessDefinitionIdAndTaskDefKey(formId,
+            fieldName, processDefinitionId, taskDefKey);
         if (y9FieldPerm == null) {
             y9FieldPerm = new Y9FieldPerm();
             y9FieldPerm.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
