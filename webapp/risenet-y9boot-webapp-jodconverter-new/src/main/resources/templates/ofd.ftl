@@ -14,14 +14,19 @@
 <#else>
     <#assign finalUrl="${baseUrl}${currentUrl}">
 </#if>
+
+
 <iframe src="" width="100%" frameborder="0"></iframe>
 </body>
 <script type="text/javascript">
+
     var url = '${finalUrl}';
     var baseUrl = '${baseUrl}'.endsWith('/') ? '${baseUrl}' : '${baseUrl}' + '/';
-    if (!url.startsWith(baseUrl)) {
-        url = baseUrl + 'getCorsFile?urlPath=' + url;
-    }
+
+    // if (!url.startsWith(baseUrl)) {
+    //     url = baseUrl + 'getCorsFile?urlPath=' + encodeURIComponent(Base64.encode(url));
+    // }
+
     document.getElementsByTagName('iframe')[0].src = "${baseUrl}ofd/index.html?file=" + url + "";
     document.getElementsByTagName('iframe')[0].height = document.documentElement.clientHeight - 10;
     /**
