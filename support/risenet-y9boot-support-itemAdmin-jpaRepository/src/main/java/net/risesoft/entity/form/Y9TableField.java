@@ -83,4 +83,8 @@ public class Y9TableField implements Serializable {
     @Comment("显示排序")
     private Integer displayOrder;
 
+    @Column(name = "ISVAR")
+    @Comment("是否设置为流程变量")
+    private Integer isVar = 0;
+
 }
