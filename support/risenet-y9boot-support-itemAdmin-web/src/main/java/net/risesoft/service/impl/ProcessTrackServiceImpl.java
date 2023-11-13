@@ -23,7 +23,7 @@ import net.risesoft.entity.ProcessTrack;
 import net.risesoft.entity.TransactionHistoryWord;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.TaoHongTemplateType;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.TaoHongTemplateTypeService;

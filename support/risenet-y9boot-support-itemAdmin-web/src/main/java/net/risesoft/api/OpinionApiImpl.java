@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.Opinion;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.service.ItemOpinionFrameBindService;

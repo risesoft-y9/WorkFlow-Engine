@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.RemindInstance;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.service.RemindInstanceService;
 import net.risesoft.y9.Y9LoginUserHolder;

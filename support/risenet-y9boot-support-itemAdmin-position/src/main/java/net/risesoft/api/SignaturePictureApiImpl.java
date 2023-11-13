@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.risesoft.api.itemadmin.SignaturePictureApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.SignaturePicture;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.SignaturePictureModel;
 import net.risesoft.service.SignaturePictureService;
 import net.risesoft.y9.Y9LoginUserHolder;

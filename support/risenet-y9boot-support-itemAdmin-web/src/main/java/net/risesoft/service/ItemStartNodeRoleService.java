@@ -3,7 +3,7 @@ package net.risesoft.service;
 import java.util.List;
 
 import net.risesoft.entity.ItemStartNodeRole;
-import net.risesoft.model.Role;
+import net.risesoft.model.platform.Role;
 
 /**
  * @author qinman

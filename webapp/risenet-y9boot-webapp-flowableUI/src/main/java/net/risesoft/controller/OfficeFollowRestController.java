@@ -22,7 +22,7 @@ import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.OfficeFollowModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;

@@ -22,10 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import net.risesoft.api.permission.PersonResourceApi;
-import net.risesoft.enums.AuthorityEnum;
+import net.risesoft.enums.platform.AuthorityEnum;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
-import net.risesoft.model.Resource;
+import net.risesoft.model.platform.Resource;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.service.CustomRepositoryService;
 import net.risesoft.util.Y9SqlPaginationUtil;
@@ -194,12 +194,12 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
                     items.add(mapTemp);
                 }
             } else {
-                List<Resource> resourceList = personResourceApi
-                    .listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
+                List<Resource> resourceList =
+                    personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE, resourceId).getData();
                 for (ProcessDefinition processDefinition : processDefinitionList) {
                     for (Resource resource : resourceList) {
                         if (resource.getCustomId().equals(processDefinition.getKey())) {
-                            mapTemp = new HashMap<String, Object>(16);
+                            mapTemp = new HashMap<>(16);
                             String deploymentId = processDefinition.getDeploymentId();
                             Deployment deployment =
                                 repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();

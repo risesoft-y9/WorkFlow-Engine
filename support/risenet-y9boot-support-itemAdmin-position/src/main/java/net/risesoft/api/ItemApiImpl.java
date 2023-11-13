@@ -15,7 +15,7 @@ import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;

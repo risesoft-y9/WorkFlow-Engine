@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.SpeakInfo;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.SpeakInfoModel;
 import net.risesoft.service.SpeakInfoService;
 import net.risesoft.util.ItemAdminModelConvertUtil;

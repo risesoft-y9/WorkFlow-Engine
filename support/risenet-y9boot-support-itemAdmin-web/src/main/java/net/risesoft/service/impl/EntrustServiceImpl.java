@@ -19,7 +19,7 @@ import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.EntrustItemModel;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.repository.jpa.EntrustHistoryRepository;
 import net.risesoft.repository.jpa.EntrustRepository;
 import net.risesoft.service.EntrustService;

@@ -42,12 +42,13 @@ import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.CustomGroupMember;
-import net.risesoft.model.Department;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.CustomGroupMember;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -832,7 +833,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     userIdListAdd.add(orgUnitId);
                 } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue() == type) {
                     List<CustomGroupMember> customGroupMemberList = customGroupApi
-                        .listCustomGroupMemberByGroupIdAndMemberType(tenantId, personId, orgUnitId, "Person").getData();
+                        .listCustomGroupMemberByGroupIdAndMemberType(tenantId, personId, orgUnitId, OrgTypeEnum.PERSON)
+                        .getData();
                     for (CustomGroupMember member : customGroupMemberList) {
                         userIdListAdd.add(member.getMemberId());
                     }

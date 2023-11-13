@@ -18,7 +18,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Reminder;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.ReminderService;
 import net.risesoft.util.SysVariables;

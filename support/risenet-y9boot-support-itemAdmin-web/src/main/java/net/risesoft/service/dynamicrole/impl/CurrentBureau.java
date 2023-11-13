@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.util.SysVariables;

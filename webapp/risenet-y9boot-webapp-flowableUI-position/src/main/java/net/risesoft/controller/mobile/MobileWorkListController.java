@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.risesoft.model.platform.Resource;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
@@ -29,7 +30,7 @@ import net.risesoft.api.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.resource.ResourceApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.enums.AuthorityEnum;
+import net.risesoft.enums.platform.AuthorityEnum;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.DoingService;
@@ -175,14 +176,14 @@ public class MobileWorkListController {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setPositionId(positionId);
-            net.risesoft.model.Resource resource = resourceManager.getResource(tenantId).getData();
+            Resource resource = resourceManager.getResource(tenantId).getData();
             List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
             if (null != resource && null != resource.getId()) {
                 String resourceId = resource.getId();
-                List<net.risesoft.model.Resource> list0 = positionResourceApi
-                    .listSubResources(tenantId, positionId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
+                List<Resource> list0 = positionResourceApi
+                    .listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
                 String url = "";
-                for (net.risesoft.model.Resource r : list0) {
+                for (Resource r : list0) {
                     map = new HashMap<>(16);
                     url = r.getUrl();
                     if (StringUtils.isBlank(url)) {

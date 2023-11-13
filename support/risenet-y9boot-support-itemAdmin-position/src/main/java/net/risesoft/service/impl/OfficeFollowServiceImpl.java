@@ -23,7 +23,7 @@ import net.risesoft.entity.OfficeFollow;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.RemindInstance;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.OfficeFollowModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.repository.jpa.OfficeFollowRepository;

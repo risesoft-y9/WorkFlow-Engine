@@ -25,7 +25,7 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.TransactionFile;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Department;
+import net.risesoft.model.platform.Department;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.TransactionFileRepository;
 import net.risesoft.service.TransactionFileService;

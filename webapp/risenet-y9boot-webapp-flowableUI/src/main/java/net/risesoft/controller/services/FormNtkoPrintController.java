@@ -32,7 +32,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.PunctuationConsts;
 import net.risesoft.enums.BrowserTypeEnum;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.user.UserInfo;

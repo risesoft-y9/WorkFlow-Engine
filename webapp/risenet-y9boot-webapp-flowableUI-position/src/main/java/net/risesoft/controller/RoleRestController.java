@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
 import net.risesoft.api.org.DepartmentApi;
-import net.risesoft.model.Department;
-import net.risesoft.model.Position;
+import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -48,7 +49,7 @@ public class RoleRestController {
     @ResponseBody
     @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> findAll(@RequestParam(required = false) String id,
-        @RequestParam(required = true) String treeType, @RequestParam(required = false) String name) {
+        @RequestParam(required = true) TreeTypeEnum treeType, @RequestParam(required = false) String name) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         item = itemRoleManager.getOrgTree(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), id,
             treeType, name);

@@ -3,8 +3,8 @@ package net.risesoft.service;
 import java.util.List;
 
 import net.risesoft.entity.DynamicRole;
-import net.risesoft.model.Department;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
 
 /**
  * @author qinman

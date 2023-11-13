@@ -17,9 +17,11 @@ import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Organization;
-import net.risesoft.model.Person;
+import net.risesoft.enums.platform.OrgTypeEnum;
+import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Person;
 import net.risesoft.service.RoleService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -71,7 +73,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
             map.put("name", orgunit.getName());
             map.put("isPerm", true);
             map.put("orgType", orgunit.getOrgType());
-            map.put("isParent", "Department".equals(orgunit.getOrgType()) ? true : false);
+            map.put("isParent", OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType()) ? true : false);
             item.add(map);
         } else {
             // TODO
@@ -130,7 +132,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
 
     @Override
     @GetMapping(value = "/getOrgTree", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getOrgTree(String tenantId, String userId, String id, String treeType,
+    public List<Map<String, Object>> getOrgTree(String tenantId, String userId, String id, TreeTypeEnum treeType,
         String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId).getData();
@@ -156,9 +158,9 @@ public class ItemRoleApiImpl implements ItemRoleApi {
             map.put("orgType", orgUnitList.get(i).getOrgType());
             map.put("parentID", orgUnitList.get(i).getParentId());
             map.put("DN", orgUnitList.get(i).getDn());
-            if ("Department".equals(orgUnitList.get(i).getOrgType())) {
+            if (OrgTypeEnum.DEPARTMENT.equals(orgUnitList.get(i).getOrgType())) {
                 map.put("isParent", true);
-            } else if ("Person".equals(orgUnitList.get(i).getOrgType())) {
+            } else if (OrgTypeEnum.PERSON.equals(orgUnitList.get(i).getOrgType())) {
                 person = personManager.getPerson(tenantId, orgUnitList.get(i).getId()).getData();
                 if (person.getDisabled()) {
                     continue;

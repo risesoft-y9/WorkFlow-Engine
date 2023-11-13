@@ -21,12 +21,13 @@ import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.consts.TreeTypeConsts;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Organization;
-import net.risesoft.model.Person;
+import net.risesoft.enums.platform.OrgTypeEnum;
+import net.risesoft.enums.platform.TreeTypeEnum;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionModel;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -112,7 +113,8 @@ public class OpinionRestController {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         OrgUnit bureau = personManager.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
         if (bureau != null) {
-            List<OrgUnit> orgUnitList = orgUnitManager.treeSearchByDn(tenantId, name, TreeTypeConsts.TREE_TYPE_PERSON, bureau.getDn()).getData();
+            List<OrgUnit> orgUnitList =
+                orgUnitManager.treeSearchByDn(tenantId, name, TreeTypeEnum.TREE_TYPE_PERSON, bureau.getDn()).getData();
             for (OrgUnit orgUnit : orgUnitList) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 map.put("id", orgUnit.getId());
@@ -120,7 +122,7 @@ public class OpinionRestController {
                 map.put("orgType", orgUnit.getOrgType());
                 map.put("parentId", orgUnit.getParentId());
                 map.put("isParent", true);
-                if ("Person".equals(orgUnit.getOrgType())) {
+                if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
                     Person per = personManager.getPerson(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                     if (per.getDisabled()) {// 除去禁用的人员
                         continue;
@@ -173,7 +175,7 @@ public class OpinionRestController {
                 item.add(m);
             }
         } else {
-            List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, "tree_type_org").getData();
+            List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, TreeTypeEnum.TREE_TYPE_ORG).getData();
             for (OrgUnit orgUnit : list) {
                 Map<String, Object> m = new HashMap<String, Object>(16);
                 m.put("id", orgUnit.getId());
@@ -181,7 +183,7 @@ public class OpinionRestController {
                 m.put("parentId", orgUnit.getParentId());
                 m.put("orgType", orgUnit.getOrgType());
                 m.put("isParent", true);
-                if (orgUnit.getOrgType().equals("Person")) {
+                if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON)) {
                     m.put("isParent", false);
                     Person person = personManager.getPerson(tenantId, orgUnit.getId()).getData();
                     if (person.getDisabled()) {
@@ -189,7 +191,8 @@ public class OpinionRestController {
                     }
                     m.put("sex", person.getSex());
                 }
-                if (orgUnit.getOrgType().equals("Person") || orgUnit.getOrgType().equals("Department")) {
+                if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON)
+                    || orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                     item.add(m);
                 }
             }
@@ -279,7 +282,7 @@ public class OpinionRestController {
                 orgUnitList.add(parent);
             }
         }
-        if (parent.getOrgType().equals("Department")) {
+        if (parent.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
             if (parent.getId().equals(nodeId)) {
                 return;
             }

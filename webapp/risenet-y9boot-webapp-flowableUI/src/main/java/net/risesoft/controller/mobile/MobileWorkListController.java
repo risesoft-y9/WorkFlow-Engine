@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.risesoft.model.platform.Resource;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
@@ -30,8 +31,8 @@ import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.resource.ResourceApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.enums.AuthorityEnum;
-import net.risesoft.model.Person;
+import net.risesoft.enums.platform.AuthorityEnum;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.DoingService;
@@ -176,14 +177,14 @@ public class MobileWorkListController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            net.risesoft.model.Resource resource = resourceApi.getResource(tenantId).getData();
+            Resource resource = resourceApi.getResource(tenantId).getData();
             List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
             if (null != resource && null != resource.getId()) {
                 String resourceId = resource.getId();
-                List<net.risesoft.model.Resource> list0 = personResourceApi
-                    .listSubResources(tenantId, userId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
+                List<Resource> list0 =
+                    personResourceApi.listSubResources(tenantId, userId, AuthorityEnum.BROWSE, resourceId).getData();
                 String url = "";
-                for (net.risesoft.model.Resource r : list0) {
+                for (Resource r : list0) {
                     map = new HashMap<String, Object>(16);
                     url = r.getUrl();
                     if (StringUtils.isBlank(url)) {

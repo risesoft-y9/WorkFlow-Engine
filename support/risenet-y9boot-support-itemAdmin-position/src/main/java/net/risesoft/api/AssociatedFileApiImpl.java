@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
 import net.risesoft.api.org.PositionApi;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.service.AssociatedFileService;
 import net.risesoft.y9.Y9LoginUserHolder;
 

@@ -38,7 +38,7 @@ import net.risesoft.command.RecoveryTodoCommand4Position;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.user.UserInfo;

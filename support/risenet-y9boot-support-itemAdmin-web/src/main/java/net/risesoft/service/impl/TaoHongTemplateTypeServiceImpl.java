@@ -11,7 +11,7 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.TaoHongTemplateType;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.TaoHongTemplateTypeRepository;
 import net.risesoft.service.TaoHongTemplateTypeService;

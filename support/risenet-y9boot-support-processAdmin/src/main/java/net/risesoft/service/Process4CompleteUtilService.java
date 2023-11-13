@@ -27,13 +27,13 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.enums.DialectEnum;
-import net.risesoft.enums.OrgTypeEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.OrgUnit;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.util.DbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -307,7 +307,7 @@ public class Process4CompleteUtilService {
             officeDoneInfo.setStartTime(startTime);
             officeDoneInfo.setTenantId(tenantId);
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
-            if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION.getEnName())) {
+            if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                 officeDoneInfo4PositionApi.saveOfficeDone(tenantId, officeDoneInfo);
             } else {
                 officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);

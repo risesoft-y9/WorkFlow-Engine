@@ -25,7 +25,7 @@ import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.DraftEntityRepository;
 import net.risesoft.service.DocumentService;

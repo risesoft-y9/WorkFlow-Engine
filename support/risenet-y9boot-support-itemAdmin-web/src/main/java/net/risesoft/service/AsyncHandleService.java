@@ -38,7 +38,7 @@ import net.risesoft.entity.TaskVariable;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.msgremind.MsgRemindInfoModel;
 import net.risesoft.model.processadmin.TaskModel;

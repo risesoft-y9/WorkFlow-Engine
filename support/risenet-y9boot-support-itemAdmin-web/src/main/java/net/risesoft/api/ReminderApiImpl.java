@@ -17,7 +17,7 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Reminder;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.ReminderService;
 import net.risesoft.util.SysVariables;

@@ -18,10 +18,10 @@ import com.alibaba.druid.pool.DruidDataSource;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.enums.ManagerLevelEnum;
+import net.risesoft.enums.platform.ManagerLevelEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Tenant;
+import net.risesoft.model.platform.Tenant;
 import net.risesoft.util.InitTableDataService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;

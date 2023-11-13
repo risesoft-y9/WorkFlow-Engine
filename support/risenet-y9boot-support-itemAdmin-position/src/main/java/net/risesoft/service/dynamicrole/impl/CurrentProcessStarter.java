@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;

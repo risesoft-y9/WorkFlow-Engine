@@ -16,10 +16,11 @@ import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.ItemPermission;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemPermissionEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Role;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.repository.jpa.ItemPermissionRepository;
 import net.risesoft.service.DynamicRoleMemberService;
@@ -205,9 +206,9 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             if (o.getRoleType() == ItemPermissionEnum.ROLE.getValue()) {
                 Integer personSize = roleManager.listPersonsById(tenantId, o.getRoleId()).getData().size();
                 Integer departmentSize =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Department").getData().size();
+                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData().size();
                 Integer organizationSize =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Organization").getData().size();
+                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION).getData().size();
                 if (personSize > 0) {
                     map.put("existPerson", true);
                 }
@@ -218,10 +219,11 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             if (o.getRoleType() == ItemPermissionEnum.DYNAMICROLE.getValue()) {
                 List<OrgUnit> orgUnitList = dynamicRoleMemberService.getOrgUnitList(o.getRoleId(), processInstanceId);
                 for (OrgUnit orgUnit : orgUnitList) {
-                    if ("Person".equals(orgUnit.getOrgType())) {
+                    if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
                         map.put("existPerson", true);
                     }
-                    if ("Department".equals(orgUnit.getOrgType()) || "Organization".equals(orgUnit.getOrgType())) {
+                    if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())
+                        || OrgTypeEnum.ORGANIZATION.equals(orgUnit.getOrgType())) {
                         map.put("existDepartment", true);
                     }
                 }
@@ -245,12 +247,12 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             }
             if (o.getRoleType() == ItemPermissionEnum.ROLE.getValue()) {
                 Integer positionSize =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Position").getData().size();
+                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData().size();
                 if (positionSize > 0) {
                     existPosition = true;
                 }
                 Integer departmentSize =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Department").getData().size();
+                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData().size();
                 if (departmentSize > 0) {
                     existDepartment = true;
                 }
@@ -262,11 +264,11 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                     if (existPosition && existDepartment) {
                         break;
                     }
-                    if ("Position".equals(orgUnit.getOrgType())) {
+                    if (OrgTypeEnum.POSITION.equals(orgUnit.getOrgType())) {
                         existPosition = true;
                         continue;
                     }
-                    if ("Department".equals(orgUnit.getOrgType())) {
+                    if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
                         existDepartment = true;
                         continue;
                     }
