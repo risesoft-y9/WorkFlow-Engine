@@ -23,7 +23,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.BrowserTypeEnum;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;

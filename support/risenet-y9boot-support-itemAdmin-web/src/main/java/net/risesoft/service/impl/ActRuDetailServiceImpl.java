@@ -19,7 +19,7 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Department;
+import net.risesoft.model.platform.Department;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;

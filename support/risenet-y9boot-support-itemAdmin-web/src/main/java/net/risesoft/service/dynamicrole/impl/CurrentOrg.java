@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.risesoft.api.org.OrgUnitApi;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Organization;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Organization;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
 

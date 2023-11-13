@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.service.ItemDataCopyService;
 import net.risesoft.service.SyncYearTableService;
 import net.risesoft.y9.Y9LoginUserHolder;

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.FlowableTenantInfoHolder;

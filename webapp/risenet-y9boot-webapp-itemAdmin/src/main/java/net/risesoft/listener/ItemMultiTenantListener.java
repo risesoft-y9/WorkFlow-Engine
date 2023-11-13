@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.risesoft.model.platform.System;
 import org.hibernate.integrator.api.integrator.Y9TenantHibernateInfoHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,11 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.resource.AppApi;
 import net.risesoft.api.resource.SystemApi;
 import net.risesoft.api.tenant.TenantApi;
-import net.risesoft.enums.ManagerLevelEnum;
+import net.risesoft.enums.platform.ManagerLevelEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.App;
-import net.risesoft.model.Tenant;
+import net.risesoft.model.platform.App;
+import net.risesoft.model.platform.Tenant;
 import net.risesoft.util.InitTableDataService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -72,7 +73,7 @@ public class ItemMultiTenantListener implements ApplicationListener<Y9EventCommo
     private void creatApp(String systemName) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            net.risesoft.model.System y9System = systemApi.getByName(systemName).getData();
+            System y9System = systemApi.getByName(systemName).getData();
             if (null != y9System) {
                 App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian").getData();
                 if (null == app) {
@@ -91,7 +92,7 @@ public class ItemMultiTenantListener implements ApplicationListener<Y9EventCommo
 
     private void createTenantApp(String systemName, Tenant tenant) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        net.risesoft.model.System y9System = systemApi.getByName(systemName).getData();
+        System y9System = systemApi.getByName(systemName).getData();
         if (null != y9System) {
             App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian").getData();
             if (null != app) {

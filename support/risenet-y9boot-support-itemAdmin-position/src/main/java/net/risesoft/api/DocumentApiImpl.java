@@ -17,8 +17,8 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Person;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.Position;
 import net.risesoft.service.DocumentService;
 import net.risesoft.y9.Y9LoginUserHolder;
 

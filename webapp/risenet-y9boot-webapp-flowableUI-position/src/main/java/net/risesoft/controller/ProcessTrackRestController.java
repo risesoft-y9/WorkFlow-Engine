@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 

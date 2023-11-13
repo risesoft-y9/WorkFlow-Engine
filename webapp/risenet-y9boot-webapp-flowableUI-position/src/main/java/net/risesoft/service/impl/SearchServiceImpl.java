@@ -21,7 +21,7 @@ import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;

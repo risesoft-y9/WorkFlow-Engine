@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.entity.Entrust;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.service.EntrustService;
 import net.risesoft.y9.Y9LoginUserHolder;

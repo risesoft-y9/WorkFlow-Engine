@@ -19,7 +19,7 @@ import net.risesoft.entity.ItemStartNodeRole;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Role;
+import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemStartNodeRoleRepository;

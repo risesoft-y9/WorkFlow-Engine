@@ -16,7 +16,7 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.service.PushNormalToAndroidService;
 import net.risesoft.util.SysVariables;

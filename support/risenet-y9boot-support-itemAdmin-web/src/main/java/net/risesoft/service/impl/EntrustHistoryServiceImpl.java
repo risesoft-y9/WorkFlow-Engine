@@ -14,7 +14,7 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.EntrustHistory;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.repository.jpa.EntrustHistoryRepository;
 import net.risesoft.service.EntrustHistoryService;
 import net.risesoft.service.SpmApproveItemService;

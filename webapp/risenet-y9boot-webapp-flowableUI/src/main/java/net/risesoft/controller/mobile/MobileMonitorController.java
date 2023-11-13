@@ -16,7 +16,7 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.MonitorApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.service.MonitorService;
 import net.risesoft.y9.Y9LoginUserHolder;

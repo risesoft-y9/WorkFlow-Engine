@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;

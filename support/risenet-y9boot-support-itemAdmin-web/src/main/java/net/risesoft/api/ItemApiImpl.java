@@ -15,7 +15,7 @@ import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;

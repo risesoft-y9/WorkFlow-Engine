@@ -39,18 +39,18 @@ import net.risesoft.entity.TaskVariable;
 import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.entity.Y9FormItemMobileBind;
 import net.risesoft.entity.form.Y9Form;
-import net.risesoft.enums.AuthorityEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.enums.ItemPermissionEnum;
-import net.risesoft.enums.OrgTypeEnum;
+import net.risesoft.enums.platform.AuthorityEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.CustomGroup;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Person;
-import net.risesoft.model.Resource;
 import net.risesoft.model.itemadmin.ErrorLogModel;
+import net.risesoft.model.platform.CustomGroup;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.Resource;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
@@ -733,8 +733,8 @@ public class DocumentServiceImpl implements DocumentService {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId();
             String resourceId = "";
-            List<Resource> list = personResourceApi
-                .listSubResources(tenantId, userId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
+            List<Resource> list =
+                personResourceApi.listSubResources(tenantId, userId, AuthorityEnum.BROWSE, resourceId).getData();
             String url = "";
             for (Resource r : list) {
                 url = r.getUrl();
@@ -785,13 +785,13 @@ public class DocumentServiceImpl implements DocumentService {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId();
             String resourceId = "";
-            List<Resource> list = personResourceApi
-                .listSubResources(tenantId, userId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
+            List<Resource> list =
+                personResourceApi.listSubResources(tenantId, userId, AuthorityEnum.BROWSE, resourceId).getData();
             Map<String, Object> map = null;
             String url = "";
             long todoCount = 0;
             for (Resource r : list) {
-                map = new HashMap<String, Object>(16);
+                map = new HashMap<>(16);
                 url = r.getUrl();
                 if (StringUtils.isBlank(url)) {
                     continue;
@@ -859,12 +859,12 @@ public class DocumentServiceImpl implements DocumentService {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId();
             String resourceId = "";
-            List<Resource> list = personResourceApi
-                .listSubResources(tenantId, userId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
+            List<Resource> list =
+                personResourceApi.listSubResources(tenantId, userId, AuthorityEnum.BROWSE, resourceId).getData();
             Map<String, Object> map = null;
             String url = "";
             for (Resource r : list) {
-                map = new HashMap<String, Object>(16);
+                map = new HashMap<>(16);
                 url = r.getUrl();
                 if (StringUtils.isBlank(url)) {
                     continue;
@@ -929,15 +929,19 @@ public class DocumentServiceImpl implements DocumentService {
                     orgUnitList.add(orgUnit);
                 }
             } else if (o.getRoleType() == ItemPermissionEnum.ROLE.getValue()) {
-                List<OrgUnit> deptList = roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Department").getData();
-                List<OrgUnit> personList = roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Person").getData();
+                List<OrgUnit> deptList =
+                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData();
+                List<OrgUnit> personList =
+                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.PERSON).getData();
                 orgUnitList.addAll(deptList);
                 orgUnitList.addAll(personList);
             } else if (o.getRoleType() == ItemPermissionEnum.DYNAMICROLE.getValue()) {
                 List<OrgUnit> ouList = dynamicRoleMemberService.getOrgUnitList(o.getRoleId(), processSerialNumber);
                 for (OrgUnit orgUnit : ouList) {
-                    // if ("Department".equals(orgUnit.getOrgType()) || "Person".equals(orgUnit.getOrgType())) {
-                    if ("Person".equals(orgUnit.getOrgType())) {
+                    // if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType()) ||
+                    // OrgTypeEnum.PERSON.equals(orgUnit.getOrgType()))
+                    // {
+                    if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
                         Person person = personManager.getPerson(tenantId, orgUnit.getId()).getData();
                         if (person != null && !person.getDisabled()) {
                             orgUnitList.add(orgUnit);
@@ -1350,9 +1354,9 @@ public class DocumentServiceImpl implements DocumentService {
                             String userChoice = "";
                             for (OrgUnit orgUnit : orgUnitList) {
                                 int type = 0;
-                                if ("Department".equals(orgUnit.getOrgType())) {
+                                if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
                                     type = 2;
-                                } else if ("Person".equals(orgUnit.getOrgType())) {
+                                } else if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
                                     type = 3;
                                 }
                                 if (StringUtils.isEmpty(userChoice)) {
@@ -1371,8 +1375,7 @@ public class DocumentServiceImpl implements DocumentService {
                     List<OrgUnit> orgUnitList = this.getUserChoice(itemId, processDefinitionId, taskDefinitionKey,
                         processParam != null ? processParam.getProcessInstanceId() : "");
                     // 只有一个人，则直接返回人员发送
-                    if (orgUnitList.size() == 1
-                        && OrgTypeEnum.PERSON.getEnName().equals(orgUnitList.get(0).getOrgType())) {
+                    if (orgUnitList.size() == 1 && OrgTypeEnum.PERSON.equals(orgUnitList.get(0).getOrgType())) {
                         map.put("userChoice", "3:" + orgUnitList.get(0).getId());
                         map.put("onePerson", true);
                     }

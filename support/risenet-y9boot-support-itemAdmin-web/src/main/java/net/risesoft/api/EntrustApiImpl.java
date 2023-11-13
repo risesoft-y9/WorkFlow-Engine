@@ -15,7 +15,7 @@ import net.risesoft.api.itemadmin.EntrustApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.Entrust;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.service.EntrustDetailService;

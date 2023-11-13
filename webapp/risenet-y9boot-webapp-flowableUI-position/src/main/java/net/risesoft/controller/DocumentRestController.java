@@ -29,7 +29,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;

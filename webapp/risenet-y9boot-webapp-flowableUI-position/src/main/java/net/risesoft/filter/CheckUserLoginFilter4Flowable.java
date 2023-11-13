@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;

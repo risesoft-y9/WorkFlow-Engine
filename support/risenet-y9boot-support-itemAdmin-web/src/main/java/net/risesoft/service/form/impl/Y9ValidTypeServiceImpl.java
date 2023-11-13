@@ -17,7 +17,7 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9ValidType;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.form.Y9ValidTypeRepository;
 import net.risesoft.service.form.Y9ValidTypeService;

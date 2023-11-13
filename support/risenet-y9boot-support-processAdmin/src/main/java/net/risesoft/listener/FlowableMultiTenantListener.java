@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationListener;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.model.TenantSystem;
+import net.risesoft.model.platform.TenantSystem;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.service.MultiTenantProcessEngineConfiguration;
 import net.risesoft.y9.Y9Context;

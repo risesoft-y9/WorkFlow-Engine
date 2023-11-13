@@ -22,7 +22,7 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.DraftEntity;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemLeaveTypeEnum;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.repository.jpa.DraftEntityRepository;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.DraftEntityService;

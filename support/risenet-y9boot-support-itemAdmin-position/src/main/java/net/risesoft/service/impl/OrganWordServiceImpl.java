@@ -30,7 +30,7 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.OrganWordRepository;

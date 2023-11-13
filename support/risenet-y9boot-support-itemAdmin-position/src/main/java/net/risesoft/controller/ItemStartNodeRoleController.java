@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemStartNodeRole;
-import net.risesoft.model.Role;
+import net.risesoft.model.platform.Role;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemStartNodeRoleService;
 import net.risesoft.y9.Y9LoginUserHolder;

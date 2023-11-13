@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.AssociatedFileApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.service.AssociatedFileService;
 import net.risesoft.y9.Y9LoginUserHolder;
 

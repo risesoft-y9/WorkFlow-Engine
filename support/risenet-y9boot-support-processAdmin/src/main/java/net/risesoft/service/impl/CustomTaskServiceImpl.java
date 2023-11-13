@@ -27,7 +27,7 @@ import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.command.JumpSubProcessCommand;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;

@@ -3,6 +3,8 @@ package net.risesoft.api.itemadmin;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.enums.platform.TreeTypeEnum;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -104,5 +106,5 @@ public interface ItemRoleApi {
      *
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> getOrgTree(String tenantId, String userId, String id, String treeType, String name);
+    List<Map<String, Object>> getOrgTree(String tenantId, String userId, String id, TreeTypeEnum treeType, String name);
 }

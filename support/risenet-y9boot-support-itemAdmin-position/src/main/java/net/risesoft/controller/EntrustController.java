@@ -17,13 +17,13 @@ import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.consts.TreeTypeConsts;
 import net.risesoft.entity.Entrust;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.enums.OrgTypeEnum;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Organization;
-import net.risesoft.model.Person;
+import net.risesoft.enums.platform.OrgTypeEnum;
+import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;
@@ -70,7 +70,7 @@ public class EntrustController {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
         OrgUnit orgUnit = personManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
-        if (OrgTypeEnum.DEPARTMENT.getEnName().equals(orgUnit.getOrgType())) {
+        if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
             List<Person> personList =
                 departmentManager.listAllPersonsByDisabledAndName(tenantId, orgUnit.getId(), false, name).getData();
             for (Person person : personList) {
@@ -79,7 +79,7 @@ public class EntrustController {
                 this.recursionUpToOrg(tenantId, orgUnit.getId(), p.getParentId(), orgUnitList, false);
             }
         } else {
-            orgUnitList = orgUnitManager.treeSearch(tenantId, name, TreeTypeConsts.TREE_TYPE_PERSON).getData();
+            orgUnitList = orgUnitManager.treeSearch(tenantId, name, TreeTypeEnum.TREE_TYPE_PERSON).getData();
         }
         for (OrgUnit orgUnit0 : orgUnitList) {
             Map<String, Object> map = new HashMap<String, Object>(16);
@@ -88,7 +88,7 @@ public class EntrustController {
             map.put("orgType", orgUnit0.getOrgType());
             map.put("parentID", orgUnit0.getParentId());
             map.put("isParent", true);
-            if ("Person".equals(orgUnit0.getOrgType())) {
+            if (OrgTypeEnum.PERSON.equals(orgUnit0.getOrgType())) {
                 Person per = personManager.getPerson(Y9LoginUserHolder.getTenantId(), orgUnit0.getId()).getData();
                 map.put("sex", per.getSex());
                 map.put("duty", per.getDuty());
@@ -124,7 +124,7 @@ public class EntrustController {
         }
         if (StringUtils.isNotBlank(id)) {
             List<OrgUnit> orgList = new ArrayList<OrgUnit>();
-            orgList = orgUnitManager.getSubTree(tenantId, id, TreeTypeConsts.TREE_TYPE_PERSON).getData();
+            orgList = orgUnitManager.getSubTree(tenantId, id, TreeTypeEnum.TREE_TYPE_PERSON).getData();
             for (OrgUnit orgunit : orgList) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 String orgunitId = orgunit.getId();
@@ -132,9 +132,9 @@ public class EntrustController {
                 map.put("parentID", id);
                 map.put("name", orgunit.getName());
                 map.put("orgType", orgunit.getOrgType());
-                if ("Department".equals(orgunit.getOrgType())) {
+                if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     map.put("isParent", true);
-                } else if ("Person".equals(orgunit.getOrgType())) {
+                } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
                     Person person = personManager.getPerson(tenantId, orgunit.getId()).getData();
                     map.put("isParent", false);
                     map.put("sex", person.getSex());
@@ -223,7 +223,7 @@ public class EntrustController {
                 orgUnitList.add(parent);
             }
         }
-        if (parent.getOrgType().equals(OrgTypeEnum.DEPARTMENT.getEnName())) {
+        if (parent.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
             if (parent.getId().equals(nodeId)) {
                 return;
             }

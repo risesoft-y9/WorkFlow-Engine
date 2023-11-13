@@ -49,20 +49,20 @@ import net.risesoft.entity.TaskVariable;
 import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.entity.Y9FormItemMobileBind;
 import net.risesoft.entity.form.Y9Form;
-import net.risesoft.enums.AuthorityEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.enums.ItemPermissionEnum;
-import net.risesoft.enums.OrgTypeEnum;
+import net.risesoft.enums.platform.AuthorityEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.CustomGroup;
-import net.risesoft.model.CustomGroupMember;
-import net.risesoft.model.Department;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Position;
-import net.risesoft.model.Resource;
 import net.risesoft.model.itemadmin.ErrorLogModel;
+import net.risesoft.model.platform.CustomGroup;
+import net.risesoft.model.platform.CustomGroupMember;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
+import net.risesoft.model.platform.Resource;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
@@ -634,8 +634,9 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             String resourceId = "";
-            List<Resource> list = positionResourceApi
-                .listSubResources(tenantId, positionId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
+            List<Resource> list =
+                positionResourceApi
+                .listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
             String url = "";
             for (Resource r : list) {
                 url = r.getUrl();
@@ -687,8 +688,9 @@ public class DocumentServiceImpl implements DocumentService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String resourceId = "";
             //////////////////////////////////
-            List<Resource> list = positionResourceApi
-                .listSubResources(tenantId, positionId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
+            List<Resource> list =
+                positionResourceApi
+                .listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
             Map<String, Object> map = null;
             String url = "";
             long todoCount = 0;
@@ -760,8 +762,9 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             String resourceId = "";
-            List<Resource> list = positionResourceApi
-                .listSubResources(tenantId, positionId, AuthorityEnum.BROWSE.getValue(), resourceId).getData();
+            List<Resource> list =
+                positionResourceApi
+                .listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
             Map<String, Object> map = null;
             String url = "";
             for (Resource r : list) {
@@ -830,16 +833,19 @@ public class DocumentServiceImpl implements DocumentService {
                     orgUnitList.add(orgUnit);
                 }
             } else if (o.getRoleType() == ItemPermissionEnum.ROLE.getValue()) {
-                List<OrgUnit> deptList = roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Department").getData();
-                List<OrgUnit> personList = roleManager.listOrgUnitsById(tenantId, o.getRoleId(), "Position").getData();
+                List<OrgUnit> deptList =
+                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData();
+                List<OrgUnit> personList =
+                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData();
                 orgUnitList.addAll(deptList);
                 orgUnitList.addAll(personList);
             } else if (o.getRoleType() == ItemPermissionEnum.DYNAMICROLE.getValue()) {
                 List<OrgUnit> ouList = dynamicRoleMemberService.getOrgUnitList(o.getRoleId(), processSerialNumber);
                 for (OrgUnit orgUnit : ouList) {
-                    // if (orgUnit.getOrgType().equals("Department") || orgUnit.getOrgType().equals("Position")) {
+                    // if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT) ||
+                    // orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                     orgUnitList.add(orgUnit);
-                    if (orgUnit.getOrgType().equals("Position")) {
+                    if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                         Position position = positionManager.getPosition(tenantId, orgUnit.getId()).getData();
                         if (position != null && !position.getDisabled()) {
                             orgUnitList.add(orgUnit);
@@ -1156,7 +1162,7 @@ public class DocumentServiceImpl implements DocumentService {
                     }
                 } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
                     List<CustomGroupMember> list = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                        Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION.getEnName()).getData();
+                        Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION).getData();
                     for (CustomGroupMember pTemp : list) {
                         Position position = positionManager.getPosition(tenantId, pTemp.getMemberId()).getData();
                         if (position != null && StringUtils.isNotBlank(position.getId())) {
@@ -1381,9 +1387,9 @@ public class DocumentServiceImpl implements DocumentService {
                             String userChoice = "";
                             for (OrgUnit orgUnit : orgUnitList) {
                                 int type = 0;
-                                if (orgUnit.getOrgType().equals("Department")) {
+                                if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                                     type = 2;
-                                } else if (orgUnit.getOrgType().equals("Position")) {
+                                } else if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                                     type = 6;
                                 }
                                 if (StringUtils.isEmpty(userChoice)) {
@@ -1403,7 +1409,7 @@ public class DocumentServiceImpl implements DocumentService {
                         processParam != null ? processParam.getProcessInstanceId() : "");
                     // 只有一个人，则直接返回人员发送
                     if (orgUnitList.size() == 1
-                        && orgUnitList.get(0).getOrgType().equals(OrgTypeEnum.POSITION.getEnName())) {
+                        && orgUnitList.get(0).getOrgType().equals(OrgTypeEnum.POSITION)) {
                         map.put("userChoice", "6:" + orgUnitList.get(0).getId());
                         map.put("onePerson", true);
                     }

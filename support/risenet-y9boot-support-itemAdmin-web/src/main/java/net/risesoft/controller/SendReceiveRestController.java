@@ -17,14 +17,14 @@ import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.consts.TreeTypeConsts;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ReceiveDepartment;
-import net.risesoft.enums.OrgTypeEnum;
-import net.risesoft.model.Department;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Organization;
-import net.risesoft.model.Person;
+import net.risesoft.enums.platform.OrgTypeEnum;
+import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ReceiveDepartmentRepository;
 import net.risesoft.service.ReceiveDeptAndPersonService;
@@ -119,7 +119,7 @@ public class SendReceiveRestController {
             map.put("orgType", orgUnit.getOrgType());
             map.put("parentId", orgUnit.getParentId());
             map.put("isParent", true);
-            if ("Person".equals(orgUnit.getOrgType())) {
+            if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
                 Person per = personManager.getPerson(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                 map.put("sex", per.getSex());
                 map.put("duty", per.getDuty());
@@ -157,7 +157,7 @@ public class SendReceiveRestController {
         }
         if (StringUtils.isNotBlank(id)) {
             List<OrgUnit> orgList = new ArrayList<>();
-            orgList = orgUnitManager.getSubTree(tenantId, id, TreeTypeConsts.TREE_TYPE_ORG).getData();
+            orgList = orgUnitManager.getSubTree(tenantId, id, TreeTypeEnum.TREE_TYPE_ORG).getData();
             for (OrgUnit orgunit : orgList) {
                 Map<String, Object> map = new HashMap<>(16);
                 String orgunitId = orgunit.getId();
@@ -165,9 +165,9 @@ public class SendReceiveRestController {
                 map.put("parentId", id);
                 map.put("name", orgunit.getName());
                 map.put("orgType", orgunit.getOrgType());
-                if ("Department".equals(orgunit.getOrgType())) {
+                if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     map.put("isParent", true);
-                } else if ("Person".equals(orgunit.getOrgType())) {
+                } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
                     Person person = personManager.getPerson(tenantId, orgunit.getId()).getData();
                     map.put("isParent", false);
                     map.put("sex", person.getSex());
@@ -201,7 +201,7 @@ public class SendReceiveRestController {
      */
     @RequestMapping(value = "/getOrgChildTree", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getOrgChildTree(@RequestParam(required = false) String id,
-        String treeType) {
+        TreeTypeEnum treeType) {
         List<Map<String, Object>> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(id)) {
@@ -215,9 +215,9 @@ public class SendReceiveRestController {
                 map.put("name", orgunit.getName());
                 map.put("orgType", orgunit.getOrgType());
                 map.put("guidPath", orgunit.getGuidPath());
-                if ("Department".equals(orgunit.getOrgType())) {
+                if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     map.put("isParent", true);
-                } else if ("Person".equals(orgunit.getOrgType())) {
+                } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
                     Person person = personManager.getPerson(tenantId, orgunit.getId()).getData();
                     map.put("isParent", false);
                     map.put("sex", person.getSex());
@@ -240,11 +240,11 @@ public class SendReceiveRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> getOrgTree(@RequestParam String id, @RequestParam String treeType) {
+    public Y9Result<List<OrgUnit>> getOrgTree(@RequestParam String id, @RequestParam TreeTypeEnum treeType) {
         List<OrgUnit> newOrgUnitList = new ArrayList<>();
         List<OrgUnit> orgUnitList = orgUnitManager.getSubTree(Y9LoginUserHolder.getTenantId(), id, treeType).getData();
         for (OrgUnit orgUnit : orgUnitList) {
-            if ("Department".equals(orgUnit.getOrgType())) {
+            if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
                 // 该部门下没有收发部门
                 orgUnit.setDn("false");
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
@@ -309,12 +309,12 @@ public class SendReceiveRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/orgTreeSearch", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> orgTreeSearch(@RequestParam String treeType, @RequestParam String name) {
+    public Y9Result<List<OrgUnit>> orgTreeSearch(@RequestParam TreeTypeEnum treeType, @RequestParam String name) {
         List<OrgUnit> newOrgUnitList = new ArrayList<>();
         List<OrgUnit> orgUnitList =
             orgUnitManager.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
         for (OrgUnit orgUnit : orgUnitList) {
-            if ("Department".equals(orgUnit.getOrgType())) {
+            if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
                 // 该部门下没有收发部门
                 orgUnit.setDn("false");
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
@@ -392,7 +392,7 @@ public class SendReceiveRestController {
                 orgUnitList.add(parent);
             }
         }
-        if (OrgTypeEnum.DEPARTMENT.getEnName().equals(parent.getOrgType())) {
+        if (OrgTypeEnum.DEPARTMENT.equals(parent.getOrgType())) {
             if (parent.getId().equals(nodeId)) {
                 return;
             }
@@ -463,7 +463,7 @@ public class SendReceiveRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/searchOrgTree", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> searchOrgTree(@RequestParam String treeType, @RequestParam String name) {
+    public Y9Result<List<OrgUnit>> searchOrgTree(@RequestParam TreeTypeEnum treeType, @RequestParam String name) {
         List<OrgUnit> orgUnitList =
             orgUnitManager.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
         return Y9Result.success(orgUnitList, "获取成功");

@@ -32,7 +32,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.util.ToolUtil;

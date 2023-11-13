@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.itemadmin.ReceiveDeptAndPersonApi;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 
 /**
  * @author qinman

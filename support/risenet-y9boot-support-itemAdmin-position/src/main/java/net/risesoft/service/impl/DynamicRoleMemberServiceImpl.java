@@ -9,8 +9,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
 import net.risesoft.entity.DynamicRole;
-import net.risesoft.model.Department;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;

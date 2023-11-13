@@ -27,7 +27,7 @@ import net.risesoft.api.processadmin.DoingApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
