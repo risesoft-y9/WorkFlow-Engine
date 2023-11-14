@@ -66,22 +66,7 @@ public class ItemApiImpl implements Item4PositionApi {
         List<ItemModel> itemModelList = new ArrayList<ItemModel>();
         for (SpmApproveItem item : list) {
             ItemModel itemModel = new ItemModel();
-            itemModel.setId(item.getId());
-            itemModel.setAccountability(item.getAccountability());
-            itemModel.setExpired(item.getExpired());
-            itemModel.setIsDocking(item.getIsDocking());
-            itemModel.setIsOnline(item.getIsOnline());
-            itemModel.setLegalLimit(item.getLegalLimit());
-            itemModel.setName(item.getName());
-            itemModel.setNature(item.getNature());
-            itemModel.setSysLevel(item.getSysLevel());
-            itemModel.setSystemName(item.getSystemName());
-            itemModel.setType(item.getType());
-            itemModel.setWorkflowGuid(item.getWorkflowGuid());
-            itemModel.setFormType(item.getFormType());
-            itemModel.setCustomItem(item.getCustomItem());
-            itemModel.setDockingItemId(item.getDockingItemId());
-            itemModel.setDockingSystem(item.getDockingSystem());
+            Y9BeanUtil.copyProperties(item, itemModel);
             itemModelList.add(itemModel);
         }
         return itemModelList;
@@ -115,22 +100,7 @@ public class ItemApiImpl implements Item4PositionApi {
         List<ItemModel> itemModelList = new ArrayList<ItemModel>();
         for (SpmApproveItem item : list) {
             ItemModel itemModel = new ItemModel();
-            itemModel.setId(item.getId());
-            itemModel.setAccountability(item.getAccountability());
-            itemModel.setExpired(item.getExpired());
-            itemModel.setIsDocking(item.getIsDocking());
-            itemModel.setIsOnline(item.getIsOnline());
-            itemModel.setLegalLimit(item.getLegalLimit());
-            itemModel.setName(item.getName());
-            itemModel.setNature(item.getNature());
-            itemModel.setSysLevel(item.getSysLevel());
-            itemModel.setSystemName(item.getSystemName());
-            itemModel.setType(item.getType());
-            itemModel.setWorkflowGuid(item.getWorkflowGuid());
-            itemModel.setFormType(item.getFormType());
-            itemModel.setCustomItem(item.getCustomItem());
-            itemModel.setDockingItemId(item.getDockingItemId());
-            itemModel.setDockingSystem(item.getDockingSystem());
+            Y9BeanUtil.copyProperties(item, itemModel);
             itemModelList.add(itemModel);
         }
         return itemModelList;
@@ -173,24 +143,7 @@ public class ItemApiImpl implements Item4PositionApi {
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         ItemModel itemModel = new ItemModel();
         if (item != null) {
-            itemModel.setId(item.getId());
-            itemModel.setAccountability(item.getAccountability());
-            itemModel.setExpired(item.getExpired());
-            itemModel.setIsDocking(item.getIsDocking());
-            itemModel.setIsOnline(item.getIsOnline());
-            itemModel.setLegalLimit(item.getLegalLimit());
-            itemModel.setName(item.getName());
-            itemModel.setNature(item.getNature());
-            itemModel.setSysLevel(item.getSysLevel());
-            itemModel.setSystemName(item.getSystemName());
-            itemModel.setType(item.getType());
-            itemModel.setWorkflowGuid(item.getWorkflowGuid());
-            itemModel.setTodoTaskUrlPrefix(item.getTodoTaskUrlPrefix());
-            itemModel.setFormType(item.getFormType());
-            itemModel.setIconData(item.getIconData());
-            itemModel.setCustomItem(item.getCustomItem());
-            itemModel.setDockingItemId(item.getDockingItemId());
-            itemModel.setDockingSystem(item.getDockingSystem());
+            Y9BeanUtil.copyProperties(item, itemModel);
         }
         return itemModel;
     }
