@@ -9,11 +9,6 @@ flowable:
             idmAdmin:
                 user: admin
                 password: 111111
-hibernate:
-    dialect:
-        mssql: org.hibernate.dialect.SQLServer2012Dialect
-        mysql: org.hibernate.dialect.MySQL8Dialect
-        oracle: org.hibernate.dialect.Oracle10gDialect
 logging:
     config: classpath:log4j2.xml
 management:
@@ -24,8 +19,6 @@ management:
 mybatis:
     mapper-locations: classpath:/META-INF/modeler-mybatis-mappings/*.xml
 server:
-    intranet:
-        ip: 192.168.x.x,10.161.x.x,10.1.x.x,172.20.x.x
     port: 8080
     servlet:
         encoding:

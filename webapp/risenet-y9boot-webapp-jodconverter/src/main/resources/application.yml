@@ -16,8 +16,6 @@ jodconverter:
 office:
     home: C:/Program Files (x86)/OpenOffice 4
 server:
-    intranet:
-        ip: 192.168.x.x,10.161.x.x,10.1.x.x
     port: 7055
     servlet:
         encoding:
@@ -91,6 +89,7 @@ spring:
             static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:///d:/y9config/
 y9:
     systemName: jodconverter
+    internalIp: 192.168.x.x,10.161.x.x,10.1.x.x,172.20.x.x
     common:
         jodconverterBaseUrl: https://vue.youshengyun.com/jodconverter
     feature:

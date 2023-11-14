@@ -4,8 +4,6 @@ management:
             exposure:
                 include: '*'
 server:
-    intranet:
-        ip: 192.168.x.x,10.161.x.x,10.1.x.x,172.20.x.x
     port: 8080
     servlet:
         encoding:
@@ -37,15 +35,6 @@ spring:
             - optional:nacos:flowableUI.yml
             #- optional:nacos:test01.yml?group=group_02
             #- optional:nacos:test02.yml?group=group_03&refreshEnabled=false
-    boot:
-        admin:
-            client:
-                enabled: false
-                instance:
-                    service-base-url: http://localhost:7055
-                password: '83204585'
-                url: http://localhost:8888/bootAdmin
-                username: y9admin
     cache:
         redis:
             time-to-live: PT2H
@@ -125,6 +114,7 @@ spring:
             static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:///d:/y9config/
 y9:
     systemName: flowableUI
+    internalIp: 192.168.x.x,10.161.x.x,10.1.x.x,172.20.x.x
     app:
         admin:
             mainIndexView: newIndex
