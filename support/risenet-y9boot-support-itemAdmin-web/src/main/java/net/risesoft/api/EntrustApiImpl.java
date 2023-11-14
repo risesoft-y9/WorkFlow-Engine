@@ -69,8 +69,7 @@ public class EntrustApiImpl implements EntrustApi {
 
     @Override
     @PostMapping(value = "/destroyEntrustByOwnerIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void destroyEntrustByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId)
-        throws Exception {
+    public void destroyEntrustByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             entrustService.destroyEntrust(ownerId, itemId);
@@ -81,8 +80,7 @@ public class EntrustApiImpl implements EntrustApi {
 
     @Override
     @GetMapping(value = "/findOneByOwnerIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EntrustModel findOneByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId)
-        throws Exception {
+    public EntrustModel findOneByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         EntrustModel entrustModel = null;
         Entrust entrust = entrustService.findOneByOwnerIdAndItemId(ownerId, itemId);
@@ -101,8 +99,6 @@ public class EntrustApiImpl implements EntrustApi {
                 itemModel.setLegalLimit(item.getLegalLimit());
                 itemModel.setName(item.getName());
                 itemModel.setNature(item.getNature());
-                itemModel.setStarter(item.getStarter());
-                itemModel.setStarterId(item.getStarterId());
                 itemModel.setSysLevel(item.getSysLevel());
                 itemModel.setSystemName(item.getSystemName());
                 itemModel.setType(item.getType());
@@ -121,8 +117,7 @@ public class EntrustApiImpl implements EntrustApi {
 
     @Override
     @GetMapping(value = "/findOneByOwnerIdAndItemIdAndTime", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EntrustModel findOneByOwnerIdAndItemIdAndTime(String tenantId, String ownerId, String itemId,
-        String currentTime) throws Exception {
+    public EntrustModel findOneByOwnerIdAndItemIdAndTime(String tenantId, String ownerId, String itemId, String currentTime) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         Entrust entrust = entrustService.findOneByOwnerIdAndItemIdAndTime(ownerId, itemId, currentTime);
         EntrustModel entrustModel = null;
@@ -152,8 +147,7 @@ public class EntrustApiImpl implements EntrustApi {
 
     @Override
     @GetMapping(value = "/getItemList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getItemList(String tenantId, String userId, String ownerId, Integer page, Integer rows)
-        throws Exception {
+    public Map<String, Object> getItemList(String tenantId, String userId, String ownerId, Integer page, Integer rows) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = entrustService.itemList(ownerId, page, rows);
         return map;
@@ -179,15 +173,13 @@ public class EntrustApiImpl implements EntrustApi {
 
     @Override
     @PostMapping(value = "/saveEntrustDetail", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void saveEntrustDetail(String tenantId, String processInstanceId, String taskId, String ownerId,
-        String assigneeId) {
+    public void saveEntrustDetail(String tenantId, String processInstanceId, String taskId, String ownerId, String assigneeId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         entrustDetailService.save(processInstanceId, taskId, ownerId, assigneeId);
     }
 
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveOrUpdate(String tenantId, String userId, @RequestBody EntrustModel entrustModel) throws Exception {
         Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
