@@ -18,6 +18,7 @@ import net.risesoft.entity.CustomProcessInfo;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.processadmin.IdentityLinkModel;
+import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.CustomProcessInfoService;
 import net.risesoft.service.ProcInstanceRelationshipService;
@@ -228,17 +229,17 @@ public class ButtonUtil {
                         // 如果在串行状态下，那么就要看是不是最后一个用户，如果是则显示发送按钮，否则不显示
                     } else if (isSequential) {
                         if (isLastSequential) {
-                            if(showSubmitButton) {
+                            if (showSubmitButton) {
                                 isButtonShow[20] = true;
-                            }else {
+                            } else {
                                 isButtonShow[1] = true;
                             }
                         }
                     } else {
                         // 如果既不是并行也不是串行
-                        if(showSubmitButton) {
+                        if (showSubmitButton) {
                             isButtonShow[20] = true;
-                        }else {
+                        } else {
                             isButtonShow[1] = true;
                         }
                     }
@@ -257,7 +258,6 @@ public class ButtonUtil {
                 /*----- 上面是可以打开选人界面的发送按钮的设置 -----*/
 
                 /*----- 下面是返回按钮的设置 -----*/
-                // 改为easyui界面后，暂时不显示返回按钮
                 isButtonShow[2] = true;
                 /*----- 上面是返回按钮的设置 -----*/
 
@@ -433,9 +433,9 @@ public class ButtonUtil {
 
             } else {// task为null，此时是新增
                 isButtonShow[0] = true;
-                if(showSubmitButton) {
+                if (showSubmitButton) {
                     isButtonShow[20] = true;
-                }else {
+                } else {
                     isButtonShow[1] = true;
                 }
             }
@@ -468,23 +468,30 @@ public class ButtonUtil {
             }
             // 抄送
             isButtonShow[17] = true;
+            ProcessInstanceModel processInstanceModel = runtimeManager.getProcessInstance(tenantId, task.getProcessInstanceId());
+            if (positionId.equals(processInstanceModel.getStartUserId())) {
+                // 重定向
+                // isButtonShow[15] = true;
+                // 特殊办结
+                isButtonShow[14] = true;
+            }
         } else if (ItemBoxTypeEnum.DONE.getValue().equals(itembox)) {
             isButtonShow[2] = true;
             isButtonShow[19] = true;
         } else if (ItemBoxTypeEnum.ADD.getValue().equals(itembox)) {
             isButtonShow[0] = true;
-            if(showSubmitButton) {
+            if (showSubmitButton) {
                 isButtonShow[20] = true;
-            }else {
+            } else {
                 isButtonShow[1] = true;
             }
             // 新建可抄送
             isButtonShow[17] = true;
         } else if (ItemBoxTypeEnum.DRAFT.getValue().equals(itembox)) {
             isButtonShow[0] = true;
-            if(showSubmitButton) {
+            if (showSubmitButton) {
                 isButtonShow[20] = true;
-            }else {
+            } else {
                 isButtonShow[1] = true;
             }
             isButtonShow[2] = true;
