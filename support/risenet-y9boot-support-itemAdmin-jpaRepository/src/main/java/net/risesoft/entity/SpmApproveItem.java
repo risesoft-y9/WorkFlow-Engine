@@ -139,10 +139,6 @@ public class SpmApproveItem implements Serializable {
     @Column(name = "SYSTEMNAME", length = 50)
     private String systemName;
 
-    @Comment("使用表单类型")
-    @Column(name = "FORMTYPE")
-    private Integer formType = 2;
-
     @Comment("应用url")
     @Column(name = "APPURL", length = 200)
     private String appUrl;
