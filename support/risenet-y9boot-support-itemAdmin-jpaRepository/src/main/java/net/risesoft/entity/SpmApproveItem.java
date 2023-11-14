@@ -71,17 +71,9 @@ public class SpmApproveItem implements Serializable {
     @Column(name = "ACCOUNTABILITY", length = 200)
     private String accountability;
 
-    @Comment("事项性质")
+    @Comment("事项管理员")
     @Column(name = "NATURE", length = 200)
     private String nature;
-
-    @Comment("首办角色id")
-    @Column(name = "STARTERID", length = 50)
-    private String starterId;
-
-    @Comment("首办角色名称")
-    @Column(name = "STARTER", length = 50)
-    private String starter;
 
     @Comment("创建人id")
     @Column(name = "CREATERID")
@@ -127,14 +119,6 @@ public class SpmApproveItem implements Serializable {
     @Column(name = "WORKFLOWGUID", length = 100)
     private String workflowGuid;
 
-    @Comment("基本信息表单id")
-    @Column(name = "BASICFORMID", length = 50)
-    private String basicformId;
-
-    @Comment("办理表单id")
-    @Column(name = "HANDELFORMID", length = 50)
-    private String handelformId;
-
     @Comment("是否网上申办")
     @Column(name = "ISONLINE", length = 50)
     private String isOnline;
@@ -171,7 +155,7 @@ public class SpmApproveItem implements Serializable {
     @Column(name = "CUSTOMITEM", nullable = false)
     @ColumnDefault("0")
     private Boolean customItem = false;
-    
+
     @Comment("显示提交按钮")
     @Column(name = "SHOWSUBMITBUTTON", nullable = false)
     @ColumnDefault("0")

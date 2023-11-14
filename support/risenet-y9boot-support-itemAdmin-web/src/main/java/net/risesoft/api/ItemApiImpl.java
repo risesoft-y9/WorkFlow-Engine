@@ -67,8 +67,6 @@ public class ItemApiImpl implements ItemApi {
             itemModel.setLegalLimit(item.getLegalLimit());
             itemModel.setName(item.getName());
             itemModel.setNature(item.getNature());
-            itemModel.setStarter(item.getStarter());
-            itemModel.setStarterId(item.getStarterId());
             itemModel.setSysLevel(item.getSysLevel());
             itemModel.setSystemName(item.getSystemName());
             itemModel.setType(item.getType());
@@ -107,8 +105,6 @@ public class ItemApiImpl implements ItemApi {
             itemModel.setLegalLimit(item.getLegalLimit());
             itemModel.setName(item.getName());
             itemModel.setNature(item.getNature());
-            itemModel.setStarter(item.getStarter());
-            itemModel.setStarterId(item.getStarterId());
             itemModel.setSysLevel(item.getSysLevel());
             itemModel.setSystemName(item.getSystemName());
             itemModel.setType(item.getType());
@@ -154,8 +150,6 @@ public class ItemApiImpl implements ItemApi {
             itemModel.setLegalLimit(item.getLegalLimit());
             itemModel.setName(item.getName());
             itemModel.setNature(item.getNature());
-            itemModel.setStarter(item.getStarter());
-            itemModel.setStarterId(item.getStarterId());
             itemModel.setSysLevel(item.getSysLevel());
             itemModel.setSystemName(item.getSystemName());
             itemModel.setType(item.getType());
@@ -212,8 +206,7 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/getItemMappingConf", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemMappingConfModel> getItemMappingConf(String tenantId, String itemId, String mappingId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ItemMappingConf> list =
-            itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
+        List<ItemMappingConf> list = itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
         List<ItemMappingConfModel> itemList = new ArrayList<ItemMappingConfModel>();
         for (ItemMappingConf item : list) {
             ItemMappingConfModel itemModel = new ItemMappingConfModel();
