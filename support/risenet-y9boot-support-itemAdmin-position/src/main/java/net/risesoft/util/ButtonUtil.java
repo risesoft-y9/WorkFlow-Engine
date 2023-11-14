@@ -18,6 +18,7 @@ import net.risesoft.entity.CustomProcessInfo;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.processadmin.IdentityLinkModel;
+import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.CustomProcessInfoService;
 import net.risesoft.service.ProcInstanceRelationshipService;
@@ -264,7 +265,6 @@ public class ButtonUtil {
                 /*----- 上面是可以打开选人界面的发送按钮的设置 -----*/
 
                 /*----- 下面是返回按钮的设置 -----*/
-                // 改为easyui界面后，暂时不显示返回按钮
                 isButtonShow[2] = true;
                 /*----- 上面是返回按钮的设置 -----*/
 
@@ -485,6 +485,13 @@ public class ButtonUtil {
             }
             // 抄送
             isButtonShow[17] = true;
+            ProcessInstanceModel processInstanceModel = runtimeManager.getProcessInstance(tenantId, task.getProcessInstanceId());
+            if (positionId.equals(processInstanceModel.getStartUserId())) {
+                // 重定向
+                // isButtonShow[15] = true;
+                // 特殊办结
+                isButtonShow[14] = true;
+            }
         } else if (ItemBoxTypeEnum.DONE.getValue().equals(itembox)) {
             isButtonShow[2] = true;
             isButtonShow[19] = true;
