@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.risesoft.api.org.OrgUnitApi;
-import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
@@ -33,7 +32,6 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Person;
 import net.risesoft.model.Position;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionModel;
@@ -76,9 +74,6 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Autowired
     private TaskApi taskManager;
-
-    @Autowired
-    private PersonApi personManager;
 
     @Autowired
     private SpmApproveItemService spmApproveItemService;
@@ -228,16 +223,11 @@ public class OpinionServiceImpl implements OpinionService {
             for (Opinion opinion : list1) {
                 OpinionHistoryModel history = new OpinionHistoryModel();
                 history.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                history.setAgentUserDeptId(opinion.getAgentUserDeptId());
-                history.setAgentUserDeptName(opinion.getAgentUserDeptName());
-                history.setAgentUserId(opinion.getAgentUserId());
-                history.setAgentUserName(opinion.getAgentUserName());
                 history.setContent(opinion.getContent());
                 history.setCreateDate(opinion.getCreateDate());
                 history.setSaveDate("");
                 history.setDeptId(opinion.getDeptId());
                 history.setDeptName(opinion.getDeptName());
-                history.setIsAgent(opinion.getIsAgent());
                 history.setModifyDate(opinion.getModifyDate());
                 history.setOpinionFrameMark(opinion.getOpinionFrameMark());
                 history.setOpinionType("");
@@ -321,11 +311,6 @@ public class OpinionServiceImpl implements OpinionService {
                         if (personId.equals(opinion.getUserId())) {
                             map.put("editable", true);
                             addableMap.put("addable", false);
-                        }
-                        // 代录意见
-                        if (StringUtils.isNotBlank(opinion.getAgentUserId())
-                            && personId.equals(opinion.getAgentUserId())) {
-                            map.put("editAgent", true);
                         }
                         OpinionModel opinionModel = new OpinionModel();
                         Y9BeanUtil.copyProperties(opinion, opinionModel);
@@ -443,11 +428,6 @@ public class OpinionServiceImpl implements OpinionService {
                         if (personId.equals(opinion.getUserId())) {
                             map.put("editable", true);
                             addableMap.put("addable", false);
-                        }
-                        // 代录意见
-                        if (StringUtils.isNotBlank(opinion.getAgentUserId())
-                            && personId.equals(opinion.getAgentUserId())) {
-                            map.put("editAgent", true);
                         }
                     }
                     resList.add(map);
@@ -660,22 +640,6 @@ public class OpinionServiceImpl implements OpinionService {
             o.setModifyDate(sdf.format(new Date()));
             o.setPositionId(positionId);
             o.setPositionName(position.getName());
-            Integer isAgent = entity.getIsAgent();
-            if (isAgent == 1) {
-                Person p = personManager.getPerson(tenantId, entity.getUserId()).getData();
-                o.setUserId(p.getId());
-                o.setUserName(p.getName());
-                o.setDeptId(entity.getDeptId());
-                o.setDeptName(orgUnitManager.getOrgUnit(tenantId, entity.getDeptId()).getData().getName());
-                o.setAgentUserId(person.getPersonId());
-                o.setAgentUserName(person.getName());
-                o.setAgentUserDeptId(position.getParentId());
-                OrgUnit orgUnit1 = orgUnitManager.getOrgUnit(tenantId, position.getParentId()).getData();
-                o.setAgentUserDeptName(orgUnit1 != null ? orgUnit1.getName() : "");
-                o.setIsAgent(1);
-                o.setCreateDate(entity.getCreateDate());
-                o.setModifyDate(entity.getCreateDate());
-            }
             if (StringUtils.isNotBlank(entity.getTaskId())) {
                 try {
                     List<ProcessTrack> list = processTrackService.findByTaskIdAndEndTimeIsNull(entity.getTaskId());
@@ -724,20 +688,6 @@ public class OpinionServiceImpl implements OpinionService {
         opinion.setDeptName(orgUnit0.getName());
         opinion.setPositionId(positionId);
         opinion.setPositionName(position.getName());
-        Integer isAgent = entity.getIsAgent();
-        if (isAgent == 1) {
-            Person p = personManager.getPerson(tenantId, entity.getUserId()).getData();
-            opinion.setUserId(p.getId());
-            opinion.setUserName(p.getName());
-            opinion.setDeptId(entity.getDeptId());
-            opinion.setDeptName(orgUnitManager.getOrgUnit(tenantId, entity.getDeptId()).getData().getName());
-            opinion.setCreateDate(entity.getCreateDate());
-            opinion.setAgentUserId(person.getPersonId());
-            opinion.setAgentUserName(person.getName());
-            opinion.setAgentUserDeptId(position.getParentId());
-            OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, position.getParentId()).getData();
-            opinion.setAgentUserDeptName(orgUnit != null ? orgUnit.getName() : "");
-        }
         /*if (StringUtils.isNotBlank(entity.getTaskId())) {
             try {
                 HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskManager.getById(tenantId, entity.getTaskId());

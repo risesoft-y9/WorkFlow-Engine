@@ -171,11 +171,6 @@ public class ItemAdminModelConvertUtil {
             om.setUserName(opinion.getUserName());
             om.setDeptId(opinion.getDeptId());
             om.setDeptName(opinion.getDeptName());
-            om.setAgentUserDeptId(opinion.getAgentUserDeptId());
-            om.setAgentUserDeptName(opinion.getAgentUserDeptName());
-            om.setAgentUserId(opinion.getAgentUserId());
-            om.setAgentUserName(opinion.getAgentUserName());
-            om.setIsAgent(opinion.getIsAgent());
         }
         return om;
     }
@@ -203,11 +198,6 @@ public class ItemAdminModelConvertUtil {
         opinion.setUserName(om.getUserName());
         opinion.setDeptId(om.getDeptId());
         opinion.setDeptName(om.getDeptName());
-        opinion.setAgentUserDeptId(om.getAgentUserDeptId());
-        opinion.setAgentUserDeptName(om.getAgentUserDeptName());
-        opinion.setAgentUserId(om.getAgentUserId());
-        opinion.setAgentUserName(om.getAgentUserName());
-        opinion.setIsAgent(om.getIsAgent());
         return opinion;
     }
 

@@ -418,16 +418,11 @@ public class AsyncHandleService {
             Y9LoginUserHolder.setTenantId(tenantId);
             OpinionHistory history = new OpinionHistory();
             history.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            history.setAgentUserDeptId(oldOpinion.getAgentUserDeptId());
-            history.setAgentUserDeptName(oldOpinion.getAgentUserDeptName());
-            history.setAgentUserId(oldOpinion.getAgentUserId());
-            history.setAgentUserName(oldOpinion.getAgentUserName());
             history.setContent(oldOpinion.getContent());
             history.setCreateDate(oldOpinion.getCreateDate());
             history.setSaveDate(sdf.format(new Date()));
             history.setDeptId(oldOpinion.getDeptId());
             history.setDeptName(oldOpinion.getDeptName());
-            history.setIsAgent(oldOpinion.getIsAgent());
             history.setModifyDate(oldOpinion.getModifyDate());
             history.setOpinionFrameMark(oldOpinion.getOpinionFrameMark());
             history.setOpinionType(opinionType);
