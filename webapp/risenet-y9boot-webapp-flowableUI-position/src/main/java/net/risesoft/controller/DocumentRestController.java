@@ -36,7 +36,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ButtonOperationService;
 import net.risesoft.util.SysVariables;
-import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 
@@ -180,10 +179,6 @@ public class DocumentRestController {
             map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
             int follow = officeFollowManager.countByProcessInstanceId(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId);
             map.put("follow", follow > 0 ? true : false);
-            if (Y9Context.getProperty("y9.app.flowable.dzxhTenantId").equals(tenantId)) {// 地灾租户处理
-                Boolean doneManage = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "办结角色", Y9LoginUserHolder.getPositionId()).getData();
-                map.put("doneManage", doneManage);
-            }
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
             e.printStackTrace();
