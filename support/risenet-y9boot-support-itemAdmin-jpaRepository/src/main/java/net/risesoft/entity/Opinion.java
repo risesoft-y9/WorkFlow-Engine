@@ -110,26 +110,6 @@ public class Opinion implements Serializable {
     @Column(name = "DEPTNAME", length = 100)
     private String deptName;
 
-    @Comment("意见代录人Guid")
-    @Column(name = "AGENTUSERID", length = 38, nullable = true)
-    private String agentUserId;
-
-    @Comment("意见代录人姓名")
-    @Column(name = "AGENTUSERNAME", length = 50, nullable = true)
-    private String agentUserName;
-
-    @Comment("代录对象的部门Id")
-    @Column(name = "AGENTUSERDEPTID", length = 38, nullable = true)
-    private String agentUserDeptId;
-
-    @Comment("代录对象的部门Name")
-    @Column(name = "AGENTUSERDEPTNAME", length = 100, nullable = true)
-    private String agentUserDeptName;
-
-    @Comment("是否是代录意见")
-    @Column(name = "ISAGENT")
-    private Integer isAgent = 0;
-
     /**
      * 意见生成时间
      */
