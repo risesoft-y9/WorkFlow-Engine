@@ -355,6 +355,14 @@ public class DocumentServiceImpl implements DocumentService {
                     e.printStackTrace();
                 }
             }
+            // 获取第一节点任务key,可能多个
+            String startTaskDefKey = "";
+            String startNode = processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
+            List<Map<String, String>> nodeList = processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, startNode);
+            for (Map<String, String> map : nodeList) {
+                startTaskDefKey = Y9Util.genCustomStr(startTaskDefKey, map.get("taskDefKey"));
+            }
+            returnMap.put("startTaskDefKey", startTaskDefKey);
         } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())) {
             HistoricProcessInstanceModel hpi = historicProcessManager.getById(tenantId, processInstanceId);
             if (hpi == null) {
@@ -1018,6 +1026,69 @@ public class DocumentServiceImpl implements DocumentService {
         return returnMap;
     }
 
+    public Y9Result<Map<String, String>> parserRouteToTaskId(String itemId, String processSerialNumber, String processDefinitionId, String taskDefKey, String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        Y9Result<Map<String, String>> result = Y9Result.failure("解析目标路由失败");
+        try {
+            List<Map<String, String>> targetNodes = processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
+            if (targetNodes.isEmpty()) {
+                result.setMsg("目标路由不存在");
+                return result;
+            }
+            if (1 == targetNodes.size()) {
+                result.setData(targetNodes.get(0));
+                result.setSuccess(true);
+                return result;
+            }
+            List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            Map<String, Object> variables = y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
+            List<Map<String, String>> targetNodesTemp = new ArrayList<>();
+            for (Map<String, String> targetNode : targetNodes) {
+                boolean b = conditionParserApi.parser(tenantId, targetNode.get(SysVariables.CONDITIONEXPRESSION), variables);
+                if (b) {
+                    targetNodesTemp.add(targetNode);
+                }
+            }
+            if (targetNodesTemp.isEmpty()) {
+                result.setMsg("未找到符合要求的目标路由");
+                return result;
+            }
+            if (targetNodesTemp.size() > 1) {
+                result.setMsg("符合要求的目标路由过多");
+                return result;
+            }
+            if (StringUtils.isNotBlank(taskId)) {
+                variableManager.setVariables(tenantId, taskId, variables);
+            }
+            result.setData(targetNodesTemp.get(0));
+            result.setMsg("解析目标路由成功");
+            result.setSuccess(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public Y9Result<List<String>> parserUser(String itemId, String processDefinitionId, String routeToTaskId, String routeToTaskName, String processInstanceId, String multiInstance) {
+        Y9Result<List<String>> result = Y9Result.failure("解析人员失败");
+        List<OrgUnit> orgUnitList = roleService.findPermUser4SUbmitTo(itemId, processDefinitionId, routeToTaskId, processInstanceId);
+        if (orgUnitList.isEmpty()) {
+            result.setMsg("目标路由未授权人员");
+            return result;
+        }
+        if (SysVariables.COMMON.equals(multiInstance) && orgUnitList.size() > 1) {
+            result.setMsg("目标路由授权人员过多");
+            return result;
+        }
+        List<String> userList = new ArrayList<>();
+        for (OrgUnit orgUnit : orgUnitList) {
+            userList.add(orgUnit.getId());
+        }
+        result.setData(userList);
+        result.setSuccess(true);
+        return result;
+    }
+
     @Override
     public List<String> parseUserChoice(String userChoice) {
         String users = "";
@@ -1153,6 +1224,28 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public Map<String, Object> saveAndForwardingByTaskKey(String itemId, String processSerialNumber, String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId, String startRouteToTaskId, Map<String, Object> variables) {
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<String> userList = new ArrayList<String>();
+        userList.addAll(this.parseUserChoice(userChoice));
+        int num = userList.size();
+        boolean tooMuch = num > 100;
+        if (tooMuch) {
+            map.put(UtilConsts.SUCCESS, false);
+            map.put("msg", "发送人数过多");
+            return map;
+        }
+        Map<String, Object> map1 = this.startProcessByTaskKey(itemId, processSerialNumber, processDefinitionKey, startRouteToTaskId);
+        String taskId = (String)map1.get("taskId");
+        if (!variables.isEmpty()) {
+            variableManager.setVariables(tenantId, taskId, variables);
+        }
+        map = this.start4Forwarding(taskId, routeToTaskId, sponsorGuid, userList);
+        return map;
+    }
+
+    @Override
     public Map<String, Object> saveAndSubmitTo(String itemId, String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         Position position = Y9LoginUserHolder.getPosition();
@@ -1188,126 +1281,6 @@ public class DocumentServiceImpl implements DocumentService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return map;
-    }
-
-    @Override
-    public Map<String, Object> submitTo(String processSerialNumber, String taskId) {
-        Map<String, Object> map = new HashMap<>();
-        map.put(UtilConsts.SUCCESS, false);
-        map.put("msg", "提交失败");
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            Position position = Y9LoginUserHolder.getPosition();
-            ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-            String itemId = processParam.getItemId();
-            TaskModel task = taskManager.findById(tenantId, taskId);
-            String processDefinitionId = task.getProcessDefinitionId(), taskDefKey = task.getTaskDefinitionKey(), processInstanceId = task.getProcessInstanceId();
-            Y9Result<Map<String, String>> routeToTaskIdResult = this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, taskId);
-            if (!routeToTaskIdResult.isSuccess()) {
-                map.put("msg", routeToTaskIdResult.getMsg());
-                return map;
-            }
-            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY), routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.TASKDEFNAME);
-            String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
-            Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, processInstanceId, multiInstance);
-            if (!userResult.isSuccess()) {
-                map.put("msg", userResult.getMsg());
-                return map;
-            }
-            List<String> userList = userResult.getData();
-            Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
-            asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, "", "", taskId, multiInstance, variables, userList);
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "提交成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return map;
-    }
-
-    public Y9Result<Map<String, String>> parserRouteToTaskId(String itemId, String processSerialNumber, String processDefinitionId, String taskDefKey, String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        Y9Result<Map<String, String>> result = Y9Result.failure("解析目标路由失败");
-        try {
-            List<Map<String, String>> targetNodes = processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
-            if (targetNodes.isEmpty()) {
-                result.setMsg("目标路由不存在");
-                return result;
-            }
-            if (1 == targetNodes.size()) {
-                result.setData(targetNodes.get(0));
-                result.setSuccess(true);
-                return result;
-            }
-            List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
-            Map<String, Object> variables = y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
-            List<Map<String, String>> targetNodesTemp = new ArrayList<>();
-            for (Map<String, String> targetNode : targetNodes) {
-                boolean b = conditionParserApi.parser(tenantId, targetNode.get(SysVariables.CONDITIONEXPRESSION), variables);
-                if (b) {
-                    targetNodesTemp.add(targetNode);
-                }
-            }
-            if (targetNodesTemp.isEmpty()) {
-                result.setMsg("未找到符合要求的目标路由");
-                return result;
-            }
-            if (targetNodesTemp.size() > 1) {
-                result.setMsg("符合要求的目标路由过多");
-                return result;
-            }
-            if (StringUtils.isNotBlank(taskId)) {
-                variableManager.setVariables(tenantId, taskId, variables);
-            }
-            result.setData(targetNodesTemp.get(0));
-            result.setMsg("解析目标路由成功");
-            result.setSuccess(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    public Y9Result<List<String>> parserUser(String itemId, String processDefinitionId, String routeToTaskId, String routeToTaskName, String processInstanceId, String multiInstance) {
-        Y9Result<List<String>> result = Y9Result.failure("解析人员失败");
-        List<OrgUnit> orgUnitList = roleService.findPermUser4SUbmitTo(itemId, processDefinitionId, routeToTaskId, processInstanceId);
-        if (orgUnitList.isEmpty()) {
-            result.setMsg("目标路由未授权人员");
-            return result;
-        }
-        if (SysVariables.COMMON.equals(multiInstance) && orgUnitList.size() > 1) {
-            result.setMsg("目标路由授权人员过多");
-            return result;
-        }
-        List<String> userList = new ArrayList<>();
-        for (OrgUnit orgUnit : orgUnitList) {
-            userList.add(orgUnit.getId());
-        }
-        result.setData(userList);
-        result.setSuccess(true);
-        return result;
-    }
-
-    @Override
-    public Map<String, Object> saveAndForwardingByTaskKey(String itemId, String processSerialNumber, String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId, String startRouteToTaskId, Map<String, Object> variables) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<String> userList = new ArrayList<String>();
-        userList.addAll(this.parseUserChoice(userChoice));
-        int num = userList.size();
-        boolean tooMuch = num > 100;
-        if (tooMuch) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "发送人数过多");
-            return map;
-        }
-        Map<String, Object> map1 = this.startProcessByTaskKey(itemId, processSerialNumber, processDefinitionKey, startRouteToTaskId);
-        String taskId = (String)map1.get("taskId");
-        if (!variables.isEmpty()) {
-            variableManager.setVariables(tenantId, taskId, variables);
-        }
-        map = this.start4Forwarding(taskId, routeToTaskId, sponsorGuid, userList);
         return map;
     }
 
@@ -1589,6 +1562,41 @@ public class DocumentServiceImpl implements DocumentService {
             asyncHandleService.startProcessHandle(tenantId, processSerialNumber, task.getId(), task.getProcessInstanceId(), processParam.getSearchTerm());
 
             map.put(UtilConsts.SUCCESS, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> submitTo(String processSerialNumber, String taskId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put(UtilConsts.SUCCESS, false);
+        map.put("msg", "提交失败");
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            Position position = Y9LoginUserHolder.getPosition();
+            ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
+            String itemId = processParam.getItemId();
+            TaskModel task = taskManager.findById(tenantId, taskId);
+            String processDefinitionId = task.getProcessDefinitionId(), taskDefKey = task.getTaskDefinitionKey(), processInstanceId = task.getProcessInstanceId();
+            Y9Result<Map<String, String>> routeToTaskIdResult = this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, taskId);
+            if (!routeToTaskIdResult.isSuccess()) {
+                map.put("msg", routeToTaskIdResult.getMsg());
+                return map;
+            }
+            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY), routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.TASKDEFNAME);
+            String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
+            Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, processInstanceId, multiInstance);
+            if (!userResult.isSuccess()) {
+                map.put("msg", userResult.getMsg());
+                return map;
+            }
+            List<String> userList = userResult.getData();
+            Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
+            asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, "", "", taskId, multiInstance, variables, userList);
+            map.put(UtilConsts.SUCCESS, true);
+            map.put("msg", "提交成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
