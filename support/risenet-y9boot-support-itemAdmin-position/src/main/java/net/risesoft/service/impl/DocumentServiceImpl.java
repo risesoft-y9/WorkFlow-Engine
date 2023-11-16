@@ -1073,11 +1073,11 @@ public class DocumentServiceImpl implements DocumentService {
         Y9Result<List<String>> result = Y9Result.failure("解析人员失败");
         List<OrgUnit> orgUnitList = roleService.findPermUser4SUbmitTo(itemId, processDefinitionId, routeToTaskId, processInstanceId);
         if (orgUnitList.isEmpty()) {
-            result.setMsg("目标路由未授权人员");
+            result.setMsg("目标路由【"+routeToTaskName+"】未授权人员");
             return result;
         }
         if (SysVariables.COMMON.equals(multiInstance) && orgUnitList.size() > 1) {
-            result.setMsg("目标路由授权人员过多");
+            result.setMsg("目标路由【"+routeToTaskName+"】授权人员过多");
             return result;
         }
         List<String> userList = new ArrayList<>();
@@ -1263,7 +1263,7 @@ public class DocumentServiceImpl implements DocumentService {
                 map.put("msg", routeToTaskIdResult.getMsg());
                 return map;
             }
-            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY), routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.TASKDEFNAME);
+            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY), routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.REALTASKDEFNAME);
             String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
             Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
             if (!userResult.isSuccess()) {
@@ -1585,7 +1585,7 @@ public class DocumentServiceImpl implements DocumentService {
                 map.put("msg", routeToTaskIdResult.getMsg());
                 return map;
             }
-            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY), routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.TASKDEFNAME);
+            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY), routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.REALTASKDEFNAME);
             String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
             Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, processInstanceId, multiInstance);
             if (!userResult.isSuccess()) {

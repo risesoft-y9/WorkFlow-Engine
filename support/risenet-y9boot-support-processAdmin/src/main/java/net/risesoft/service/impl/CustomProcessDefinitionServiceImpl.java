@@ -464,6 +464,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                                     // 如果输出线上没有名称，则使用目标节点名称作为路由名称
                                     map.put(SysVariables.TASKDEFNAME, tr.getTargetFlowElement().getName());
                                 }
+                                map.put(SysVariables.REALTASKDEFNAME, tr.getTargetFlowElement().getName());
                             }
                         }
                         targetNodes.add(map);
@@ -480,6 +481,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                             } else {
                                 map.put(SysVariables.TASKDEFKEY, tr.getTargetFlowElement().getId());
                                 map.put(SysVariables.CONDITIONEXPRESSION, tr.getConditionExpression());
+                                map.put(SysVariables.REALTASKDEFNAME, tr.getTargetFlowElement().getName());
                                 if (StringUtils.isNotBlank(name)) {
                                     // 如果输出线上有名称，则使用线上的名称作为路由名称
                                     map.put(SysVariables.TASKDEFNAME, name);
