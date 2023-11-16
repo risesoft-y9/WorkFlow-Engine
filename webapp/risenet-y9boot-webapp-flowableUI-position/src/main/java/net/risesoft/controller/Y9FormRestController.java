@@ -193,7 +193,8 @@ public class Y9FormRestController {
         map.put("deptName", parent.getName());// 创建部门
         map.put("userName", person.getName());// 创建人
         Position position = Y9LoginUserHolder.getPosition();
-        map.put("duty", position.getDuty());// 职务
+        map.put("positionName", position.getName());// 创建岗位
+        map.put("duty", position.getName().split("（")[0]);// 职务
         map.put("createDate", nowDate);// 创建日期
         map.put("mobile", person.getMobile());// 联系电话
         map.put("number", itemNumber);// 编号
