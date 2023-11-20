@@ -20,7 +20,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 
 @RestController
 @RequestMapping(value = "/vue/speakInfo")
-public class SpeakInfoRsetController {
+public class SpeakInfoRestController {
 
     @Autowired
     private SpeakInfoApi speakInfoManager;

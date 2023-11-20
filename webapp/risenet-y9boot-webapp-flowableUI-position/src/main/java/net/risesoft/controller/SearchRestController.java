@@ -1,5 +1,7 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SearchService;
@@ -39,9 +42,7 @@ public class SearchRestController {
      * @return
      */
     @RequestMapping(value = "/getEmailList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getEmailList(@RequestParam(required = false) String title,
-        @RequestParam(required = false) String userName, @RequestParam(required = false) Integer fileType,
-        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
+    public Y9Page<Map<String, Object>> getEmailList(@RequestParam(required = false) String title, @RequestParam(required = false) String userName, @RequestParam(required = false) Integer fileType, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
         @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return searchService.getEmailList(page, rows, startDate, endDate, fileType, userName, title);
     }
@@ -61,6 +62,28 @@ public class SearchRestController {
     }
 
     /**
+     * 获取我的事项系统列表
+     *
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getMyItemSystemList", method = RequestMethod.GET, produces = "application/json")
+    public Y9Result<List<Map<String, Object>>> getMyItemSystemList() {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<ItemModel> listMap = itemManager.getAllItemList(tenantId);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        for (ItemModel itemModel : listMap) {
+            Map<String, Object> newmap = new HashMap<String, Object>(16);
+            newmap.put("systemName", itemModel.getSystemName());
+            newmap.put("systemCnName", itemModel.getSysLevel());
+            if (!list.contains(newmap)) {
+                list.add(newmap);
+            }
+        }
+        return Y9Result.success(list, "获取成功");
+    }
+
+    /**
      * 获取个人所有件
      *
      * @param searchName 搜索词
@@ -74,9 +97,7 @@ public class SearchRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getSearchList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = false) String searchName,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
-        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+    public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return searchService.getSearchList(searchName, itemId, userName, state, year, page, rows);
     }
@@ -95,9 +116,7 @@ public class SearchRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getYuejianList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getYuejianList(@RequestParam(required = false) String searchName,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
-        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+    public Y9Page<Map<String, Object>> getYuejianList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return searchService.getYuejianList(searchName, itemId, userName, state, year, page, rows);
     }
