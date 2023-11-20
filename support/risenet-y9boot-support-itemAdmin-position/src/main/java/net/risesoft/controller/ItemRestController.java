@@ -26,7 +26,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.AppIcon;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.Organization;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SpmApproveItemService;
@@ -141,14 +141,17 @@ public class ItemRestController {
         if (StringUtils.isBlank(deptId)) {
             List<Organization> orgList = organizationManager.listAllOrganizations(tenantId).getData();
             if (orgList != null && orgList.size() > 0) {
-                List<Department> deptList = organizationManager.listDepartments(tenantId, orgList.get(0).getId()).getData();
+                List<Department> deptList =
+                    organizationManager.listDepartments(tenantId, orgList.get(0).getId()).getData();
                 for (Department dept : deptList) {
-                    List<Department> subDeptList = departmentManager.listSubDepartments(tenantId, dept.getId()).getData();
+                    List<Department> subDeptList =
+                        departmentManager.listSubDepartments(tenantId, dept.getId()).getData();
                     boolean isParent = false;
                     if (subDeptList != null && subDeptList.size() > 0) {
                         isParent = true;
                     }
-                    sb.append("{ id:'" + dept.getId() + "', pId:'" + orgList.get(0).getId() + "', name:'" + dept.getName() + "', isParent: " + isParent + "},");
+                    sb.append("{ id:'" + dept.getId() + "', pId:'" + orgList.get(0).getId() + "', name:'"
+                        + dept.getName() + "', isParent: " + isParent + "},");
                 }
             }
         } else {
@@ -159,7 +162,8 @@ public class ItemRestController {
                 if (subDeptList != null && subDeptList.size() > 0) {
                     isParent = true;
                 }
-                sb.append("{ id:'" + dept.getId() + "', pId:'" + deptId + "', name:'" + dept.getName() + "', isParent: " + isParent + "},");
+                sb.append("{ id:'" + dept.getId() + "', pId:'" + deptId + "', name:'" + dept.getName() + "', isParent: "
+                    + isParent + "},");
             }
         }
     }
