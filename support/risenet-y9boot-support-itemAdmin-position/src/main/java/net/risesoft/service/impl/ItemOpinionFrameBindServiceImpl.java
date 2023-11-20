@@ -115,7 +115,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                     newbind.setTenantId(tenantId);
                     newbind.setUserId(userId);
                     newbind.setUserName(userName);
-
+                    newbind.setSignOpinion(bind.isSignOpinion());
                     itemOpinionFrameBindRepository.save(newbind);
                     /**
                      * 保存意见框的授权
