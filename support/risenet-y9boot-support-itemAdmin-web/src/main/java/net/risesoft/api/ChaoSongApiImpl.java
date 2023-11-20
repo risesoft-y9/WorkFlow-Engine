@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.ChaoSong;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.service.ChaoSongService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -90,7 +90,7 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     public Map<String, Object> detail(String tenantId, String userId, String id, String processInstanceId,
         Integer status, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = chaoSongService.detail(processInstanceId, status, mobile);
@@ -250,7 +250,7 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     public Map<String, Object> save(String tenantId, String userId, String processInstanceId, String users,
         String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map =
             chaoSongService.save(processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);

@@ -23,7 +23,7 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -108,7 +108,7 @@ public class Process4SearchService {
                         allUserId = Y9Util.genCustomStr(allUserId, userId);
                     }
                     if (StringUtils.isNotEmpty(userId)) {
-                        Person person = personApi.getPerson(tenantId, userId);
+                        Person person = personApi.getPerson(tenantId, userId).getData();
                         if (person != null && person.getId() != null) {
                             if (!deptIds.contains(person.getParentId())) {
                                 deptIds = Y9Util.genCustomStr(deptIds, person.getParentId());
@@ -197,7 +197,7 @@ public class Process4SearchService {
                         allUserId = Y9Util.genCustomStr(allUserId, userId);
                     }
                     if (StringUtils.isNotEmpty(userId)) {
-                        Person person = personApi.getPerson(tenantId, userId);
+                        Person person = personApi.getPerson(tenantId, userId).getData();
                         if (person != null && person.getId() != null) {
                             if (!deptIds.contains(person.getParentId())) {
                                 deptIds = Y9Util.genCustomStr(deptIds, person.getParentId());

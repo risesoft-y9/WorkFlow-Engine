@@ -81,7 +81,7 @@ public class ItemWordTemplateBindController {
         String processDefinitionId = processDefinition.getId();
         map.put("processDefinitionId", processDefinitionId);
         List<WordTemplate> templateList = wordTemplateService
-            .findByBureauIdOrderByUploadTimeDesc(personManager.getBureau(tenantId, personId).getId());
+            .findByBureauIdOrderByUploadTimeDesc(personManager.getBureau(tenantId, personId).getData().getId());
         ItemWordTemplateBind wordTemplateBind =
             itemWordTemplateBindService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         String tempName = "", bindId = "";

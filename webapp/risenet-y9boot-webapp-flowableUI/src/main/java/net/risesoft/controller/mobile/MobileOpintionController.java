@@ -17,7 +17,7 @@ import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -55,7 +55,7 @@ public class MobileOpintionController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             OpinionModel opinionModel = Y9JsonUtil.readValue(formJsonData, OpinionModel.class);
             opinionModel.setTenantId(tenantId + ":mobile");
@@ -113,7 +113,7 @@ public class MobileOpintionController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             opinionManager.delete(tenantId, userId, id);
             map.put(UtilConsts.SUCCESS, true);
@@ -139,7 +139,7 @@ public class MobileOpintionController {
         @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             List<Map<String, Object>> listMap = commonSentencesManager.listSentencesService(tenantId, userId);
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(listMap));
@@ -173,7 +173,7 @@ public class MobileOpintionController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             listMap = opinionManager.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
                 opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
@@ -203,7 +203,7 @@ public class MobileOpintionController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             commonSentencesManager.delete(tenantId, id);
             map.put(UtilConsts.SUCCESS, true);
@@ -234,7 +234,7 @@ public class MobileOpintionController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             commonSentencesManager.save(tenantId, userId, id, content);
             map.put(UtilConsts.SUCCESS, true);
@@ -260,7 +260,7 @@ public class MobileOpintionController {
         @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             List<Map<String, Object>> listMap = commonSentencesManager.listSentencesService(tenantId, userId);
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(listMap));

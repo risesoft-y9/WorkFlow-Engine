@@ -22,10 +22,10 @@ import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Department;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Organization;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Person;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -85,10 +85,10 @@ public class MobileOrgController {
             Y9LoginUserHolder.setTenantId(tenantId);
             List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
             if (StringUtils.isBlank(id)) {
-                Organization org = orgUnitApi.getOrganization(tenantId, userId);
+                Organization org = orgUnitApi.getOrganization(tenantId, userId).getData();
                 String orgId = org.getId();
-                List<Department> deptList = organizationApi.listDepartments(tenantId, orgId);
-                List<Person> personList = organizationApi.listPersons(tenantId, orgId);
+                List<Department> deptList = organizationApi.listDepartments(tenantId, orgId).getData();
+                List<Person> personList = organizationApi.listPersons(tenantId, orgId).getData();
                 for (Department dept : deptList) {
                     Map<String, Object> m = new HashMap<String, Object>(16);
                     m.put("id", dept.getId());
@@ -119,8 +119,8 @@ public class MobileOrgController {
                     item.add(m);
                 }
             } else {// 展开部门
-                List<Department> deptList = organizationApi.listDepartments(tenantId, id);
-                List<Person> personList = organizationApi.listPersons(tenantId, id);
+                List<Department> deptList = organizationApi.listDepartments(tenantId, id).getData();
+                List<Person> personList = organizationApi.listPersons(tenantId, id).getData();
                 for (Department dept : deptList) {
                     Map<String, Object> m = new HashMap<String, Object>(16);
                     m.put("id", dept.getId());
@@ -221,9 +221,9 @@ public class MobileOrgController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
-            OrgUnit orgUnit = personApi.getBureau(tenantId, userId);
-            OrgUnit orgUnit1 = personApi.getParent(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
+            OrgUnit orgUnit = personApi.getBureau(tenantId, userId).getData();
+            OrgUnit orgUnit1 = personApi.getParent(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map.put("bureauName", orgUnit != null ? orgUnit.getName() : "");
             map.put("deptName", orgUnit1 != null ? orgUnit1.getName() : "");
@@ -241,10 +241,10 @@ public class MobileOrgController {
 
     private void recursionAllPersons(String parentId, List<Person> personList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        personList.addAll(departmentApi.listPersonsByDisabled(tenantId, parentId, false));
+        personList.addAll(departmentApi.listPersonsByDisabled(tenantId, parentId, false).getData());
         boolean b = personList.size() < 101;
         if (b) {
-            List<Department> deptList = departmentApi.listSubDepartments(tenantId, parentId);
+            List<Department> deptList = departmentApi.listSubDepartments(tenantId, parentId).getData();
             for (Department dept : deptList) {
                 recursionAllPersons(dept.getId(), personList);
             }

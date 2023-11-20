@@ -10,7 +10,7 @@ import net.risesoft.api.permission.RoleApi;
 import net.risesoft.entity.ItemOpinionFrameRole;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Role;
+import net.risesoft.model.platform.Role;
 import net.risesoft.repository.jpa.ItemOpinionFrameRoleRepository;
 import net.risesoft.service.ItemOpinionFrameRoleService;
 
@@ -45,7 +45,7 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
         List<ItemOpinionFrameRole> roleList =
             itemOpinionFrameRoleRepository.findByItemOpinionFrameId(itemOpinionFrameId);
         for (ItemOpinionFrameRole role : roleList) {
-            Role r = roleManager.getRole(role.getRoleId());
+            Role r = roleManager.getRole(role.getRoleId()).getData();
             role.setRoleName(r == null ? "角色已删除" : r.getName());
         }
         return roleList;

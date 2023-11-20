@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.SpeakInfo;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.SpeakInfoModel;
 import net.risesoft.service.SpeakInfoService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
@@ -79,7 +79,7 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
     @Override
     @GetMapping(value = "/findByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<SpeakInfoModel> findByProcessInstanceId(String tenantId, String userId, String processInstanceId) {
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
 
@@ -114,7 +114,7 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
     @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
     public String saveOrUpdate(String tenantId, String userId, @RequestBody SpeakInfoModel speakInfoModel) {
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
 

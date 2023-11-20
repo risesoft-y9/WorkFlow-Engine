@@ -19,7 +19,8 @@ public interface HistoricTaskApi {
      * @param year 年份
      * @return List&lt;HistoricTaskInstanceModel&gt;
      */
-    List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrByEndTimeAsc(String tenantId, String processInstanceId, String year);
+    List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrByEndTimeAsc(String tenantId, String processInstanceId,
+        String year);
 
     /**
      * 根据开始时间升序获取
@@ -29,7 +30,8 @@ public interface HistoricTaskApi {
      * @param year 年份
      * @return List&lt;HistoricTaskInstanceModel&gt;
      */
-    List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrderByStartTimeAsc(String tenantId, String processInstanceId, String year);
+    List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrderByStartTimeAsc(String tenantId,
+        String processInstanceId, String year);
 
     /**
      * 根据任务Id获取任务实例
@@ -58,7 +60,8 @@ public interface HistoricTaskApi {
      * @param year 年份
      * @return List&lt;HistoricTaskInstanceModel&gt; 任务实例列表
      */
-    List<HistoricTaskInstanceModel> getByProcessInstanceIdOrderByEndTimeDesc(String tenantId, String processInstanceId, String year);
+    List<HistoricTaskInstanceModel> getByProcessInstanceIdOrderByEndTimeDesc(String tenantId, String processInstanceId,
+        String year);
 
     /**
      * 根据执行实例获取已经办理完成的任务数量

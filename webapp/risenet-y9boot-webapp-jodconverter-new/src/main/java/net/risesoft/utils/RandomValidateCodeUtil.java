@@ -1,8 +1,6 @@
 package net.risesoft.utils;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +14,9 @@ public class RandomValidateCodeUtil {
     private static final int xx = 18;
     private static final int fontHeight = 28;
     private static final int codeY = 27;
-    private static final char[] codeSequence =
-        {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', '2', '3', '4', '5', '6', '7', '8', '9'};
+    private static final char[] codeSequence = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q',
+        'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q',
+        'r', 's', 't', 'u', 'v', 'w', 'x', 'y', '2', '3', '4', '5', '6', '7', '8', '9'};
 
     /**
      * 生成一个map集合 code为生成的验证码 codePic为生成的验证码BufferedImage对象

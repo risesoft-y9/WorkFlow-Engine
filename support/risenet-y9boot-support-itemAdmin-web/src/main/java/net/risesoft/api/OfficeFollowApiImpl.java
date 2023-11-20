@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.OfficeFollow;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.OfficeFollowModel;
 import net.risesoft.service.OfficeFollowService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -39,7 +39,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     @Override
     @GetMapping(value = "/countByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public int countByProcessInstanceId(String tenantId, String userId, String processInstanceId) {
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         return officeFollowService.countByProcessInstanceId(processInstanceId);
@@ -55,7 +55,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     @Override
     @PostMapping(value = "/delOfficeFollow", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> delOfficeFollow(String tenantId, String userId, String processInstanceIds) {
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         return officeFollowService.delOfficeFollow(processInstanceIds);
@@ -64,7 +64,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     @Override
     @GetMapping(value = "/getFollowCount", produces = MediaType.APPLICATION_JSON_VALUE)
     public int getFollowCount(String tenantId, String userId) {
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         return officeFollowService.getFollowCount();
@@ -74,7 +74,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     @GetMapping(value = "/getOfficeFollowList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getOfficeFollowList(String tenantId, String userId, String searchName, int page,
         int rows) {
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         return officeFollowService.getOfficeFollowList(searchName, page, rows);
@@ -85,7 +85,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
         consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> saveOfficeFollow(String tenantId, String userId,
         @RequestBody OfficeFollowModel officeFollowModel) {
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         OfficeFollow officeFollow = new OfficeFollow();

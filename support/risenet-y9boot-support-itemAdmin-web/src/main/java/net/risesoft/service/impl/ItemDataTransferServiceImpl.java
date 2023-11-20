@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -135,7 +135,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
                 String assignee = task.getAssignee();
                 if (i < 5) {
                     if (StringUtils.isNotBlank(assignee)) {
-                        Person personTemp = personManager.getPerson(tenantId, assignee);
+                        Person personTemp = personManager.getPerson(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             i += 1;

@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.permission.RoleApi;
 import net.risesoft.api.resource.AppApi;
 import net.risesoft.api.resource.SystemApi;
-import net.risesoft.model.App;
-import net.risesoft.model.Role;
-import net.risesoft.model.System;
+import net.risesoft.enums.platform.RoleTypeEnum;
+import net.risesoft.model.platform.App;
+import net.risesoft.model.platform.Role;
+import net.risesoft.model.platform.System;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
 
@@ -51,8 +52,8 @@ public class RoleRestController {
     public Y9Result<List<Map<String, Object>>> findAll(@RequestParam(required = false) String id) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(id)) {
-            System system = systemEntityManager.getByName(Y9Context.getSystemName());
-            List<App> appList = appApi.listBySystemId(system.getId());
+            System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
+            List<App> appList = appApi.listBySystemId(system.getId()).getData();
             for (App app : appList) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 map.put("id", app.getId());
@@ -63,7 +64,7 @@ public class RoleRestController {
                 listMap.add(map);
             }
         } else {
-            List<Role> listRole = roleManager.listRoleByParentId(id);
+            List<Role> listRole = roleManager.listRoleByParentId(id).getData();
             if (listRole != null) {
                 for (Role role : listRole) {
                     Map<String, Object> map = new HashMap<String, Object>(16);
@@ -71,11 +72,11 @@ public class RoleRestController {
                     map.put("name", role.getName());
                     map.put("parentId", id);
                     map.put("guidPath", role.getGuidPath());
-                    if ("role".equals(role.getType())) {
+                    if (RoleTypeEnum.ROLE.equals(role.getType())) {
                         map.put("isParent", false);
                         map.put("orgType", "role");
                     } else {
-                        List<Role> list = roleManager.listRoleByParentId(role.getId());
+                        List<Role> list = roleManager.listRoleByParentId(role.getId()).getData();
                         boolean isP = false;
                         if (list != null) {
                             isP = list.size() > 0 ? true : false;

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.RejectReasonApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.service.RejectReasonService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -31,7 +31,7 @@ public class RejectReasonApiImpl implements RejectReasonApi {
     @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
     public void save(String tenantId, String userId, Integer action, String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
 
         rejectReasonService.save(reason, taskId, action);

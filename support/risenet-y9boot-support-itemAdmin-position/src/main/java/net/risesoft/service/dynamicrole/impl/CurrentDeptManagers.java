@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.PositionApi;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -32,8 +32,8 @@ public class CurrentDeptManagers extends AbstractDynamicRoleMember {
     public List<OrgUnit> getOrgUnitList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        Position position = positionApi.getPosition(tenantId, positionId);
-        return departmentManager.listManagers(tenantId, position.getParentId());
+        Position position = positionApi.getPosition(tenantId, positionId).getData();
+        return departmentManager.listManagers(tenantId, position.getParentId()).getData();
     }
 
 }

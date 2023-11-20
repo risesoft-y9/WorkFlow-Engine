@@ -23,10 +23,10 @@ import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.WorkOrderEntity;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.enums.OrgTypeEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.todo.TodoTask;
 import net.risesoft.repository.jpa.WorkOrderRepository;
 import net.risesoft.service.WorkOrderService;
@@ -212,7 +212,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
             String handleType = "1";
             if (workOrder.getHandleType().equals(handleType)) {
                 List<OrgUnit> orgUnitList =
-                    roleManager.listOrgUnitsById(myTenantId, workOrderRoleId, OrgTypeEnum.POSITION.getEnName());
+                    roleManager.listOrgUnitsById(myTenantId, workOrderRoleId, OrgTypeEnum.POSITION).getData();
                 TodoTask todo = new TodoTask();
                 todo.setTenantId(myTenantId);
                 todo.setSystemName("systemWorkOrder");
@@ -240,7 +240,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
                     todo.setReceiverId(orgUnit.getId());
                     todo.setReceiverName(orgUnit.getName());
                     todo.setReceiverDepartmentId(orgUnit.getParentId());
-                    OrgUnit orgUnit1 = orgUnitApi.getParent(myTenantId, orgUnit.getId());
+                    OrgUnit orgUnit1 = orgUnitApi.getParent(myTenantId, orgUnit.getId()).getData();
                     todo.setReceiverDepartmentName(orgUnit1.getName());
                     todoTaskManager.saveTodoTask(myTenantId, todo);
                 }

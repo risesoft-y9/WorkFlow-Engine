@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.RemindInstance;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.service.RemindInstanceService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -120,7 +120,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
     @GetMapping(value = "/getRemindInstance", produces = MediaType.APPLICATION_JSON_VALUE)
     public RemindInstanceModel getRemindInstance(String tenantId, String userId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         RemindInstance remindInstance = remindInstanceService.getRemindInstance(processInstanceId);
         RemindInstanceModel remindInstanceModel = null;
@@ -136,7 +136,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
     public Map<String, Object> saveRemindInstance(String tenantId, String userId, String processInstanceId,
         String taskIds, Boolean process, String arriveTaskKey, String completeTaskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         return remindInstanceService.saveRemindInstance(processInstanceId, taskIds, process, arriveTaskKey,
             completeTaskKey);

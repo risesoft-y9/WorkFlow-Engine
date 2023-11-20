@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
-import net.risesoft.model.Person;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.ExecutionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.service.CustomRuntimeService;
@@ -86,7 +86,7 @@ public class RuntimeApiImpl implements RuntimeApi {
         throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         customTaskService.complete4Position(processInstanceId, taskId);
     }
@@ -104,7 +104,7 @@ public class RuntimeApiImpl implements RuntimeApi {
     public void completed(String tenantId, String userId, String processInstanceId, String taskId) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         customTaskService.complete(processInstanceId, taskId);
     }
@@ -247,12 +247,12 @@ public class RuntimeApiImpl implements RuntimeApi {
         throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         if (person != null && StringUtils.isNotBlank(person.getId())) {
             Y9LoginUserHolder.setPerson(person);
             customRuntimeService.recovery4Completed(processInstanceId, year);
         } else {
-            Position position = positionManager.getPosition(tenantId, userId);
+            Position position = positionManager.getPosition(tenantId, userId).getData();
             Y9LoginUserHolder.setPosition(position);
             customRuntimeService.recoveryCompleted4Position(processInstanceId, year);
         }
@@ -339,7 +339,7 @@ public class RuntimeApiImpl implements RuntimeApi {
         String systemName, @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         if (person != null && StringUtils.isNotBlank(person.getId())) {
             Y9LoginUserHolder.setPerson(person);
             ProcessInstance pi = customRuntimeService.startProcessInstanceByKey(processDefinitionKey, systemName, map);

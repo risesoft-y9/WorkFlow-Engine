@@ -18,7 +18,7 @@ import net.risesoft.entity.OrganWord;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Role;
+import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemOrganWordBindRepository;
@@ -173,7 +173,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             String roleNames = "";
             for (ItemOrganWordRole role : roleList) {
                 roleIds.add(role.getId());
-                Role r = roleManager.getRole(role.getRoleId());
+                Role r = roleManager.getRole(role.getRoleId()).getData();
                 if (StringUtils.isEmpty(roleNames)) {
                     roleNames = null == r ? "角色不存在" : r.getName();
                 } else {

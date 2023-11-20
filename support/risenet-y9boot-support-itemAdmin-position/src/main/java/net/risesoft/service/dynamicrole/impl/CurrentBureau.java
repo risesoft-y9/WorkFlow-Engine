@@ -11,8 +11,8 @@ import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.util.SysVariables;
@@ -45,8 +45,8 @@ public class CurrentBureau extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
-        Position position = positionManager.getPosition(tenantId, positionId);
-        OrgUnit orgUnit = departmentManager.getBureau(tenantId, position.getParentId());
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        OrgUnit orgUnit = departmentManager.getBureau(tenantId, position.getParentId()).getData();
         orgUnitList.add(orgUnit);
         return orgUnitList;
     }
@@ -56,15 +56,15 @@ public class CurrentBureau extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
-        Position position = positionManager.getPosition(tenantId, positionId);
-        OrgUnit orgUnit = departmentManager.getBureau(tenantId, position.getParentId());
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        OrgUnit orgUnit = departmentManager.getBureau(tenantId, position.getParentId()).getData();
         if (StringUtils.isNotBlank(processInstanceId)) {
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             if (null != processParam && StringUtils.isNotBlank(processParam.getBureauIds())) {
                 String[] bureauIds = processParam.getBureauIds().split(SysVariables.SEMICOLON);
                 for (String bureauId : bureauIds) {
                     if (!bureauId.equals(orgUnit.getId())) {
-                        orgUnitList.add(orgUnitManager.getOrgUnit(tenantId, bureauId));
+                        orgUnitList.add(orgUnitManager.getOrgUnit(tenantId, bureauId).getData());
                     }
                 }
             }

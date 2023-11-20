@@ -25,7 +25,7 @@ import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.DraftEntityRepository;
 import net.risesoft.service.DocumentService;
@@ -278,8 +278,8 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                     draft.setItemId(itemId);
                     draft.setProcessDefinitionKey(processDefinitionKey);
                     draft.setCreaterId(Y9LoginUserHolder.getPositionId());
-                    Position position =
-                        positionManager.getPosition(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId());
+                    Position position = positionManager
+                        .getPosition(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
                     draft.setCreater(position.getName());
                     draft.setDelFlag(false);
                     draft.setDraftTime(new Date());

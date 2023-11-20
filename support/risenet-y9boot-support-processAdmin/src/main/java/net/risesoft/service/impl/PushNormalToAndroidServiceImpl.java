@@ -16,7 +16,7 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.service.PushNormalToAndroidService;
 import net.risesoft.util.SysVariables;
@@ -63,9 +63,9 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
             String title = processParamModel.getTitle();
             String itemName = processParamModel.getItemName();
             List<String> list = new ArrayList<String>();
-            Person person = personManager.getPerson(tenantId, assignee);
+            Person person = personManager.getPerson(tenantId, assignee).getData();
             if (person == null || StringUtils.isBlank(person.getId())) {
-                List<Person> plist = positionApi.listPersons(tenantId, assignee);
+                List<Person> plist = positionApi.listPersons(tenantId, assignee).getData();
                 for (Person p : plist) {
                     list.add(p.getId());
                 }

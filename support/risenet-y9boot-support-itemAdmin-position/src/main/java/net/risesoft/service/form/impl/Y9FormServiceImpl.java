@@ -281,6 +281,54 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
+    public Map<String, Object> getFormData4Var(String formId, String guid) {
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        Connection connection = null;
+        try {
+            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
+            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            List<String> tableNameList = y9FormRepository.findBindTableName(formId);
+            for (String tableName : tableNameList) {
+                Y9Table y9Table = y9TableService.findByTableName(tableName);
+                if (y9Table.getTableType() == 1) {
+                    StringBuffer sqlStr = new StringBuffer();
+                    if ("oracle".equals(dialect)) {
+                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                    } else if ("dm".equals(dialect)) {
+                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                    } else if ("kingbase".equals(dialect)) {
+                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                    } else if ("mysql".equals(dialect)) {
+                        sqlStr = new StringBuffer("SELECT * FROM " + tableName + " where guid =?");
+                    }
+                    List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), guid);
+                    if (datamap.size() > 0) {
+                        List<Y9TableField> tableFieldList = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(y9Table.getId());
+                        for (Y9TableField tableField : tableFieldList) {
+                            if (null != tableField.getIsVar() && 1 == tableField.getIsVar()) {
+                                String fieldName = tableField.getFieldName();
+                                map.put(fieldName, datamap.get(0).get(fieldName) != null ? datamap.get(0).get(fieldName).toString() : "");
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
     public String getFormField(String id) {
         List<Y9FormField> list = y9FormFieldRepository.findByFormId(id);
         return Y9JsonUtil.writeValueAsString(list);

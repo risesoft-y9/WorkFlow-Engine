@@ -25,13 +25,15 @@ public class QuickSendServiceImpl implements QuickSendService {
 
     @Override
     public String getAssignee(String itemId, String taskKey) {
-        QuickSend quickSend = quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9LoginUserHolder.getPositionId(), taskKey);
+        QuickSend quickSend =
+            quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9LoginUserHolder.getPositionId(), taskKey);
         return quickSend != null ? quickSend.getAssignee() : "";
     }
 
     @Override
     public void saveOrUpdate(String itemId, String taskKey, String assignee) {
-        QuickSend quickSend = quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9LoginUserHolder.getPositionId(), taskKey);
+        QuickSend quickSend =
+            quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9LoginUserHolder.getPositionId(), taskKey);
         if (quickSend != null) {
             quickSend.setAssignee(assignee);
             quickSend.setUpdateTime(new Date());

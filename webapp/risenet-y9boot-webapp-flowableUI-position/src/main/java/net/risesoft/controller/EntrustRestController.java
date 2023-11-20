@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
 import net.risesoft.api.org.OrganizationApi;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Organization;
+import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Organization;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -75,7 +76,7 @@ public class EntrustRestController {
     public Y9Result<List<Organization>> getOrgList() {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            List<Organization> list = organizationApi.listAllOrganizations(tenantId);
+            List<Organization> list = organizationApi.listAllOrganizations(tenantId).getData();
             return Y9Result.success(list, "获取成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,10 +92,10 @@ public class EntrustRestController {
      * @return
      */
     @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> getOrgTree(String id, String treeType) {
+    public Y9Result<List<OrgUnit>> getOrgTree(String id, TreeTypeEnum treeType) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, treeType);
+            List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, treeType).getData();
             return Y9Result.success(list, "获取成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,10 +130,10 @@ public class EntrustRestController {
      * @return
      */
     @RequestMapping(value = "/treeSearch", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> treeSearch(String name, String treeType) {
+    public Y9Result<List<OrgUnit>> treeSearch(String name, TreeTypeEnum treeType) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            List<OrgUnit> list = orgUnitManager.treeSearch(tenantId, name, treeType);
+            List<OrgUnit> list = orgUnitManager.treeSearch(tenantId, name, treeType).getData();
             return Y9Result.success(list, "获取成功");
         } catch (Exception e) {
             e.printStackTrace();

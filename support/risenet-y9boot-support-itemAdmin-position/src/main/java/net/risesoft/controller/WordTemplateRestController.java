@@ -196,7 +196,7 @@ public class WordTemplateRestController {
             list = wordTemplateService.findAll();
         } else {
             list = wordTemplateService
-                .findByBureauIdOrderByUploadTimeDesc(personManager.getBureau(tenantId, personId).getId());
+                .findByBureauIdOrderByUploadTimeDesc(personManager.getBureau(tenantId, personId).getData().getId());
         }
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         for (WordTemplate wordTemplate : list) {

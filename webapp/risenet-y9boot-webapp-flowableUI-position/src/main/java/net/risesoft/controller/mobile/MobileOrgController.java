@@ -23,11 +23,11 @@ import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Department;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Organization;
-import net.risesoft.model.Person;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.Position;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -85,16 +85,18 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getOrg")
-    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, String id, HttpServletRequest request, HttpServletResponse response) {
+    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestHeader("auth-positionId") String positionId, String id, HttpServletRequest request,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
             if (StringUtils.isBlank(id)) {// 只获取当前组织架构
-                Organization org = orgUnitManager.getOrganization(tenantId, userId);
+                Organization org = orgUnitManager.getOrganization(tenantId, userId).getData();
                 String orgId = org.getId();
-                List<Department> deptList = organizationManager.listDepartments(tenantId, orgId);
-                List<Person> personList = organizationManager.listPersons(tenantId, orgId);
+                List<Department> deptList = organizationManager.listDepartments(tenantId, orgId).getData();
+                List<Person> personList = organizationManager.listPersons(tenantId, orgId).getData();
                 for (Department dept : deptList) {
                     Map<String, Object> m = new HashMap<String, Object>(16);
                     m.put("id", dept.getId());
@@ -125,8 +127,8 @@ public class MobileOrgController {
                     item.add(m);
                 }
             } else {// 展开部门
-                List<Department> deptList = organizationManager.listDepartments(tenantId, id);
-                List<Person> personList = organizationManager.listPersons(tenantId, id);
+                List<Department> deptList = organizationManager.listDepartments(tenantId, id).getData();
+                List<Person> personList = organizationManager.listPersons(tenantId, id).getData();
                 for (Department dept : deptList) {
                     Map<String, Object> m = new HashMap<String, Object>(16);
                     m.put("id", dept.getId());
@@ -179,11 +181,12 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getPositionList")
-    public void getPositionList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
+    public void getPositionList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            List<Position> list = positionApi.listByPersonId(tenantId, userId);
+            List<Position> list = positionApi.listByPersonId(tenantId, userId).getData();
             map.put("positionList", list);
             map.put("msg", "获取数据成功");
             map.put(UtilConsts.SUCCESS, true);
@@ -206,7 +209,8 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getUserCount")
-    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, String userChoice, HttpServletRequest request, HttpServletResponse response) {
+    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, String userChoice,
+        HttpServletRequest request, HttpServletResponse response) {
         List<String> userIds = new ArrayList<String>();
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -247,14 +251,16 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getUserInfo")
-    public void getUserInfo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletRequest request, HttpServletResponse response) {
+    public void getUserInfo(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Position position = positionApi.getPosition(tenantId, positionId);
-            Person person = personManager.getPerson(tenantId, userId);
-            OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, positionId);
-            OrgUnit orgUnit1 = orgUnitManager.getParent(tenantId, positionId);
+            Position position = positionApi.getPosition(tenantId, positionId).getData();
+            Person person = personManager.getPerson(tenantId, userId).getData();
+            OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, positionId).getData();
+            OrgUnit orgUnit1 = orgUnitManager.getParent(tenantId, positionId).getData();
             Y9LoginUserHolder.setPerson(person);
             map.put("bureauName", orgUnit != null ? orgUnit.getName() : "");
             map.put("deptName", orgUnit1 != null ? orgUnit1.getName() : "");
@@ -273,9 +279,9 @@ public class MobileOrgController {
 
     private void recursionAllPersons(String parentID, List<Position> personList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        personList.addAll(departmentManager.listPositions(tenantId, parentID));
+        personList.addAll(departmentManager.listPositions(tenantId, parentID).getData());
         if (personList.size() < 101) {
-            List<Department> deptList = departmentManager.listSubDepartments(tenantId, parentID);
+            List<Department> deptList = departmentManager.listSubDepartments(tenantId, parentID).getData();
             for (Department dept : deptList) {
                 recursionAllPersons(dept.getId(), personList);
             }

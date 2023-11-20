@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.org.PositionApi;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -41,13 +41,15 @@ public class Task4ActRuDetaillService {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
 
-                String sql0 = "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '" + taskEntity.getProcessInstanceId() + "'";
+                String sql0 =
+                    "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '"
+                        + taskEntity.getProcessInstanceId() + "'";
                 List<Map<String, Object>> list = jdbcTemplate.queryForList(sql0);
 
                 String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
                 String assignee = taskEntity.getAssignee();
 
-                Position position = positionApi.getPosition(tenantId, assignee);
+                Position position = positionApi.getPosition(tenantId, assignee).getData();
                 ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
                 actRuDetailModel.setCreateTime(taskEntity.getCreateTime());
                 actRuDetailModel.setAssignee(assignee);
@@ -72,7 +74,9 @@ public class Task4ActRuDetaillService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn("##########################Task4ActRuDetaillService:saveOrUpdate保存流程流转信息失败-taskId:{}##########################", taskEntity.getId(), e);
+            LOGGER.warn(
+                "##########################Task4ActRuDetaillService:saveOrUpdate保存流程流转信息失败-taskId:{}##########################",
+                taskEntity.getId(), e);
         }
     }
 
@@ -88,7 +92,9 @@ public class Task4ActRuDetaillService {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
 
-                String sql0 = "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '" + taskEntity.getProcessInstanceId() + "'";
+                String sql0 =
+                    "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '"
+                        + taskEntity.getProcessInstanceId() + "'";
                 List<Map<String, Object>> list = jdbcTemplate.queryForList(sql0);
 
                 String assignee = taskEntity.getAssignee();
@@ -96,7 +102,7 @@ public class Task4ActRuDetaillService {
                 Set<IdentityLink> linkSet = taskEntity.getCandidates();
                 for (IdentityLink link : linkSet) {
                     String userId = link.getUserId();
-                    Position position = positionApi.getPosition(tenantId, userId);
+                    Position position = positionApi.getPosition(tenantId, userId).getData();
                     ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
                     actRuDetailModel.setCreateTime(taskEntity.getCreateTime());
                     actRuDetailModel.setAssignee(userId);
@@ -119,7 +125,9 @@ public class Task4ActRuDetaillService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn("##########################saveOrUpdate4DoSign抢占式节点-保存流程流转信息失败-taskId:{}##########################", taskEntity.getId(), e);
+            LOGGER.warn(
+                "##########################saveOrUpdate4DoSign抢占式节点-保存流程流转信息失败-taskId:{}##########################",
+                taskEntity.getId(), e);
         }
     }
 
@@ -135,14 +143,16 @@ public class Task4ActRuDetaillService {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
 
-                String sql0 = "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '" + taskEntity.getProcessInstanceId() + "'";
+                String sql0 =
+                    "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '"
+                        + taskEntity.getProcessInstanceId() + "'";
                 List<Map<String, Object>> list = jdbcTemplate.queryForList(sql0);
 
                 String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
                 Set<IdentityLink> linkSet = taskEntity.getCandidates();
                 for (IdentityLink link : linkSet) {
                     String userId = link.getUserId();
-                    Position position = positionApi.getPosition(tenantId, userId);
+                    Position position = positionApi.getPosition(tenantId, userId).getData();
                     ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
                     actRuDetailModel.setCreateTime(taskEntity.getCreateTime());
                     actRuDetailModel.setAssignee(userId);
@@ -161,7 +171,9 @@ public class Task4ActRuDetaillService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn("##########################saveOrUpdate4Reposition抢占式节点-保存流程流转信息失败-taskId:{}##########################", taskEntity.getId());
+            LOGGER.warn(
+                "##########################saveOrUpdate4Reposition抢占式节点-保存流程流转信息失败-taskId:{}##########################",
+                taskEntity.getId());
         }
     }
 
@@ -178,14 +190,16 @@ public class Task4ActRuDetaillService {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
 
-                String sql0 = "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '" + taskEntity.getProcessInstanceId() + "'";
+                String sql0 =
+                    "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '"
+                        + taskEntity.getProcessInstanceId() + "'";
                 List<Map<String, Object>> list = jdbcTemplate.queryForList(sql0);
 
                 String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
                 Set<IdentityLink> linkSet = taskEntity.getCandidates();
                 for (IdentityLink link : linkSet) {
                     String userId = link.getUserId();
-                    Position position = positionApi.getPosition(tenantId, userId);
+                    Position position = positionApi.getPosition(tenantId, userId).getData();
                     ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
                     actRuDetailModel.setCreateTime(taskEntity.getCreateTime());
                     actRuDetailModel.setAssignee(userId);
@@ -204,7 +218,9 @@ public class Task4ActRuDetaillService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn("##########################saveOrUpdate4Sign抢占式节点-保存流程流转信息失败-taskId:{}##########################", taskEntity.getId());
+            LOGGER.warn(
+                "##########################saveOrUpdate4Sign抢占式节点-保存流程流转信息失败-taskId:{}##########################",
+                taskEntity.getId());
         }
     }
 }

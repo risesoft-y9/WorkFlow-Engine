@@ -17,10 +17,10 @@ import net.risesoft.api.itemadmin.QuickSendApi;
 import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.enums.ItemPermissionEnum;
-import net.risesoft.enums.OrgTypeEnum;
-import net.risesoft.model.CustomGroup;
-import net.risesoft.model.Department;
-import net.risesoft.model.Position;
+import net.risesoft.enums.platform.OrgTypeEnum;
+import net.risesoft.model.platform.CustomGroup;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -61,19 +61,20 @@ public class QuickSendRestController {
                 String orgId = id.split(":")[1];
                 Integer principalType = Integer.parseInt(type);
                 if (principalType == ItemPermissionEnum.POSITION.getValue()) {
-                    Position position = positionApi.getPosition(tenantId, orgId);
+                    Position position = positionApi.getPosition(tenantId, orgId).getData();
                     map.put("id", position.getId());
                     map.put("name", position.getName());
                     map.put("orgType", OrgTypeEnum.POSITION.getEnName());
                     list.add(map);
                 } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {
-                    Department dept = departmentApi.getDepartment(tenantId, orgId);
+                    Department dept = departmentApi.getDepartment(tenantId, orgId).getData();
                     map.put("id", dept.getId());
                     map.put("name", dept.getName());
                     map.put("orgType", OrgTypeEnum.DEPARTMENT.getEnName());
                     list.add(map);
                 } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
-                    CustomGroup customGroup = customGroupApi.findCustomGroupById(tenantId, Y9LoginUserHolder.getPersonId(), orgId);
+                    CustomGroup customGroup =
+                        customGroupApi.findCustomGroupById(tenantId, Y9LoginUserHolder.getPersonId(), orgId).getData();
                     map.put("id", customGroup.getId());
                     map.put("name", customGroup.getGroupName());
                     map.put("orgType", "customGroup");
@@ -94,8 +95,10 @@ public class QuickSendRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveOrUpdate")
-    public Y9Result<String> saveOrUpdate(@RequestParam String itemId, @RequestParam String taskKey, @RequestParam String assignee) {
-        quickSendApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId, taskKey, assignee);
+    public Y9Result<String> saveOrUpdate(@RequestParam String itemId, @RequestParam String taskKey,
+        @RequestParam String assignee) {
+        quickSendApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId, taskKey,
+            assignee);
         return Y9Result.successMsg("保存成功");
     }
 }

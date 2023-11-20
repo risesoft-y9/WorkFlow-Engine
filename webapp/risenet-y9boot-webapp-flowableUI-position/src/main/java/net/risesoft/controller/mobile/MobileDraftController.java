@@ -126,7 +126,7 @@ public class MobileDraftController {
      * @param response
      */
     @RequestMapping(value = "/getDraft")
-    public void getManuscript(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, @RequestParam String title, boolean delFlag, @RequestParam Integer page,
+    public void getManuscript(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, @RequestParam(required = false) String title, boolean delFlag, @RequestParam Integer page,
         @RequestParam Integer rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {

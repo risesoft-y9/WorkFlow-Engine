@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 
 import net.risesoft.api.org.ManagerApi;
-import net.risesoft.model.Manager;
+import net.risesoft.model.platform.Manager;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
@@ -48,7 +48,8 @@ public class ProcessAdminCheckUserLoginFilter implements Filter {
                 if (StringUtils.isNotBlank(personId)) {
                     try {
                         ManagerApi managerApi = Y9Context.getBean(ManagerApi.class);
-                        Manager manager = managerApi.getManagerById(personId.split(":")[0], personId.split(":")[1]);
+                        Manager manager =
+                            managerApi.getManagerById(personId.split(":")[0], personId.split(":")[1]).getData();
                         loginUser = manager.toUserInfo();
                     } catch (BeansException e) {
                         e.printStackTrace();

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.util.SysVariables;
@@ -40,7 +40,7 @@ public class CurrentBureau extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String personId = Y9LoginUserHolder.getPersonId();
         List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
-        OrgUnit orgUnit = personManager.getBureau(tenantId, personId);
+        OrgUnit orgUnit = personManager.getBureau(tenantId, personId).getData();
         orgUnitList.add(orgUnit);
         return orgUnitList;
     }
@@ -50,14 +50,14 @@ public class CurrentBureau extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String personId = Y9LoginUserHolder.getPersonId();
         List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
-        OrgUnit orgUnit = personManager.getBureau(tenantId, personId);
+        OrgUnit orgUnit = personManager.getBureau(tenantId, personId).getData();
         if (StringUtils.isNotBlank(processInstanceId)) {
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             if (null != processParam && StringUtils.isNotBlank(processParam.getBureauIds())) {
                 String[] bureauIds = processParam.getBureauIds().split(SysVariables.SEMICOLON);
                 for (String bureauId : bureauIds) {
                     if (!bureauId.equals(orgUnit.getId())) {
-                        orgUnitList.add(orgUnitManager.getOrgUnit(tenantId, bureauId));
+                        orgUnitList.add(orgUnitManager.getOrgUnit(tenantId, bureauId).getData());
                     }
                 }
             }

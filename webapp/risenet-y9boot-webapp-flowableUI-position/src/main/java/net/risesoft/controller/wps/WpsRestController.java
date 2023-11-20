@@ -27,7 +27,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.util.ToolUtil;
@@ -216,7 +216,7 @@ public class WpsRestController {
     public List<Map<String, Object>> taoHongTemplateList(@RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        OrgUnit currentBureau = personManager.getBureau(tenantId, userId);
+        OrgUnit currentBureau = personManager.getBureau(tenantId, userId).getData();
         String currentBureauGuid = currentBureau != null ? currentBureau.getId() : "";
         if (StringUtils.isBlank(currentBureauGuid)) {
             currentBureauGuid = person.getParentId();

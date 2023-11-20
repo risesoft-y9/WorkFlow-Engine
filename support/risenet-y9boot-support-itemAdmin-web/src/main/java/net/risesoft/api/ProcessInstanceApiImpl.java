@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
 import net.risesoft.service.ProcessInstanceDetailsService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -59,7 +59,7 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
     public boolean updateProcessInstanceDetails(String tenantId, String assigneeId, String processInstanceId,
         String taskId, String itembox, Date endTime) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, assigneeId);
+        Person person = personApi.getPerson(tenantId, assigneeId).getData();
         Y9LoginUserHolder.setPerson(person);
         return processInstanceDetailsService.updateProcessInstanceDetails(processInstanceId, taskId, itembox, endTime);
     }

@@ -38,7 +38,7 @@ import net.risesoft.entity.TaskVariable;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.msgremind.MsgRemindInfoModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -218,7 +218,8 @@ public class AsyncHandleService {
             type = sponsorGuid.substring(0, 1);
             sponsor = sponsorGuid.substring(2);
             if (ItemPrincipalTypeEnum.DEPT.getValue().equals(type)) {
-                List<Person> personList = departmentManager.listAllPersonsByDisabled(tenantId, sponsor, false);
+                List<Person> personList =
+                    departmentManager.listAllPersonsByDisabled(tenantId, sponsor, false).getData();
                 if (!personList.isEmpty()) {
                     // 设置主办部门下的第一个人员为主办人
                     sponsorGuid = personList.get(0).getId();
@@ -261,7 +262,7 @@ public class AsyncHandleService {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             // 更新自定义历程结束时间
             List<ProcessTrack> ptModelList = processTrackRepository.findByTaskId(taskId);
@@ -395,16 +396,11 @@ public class AsyncHandleService {
             Y9LoginUserHolder.setTenantId(tenantId);
             OpinionHistory history = new OpinionHistory();
             history.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            history.setAgentUserDeptId(oldOpinion.getAgentUserDeptId());
-            history.setAgentUserDeptName(oldOpinion.getAgentUserDeptName());
-            history.setAgentUserId(oldOpinion.getAgentUserId());
-            history.setAgentUserName(oldOpinion.getAgentUserName());
             history.setContent(oldOpinion.getContent());
             history.setCreateDate(oldOpinion.getCreateDate());
             history.setSaveDate(sdf.format(new Date()));
             history.setDeptId(oldOpinion.getDeptId());
             history.setDeptName(oldOpinion.getDeptName());
-            history.setIsAgent(oldOpinion.getIsAgent());
             history.setModifyDate(oldOpinion.getModifyDate());
             history.setOpinionFrameMark(oldOpinion.getOpinionFrameMark());
             history.setOpinionType(opinionType);
@@ -430,7 +426,7 @@ public class AsyncHandleService {
         final String content) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             String personIds = msgRemindInfoManager.getRemindConfig(tenantId, userId, "opinionRemind");
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
@@ -527,7 +523,7 @@ public class AsyncHandleService {
             String documentTitle = processParam.getTitle();
             String itemId = processParam.getItemId();
             String itemName = processParam.getItemName();
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             for (ChaoSong cs : list) {
                 String assignee = cs.getUserId();
                 HttpClient client = new HttpClient();
@@ -580,7 +576,7 @@ public class AsyncHandleService {
             String documentTitle = processParam.getTitle();
             String itemId = processParam.getItemId();
             String itemName = processParam.getItemName();
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             OfficeDoneInfo officeDoneInfo =
                 officeDoneInfoService.findByProcessInstanceId(list.get(0).getProcessInstanceId());
             for (ChaoSongInfo cs : list) {

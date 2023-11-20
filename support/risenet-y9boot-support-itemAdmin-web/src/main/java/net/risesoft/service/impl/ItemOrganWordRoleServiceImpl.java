@@ -10,7 +10,7 @@ import net.risesoft.api.permission.RoleApi;
 import net.risesoft.entity.ItemOrganWordRole;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Role;
+import net.risesoft.model.platform.Role;
 import net.risesoft.repository.jpa.ItemOrganWordRoleRepository;
 import net.risesoft.service.ItemOrganWordRoleService;
 
@@ -43,7 +43,7 @@ public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
     public List<ItemOrganWordRole> findByItemOrganWordBindIdContainRoleName(String itemOrganWordBindId) {
         List<ItemOrganWordRole> roleList = itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
         for (ItemOrganWordRole role : roleList) {
-            Role r = roleManager.getRole(role.getRoleId());
+            Role r = roleManager.getRole(role.getRoleId()).getData();
             role.setRoleName(r == null ? "角色已删除" : r.getName());
         }
         return roleList;

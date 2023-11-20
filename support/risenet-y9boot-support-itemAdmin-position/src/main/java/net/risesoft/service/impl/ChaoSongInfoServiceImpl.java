@@ -45,9 +45,9 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Department;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -257,7 +257,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             TaskModel taskTemp = taskManager.findById(tenantId, taskId);
             taskDefinitionKey = taskTemp.getTaskDefinitionKey();
         }
-        Position position = positionManager.getPosition(tenantId, Y9LoginUserHolder.getPositionId());
+        Position position = positionManager.getPosition(tenantId, Y9LoginUserHolder.getPositionId()).getData();
         returnMap.put("title", processParam.getTitle());
         returnMap.put("startor", startor);
         returnMap.put("itembox", itembox);
@@ -812,7 +812,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 String orgUnitId = orgUnitArr[1];
                 List<Position> list = new ArrayList<Position>();
                 if (2 == type) {
-                    list = departmentManager.listPositions(tenantId, orgUnitId);
+                    list = departmentManager.listPositions(tenantId, orgUnitId).getData();
                     for (Position position : list) {
                         userIdListAdd.add(position.getId());
                     }
@@ -823,13 +823,15 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 }
             }
             // 保存抄送
-            OrgUnit dept = departmentManager.getDepartment(tenantId, Y9LoginUserHolder.getPosition().getParentId());
+            OrgUnit dept =
+                departmentManager.getDepartment(tenantId, Y9LoginUserHolder.getPosition().getParentId()).getData();
             if (null == dept || null == dept.getId()) {
-                dept = organizationManager.getOrganization(tenantId, Y9LoginUserHolder.getPosition().getParentId());
+                dept = organizationManager.getOrganization(tenantId, Y9LoginUserHolder.getPosition().getParentId())
+                    .getData();
             }
             List<String> mobile = new ArrayList<String>();
             for (String userId : userIdListAdd) {
-                Position position = positionManager.getPosition(tenantId, userId);
+                Position position = positionManager.getPosition(tenantId, userId).getData();
                 ChaoSongInfo cs = new ChaoSongInfo();
                 cs.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 cs.setCreateTime(sdf.format(new Date()));
@@ -843,7 +845,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 cs.setTitle(title);
                 cs.setUserId(position.getId());
                 cs.setUserName(position.getName());
-                Department department = departmentManager.getDepartment(tenantId, position.getParentId());
+                Department department = departmentManager.getDepartment(tenantId, position.getParentId()).getData();
                 cs.setUserDeptId(department.getId());
                 cs.setUserDeptName(department.getName());
                 cs.setItemId(itemId);

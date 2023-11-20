@@ -15,7 +15,8 @@ import net.risesoft.api.itemadmin.CommonSentencesApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "CommonSentencesApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/commonSentences")
+@FeignClient(contextId = "CommonSentencesApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
+    path = "/services/rest/commonSentences")
 public interface CommonSentencesApiClient extends CommonSentencesApi {
 
     /**
@@ -37,7 +38,8 @@ public interface CommonSentencesApiClient extends CommonSentencesApi {
      */
     @Override
     @GetMapping("/getCommonSentencesStr")
-    public String getCommonSentencesStr(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
+    public String getCommonSentencesStr(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId);
 
     /**
      * 获取常用语
@@ -48,7 +50,8 @@ public interface CommonSentencesApiClient extends CommonSentencesApi {
      */
     @Override
     @GetMapping("/listSentencesService")
-    List<Map<String, Object>> listSentencesService(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
+    List<Map<String, Object>> listSentencesService(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId);
 
     /**
      * 根据排序号tabIndex删除常用语
@@ -59,7 +62,8 @@ public interface CommonSentencesApiClient extends CommonSentencesApi {
      */
     @Override
     @PostMapping("/removeCommonSentences")
-    public void removeCommonSentences(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("tabIndex") int tabIndex);
+    public void removeCommonSentences(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("tabIndex") int tabIndex);
 
     /**
      * 清除常用语使用次数
@@ -81,7 +85,8 @@ public interface CommonSentencesApiClient extends CommonSentencesApi {
      */
     @Override
     @PostMapping("/save")
-    public void save(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("id") String id, @RequestParam("content") String content);
+    public void save(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("id") String id, @RequestParam("content") String content);
 
     /**
      * 根据排序号tabIndex保存更新常用语
@@ -93,7 +98,8 @@ public interface CommonSentencesApiClient extends CommonSentencesApi {
      */
     @Override
     @PostMapping("/saveCommonSentences")
-    public void saveCommonSentences(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("content") String content, @RequestParam("tabIndex") int tabIndex);
+    public void saveCommonSentences(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("content") String content, @RequestParam("tabIndex") int tabIndex);
 
     /**
      * 更新常用语使用次数

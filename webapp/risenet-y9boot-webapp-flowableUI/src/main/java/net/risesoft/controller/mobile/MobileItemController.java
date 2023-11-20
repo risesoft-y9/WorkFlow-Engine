@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -54,7 +54,7 @@ public class MobileItemController {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             List<Map<String, Object>> listMap = itemManager.getItemList(tenantId, userId);
             List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();

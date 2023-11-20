@@ -27,7 +27,7 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.BrowserTypeEnum;
 import net.risesoft.enums.FileTypeEnum;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.util.ToolUtil;
@@ -222,7 +222,7 @@ public class WpsRestController {
     public List<Map<String, Object>> taoHongTemplateList(@RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        OrgUnit currentBureau = personApi.getBureau(tenantId, userId);
+        OrgUnit currentBureau = personApi.getBureau(tenantId, userId).getData();
         String currentBureauGuid = currentBureau != null ? currentBureau.getId() : "";
         if (StringUtils.isBlank(currentBureauGuid)) {
             currentBureauGuid = userInfo.getParentId();

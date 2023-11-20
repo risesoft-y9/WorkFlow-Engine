@@ -2,12 +2,12 @@ package net.risesoft.service.dynamicrole;
 
 import java.util.List;
 
-import net.risesoft.model.Department;
-import net.risesoft.model.Group;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Organization;
-import net.risesoft.model.Person;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.Group;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.Position;
 
 /**
  * @author qinman

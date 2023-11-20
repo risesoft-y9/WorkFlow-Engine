@@ -160,7 +160,7 @@ public class BugWorkOrderAdminRestController {
         model.addAttribute("processSerialNumber", processSerialNumber);
         model.addAttribute("itemId", itemId);
         model.addAttribute("tenantManager", userInfo.isGlobalManager());
-        boolean workOrderManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId);
+        boolean workOrderManage = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", userId).getData();
         model.addAttribute("workOrderManage", workOrderManage);
         ItemModel itemModel = itemManager.getByItemId(Y9LoginUserHolder.getTenantId(), itemId);
         if (itemModel != null && itemModel.getId() != null) {

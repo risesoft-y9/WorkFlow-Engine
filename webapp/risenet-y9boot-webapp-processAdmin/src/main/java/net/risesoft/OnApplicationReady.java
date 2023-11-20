@@ -15,7 +15,8 @@ import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.tenant.TenantApi;
-import net.risesoft.model.Tenant;
+import net.risesoft.enums.platform.TenantTypeEnum;
+import net.risesoft.model.platform.Tenant;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -38,7 +39,7 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
 
     private void createDeployment(String processDefinitionKey) {
         try {
-            List<Tenant> tlist = tenantApi.listByTenantType(3);
+            List<Tenant> tlist = tenantApi.listByTenantType(TenantTypeEnum.TENANT).getData();
             for (Tenant tenant : tlist) {
                 Y9LoginUserHolder.setTenantId(tenant.getId());
                 FlowableTenantInfoHolder.setTenantId(tenant.getId());

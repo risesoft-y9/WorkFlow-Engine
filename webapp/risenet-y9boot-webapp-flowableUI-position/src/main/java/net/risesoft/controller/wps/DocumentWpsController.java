@@ -34,7 +34,7 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.itemadmin.DocumentWpsModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.user.UserInfo;
@@ -251,8 +251,8 @@ public class DocumentWpsController {
      */
     @RequestMapping(value = "/openTaoHong")
     public String openTaoHong(Model model) {
-        OrgUnit currentBureau =
-            personManager.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId());
+        OrgUnit currentBureau = personManager
+            .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
         model.addAttribute("currentBureauGuid", currentBureau.getId());
         model.addAttribute("tenantId", Y9LoginUserHolder.getTenantId());
         model.addAttribute("userId", Y9LoginUserHolder.getUserInfo().getPersonId());

@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.ItemRoleApi;
 import net.risesoft.api.org.DepartmentApi;
-import net.risesoft.model.Department;
-import net.risesoft.model.Person;
+import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -53,7 +54,7 @@ public class RoleRestController {
     @ResponseBody
     @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> findAll(@RequestParam(required = false) String id,
-        @RequestParam(required = true) String treeType, @RequestParam(required = false) String name) {
+        @RequestParam(required = true) TreeTypeEnum treeType, @RequestParam(required = false) String name) {
         List<Map<String, Object>> item = itemRoleManager.getOrgTree(Y9LoginUserHolder.getTenantId(),
             Y9LoginUserHolder.getPersonId(), id, treeType, name);
         return Y9Result.success(item, "获取成功");
@@ -191,10 +192,10 @@ public class RoleRestController {
 
     private void recursionAllPersons(String parentId, List<Person> personList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        personList.addAll(departmentApi.listPersonsByDisabled(tenantId, parentId, false));
+        personList.addAll(departmentApi.listPersonsByDisabled(tenantId, parentId, false).getData());
         boolean b = personList.size() < 101;
         if (b) {
-            List<Department> deptList = departmentApi.listSubDepartments(tenantId, parentId);
+            List<Department> deptList = departmentApi.listSubDepartments(tenantId, parentId).getData();
             for (Department dept : deptList) {
                 recursionAllPersons(dept.getId(), personList);
             }

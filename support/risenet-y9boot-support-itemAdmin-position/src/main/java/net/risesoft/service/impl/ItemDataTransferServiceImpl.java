@@ -20,7 +20,7 @@ import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -135,7 +135,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
                 String assignee = task.getAssignee();
                 if (i < 5) {
                     if (StringUtils.isNotBlank(assignee)) {
-                        Person personTemp = personManager.getPerson(tenantId, assignee);
+                        Person personTemp = personManager.getPerson(tenantId, assignee).getData();
                         if (personTemp != null) {
                             // 并行时，领导选取时存在顺序，因此这里也存在顺序
                             assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");

@@ -22,8 +22,8 @@ import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.OfficeFollowModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -125,7 +125,7 @@ public class OfficeFollowRestController {
                 ProcessParamModel processParamModel =
                     processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                 officeFollow.setGuid(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                OrgUnit orgUnit = departmentManager.getBureau(tenantId, position.getParentId());
+                OrgUnit orgUnit = departmentManager.getBureau(tenantId, position.getParentId()).getData();
                 officeFollow.setBureauId(orgUnit != null ? orgUnit.getId() : "");
                 officeFollow.setBureauName(orgUnit != null ? orgUnit.getName() : "");
                 officeFollow.setCreateTime(sdf.format(new Date()));

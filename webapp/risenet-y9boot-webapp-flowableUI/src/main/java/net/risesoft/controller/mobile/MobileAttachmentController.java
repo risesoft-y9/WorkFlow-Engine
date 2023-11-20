@@ -23,7 +23,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.BrowserTypeEnum;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -70,7 +70,7 @@ public class MobileAttachmentController {
         HttpServletRequest request) throws Exception {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Map<String, Object> map = attachmentManager.attachmentDownload(tenantId, userId, id);
             String filename = (String)map.get("filename");
@@ -111,7 +111,7 @@ public class MobileAttachmentController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map = attachmentManager.getAttachmentList(tenantId, userId, processSerialNumber, fileSource, page, rows);
         } catch (Exception e) {
@@ -145,7 +145,7 @@ public class MobileAttachmentController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(Y9LoginUserHolder.getTenantId(), userId);
+            Person person = personApi.getPerson(Y9LoginUserHolder.getTenantId(), userId).getData();
             Y9LoginUserHolder.setPerson(person);
             if (StringUtils.isNotEmpty(describes)) {
                 describes = URLDecoder.decode(describes, "UTF-8");
@@ -181,7 +181,7 @@ public class MobileAttachmentController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map = attachmentManager.delFile(tenantId, userId, ids);
         } catch (Exception e) {
@@ -209,7 +209,7 @@ public class MobileAttachmentController {
         @RequestParam String itemId, HttpServletResponse response, HttpServletRequest request) throws Exception {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Map<String, Object> fileDocument =
                 transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);

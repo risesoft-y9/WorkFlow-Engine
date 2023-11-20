@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.DataCenterApi;
 import net.risesoft.api.org.PositionApi;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.service.DataCenterService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -41,7 +41,7 @@ public class DataCenterApiImpl implements DataCenterApi {
     @PostMapping(value = "/saveToDateCenter", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean saveToDateCenter(String processInstanceId, String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.getPosition(tenantId, userId);
+        Position position = positionApi.getPosition(tenantId, userId).getData();
         Y9LoginUserHolder.setPosition(position);
         boolean b = dataCenterService.saveToDateCenter(processInstanceId);
         return b;

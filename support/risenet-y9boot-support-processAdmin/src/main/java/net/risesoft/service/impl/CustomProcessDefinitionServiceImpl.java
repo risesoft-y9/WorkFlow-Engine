@@ -181,8 +181,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             Iterator<FlowElement> sListIterator = activitieList.iterator();
             while (sListIterator.hasNext()) {
                 FlowElement e = sListIterator.next();
-                if (e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
-                    || e instanceof SequenceFlow) {
+                if (e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent || e instanceof SequenceFlow) {
                     sListIterator.remove();
                 }
             }
@@ -399,8 +398,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
 
     @Override
     public String getStartNodeKeyByProcessDefinitionKey(String processDefinitionKey) {
-        String processDefinitionId = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey).latestVersion().singleResult().getId();
+        String processDefinitionId = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).latestVersion().singleResult().getId();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         Collection<FlowElement> flowElements = process.getFlowElements();
@@ -466,6 +464,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                                     // 如果输出线上没有名称，则使用目标节点名称作为路由名称
                                     map.put(SysVariables.TASKDEFNAME, tr.getTargetFlowElement().getName());
                                 }
+                                map.put(SysVariables.REALTASKDEFNAME, tr.getTargetFlowElement().getName());
                             }
                         }
                         targetNodes.add(map);
@@ -475,13 +474,14 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                         Map<String, String> map = new HashMap<>(16);
                         String conditionText = tr.getConditionExpression();
                         FlowElement fe = tr.getTargetFlowElement();
-                        if (StringUtils.isNotBlank(conditionText) && !(fe instanceof EndEvent)
-                            && !(fe instanceof ParallelGateway)) {
+                        if (StringUtils.isNotBlank(conditionText) && !(fe instanceof EndEvent) && !(fe instanceof ParallelGateway)) {
                             String name = tr.getName();
                             if (StringUtils.isNotBlank(name) && "skip".equals(name)) {
                                 // 忽略
                             } else {
                                 map.put(SysVariables.TASKDEFKEY, tr.getTargetFlowElement().getId());
+                                map.put(SysVariables.CONDITIONEXPRESSION, tr.getConditionExpression());
+                                map.put(SysVariables.REALTASKDEFNAME, tr.getTargetFlowElement().getName());
                                 if (StringUtils.isNotBlank(name)) {
                                     // 如果输出线上有名称，则使用线上的名称作为路由名称
                                     map.put(SysVariables.TASKDEFNAME, name);
@@ -489,9 +489,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                                     // 如果输出线上没有名称，则使用目标节点名称作为路由名称
                                     map.put(SysVariables.TASKDEFNAME, tr.getTargetFlowElement().getName());
                                 }
-                                if (fe instanceof CallActivity) {
-                                    map.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
-                                } else if (fe instanceof SubProcess) {
+                                if (fe instanceof SubProcess) {
                                     map.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
                                 } else {
                                     UserTask userTask = (UserTask)fe;
@@ -593,8 +591,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                                             UserTask userTask = (UserTask)fe;
                                             if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
                                                 map.put(SysVariables.MULTIINSTANCE, SysVariables.SEQUENTIAL);
-                                            } else if (userTask
-                                                .getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                                            } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
                                                 map.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
                                             }
                                         }
@@ -603,8 +600,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                                     nameListTemp.add(name);
                                 } else {
                                     UserTask userTask = (UserTask)fe;
-                                    if (!(fe instanceof EndEvent)
-                                        && userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                                    if (!(fe instanceof EndEvent) && userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
                                         for (int j = 0; j < targetNodes.size(); j++) {
                                             // 当节点名称相同时，默认选择并行节点
                                             if (targetNodes.get(j).get("taskDefName").equals(name)) {
@@ -656,8 +652,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
-    public List<Map<String, String>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey,
-        Boolean isContainEndNode) {
+    public List<Map<String, String>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey, Boolean isContainEndNode) {
         List<Map<String, String>> targetNodes = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);

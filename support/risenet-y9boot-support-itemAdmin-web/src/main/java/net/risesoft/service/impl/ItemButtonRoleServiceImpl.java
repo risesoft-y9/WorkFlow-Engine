@@ -10,7 +10,7 @@ import net.risesoft.api.permission.RoleApi;
 import net.risesoft.entity.ItemButtonRole;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Role;
+import net.risesoft.model.platform.Role;
 import net.risesoft.repository.jpa.ItemButtonRoleRepository;
 import net.risesoft.service.ItemButtonRoleService;
 
@@ -45,7 +45,7 @@ public class ItemButtonRoleServiceImpl implements ItemButtonRoleService {
     public List<ItemButtonRole> findByItemButtonIdContainRoleName(String itemButtonId) {
         List<ItemButtonRole> roleList = itemButtonRoleRepository.findByItemButtonId(itemButtonId);
         for (ItemButtonRole role : roleList) {
-            Role r = roleManager.getRole(role.getRoleId());
+            Role r = roleManager.getRole(role.getRoleId()).getData();
             role.setRoleName(r == null ? "角色已删除" : r.getName());
         }
         return roleList;

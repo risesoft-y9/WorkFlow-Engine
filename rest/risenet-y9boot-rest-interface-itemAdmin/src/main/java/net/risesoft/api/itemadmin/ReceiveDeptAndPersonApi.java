@@ -3,7 +3,7 @@ package net.risesoft.api.itemadmin;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 
 /**
  * @author qinman

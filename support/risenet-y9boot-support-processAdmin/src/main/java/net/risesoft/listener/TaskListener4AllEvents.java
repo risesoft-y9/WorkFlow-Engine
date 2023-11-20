@@ -72,7 +72,8 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             /**
              * 统一待办-新建这一步不使用异步方式保存
              */
-            boolean b = "xinjian".equals(task.getTaskDefinitionKey()) || "faqiren".equals(task.getTaskDefinitionKey()) || "qicao".equals(task.getTaskDefinitionKey()) || "fenpei".equals(task.getTaskDefinitionKey());
+            boolean b = "xinjian".equals(task.getTaskDefinitionKey()) || "faqiren".equals(task.getTaskDefinitionKey())
+                || "qicao".equals(task.getTaskDefinitionKey()) || "fenpei".equals(task.getTaskDefinitionKey());
             if (b) {
                 TodoTaskService todoTaskService = Y9Context.getBean(TodoTaskService.class);
                 todoTaskService.saveTodoTask(task, variables);

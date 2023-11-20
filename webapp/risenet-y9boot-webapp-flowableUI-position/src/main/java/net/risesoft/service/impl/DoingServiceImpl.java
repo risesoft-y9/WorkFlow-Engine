@@ -28,7 +28,7 @@ import net.risesoft.api.processadmin.DoingApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ItemPage;
@@ -100,7 +100,7 @@ public class DoingServiceImpl implements DoingService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionManager.getPosition(tenantId, assignee);
+                        Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                             i += 1;
@@ -112,7 +112,7 @@ public class DoingServiceImpl implements DoingService {
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
                                 Position ownerUser =
-                                    positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId);
+                                    positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -130,7 +130,7 @@ public class DoingServiceImpl implements DoingService {
                     if (i < 5) {
                         if (StringUtils.isNotBlank(assignee)) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, task.getAssignee(), SysVariables.COMMA);// 并行时，领导选取时存在顺序，因此这里也存在顺序
-                            Position personTemp = positionManager.getPosition(tenantId, assignee);
+                            Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");// 并行时，领导选取时存在顺序，因此这里也存在顺序
                                 i += 1;

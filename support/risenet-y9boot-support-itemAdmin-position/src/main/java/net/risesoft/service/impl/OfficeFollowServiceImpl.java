@@ -23,7 +23,7 @@ import net.risesoft.entity.OfficeFollow;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.RemindInstance;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.OfficeFollowModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.repository.jpa.OfficeFollowRepository;
@@ -109,7 +109,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position position = positionManager.getPosition(tenantId, assignee);
+                        Position position = positionManager.getPosition(tenantId, assignee).getData();
                         if (position != null) {
                             assigneeNames = position.getName();
                         }
@@ -124,7 +124,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Position position = positionManager.getPosition(tenantId, assignee);
+                            Position position = positionManager.getPosition(tenantId, assignee).getData();
                             if (position != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, position.getName(), "、");
                             }

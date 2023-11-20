@@ -1,8 +1,25 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.WorkOrderApi;
-import net.risesoft.api.itemadmin.position.*;
+import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
+import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
+import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.DoingApi;
@@ -10,31 +27,17 @@ import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.todo.TodoTaskApi;
-import net.risesoft.model.Position;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/vue/mian")
@@ -83,15 +86,14 @@ public class MainRestController {
     private Entrust4PositionApi entrust4PositionApi;
 
     /**
-     * 获取监控角色
+     * 根据事项id获取事项统计
      *
      * @param itemId
-     * @param model
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/getCount4Item")
-    public Y9Result<Map<String, Object>> getCount4Item(String itemId, Model model) {
+    public Y9Result<Map<String, Object>> getCount4Item(String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -119,7 +121,7 @@ public class MainRestController {
             ItemModel itemModel = itemManager.getByItemId(tenantId, itemId);
             String processDefinitionKey = itemModel.getWorkflowGuid();
             if (itemModel != null && itemModel.getId() != null) {
-                model.addAttribute("processDefinitionKey", processDefinitionKey);
+                map.put("processDefinitionKey", processDefinitionKey);
                 if (processDefinitionKey.equals(Y9Context.getProperty("y9.app.flowable.systemWorkOrderKey"))) {
                     Map<String, Object> m = workOrderManager.getAdminCount();
                     map.put("wtodoCount", m.get("todoCount"));
@@ -164,6 +166,58 @@ public class MainRestController {
     }
 
     /**
+     * 根据系统名称获取事项统计
+     *
+     * @param systemName
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getCount4SystemName")
+    public Y9Result<Map<String, Object>> getCount4SystemName(String systemName) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId();
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        int draftCount = 0;
+        long todoCount = 0;
+        long doingCount = 0;
+        long doneCount = 0;
+        long draftRecycleCount = 0;
+
+        long monitorDoing = 0;
+        long monitorDone = 0;
+
+        map.put("draftCount", draftCount);
+        map.put("todoCount", todoCount);
+        map.put("doingCount", doingCount);
+        map.put("doneCount", doneCount);
+        map.put("draftRecycleCount", draftRecycleCount);
+
+        map.put("monitorDoing", monitorDoing);
+        map.put("monitorDone", monitorDone);
+        try {
+            draftCount = draftManager.getDraftCount(tenantId, positionId, systemName);
+            draftRecycleCount = draftManager.getDeleteDraftCount(tenantId, positionId, systemName);
+            Map<String, Object> countMap = todoManager.getCountByUserIdAndSystemName(tenantId, positionId, systemName);
+            todoCount = countMap != null ? Long.parseLong(countMap.get("todoCount").toString()) : 0;
+            doingCount = countMap != null ? Long.parseLong(countMap.get("doingCount").toString()) : 0;
+            try {
+                doneCount = officeDoneInfoManager.countByPositionIdAndSystemName(tenantId, positionId, systemName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            map.put("draftCount", draftCount);
+            map.put("todoCount", todoCount);
+            map.put("doingCount", doingCount);
+            map.put("doneCount", doneCount);
+            map.put("draftRecycleCount", draftRecycleCount);
+            return Y9Result.success(map, "获取成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Y9Result.failure("获取失败");
+    }
+
+    /**
      * 获取事项
      *
      * @param itemId 事项id
@@ -180,7 +234,7 @@ public class MainRestController {
         map.put("itemModel", itemModel);
         map.put("tenantId", tenantId);
         map.put("dzxhTenantId", Y9Context.getProperty("y9.app.flowable.dzxhTenantId"));
-        boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", Y9LoginUserHolder.getPositionId());
+        boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);
@@ -229,7 +283,7 @@ public class MainRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
-        List<Position> list = positionApi.listByPersonId(tenantId, Y9LoginUserHolder.getPersonId());
+        List<Position> list = positionApi.listByPersonId(tenantId, Y9LoginUserHolder.getPersonId()).getData();
         long allCount = 0;
         for (Position p : list) {
             Map<String, Object> map = new HashMap<String, Object>(16);
@@ -259,7 +313,7 @@ public class MainRestController {
                 if (model.getUsed().equals(1)) {// 使用中的委托，将委托岗位加入岗位列表
                     Map<String, Object> map1 = new HashMap<String, Object>(16);
                     String positionId = model.getOwnerId();
-                    Position position = positionApi.getPosition(tenantId, positionId);
+                    Position position = positionApi.getPosition(tenantId, positionId).getData();
                     if (position != null) {
                         map1.put("id", position.getId());
                         map1.put("name", position.getName());
@@ -317,7 +371,7 @@ public class MainRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("tenantManager", person.isGlobalManager());
-        boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", Y9LoginUserHolder.getPositionId());
+        boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);
@@ -327,9 +381,9 @@ public class MainRestController {
     /**
      * 获取流程任务信息
      *
-     * @param taskId            任务id
+     * @param taskId 任务id
      * @param processInstanceId 流程实例id
-     * @param type              类型
+     * @param type 类型
      * @return
      */
     @ResponseBody

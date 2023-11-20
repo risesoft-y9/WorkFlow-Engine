@@ -80,8 +80,7 @@ public class PrintRestController {
      * @param request
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam String id, HttpServletResponse response,
-        HttpServletRequest request) {
+    public void download(@RequestParam String id, HttpServletResponse response, HttpServletRequest request) {
         printTemplateService.download(id, response, request);
     }
 

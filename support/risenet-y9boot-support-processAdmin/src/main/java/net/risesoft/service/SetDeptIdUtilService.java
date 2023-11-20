@@ -14,9 +14,9 @@ import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Person;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -59,16 +59,16 @@ public class SetDeptIdUtilService {
             String tenantId = (String)map.get("tenantId");
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
-                Person person = personManager.getPerson(tenantId, assignee);
+                Person person = personManager.getPerson(tenantId, assignee).getData();
                 OrgUnit bureau = null;
                 OrgUnit orgUnit = null;
                 if (person == null || StringUtils.isBlank(person.getId())) {
-                    Position position = positionApi.getPosition(tenantId, assignee);
-                    bureau = departmentApi.getBureau(tenantId, position.getParentId());
-                    orgUnit = orgUnitManager.getOrgUnit(tenantId, position.getParentId());
+                    Position position = positionApi.getPosition(tenantId, assignee).getData();
+                    bureau = departmentApi.getBureau(tenantId, position.getParentId()).getData();
+                    orgUnit = orgUnitManager.getOrgUnit(tenantId, position.getParentId()).getData();
                 } else {// 人员
-                    bureau = personManager.getBureau(tenantId, person.getId());
-                    orgUnit = orgUnitManager.getOrgUnit(tenantId, person.getParentId());
+                    bureau = personManager.getBureau(tenantId, person.getId()).getData();
+                    orgUnit = orgUnitManager.getOrgUnit(tenantId, person.getParentId()).getData();
                 }
                 ProcessParamModel processParamModel =
                     processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);

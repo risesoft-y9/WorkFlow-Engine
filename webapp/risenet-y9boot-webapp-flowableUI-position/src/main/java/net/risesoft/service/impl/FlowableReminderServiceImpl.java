@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.FlowableReminderService;
@@ -51,7 +51,7 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
                 String taskId = task.getId();
                 String taskName = task.getName();
                 mapTemp.put("taskId", taskId);
-                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, task.getAssignee());
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, task.getAssignee()).getData();
                 mapTemp.put("userName", StringUtils.isBlank(task.getAssignee()) ? "" : orgUnit.getName());
                 mapTemp.put("taskName", taskName);
                 mapTemp.put("createTime", sdf.format(task.getCreateTime()));

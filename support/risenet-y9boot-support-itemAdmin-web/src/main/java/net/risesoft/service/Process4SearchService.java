@@ -26,8 +26,8 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
@@ -113,7 +113,7 @@ public class Process4SearchService {
                     StringUtils.isNotBlank(processParam.getStartorName()) ? processParam.getStartorName() : "");
             }
             officeDoneInfo.setUserComplete("");
-            OrgUnit bureau = personManager.getBureau(tenantId, person.getPersonId());
+            OrgUnit bureau = personManager.getBureau(tenantId, person.getPersonId()).getData();
             officeDoneInfo.setBureauId(bureau != null ? bureau.getId() : "");
             officeDoneInfo.setDeptId(person.getParentId());
             officeDoneInfo.setEntrustUserId("");
@@ -248,7 +248,7 @@ public class Process4SearchService {
                     allUserId = Y9Util.genCustomStr(allUserId, userId);
                 }
                 if (!"".equals(userId)) {
-                    Person person = personManager.getPerson(tenantId, userId);
+                    Person person = personManager.getPerson(tenantId, userId).getData();
                     if (person != null && person.getId() != null) {
                         if (!deptIds.contains(person.getParentId())) {
                             deptIds = Y9Util.genCustomStr(deptIds, person.getParentId());

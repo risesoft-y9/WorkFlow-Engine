@@ -44,7 +44,7 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.processadmin.BpmnModelApi;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
@@ -380,7 +380,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     continue;
                 }
                 String userId = his.getAssignee();
-                Person person = personManager.getPerson(tenantId, userId);
+                Person person = personManager.getPerson(tenantId, userId).getData();
                 if ("".equals(activityId) || activityId.equals(his.getActivityId())) {
                     Map<String, Object> map = new HashMap<String, Object>(16);
                     map.put("id", taskId);

@@ -30,7 +30,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.user.UserInfo;
@@ -88,7 +88,7 @@ public class FormNTKOPrintController {
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Object documentTitle = null;
             String[] pId = processInstanceId.split(",");
@@ -143,7 +143,7 @@ public class FormNTKOPrintController {
         @RequestParam(required = false) String itembox, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, String itemId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = formDataManager.getData(tenantId, itemId, processSerialNumber);
 
@@ -178,7 +178,7 @@ public class FormNTKOPrintController {
         @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         // 表单数据
@@ -234,7 +234,7 @@ public class FormNTKOPrintController {
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         String y9FileStoreId = transactionWordManager.openDocument(tenantId, userId, processSerialNumber, itemId);
 
@@ -284,7 +284,7 @@ public class FormNTKOPrintController {
     public void openDocument(String itemId, String tenantId, String userId, HttpServletResponse response,
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         String y9FileStoreId = printManager.openDocument(tenantId, userId, itemId);
         ServletOutputStream out = null;

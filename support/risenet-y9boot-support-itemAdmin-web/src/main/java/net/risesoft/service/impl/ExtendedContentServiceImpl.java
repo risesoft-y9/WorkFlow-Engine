@@ -20,7 +20,7 @@ import net.risesoft.entity.ExtendedContent;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ExtendedContentRepository;
 import net.risesoft.service.ExtendedContentService;
@@ -195,7 +195,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId();
             String departmentId = userInfo.getParentId();
-            OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, departmentId);
+            OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, departmentId).getData();
             if (StringUtils.isBlank(id)) {
                 ExtendedContent extendedContent = new ExtendedContent();
                 extendedContent.setDepartmentName(orgUnit.getName());

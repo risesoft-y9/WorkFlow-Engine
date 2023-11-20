@@ -23,7 +23,7 @@ import net.risesoft.api.processadmin.SpecialOperationApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -121,7 +121,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
     public boolean directSend(String tenantId, String positionId, String taskId, String routeToTask,
         String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         boolean b = false;
         try {
@@ -160,7 +160,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
             // 前一任务的受让人，标题
             String assignee = hti.getAssignee();
             userAndDeptIdList.add(assignee);
-            Position position = positionManager.getPosition(tenantId, positionId);
+            Position position = positionManager.getPosition(tenantId, positionId).getData();
             String htiMultiInstance = processDefinitionManager.getNodeType(tenantId, hti.getProcessDefinitionId(),
                 hti.getTaskDefinitionKey());
             Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(),

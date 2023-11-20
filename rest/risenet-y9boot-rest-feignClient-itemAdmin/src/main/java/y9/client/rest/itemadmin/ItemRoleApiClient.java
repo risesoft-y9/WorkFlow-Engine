@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.itemadmin.ItemRoleApi;
+import net.risesoft.enums.platform.TreeTypeEnum;
 
 /**
  * @author qinman
@@ -140,6 +141,6 @@ public interface ItemRoleApiClient extends ItemRoleApi {
     @Override
     @GetMapping("/getOrgTree")
     public List<Map<String, Object>> getOrgTree(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("id") String id, @RequestParam("treeType") String treeType,
-        @RequestParam("name") String name);
+        @RequestParam("userId") String userId, @RequestParam("id") String id,
+        @RequestParam("treeType") TreeTypeEnum treeType, @RequestParam("name") String name);
 }

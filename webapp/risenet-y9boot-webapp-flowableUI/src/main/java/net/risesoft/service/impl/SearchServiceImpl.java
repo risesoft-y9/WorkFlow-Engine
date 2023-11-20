@@ -21,7 +21,7 @@ import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -80,7 +80,7 @@ public class SearchServiceImpl implements SearchService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Person personTemp = personApi.getPerson(tenantId, assignee);
+                        Person personTemp = personApi.getPerson(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames.append(personTemp.getName());
                         }
@@ -95,7 +95,8 @@ public class SearchServiceImpl implements SearchService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Person ownerUser = personApi.getPerson(Y9LoginUserHolder.getTenantId(), assigneeId);
+                                Person ownerUser =
+                                    personApi.getPerson(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames,
                                         ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : ""), "、");
@@ -113,7 +114,7 @@ public class SearchServiceImpl implements SearchService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Person personTemp = personApi.getPerson(tenantId, assignee);
+                            Person personTemp = personApi.getPerson(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             }

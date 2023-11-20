@@ -28,8 +28,8 @@ import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.datacenter.AttachmentInfo;
 import net.risesoft.model.datacenter.EformInfo;
 import net.risesoft.model.datacenter.HistoryInfo;
@@ -257,8 +257,8 @@ public class DataCenterService {
             SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
             String startProUserId = processInstance.getStartUserId();
             String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
-            Person startProUser = personManager.getPerson(tenantId, startUserId);
-            OrgUnit dept = personManager.getBureau(tenantId, startProUser.getId());
+            Person startProUser = personManager.getPerson(tenantId, startUserId).getData();
+            OrgUnit dept = personManager.getBureau(tenantId, startProUser.getId()).getData();
 
             // 获取历程
             Map<String, Object> map = this.historyExcel(processSerialNumber, processInstanceId);
@@ -363,8 +363,8 @@ public class DataCenterService {
             SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
             String startProUserId = processParam.getStartor();
             String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
-            Person startProUser = personManager.getPerson(tenantId, startUserId);
-            OrgUnit dept = personManager.getBureau(tenantId, startProUser.getId());
+            Person startProUser = personManager.getPerson(tenantId, startUserId).getData();
+            OrgUnit dept = personManager.getBureau(tenantId, startProUser.getId()).getData();
 
             // 获取历程
             Map<String, Object> map = this.historyExcel(processSerialNumber, processInstanceId);

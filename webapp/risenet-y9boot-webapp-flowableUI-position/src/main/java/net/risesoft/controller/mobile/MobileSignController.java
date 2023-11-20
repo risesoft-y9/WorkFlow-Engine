@@ -283,4 +283,50 @@ public class MobileSignController {
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
         return;
     }
+
+    /**
+     * 获取两个日期之间的天数
+     *
+     * @param tenantId 租户id
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @param dateType 是否排除节假日和周末
+     * @param request
+     * @param response
+     * @param session
+     */
+    @RequestMapping(value = "/getDays")
+    @ResponseBody
+    public void getDays(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, @RequestParam(required = false) String dateType, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        try {
+            Y9LoginUserHolder.setTenantId(tenantId);
+            map.put(UtilConsts.SUCCESS, false);
+            if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
+                String year = startDate.substring(0, 4);
+                CalendarConfigModel calendarConfigModel = calendarConfigManager.findByYear(tenantId, year);
+                String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
+                if (StringUtils.isNotBlank(dateType) && dateType.equals("1")) {// 排除节假日，周末
+                    if (StringUtils.isNotBlank(everyYearHoliday)) {
+                        String day = daysBetween(startDate, endDate, everyYearHoliday);
+                        map.put("day", day);
+                        map.put(UtilConsts.SUCCESS, true);
+                    } else {
+                        String day = daysBetween(startDate, endDate);
+                        map.put("day", day);
+                        map.put(UtilConsts.SUCCESS, true);
+                    }
+                } else {// 不排除节假日和周末
+                    String day = daysBetween(startDate, endDate);
+                    map.put("day", day);
+                    map.put(UtilConsts.SUCCESS, true);
+                }
+            }
+        } catch (Exception e) {
+            map.put(UtilConsts.SUCCESS, false);
+            e.printStackTrace();
+        }
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+        return;
+    }
 }

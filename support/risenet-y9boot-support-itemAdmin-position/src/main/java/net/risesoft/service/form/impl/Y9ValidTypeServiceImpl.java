@@ -17,7 +17,7 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9ValidType;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.form.Y9ValidTypeRepository;
 import net.risesoft.service.form.Y9ValidTypeService;
@@ -88,7 +88,7 @@ public class Y9ValidTypeServiceImpl implements Y9ValidTypeService {
                 m.put("validName", y9VlidType.getValidName());
                 m.put("validType", y9VlidType.getValidType());
                 String personId = y9VlidType.getPersonId();
-                Person person = personManager.getPerson(Y9LoginUserHolder.getTenantId(), personId);
+                Person person = personManager.getPerson(Y9LoginUserHolder.getTenantId(), personId).getData();
                 m.put("personName", person.getName());
                 m.put("updateTime", sdf.format(y9VlidType.getUpdateTime()));
                 resList.add(m);

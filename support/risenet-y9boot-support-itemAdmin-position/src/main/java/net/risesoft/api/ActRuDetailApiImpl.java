@@ -42,7 +42,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      */
     @Override
     @PostMapping(value = "/endByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean endByProcessInstanceId(@RequestParam(required = true) String tenantId, @RequestParam(required = true) String processInstanceId) {
+    public boolean endByProcessInstanceId(@RequestParam(required = true) String tenantId,
+        @RequestParam(required = true) String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return actRuDetailService.endByProcessInstanceId(processInstanceId);
     }
@@ -56,7 +57,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      */
     @Override
     @PostMapping(value = "/endByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean endByProcessSerialNumber(@RequestParam(required = true) String tenantId, @RequestParam(required = true) String processSerialNumber) {
+    public boolean endByProcessSerialNumber(@RequestParam(required = true) String tenantId,
+        @RequestParam(required = true) String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return actRuDetailService.endByProcessSerialNumber(processSerialNumber);
     }
@@ -71,9 +73,11 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      */
     @Override
     @GetMapping(value = "/findByProcessInstanceIdAndStatus", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ActRuDetailModel> findByProcessInstanceIdAndStatus(@RequestParam(required = true) String tenantId, @RequestParam(required = true) String processInstanceId, int status) {
+    public List<ActRuDetailModel> findByProcessInstanceIdAndStatus(@RequestParam(required = true) String tenantId,
+        @RequestParam(required = true) String processInstanceId, int status) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ActRuDetail> actRuDetailList = actRuDetailService.findByProcessInstanceIdAndStatus(processInstanceId, status);
+        List<ActRuDetail> actRuDetailList =
+            actRuDetailService.findByProcessInstanceIdAndStatus(processInstanceId, status);
         List<ActRuDetailModel> modelList = new ArrayList<>();
         ActRuDetailModel model = null;
         for (ActRuDetail actRuDetail : actRuDetailList) {
@@ -93,7 +97,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      */
     @Override
     @GetMapping(value = "/findByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ActRuDetailModel> findByProcessSerialNumber(@RequestParam(required = true) String tenantId, @RequestParam(required = true) String processSerialNumber) {
+    public List<ActRuDetailModel> findByProcessSerialNumber(@RequestParam(required = true) String tenantId,
+        @RequestParam(required = true) String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ActRuDetail> actRuDetailList = actRuDetailService.findByProcessSerialNumber(processSerialNumber);
         List<ActRuDetailModel> modelList = new ArrayList<>();
@@ -116,9 +121,11 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      */
     @Override
     @GetMapping(value = "/findByProcessSerialNumberAndAssignee", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ActRuDetailModel findByProcessSerialNumberAndAssignee(@RequestParam(required = true) String tenantId, @RequestParam(required = true) String processSerialNumber, String assignee) {
+    public ActRuDetailModel findByProcessSerialNumberAndAssignee(@RequestParam(required = true) String tenantId,
+        @RequestParam(required = true) String processSerialNumber, String assignee) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        ActRuDetail actRuDetail = actRuDetailService.findByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
+        ActRuDetail actRuDetail =
+            actRuDetailService.findByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
         ActRuDetailModel model = new ActRuDetailModel();
         Y9BeanUtil.copyProperties(actRuDetail, model);
         return model;
@@ -134,9 +141,11 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      */
     @Override
     @GetMapping(value = "/findByProcessSerialNumberAndStatus", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ActRuDetailModel> findByProcessSerialNumberAndStatus(@RequestParam(required = true) String tenantId, @RequestParam(required = true) String processSerialNumber, int status) {
+    public List<ActRuDetailModel> findByProcessSerialNumberAndStatus(@RequestParam(required = true) String tenantId,
+        @RequestParam(required = true) String processSerialNumber, int status) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ActRuDetail> actRuDetailList = actRuDetailService.findByProcessSerialNumberAndStatus(processSerialNumber, status);
+        List<ActRuDetail> actRuDetailList =
+            actRuDetailService.findByProcessSerialNumberAndStatus(processSerialNumber, status);
         List<ActRuDetailModel> modelList = new ArrayList<>();
         ActRuDetailModel model = null;
         for (ActRuDetail actRuDetail : actRuDetailList) {
@@ -156,7 +165,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      */
     @Override
     @PostMapping(value = "/recoveryByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean recoveryByProcessInstanceId(@RequestParam(required = true) String tenantId, @RequestParam(required = true) String processInstanceId) {
+    public boolean recoveryByProcessInstanceId(@RequestParam(required = true) String tenantId,
+        @RequestParam(required = true) String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return actRuDetailService.recoveryByProcessInstanceId(processInstanceId);
     }
@@ -170,7 +180,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      */
     @Override
     @PostMapping(value = "/removeByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean removeByProcessInstanceId(@RequestParam(required = true) String tenantId, @RequestParam(required = true) String processInstanceId) {
+    public boolean removeByProcessInstanceId(@RequestParam(required = true) String tenantId,
+        @RequestParam(required = true) String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return actRuDetailService.removeByProcessInstanceId(processInstanceId);
     }
@@ -184,7 +195,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      */
     @Override
     @PostMapping(value = "/removeByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean removeByProcessSerialNumber(@RequestParam(required = true) String tenantId, @RequestParam(required = true) String processSerialNumber) {
+    public boolean removeByProcessSerialNumber(@RequestParam(required = true) String tenantId,
+        @RequestParam(required = true) String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return actRuDetailService.removeByProcessSerialNumber(processSerialNumber);
     }
@@ -198,7 +210,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      */
     @Override
     @PostMapping(value = "/removeByProcessSerialNumberAndAssignee", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean removeByProcessSerialNumberAndAssignee(@RequestParam(required = true) String tenantId, @RequestParam(required = true) String processSerialNumber, String assignee) {
+    public boolean removeByProcessSerialNumberAndAssignee(@RequestParam(required = true) String tenantId,
+        @RequestParam(required = true) String processSerialNumber, String assignee) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return actRuDetailService.removeByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
     }
@@ -211,7 +224,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      * @return boolean
      */
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public boolean saveOrUpdate(String tenantId, @RequestBody ActRuDetailModel actRuDetailModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ActRuDetail actRuDetail = new ActRuDetail();

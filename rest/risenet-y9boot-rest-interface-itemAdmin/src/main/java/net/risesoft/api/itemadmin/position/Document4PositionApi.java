@@ -84,6 +84,25 @@ public interface Document4PositionApi {
         Map<String, Object> variables);
 
     /**
+     * 带自定义变量发送
+     *
+     * @param tenantId 租户id
+     * @param positionId 岗位 id
+     * @param processInstanceId 流程实例id
+     * @param taskId 任务id
+     * @param sponsorHandle 是否主办人办理
+     * @param itemId 事项id
+     * @param processSerialNumber 流程编号
+     * @param processDefinitionKey 流程定义key
+     * @param userChoice 选择的发送人员
+     * @param sponsorGuid 主办人id
+     * @param routeToTaskId 任务key
+     * @param variables 保存变量
+     * @return Map&lt;String, Object&gt;
+     */
+    Map<String, Object> saveAndSubmitTo(String tenantId, String positionId, String taskId, String itemId, String processSerialNumber);
+
+    /**
      *
      * Description: 指定任务节点发送
      *

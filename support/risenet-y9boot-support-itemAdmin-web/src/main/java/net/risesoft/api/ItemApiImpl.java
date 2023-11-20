@@ -15,7 +15,7 @@ import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
@@ -53,30 +53,13 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/findAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemModel> findAll(String tenantId, String userId, String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<SpmApproveItem> list = spmApproveItemRepository.findAll(systemName);
         List<ItemModel> itemModelList = new ArrayList<ItemModel>();
         for (SpmApproveItem item : list) {
             ItemModel itemModel = new ItemModel();
-            itemModel.setId(item.getId());
-            itemModel.setAccountability(item.getAccountability());
-            itemModel.setExpired(item.getExpired());
-            itemModel.setIsDocking(item.getIsDocking());
-            itemModel.setIsOnline(item.getIsOnline());
-            itemModel.setLegalLimit(item.getLegalLimit());
-            itemModel.setName(item.getName());
-            itemModel.setNature(item.getNature());
-            itemModel.setStarter(item.getStarter());
-            itemModel.setStarterId(item.getStarterId());
-            itemModel.setSysLevel(item.getSysLevel());
-            itemModel.setSystemName(item.getSystemName());
-            itemModel.setType(item.getType());
-            itemModel.setWorkflowGuid(item.getWorkflowGuid());
-            itemModel.setFormType(item.getFormType());
-            itemModel.setCustomItem(item.getCustomItem());
-            itemModel.setDockingItemId(item.getDockingItemId());
-            itemModel.setDockingSystem(item.getDockingSystem());
+            Y9BeanUtil.copyProperties(item, itemModel);
             itemModelList.add(itemModel);
         }
         return itemModelList;
@@ -93,30 +76,13 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/getAllItem", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemModel> getAllItem(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<SpmApproveItem> list = spmApproveItemRepository.findAll();
         List<ItemModel> itemModelList = new ArrayList<ItemModel>();
         for (SpmApproveItem item : list) {
             ItemModel itemModel = new ItemModel();
-            itemModel.setId(item.getId());
-            itemModel.setAccountability(item.getAccountability());
-            itemModel.setExpired(item.getExpired());
-            itemModel.setIsDocking(item.getIsDocking());
-            itemModel.setIsOnline(item.getIsOnline());
-            itemModel.setLegalLimit(item.getLegalLimit());
-            itemModel.setName(item.getName());
-            itemModel.setNature(item.getNature());
-            itemModel.setStarter(item.getStarter());
-            itemModel.setStarterId(item.getStarterId());
-            itemModel.setSysLevel(item.getSysLevel());
-            itemModel.setSystemName(item.getSystemName());
-            itemModel.setType(item.getType());
-            itemModel.setWorkflowGuid(item.getWorkflowGuid());
-            itemModel.setFormType(item.getFormType());
-            itemModel.setCustomItem(item.getCustomItem());
-            itemModel.setDockingItemId(item.getDockingItemId());
-            itemModel.setDockingSystem(item.getDockingSystem());
+            Y9BeanUtil.copyProperties(item, itemModel);
             itemModelList.add(itemModel);
         }
         return itemModelList;
@@ -146,26 +112,7 @@ public class ItemApiImpl implements ItemApi {
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         ItemModel itemModel = new ItemModel();
         if (item != null) {
-            itemModel.setId(item.getId());
-            itemModel.setAccountability(item.getAccountability());
-            itemModel.setExpired(item.getExpired());
-            itemModel.setIsDocking(item.getIsDocking());
-            itemModel.setIsOnline(item.getIsOnline());
-            itemModel.setLegalLimit(item.getLegalLimit());
-            itemModel.setName(item.getName());
-            itemModel.setNature(item.getNature());
-            itemModel.setStarter(item.getStarter());
-            itemModel.setStarterId(item.getStarterId());
-            itemModel.setSysLevel(item.getSysLevel());
-            itemModel.setSystemName(item.getSystemName());
-            itemModel.setType(item.getType());
-            itemModel.setWorkflowGuid(item.getWorkflowGuid());
-            itemModel.setTodoTaskUrlPrefix(item.getTodoTaskUrlPrefix());
-            itemModel.setFormType(item.getFormType());
-            itemModel.setIconData(item.getIconData());
-            itemModel.setCustomItem(item.getCustomItem());
-            itemModel.setDockingItemId(item.getDockingItemId());
-            itemModel.setDockingSystem(item.getDockingSystem());
+            Y9BeanUtil.copyProperties(item, itemModel);
         }
         return itemModel;
     }
@@ -174,7 +121,7 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/getFirstItem", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getFirstItem(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         return documentService.getFirstItem();
     }
@@ -190,7 +137,7 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/getItemList", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getItemList(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         listMap = documentService.getItemList();
@@ -201,7 +148,7 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/getItemPageList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getItemList(String tenantId, String personId, Integer page, Integer rows, String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, personId);
+        Person person = personManager.getPerson(tenantId, personId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = spmApproveItemService.list();
@@ -212,8 +159,7 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/getItemMappingConf", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemMappingConfModel> getItemMappingConf(String tenantId, String itemId, String mappingId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ItemMappingConf> list =
-            itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
+        List<ItemMappingConf> list = itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
         List<ItemMappingConfModel> itemList = new ArrayList<ItemMappingConfModel>();
         for (ItemMappingConf item : list) {
             ItemMappingConfModel itemModel = new ItemMappingConfModel();
@@ -240,7 +186,7 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/getMyItemList", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getMyItemList(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         listMap = documentService.getMyItemList();

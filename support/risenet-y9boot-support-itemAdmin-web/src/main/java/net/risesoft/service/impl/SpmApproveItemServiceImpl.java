@@ -18,8 +18,8 @@ import net.risesoft.api.resource.SystemApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.model.App;
-import net.risesoft.model.System;
+import net.risesoft.model.platform.App;
+import net.risesoft.model.platform.System;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
@@ -81,8 +81,6 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     public Map<String, Object> findById(String itemId, Map<String, Object> map) {
         SpmApproveItem spmApproveitem = spmApproveItemRepository.findById(itemId).orElse(null);
         if (spmApproveitem != null) {
-            map.put("basicformId", spmApproveitem.getBasicformId() == null ? "" : spmApproveitem.getBasicformId());
-            map.put("handelformId", spmApproveitem.getHandelformId() == null ? "" : spmApproveitem.getHandelformId());
             map.put("processDefinitionKey", spmApproveitem.getWorkflowGuid());
             map.put("itemId", spmApproveitem.getId());
             map.put("type", spmApproveitem.getType() == null ? "" : spmApproveitem.getType());
@@ -157,7 +155,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
         try {
             SpmApproveItem item = this.findById(itemId);
             map.put("msg", "发布应用失败");
-            System system = systemEntityManager.getByName(Y9Context.getSystemName());
+            System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
             if (null == system) {
                 map.put("msg", "发布为系统[" + Y9Context.getSystemName() + "]的应用失败:没有找到英文名为[" + Y9Context.getSystemName()
                     + "]的系统,请先创建系统后再发布");
@@ -167,22 +165,24 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
              * 1、判断应用是否存在，不存在则创建应用，存在则修改应用
              */
             String systemId = system.getId(), customId = itemId;
-            App app = appApi.findBySystemIdAndCustomId(systemId, customId);
+            App app = appApi.findBySystemIdAndCustomId(systemId, customId).getData();
             if (null == app) {
                 app = new App();
                 app.setName(item.getName());
                 app.setUrl(item.getAppUrl());
                 app.setCustomId(customId);
                 app.setEnabled(Boolean.TRUE);
+                app.setSystemId(systemId);
                 // FIXME
-                appApi.saveIsvApp(app, systemId);
+                appApi.saveIsvApp(app);
 
                 map.put("msg", "发布为系统[" + Y9Context.getSystemName() + "]的新应用成功，请联系运维人员进行应用审核");
             } else {
                 app.setName(item.getName());
                 app.setUrl(item.getAppUrl());
+                app.setSystemId(systemId);
                 // FIXME
-                appApi.saveIsvApp(app, systemId);
+                appApi.saveIsvApp(app);
                 map.put("msg", "更新系统[" + Y9Context.getSystemName() + "]的应用成功，请联系运维人员进行应用审核");
             }
             map.put(UtilConsts.SUCCESS, true);

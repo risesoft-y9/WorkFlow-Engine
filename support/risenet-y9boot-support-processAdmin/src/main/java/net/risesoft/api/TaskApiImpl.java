@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.FlowableTenantInfoHolder;
@@ -110,7 +110,7 @@ public class TaskApiImpl implements TaskApi {
     public void completeTaskWithoutAssignee(String tenantId, String positionId, String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPositionId(position.getId());
         customTaskService.completeTaskWithoutAssignee(processInstanceId);
     }
@@ -149,9 +149,9 @@ public class TaskApiImpl implements TaskApi {
         @RequestBody Map<String, Object> vars) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPositionId(position.getId());
-        Y9LoginUserHolder.setPerson(personManager.getPerson(tenantId, userId));
+        Y9LoginUserHolder.setPerson(personManager.getPerson(tenantId, userId).getData());
         customTaskService.completeWithVariables(taskId, vars);
 
     }
@@ -173,7 +173,7 @@ public class TaskApiImpl implements TaskApi {
         Map<String, Object> vars, @RequestBody List<String> positionIdList) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(personManager.getPerson(tenantId, personId));
+        Y9LoginUserHolder.setPerson(personManager.getPerson(tenantId, personId).getData());
         return customTaskService.createWithVariables(vars, routeToTaskId, positionIdList);
     }
 
@@ -195,9 +195,9 @@ public class TaskApiImpl implements TaskApi {
         Map<String, Object> vars, @RequestBody List<String> positionIdList) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPositionId(position.getId());
-        Y9LoginUserHolder.setPerson(personManager.getPerson(tenantId, personId));
+        Y9LoginUserHolder.setPerson(personManager.getPerson(tenantId, personId).getData());
         return customTaskService.createWithVariables(positionId, vars, routeToTaskId, positionIdList);
     }
 

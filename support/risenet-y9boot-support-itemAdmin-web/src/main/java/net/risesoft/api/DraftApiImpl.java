@@ -22,7 +22,7 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.DraftEntity;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemLeaveTypeEnum;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.repository.jpa.DraftEntityRepository;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.DraftEntityService;
@@ -57,7 +57,7 @@ public class DraftApiImpl implements DraftApi {
     @PostMapping(value = "/deleteDraft", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> deleteDraft(String tenantId, String userId, String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = draftEntityService.deleteDraft(ids);
@@ -68,7 +68,7 @@ public class DraftApiImpl implements DraftApi {
     @GetMapping(value = "/getDeleteDraftCount", produces = MediaType.APPLICATION_JSON_VALUE)
     public int getDeleteDraftCount(String tenantId, String userId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         int count = 0;
         if (StringUtils.isBlank(itemId) || "".equals(itemId)) {
@@ -84,7 +84,7 @@ public class DraftApiImpl implements DraftApi {
     public Map<String, Object> getDraftByProcessSerialNumber(String tenantId, String userId,
         String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> retMap = new HashMap<>(16);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -109,7 +109,7 @@ public class DraftApiImpl implements DraftApi {
     @GetMapping(value = "/getDraftCount", produces = MediaType.APPLICATION_JSON_VALUE)
     public int getDraftCount(String tenantId, String userId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         int count = 0;
         if (StringUtils.isBlank(itemId) || "".equals(itemId)) {
@@ -124,7 +124,7 @@ public class DraftApiImpl implements DraftApi {
     @GetMapping(value = "/getDraftCountBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public int getDraftCountBySystemName(String tenantId, String userId, String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         int count = draftEntityRepository.countBySystemNameAndCreaterIdAndDelFlagFalse(systemName, userId);
         return count;
@@ -135,7 +135,7 @@ public class DraftApiImpl implements DraftApi {
     public Map<String, Object> getDraftList(String tenantId, String userId, int page, int rows, String title,
         String itemId, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -204,7 +204,7 @@ public class DraftApiImpl implements DraftApi {
     public Map<String, Object> getDraftListBySystemName(String tenantId, String userId, int page, int rows,
         String title, String systemName, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -259,7 +259,7 @@ public class DraftApiImpl implements DraftApi {
     public Map<String, Object> openDraft(String tenantId, String userId, String itemId, String processSerialNumber,
         boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
 
         Map<String, Object> map = new HashMap<>(16);
@@ -273,7 +273,7 @@ public class DraftApiImpl implements DraftApi {
     @PostMapping(value = "/reduction", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> reduction(String tenantId, String userId, String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = draftEntityService.reduction(ids);
@@ -284,7 +284,7 @@ public class DraftApiImpl implements DraftApi {
     @PostMapping(value = "/removeDraft", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> removeDraft(String tenantId, String userId, String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = draftEntityService.removeDraft(ids);
@@ -296,7 +296,7 @@ public class DraftApiImpl implements DraftApi {
     public Map<String, Object> saveDraft(String tenantId, String userId, String itemId, String processSerialNumber,
         String processDefinitionKey, String number, String level, String title) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = draftEntityService.saveDraft(itemId, processSerialNumber, processDefinitionKey, number, level, title, "");
@@ -308,7 +308,7 @@ public class DraftApiImpl implements DraftApi {
     public Map<String, Object> saveDraft(String tenantId, String userId, String itemId, String processSerialNumber,
         String processDefinitionKey, String number, String level, String jijian, String title) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = draftEntityService.saveDraft(itemId, processSerialNumber, processDefinitionKey, number, level, jijian,
@@ -322,7 +322,7 @@ public class DraftApiImpl implements DraftApi {
         String processSerialNumber, String processDefinitionKey, String number, String level, String title,
         String type) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map =

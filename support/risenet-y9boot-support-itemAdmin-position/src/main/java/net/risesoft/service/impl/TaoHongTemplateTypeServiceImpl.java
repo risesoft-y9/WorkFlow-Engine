@@ -11,7 +11,7 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.TaoHongTemplateType;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.TaoHongTemplateTypeRepository;
 import net.risesoft.service.TaoHongTemplateTypeService;
@@ -82,7 +82,7 @@ public class TaoHongTemplateTypeServiceImpl implements TaoHongTemplateTypeServic
 
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
-        OrgUnit orgUnit = personManager.getBureau(tenantId, personId);
+        OrgUnit orgUnit = personManager.getBureau(tenantId, personId).getData();
         TaoHongTemplateType thtNew = new TaoHongTemplateType();
         thtNew.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         thtNew.setBureauId(orgUnit.getId());

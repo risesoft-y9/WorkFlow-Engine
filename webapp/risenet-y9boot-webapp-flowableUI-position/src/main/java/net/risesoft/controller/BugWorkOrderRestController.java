@@ -37,8 +37,8 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.log.OperationTypeEnum;
 import net.risesoft.log.annotation.RiseLog;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Tenant;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Tenant;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.itemadmin.WorkOrderModel;
 import net.risesoft.model.user.UserInfo;
@@ -277,8 +277,9 @@ public class BugWorkOrderRestController {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            boolean workOrderManage = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "系统工单管理员",
-                Y9LoginUserHolder.getPositionId());
+            boolean workOrderManage = positionRoleApi
+                .hasRole(tenantId, "Y9OrgHierarchyManagement", "", "系统工单管理员", Y9LoginUserHolder.getPositionId())
+                .getData();
             if (workOrderManage && itembox.equals("wtodo")) {// 管理员打开待办工单,可走工作流
                 WorkOrderModel workOrderModel = workOrderManager.findByProcessSerialNumber(processSerialNumber);
                 if (workOrderModel.getHandleType().equals("1")) {
@@ -405,7 +406,7 @@ public class BugWorkOrderRestController {
             attachmentModel.setPersonId(person.getPersonId());
             attachmentModel.setPositionId(Y9LoginUserHolder.getPositionId());
             OrgUnit orgUnit =
-                orgUnitManager.getParent(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId());
+                orgUnitManager.getParent(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
             attachmentModel.setDeptId(orgUnit != null ? orgUnit.getId() : "");
             attachmentModel.setDeptName(orgUnit != null ? orgUnit.getName() : "");
             attachmentModel.setFileStoreId(y9FileStore.getId());
@@ -467,7 +468,7 @@ public class BugWorkOrderRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Tenant tenant = tenantManager.getById(tenantId);
+            Tenant tenant = tenantManager.getById(tenantId).getData();
             workOrder.setCreateTime(sdf.format(new Date()));
             workOrder.setHandleType(type.equals(ItemBoxTypeEnum.DRAFT.getValue()) ? "0" : "1");
             workOrder.setRealProcessInstanceId("");

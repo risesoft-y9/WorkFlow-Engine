@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.service.DocumentService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -43,7 +43,7 @@ public class DocumentApiImpl implements DocumentApi {
     @GetMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> add(String tenantId, String userId, String itemId, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
 
         Map<String, Object> returnMap = new HashMap<>(16);
@@ -55,7 +55,7 @@ public class DocumentApiImpl implements DocumentApi {
     @PostMapping(value = "/complete", produces = MediaType.APPLICATION_JSON_VALUE)
     public void complete(String tenantId, String userId, String taskId) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         documentService.complete(taskId);
     }
@@ -65,7 +65,7 @@ public class DocumentApiImpl implements DocumentApi {
     public Map<String, Object> docUserChoise(String tenantId, String userId, String itemId, String processDefinitionKey,
         String processDefinitionId, String taskId, String routeToTask, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
 
         Map<String, Object> returnMap = new HashMap<>(16);
@@ -79,7 +79,7 @@ public class DocumentApiImpl implements DocumentApi {
     public Map<String, Object> edit(String tenantId, String userId, String itembox, String taskId,
         String processInstanceId, String itemId, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
 
         Map<String, Object> returnMap = new HashMap<>(16);
@@ -93,7 +93,7 @@ public class DocumentApiImpl implements DocumentApi {
     public Map<String, Object> forwardingSendReceive(String tenantId, String userId, String taskId, String userChoice,
         String routeToTaskId, @RequestBody Map<String, Object> variables) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         variableManager.setVariables(tenantId, taskId, variables);
@@ -108,7 +108,7 @@ public class DocumentApiImpl implements DocumentApi {
         String taskId, String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey,
         String userChoice, String sponsorGuid, String routeToTaskId, @RequestBody Map<String, Object> variables) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         if (StringUtils.isBlank(processInstanceId) || UtilConsts.NULL.equals(processInstanceId)) {
@@ -131,7 +131,7 @@ public class DocumentApiImpl implements DocumentApi {
         String userChoice, String sponsorGuid, String routeToTaskId, String startRouteToTaskId,
         @RequestBody Map<String, Object> variables) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         if (StringUtils.isBlank(processInstanceId) || UtilConsts.NULL.equals(processInstanceId)) {
@@ -149,7 +149,7 @@ public class DocumentApiImpl implements DocumentApi {
     public Map<String, Object> signTaskConfig(String tenantId, String userId, String itemId, String processDefinitionId,
         String taskDefinitionKey, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map =
             documentService.signTaskConfig(itemId, processDefinitionId, taskDefinitionKey, processSerialNumber);
@@ -161,7 +161,7 @@ public class DocumentApiImpl implements DocumentApi {
     public Map<String, Object> startProcess(String tenantId, String userId, String itemId, String processSerialNumber,
         String processDefinitionKey) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = documentService.startProcess(itemId, processSerialNumber, processDefinitionKey);
         return map;
@@ -172,7 +172,7 @@ public class DocumentApiImpl implements DocumentApi {
     public Map<String, Object> startProcess(String tenantId, String userId, String itemId, String processSerialNumber,
         String processDefinitionKey, String userIds) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map =
             documentService.startProcess(itemId, processSerialNumber, processDefinitionKey, userIds);

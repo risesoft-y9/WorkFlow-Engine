@@ -14,7 +14,7 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.EntrustHistory;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.repository.jpa.EntrustHistoryRepository;
 import net.risesoft.service.EntrustHistoryService;
 import net.risesoft.service.SpmApproveItemService;
@@ -60,9 +60,9 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
         Person pTemp = null;
         SpmApproveItem itemTemp = null;
         for (EntrustHistory eh : ehList) {
-            pTemp = personManager.getPerson(tenantId, eh.getAssigneeId());
+            pTemp = personManager.getPerson(tenantId, eh.getAssigneeId()).getData();
             eh.setAssigneeName(pTemp.getName());
-            pTemp = personManager.getPerson(tenantId, eh.getOwnerId());
+            pTemp = personManager.getPerson(tenantId, eh.getOwnerId()).getData();
             eh.setOwnerName(pTemp.getName());
 
             String itemId = eh.getItemId();
@@ -99,9 +99,9 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
         }
 
         for (EntrustHistory eh : ehList) {
-            pTemp = personManager.getPerson(tenantId, eh.getAssigneeId());
+            pTemp = personManager.getPerson(tenantId, eh.getAssigneeId()).getData();
             eh.setAssigneeName(pTemp.getName());
-            pTemp = personManager.getPerson(tenantId, eh.getOwnerId());
+            pTemp = personManager.getPerson(tenantId, eh.getOwnerId()).getData();
             eh.setOwnerName(pTemp.getName());
             eh.setItemName(itemName);
         }

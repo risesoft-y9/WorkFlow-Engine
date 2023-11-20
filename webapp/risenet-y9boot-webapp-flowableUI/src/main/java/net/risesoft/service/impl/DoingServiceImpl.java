@@ -27,7 +27,7 @@ import net.risesoft.api.processadmin.DoingApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
@@ -101,7 +101,7 @@ public class DoingServiceImpl implements DoingService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Person personTemp = personApi.getPerson(tenantId, assignee);
+                        Person personTemp = personApi.getPerson(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames.append(personTemp.getName());
                             i += 1;
@@ -112,7 +112,8 @@ public class DoingServiceImpl implements DoingService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Person ownerUser = personApi.getPerson(Y9LoginUserHolder.getTenantId(), assigneeId);
+                                Person ownerUser =
+                                    personApi.getPerson(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames,
                                         ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : ""), "、");
@@ -131,7 +132,7 @@ public class DoingServiceImpl implements DoingService {
                     if (i < 5) {
                         if (StringUtils.isNotBlank(assignee)) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, task.getAssignee(), SysVariables.COMMA);
-                            Person personTemp = personApi.getPerson(tenantId, assignee);
+                            Person personTemp = personApi.getPerson(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                                 i += 1;

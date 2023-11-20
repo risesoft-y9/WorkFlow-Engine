@@ -30,7 +30,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
@@ -334,7 +334,7 @@ public class ButtonOperationRestController {
             String userNames = "";
             for (Object obj : users) {
                 String user = obj.toString();
-                Person employee = personApi.getPerson(Y9LoginUserHolder.getTenantId(), user);
+                Person employee = personApi.getPerson(Y9LoginUserHolder.getTenantId(), user).getData();
                 if (user.equals(taskModel.getAssignee())) {
                     userNames = "<font color='red'>" + employee.getName() + "</font>";
                 } else {
@@ -409,7 +409,7 @@ public class ButtonOperationRestController {
             if (multiInstance.equals(SysVariables.COMMON)) {
                 for (int i = 0; i < users.size(); i++) {
                     Map<String, Object> map = new HashMap<String, Object>(16);
-                    Person employee = personApi.getPerson(Y9LoginUserHolder.getTenantId(), users.get(i));
+                    Person employee = personApi.getPerson(Y9LoginUserHolder.getTenantId(), users.get(i)).getData();
                     map.put("user", employee.getName());
                     map.put("order", "");
                     if (StringUtils.isBlank(taskModel.getAssignee())) {
@@ -427,7 +427,7 @@ public class ButtonOperationRestController {
                 Boolean isEnd = true;
                 for (int i = 0; i < users.size(); i++) {
                     Map<String, Object> map = new HashMap<String, Object>(16);
-                    Person employee = personApi.getPerson(Y9LoginUserHolder.getTenantId(), users.get(i));
+                    Person employee = personApi.getPerson(Y9LoginUserHolder.getTenantId(), users.get(i)).getData();
                     map.put("user", employee.getName());
                     map.put("order", i + 1);
                     if (users.get(i).equals(taskModel.getAssignee())) {
@@ -464,7 +464,7 @@ public class ButtonOperationRestController {
                     boolean b = (timediff >= -3000 && timediff <= 3000) && taskModel.getName().equals(hai.getName());
                     if (b) {
                         Map<String, Object> map = new HashMap<String, Object>(16);
-                        Person employee = personApi.getPerson(tenantId, hai.getAssignee());
+                        Person employee = personApi.getPerson(tenantId, hai.getAssignee()).getData();
                         map.put("user", employee.getName());
                         Date endTime = hai.getEndTime();
                         String parallelSponsorObj = null;

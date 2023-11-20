@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.risesoft.model.platform.Resource;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
@@ -30,8 +31,8 @@ import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.resource.ResourceApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.enums.AuthorityEnum;
-import net.risesoft.model.Person;
+import net.risesoft.enums.platform.AuthorityEnum;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.DoingService;
@@ -108,7 +109,7 @@ public class MobileWorkListController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId));
+            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId).getData());
             Map<String, Object> m = doingService.list(itemId, title, page, rows);
             List<Map<String, Object>> doingList = (List<Map<String, Object>>)m.get("rows");
             map.put("doingList", doingList);
@@ -143,7 +144,7 @@ public class MobileWorkListController {
         try {
             map.put(UtilConsts.SUCCESS, true);
             Y9LoginUserHolder.setTenantId(tenantId);
-            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId));
+            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId).getData());
             Y9Page<Map<String, Object>> y9page = doneService.list(itemId, title, page, rows);
             List<Map<String, Object>> doneList = y9page.getRows();
             map.put("doneList", doneList);
@@ -174,16 +175,16 @@ public class MobileWorkListController {
         map.put(UtilConsts.SUCCESS, true);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            net.risesoft.model.Resource resource = resourceApi.getResource(tenantId);
+            Resource resource = resourceApi.getResource(tenantId).getData();
             List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
             if (null != resource && null != resource.getId()) {
                 String resourceId = resource.getId();
-                List<net.risesoft.model.Resource> list0 =
-                    personResourceApi.listSubResources(tenantId, userId, AuthorityEnum.BROWSE.getValue(), resourceId);
+                List<Resource> list0 =
+                    personResourceApi.listSubResources(tenantId, userId, AuthorityEnum.BROWSE, resourceId).getData();
                 String url = "";
-                for (net.risesoft.model.Resource r : list0) {
+                for (Resource r : list0) {
                     map = new HashMap<String, Object>(16);
                     url = r.getUrl();
                     if (StringUtils.isBlank(url)) {
@@ -213,7 +214,7 @@ public class MobileWorkListController {
                 // 系统工单为大有生租户专用,不创建应用,不生成资源,避免其他租户可租用,大有生租户添加系统工单
                 String riseTenantId = Y9Context.getProperty("y9.app.flowable.tenantId");
                 if (riseTenantId.equals(Y9LoginUserHolder.getTenantId())) {
-                    boolean workOrder = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", userId);
+                    boolean workOrder = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", userId).getData();
                     // 拥有系统工单角色,才在我的工作中显示系统工单事项
                     if (workOrder) {
                         map = new HashMap<String, Object>(16);
@@ -343,7 +344,7 @@ public class MobileWorkListController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId);
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             ItemModel item = itemManager.getByItemId(tenantId, itemId);
             String processDefinitionKey = item.getWorkflowGuid();
@@ -377,7 +378,7 @@ public class MobileWorkListController {
         @RequestParam String processInstanceId, HttpServletResponse response) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId));
+        Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId).getData());
         try {
             retMap = processTrackManager.processTrackList(tenantId, userId, processInstanceId);
             retMap.put(UtilConsts.SUCCESS, true);
@@ -408,7 +409,7 @@ public class MobileWorkListController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId));
+            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId).getData());
             Map<String, Object> m = todoService.list(itemId, title, page, rows);
             List<Map<String, Object>> todoList = (List<Map<String, Object>>)m.get("rows");
             map.put("todoList", todoList);

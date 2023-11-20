@@ -59,8 +59,10 @@ public class SysVariables {
     public static final String DOCUMENTTITLE = "documentTitle";
     /** 自定义变量名称 文档标题 **/
     public static final String TASKDEFKEY = "taskDefKey";
+    public static final String CONDITIONEXPRESSION = "conditionExpression";
     /** 自定义变量名称 taskDefKey是流程图中节点的Id **/
     public static final String TASKDEFNAME = "taskDefName";
+    public static final String REALTASKDEFNAME = "realTaskDefName";
     /** 自定义变量名称 taskDefName是流程图中节点的name **/
     public static final String ROUTETOTASKID = "routeToTaskId";
     /** 目标节点的Id（例如 outerflow） **/

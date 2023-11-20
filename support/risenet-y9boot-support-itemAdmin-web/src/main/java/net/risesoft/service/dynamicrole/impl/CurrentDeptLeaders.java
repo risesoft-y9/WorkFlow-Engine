@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.risesoft.api.org.DepartmentApi;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -27,6 +27,6 @@ public class CurrentDeptLeaders extends AbstractDynamicRoleMember {
     public List<OrgUnit> getOrgUnitList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String deptId = Y9LoginUserHolder.getDeptId();
-        return departmentManager.listLeaders(tenantId, deptId);
+        return departmentManager.listLeaders(tenantId, deptId).getData();
     }
 }

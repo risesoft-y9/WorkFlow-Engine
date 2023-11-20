@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.service.ItemDataCopyService;
 import net.risesoft.service.SyncYearTableService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -57,7 +57,7 @@ public class KafkaConsumer {
                 tenantId = targetTenantId;
                 String itemId = (String)map.get("itemId");
                 String personId = (String)map.get("personId");
-                Person person = personManager.getPerson(targetTenantId, personId);
+                Person person = personManager.getPerson(targetTenantId, personId).getData();
                 Y9LoginUserHolder.setPerson(person);
                 itemDataCopyService.dataCopy(sourceTenantId, targetTenantId, itemId);
 
@@ -68,7 +68,7 @@ public class KafkaConsumer {
                 tenantId = targetTenantId;
                 String systemName = (String)map.get("systemName");
                 String personId = (String)map.get("personId");
-                Person person = personManager.getPerson(targetTenantId, personId);
+                Person person = personManager.getPerson(targetTenantId, personId).getData();
                 Y9LoginUserHolder.setPerson(person);
                 itemDataCopyService.dataCopy4System(sourceTenantId, targetTenantId, systemName);
             }

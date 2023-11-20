@@ -15,7 +15,7 @@ import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
@@ -66,24 +66,7 @@ public class ItemApiImpl implements Item4PositionApi {
         List<ItemModel> itemModelList = new ArrayList<ItemModel>();
         for (SpmApproveItem item : list) {
             ItemModel itemModel = new ItemModel();
-            itemModel.setId(item.getId());
-            itemModel.setAccountability(item.getAccountability());
-            itemModel.setExpired(item.getExpired());
-            itemModel.setIsDocking(item.getIsDocking());
-            itemModel.setIsOnline(item.getIsOnline());
-            itemModel.setLegalLimit(item.getLegalLimit());
-            itemModel.setName(item.getName());
-            itemModel.setNature(item.getNature());
-            itemModel.setStarter(item.getStarter());
-            itemModel.setStarterId(item.getStarterId());
-            itemModel.setSysLevel(item.getSysLevel());
-            itemModel.setSystemName(item.getSystemName());
-            itemModel.setType(item.getType());
-            itemModel.setWorkflowGuid(item.getWorkflowGuid());
-            itemModel.setFormType(item.getFormType());
-            itemModel.setCustomItem(item.getCustomItem());
-            itemModel.setDockingItemId(item.getDockingItemId());
-            itemModel.setDockingSystem(item.getDockingSystem());
+            Y9BeanUtil.copyProperties(item, itemModel);
             itemModelList.add(itemModel);
         }
         return itemModelList;
@@ -117,24 +100,7 @@ public class ItemApiImpl implements Item4PositionApi {
         List<ItemModel> itemModelList = new ArrayList<ItemModel>();
         for (SpmApproveItem item : list) {
             ItemModel itemModel = new ItemModel();
-            itemModel.setId(item.getId());
-            itemModel.setAccountability(item.getAccountability());
-            itemModel.setExpired(item.getExpired());
-            itemModel.setIsDocking(item.getIsDocking());
-            itemModel.setIsOnline(item.getIsOnline());
-            itemModel.setLegalLimit(item.getLegalLimit());
-            itemModel.setName(item.getName());
-            itemModel.setNature(item.getNature());
-            itemModel.setStarter(item.getStarter());
-            itemModel.setStarterId(item.getStarterId());
-            itemModel.setSysLevel(item.getSysLevel());
-            itemModel.setSystemName(item.getSystemName());
-            itemModel.setType(item.getType());
-            itemModel.setWorkflowGuid(item.getWorkflowGuid());
-            itemModel.setFormType(item.getFormType());
-            itemModel.setCustomItem(item.getCustomItem());
-            itemModel.setDockingItemId(item.getDockingItemId());
-            itemModel.setDockingSystem(item.getDockingSystem());
+            Y9BeanUtil.copyProperties(item, itemModel);
             itemModelList.add(itemModel);
         }
         return itemModelList;
@@ -177,26 +143,7 @@ public class ItemApiImpl implements Item4PositionApi {
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         ItemModel itemModel = new ItemModel();
         if (item != null) {
-            itemModel.setId(item.getId());
-            itemModel.setAccountability(item.getAccountability());
-            itemModel.setExpired(item.getExpired());
-            itemModel.setIsDocking(item.getIsDocking());
-            itemModel.setIsOnline(item.getIsOnline());
-            itemModel.setLegalLimit(item.getLegalLimit());
-            itemModel.setName(item.getName());
-            itemModel.setNature(item.getNature());
-            itemModel.setStarter(item.getStarter());
-            itemModel.setStarterId(item.getStarterId());
-            itemModel.setSysLevel(item.getSysLevel());
-            itemModel.setSystemName(item.getSystemName());
-            itemModel.setType(item.getType());
-            itemModel.setWorkflowGuid(item.getWorkflowGuid());
-            itemModel.setTodoTaskUrlPrefix(item.getTodoTaskUrlPrefix());
-            itemModel.setFormType(item.getFormType());
-            itemModel.setIconData(item.getIconData());
-            itemModel.setCustomItem(item.getCustomItem());
-            itemModel.setDockingItemId(item.getDockingItemId());
-            itemModel.setDockingSystem(item.getDockingSystem());
+            Y9BeanUtil.copyProperties(item, itemModel);
         }
         return itemModel;
     }
@@ -212,7 +159,7 @@ public class ItemApiImpl implements Item4PositionApi {
     @GetMapping(value = "/getFirstItem", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getFirstItem(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         return documentService.getFirstItem();
     }
@@ -243,7 +190,7 @@ public class ItemApiImpl implements Item4PositionApi {
     @GetMapping(value = "/getItemList", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getItemList(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         listMap = documentService.getItemList();
@@ -262,8 +209,7 @@ public class ItemApiImpl implements Item4PositionApi {
     @GetMapping(value = "/getItemMappingConf", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemMappingConfModel> getItemMappingConf(String tenantId, String itemId, String mappingId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ItemMappingConf> list =
-            itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
+        List<ItemMappingConf> list = itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
         List<ItemMappingConfModel> itemList = new ArrayList<ItemMappingConfModel>();
         for (ItemMappingConf item : list) {
             ItemMappingConfModel itemModel = new ItemMappingConfModel();
@@ -303,7 +249,7 @@ public class ItemApiImpl implements Item4PositionApi {
     @GetMapping(value = "/getMyItemList", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getMyItemList(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         listMap = documentService.getMyItemList();

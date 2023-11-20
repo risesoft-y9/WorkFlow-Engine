@@ -42,12 +42,13 @@ import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.CustomGroupMember;
-import net.risesoft.model.Department;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.CustomGroupMember;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -824,7 +825,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 String orgUnitId = orgUnitArr[1];
                 List<Person> personListTemp = new ArrayList<Person>();
                 if (ItemPrincipalTypeEnum.DEPT.getValue() == type) {
-                    personListTemp = departmentManager.listAllPersonsByDisabled(tenantId, orgUnitId, false);
+                    personListTemp = departmentManager.listAllPersonsByDisabled(tenantId, orgUnitId, false).getData();
                     for (Person personTemp : personListTemp) {
                         userIdListAdd.add(personTemp.getId());
                     }
@@ -832,20 +833,21 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     userIdListAdd.add(orgUnitId);
                 } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue() == type) {
                     List<CustomGroupMember> customGroupMemberList = customGroupApi
-                        .listCustomGroupMemberByGroupIdAndMemberType(tenantId, personId, orgUnitId, "Person");
+                        .listCustomGroupMemberByGroupIdAndMemberType(tenantId, personId, orgUnitId, OrgTypeEnum.PERSON)
+                        .getData();
                     for (CustomGroupMember member : customGroupMemberList) {
                         userIdListAdd.add(member.getMemberId());
                     }
                 }
             }
             // 保存抄送
-            OrgUnit dept = departmentManager.getDepartment(tenantId, userInfo.getParentId());
+            OrgUnit dept = departmentManager.getDepartment(tenantId, userInfo.getParentId()).getData();
             if (null == dept || null == dept.getId()) {
-                dept = organizationManager.getOrganization(tenantId, userInfo.getParentId());
+                dept = organizationManager.getOrganization(tenantId, userInfo.getParentId()).getData();
             }
             List<String> mobile = new ArrayList<String>();
             for (String userId : userIdListAdd) {
-                Person personTemp = personManager.getPerson(tenantId, userId);
+                Person personTemp = personManager.getPerson(tenantId, userId).getData();
                 ChaoSongInfo cs = new ChaoSongInfo();
                 cs.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 cs.setCreateTime(sdf.format(new Date()));
@@ -859,7 +861,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 cs.setTitle(title);
                 cs.setUserId(personTemp.getId());
                 cs.setUserName(personTemp.getName());
-                Department department = departmentManager.getDepartment(tenantId, personTemp.getParentId());
+                Department department = departmentManager.getDepartment(tenantId, personTemp.getParentId()).getData();
                 cs.setUserDeptId(department.getId());
                 cs.setUserDeptName(department.getName());
                 cs.setItemId(itemId);

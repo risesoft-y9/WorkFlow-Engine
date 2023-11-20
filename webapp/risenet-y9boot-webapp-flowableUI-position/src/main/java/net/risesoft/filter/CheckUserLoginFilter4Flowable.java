@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -43,13 +43,14 @@ public class CheckUserLoginFilter4Flowable implements Filter {
                     session.setAttribute("positionId", positionId);
                     Y9LoginUserHolder.setPositionId(positionId);
                     PositionApi positionManager = Y9Context.getBean(PositionApi.class);
-                    Position position = positionManager.getPosition(loginPerson.getTenantId(), positionId);
+                    Position position = positionManager.getPosition(loginPerson.getTenantId(), positionId).getData();
                     if (position != null) {
                         Y9LoginUserHolder.setPosition(position);
                     }
                 } else {
                     PersonApi personApi = Y9Context.getBean(PersonApi.class);
-                    List<Position> list = personApi.listPositions(loginPerson.getTenantId(), loginPerson.getPersonId());
+                    List<Position> list =
+                        personApi.listPositions(loginPerson.getTenantId(), loginPerson.getPersonId()).getData();
                     if (list.size() > 0) {
                         Y9LoginUserHolder.setPosition(list.get(0));
                     }

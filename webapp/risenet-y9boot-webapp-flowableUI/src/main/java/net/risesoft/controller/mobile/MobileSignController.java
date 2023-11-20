@@ -34,7 +34,7 @@ import net.risesoft.api.dzxh.AttendanceApi;
 import net.risesoft.api.itemadmin.CalendarConfigApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.attendance.Attendance;
 import net.risesoft.model.itemadmin.CalendarConfigModel;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -137,7 +137,7 @@ public class MobileSignController {
     public void getAnnualLeaveDay(@RequestHeader("auth-tenantId") String tenantId,
         @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         // 应休年假
@@ -313,7 +313,7 @@ public class MobileSignController {
         @RequestParam(required = false) String endDate, @RequestParam(required = false) String type,
         @RequestParam(required = false) String leaveYear, HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {

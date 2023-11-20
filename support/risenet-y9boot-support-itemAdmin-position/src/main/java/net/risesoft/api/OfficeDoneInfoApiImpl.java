@@ -19,7 +19,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 办结信息接口
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -58,6 +58,21 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
     public int countByPositionId(String tenantId, String positionId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.countByUserId(positionId, itemId);
+    }
+
+    /**
+     * 根据系统名称统计个人办结件
+     *
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param systemName 系统名称
+     * @return int
+     */
+    @Override
+    @GetMapping(value = "/countByPositionIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
+    public int countByPositionIdAndSystemName(String tenantId, String positionId, String systemName) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return officeDoneInfoService.countByPositionIdAndSystemName(positionId, systemName);
     }
 
     /**
@@ -114,8 +129,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @throws Exception
      */
     @Override
-    @PostMapping(value = "/saveOfficeDone", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/saveOfficeDone", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveOfficeDone(String tenantId, @RequestBody OfficeDoneInfoModel info) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         OfficeDoneInfo officeInfo = new OfficeDoneInfo();
@@ -139,8 +153,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      */
     @Override
     @GetMapping(value = "/searchAllByDeptId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchAllByDeptId(String tenantId, String deptId, String title, String itemId,
-        String userName, String state, String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllByDeptId(String tenantId, String deptId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchAllByDeptId(deptId, title, itemId, userName, state, year, page, rows);
     }
@@ -161,8 +174,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      */
     @Override
     @GetMapping(value = "/searchAllByPositionId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchAllByPositionId(String tenantId, String positionId, String title, String itemId,
-        String userName, String state, String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllByPositionId(String tenantId, String positionId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchAllByUserId(positionId, title, itemId, userName, state, year, page, rows);
     }
@@ -182,8 +194,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      */
     @Override
     @GetMapping(value = "/searchAllList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String userName,
-        String state, String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchAllList(searchName, itemId, userName, state, year, page, rows);
     }
@@ -203,8 +214,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      */
     @Override
     @GetMapping(value = "/searchByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchByItemId(String tenantId, String title, String itemId, String state,
-        String startdate, String enddate, Integer page, Integer rows) {
+    public Map<String, Object> searchByItemId(String tenantId, String title, String itemId, String state, String startdate, String enddate, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchByItemId(title, itemId, state, startdate, enddate, page, rows);
     }
@@ -224,10 +234,29 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      */
     @Override
     @GetMapping(value = "/searchByPositionId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchByPositionId(String tenantId, String positionId, String title, String itemId,
-        String startdate, String enddate, Integer page, Integer rows) {
+    public Map<String, Object> searchByPositionId(String tenantId, String positionId, String title, String itemId, String startdate, String enddate, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchByUserId(positionId, title, itemId, startdate, enddate, page, rows);
+    }
+
+    /**
+     * 根据岗位id,系统名称，获取个人办结件列表
+     *
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param title 搜索词
+     * @param systemName 系统名称
+     * @param startdate 开始日期
+     * @param enddate 结束日期
+     * @param page 页码
+     * @param rows条数
+     * @return
+     */
+    @Override
+    @GetMapping(value = "/searchByPositionIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> searchByPositionIdAndSystemName(String tenantId, String positionId, String title, String systemName, String startdate, String enddate, Integer page, Integer rows) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return officeDoneInfoService.searchByPositionIdAndSystemName(positionId, title, systemName, startdate, enddate, page, rows);
     }
 
 }

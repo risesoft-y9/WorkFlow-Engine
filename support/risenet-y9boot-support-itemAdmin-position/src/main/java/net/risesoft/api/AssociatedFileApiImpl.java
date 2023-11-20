@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
 import net.risesoft.api.org.PositionApi;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.service.AssociatedFileService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -127,7 +127,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber,
         String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         boolean b = associatedFileService.saveAssociatedFile(processSerialNumber, processInstanceIds);
         return b;

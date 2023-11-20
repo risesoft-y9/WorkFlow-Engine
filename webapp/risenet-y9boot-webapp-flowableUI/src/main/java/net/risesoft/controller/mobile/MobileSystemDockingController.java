@@ -19,7 +19,7 @@ import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.pojo.Y9Result;
@@ -66,7 +66,7 @@ public class MobileSystemDockingController {
         map.put("msg", "提交成功");
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId);
+            Person person = personManager.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Map<String, Object> mapForm = Y9JsonUtil.readValue(formJsonData, Map.class);
             List<ItemMappingConfModel> list = itemManager.getItemMappingConf(tenantId, itemId, mappingId);

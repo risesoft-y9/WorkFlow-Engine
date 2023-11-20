@@ -16,15 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.OrganizationApi;
+import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.resource.AppIconApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.AppIcon;
-import net.risesoft.model.Department;
-import net.risesoft.model.Organization;
+import net.risesoft.model.platform.AppIcon;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SpmApproveItemService;
@@ -54,6 +56,9 @@ public class ItemRestController {
 
     @Autowired
     private AppIconApi appIconManager;
+
+    @Autowired
+    private PositionApi positionApi;
 
     /**
      * 删除事项
@@ -134,11 +139,13 @@ public class ItemRestController {
     public void getJson(StringBuffer sb, String deptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(deptId)) {
-            List<Organization> orgList = organizationManager.listAllOrganizations(tenantId);
+            List<Organization> orgList = organizationManager.listAllOrganizations(tenantId).getData();
             if (orgList != null && orgList.size() > 0) {
-                List<Department> deptList = organizationManager.listDepartments(tenantId, orgList.get(0).getId());
+                List<Department> deptList =
+                    organizationManager.listDepartments(tenantId, orgList.get(0).getId()).getData();
                 for (Department dept : deptList) {
-                    List<Department> subDeptList = departmentManager.listSubDepartments(tenantId, dept.getId());
+                    List<Department> subDeptList =
+                        departmentManager.listSubDepartments(tenantId, dept.getId()).getData();
                     boolean isParent = false;
                     if (subDeptList != null && subDeptList.size() > 0) {
                         isParent = true;
@@ -148,9 +155,9 @@ public class ItemRestController {
                 }
             }
         } else {
-            List<Department> deptList = departmentManager.listSubDepartments(tenantId, deptId);
+            List<Department> deptList = departmentManager.listSubDepartments(tenantId, deptId).getData();
             for (Department dept : deptList) {
-                List<Department> subDeptList = departmentManager.listSubDepartments(tenantId, dept.getId());
+                List<Department> subDeptList = departmentManager.listSubDepartments(tenantId, dept.getId()).getData();
                 boolean isParent = false;
                 if (subDeptList != null && subDeptList.size() > 0) {
                     isParent = true;
@@ -188,10 +195,21 @@ public class ItemRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = new SpmApproveItem();
         item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        List<Position> manager = new ArrayList<Position>();
         if (StringUtils.isNotBlank(id)) {
             item = spmApproveItemService.findById(id);
+            if (StringUtils.isNotBlank(item.getNature())) {// 事项管理员
+                String idStr = item.getNature();
+                for (String positionId : idStr.split(";")) {
+                    Position position = positionApi.getPosition(tenantId, positionId).getData();
+                    if (position != null) {
+                        manager.add(position);
+                    }
+                }
+            }
         }
         map.put("item", item);
+        map.put("manager", manager);
         List<Map<String, Object>> workflowList = new ArrayList<Map<String, Object>>();
         List<ProcessDefinitionModel> pdModelList = repositoryManager.getLatestProcessDefinitionList(tenantId);
         for (ProcessDefinitionModel pdModel : pdModelList) {
@@ -229,7 +247,7 @@ public class ItemRestController {
     @RequestMapping(value = "/readAppIconFile", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> readAppIconFile() {
         List<Map<String, String>> iconList = null;
-        List<AppIcon> list = appIconManager.listAllIcon();
+        List<AppIcon> list = appIconManager.listAllIcon().getData();
         iconList = new ArrayList<Map<String, String>>();
         if (list != null) {
             for (AppIcon appicon : list) {
@@ -248,7 +266,7 @@ public class ItemRestController {
     /**
      * 保存事项
      *
-     * @param item 事项信息
+     * @param itemJson 事项信息json
      * @return
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
@@ -271,7 +289,7 @@ public class ItemRestController {
     @RequestMapping(value = "/searchAppIcon", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public Y9Result<Map<String, Object>> searchAppIcon(@RequestParam(required = false) String name) {
-        List<AppIcon> list = appIconManager.searchAppIcon("%" + name + "%");
+        List<AppIcon> list = appIconManager.searchAppIcon("%" + name + "%").getData();
         List<Map<String, String>> iconList = new ArrayList<Map<String, String>>();
         if (list != null) {
             for (AppIcon appicon : list) {

@@ -49,8 +49,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import net.risesoft.api.permission.PersonResourceApi;
-import net.risesoft.enums.AuthorityEnum;
-import net.risesoft.model.Resource;
+import net.risesoft.enums.platform.AuthorityEnum;
+import net.risesoft.enums.platform.ManagerLevelEnum;
+import net.risesoft.model.platform.Resource;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -201,7 +202,7 @@ public class ProcessModelVueController {
         List<Map<String, Object>> items = new ArrayList<>();
         List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
         ProcessDefinition processDefinition = null;
-        if (tenantManager || userInfo.getManagerLevel() == 1) {
+        if (tenantManager || ManagerLevelEnum.SYSTEM_MANAGER.equals(userInfo.getManagerLevel())) {
             Map<String, Object> mapTemp = null;
             for (AbstractModel model : list) {
                 mapTemp = new HashMap<>(16);
@@ -221,7 +222,7 @@ public class ProcessModelVueController {
         } else {
             Map<String, Object> mapTemp = null;
             List<Resource> resourceList =
-                personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE.getValue(), resourceId);
+                personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE, resourceId).getData();
             for (AbstractModel model : list) {
                 for (Resource resource : resourceList) {
                     if (resource.getCustomId().equals(model.getKey())) {

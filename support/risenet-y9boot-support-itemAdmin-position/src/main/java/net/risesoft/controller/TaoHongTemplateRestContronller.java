@@ -26,8 +26,8 @@ import net.risesoft.api.org.ManagerApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.entity.TaoHongTemplate;
 import net.risesoft.entity.TaoHongTemplateType;
-import net.risesoft.model.Manager;
-import net.risesoft.model.OrgUnit;
+import net.risesoft.model.platform.Manager;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.TaoHongTemplateService;
@@ -132,7 +132,7 @@ public class TaoHongTemplateRestContronller {
             list = taoHongTemplateService.findByTenantId(Y9LoginUserHolder.getTenantId(),
                 StringUtils.isBlank(name) ? "%%" : "%" + name + "%");
         } else {
-            OrgUnit orgUnit = personManager.getBureau(Y9LoginUserHolder.getTenantId(), person.getPersonId());
+            OrgUnit orgUnit = personManager.getBureau(Y9LoginUserHolder.getTenantId(), person.getPersonId()).getData();
             list = taoHongTemplateService.findByBureauGuid(orgUnit.getId());
         }
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
@@ -145,7 +145,7 @@ public class TaoHongTemplateRestContronller {
             map.put("uploadTime", sdf.format(list.get(i).getUploadTime()));
 
             String userId = list.get(i).getUserId();
-            Manager manger = managerApi.getManagerById(Y9LoginUserHolder.getTenantId(), userId);
+            Manager manger = managerApi.getManagerById(Y9LoginUserHolder.getTenantId(), userId).getData();
             map.put("userName", manger != null ? manger.getName() : "人员不存在");
             map.put("tabIndex", list.get(i).getTabIndex());
             items.add(map);
@@ -169,7 +169,7 @@ public class TaoHongTemplateRestContronller {
         if (person.isGlobalManager()) {
             typeList = taoHongTemplateTypeService.findAll();
         } else {
-            OrgUnit orgUnit = personManager.getBureau(tenantId, personId);
+            OrgUnit orgUnit = personManager.getBureau(tenantId, personId).getData();
             map.put("bureauGuid", orgUnit.getId());
             map.put("bureauName", orgUnit.getName());
             typeList = taoHongTemplateTypeService.findByBureauId(orgUnit.getId());

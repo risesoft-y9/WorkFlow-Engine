@@ -16,7 +16,7 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.sms.SmsHttpApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.service.SmsRemindService;
 import net.risesoft.util.SysVariables;
@@ -75,8 +75,8 @@ public class SmsRemindServiceImpl implements SmsRemindService {
                 return;
             }
             String userId = map.get(SysVariables.TASKSENDERID).toString();
-            Person user = personManager.getPerson(tenantId, userId);
-            Person person = personManager.getPerson(tenantId, assignee);
+            Person user = personManager.getPerson(tenantId, userId).getData();
+            Person person = personManager.getPerson(tenantId, assignee).getData();
             String mobile = person.getMobile();
             Y9DzxhSendMsgUtil.sendMsgByphoneAndParams(mobile, person.getName(), "OA待办", user.getName(),
                 processParamModel.getTitle());
@@ -128,13 +128,13 @@ public class SmsRemindServiceImpl implements SmsRemindService {
             }
             List<String> list = new ArrayList<String>();
             String userId = map.get(SysVariables.TASKSENDERID).toString();
-            Person user = personManager.getPerson(tenantId, userId);
+            Person user = personManager.getPerson(tenantId, userId).getData();
             if (UtilConsts.TRUE.equals(isShuMing)) {
                 smsContent = smsContent + "--" + user.getName();
             }
-            Person person = personManager.getPerson(tenantId, assignee);
+            Person person = personManager.getPerson(tenantId, assignee).getData();
             if (person == null || StringUtils.isBlank(person.getId())) {
-                List<Person> plist = positionApi.listPersons(tenantId, assignee);
+                List<Person> plist = positionApi.listPersons(tenantId, assignee).getData();
                 for (Person p : plist) {
                     list.add(p.getMobile());
                 }

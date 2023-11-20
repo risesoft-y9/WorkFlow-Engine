@@ -36,7 +36,8 @@ public interface Entrust4PositionApi {
      * @throws Exception Exception
      */
     @GetMapping(value = "/getEntrustList")
-    List<EntrustModel> getEntrustList(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId) throws Exception;
+    List<EntrustModel> getEntrustList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId) throws Exception;
 
     /**
      * 获取当前岗被委托记录
@@ -46,7 +47,8 @@ public interface Entrust4PositionApi {
      * @return List&lt;EntrustModel&gt;
      */
     @GetMapping(value = "/getMyEntrustList")
-    List<EntrustModel> getMyEntrustList(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId);
+    List<EntrustModel> getMyEntrustList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId);
 
     /**
      * 保存或者更新委托对象
@@ -57,5 +59,6 @@ public interface Entrust4PositionApi {
      * @throws Exception Exception
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestBody EntrustModel entrustModel) throws Exception;
+    void saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,
+        @RequestBody EntrustModel entrustModel) throws Exception;
 }

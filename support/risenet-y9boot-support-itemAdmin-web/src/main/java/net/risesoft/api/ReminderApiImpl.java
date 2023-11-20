@@ -17,7 +17,7 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Reminder;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.Person;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.ReminderService;
 import net.risesoft.util.SysVariables;
@@ -44,7 +44,8 @@ public class ReminderApiImpl implements ReminderApi {
     private TaskApiClient taskManager;
 
     @Override
-    @PostMapping(value = "/deleteList", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/deleteList", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void deleteList(String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         reminderService.deleteList(ids);
@@ -77,7 +78,8 @@ public class ReminderApiImpl implements ReminderApi {
 
     @Override
     @GetMapping(value = "/findBySenderIdAndProcessInstanceIdAndActive", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String tenantId, String senderId, String processInstanceId, int page, int rows) {
+    public Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String tenantId, String senderId,
+        String processInstanceId, int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = reminderService.findBySenderIdAndProcessInstanceIdAndActive(senderId, processInstanceId, page, rows);
@@ -97,7 +99,7 @@ public class ReminderApiImpl implements ReminderApi {
     @GetMapping(value = "/getReminder", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getReminder(String tenantId, String userId, String taskId, String type) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         taskId = taskId.contains(SysVariables.COMMA) ? taskId.split(SysVariables.COMMA)[0] : taskId;
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -129,10 +131,12 @@ public class ReminderApiImpl implements ReminderApi {
     }
 
     @Override
-    @PostMapping(value = "/saveReminder", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveReminder(String tenantId, String userId, String processInstanceId, @RequestBody String[] taskIds, String msgContent) {
+    @PostMapping(value = "/saveReminder", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> saveReminder(String tenantId, String userId, String processInstanceId,
+        @RequestBody String[] taskIds, String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
@@ -161,14 +165,16 @@ public class ReminderApiImpl implements ReminderApi {
 
     @Override
     @PostMapping(value = "/sendReminderMessage", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> sendReminderMessage(String tenantId, String userId, String remType, String procInstId, String processInstanceId, String documentTitle, String taskId, String taskAssigneeId, String msgContent) {
+    public Map<String, Object> sendReminderMessage(String tenantId, String userId, String remType, String procInstId,
+        String processInstanceId, String documentTitle, String taskId, String taskAssigneeId, String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId);
+        Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             // 催办信息处理
-            String err = reminderService.handleReminder(URLDecoder.decode(msgContent, "utf-8"), procInstId, 1, remType, taskId, taskAssigneeId, URLDecoder.decode(documentTitle, "utf-8"));
+            String err = reminderService.handleReminder(URLDecoder.decode(msgContent, "utf-8"), procInstId, 1, remType,
+                taskId, taskAssigneeId, URLDecoder.decode(documentTitle, "utf-8"));
             if ("".equals(err)) {
                 map.put(UtilConsts.SUCCESS, true);
                 map.put("msg", "催办发送成功!");
@@ -198,7 +204,8 @@ public class ReminderApiImpl implements ReminderApi {
     }
 
     @Override
-    @PostMapping(value = "/setReadTime", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/setReadTime", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void setReadTime(String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         reminderService.setReadTime(ids);

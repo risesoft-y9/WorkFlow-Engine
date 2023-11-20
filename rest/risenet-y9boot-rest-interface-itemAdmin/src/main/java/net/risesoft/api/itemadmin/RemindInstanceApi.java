@@ -29,7 +29,8 @@ public interface RemindInstanceApi {
      * @param taskKey 任务key
      * @return List&lt;RemindInstanceModel&gt;
      */
-    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(String tenantId, String processInstanceId, String taskKey);
+    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(String tenantId,
+        String processInstanceId, String taskKey);
 
     /**
      * 根据流程实例id和任务key获取消息提醒设置
@@ -39,7 +40,8 @@ public interface RemindInstanceApi {
      * @param taskKey taskKey
      * @return List&lt;RemindInstanceModel&gt;
      */
-    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(String tenantId, String processInstanceId, String taskKey);
+    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(String tenantId,
+        String processInstanceId, String taskKey);
 
     /**
      *
@@ -50,7 +52,8 @@ public interface RemindInstanceApi {
      * @param remindType remindType
      * @return List&lt;RemindInstanceModel&gt;
      */
-    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndRemindType(String tenantId, String processInstanceId, String remindType);
+    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndRemindType(String tenantId,
+        String processInstanceId, String remindType);
 
     /**
      * 根据流程实例id和任务id获取消息提醒设置
@@ -60,7 +63,8 @@ public interface RemindInstanceApi {
      * @param taskId 任务id
      * @return List&lt;RemindInstanceModel&gt;
      */
-    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndTaskId(String tenantId, String processInstanceId, String taskId);
+    List<RemindInstanceModel> findRemindInstanceByProcessInstanceIdAndTaskId(String tenantId, String processInstanceId,
+        String taskId);
 
     /**
      * 根据流程实例id获取个人消息提醒设置
@@ -84,6 +88,7 @@ public interface RemindInstanceApi {
      * @param completeTaskKey completeTaskKey
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> saveRemindInstance(String tenantId, String userId, String processInstanceId, String taskIds, Boolean process, String arriveTaskKey, String completeTaskKey);
+    Map<String, Object> saveRemindInstance(String tenantId, String userId, String processInstanceId, String taskIds,
+        Boolean process, String arriveTaskKey, String completeTaskKey);
 
 }

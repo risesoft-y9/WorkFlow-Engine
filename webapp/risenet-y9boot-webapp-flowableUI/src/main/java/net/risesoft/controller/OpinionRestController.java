@@ -22,14 +22,14 @@ import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.permission.PersonRoleApi;
-import net.risesoft.consts.TreeTypeConsts;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.enums.OrgTypeEnum;
-import net.risesoft.model.OrgUnit;
-import net.risesoft.model.Organization;
-import net.risesoft.model.Person;
+import net.risesoft.enums.platform.OrgTypeEnum;
+import net.risesoft.enums.platform.TreeTypeEnum;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionModel;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -124,10 +124,11 @@ public class OpinionRestController {
     public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = false) String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        OrgUnit bureau = personApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId());
+        OrgUnit bureau = personApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
         if (bureau != null) {
             List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
-            orgUnitList = orgUnitApi.treeSearchByDn(tenantId, name, TreeTypeConsts.TREE_TYPE_PERSON, bureau.getDn());
+            orgUnitList =
+                orgUnitApi.treeSearchByDn(tenantId, name, TreeTypeEnum.TREE_TYPE_PERSON, bureau.getDn()).getData();
             for (OrgUnit orgUnit : orgUnitList) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 map.put("id", orgUnit.getId());
@@ -135,8 +136,8 @@ public class OpinionRestController {
                 map.put("orgType", orgUnit.getOrgType());
                 map.put("parentId", orgUnit.getParentId());
                 map.put("isParent", true);
-                if ("Person".equals(orgUnit.getOrgType())) {
-                    Person per = personApi.getPerson(Y9LoginUserHolder.getTenantId(), orgUnit.getId());
+                if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
+                    Person per = personApi.getPerson(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                     if (per.getDisabled()) {
                         continue;
                     }
@@ -177,7 +178,7 @@ public class OpinionRestController {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(id)) {
-            OrgUnit orgUnit = personApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId());
+            OrgUnit orgUnit = personApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
             if (orgUnit != null) {
                 Map<String, Object> m = new HashMap<String, Object>(16);
                 id = orgUnit.getId();
@@ -189,7 +190,7 @@ public class OpinionRestController {
                 item.add(m);
             }
         } else {
-            List<OrgUnit> list = orgUnitApi.getSubTree(tenantId, id, "tree_type_org");
+            List<OrgUnit> list = orgUnitApi.getSubTree(tenantId, id, TreeTypeEnum.TREE_TYPE_ORG).getData();
             for (OrgUnit orgUnit : list) {
                 Map<String, Object> m = new HashMap<String, Object>(16);
                 m.put("id", orgUnit.getId());
@@ -197,15 +198,16 @@ public class OpinionRestController {
                 m.put("parentId", orgUnit.getParentId());
                 m.put("orgType", orgUnit.getOrgType());
                 m.put("isParent", true);
-                if (orgUnit.getOrgType().equals("Person")) {
+                if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON)) {
                     m.put("isParent", false);
-                    Person person = personApi.getPerson(tenantId, orgUnit.getId());
+                    Person person = personApi.getPerson(tenantId, orgUnit.getId()).getData();
                     if (person.getDisabled()) {
                         continue;
                     }
                     m.put("sex", person.getSex());
                 }
-                if (orgUnit.getOrgType().equals("Person") || orgUnit.getOrgType().equals("Department")) {
+                if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON)
+                    || orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                     item.add(m);
                 }
             }
@@ -214,8 +216,8 @@ public class OpinionRestController {
     }
 
     public OrgUnit getParent(String tenantId, String nodeId, String parentId) {
-        Organization parent = organizationApi.getOrganization(tenantId, parentId);
-        return parent.getId() != null ? parent : departmentApi.getDepartment(tenantId, parentId);
+        Organization parent = organizationApi.getOrganization(tenantId, parentId).getData();
+        return parent.getId() != null ? parent : departmentApi.getDepartment(tenantId, parentId).getData();
     }
 
     /**
@@ -254,8 +256,8 @@ public class OpinionRestController {
             map.put("opinion", opinion);
             map.put("date", opinion.getCreateDate());
         }
-        boolean hasRole =
-            personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", userInfo.getPersonId());
+        boolean hasRole = personRoleApi
+            .hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", userInfo.getPersonId()).getData();
         map.put("hasRole", hasRole);
         return Y9Result.success(map, "获取成功");
     }
@@ -306,7 +308,7 @@ public class OpinionRestController {
                 orgUnitList.add(parent);
             }
         }
-        if (parent.getOrgType().equals(OrgTypeEnum.DEPARTMENT.getEnName())) {
+        if (parent.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
             if (parent.getId().equals(nodeId)) {
                 return;
             }

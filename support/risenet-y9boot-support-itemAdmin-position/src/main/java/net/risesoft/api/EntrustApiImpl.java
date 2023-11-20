@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.entity.Entrust;
-import net.risesoft.model.Position;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.service.EntrustService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -54,10 +54,12 @@ public class EntrustApiImpl implements Entrust4PositionApi {
     }
 
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void saveOrUpdate(String tenantId, String positionId, @RequestBody EntrustModel entrustModel) throws Exception {
+    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void saveOrUpdate(String tenantId, String positionId, @RequestBody EntrustModel entrustModel)
+        throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.getPosition(tenantId, positionId);
+        Position position = positionApi.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Entrust entrust = new Entrust();
         Y9BeanUtil.copyProperties(entrustModel, entrust);
