@@ -105,7 +105,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemManager.getByItemId(tenantId, itemId);
-            String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
                 retMap = doingManager.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
                 List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
@@ -129,8 +128,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         String documentTitle = StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
                         String level = processParam.getCustomLevel();
                         String number = processParam.getCustomNumber();
-                        mapTemp.put("itemName", itemName);
-                        mapTemp.put("processDefinitionKey", processDefinitionKey);
+                        mapTemp.put("itemId", processParam.getItemId());
+                        mapTemp.put("itemName", processParam.getItemName());
+                        mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
                         mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                         mapTemp.put("processDefinitionId", processDefinitionId);
                         mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
@@ -166,7 +166,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     items.add(mapTemp);
                 }
             } else {
-                retMap = doingManager.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey, searchTerm, page, rows);
+                retMap = doingManager.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), searchTerm, page, rows);
                 List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {});
@@ -187,9 +187,10 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         String documentTitle = StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
                         String level = processParam.getCustomLevel();
                         String number = processParam.getCustomNumber();
-                        mapTemp.put("itemName", itemName);
+                        mapTemp.put("itemId", processParam.getItemId());
+                        mapTemp.put("itemName", processParam.getItemName());
                         mapTemp.put("processInstanceId", processInstanceId);
-                        mapTemp.put("processDefinitionKey", processDefinitionKey);
+                        mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
                         mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                         mapTemp.put("processDefinitionId", processDefinitionId);
                         mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
@@ -230,7 +231,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = itemManager.getByItemId(tenantId, itemId);
-        String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
         retMap = officeDoneInfoManager.searchByPositionIdAndSystemName(tenantId, userId, searchTerm, item.getSystemName(), "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         List<OfficeDoneInfoModel> list = (List<OfficeDoneInfoModel>)retMap.get("rows");
@@ -249,11 +249,12 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 String level = hpim.getUrgency();
                 String number = hpim.getDocNumber();
                 String completer = StringUtils.isBlank(hpim.getUserComplete()) ? "无" : hpim.getUserComplete();
-                mapTemp.put("itemName", itemName);
+                mapTemp.put("itemId", hpim.getItemId());
+                mapTemp.put("itemName", hpim.getItemName());
                 mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                 mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
                 mapTemp.put("processDefinitionId", processDefinitionId);
-                mapTemp.put("processDefinitionKey", processDefinitionKey);
+                mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionId());
                 mapTemp.put("startTime", startTime);
                 mapTemp.put("endTime", endTime);
                 mapTemp.put("taskDefinitionKey", "");
@@ -359,7 +360,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = itemManager.getByItemId(tenantId, itemId);
-            String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
                 retMap = todoManager.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
             } else {
@@ -396,9 +396,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     String processSerialNumber = processParam.getProcessSerialNumber();
                     String level = processParam.getCustomLevel();
                     String number = processParam.getCustomNumber();
-                    mapTemp.put("itemId", itemId);
-                    mapTemp.put("itemName", itemName);
-                    mapTemp.put("processDefinitionKey", processDefinitionKey);
+                    mapTemp.put("itemId", processParam.getItemId());
+                    mapTemp.put("itemName", processParam.getItemName());
+                    mapTemp.put("processDefinitionKey", task.getProcessDefinitionId().split(":")[0]);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     mapTemp.put("processDefinitionId", processDefinitionId);
                     mapTemp.put("taskId", taskId);
