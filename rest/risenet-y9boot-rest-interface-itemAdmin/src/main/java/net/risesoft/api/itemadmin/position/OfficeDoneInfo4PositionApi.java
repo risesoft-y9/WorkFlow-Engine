@@ -33,6 +33,16 @@ public interface OfficeDoneInfo4PositionApi {
     int countByPositionId(String tenantId, String positionId, String itemId);
 
     /**
+     * 根据系统名称统计个人办结件
+     *
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param systemName 系统名称
+     * @return int
+     */
+    int countByPositionIdAndSystemName(String tenantId, String positionId, String systemName);
+
+    /**
      * 监控在办统计
      *
      * @param tenantId 租户id
@@ -82,8 +92,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchAllByDeptId(String tenantId, String deptId, String title, String itemId, String userName,
-        String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllByDeptId(String tenantId, String deptId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows);
 
     /**
      *
@@ -100,8 +109,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchAllByPositionId(String tenantId, String positionId, String title, String itemId,
-        String userName, String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllByPositionId(String tenantId, String positionId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 监控办件列表
@@ -116,8 +124,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String userName, String state,
-        String year, Integer page, Integer rows);
+    Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 获取监控在办，办结件列表
@@ -132,8 +139,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchByItemId(String tenantId, String title, String itemId, String state, String startdate,
-        String enddate, Integer page, Integer rows);
+    Map<String, Object> searchByItemId(String tenantId, String title, String itemId, String state, String startdate, String enddate, Integer page, Integer rows);
 
     /**
      * 获取个人办结件列表
@@ -148,7 +154,21 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchByPositionId(String tenantId, String positionId, String title, String itemId,
-        String startdate, String enddate, Integer page, Integer rows);
+    Map<String, Object> searchByPositionId(String tenantId, String positionId, String title, String itemId, String startdate, String enddate, Integer page, Integer rows);
+
+    /**
+     * 根据岗位id,系统名称，获取个人办结件列表
+     *
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param title 标题
+     * @param systemName 系统名称
+     * @param startdate 开始日期
+     * @param enddate 结束日期
+     * @param page page
+     * @param rows rows
+     * @return
+     */
+    Map<String, Object> searchByPositionIdAndSystemName(String tenantId, String positionId, String title, String systemName, String startdate, String enddate, Integer page, Integer rows);
 
 }
