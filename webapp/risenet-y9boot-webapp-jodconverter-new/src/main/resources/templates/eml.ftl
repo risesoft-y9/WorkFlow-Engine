@@ -22,7 +22,7 @@
     var url = '${finalUrl}';
     var baseUrl = '${baseUrl}'.endsWith('/') ? '${baseUrl}' : '${baseUrl}' + '/';
     if (!url.startsWith(baseUrl)) {
-        url = baseUrl + 'getCorsFile?urlPath=' + url;
+        url = baseUrl + 'getCorsFile?urlPath=' + encodeURIComponent(url);
     }
     document.getElementsByTagName('iframe')[0].src = "${baseUrl}eml/index.html?file=" + url;
     document.getElementsByTagName('iframe')[0].height = document.documentElement.clientHeight - 10;
