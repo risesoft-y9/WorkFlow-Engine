@@ -23,7 +23,7 @@
     var url = '${finalUrl}';
     var baseUrl = '${baseUrl}'.endsWith('/') ? '${baseUrl}' : '${baseUrl}' + '/';
     if (!url.startsWith(baseUrl)) {
-        url = baseUrl + 'getCorsFile?urlPath=' + url;
+        url = baseUrl + 'getCorsFile?urlPath=' + encodeURIComponent(url);
     }
     const init = async () => {
         var windowWidth = document.documentElement.clientWidth || document.body.clientWidth;

@@ -28,7 +28,7 @@
     var url = '${finalUrl}';
     var baseUrl = '${baseUrl}'.endsWith('/') ? '${baseUrl}' : '${baseUrl}' + '/';
     if (!url.startsWith(baseUrl)) {
-        url = baseUrl + 'getCorsFile?urlPath=' + url;
+        url = baseUrl + 'getCorsFile?urlPath=' + encodeURIComponent(url);
     }
     var currentSectionIndex = 100;
     // Load the opf
