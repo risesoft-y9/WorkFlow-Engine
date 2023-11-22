@@ -71,7 +71,7 @@ public class OnlinePreviewController {
         FilePreview filePreview = previewFactory.get(fileAttribute);
         logger.info("预览文件url：{}，previewType：{}", url, fileAttribute.getType());
         String page = filePreview.filePreviewHandle(url, model, fileAttribute);
-        if (page.equals(PDF_FILE_PREVIEW_PAGE)) {
+        if (page.equals(FilePreview.PDF_FILE_PREVIEW_PAGE)) {
             String pdfjs = WebUtils.getPdfjsVersion(req);
             model.addAttribute("pdfjs", pdfjs);
         }
