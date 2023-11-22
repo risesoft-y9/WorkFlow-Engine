@@ -67,6 +67,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     private Y9TableFieldRepository y9TableFieldRepository;
 
     @Override
+    @Transactional(readOnly = false)
     public Map<String, Object> delChildTableRow(String formId, String tableId, String guid) {
         Connection connection = null;
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -387,6 +388,7 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional(readOnly = false)
     public Map<String, Object> saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Connection connection = null;

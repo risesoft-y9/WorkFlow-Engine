@@ -77,6 +77,7 @@ public class FormDataServiceImpl implements FormDataService {
     private Y9TableService y9TableService;
 
     @Override
+    @Transactional(readOnly = false)
     public Map<String, Object> delChildTableRow(String formId, String tableId, String guid) {
         return y9FormService.delChildTableRow(formId, tableId, guid);
     }
@@ -258,6 +259,7 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData) throws Exception {
         try {
             Map<String, Object> map = new HashMap<String, Object>(16);
