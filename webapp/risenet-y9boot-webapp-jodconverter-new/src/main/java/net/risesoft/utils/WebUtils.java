@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
 
+import cn.hutool.http.useragent.UserAgent;
+import cn.hutool.http.useragent.UserAgentUtil;
 import io.mola.galimatias.GalimatiasParseException;
 
 public class WebUtils {
@@ -199,5 +201,33 @@ public class WebUtils {
         } catch (MalformedURLException ignored) {
         }
         return null;
+    }
+
+    /**
+     * @description 根据用户浏览器版本，选择pdfjs版本
+     *
+     * @param: request
+     * @return: String
+     */
+    public static String getPdfjsVersion(HttpServletRequest request) {
+        String userAgentStr = request.getHeader("User-Agent");
+        String pdfjs = "oldpdfjs";
+        try {
+            UserAgent userAgent = UserAgentUtil.parse(userAgentStr);
+            String browser = userAgent.getBrowser().getName();
+            String versionStr = userAgent.getVersion().substring(0, userAgent.getVersion().indexOf("."));
+            int version = Integer.parseInt(versionStr);
+            if ((browser.contains("MSEdge") || browser.contains("Chrome")) && version > 80) {
+                pdfjs = "pdfjs";
+            }
+            if (browser.contains("Firefox") && version > 74) {
+                pdfjs = "pdfjs";
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            pdfjs = "oldpdfjs";
+        }
+
+        return pdfjs;
     }
 }

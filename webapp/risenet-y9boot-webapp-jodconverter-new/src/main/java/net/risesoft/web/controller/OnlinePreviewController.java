@@ -70,7 +70,12 @@ public class OnlinePreviewController {
         model.addAttribute("file", fileAttribute);
         FilePreview filePreview = previewFactory.get(fileAttribute);
         logger.info("预览文件url：{}，previewType：{}", url, fileAttribute.getType());
-        return filePreview.filePreviewHandle(url, model, fileAttribute);
+        String page = filePreview.filePreviewHandle(url, model, fileAttribute);
+        if (page.equals(PDF_FILE_PREVIEW_PAGE)) {
+            String pdfjs = WebUtils.getPdfjsVersion(req);
+            model.addAttribute("pdfjs", pdfjs);
+        }
+        return page;
     }
 
     @GetMapping("/picturesPreview")
