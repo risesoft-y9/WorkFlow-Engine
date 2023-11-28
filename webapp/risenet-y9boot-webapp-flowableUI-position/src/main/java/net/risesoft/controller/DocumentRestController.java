@@ -309,7 +309,7 @@ public class DocumentRestController {
             boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", null, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
             map.put("monitorManage", b);
 
-            boolean b1 = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "人事统计角色", Y9LoginUserHolder.getPositionId()).getData();
+            boolean b1 = false;
             map.put("leaveManage", b1);
 
             return Y9Result.success(map, "获取成功");

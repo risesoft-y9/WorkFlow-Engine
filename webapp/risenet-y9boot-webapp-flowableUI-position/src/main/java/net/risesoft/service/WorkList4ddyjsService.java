@@ -29,6 +29,15 @@ public interface WorkList4ddyjsService {
     Y9Page<Map<String, Object>> doneList(String itemId, String searchTerm, Integer page, Integer rows);
 
     /**
+     * 我的在办事项
+     *
+     * @param page
+     * @param rows
+     * @return
+     */
+    Y9Page<Map<String, Object>> homeDoingList(Integer page, Integer rows);
+
+    /**
      * 获取待办列表
      *
      * @param itemId 事项Id

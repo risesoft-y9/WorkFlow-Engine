@@ -153,8 +153,7 @@ public class DraftApiImpl implements Draft4PositionApi {
      */
     @Override
     @GetMapping(value = "/getDraftList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getDraftList(String tenantId, String positionId, int page, int rows, String title,
-        String itemId, boolean delFlag) {
+    public Map<String, Object> getDraftList(String tenantId, String positionId, int page, int rows, String title, String itemId, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -164,8 +163,7 @@ public class DraftApiImpl implements Draft4PositionApi {
             if (StringUtils.isEmpty(title)) {
                 title = "";
             }
-            Page<DraftEntity> pageList =
-                draftEntityService.getDraftList(itemId, positionId, page, rows, title, delFlag);
+            Page<DraftEntity> pageList = draftEntityService.getDraftList(itemId, positionId, page, rows, title, delFlag);
             List<Map<String, Object>> draftList = new ArrayList<Map<String, Object>>();
             Map<String, Object> formDataMap = null;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -220,6 +218,57 @@ public class DraftApiImpl implements Draft4PositionApi {
         return map;
     }
 
+    @Override
+    public Map<String, Object> getDraftListBySystemName(String tenantId, String positionId, int page, int rows, String title, String systemName, boolean delFlag) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPositionId(positionId);
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        map.put(UtilConsts.SUCCESS, true);
+        map.put("msg", "获取草稿列表成功");
+        try {
+            if (StringUtils.isEmpty(title)) {
+                title = "";
+            }
+            Page<DraftEntity> pageList = draftEntityService.getDraftListBySystemName(systemName, positionId, page, rows, title, delFlag);
+            List<Map<String, Object>> draftList = new ArrayList<Map<String, Object>>();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            int number = (page - 1) * rows;
+            for (DraftEntity draftEntity : pageList) {
+                Map<String, Object> retMap = new HashMap<String, Object>(16);
+                Optional<SpmApproveItem> spmApproveitem = spmApproveitemRepository.findById(draftEntity.getItemId());
+                if (spmApproveitem != null && spmApproveitem.get().getId() != null) {
+                    retMap.put("itemName", spmApproveitem.get().getName());
+                } else {
+                    retMap.put("itemName", "");
+                }
+                retMap.put("serialNumber", number + 1);
+                retMap.put("id", draftEntity.getId());
+                retMap.put("type", draftEntity.getType());
+                retMap.put("creater", draftEntity.getCreater());
+                retMap.put("createrId", draftEntity.getCreaterId());
+                retMap.put("docNumber", draftEntity.getDocNumber());
+                retMap.put("itemId", draftEntity.getItemId());
+                retMap.put("processDefinitionKey", draftEntity.getProcessDefinitionKey());
+                retMap.put("processInstanceId", draftEntity.getProcessInstanceId());
+                retMap.put("processSerialNumber", draftEntity.getProcessSerialNumber());
+                retMap.put("title", StringUtils.isEmpty(draftEntity.getTitle()) ? "无标题" : draftEntity.getTitle());
+                retMap.put("urgency", draftEntity.getUrgency());
+                retMap.put("draftTime", sdf.format(draftEntity.getDraftTime()));
+                draftList.add(retMap);
+                number += 1;
+            }
+            map.put("currpage", page);
+            map.put("totalpage", pageList.getTotalPages());
+            map.put("total", pageList.getTotalElements());
+            map.put("rows", draftList);
+        } catch (Exception e) {
+            map.put(UtilConsts.SUCCESS, false);
+            map.put("msg", "获取草稿列表失败");
+            e.printStackTrace();
+        }
+        return map;
+    }
+
     /**
      * 编辑草稿
      *
@@ -232,8 +281,7 @@ public class DraftApiImpl implements Draft4PositionApi {
      */
     @Override
     @GetMapping(value = "/openDraft4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> openDraft4Position(String tenantId, String positionId, String itemId,
-        String processSerialNumber, boolean mobile) {
+    public Map<String, Object> openDraft4Position(String tenantId, String positionId, String itemId, String processSerialNumber, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         Map<String, Object> map = new HashMap<>(16);
@@ -290,8 +338,7 @@ public class DraftApiImpl implements Draft4PositionApi {
      */
     @Override
     @PostMapping(value = "/saveDraft", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber,
-        String processDefinitionKey, String number, String level, String title) {
+    public Map<String, Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String title) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         Map<String, Object> map = new HashMap<String, Object>(16);

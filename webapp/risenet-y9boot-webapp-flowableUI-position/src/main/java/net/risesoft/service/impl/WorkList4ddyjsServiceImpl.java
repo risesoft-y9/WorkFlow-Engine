@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.RemindInstanceApi;
-import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.TaskVariableApi;
-import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
@@ -35,7 +33,6 @@ import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.itemadmin.TaskVariableModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.IdentityLinkModel;
@@ -67,15 +64,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     private ProcessParamApi processParamManager;
 
     @Autowired
-    private ChaoSong4PositionApi chaoSongInfoManager;
-
-    @Autowired
-    private SpeakInfoApi speakInfoManager;
-
-    @Autowired
-    private RemindInstanceApi remindInstanceManager;
-
-    @Autowired
     private OfficeFollow4PositionApi officeFollowManager;
 
     @Autowired
@@ -95,6 +83,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
     @Autowired
     private TaskVariableApi taskVariableManager;
+
+    @Value("${y9.common.flowableBaseUrl}")
+    private String flowableBaseUrl;
 
     @SuppressWarnings({"unchecked"})
     @Override
@@ -133,29 +124,22 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
                         mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                         mapTemp.put("processDefinitionId", processDefinitionId);
-                        mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
+                        mapTemp.put("title", documentTitle);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
                         mapTemp.put("taskName", taskList.get(0).getName());
                         mapTemp.put("taskCreateTime", taskCreateTime);
                         mapTemp.put("taskId", taskIds);
                         mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
-                        mapTemp.put(SysVariables.ITEMID, itemId);
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSongInfoManager.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
-                        mapTemp.put("chaosongNum", chaosongNum);
+                        mapTemp.put("chaosongNum", 0);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
                         mapTemp.put("processInstanceId", processInstanceId);
-                        int speakInfoNum = speakInfoManager.getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
-                        mapTemp.put("speakInfoNum", speakInfoNum);
+                        mapTemp.put("speakInfoNum", 0);
                         mapTemp.put("remindSetting", false);
-                        RemindInstanceModel remindInstanceModel = remindInstanceManager.getRemindInstance(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
-                        if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
-                            mapTemp.put("remindSetting", true);
-                        }
                         int countFollow = officeFollowManager.countByProcessInstanceId(tenantId, positionId, processInstanceId);
                         mapTemp.put("follow", countFollow > 0 ? true : false);
                     } catch (Exception e) {
@@ -204,12 +188,10 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSongInfoManager.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
-                        mapTemp.put("chaosongNum", chaosongNum);
+                        mapTemp.put("chaosongNum", 0);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
-                        int speakInfoNum = speakInfoManager.getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
-                        mapTemp.put("speakInfoNum", speakInfoNum);
+                        mapTemp.put("speakInfoNum", 0);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -252,7 +234,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 mapTemp.put("itemId", hpim.getItemId());
                 mapTemp.put("itemName", hpim.getItemName());
                 mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-                mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
+                mapTemp.put("title", documentTitle);
                 mapTemp.put("processDefinitionId", processDefinitionId);
                 mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionId());
                 mapTemp.put("startTime", startTime);
@@ -262,8 +244,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 mapTemp.put("itemId", itemId);
                 mapTemp.put("level", level);
                 mapTemp.put("number", number);
-                int chaosongNum = chaoSongInfoManager.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
-                mapTemp.put("chaosongNum", chaosongNum);
+                mapTemp.put("chaosongNum", 0);
                 mapTemp.put("processInstanceId", processInstanceId);
                 int countFollow = officeFollowManager.countByProcessInstanceId(tenantId, userId, processInstanceId);
                 mapTemp.put("follow", countFollow > 0 ? true : false);
@@ -354,6 +335,74 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
     @SuppressWarnings("unchecked")
     @Override
+    public Y9Page<Map<String, Object>> homeDoingList(Integer page, Integer rows) {
+        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        try {
+            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+            retMap = doingManager.getListByUserId(tenantId, positionId, page, rows);
+            List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {});
+            int serialNumber = (page - 1) * rows;
+            Map<String, Object> mapTemp = null;
+            ProcessParamModel processParam = null;
+            for (ProcessInstanceModel hpim : hpiModelList) {// 以办理时间排序
+                mapTemp = new HashMap<String, Object>(16);
+                try {
+                    String processInstanceId = hpim.getId();
+                    String processDefinitionId = hpim.getProcessDefinitionId();
+                    String taskCreateTime = sdf.format(hpim.getStartTime());
+                    List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                    String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
+                    Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
+                    processParam = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    String processSerialNumber = processParam.getProcessSerialNumber();
+                    String documentTitle = StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
+                    String level = processParam.getCustomLevel();
+                    String number = processParam.getCustomNumber();
+                    mapTemp.put("itemId", processParam.getItemId());
+                    mapTemp.put("itemName", processParam.getItemName());
+                    mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put("processDefinitionId", processDefinitionId);
+                    mapTemp.put("title", documentTitle);
+                    mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
+                    mapTemp.put("taskName", taskList.get(0).getName());
+                    mapTemp.put("taskCreateTime", taskCreateTime);
+                    mapTemp.put("taskId", taskIds);
+                    mapTemp.put("taskAssigneeId", assigneeIds);
+                    mapTemp.put("taskAssignee", assigneeNames);
+                    mapTemp.put(SysVariables.LEVEL, level);
+                    mapTemp.put(SysVariables.NUMBER, number);
+                    mapTemp.put("isReminder", isReminder);
+                    String url = flowableBaseUrl + "/index/edit?itemId=" + processParam.getItemId() + "&processSerialNumber=" + processSerialNumber + "&itembox=doing&taskId=" + taskIds + "&processInstanceId=" + processInstanceId + "&listType=doing&systemName=" + processParam.getSystemName();
+                    mapTemp.put("url", url);
+                    mapTemp.put("chaosongNum", 0);
+                    mapTemp.put("status", 1);
+                    mapTemp.put("taskDueDate", "");
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("speakInfoNum", 0);
+                    mapTemp.put("remindSetting", false);
+                    mapTemp.put("follow", false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                mapTemp.put("serialNumber", serialNumber + 1);
+                serialNumber += 1;
+                items.add(mapTemp);
+            }
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public Y9Page<Map<String, Object>> todoList(String itemId, String searchTerm, Integer page, Integer rows) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         try {
@@ -400,6 +449,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     mapTemp.put("itemName", processParam.getItemName());
                     mapTemp.put("processDefinitionKey", task.getProcessDefinitionId().split(":")[0]);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put("title", processParam.getTitle());
                     mapTemp.put("processDefinitionId", processDefinitionId);
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("description", description);
@@ -437,13 +487,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     }
                     mapTemp.put(SysVariables.LEVEL, level);
                     mapTemp.put("processInstanceId", processInstanceId);
-                    int speakInfoNum = speakInfoManager.getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
-                    mapTemp.put("speakInfoNum", speakInfoNum);
+                    mapTemp.put("speakInfoNum", 0);
                     mapTemp.put("remindSetting", false);
-                    RemindInstanceModel remindInstanceModel = remindInstanceManager.getRemindInstance(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
-                    if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
-                        mapTemp.put("remindSetting", true);
-                    }
 
                     int countFollow = officeFollowManager.countByProcessInstanceId(tenantId, positionId, processInstanceId);
                     mapTemp.put("follow", countFollow > 0 ? true : false);
