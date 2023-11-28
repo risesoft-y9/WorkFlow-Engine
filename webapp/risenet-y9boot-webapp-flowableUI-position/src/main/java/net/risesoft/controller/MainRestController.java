@@ -86,6 +86,19 @@ public class MainRestController {
     private Entrust4PositionApi entrust4PositionApi;
 
     /**
+     * 获取所有事项
+     *
+     * @return
+     */
+    @RequestMapping(value = "/geAllItemList", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public Y9Result<List<ItemModel>> geAllItemList() {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<ItemModel> list = itemManager.getAllItemList(tenantId);
+        return Y9Result.success(list, "获取成功");
+    }
+
+    /**
      * 根据事项id获取事项统计
      *
      * @param itemId
@@ -242,6 +255,20 @@ public class MainRestController {
     }
 
     /**
+     * 根据系统名称获取事项
+     *
+     * @param systemName
+     * @return
+     */
+    @RequestMapping(value = "/getItemBySystemName", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public Y9Result<List<ItemModel>> getItemBySystemName(@RequestParam(required = true) String systemName) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<ItemModel> itemList = itemManager.findAll(tenantId, systemName);
+        return Y9Result.success(itemList, "获取成功");
+    }
+
+    /**
      * 获取个人所有件统计
      *
      * @return
@@ -279,7 +306,7 @@ public class MainRestController {
      */
     @RequestMapping(value = "/getPositionList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Result<Map<String, Object>> getPositionList(@RequestParam(required = false) String count, @RequestParam(required = false) String itemId) {
+    public Y9Result<Map<String, Object>> getPositionList(@RequestParam(required = false) String count, @RequestParam(required = false) String itemId, @RequestParam(required = false) String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
@@ -294,6 +321,9 @@ public class MainRestController {
                 if (StringUtils.isNotBlank(itemId)) {// 单个事项获取待办数量
                     ItemModel itemModel = itemManager.getByItemId(tenantId, itemId);
                     todoCount = todoManager.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, p.getId(), itemModel.getWorkflowGuid());
+                    allCount = allCount + todoCount;
+                } else if (StringUtils.isNotBlank(systemName)) {// 单个事项获取待办数量
+                    todoCount = todoManager.getTodoCountByUserIdAndSystemName(tenantId, p.getId(), systemName);
                     allCount = allCount + todoCount;
                 } else {// 工作台获取所有待办数量
                     try {
@@ -322,6 +352,9 @@ public class MainRestController {
                             if (StringUtils.isNotBlank(itemId)) {// 单个事项获取待办数量
                                 ItemModel itemModel = itemManager.getByItemId(tenantId, itemId);
                                 todoCount1 = todoManager.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, position.getId(), itemModel.getWorkflowGuid());
+                                allCount = allCount + todoCount1;
+                            } else if (StringUtils.isNotBlank(systemName)) {// 单个事项获取待办数量
+                                todoCount1 = todoManager.getTodoCountByUserIdAndSystemName(tenantId, position.getId(), systemName);
                                 allCount = allCount + todoCount1;
                             } else {// 工作台获取所有待办数量
                                 try {
@@ -392,61 +425,76 @@ public class MainRestController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         String processSerialNumber = "";
-        if (type.equals("fromTodo")) {
-            try {
-                TaskModel taskModel = taskManager.findById(tenantId, taskId);
-                if (taskModel == null || taskModel.getId() == null) {
-                    try {
-                        todoTaskManager.deleteTodoTaskByTaskId(tenantId, taskId);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+        try {
+
+            if (type.equals("fromTodo")) {
+                try {
+                    TaskModel taskModel = taskManager.findById(tenantId, taskId);
+                    if (taskModel == null || taskModel.getId() == null) {
+                        try {
+                            todoTaskManager.deleteTodoTaskByTaskId(tenantId, taskId);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        map.put("taskId", "");
                     }
-                    map.put("taskId", "");
+                    processInstanceId = taskModel.getProcessInstanceId();
+                    ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    String itemId = processParamModel.getItemId();
+                    ItemModel itemModel = itemManager.getByItemId(tenantId, itemId);
+                    map.put("itemModel", itemModel);
+                    processSerialNumber = processParamModel.getProcessSerialNumber();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                processInstanceId = taskModel.getProcessInstanceId();
+            } else if (type.equals("fromCplane")) {
+                taskId = "";// 等于空为办结件
+                HistoricProcessInstanceModel hisProcess = historicProcessManager.getById(tenantId, processInstanceId);
                 ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                 processSerialNumber = processParamModel.getProcessSerialNumber();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else if (type.equals("fromCplane")) {
-            taskId = "";// 等于空为办结件
-            HistoricProcessInstanceModel hisProcess = historicProcessManager.getById(tenantId, processInstanceId);
-            ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
-            processSerialNumber = processParamModel.getProcessSerialNumber();
-            if (hisProcess == null || hisProcess.getId() == null) {// 办结件
-                // todoTaskManager.deleteTodoTaskByTaskId(tenantId, taskId);
-                // model.addAttribute("type", "");
-            } else {
-                if (hisProcess.getEndTime() == null) {// 协作状态未办结
-                    List<TaskModel> list = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
-                    boolean isTodo = false;
-                    if (list != null) {
-                        for (TaskModel task : list) {
-                            if ((task.getAssignee() != null && task.getAssignee().contains(Y9LoginUserHolder.getPositionId()))) {// 待办件
-                                taskId = task.getId();
-                                isTodo = true;
-                                break;
+                String itemId = processParamModel.getItemId();
+                ItemModel itemModel = itemManager.getByItemId(tenantId, itemId);
+                map.put("itemModel", itemModel);
+                if (hisProcess == null || hisProcess.getId() == null) {// 办结件
+                    // todoTaskManager.deleteTodoTaskByTaskId(tenantId, taskId);
+                    // model.addAttribute("type", "");
+                } else {
+                    if (hisProcess.getEndTime() == null) {// 协作状态未办结
+                        List<TaskModel> list = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        boolean isTodo = false;
+                        if (list != null) {
+                            for (TaskModel task : list) {
+                                if ((task.getAssignee() != null && task.getAssignee().contains(Y9LoginUserHolder.getPositionId()))) {// 待办件
+                                    taskId = task.getId();
+                                    isTodo = true;
+                                    break;
+                                }
+                            }
+                            if (!isTodo) {// 在办件
+                                taskId = list.get(0).getId();
                             }
                         }
-                        if (!isTodo) {// 在办件
-                            taskId = list.get(0).getId();
-                        }
+                        map.put("isTodo", isTodo);
                     }
-                    map.put("isTodo", isTodo);
                 }
-            }
-            map.put("taskId", taskId);
-        } else if (type.equals("fromHistory")) {
-            HistoricProcessInstanceModel processModel = historicProcessManager.getById(tenantId, processInstanceId);
-            if (processModel == null || processModel.getId() == null) {
-                OfficeDoneInfoModel officeDoneInfoModel = officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
-                if (officeDoneInfoModel == null) {
-                    processInstanceId = "";
-                } else {
-                    processSerialNumber = officeDoneInfoModel.getProcessSerialNumber();
+                map.put("taskId", taskId);
+            } else if (type.equals("fromHistory")) {
+                HistoricProcessInstanceModel processModel = historicProcessManager.getById(tenantId, processInstanceId);
+                if (processModel == null || processModel.getId() == null) {
+                    OfficeDoneInfoModel officeDoneInfoModel = officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    if (officeDoneInfoModel == null) {
+                        processInstanceId = "";
+                    } else {
+                        processSerialNumber = officeDoneInfoModel.getProcessSerialNumber();
+                    }
                 }
+                ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ItemModel itemModel = itemManager.getByItemId(tenantId, processParamModel.getItemId());
+                map.put("itemModel", itemModel);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Y9Result.failure("获取失败");
         }
         map.put("processInstanceId", processInstanceId);
         map.put("processSerialNumber", processSerialNumber);
