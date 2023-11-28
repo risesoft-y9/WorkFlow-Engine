@@ -208,8 +208,8 @@ public class MainRestController {
         map.put("monitorDoing", monitorDoing);
         map.put("monitorDone", monitorDone);
         try {
-            draftCount = draftManager.getDraftCount(tenantId, positionId, systemName);
-            draftRecycleCount = draftManager.getDeleteDraftCount(tenantId, positionId, systemName);
+            // draftCount = draftManager.getDraftCount(tenantId, positionId, systemName);
+            // draftRecycleCount = draftManager.getDeleteDraftCount(tenantId, positionId, systemName);
             Map<String, Object> countMap = todoManager.getCountByUserIdAndSystemName(tenantId, positionId, systemName);
             todoCount = countMap != null ? Long.parseLong(countMap.get("todoCount").toString()) : 0;
             doingCount = countMap != null ? Long.parseLong(countMap.get("doingCount").toString()) : 0;

@@ -1,5 +1,6 @@
 package net.risesoft.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.QueryListService;
 import net.risesoft.service.WorkList4ddyjsService;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 当代中国研究所使用
@@ -28,6 +33,12 @@ public class WorkList4ddyjsRestController {
 
     @Autowired
     private QueryListService queryListService;
+
+    @Autowired
+    private Draft4PositionApi draftManager;
+
+    @Autowired
+    private Item4PositionApi itemManager;
 
     /**
      * 获取已办件列表
@@ -57,6 +68,39 @@ public class WorkList4ddyjsRestController {
     @RequestMapping(value = "/doneList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> doneList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return workList4ddyjsService.doneList(itemId, searchTerm, page, rows);
+    }
+
+    /**
+     * 草稿列表
+     *
+     * @param page
+     * @param rows
+     * @param itemId
+     * @param title
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    @ResponseBody
+    @RequestMapping(value = "/draftList", method = RequestMethod.GET, produces = "application/json")
+    public Y9Page<Map<String, Object>> draftList(@RequestParam(required = true) int page, @RequestParam(required = true) int rows, @RequestParam(required = true) String itemId, @RequestParam(required = false) String title) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        ItemModel item = itemManager.getByItemId(tenantId, itemId);
+        Map<String, Object> map = draftManager.getDraftListBySystemName(tenantId, positionId, page, rows, title, item.getSystemName(), false);
+        List<Map<String, Object>> draftList = (List<Map<String, Object>>)map.get("rows");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), draftList, "获取列表成功");
+    }
+
+    /**
+     * 首页我的在办事项
+     *
+     * @param page
+     * @param rows
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/homeDoingList", method = RequestMethod.GET, produces = "application/json")
+    public Y9Page<Map<String, Object>> homeDoingList(@RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+        return workList4ddyjsService.homeDoingList(page, rows);
     }
 
     /**
