@@ -10,12 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.init.TenantDataInitializer;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.service.MultiTenantProcessEngineConfiguration;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
-
-import y9.autoconfiguration.liquibase.TenantDataInitializer;
 
 /**
  * @author qinman

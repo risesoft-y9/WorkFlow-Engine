@@ -17,14 +17,13 @@ import net.risesoft.api.tenant.TenantApi;
 import net.risesoft.enums.platform.ManagerLevelEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.init.TenantDataInitializer;
 import net.risesoft.model.platform.App;
 import net.risesoft.model.platform.System;
 import net.risesoft.model.platform.Tenant;
 import net.risesoft.util.InitTableDataService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
-
-import y9.autoconfiguration.liquibase.TenantDataInitializer;
 
 /**
  * @author qinman
