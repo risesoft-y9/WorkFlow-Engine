@@ -4,16 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import net.risesoft.model.platform.System;
-import org.hibernate.integrator.api.integrator.Y9TenantHibernateInfoHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationListener;
 import org.springframework.jdbc.core.JdbcTemplate;
-
-import com.alibaba.druid.pool.DruidDataSource;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,14 +18,13 @@ import net.risesoft.enums.platform.ManagerLevelEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.App;
+import net.risesoft.model.platform.System;
 import net.risesoft.model.platform.Tenant;
 import net.risesoft.util.InitTableDataService;
 import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
-import net.risesoft.y9.pubsub.constant.Y9CommonEventConst;
-import net.risesoft.y9.pubsub.event.Y9EventCommon;
-import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
+
+import y9.autoconfiguration.liquibase.TenantDataInitializer;
 
 /**
  * @author qinman
@@ -39,7 +32,7 @@ import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
  * @date 2023/01/03
  */
 @Slf4j
-public class ItemMultiTenantListener implements ApplicationListener<Y9EventCommon> {
+public class ItemMultiTenantListener implements TenantDataInitializer {
 
     /** 事项id */
     public static final String ITEM_ID = "11111111-1111-1111-1111-111111111111";
@@ -49,14 +42,7 @@ public class ItemMultiTenantListener implements ApplicationListener<Y9EventCommo
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate4Tenant;
-
-    @Autowired
     private TenantApi tenantApi;
-
-    @Autowired
-    private Y9TenantDataSourceLookup y9TenantDataSourceLookup;
 
     @Autowired
     private SystemApi systemApi;
@@ -113,37 +99,14 @@ public class ItemMultiTenantListener implements ApplicationListener<Y9EventCommo
 
     }
 
-    /**
-     * 租户租用事项系统监听
-     */
     @Override
-    public void onApplicationEvent(Y9EventCommon event) {
-        String eventType = event.getEventType();
-        String target = event.getTarget();
-        if (Y9CommonEventConst.TENANT_SYSTEM_REGISTERED.equals(eventType) && Y9Context.getSystemName().equals(target)) {
-            String tenantId = event.getEventObject().toString();
-            LOGGER.info("租户:{}租用itemAdmin 初始化数据.........", tenantId);
-            Tenant tenant = tenantApi.getById(tenantId).getData();
-            creatApp("itemAdmin");
-            createTenantApp("itemAdmin", tenant);
-            try {
-                // 更新租户数据库里的表结构
-                updateTenantSchema();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            initTableDataService.init(tenantId);
-            LOGGER.info(Y9Context.getSystemName() + ", 同步租户数据源信息, 成功！");
-        }
-    }
-
-    private void updateTenantSchema() {
-        Map<String, DruidDataSource> map = y9TenantDataSourceLookup.getDataSources();
-        Set<String> list = map.keySet();
-        for (String tenantId : list) {
-            Y9LoginUserHolder.setTenantId(tenantId);
-            Y9TenantHibernateInfoHolder.schemaUpdate(Y9Context.getEnvironment());
-        }
+    public void init(String tenantId) {
+        LOGGER.info("租户:{}租用itemAdmin 初始化数据.........", tenantId);
+        Tenant tenant = tenantApi.getById(tenantId).getData();
+        creatApp("itemAdmin");
+        createTenantApp("itemAdmin", tenant);
+        initTableDataService.init(tenantId);
+        LOGGER.info(Y9Context.getSystemName() + ", 同步租户数据源信息, 成功！");
     }
 
 }
