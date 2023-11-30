@@ -6,6 +6,7 @@
     <title>PDF预览</title>
     <#include "*/commonHeader.ftl">
     <script src="js/base64.min.js" type="text/javascript"></script>
+    <script src="js/customMethods.js" type="text/javascript"></script>
 </head>
 
 <body>

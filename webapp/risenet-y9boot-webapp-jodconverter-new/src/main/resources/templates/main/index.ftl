@@ -340,7 +340,7 @@
         }).on('pre-body.bs.table', function (e, data) {
             // 每个data添加一列用来操作
             $(data).each(function (index, item) {
-                item.action = "<a class='btn btn-success' target='_blank' href='${baseUrl}onlinePreview?url=" + '${baseUrl}' + item.fileName + "'>预览</a>" +
+                item.action = "<a class='btn btn-success' target='_blank' href='${baseUrl}onlinePreview?url=" + '${baseUrl}' + encodeURIComponent(item.fileName) + "'>预览</a>" +
                     "<a class='btn btn-danger' style='margin-left:10px;' href='javascript:void(0);' onclick='deleteFile(\"" + '${baseUrl}' + item.fileName + "\")'>删除</a>";
             });
             return data;
@@ -358,7 +358,7 @@
                 return false;
             }
 
-            window.open('${baseUrl}onlinePreview?url=' + _url);
+            window.open('${baseUrl}onlinePreview?url=' + encodeURIComponent(_url));
         });
 
         $('#fileSelectBtn').on('click', function () {

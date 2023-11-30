@@ -49,7 +49,7 @@
 </head>
 <body>
 <div class="zTreeDemoBackground left">
-    <h1>kkFileView</h1>
+    <h1>FileView</h1>
     <ul id="treeDemo" class="ztree"></ul>
 </div>
 <script>
@@ -70,7 +70,7 @@
     function chooseNode(event, treeId, treeNode) {
         if (!treeNode.isParent) {
             var path = '${baseUrl}' + treeNode.id + "?fileKey=" + '${fileName}';
-            location.href = "${baseUrl}onlinePreview?url=" + path;
+            location.href = "${baseUrl}onlinePreview?url=" + encodeURIComponent(path);
         }
     }
 
@@ -78,7 +78,7 @@
         var url = '${fileTree}';
         $.ajax({
             type: "get",
-            url: "${baseUrl}directory?urls=" + url,
+            url: "${baseUrl}directory?urls=" + encodeURIComponent(url),
             success: function (res) {
                 zTreeObj = $.fn.zTree.init($("#treeDemo"), settings, res); //初始化树
                 zTreeObj.expandAll(true);   //true 节点全部展开、false节点收缩

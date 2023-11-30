@@ -1,7 +1,6 @@
 package net.risesoft.service.impl;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -59,7 +58,10 @@ public class OfficeFilePreviewImpl implements FilePreview {
                 || suffix.equalsIgnoreCase("xlsm") || suffix.equalsIgnoreCase("xlt") || suffix.equalsIgnoreCase("xltm")
                 || suffix.equalsIgnoreCase("et") || suffix.equalsIgnoreCase("ett") || suffix.equalsIgnoreCase("xlam");
         String pdfName = fileName.substring(0, fileName.lastIndexOf(".")) + suffix + "." + (isHtml ? "html" : "pdf"); // 生成文件添加类型后缀
-                                                                                                                      // 防止同名文件
+        // 防止同名文件
+        if (pdfName.contains("/")) {
+            pdfName = pdfName.substring(pdfName.lastIndexOf("/") + 1); // 避免压缩包预览，会下载到压缩目录
+        }
         String cacheFileName = userToken == null ? pdfName : userToken + "_" + pdfName;
         String outFilePath = FILE_DIR + cacheFileName;
         if (!officePreviewType.equalsIgnoreCase("html")) {
@@ -146,7 +148,7 @@ public class OfficeFilePreviewImpl implements FilePreview {
             return getPreviewType(model, fileAttribute, officePreviewType, baseUrl, cacheFileName, outFilePath,
                 fileHandlerService, OFFICE_PREVIEW_TYPE_IMAGE, otherFilePreview);
         }
-        cacheFileName = URLEncoder.encode(cacheFileName).replaceAll("\\+", "%20");
+        // cacheFileName = URLEncoder.encode(cacheFileName).replaceAll("\\+", "%20");
         model.addAttribute("pdfUrl", cacheFileName);
         return isHtml ? EXEL_FILE_PREVIEW_PAGE : PDF_FILE_PREVIEW_PAGE;
     }

@@ -22,6 +22,7 @@
         <java.version>11</java.version>
         <logging.path>${basedir}/target/classes/logs</logging.path>
         <appName>file-preview-new</appName>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
     <repositories>
