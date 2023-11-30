@@ -10,11 +10,11 @@
             height: 100%
         }
     </style>
-    <title>kkFileView Bpmn</title>
+    <title>FileView Bpmn</title>
 </head>
 <body>
 
-<h2>kkFileView Bpmn : ${fileName}</h2>
+<h2>FileView Bpmn : ${fileName}</h2>
 
 <div id="diagram"></div>
 

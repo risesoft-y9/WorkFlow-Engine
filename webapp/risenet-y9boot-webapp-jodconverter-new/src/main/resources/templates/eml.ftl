@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1.0">
     <#include "*/commonHeader.ftl">
     <script src="js/base64.min.js" type="text/javascript"></script>
+    <script src="js/customMethods.js" type="text/javascript"></script>
 </head>
 <#if currentUrl?contains("http://") || currentUrl?contains("https://") || currentUrl?contains("file://")>
     <#assign finalUrl="${currentUrl}">
