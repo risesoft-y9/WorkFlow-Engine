@@ -10,6 +10,16 @@ import java.util.Map;
 public interface Draft4PositionApi {
 
     /**
+     * 根据系统名称计数
+     *
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param systemName 系统id
+     * @return
+     */
+    int countBySystemName(String tenantId, String positionId, String systemName);
+
+    /**
      * 彻底删除草稿
      *
      * @param tenantId 租户id

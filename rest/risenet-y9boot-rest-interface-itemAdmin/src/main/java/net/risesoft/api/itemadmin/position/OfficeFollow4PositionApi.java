@@ -49,6 +49,19 @@ public interface OfficeFollow4PositionApi {
     int getFollowCount(String tenantId, String positionId);
 
     /**
+     * 根据系统名获取关注列表
+     *
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param systemName 系统名称
+     * @param searchName 搜索内容
+     * @param page
+     * @param rows
+     * @return
+     */
+    Map<String, Object> getFollowListBySystemName(String tenantId, String positionId, String systemName, String searchName, int page, int rows);
+
+    /**
      * 获取关注列表
      *
      * @param tenantId 租户id

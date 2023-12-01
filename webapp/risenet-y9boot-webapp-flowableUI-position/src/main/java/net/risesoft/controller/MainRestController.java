@@ -92,10 +92,14 @@ public class MainRestController {
      */
     @RequestMapping(value = "/geAllItemList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Result<List<ItemModel>> geAllItemList() {
+    public Y9Result<Map<String, Object>> geAllItemList() {
+        Map<String, Object> map = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemModel> list = itemManager.getAllItemList(tenantId);
-        return Y9Result.success(list, "获取成功");
+        boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", null, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
+        map.put("monitorManage", b);
+        map.put("itemList", list);
+        return Y9Result.success(map, "获取成功");
     }
 
     /**
@@ -208,7 +212,7 @@ public class MainRestController {
         map.put("monitorDoing", monitorDoing);
         map.put("monitorDone", monitorDone);
         try {
-            // draftCount = draftManager.getDraftCount(tenantId, positionId, systemName);
+            draftCount = draftManager.countBySystemName(tenantId, positionId, systemName);
             // draftRecycleCount = draftManager.getDeleteDraftCount(tenantId, positionId, systemName);
             Map<String, Object> countMap = todoManager.getCountByUserIdAndSystemName(tenantId, positionId, systemName);
             todoCount = countMap != null ? Long.parseLong(countMap.get("todoCount").toString()) : 0;

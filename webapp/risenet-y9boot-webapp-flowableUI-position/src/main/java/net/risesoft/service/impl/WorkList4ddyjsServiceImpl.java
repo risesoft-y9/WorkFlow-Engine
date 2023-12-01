@@ -184,7 +184,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         mapTemp.put("taskId", taskIds);
                         mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
-                        mapTemp.put(SysVariables.ITEMID, itemId);
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
@@ -241,7 +240,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 mapTemp.put("endTime", endTime);
                 mapTemp.put("taskDefinitionKey", "");
                 mapTemp.put("user4Complete", completer);
-                mapTemp.put("itemId", itemId);
                 mapTemp.put("level", level);
                 mapTemp.put("number", number);
                 mapTemp.put("chaosongNum", 0);
@@ -256,6 +254,16 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             items.add(mapTemp);
         }
         return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Y9Page<Map<String, Object>> followList(String itemId, String searchTerm, Integer page, Integer rows) {
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        ItemModel item = itemManager.getByItemId(tenantId, itemId);
+        map = officeFollowManager.getFollowListBySystemName(tenantId, Y9LoginUserHolder.getPositionId(), item.getSystemName(), searchTerm, page, rows);
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
     }
 
     /**

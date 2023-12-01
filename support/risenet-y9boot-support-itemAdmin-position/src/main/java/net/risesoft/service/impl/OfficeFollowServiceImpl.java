@@ -23,8 +23,8 @@ import net.risesoft.entity.OfficeFollow;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.RemindInstance;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.OfficeFollowModel;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.repository.jpa.OfficeFollowRepository;
 import net.risesoft.service.OfficeFollowService;
@@ -61,8 +61,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
 
     @Override
     public int countByProcessInstanceId(String processInstanceId) {
-        return officeFollowRepository.countByProcessInstanceIdAndUserId(processInstanceId,
-            Y9LoginUserHolder.getPositionId());
+        return officeFollowRepository.countByProcessInstanceIdAndUserId(processInstanceId, Y9LoginUserHolder.getPositionId());
     }
 
     @Override
@@ -98,8 +97,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
-            taskId = "";
+        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
         List<String> list = new ArrayList<String>();
         int i = 0;
         if (taskList.size() > 0) {
@@ -156,6 +154,70 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     }
 
     @Override
+    public Map<String, Object> getFollowListBySystemName(String systemName, String searchName, int page, int rows) {
+        String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        Map<String, Object> resultMap = new HashMap<String, Object>(16);
+        SimpleDateFormat sdf5 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<OfficeFollowModel> list = new ArrayList<OfficeFollowModel>();
+        try {
+            Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
+            Page<OfficeFollow> followList = null;
+            if (StringUtils.isBlank(searchName)) {
+                followList = officeFollowRepository.findBySystemNameAndUserId(systemName, positionId, pageable);
+            } else {
+                searchName = "%" + searchName + "%";
+                followList = officeFollowRepository.findBySystemNameAndParamsLike(systemName, positionId, searchName, pageable);
+            }
+            for (OfficeFollow officeFollow : followList.getContent()) {
+                try {
+                    String processInstanceId = officeFollow.getProcessInstanceId();
+                    officeFollow.setStartTime(sdf5.format(sdf.parse(officeFollow.getStartTime())));
+                    ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+                    List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, officeFollow.getProcessInstanceId());
+                    if (CollectionUtils.isNotEmpty(taskList)) {
+                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                        String taskIds = listTemp.get(0);
+                        String assigneeNames = listTemp.get(2);
+                        officeFollow.setTaskId(listTemp.get(3).equals(new HashMap<String, String>(16)) ? taskIds : listTemp.get(4));
+                        officeFollow.setTaskName(StringUtils.isEmpty(taskList.get(0).getName()) ? "" : taskList.get(0).getName());
+                        officeFollow.setItembox(listTemp.get(3));
+                        officeFollow.setTaskAssignee(StringUtils.isEmpty(assigneeNames) ? "" : assigneeNames);
+                    } else {
+                        officeFollow.setTaskId("");
+                        officeFollow.setItembox(ItemBoxTypeEnum.DONE.getValue());
+                        officeFollow.setTaskAssignee(processParam != null ? processParam.getCompleter() : "");
+                    }
+
+                    officeFollow.setSendDept(processParam.getStartorName());
+                    officeFollow.setMsgremind(false);
+                    RemindInstance remindInstance = remindInstanceService.getRemindInstance(processInstanceId);
+                    // 流程实例是否设置消息提醒
+                    if (remindInstance != null) {
+                        officeFollow.setMsgremind(true);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                OfficeFollowModel model = new OfficeFollowModel();
+                Y9BeanUtil.copyProperties(officeFollow, model);
+                list.add(model);
+            }
+            resultMap.put("rows", list);
+            resultMap.put("totalpage", followList.getTotalPages());
+            resultMap.put("currpage", page);
+            resultMap.put("total", followList.getTotalElements());
+            resultMap.put(UtilConsts.SUCCESS, true);
+            resultMap.put("msg", "列表获取成功");
+        } catch (Exception e) {
+            resultMap.put(UtilConsts.SUCCESS, false);
+            resultMap.put("msg", "列表获取失败");
+            e.printStackTrace();
+        }
+        return resultMap;
+    }
+
+    @Override
     public Map<String, Object> getOfficeFollowList(String searchName, int page, int rows) {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> resultMap = new HashMap<String, Object>(16);
@@ -175,16 +237,13 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                 try {
                     String processInstanceId = officeFollow.getProcessInstanceId();
                     officeFollow.setStartTime(sdf5.format(sdf.parse(officeFollow.getStartTime())));
-                    List<TaskModel> taskList =
-                        taskManager.findByProcessInstanceId(tenantId, officeFollow.getProcessInstanceId());
+                    List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, officeFollow.getProcessInstanceId());
                     if (CollectionUtils.isNotEmpty(taskList)) {
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0);
                         String assigneeNames = listTemp.get(2);
-                        officeFollow.setTaskId(
-                            listTemp.get(3).equals(new HashMap<String, String>(16)) ? taskIds : listTemp.get(4));
-                        officeFollow.setTaskName(
-                            StringUtils.isEmpty(taskList.get(0).getName()) ? "" : taskList.get(0).getName());
+                        officeFollow.setTaskId(listTemp.get(3).equals(new HashMap<String, String>(16)) ? taskIds : listTemp.get(4));
+                        officeFollow.setTaskName(StringUtils.isEmpty(taskList.get(0).getName()) ? "" : taskList.get(0).getName());
                         officeFollow.setItembox(listTemp.get(3));
                         officeFollow.setTaskAssignee(StringUtils.isEmpty(assigneeNames) ? "" : assigneeNames);
                     } else {
@@ -228,8 +287,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
         map.put("msg", "关注成功");
         try {
             if (officeFollow != null && officeFollow.getGuid() != null) {
-                OfficeFollow follow = officeFollowRepository
-                    .findByProcessInstanceIdAndUserId(officeFollow.getProcessInstanceId(), officeFollow.getUserId());
+                OfficeFollow follow = officeFollowRepository.findByProcessInstanceIdAndUserId(officeFollow.getProcessInstanceId(), officeFollow.getUserId());
                 if (follow == null) {
                     officeFollowRepository.save(officeFollow);
                 }
