@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.OptionClassApi;
+import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.tenant.TenantApi;
@@ -45,6 +46,9 @@ public class Y9FormRestController {
 
     @Autowired
     private OptionClassApi optionClassManager;
+
+    @Autowired
+    private DepartmentApi departmentApi;
 
     /**
      * 删除子表单数据
@@ -210,6 +214,11 @@ public class Y9FormRestController {
         PersonExt personExt = personApi.getPersonExtByPersonId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
         if (personExt != null && personExt.getSign() != null) {
             map.put("sign", personExt.getSign());// 签名
+        }
+        List<OrgUnit> leaders = departmentApi.listLeaders(Y9LoginUserHolder.getTenantId(), parent.getId()).getData();
+        map.put("deptLeader", "未配置");// 岗位所在部门领导
+        if (!leaders.isEmpty()) {
+            map.put("deptLeader", leaders.get(0).getName());
         }
         /** 办件表单数据初始化 **/
         map.put("zihao", second + "号");// 编号
