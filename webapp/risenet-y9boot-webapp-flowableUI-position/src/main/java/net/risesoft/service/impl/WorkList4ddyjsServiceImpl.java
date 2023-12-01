@@ -426,6 +426,11 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     mapTemp.put("speakInfoNum", 0);
                     mapTemp.put("remindSetting", false);
                     mapTemp.put("follow", false);
+                    mapTemp.put("meeting", false);
+                    String meeting = variableManager.getVariableByProcessInstanceId(tenantId, processInstanceId, "meeting");
+                    if (meeting != null && Boolean.valueOf(meeting)) {// 上会
+                        mapTemp.put("meeting", true);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
