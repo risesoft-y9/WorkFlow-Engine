@@ -18,6 +18,13 @@ import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 public interface Draft4PositionApiClient extends Draft4PositionApi {
 
     /**
+     *
+     */
+    @Override
+    @GetMapping("/countBySystemName")
+    public int countBySystemName(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("systemName") String systemName);
+
+    /**
      * 彻底删除草稿
      *
      * @param tenantId 租户id

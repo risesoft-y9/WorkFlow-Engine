@@ -35,10 +35,9 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
+import jodd.util.StringUtil;
 import y9.client.rest.processadmin.ProcessDefinitionApiClient;
 import y9.client.rest.processadmin.RepositoryApiClient;
-
-import jodd.util.StringUtil;
 
 /**
  * @author qinman
@@ -118,43 +117,35 @@ public class DraftEntityServiceImpl implements DraftEntityService {
     }
 
     @Override
-    public Page<DraftEntity> getDraftList(String itemId, String userId, int page, int rows, String title,
-        boolean delFlag) {
-        PageRequest pageable =
-            PageRequest.of(page > 0 ? page - 1 : 0, rows, Sort.by(Sort.Direction.DESC, "urgency", "draftTime"));
+    public Page<DraftEntity> getDraftList(String itemId, String userId, int page, int rows, String title, boolean delFlag) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, Sort.by(Sort.Direction.DESC, "urgency", "draftTime"));
         Page<DraftEntity> list = null;
         title = "%" + title + "%";
         if (delFlag) {
             if (StringUtil.isAllBlank(itemId) || "".equals(itemId)) {
                 list = draftEntityRepository.findByCreaterIdAndTitleLikeAndDelFlagTrue(userId, title, pageable);
             } else {
-                list = draftEntityRepository.findByItemIdAndCreaterIdAndTitleLikeAndDelFlagTrue(itemId, userId, title,
-                    pageable);
+                list = draftEntityRepository.findByItemIdAndCreaterIdAndTitleLikeAndDelFlagTrue(itemId, userId, title, pageable);
             }
         } else {
             if (StringUtil.isEmpty(itemId)) {
                 list = draftEntityRepository.findByCreaterIdAndTitleLikeAndDelFlagFalse(userId, title, pageable);
             } else {
-                list = draftEntityRepository.findByItemIdAndCreaterIdAndTitleLikeAndDelFlagFalse(itemId, userId, title,
-                    pageable);
+                list = draftEntityRepository.findByItemIdAndCreaterIdAndTitleLikeAndDelFlagFalse(itemId, userId, title, pageable);
             }
         }
         return list;
     }
 
     @Override
-    public Page<DraftEntity> getDraftListBySystemName(String systemName, String userId, int page, int rows,
-        String title, boolean delFlag) {
-        PageRequest pageable =
-            PageRequest.of(page > 0 ? page - 1 : 0, rows, Sort.by(Sort.Direction.DESC, "urgency", "draftTime"));
+    public Page<DraftEntity> getDraftListBySystemName(String systemName, String userId, int page, int rows, String title, boolean delFlag) {
+        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, Sort.by(Sort.Direction.DESC, "urgency", "draftTime"));
         Page<DraftEntity> list = null;
         title = "%" + title + "%";
         if (delFlag) {
-            list = draftEntityRepository.findBySystemNameAndCreaterIdAndTitleLikeAndDelFlagTrue(systemName, userId,
-                title, pageable);
+            list = draftEntityRepository.findByTypeAndCreaterIdAndTitleLikeAndDelFlagTrue(systemName, userId, title, pageable);
         } else {
-            list = draftEntityRepository.findBySystemNameAndCreaterIdAndTitleLikeAndDelFlagFalse(systemName, userId,
-                title, pageable);
+            list = draftEntityRepository.findByTypeAndCreaterIdAndTitleLikeAndDelFlagFalse(systemName, userId, title, pageable);
         }
         return list;
     }
@@ -168,11 +159,9 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         Map<String, Object> returnMap = new HashMap<>(16);
         returnMap = spmApproveitemService.findById(itemId, returnMap);
         String processDefinitionKey = (String)returnMap.get("processDefinitionKey");
-        String processDefinitionId =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getId();
+        String processDefinitionId = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getId();
         String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
-        List<Map<String, String>> routeToTasks =
-            processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
+        List<Map<String, String>> routeToTasks = processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
         String taskDefKeyList = "";
         String taskDefNameList = "";
         for (Map<String, String> m : routeToTasks) {
@@ -186,8 +175,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         returnMap = documentService.genDocumentModel(itemId, processDefinitionKey, "", taskDefKey, mobile, returnMap);
         returnMap.put("taskDefKeyList", taskDefKeyList);
         returnMap.put("taskDefNameList", taskDefNameList);
-        returnMap = documentService.menuControl(itemId, processDefinitionId, taskDefKey, "", returnMap,
-            ItemBoxTypeEnum.DRAFT.getValue());
+        returnMap = documentService.menuControl(itemId, processDefinitionId, taskDefKey, "", returnMap, ItemBoxTypeEnum.DRAFT.getValue());
         returnMap.put("processDefinitionId", processDefinitionId);
         returnMap.put("processDefinitionKey", processDefinitionKey);
         returnMap.put("taskDefKey", taskDefKey);
@@ -251,8 +239,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
 
     @Transactional(readOnly = false)
     @Override
-    public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
-        String number, String level, String title, String type) {
+    public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String title, String type) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("message", "保存失败");
         map.put(UtilConsts.SUCCESS, false);
@@ -307,8 +294,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
 
     @Transactional(readOnly = false)
     @Override
-    public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
-        String number, String level, String title, String jijian, String type) {
+    public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String title, String jijian, String type) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("message", "保存失败");
         map.put(UtilConsts.SUCCESS, false);

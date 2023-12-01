@@ -91,6 +91,21 @@ public class WorkList4ddyjsRestController {
     }
 
     /**
+     * 关注列表
+     *
+     * @param itemId
+     * @param searchTerm
+     * @param page
+     * @param rows
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/followList", method = RequestMethod.GET, produces = "application/json")
+    public Y9Page<Map<String, Object>> followList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+        return workList4ddyjsService.followList(itemId, searchTerm, page, rows);
+    }
+
+    /**
      * 首页我的在办事项
      *
      * @param page

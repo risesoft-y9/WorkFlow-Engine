@@ -50,6 +50,15 @@ public class DraftApiImpl implements Draft4PositionApi {
     @Autowired
     private FormDataService formDataService;
 
+    @Override
+    @GetMapping(value = "/countBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
+    public int countBySystemName(String tenantId, String positionId, String systemName) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPositionId(positionId);
+        int count = draftEntityRepository.countByTypeAndCreaterIdAndDelFlagFalse(systemName, positionId);
+        return count;
+    }
+
     /**
      * 彻底删除草稿
      *
@@ -219,6 +228,7 @@ public class DraftApiImpl implements Draft4PositionApi {
     }
 
     @Override
+    @GetMapping(value = "/getDraftListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getDraftListBySystemName(String tenantId, String positionId, int page, int rows, String title, String systemName, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);

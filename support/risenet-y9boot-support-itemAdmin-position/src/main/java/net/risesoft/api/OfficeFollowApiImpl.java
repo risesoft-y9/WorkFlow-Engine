@@ -92,6 +92,25 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
     }
 
     /**
+     * 根据系统名称获取关注列表
+     *
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param systemName 系统名称
+     * @param searchName 搜索词
+     * @param page 页码
+     * @param rows 条数
+     * @return Map<String, Object>
+     */
+    @Override
+    @GetMapping(value = "/getFollowListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getFollowListBySystemName(String tenantId, String positionId, String systemName, String searchName, int page, int rows) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPositionId(positionId);
+        return officeFollowService.getFollowListBySystemName(systemName, searchName, page, rows);
+    }
+
+    /**
      * 获取关注列表
      *
      * @param tenantId 租户id
@@ -103,8 +122,7 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
      */
     @Override
     @GetMapping(value = "/getOfficeFollowList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getOfficeFollowList(String tenantId, String positionId, String searchName, int page,
-        int rows) {
+    public Map<String, Object> getOfficeFollowList(String tenantId, String positionId, String searchName, int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         return officeFollowService.getOfficeFollowList(searchName, page, rows);
@@ -118,8 +136,7 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
      * @return Map<String, Object>
      */
     @Override
-    @PostMapping(value = "/saveOfficeFollow", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/saveOfficeFollow", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> saveOfficeFollow(String tenantId, @RequestBody OfficeFollowModel officeFollowModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OfficeFollow officeFollow = new OfficeFollow();

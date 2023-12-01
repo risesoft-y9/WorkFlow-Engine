@@ -86,6 +86,13 @@ public class OfficeFollow implements Serializable {
     private String fileType;
 
     /**
+     * 系统名称
+     */
+    @Comment("系统名称")
+    @Column(name = "SYSTEMNAME", length = 50, nullable = true)
+    private String systemName;
+
+    /**
      * 标题
      */
     @Comment("标题")

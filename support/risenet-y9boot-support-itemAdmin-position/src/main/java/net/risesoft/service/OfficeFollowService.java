@@ -42,6 +42,17 @@ public interface OfficeFollowService {
     int getFollowCount();
 
     /**
+     * 根据系统名称获取关注列表
+     *
+     * @param systemName
+     * @param searchName
+     * @param page
+     * @param rows
+     * @return
+     */
+    Map<String, Object> getFollowListBySystemName(String systemName, String searchName, int page, int rows);
+
+    /**
      * 获取关注列表
      *
      * @param searchName
