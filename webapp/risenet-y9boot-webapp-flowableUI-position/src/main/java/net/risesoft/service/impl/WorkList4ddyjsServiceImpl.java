@@ -25,6 +25,7 @@ import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.processadmin.DoingApi;
+import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
@@ -35,6 +36,7 @@ import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.TaskVariableModel;
 import net.risesoft.model.platform.Position;
+import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -77,6 +79,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
     @Autowired
     private VariableApi variableManager;
+
+    @Autowired
+    private HistoricVariableApi historicVariableApi;
 
     @Autowired
     private ProcessDefinitionApi processDefinitionManager;
@@ -140,8 +145,17 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         mapTemp.put("processInstanceId", processInstanceId);
                         mapTemp.put("speakInfoNum", 0);
                         mapTemp.put("remindSetting", false);
-                        int countFollow = officeFollowManager.countByProcessInstanceId(tenantId, positionId, processInstanceId);
-                        mapTemp.put("follow", countFollow > 0 ? true : false);
+                        // int countFollow = officeFollowManager.countByProcessInstanceId(tenantId, positionId,
+                        // processInstanceId);
+                        // mapTemp.put("follow", countFollow > 0 ? true : false);
+
+                        mapTemp.put("meeting", false);
+                        if (item.getSystemName().equals("gongwenguanli")) {
+                            String meeting = variableManager.getVariableByProcessInstanceId(tenantId, processInstanceId, "meeting");
+                            if (meeting != null && Boolean.valueOf(meeting)) {// 上会
+                                mapTemp.put("meeting", true);
+                            }
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -191,6 +205,14 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
                         mapTemp.put("speakInfoNum", 0);
+
+                        mapTemp.put("meeting", false);
+                        if (item.getSystemName().equals("gongwenguanli")) {
+                            String meeting = variableManager.getVariableByProcessInstanceId(tenantId, processInstanceId, "meeting");
+                            if (meeting != null && Boolean.valueOf(meeting)) {// 上会
+                                mapTemp.put("meeting", true);
+                            }
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -244,8 +266,17 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 mapTemp.put("number", number);
                 mapTemp.put("chaosongNum", 0);
                 mapTemp.put("processInstanceId", processInstanceId);
-                int countFollow = officeFollowManager.countByProcessInstanceId(tenantId, userId, processInstanceId);
-                mapTemp.put("follow", countFollow > 0 ? true : false);
+                // int countFollow = officeFollowManager.countByProcessInstanceId(tenantId, userId, processInstanceId);
+                // mapTemp.put("follow", countFollow > 0 ? true : false);
+                mapTemp.put("meeting", false);
+                if (item.getSystemName().equals("gongwenguanli")) {
+                    HistoricVariableInstanceModel meetingObj = historicVariableApi.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, "meeting", hpim.getStartTime().substring(0, 4));
+                    if (meetingObj != null) {
+                        if (meetingObj.getValue() != null && Boolean.valueOf((String)meetingObj.getValue())) {// 上会
+                            mapTemp.put("meeting", true);
+                        }
+                    }
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -445,8 +476,10 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     int priority = task.getPriority();
                     keys = new ArrayList<String>();
                     keys.add(SysVariables.TASKSENDER);
+                    keys.add("meeting");
                     vars = variableManager.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys);
                     String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
+                    String meeting = Strings.nullToEmpty((String)vars.get("meeting"));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
                     processParam = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
@@ -498,12 +531,17 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     mapTemp.put("speakInfoNum", 0);
                     mapTemp.put("remindSetting", false);
 
-                    int countFollow = officeFollowManager.countByProcessInstanceId(tenantId, positionId, processInstanceId);
-                    mapTemp.put("follow", countFollow > 0 ? true : false);
+                    // int countFollow = officeFollowManager.countByProcessInstanceId(tenantId, positionId,
+                    // processInstanceId);
+                    // mapTemp.put("follow", countFollow > 0 ? true : false);
 
                     String rollBack = variableManager.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK);
                     if (rollBack != null && Boolean.valueOf(rollBack)) {// 退回件
                         mapTemp.put("rollBack", true);
+                    }
+                    mapTemp.put("meeting", false);
+                    if (meeting != null && Boolean.valueOf(meeting)) {// 上会
+                        mapTemp.put("meeting", true);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
