@@ -484,7 +484,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     keys.add("meeting");
                     vars = variableManager.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys);
                     String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
-                    String meeting = Strings.nullToEmpty((String)vars.get("meeting"));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
                     processParam = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
@@ -545,7 +544,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         mapTemp.put("rollBack", true);
                     }
                     mapTemp.put("meeting", false);
-                    if (meeting != null && Boolean.valueOf(meeting)) {// 上会
+                    if (vars.get("meeting") != null && Boolean.valueOf(String.valueOf(vars.get("meeting")))) {// 上会
                         mapTemp.put("meeting", true);
                     }
                 } catch (Exception e) {
