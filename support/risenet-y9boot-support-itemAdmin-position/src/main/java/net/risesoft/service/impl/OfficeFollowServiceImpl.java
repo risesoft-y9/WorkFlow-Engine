@@ -179,7 +179,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0);
                         String assigneeNames = listTemp.get(2);
-                        officeFollow.setTaskId(listTemp.get(3).equals(new HashMap<String, String>(16)) ? taskIds : listTemp.get(4));
+                        officeFollow.setTaskId(listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
                         officeFollow.setTaskName(StringUtils.isEmpty(taskList.get(0).getName()) ? "" : taskList.get(0).getName());
                         officeFollow.setItembox(listTemp.get(3));
                         officeFollow.setTaskAssignee(StringUtils.isEmpty(assigneeNames) ? "" : assigneeNames);
@@ -242,7 +242,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0);
                         String assigneeNames = listTemp.get(2);
-                        officeFollow.setTaskId(listTemp.get(3).equals(new HashMap<String, String>(16)) ? taskIds : listTemp.get(4));
+                        officeFollow.setTaskId(listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
                         officeFollow.setTaskName(StringUtils.isEmpty(taskList.get(0).getName()) ? "" : taskList.get(0).getName());
                         officeFollow.setItembox(listTemp.get(3));
                         officeFollow.setTaskAssignee(StringUtils.isEmpty(assigneeNames) ? "" : assigneeNames);

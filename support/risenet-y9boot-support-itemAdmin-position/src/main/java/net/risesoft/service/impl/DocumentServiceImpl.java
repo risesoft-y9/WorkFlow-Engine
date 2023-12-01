@@ -30,6 +30,7 @@ import net.risesoft.api.permission.RoleApi;
 import net.risesoft.api.processadmin.ConditionParserApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
+import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.RepositoryApi;
@@ -65,6 +66,7 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.model.platform.Resource;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
+import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -145,6 +147,9 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Autowired
     private VariableApi variableManager;
+
+    @Autowired
+    private HistoricVariableApi historicVariableApi;
 
     @Autowired
     private OrgUnitApi orgUnitManager;
@@ -330,6 +335,7 @@ public class DocumentServiceImpl implements DocumentService {
         if (ItemBoxTypeEnum.MONITORDOING.getValue().equals(itembox)) {
             itembox = ItemBoxTypeEnum.DOING.getValue();
         }
+        returnMap.put("meeting", false);
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         startor = processParam.getStartor();
         if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
@@ -363,6 +369,10 @@ public class DocumentServiceImpl implements DocumentService {
                 startTaskDefKey = Y9Util.genCustomStr(startTaskDefKey, map.get("taskDefKey"));
             }
             returnMap.put("startTaskDefKey", startTaskDefKey);
+            String meeting = variableManager.getVariableByProcessInstanceId(tenantId, processInstanceId, "meeting");
+            if (meeting != null && Boolean.valueOf(meeting)) {// 上会
+                returnMap.put("meeting", true);
+            }
         } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())) {
             HistoricProcessInstanceModel hpi = historicProcessManager.getById(tenantId, processInstanceId);
             if (hpi == null) {
@@ -376,7 +386,17 @@ public class DocumentServiceImpl implements DocumentService {
                     processDefinitionId = officeDoneInfo.getProcessDefinitionId();
                     processDefinitionKey = officeDoneInfo.getProcessDefinitionKey();
                 }
+                HistoricVariableInstanceModel meetingObj = historicVariableApi.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, "meeting", officeDoneInfo.getStartTime().substring(0, 4));
+                if (meetingObj != null) {
+                    if (meetingObj.getValue() != null && Boolean.valueOf((String)meetingObj.getValue())) {// 上会
+                        returnMap.put("meeting", true);
+                    }
+                }
             } else {
+                String meeting = variableManager.getVariableByProcessInstanceId(tenantId, processInstanceId, "meeting");
+                if (meeting != null && Boolean.valueOf(meeting)) {// 上会
+                    returnMap.put("meeting", true);
+                }
                 processDefinitionId = hpi.getProcessDefinitionId();
                 processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
             }
