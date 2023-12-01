@@ -21,6 +21,7 @@ import net.risesoft.api.tenant.TenantApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.PersonExt;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.platform.Tenant;
@@ -218,7 +219,8 @@ public class Y9FormRestController {
         List<OrgUnit> leaders = departmentApi.listLeaders(Y9LoginUserHolder.getTenantId(), parent.getId()).getData();
         map.put("deptLeader", "未配置");// 岗位所在部门领导
         if (!leaders.isEmpty()) {
-            map.put("deptLeader", leaders.get(0).getName());
+            List<Person> personLeaders = positionApi.listPersons(Y9LoginUserHolder.getTenantId(), leaders.get(0).getId()).getData();
+            map.put("deptLeader", personLeaders.isEmpty() ? leaders.get(0).getName() : personLeaders.get(0).getName());
         }
         /** 办件表单数据初始化 **/
         map.put("zihao", second + "号");// 编号
