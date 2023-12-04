@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.OfficeFollow;
 import net.risesoft.entity.ProcessParam;
@@ -25,8 +27,11 @@ import net.risesoft.entity.RemindInstance;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.OfficeFollowModel;
 import net.risesoft.model.platform.Position;
+import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.repository.jpa.OfficeFollowRepository;
+import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.OfficeFollowService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.RemindInstanceService;
@@ -58,6 +63,15 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
 
     @Autowired
     private RemindInstanceService remindInstanceService;
+
+    @Autowired
+    private VariableApi variableApi;
+
+    @Autowired
+    private HistoricVariableApi historicVariableApi;
+
+    @Autowired
+    private OfficeDoneInfoService officeDoneInfoService;
 
     @Override
     public int countByProcessInstanceId(String processInstanceId) {
@@ -172,7 +186,8 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
             for (OfficeFollow officeFollow : followList.getContent()) {
                 try {
                     String processInstanceId = officeFollow.getProcessInstanceId();
-                    officeFollow.setStartTime(sdf5.format(sdf.parse(officeFollow.getStartTime())));
+                    OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                    officeFollow.setStartTime(sdf5.format(sdf.parse(officeDoneInfo.getStartTime())));
                     ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
                     List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, officeFollow.getProcessInstanceId());
                     if (CollectionUtils.isNotEmpty(taskList)) {
@@ -183,19 +198,24 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                         officeFollow.setTaskName(StringUtils.isEmpty(taskList.get(0).getName()) ? "" : taskList.get(0).getName());
                         officeFollow.setItembox(listTemp.get(3));
                         officeFollow.setTaskAssignee(StringUtils.isEmpty(assigneeNames) ? "" : assigneeNames);
+                        officeFollow.setMsgremind(false);
+                        String meeting = variableApi.getVariableByProcessInstanceId(tenantId, processInstanceId, "meeting");
+                        if (meeting != null && Boolean.valueOf(meeting)) {// 上会
+                            officeFollow.setMsgremind(true);
+                        }
                     } else {
                         officeFollow.setTaskId("");
                         officeFollow.setItembox(ItemBoxTypeEnum.DONE.getValue());
                         officeFollow.setTaskAssignee(processParam != null ? processParam.getCompleter() : "");
+                        HistoricVariableInstanceModel meetingObj = historicVariableApi.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, "meeting", officeDoneInfo.getStartTime().substring(0, 4));
+                        if (meetingObj != null) {
+                            if (meetingObj.getValue() != null && Boolean.valueOf((String)meetingObj.getValue())) {// 上会
+                                officeFollow.setMsgremind(true);
+                            }
+                        }
                     }
-
                     officeFollow.setSendDept(processParam.getStartorName());
                     officeFollow.setMsgremind(false);
-                    RemindInstance remindInstance = remindInstanceService.getRemindInstance(processInstanceId);
-                    // 流程实例是否设置消息提醒
-                    if (remindInstance != null) {
-                        officeFollow.setMsgremind(true);
-                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
