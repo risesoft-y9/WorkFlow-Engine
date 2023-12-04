@@ -41,6 +41,7 @@ public class DdyjsRestController {
             Map<String, Object> val = new HashMap<String, Object>();
             val.put("val", false);
             variableManager.setVariableByProcessInstanceId(tenantId, processInstanceId, "meeting", val);
+            return Y9Result.successMsg("取消上会成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
