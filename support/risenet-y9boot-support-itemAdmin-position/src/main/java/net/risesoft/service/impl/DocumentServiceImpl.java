@@ -240,8 +240,7 @@ public class DocumentServiceImpl implements DocumentService {
             if (StringUtils.isNotBlank(itemId)) {
                 returnMap = spmApproveitemService.findById(itemId, returnMap);
                 String processDefinitionKey = (String)returnMap.get("processDefinitionKey");
-                ProcessDefinitionModel pdModel =
-                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+                ProcessDefinitionModel pdModel = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
                 String processDefinitionId = pdModel.getId();
                 if (StringUtils.isBlank(processDefinitionKey)) {
                     returnMap.put("msg", "当前事项没有绑定流程！");
@@ -251,8 +250,7 @@ public class DocumentServiceImpl implements DocumentService {
                 String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
                 String activitiUser = userId;
                 returnMap = this.genDocumentModel(itemId, processDefinitionKey, "", taskDefKey, mobile, returnMap);
-                returnMap = this.menuControl(itemId, processDefinitionId, taskDefKey, "", returnMap,
-                    ItemBoxTypeEnum.ADD.getValue());
+                returnMap = this.menuControl(itemId, processDefinitionId, taskDefKey, "", returnMap, ItemBoxTypeEnum.ADD.getValue());
                 returnMap.put("processDefinitionId", processDefinitionId);
                 returnMap.put("processDefinitionKey", processDefinitionKey);
                 returnMap.put("taskDefKey", taskDefKey);
@@ -303,19 +301,16 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Map<String, Object> docUserChoise(String itemId, String processDefinitionKey, String processDefinitionId,
-        String taskId, String taskDefKey, String processInstanceId) {
+    public Map<String, Object> docUserChoise(String itemId, String processDefinitionKey, String processDefinitionId, String taskId, String taskDefKey, String processInstanceId) {
         Map<String, Object> returnMap = new HashMap<>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, taskDefKey);
-            Map<String, Object> tabMap =
-                itemPermissionService.getTabMap(itemId, processDefinitionId, taskDefKey, processInstanceId);
+            Map<String, Object> tabMap = itemPermissionService.getTabMap(itemId, processDefinitionId, taskDefKey, processInstanceId);
             returnMap.put("existPosition", tabMap.get("existPosition"));
             returnMap.put("existDepartment", tabMap.get("existDepartment"));
 
-            Y9Page<CustomGroup> pagelist = customGroupApi.pageCustomGroupByPersonId(tenantId,
-                Y9LoginUserHolder.getPersonId(), new Y9PageQuery(1, 1));
+            Y9Page<CustomGroup> pagelist = customGroupApi.pageCustomGroupByPersonId(tenantId, Y9LoginUserHolder.getPersonId(), new Y9PageQuery(1, 1));
             returnMap.put("existCustomGroup", (pagelist != null && pagelist.getTotal() > 0) ? true : false);
 
             returnMap.put("multiInstance", multiInstance);
@@ -332,11 +327,9 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Map<String, Object> edit(String itembox, String taskId, String processInstanceId, String itemId,
-        boolean mobile) {
+    public Map<String, Object> edit(String itembox, String taskId, String processInstanceId, String itemId, boolean mobile) {
         Map<String, Object> returnMap = new HashMap<>(16);
-        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
-            activitiUser = "";
+        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "", activitiUser = "";
         String itemboxStr = itembox;
         String startor = "";
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -371,10 +364,8 @@ public class DocumentServiceImpl implements DocumentService {
             }
             // 获取第一节点任务key,可能多个
             String startTaskDefKey = "";
-            String startNode =
-                processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
-            List<Map<String, String>> nodeList =
-                processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, startNode);
+            String startNode = processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
+            List<Map<String, String>> nodeList = processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, startNode);
             for (Map<String, String> map : nodeList) {
                 startTaskDefKey = Y9Util.genCustomStr(startTaskDefKey, map.get("taskDefKey"));
             }
@@ -383,8 +374,7 @@ public class DocumentServiceImpl implements DocumentService {
             if (meeting != null && Boolean.valueOf(meeting)) {// 上会
                 returnMap.put("meeting", true);
             }
-        } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
-            || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())) {
+        } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())) {
             HistoricProcessInstanceModel hpi = historicProcessManager.getById(tenantId, processInstanceId);
             if (hpi == null) {
                 OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
@@ -397,8 +387,7 @@ public class DocumentServiceImpl implements DocumentService {
                     processDefinitionId = officeDoneInfo.getProcessDefinitionId();
                     processDefinitionKey = officeDoneInfo.getProcessDefinitionKey();
                 }
-                HistoricVariableInstanceModel meetingObj = historicVariableApi.getByProcessInstanceIdAndVariableName(
-                    tenantId, processInstanceId, "meeting", officeDoneInfo.getStartTime().substring(0, 4));
+                HistoricVariableInstanceModel meetingObj = historicVariableApi.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, "meeting", officeDoneInfo.getStartTime().substring(0, 4));
                 if (meetingObj != null) {
                     if (meetingObj.getValue() != null && Boolean.valueOf((String)meetingObj.getValue())) {// 上会
                         returnMap.put("meeting", true);
@@ -434,8 +423,7 @@ public class DocumentServiceImpl implements DocumentService {
         returnMap.put("taskId", taskId);
         returnMap.put(SysVariables.ACTIVITIUSER, activitiUser);
         returnMap = spmApproveitemService.findById(itemId, returnMap);
-        returnMap = this.genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile,
-            returnMap);
+        returnMap = this.genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, returnMap);
         returnMap = this.menuControl(itemId, processDefinitionId, taskDefinitionKey, taskId, returnMap, itemboxStr);
         return returnMap;
     }
@@ -451,8 +439,7 @@ public class DocumentServiceImpl implements DocumentService {
      * @return
      */
     @Override
-    public Map<String, Object> forwarding(String taskId, String sponsorHandle, String userChoice, String routeToTaskId,
-        String sponsorGuid) {
+    public Map<String, Object> forwarding(String taskId, String sponsorHandle, String userChoice, String routeToTaskId, String sponsorGuid) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         String processInstanceId = "";
         try {
@@ -471,15 +458,12 @@ public class DocumentServiceImpl implements DocumentService {
             }
             Position position = Y9LoginUserHolder.getPosition();
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
-            String multiInstance =
-                processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(), routeToTaskId);
-            Map<String, Object> variables =
-                CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
+            String multiInstance = processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(), routeToTaskId);
+            Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
             // 子流程信息
             if (multiInstance.equals(SysVariables.CALLACTIVITY)) {
                 Map<String, Object> initDataMap = new HashMap<String, Object>(16);
-                initDataMap.put(SysVariables.PARENTPROCESSSERIALNUMBER,
-                    processParam != null ? processParam.getProcessSerialNumber() : "");
+                initDataMap.put(SysVariables.PARENTPROCESSSERIALNUMBER, processParam != null ? processParam.getProcessSerialNumber() : "");
                 variables.put(SysVariables.INITDATAMAP, initDataMap);
             }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -501,8 +485,7 @@ public class DocumentServiceImpl implements DocumentService {
                 taskVariable.setUpdateTime(sdf.format(date));
                 taskVariable.setText("true:" + String.valueOf(num));
                 taskVariableRepository.save(taskVariable);
-                asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, sponsorHandle,
-                    sponsorGuid, taskId, multiInstance, variables, userList);
+                asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, sponsorHandle, sponsorGuid, taskId, multiInstance, variables, userList);
             } else if (SysVariables.SUBPROCESS.equals(multiInstance)) {
                 Map<String, Object> vars = new HashMap<String, Object>(16);
                 vars.put("parentTaskId", taskId);
@@ -516,8 +499,7 @@ public class DocumentServiceImpl implements DocumentService {
                      */
                     tooMuch = taskNextList1.size() > 10;
                     if (tooMuch) {
-                        TaskVariable taskVariable =
-                            taskVariableRepository.findByTaskIdAndKeyName(taskId, "isForwarding");
+                        TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, "isForwarding");
                         Date date = new Date();
                         if (taskVariable == null) {
                             taskVariable = new TaskVariable();
@@ -530,15 +512,12 @@ public class DocumentServiceImpl implements DocumentService {
                         taskVariable.setUpdateTime(sdf.format(date));
                         taskVariable.setText("true:" + String.valueOf(num));
                         taskVariableRepository.save(taskVariable);
-                        asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam,
-                            sponsorHandle, sponsorGuid, taskId, multiInstance, variables, userList);
+                        asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, sponsorHandle, sponsorGuid, taskId, multiInstance, variables, userList);
                     } else {
-                        asyncHandleService.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid,
-                            taskId, multiInstance, variables, userList);
+                        asyncHandleService.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid, taskId, multiInstance, variables, userList);
                     }
                 } else {
-                    asyncHandleService.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid,
-                        taskId, multiInstance, variables, userList);
+                    asyncHandleService.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid, taskId, multiInstance, variables, userList);
                 }
             }
             map.put("processInstanceId", processInstanceId);
@@ -575,20 +554,17 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Map<String, Object> genDocumentModel(String itemId, String processDefinitionKey, String processDefinitionId,
-        String taskDefinitionKey, boolean mobile, Map<String, Object> returnMap) {
+    public Map<String, Object> genDocumentModel(String itemId, String processDefinitionKey, String processDefinitionId, String taskDefinitionKey, boolean mobile, Map<String, Object> returnMap) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(processDefinitionId)) {
-            processDefinitionId =
-                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getId();
+            processDefinitionId = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getId();
         }
         // Y9表单
         String formIds = "";
         String showOtherFlag = "";
         String formNames = "";
         if (mobile) {
-            List<Y9FormItemMobileBind> eformTaskBinds = y9FormItemBindService
-                .findByItemIdAndProcDefIdAndTaskDefKey4Mobile(itemId, processDefinitionId, taskDefinitionKey);
+            List<Y9FormItemMobileBind> eformTaskBinds = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey4Mobile(itemId, processDefinitionId, taskDefinitionKey);
             returnMap.put("formId", "");
             returnMap.put("formName", "");
             returnMap.put("formJson", "");
@@ -606,8 +582,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
             return returnMap;
         }
-        List<Y9FormItemBind> eformTaskBinds =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
+        List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
         List<Map<String, String>> list = new ArrayList<Map<String, String>>();
         if (eformTaskBinds.size() > 0) {
             for (Y9FormItemBind eftb : eformTaskBinds) {
@@ -642,8 +617,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     private void getAllPosition(List<Position> list, String deptId) {
-        List<Department> deptList =
-            departmentManager.listSubDepartments(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        List<Department> deptList = departmentManager.listSubDepartments(Y9LoginUserHolder.getTenantId(), deptId).getData();
         List<Position> list0 = departmentManager.listPositions(Y9LoginUserHolder.getTenantId(), deptId).getData();
         if (!list0.isEmpty()) {
             list.addAll(list0);
@@ -658,8 +632,7 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             String resourceId = "";
-            List<Resource> list =
-                positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
+            List<Resource> list = positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
             String url = "";
             for (Resource r : list) {
                 url = r.getUrl();
@@ -691,10 +664,8 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public String getFormIdByItemId(String itemId, String processDefinitionKey) {
         String formIds = "";
-        String processDefinitionId = repositoryManager
-            .getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefinitionKey).getId();
-        List<Y9FormItemBind> eformTaskBinds =
-            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, "");
+        String processDefinitionId = repositoryManager.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefinitionKey).getId();
+        List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, "");
         if (eformTaskBinds.size() > 0) {
             for (Y9FormItemBind eftb : eformTaskBinds) {
                 formIds = Y9Util.genCustomStr(formIds, eftb.getFormId());
@@ -711,8 +682,7 @@ public class DocumentServiceImpl implements DocumentService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String resourceId = "";
             //////////////////////////////////
-            List<Resource> list =
-                positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
+            List<Resource> list = positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
             Map<String, Object> map = null;
             String url = "";
             long todoCount = 0;
@@ -734,11 +704,9 @@ public class DocumentServiceImpl implements DocumentService {
                 map.put("name", r.getName());
                 if (spmApproveitem != null && spmApproveitem.getId() != null) {
                     map.put("name", spmApproveitem.getName());
-                    todoCount = todoManager.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId,
-                        spmApproveitem.getWorkflowGuid());
+                    todoCount = todoManager.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId, spmApproveitem.getWorkflowGuid());
                     map.put("todoCount", todoCount);
-                    map.put("iconData",
-                        StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
+                    map.put("iconData", StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
                     listMap.add(map);
                 }
             }
@@ -757,17 +725,14 @@ public class DocumentServiceImpl implements DocumentService {
                     map.put("iconData", "");
                     map.put("todoCount", 0);
                     if (spmApproveitem != null && spmApproveitem.getId() != null) {
-                        todoCount = todoManager.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId,
-                            spmApproveitem.getWorkflowGuid());
-                        boolean workOrderManage =
-                            positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", positionId).getData();
+                        todoCount = todoManager.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId, spmApproveitem.getWorkflowGuid());
+                        boolean workOrderManage = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", positionId).getData();
                         if (workOrderManage) {
                             int workOrdertodoCount = workOrderService.getAdminTodoCount();
                             todoCount += workOrdertodoCount;
                         }
                         map.put("todoCount", todoCount);
-                        map.put("iconData",
-                            StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
+                        map.put("iconData", StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
                         listMap.add(map);
                     }
                 }
@@ -784,8 +749,7 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             String resourceId = "";
-            List<Resource> list =
-                positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
+            List<Resource> list = positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
             Map<String, Object> map = null;
             String url = "";
             for (Resource r : list) {
@@ -805,8 +769,7 @@ public class DocumentServiceImpl implements DocumentService {
                 map.put("name", r.getName());
                 if (spmApproveitem != null && spmApproveitem.getId() != null) {
                     map.put("name", spmApproveitem.getName());
-                    map.put("iconData",
-                        StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
+                    map.put("iconData", StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
                     listMap.add(map);
                 }
             }
@@ -824,8 +787,7 @@ public class DocumentServiceImpl implements DocumentService {
                     map.put("itemId", workOrderItemId);
                     map.put("iconData", "");
                     if (spmApproveitem != null && spmApproveitem.getId() != null) {
-                        map.put("iconData",
-                            StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
+                        map.put("iconData", StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
                         listMap.add(map);
                     }
                 }
@@ -836,11 +798,9 @@ public class DocumentServiceImpl implements DocumentService {
         return listMap;
     }
 
-    public List<OrgUnit> getUserChoice(String itemId, String processDefinitionId, String taskDefinitionKey,
-        String processSerialNumber) {
+    public List<OrgUnit> getUserChoice(String itemId, String processDefinitionId, String taskDefinitionKey, String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemPermission> list = itemPermissionService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId,
-            processDefinitionId, taskDefinitionKey);
+        List<ItemPermission> list = itemPermissionService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefinitionKey);
         List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
         for (ItemPermission o : list) {
             if (o.getRoleType() == ItemPermissionEnum.DEPARTMENT.getValue()) {
@@ -854,10 +814,8 @@ public class DocumentServiceImpl implements DocumentService {
                     orgUnitList.add(orgUnit);
                 }
             } else if (o.getRoleType() == ItemPermissionEnum.ROLE.getValue()) {
-                List<OrgUnit> deptList =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData();
-                List<OrgUnit> personList =
-                    roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData();
+                List<OrgUnit> deptList = roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData();
+                List<OrgUnit> personList = roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData();
                 orgUnitList.addAll(deptList);
                 orgUnitList.addAll(personList);
             } else if (o.getRoleType() == ItemPermissionEnum.DYNAMICROLE.getValue()) {
@@ -882,8 +840,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Map<String, Object> menuControl(String itemId, String processDefinitionId, String taskDefKey, String taskId,
-        Map<String, Object> returnMap, String itembox) {
+    public Map<String, Object> menuControl(String itemId, String processDefinitionId, String taskDefKey, String taskId, Map<String, Object> returnMap, String itembox) {
         ButtonUtil buttonUtil = new ButtonUtil();
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = buttonUtil.showButton(itemId, taskId, itembox);
@@ -910,8 +867,7 @@ public class DocumentServiceImpl implements DocumentService {
              * 如果显示保存按钮，那么说明是待办，把自定义普通按钮加在保存按钮的前面
              */
             if (k == 0 && isButtonShow[0]) {
-                bibList = buttonItemBindService.findListContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
-                    processDefinitionId, taskDefKey);
+                bibList = buttonItemBindService.findListContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(), processDefinitionId, taskDefKey);
                 for (ItemButtonBind bind : bibList) {
                     String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
                     if (!"发送".equals(buttonName)) {
@@ -950,8 +906,7 @@ public class DocumentServiceImpl implements DocumentService {
                  * 假如有自定义“发送”按钮的话,就不显示默认的发送按钮
                  */
                 Boolean haveSendButton = false;
-                bibList = buttonItemBindService.findListContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(),
-                    processDefinitionId, taskDefKey);
+                bibList = buttonItemBindService.findListContainRoleId(itemId, ItemButtonTypeEnum.COMMON.getValue(), processDefinitionId, taskDefKey);
                 bibFor:
                 for (ItemButtonBind bib : bibList) {
                     if ("发送".equals(bib.getButtonName())) {
@@ -997,8 +952,7 @@ public class DocumentServiceImpl implements DocumentService {
                     /**
                      * 添加发送下面的路由
                      */
-                    List<Map<String, String>> routeToTasks =
-                        processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
+                    List<Map<String, String>> routeToTasks = processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
                     for (Map<String, String> m : routeToTasks) {
                         Map<String, Object> map2 = new HashMap<String, Object>(16);
                         // 退回、路由网关不显示在发送下面
@@ -1013,8 +967,7 @@ public class DocumentServiceImpl implements DocumentService {
                     /**
                      * 添加自定义按钮到发送
                      */
-                    bibList = buttonItemBindService.findListContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(),
-                        processDefinitionId, taskDefKey);
+                    bibList = buttonItemBindService.findListContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(), processDefinitionId, taskDefKey);
                     for (ItemButtonBind bind : bibList) {
                         List<String> roleIds = bind.getRoleIds();
                         String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
@@ -1048,8 +1001,7 @@ public class DocumentServiceImpl implements DocumentService {
              */
             String taskDefNameJson = "";
             if (k == 15 && isButtonShow[15]) {
-                List<Map<String, Object>> taskNodes =
-                    processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
+                List<Map<String, Object>> taskNodes = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
                 for (Map<String, Object> node : taskNodes) {
                     Map<String, Object> map3 = new HashMap<String, Object>(16);
                     // 流程不显示在重定向按钮下面
@@ -1096,13 +1048,11 @@ public class DocumentServiceImpl implements DocumentService {
         return returnMap;
     }
 
-    public Y9Result<Map<String, String>> parserRouteToTaskId(String itemId, String processSerialNumber,
-        String processDefinitionId, String taskDefKey, String taskId) {
+    public Y9Result<Map<String, String>> parserRouteToTaskId(String itemId, String processSerialNumber, String processDefinitionId, String taskDefKey, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Y9Result<Map<String, String>> result = Y9Result.failure("解析目标路由失败");
         try {
-            List<Map<String, String>> targetNodes =
-                processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
+            List<Map<String, String>> targetNodes = processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, taskDefKey);
             if (targetNodes.isEmpty()) {
                 result.setMsg("目标路由不存在");
                 return result;
@@ -1112,14 +1062,11 @@ public class DocumentServiceImpl implements DocumentService {
                 result.setSuccess(true);
                 return result;
             }
-            List<Y9FormItemBind> eformTaskBinds =
-                y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
-            Map<String, Object> variables =
-                y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
+            List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            Map<String, Object> variables = y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
             List<Map<String, String>> targetNodesTemp = new ArrayList<>();
             for (Map<String, String> targetNode : targetNodes) {
-                boolean b =
-                    conditionParserApi.parser(tenantId, targetNode.get(SysVariables.CONDITIONEXPRESSION), variables);
+                boolean b = conditionParserApi.parser(tenantId, targetNode.get(SysVariables.CONDITIONEXPRESSION), variables);
                 if (b) {
                     targetNodesTemp.add(targetNode);
                 }
@@ -1144,11 +1091,9 @@ public class DocumentServiceImpl implements DocumentService {
         return result;
     }
 
-    public Y9Result<List<String>> parserUser(String itemId, String processDefinitionId, String routeToTaskId,
-        String routeToTaskName, String processInstanceId, String multiInstance) {
+    public Y9Result<List<String>> parserUser(String itemId, String processDefinitionId, String routeToTaskId, String routeToTaskName, String processInstanceId, String multiInstance) {
         Y9Result<List<String>> result = Y9Result.failure("解析人员失败");
-        List<OrgUnit> orgUnitList =
-            roleService.findPermUser4SUbmitTo(itemId, processDefinitionId, routeToTaskId, processInstanceId);
+        List<OrgUnit> orgUnitList = roleService.findPermUser4SUbmitTo(itemId, processDefinitionId, routeToTaskId, processInstanceId);
         if (orgUnitList.isEmpty()) {
             result.setMsg("目标路由【" + routeToTaskName + "】未授权人员");
             return result;
@@ -1189,8 +1134,7 @@ public class DocumentServiceImpl implements DocumentService {
                         users = this.addUserId(users, pTemp.getId());
                     }
                 } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
-                    List<CustomGroupMember> list = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                        Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION).getData();
+                    List<CustomGroupMember> list = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId, Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION).getData();
                     for (CustomGroupMember pTemp : list) {
                         Position position = positionManager.getPosition(tenantId, pTemp.getMemberId()).getData();
                         if (position != null && StringUtils.isNotBlank(position.getId())) {
@@ -1218,8 +1162,7 @@ public class DocumentServiceImpl implements DocumentService {
             userChoice = userChoice.substring(2, userChoice.length());
             userAndDeptIdList.add(userChoice);
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
-            String multiInstance = processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(),
-                task.getTaskDefinitionKey());
+            String multiInstance = processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey());
             Map<String, Object> variables = new HashMap<String, Object>(16);
             variables.put(SysVariables.USER, userChoice);
             if (SysVariables.PARALLEL.equals(multiInstance)) {
@@ -1281,8 +1224,7 @@ public class DocumentServiceImpl implements DocumentService {
      * @return
      */
     @Override
-    public Map<String, Object> saveAndForwarding(String itemId, String processSerialNumber, String processDefinitionKey,
-        String userChoice, String sponsorGuid, String routeToTaskId, Map<String, Object> variables) {
+    public Map<String, Object> saveAndForwarding(String itemId, String processSerialNumber, String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId, Map<String, Object> variables) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         List<String> userList = new ArrayList<String>();
         userList.addAll(this.parseUserChoice(userChoice));
@@ -1304,9 +1246,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Map<String, Object> saveAndForwardingByTaskKey(String itemId, String processSerialNumber,
-        String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId,
-        String startRouteToTaskId, Map<String, Object> variables) {
+    public Map<String, Object> saveAndForwardingByTaskKey(String itemId, String processSerialNumber, String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId, String startRouteToTaskId, Map<String, Object> variables) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<String> userList = new ArrayList<String>();
@@ -1318,8 +1258,7 @@ public class DocumentServiceImpl implements DocumentService {
             map.put("msg", "发送人数过多");
             return map;
         }
-        Map<String, Object> map1 =
-            this.startProcessByTaskKey(itemId, processSerialNumber, processDefinitionKey, startRouteToTaskId);
+        Map<String, Object> map1 = this.startProcessByTaskKey(itemId, processSerialNumber, processDefinitionKey, startRouteToTaskId);
         String taskId = (String)map1.get("taskId");
         if (!variables.isEmpty()) {
             variableManager.setVariables(tenantId, taskId, variables);
@@ -1338,34 +1277,27 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             SpmApproveItem item = spmApproveitemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
-            ProcessDefinitionModel processDefinitionModel =
-                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+            ProcessDefinitionModel processDefinitionModel = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
             String processDefinitionId = processDefinitionModel.getId();
             String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
-            Y9Result<Map<String, String>> routeToTaskIdResult =
-                this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, "");
+            Y9Result<Map<String, String>> routeToTaskIdResult = this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, "");
             if (!routeToTaskIdResult.isSuccess()) {
                 map.put("msg", routeToTaskIdResult.getMsg());
                 return map;
             }
-            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY),
-                routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.REALTASKDEFNAME);
+            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY), routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.REALTASKDEFNAME);
             String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
-            Y9Result<List<String>> userResult =
-                this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
+            Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, "", multiInstance);
             if (!userResult.isSuccess()) {
                 map.put("msg", userResult.getMsg());
                 return map;
             }
             Map<String, Object> startProcessMap = this.startProcess(itemId, processSerialNumber, processDefinitionKey);
-            String taskId = (String)startProcessMap.get("taskId"),
-                processInstanceId = (String)startProcessMap.get("processInstanceId");
+            String taskId = (String)startProcessMap.get("taskId"), processInstanceId = (String)startProcessMap.get("processInstanceId");
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             List<String> userList = userResult.getData();
-            Map<String, Object> variables =
-                CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
-            asyncHandleService.forwarding4Task(processInstanceId, processParam, "", "", taskId, multiInstance,
-                variables, userList);
+            Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
+            asyncHandleService.forwarding4Task(processInstanceId, processParam, "", "", taskId, multiInstance, variables, userList);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "提交成功");
         } catch (Exception e) {
@@ -1375,8 +1307,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Map<String, Object> signTaskConfig(String itemId, String processDefinitionId, String taskDefinitionKey,
-        String processSerialNumber) {
+    public Map<String, Object> signTaskConfig(String itemId, String processDefinitionId, String taskDefinitionKey, String processSerialNumber) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
@@ -1387,19 +1318,15 @@ public class DocumentServiceImpl implements DocumentService {
             map.put("onePerson", false);
             boolean searchPerson = true;
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String multiInstance =
-                processDefinitionManager.getNodeType(tenantId, processDefinitionId, taskDefinitionKey);
+            String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, taskDefinitionKey);
             if (SysVariables.COMMON.equals(multiInstance)) {
-                ItemTaskConf itemTaskConf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
-                    processDefinitionId, taskDefinitionKey);
+                ItemTaskConf itemTaskConf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
                 ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
                 // 判断是否是抢占式签收任务
                 if (itemTaskConf != null && itemTaskConf.getSignTask()) {
                     map.put("signTask", true);
                     if (processParam != null && StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
-                        List<HistoricTaskInstanceModel> hisTaskList =
-                            historicTaskManager.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId,
-                                processParam.getProcessInstanceId(), "");
+                        List<HistoricTaskInstanceModel> hisTaskList = historicTaskManager.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processParam.getProcessInstanceId(), "");
                         for (HistoricTaskInstanceModel hisTask : hisTaskList) {
                             // 获取相同任务
                             if (hisTask.getTaskDefinitionKey().equals(taskDefinitionKey)) {
@@ -1410,8 +1337,7 @@ public class DocumentServiceImpl implements DocumentService {
                         }
                     }
                     if (searchPerson) {
-                        List<OrgUnit> orgUnitList = this.getUserChoice(itemId, processDefinitionId, taskDefinitionKey,
-                            processParam != null ? processParam.getProcessInstanceId() : "");
+                        List<OrgUnit> orgUnitList = this.getUserChoice(itemId, processDefinitionId, taskDefinitionKey, processParam != null ? processParam.getProcessInstanceId() : "");
                         if (orgUnitList.isEmpty()) {
                             map.put("signTask", false);
                         } else {
@@ -1436,8 +1362,7 @@ public class DocumentServiceImpl implements DocumentService {
                         }
                     }
                 } else {// signTask为false且onePerson为true则直接发送
-                    List<OrgUnit> orgUnitList = this.getUserChoice(itemId, processDefinitionId, taskDefinitionKey,
-                        processParam != null ? processParam.getProcessInstanceId() : "");
+                    List<OrgUnit> orgUnitList = this.getUserChoice(itemId, processDefinitionId, taskDefinitionKey, processParam != null ? processParam.getProcessInstanceId() : "");
                     // 只有一个人，则直接返回人员发送
                     if (orgUnitList.size() == 1 && orgUnitList.get(0).getOrgType().equals(OrgTypeEnum.POSITION)) {
                         map.put("userChoice", "6:" + orgUnitList.get(0).getId());
@@ -1462,8 +1387,7 @@ public class DocumentServiceImpl implements DocumentService {
      * @param userList
      * @return
      */
-    public Map<String, Object> start4Forwarding(String taskId, String routeToTaskId, String sponsorGuid,
-        List<String> userList) {
+    public Map<String, Object> start4Forwarding(String taskId, String routeToTaskId, String sponsorGuid, List<String> userList) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         String processInstanceId = "";
         try {
@@ -1473,15 +1397,12 @@ public class DocumentServiceImpl implements DocumentService {
             processInstanceId = task.getProcessInstanceId();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
-            String multiInstance =
-                processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(), routeToTaskId);
-            Map<String, Object> variables =
-                CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
+            String multiInstance = processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(), routeToTaskId);
+            Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
             // 子流程信息
             if (multiInstance.equals(SysVariables.CALLACTIVITY)) {
                 Map<String, Object> initDataMap = new HashMap<String, Object>(16);
-                initDataMap.put(SysVariables.PARENTPROCESSSERIALNUMBER,
-                    processParam != null ? processParam.getProcessSerialNumber() : "");
+                initDataMap.put(SysVariables.PARENTPROCESSSERIALNUMBER, processParam != null ? processParam.getProcessSerialNumber() : "");
                 variables.put(SysVariables.INITDATAMAP, initDataMap);
             }
             int num = userList.size();
@@ -1502,15 +1423,13 @@ public class DocumentServiceImpl implements DocumentService {
                 taskVariable.setUpdateTime(sdf.format(date));
                 taskVariable.setText("true:" + String.valueOf(num));
                 taskVariableRepository.save(taskVariable);
-                asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, "", sponsorGuid,
-                    taskId, multiInstance, variables, userList);
+                asyncHandleService.forwarding(tenantId, position, processInstanceId, processParam, "", sponsorGuid, taskId, multiInstance, variables, userList);
             } else if (SysVariables.SUBPROCESS.equals(multiInstance)) {
                 Map<String, Object> vars = new HashMap<String, Object>(16);
                 vars.put("parentTaskId", taskId);
                 taskManager.createWithVariables(tenantId, position.getId(), routeToTaskId, vars, userList);
             } else {
-                asyncHandleService.forwarding4Task(processInstanceId, processParam, "", sponsorGuid, taskId,
-                    multiInstance, variables, userList);
+                asyncHandleService.forwarding4Task(processInstanceId, processParam, "", sponsorGuid, taskId, multiInstance, variables, userList);
             }
             map.put("processInstanceId", processInstanceId);
             map.put(UtilConsts.SUCCESS, true);
@@ -1557,16 +1476,12 @@ public class DocumentServiceImpl implements DocumentService {
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             vars.put("routeToTaskId", startTaskDefKey);
             if (item.isShowSubmitButton()) {
-                ProcessDefinitionModel processDefinitionModel =
-                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
-                List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService
-                    .findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionModel.getId(), "");
-                Map<String, Object> variables =
-                    y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
+                ProcessDefinitionModel processDefinitionModel = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+                List<Y9FormItemBind> eformTaskBinds = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionModel.getId(), "");
+                Map<String, Object> variables = y9FormService.getFormData4Var(eformTaskBinds.get(0).getFormId(), processSerialNumber);
                 vars.putAll(variables);
             }
-            TaskModel task =
-                activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(), vars);
+            TaskModel task = activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(), vars);
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             processParam.setProcessInstanceId(task.getProcessInstanceId());
             processParam.setStartor(Y9LoginUserHolder.getPositionId());
@@ -1578,8 +1493,7 @@ public class DocumentServiceImpl implements DocumentService {
             processParamService.saveOrUpdate(processParam);
 
             // 异步处理数据
-            asyncHandleService.startProcessHandle(tenantId, processSerialNumber, task.getId(),
-                task.getProcessInstanceId(), processParam.getSearchTerm());
+            asyncHandleService.startProcessHandle(tenantId, processSerialNumber, task.getId(), task.getProcessInstanceId(), processParam.getSearchTerm());
 
             map.put("processInstanceId", task.getProcessInstanceId());
             map.put("processSerialNumber", processSerialNumber);
@@ -1594,8 +1508,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Map<String, Object> startProcess(String itemId, String processSerialNumber, String processDefinitionKey,
-        String positionIds) {
+    public Map<String, Object> startProcess(String itemId, String processSerialNumber, String processDefinitionKey, String positionIds) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "启动失败");
@@ -1608,10 +1521,8 @@ public class DocumentServiceImpl implements DocumentService {
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             vars.put("routeToTaskId", startTaskDefKey);
 
-            vars = CommonOpt.setVariables(position.getId(), position.getName(), "",
-                Arrays.asList(positionIds.split(",")), processSerialNumber, "", vars);
-            ProcessInstanceModel piModel = runtimeManager.startProcessInstanceByKey(tenantId, position.getId(),
-                processDefinitionKey, item.getSystemName(), vars);
+            vars = CommonOpt.setVariables(position.getId(), position.getName(), "", Arrays.asList(positionIds.split(",")), processSerialNumber, "", vars);
+            ProcessInstanceModel piModel = runtimeManager.startProcessInstanceByKey(tenantId, position.getId(), processDefinitionKey, item.getSystemName(), vars);
             // 获取运行的任务节点,这里没有考虑启动节点下一个用户任务节点是多实例的情况
             String processInstanceId = piModel.getId();
             TaskModel task = taskManager.findByProcessInstanceId(tenantId, processInstanceId).get(0);
@@ -1627,8 +1538,7 @@ public class DocumentServiceImpl implements DocumentService {
             processParamService.saveOrUpdate(processParam);
 
             // 异步处理数据
-            asyncHandleService.startProcessHandle(tenantId, processSerialNumber, task.getId(),
-                task.getProcessInstanceId(), processParam.getSearchTerm());
+            asyncHandleService.startProcessHandle(tenantId, processSerialNumber, task.getId(), task.getProcessInstanceId(), processParam.getSearchTerm());
 
             map.put("processInstanceId", task.getProcessInstanceId());
             map.put("processSerialNumber", processSerialNumber);
@@ -1644,8 +1554,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Map<String, Object> startProcessByTaskKey(String itemId, String processSerialNumber,
-        String processDefinitionKey, String startRouteToTaskId) {
+    public Map<String, Object> startProcessByTaskKey(String itemId, String processSerialNumber, String processDefinitionKey, String startRouteToTaskId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
         try {
@@ -1654,8 +1563,7 @@ public class DocumentServiceImpl implements DocumentService {
             SpmApproveItem item = spmApproveitemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);
             vars.put(SysVariables.ROUTETOTASKID, startRouteToTaskId);
-            TaskModel task =
-                activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(), vars);
+            TaskModel task = activitiOptService.startProcess(processSerialNumber, processDefinitionKey, item.getSystemName(), vars);
             map.put("processInstanceId", task.getProcessInstanceId());
             map.put("processSerialNumber", processSerialNumber);
             map.put("processDefinitionId", task.getProcessDefinitionId());
@@ -1673,8 +1581,7 @@ public class DocumentServiceImpl implements DocumentService {
             processParamService.saveOrUpdate(processParam);
 
             // 异步处理数据
-            asyncHandleService.startProcessHandle(tenantId, processSerialNumber, task.getId(),
-                task.getProcessInstanceId(), processParam.getSearchTerm());
+            asyncHandleService.startProcessHandle(tenantId, processSerialNumber, task.getId(), task.getProcessInstanceId(), processParam.getSearchTerm());
 
             map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
@@ -1694,28 +1601,27 @@ public class DocumentServiceImpl implements DocumentService {
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             String itemId = processParam.getItemId();
             TaskModel task = taskManager.findById(tenantId, taskId);
-            String processDefinitionId = task.getProcessDefinitionId(), taskDefKey = task.getTaskDefinitionKey(),
-                processInstanceId = task.getProcessInstanceId();
-            Y9Result<Map<String, String>> routeToTaskIdResult =
-                this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, taskId);
+            String processDefinitionId = task.getProcessDefinitionId(), taskDefKey = task.getTaskDefinitionKey(), processInstanceId = task.getProcessInstanceId();
+            Y9Result<Map<String, String>> routeToTaskIdResult = this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, taskId);
             if (!routeToTaskIdResult.isSuccess()) {
                 map.put("msg", routeToTaskIdResult.getMsg());
                 return map;
             }
-            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY),
-                routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.REALTASKDEFNAME);
+            String routeToTaskId = routeToTaskIdResult.getData().get(SysVariables.TASKDEFKEY), routeToTaskName = routeToTaskIdResult.getData().get(SysVariables.REALTASKDEFNAME);
             String multiInstance = processDefinitionManager.getNodeType(tenantId, processDefinitionId, routeToTaskId);
-            Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId,
-                routeToTaskName, processInstanceId, multiInstance);
+            Y9Result<List<String>> userResult = this.parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName, processInstanceId, multiInstance);
             if (!userResult.isSuccess()) {
                 map.put("msg", userResult.getMsg());
                 return map;
             }
             List<String> userList = userResult.getData();
-            Map<String, Object> variables =
-                CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
-            asyncHandleService.forwarding4Task(processInstanceId, processParam, "", "", taskId, multiInstance,
-                variables, userList);
+            Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
+            String sponsorHandle = "false";
+            ItemTaskConf itemTaskConf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            if (null != itemTaskConf && itemTaskConf.getSignTask()) {
+                sponsorHandle = "true";
+            }
+            asyncHandleService.forwarding4Task(processInstanceId, processParam, sponsorHandle, "", taskId, multiInstance, variables, userList);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "提交成功");
         } catch (Exception e) {

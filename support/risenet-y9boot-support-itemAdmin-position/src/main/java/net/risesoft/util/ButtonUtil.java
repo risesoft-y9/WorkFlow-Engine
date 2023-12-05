@@ -15,12 +15,14 @@ import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.entity.CustomProcessInfo;
+import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.CustomProcessInfoService;
+import net.risesoft.service.ItemTaskConfService;
 import net.risesoft.service.ProcInstanceRelationshipService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9Context;
@@ -42,6 +44,7 @@ public class ButtonUtil {
     private HistoricTaskApi historicTaskManager;
     private CustomProcessInfoService customProcessInfoService;
     private SpmApproveItemService itemService;
+    private ItemTaskConfService itemTaskConfService;
 
     public ButtonUtil() {
         this.procInstanceRelationshipService = Y9Context.getBean(ProcInstanceRelationshipService.class);
@@ -53,6 +56,7 @@ public class ButtonUtil {
         this.historicTaskManager = Y9Context.getBean(HistoricTaskApi.class);
         this.customProcessInfoService = Y9Context.getBean(CustomProcessInfoService.class);
         this.itemService = Y9Context.getBean(SpmApproveItemService.class);
+        this.itemTaskConfService = Y9Context.getBean(ItemTaskConfService.class);
     }
 
     @SuppressWarnings({"unused", "unchecked"})
@@ -206,9 +210,8 @@ public class ButtonUtil {
                 if (DelegationState.PENDING != task.getDelegationState() && isAssignee && outPutNodeCount > 0) {
                     // 如果是在并行状态下，那么就要看是不是并行状态主办人，如果是则显示发送按钮，否则不显示
                     if (isParallel) {
-                        // if (sponsorStatus) {// sponsorStatus表示是否存在主协办，true表示存在，false表示不存在
-                        // isParallelSponsor：表示当前用户是并行状态下主办人员
                         if (isParallelSponsor) {
+                            // isParallelSponsor：表示当前用户是并行状态下主办人员
                             if (showSubmitButton) {
                                 isButtonShow[20] = true;
                             } else {
@@ -216,8 +219,16 @@ public class ButtonUtil {
                             }
                             // 主办办理
                             map.put("sponsorHandle", "true");
+                        } else {
+                            ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
+                            if (null != itemTaskConf && itemTaskConf.getSignTask()) {
+                                if (showSubmitButton) {
+                                    isButtonShow[20] = true;
+                                } else {
+                                    isButtonShow[1] = true;
+                                }
+                            }
                         }
-                        // } else {// 非主协办状态下，如果是最后一个处理人，发送按钮要显示，如果不是，要显示办理完成按钮
                         if (isLastParallel) {
                             if (showSubmitButton) {
                                 isButtonShow[20] = true;
@@ -225,9 +236,8 @@ public class ButtonUtil {
                                 isButtonShow[1] = true;
                             }
                         }
-                        // }
-                        // 如果在串行状态下，那么就要看是不是最后一个用户，如果是则显示发送按钮，否则不显示
                     } else if (isSequential) {
+                        // 如果在串行状态下，那么就要看是不是最后一个用户，如果是则显示发送按钮，否则不显示
                         if (isLastSequential) {
                             if (showSubmitButton) {
                                 isButtonShow[20] = true;
@@ -329,8 +339,17 @@ public class ButtonUtil {
                     // if (sponsorStatus) {// 在基本是否配置了主协办，没有配置为false，配置了使用主协办为true，不使用主协办为false
                     // 如果不是主办人，并且不是最后一个处理人，显示办理完成按钮
                     if (!isParallelSponsor && !isLastParallel) {
-                        isButtonShow[8] = true;
-                        isButtonShow[12] = false;
+                        ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
+                        if (null != itemTaskConf && itemTaskConf.getSignTask()) {
+                            isButtonShow[8] = false;
+                            if (showSubmitButton) {
+                                isButtonShow[20] = true;
+                            } else {
+                                isButtonShow[1] = true;
+                            }
+                        } else {
+                            isButtonShow[8] = true;
+                        }
                     }
                     // } else {// sponsorStatus，此时如果是最后一个处理人，上面的发送按钮要显示，如果不是，要显示办理完成按钮
                     // if (!isLastParallel) {
