@@ -13,6 +13,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class ConfigUtils {
 
@@ -89,7 +92,7 @@ public class ConfigUtils {
 
         String homePath = getHomePath();
         String separator = java.io.File.separator;
-
+        LOGGER.info("配置文件路径:::{}{}{}", absolutePath, separator, "application.yml");
         System.out.println("配置文件路径" + ":::" + absolutePath + separator + "application.yml");
 
         return absolutePath + separator + "application.yml";

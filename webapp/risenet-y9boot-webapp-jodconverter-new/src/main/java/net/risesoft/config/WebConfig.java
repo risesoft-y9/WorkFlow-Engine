@@ -3,13 +3,13 @@ package net.risesoft.config;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.web.filter.AttributeSetFilter;
 import net.risesoft.web.filter.BaseUrlFilter;
@@ -18,9 +18,8 @@ import net.risesoft.web.filter.TrustDirFilter;
 import net.risesoft.web.filter.TrustHostFilter;
 
 @Configuration
+@Slf4j
 public class WebConfig implements WebMvcConfigurer {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(WebConfig.class);
 
     /**
      * 访问外部文件配置

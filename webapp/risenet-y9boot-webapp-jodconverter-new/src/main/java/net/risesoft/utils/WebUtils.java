@@ -99,7 +99,7 @@ public class WebUtils {
                 URL urlObj = new URL(url);
                 url = urlObj.getPath().substring(1);
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                LOGGER.error("获取文件名失败！地址:" + url, e);
             }
         }
         // 因为url的参数中可能会存在/的情况，所以直接url.lastIndexOf("/")会有问题

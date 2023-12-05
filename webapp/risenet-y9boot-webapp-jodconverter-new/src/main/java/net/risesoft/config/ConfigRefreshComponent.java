@@ -5,19 +5,18 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @description 每隔1s读取并更新一次配置文件
  */
 @Component
+@Slf4j
 public class ConfigRefreshComponent {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigRefreshComponent.class);
 
     @PostConstruct
     void refresh() {

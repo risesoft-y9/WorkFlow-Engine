@@ -14,21 +14,21 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.jodconverter.core.util.OSUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.utils.WebUtils;
 
 import io.mola.galimatias.GalimatiasParseException;
 
+@Slf4j
 public class TrustDirFilter implements Filter {
 
     private String notTrustDirView;
-    private final Logger logger = LoggerFactory.getLogger(TrustDirFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -38,7 +38,7 @@ public class TrustDirFilter implements Filter {
             byte[] bytes = FileCopyUtils.copyToByteArray(classPathResource.getInputStream());
             this.notTrustDirView = new String(bytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
     }
 
@@ -76,7 +76,7 @@ public class TrustDirFilter implements Filter {
             }
             return true;
         } catch (IOException | GalimatiasParseException e) {
-            logger.error("解析URL异常，url：{}", urlPath, e);
+            LOGGER.error("解析URL异常，url：{}", urlPath, e);
             return false;
         }
     }

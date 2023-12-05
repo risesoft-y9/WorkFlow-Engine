@@ -15,8 +15,6 @@ import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.ReturnResponse;
 import net.risesoft.utils.KkFileUtils;
@@ -32,9 +32,9 @@ import net.risesoft.utils.RarUtils;
 import net.risesoft.utils.WebUtils;
 
 @RestController
+@Slf4j
 public class FileController {
 
-    private final Logger logger = LoggerFactory.getLogger(FileController.class);
 
     private final String fileDir = ConfigConstants.getFileDir();
     private final String demoDir = "demo";
@@ -48,16 +48,16 @@ public class FileController {
         }
         File outFile = new File(fileDir + demoPath);
         if (!outFile.exists() && !outFile.mkdirs()) {
-            logger.error("创建文件夹【{}】失败，请检查目录权限！", fileDir + demoPath);
+            LOGGER.error("创建文件夹【{}】失败，请检查目录权限！", fileDir + demoPath);
         }
         String fileName = checkResult.getContent().toString();
-        logger.info("上传文件：{}{}{}", fileDir, demoPath, fileName);
+        LOGGER.info("上传文件：{}{}{}", fileDir, demoPath, fileName);
         try (InputStream in = file.getInputStream();
             OutputStream out = Files.newOutputStream(Paths.get(fileDir + demoPath + fileName))) {
             StreamUtils.copy(in, out);
             return ReturnResponse.success(null);
         } catch (IOException e) {
-            logger.error("文件上传失败", e);
+            LOGGER.error("文件上传失败", e);
             return ReturnResponse.failure();
         }
     }
@@ -77,20 +77,20 @@ public class FileController {
                 sessionCode = "null";
             }
             if (password == null || !sessionCode.equalsIgnoreCase(password)) {
-                logger.error("删除文件【{}】失败，密码错误！", fileName);
+                LOGGER.error("删除文件【{}】失败，密码错误！", fileName);
                 return ReturnResponse.failure("删除文件失败，密码错误！");
             }
         } else {
             if (password == null || !ConfigConstants.getPassword().equalsIgnoreCase(password)) {
-                logger.error("删除文件【{}】失败，密码错误！", fileName);
+                LOGGER.error("删除文件【{}】失败，密码错误！", fileName);
                 return ReturnResponse.failure("删除文件失败，密码错误！");
             }
         }
         File file = new File(fileDir + demoPath + fileName);
-        logger.info("删除文件：{}", file.getAbsolutePath());
+        LOGGER.info("删除文件：{}", file.getAbsolutePath());
         if (file.exists() && !file.delete()) {
             String msg = String.format("删除文件【%s】失败，请检查目录权限！", file.getPath());
-            logger.error(msg);
+            LOGGER.error(msg);
             return ReturnResponse.failure(msg);
         }
         request.getSession().removeAttribute("code"); // 删除缓存验证码

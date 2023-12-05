@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.FileAttribute;
 import net.risesoft.model.ReturnResponse;
@@ -15,6 +17,7 @@ import net.risesoft.utils.DownloadUtils;
 import net.risesoft.utils.KkFileUtils;
 import net.risesoft.web.filter.BaseUrlFilter;
 
+@Slf4j
 @Service
 public class CadFilePreviewImpl implements FilePreview {
 
@@ -57,7 +60,7 @@ public class CadFilePreviewImpl implements FilePreview {
                 try {
                     imageUrls = fileHandlerService.cadToPdf(filePath, outFilePath, cadPreviewType);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("cad 转 pdf 异常！", e);
                 }
                 if (imageUrls == null) {
                     return otherFilePreview.notSupportedFile(model, fileAttribute, "office转图片异常，请联系管理员");

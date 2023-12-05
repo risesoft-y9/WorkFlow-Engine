@@ -7,13 +7,13 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 
 import org.mozilla.universalchardet.UniversalDetector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class EncodingDetects {
     private static UniversalDetector detector = new UniversalDetector(null);
     private static final int DEFAULT_LENGTH = 4096;
-    private static final Logger logger = LoggerFactory.getLogger(EncodingDetects.class);
 
     public static String getJavaEncode(String filePath) {
         return getJavaEncode(new File(filePath));
@@ -25,7 +25,7 @@ public class EncodingDetects {
         try (InputStream fis = Files.newInputStream(file.toPath())) {
             fis.read(content, 0, len);
         } catch (IOException e) {
-            logger.error("文件读取失败:{}", file.getPath());
+            LOGGER.error("文件读取失败:{}", file.getPath());
         }
         return getJavaEncode(content);
     }

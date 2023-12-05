@@ -13,9 +13,6 @@ import java.util.List;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.io.FileChannelRandomAccessSource;
@@ -28,14 +25,16 @@ import com.sun.media.jai.codec.ImageDecoder;
 import com.sun.media.jai.codec.JPEGEncodeParam;
 import com.sun.media.jai.codec.TIFFEncodeParam;
 
+import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.config.ConfigConstants;
 
+@Slf4j
 public class ConvertPicUtil {
 
     private static final int FIT_WIDTH = 500;
     private static final int FIT_HEIGHT = 900;
 
-    private final static Logger logger = LoggerFactory.getLogger(ConvertPicUtil.class);
     private final static String fileDir = ConfigConstants.getFileDir();
 
     /**
@@ -52,7 +51,7 @@ public class ConvertPicUtil {
             return null;
         }
         if (!new File(strInputFile).exists()) {
-            logger.info("找不到文件【" + strInputFile + "】");
+            LOGGER.info("找不到文件【" + strInputFile + "】");
             return null;
         }
         strInputFile = strInputFile.replaceAll("\\\\", "/");
@@ -65,12 +64,12 @@ public class ConvertPicUtil {
             fileSeekStream = new FileSeekableStream(strInputFile);
             ImageDecoder imageDecoder = ImageCodec.createImageDecoder("TIFF", fileSeekStream, null);
             int intTifCount = imageDecoder.getNumPages();
-            logger.info("该tif文件共有【" + intTifCount + "】页");
+            LOGGER.info("该tif文件共有【" + intTifCount + "】页");
             String strJpgPath = fileDir + strOutputFile;
             // 处理目标文件夹，如果不存在则自动创建
             File fileJpgPath = new File(strJpgPath);
             if (!fileJpgPath.exists() && !fileJpgPath.mkdirs()) {
-                logger.error("{} 创建失败", strJpgPath);
+                LOGGER.error("{} 创建失败", strJpgPath);
             }
             // 循环，处理每页tif文件，转换为jpg
             for (int i = 0; i < intTifCount; i++) {
@@ -87,21 +86,21 @@ public class ConvertPicUtil {
                     pb.add(jpegEncodeParam);
                     RenderedOp renderedOp = JAI.create("filestore", pb);
                     renderedOp.dispose();
-                    logger.info("每页分别保存至： " + fileJpg.getCanonicalPath());
+                    LOGGER.info("每页分别保存至： " + fileJpg.getCanonicalPath());
                 }
                 listImageFiles.add(strJpgUrl);
             }
 
             return listImageFiles;
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
             return null;
         } finally {
             if (fileSeekStream != null) {
                 try {
                     fileSeekStream.close();
                 } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
+                    LOGGER.error(e.getMessage(), e);
                 }
             }
         }
@@ -132,14 +131,14 @@ public class ConvertPicUtil {
                 } catch (Exception e) {
                     document.close();
                     rafa.close();
-                    e.printStackTrace();
+                    LOGGER.error(e.getMessage());
                 }
             }
             document.close();
             rafa.close();
             return true;
         } catch (Exception e) {
-            logger.error("图片转PDF异常，图片文件路径：" + strJpgFile, e);
+            LOGGER.error("图片转PDF异常，图片文件路径：" + strJpgFile, e);
         } finally {
             try {
                 if (document != null && document.isOpen()) {
@@ -149,7 +148,7 @@ public class ConvertPicUtil {
                     rafa.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage());
             }
         }
         return false;

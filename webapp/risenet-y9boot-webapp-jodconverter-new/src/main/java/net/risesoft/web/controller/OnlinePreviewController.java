@@ -19,8 +19,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -28,6 +26,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.FileAttribute;
@@ -44,10 +44,10 @@ import fr.opensagres.xdocreport.core.io.IOUtils;
 import io.mola.galimatias.GalimatiasParseException;
 
 @Controller
+@Slf4j
 public class OnlinePreviewController {
 
     public static final String BASE64_DECODE_ERROR_MSG = "Base64解码失败，请检查你的 %s 是否采用 Base64 + urlEncode 双重编码了！";
-    private final Logger logger = LoggerFactory.getLogger(OnlinePreviewController.class);
 
     private final FilePreviewFactory previewFactory;
     private final CacheService cacheService;
@@ -68,10 +68,11 @@ public class OnlinePreviewController {
         FileAttribute fileAttribute = fileHandlerService.getFileAttribute(url, req);
         model.addAttribute("file", fileAttribute);
         FilePreview filePreview = previewFactory.get(fileAttribute);
-        logger.info("预览文件url：{}，previewType：{}", url, fileAttribute.getType());
+        LOGGER.info("预览文件url：{}，previewType：{}", url, fileAttribute.getType());
         String page = filePreview.filePreviewHandle(url, model, fileAttribute);
         if (page.equals(FilePreview.PDF_FILE_PREVIEW_PAGE)) {
             String pdfjs = WebUtils.getPdfjsVersion(req);
+            LOGGER.info("预览类型是pdf，预览插件为:{}", "pdfjs".equals(pdfjs) ? "新版本" : "旧版本");
             model.addAttribute("pdfjs", pdfjs);
         }
         return page;
@@ -88,7 +89,7 @@ public class OnlinePreviewController {
             String errorMsg = String.format(BASE64_DECODE_ERROR_MSG, "urls");
             return otherFilePreview.notSupportedFile(model, errorMsg);
         }
-        logger.info("预览文件url：{}，urls：{}", fileUrls, urls);
+        LOGGER.info("预览文件url：{}，urls：{}", fileUrls, urls);
         // 抽取文件并返回文件列表
         String[] images = fileUrls.split("\\|");
         List<String> imgUrls = Arrays.asList(images);
@@ -118,10 +119,10 @@ public class OnlinePreviewController {
         assert urlPath != null;
         if (!urlPath.toLowerCase().startsWith("http") && !urlPath.toLowerCase().startsWith("https")
             && !urlPath.toLowerCase().startsWith("ftp")) {
-            logger.info("读取跨域文件异常，可能存在非法访问，urlPath：{}", urlPath);
+            LOGGER.info("读取跨域文件异常，可能存在非法访问，urlPath：{}", urlPath);
             return;
         }
-        logger.info("下载跨域pdf文件url：{}", urlPath);
+        LOGGER.info("下载跨域pdf文件url：{}", urlPath);
         if (!urlPath.toLowerCase().startsWith("ftp:")) {
             try {
                 URL url = WebUtils.normalizedURL(urlPath);
@@ -131,7 +132,7 @@ public class OnlinePreviewController {
                 urlcon.setInstanceFollowRedirects(false);
                 int responseCode = urlcon.getResponseCode();
                 if (responseCode == 403 || responseCode == 500) { // 403 500
-                    logger.error("读取跨域文件异常，url：{}，错误：{}", urlPath, responseCode);
+                    LOGGER.error("读取跨域文件异常，url：{}，错误：{}", urlPath, responseCode);
                     return;
                 }
                 if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
@@ -141,8 +142,8 @@ public class OnlinePreviewController {
                 }
                 if (responseCode == 404) { // 404
                     try {
-                        urlStr = URLDecoder.decode(urlPath, StandardCharsets.UTF_8.name());
-                        urlStr = URLDecoder.decode(urlStr, StandardCharsets.UTF_8.name());
+                        urlStr = URLDecoder.decode(urlPath, StandardCharsets.UTF_8);
+                        urlStr = URLDecoder.decode(urlStr, StandardCharsets.UTF_8);
                         url = WebUtils.normalizedURL(urlStr);
                         urlcon = (HttpURLConnection)url.openConnection();
                         urlcon.setConnectTimeout(30000);
@@ -154,11 +155,11 @@ public class OnlinePreviewController {
                             url = new URL(urlcon.getHeaderField("Location"));
                         }
                         if (responseCode == 404 || responseCode == 403 || responseCode == 500) {
-                            logger.error("读取跨域文件异常，url：{}，错误：{}", urlPath, responseCode);
+                            LOGGER.error("读取跨域文件异常，url：{}，错误：{}", urlPath, responseCode);
                             return;
                         }
                     } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
+                        LOGGER.error(e.getMessage());
                     } finally {
                         assert urlcon != null;
                         urlcon.disconnect();
@@ -171,7 +172,7 @@ public class OnlinePreviewController {
                 IOUtils.copy(inputStream, response.getOutputStream());
 
             } catch (IOException | GalimatiasParseException e) {
-                logger.error("读取跨域文件异常，url：{}", urlPath);
+                LOGGER.error("读取跨域文件异常，url：{}", urlPath);
             } finally {
                 assert urlcon != null;
                 urlcon.disconnect();
@@ -186,7 +187,7 @@ public class OnlinePreviewController {
                 inputStream = (url).openStream();
                 IOUtils.copy(inputStream, response.getOutputStream());
             } catch (IOException | GalimatiasParseException e) {
-                logger.error("读取跨域文件异常，url：{}", urlPath);
+                LOGGER.error("读取跨域文件异常，url：{}", urlPath);
             } finally {
                 IOUtils.closeQuietly(inputStream);
             }
@@ -242,7 +243,7 @@ public class OnlinePreviewController {
                 sos = response.getOutputStream();
                 ImageIO.write((RenderedImage)codeMap.get("codePic"), "jpeg", sos);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error("图像写入失败！", e);
             } finally {
                 assert sos != null;
                 sos.close();
@@ -260,7 +261,7 @@ public class OnlinePreviewController {
                 sos = response.getOutputStream();
                 ImageIO.write((RenderedImage)codeMap.get("codePic"), "jpeg", sos);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error("图像写入失败！", e);
             } finally {
                 assert sos != null;
                 sos.close();
@@ -276,7 +277,7 @@ public class OnlinePreviewController {
     @GetMapping("/addTask")
     @ResponseBody
     public String addQueueTask(String url) {
-        logger.info("添加转码队列url：{}", url);
+        LOGGER.info("添加转码队列url：{}", url);
         cacheService.addQueueTask(url);
         return "success";
     }
