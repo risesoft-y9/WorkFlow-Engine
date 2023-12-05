@@ -298,26 +298,6 @@
                                             smart-doc-maven-plugin
                                         </artifactId>
                                         <versionRange>
-                                            [1.0.8,)
-                                        </versionRange>
-                                        <goals>
-                                            <goal>html</goal>
-                                            <goal>markdown</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>
-                                            com.ly.smart-doc
-                                        </groupId>
-                                        <artifactId>
-                                            smart-doc-maven-plugin
-                                        </artifactId>
-                                        <versionRange>
                                             [2.4.8,)
                                         </versionRange>
                                         <goals>
