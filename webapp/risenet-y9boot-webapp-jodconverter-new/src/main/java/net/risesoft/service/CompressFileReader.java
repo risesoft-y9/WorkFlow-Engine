@@ -12,6 +12,8 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.model.FileType;
 import net.risesoft.utils.RarUtils;
 import net.risesoft.web.filter.BaseUrlFilter;
@@ -23,6 +25,7 @@ import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchive;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
 
+@Slf4j
 @Component
 public class CompressFileReader {
     private final FileHandlerService fileHandlerService;
@@ -65,7 +68,7 @@ public class CompressFileReader {
                             IOUtils.write(data, out);
                             out.close();
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            LOGGER.error("解压失败！", e);
                         }
                         return data.length;
                     }, passWord);
@@ -88,14 +91,14 @@ public class CompressFileReader {
                 try {
                     inArchive.close();
                 } catch (SevenZipException e) {
-                    System.err.println("Error closing archive: " + e);
+                    LOGGER.error("Error closing archive: ", e);
                 }
             }
             if (randomAccessFile != null) {
                 try {
                     randomAccessFile.close();
                 } catch (IOException e) {
-                    System.err.println("Error closing file: " + e);
+                    LOGGER.error("Error closing file: ", e);
                 }
             }
         }

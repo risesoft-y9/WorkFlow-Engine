@@ -10,12 +10,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.FileAttribute;
@@ -23,9 +24,9 @@ import net.risesoft.model.ReturnResponse;
 
 import io.mola.galimatias.GalimatiasParseException;
 
+@Slf4j
 public class DownloadUtils {
 
-    private final static Logger logger = LoggerFactory.getLogger(DownloadUtils.class);
     private static final String fileDir = ConfigConstants.getFileDir();
     private static final String URL_PARAM_FTP_USERNAME = "ftp.username";
     private static final String URL_PARAM_FTP_PASSWORD = "ftp.password";
@@ -44,7 +45,7 @@ public class DownloadUtils {
             SslUtils.ignoreSsl();
             urlStr = fileAttribute.getUrl().replaceAll("\\+", "%20");
         } catch (Exception e) {
-            logger.error("忽略SSL证书异常:", e);
+            LOGGER.error("忽略SSL证书异常:", e);
         }
         ReturnResponse<String> response = new ReturnResponse<>(0, "下载成功!!!", "");
         String realPath = getRelFilePath(fileName, fileAttribute);
@@ -92,8 +93,8 @@ public class DownloadUtils {
                     }
                     if (responseCode == 404) { // 404
                         try {
-                            urlStr = URLDecoder.decode(urlStr, "UTF-8");
-                            urlStr = URLDecoder.decode(urlStr, "UTF-8");
+                            urlStr = URLDecoder.decode(urlStr, StandardCharsets.UTF_8);
+                            urlStr = URLDecoder.decode(urlStr, StandardCharsets.UTF_8);
                             url = WebUtils.normalizedURL(urlStr);
                             urlcon = (HttpURLConnection)url.openConnection();
                             urlcon.setConnectTimeout(30000);
@@ -111,7 +112,7 @@ public class DownloadUtils {
                                 return response;
                             }
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            LOGGER.error("下载失败,地址：" + urlStr, e);
                         } finally {
                             assert urlcon != null;
                             urlcon.disconnect();
@@ -138,7 +139,7 @@ public class DownloadUtils {
             response.setMsg(fileName);
             return response;
         } catch (IOException | GalimatiasParseException e) {
-            logger.error("文件下载失败，url：{}", urlStr);
+            LOGGER.error("文件下载失败，url：{}", urlStr);
             response.setCode(1);
             response.setContent(null);
             if (e instanceof FileNotFoundException) {
@@ -171,7 +172,7 @@ public class DownloadUtils {
         String realPath = fileDir + fileName;
         File dirFile = new File(fileDir);
         if (!dirFile.exists() && !dirFile.mkdirs()) {
-            logger.error("创建目录【{}】失败,可能是权限不够，请检查", fileDir);
+            LOGGER.error("创建目录【{}】失败,可能是权限不够，请检查", fileDir);
         }
         Boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
         // 判断是否启用强制更新功能如果启用 文件必须重新下载

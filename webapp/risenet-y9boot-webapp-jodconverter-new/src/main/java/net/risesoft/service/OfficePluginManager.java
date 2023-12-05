@@ -15,13 +15,13 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeUtils;
 import org.jodconverter.core.util.OSUtils;
 import org.jodconverter.local.office.LocalOfficeManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.convert.DurationStyle;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.utils.LocalOfficeUtils;
 
@@ -32,9 +32,8 @@ import net.risesoft.utils.LocalOfficeUtils;
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
+@Slf4j
 public class OfficePluginManager {
-
-    private final Logger logger = LoggerFactory.getLogger(OfficePluginManager.class);
 
     private LocalOfficeManager officeManager;
 
@@ -55,7 +54,7 @@ public class OfficePluginManager {
         }
         boolean killOffice = killProcess();
         if (killOffice) {
-            logger.warn("检测到有正在运行的office进程，已自动结束该进程");
+            LOGGER.warn("检测到有正在运行的office进程，已自动结束该进程");
         }
         try {
             String[] portsString = serverPorts.split(",");
@@ -66,7 +65,7 @@ public class OfficePluginManager {
             officeManager.start();
             InstalledOfficeManagerHolder.setInstance(officeManager);
         } catch (Exception e) {
-            logger.error("启动office组件失败，请检查office组件是否可用");
+            LOGGER.error("启动office组件失败，请检查office组件是否可用");
             throw e;
         }
     }
@@ -119,7 +118,7 @@ public class OfficePluginManager {
                 }
             }
         } catch (IOException e) {
-            logger.error("检测office进程异常", e);
+            LOGGER.error("检测office进程异常", e);
         }
         return flag;
     }
@@ -127,7 +126,7 @@ public class OfficePluginManager {
     @PreDestroy
     public void destroyOfficeManager() {
         if (null != officeManager && officeManager.isRunning()) {
-            logger.info("Shutting down office process");
+            LOGGER.info("Shutting down office process");
             OfficeUtils.stopQuietly(officeManager);
         }
     }

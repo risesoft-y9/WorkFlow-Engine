@@ -7,19 +7,18 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.local.LocalConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.sun.star.document.UpdateDocMode;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.FileAttribute;
 
 @Component
+@Slf4j
 public class OfficeToPdfService {
-
-    private final static Logger logger = LoggerFactory.getLogger(OfficeToPdfService.class);
 
     public void openOfficeToPDF(String inputFilePath, String outputFilePath, FileAttribute fileAttribute)
         throws OfficeException {
@@ -31,7 +30,7 @@ public class OfficeToPdfService {
         File outputFile = new File(outputFilePath_end);
         // 假如目标路径不存在,则新建该路径
         if (!outputFile.getParentFile().exists() && !outputFile.getParentFile().mkdirs()) {
-            logger.error("创建目录【{}】失败，请检查目录权限！", outputFilePath_end);
+            LOGGER.error("创建目录【{}】失败，请检查目录权限！", outputFilePath_end);
         }
         LocalConverter.Builder builder;
         Map<String, Object> filterData = new HashMap<>();

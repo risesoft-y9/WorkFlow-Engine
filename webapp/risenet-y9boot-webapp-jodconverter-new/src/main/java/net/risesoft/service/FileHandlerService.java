@@ -34,8 +34,6 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.apache.poi.EncryptedDocumentException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -55,6 +53,8 @@ import com.aspose.cad.imageoptions.TiffOptions;
 import com.aspose.cad.internal.Exceptions.TimeoutException;
 import com.itextpdf.text.pdf.PdfReader;
 
+import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.FileAttribute;
 import net.risesoft.model.FileType;
@@ -66,11 +66,11 @@ import net.risesoft.utils.WebUtils;
 import net.risesoft.web.filter.BaseUrlFilter;
 
 @Component
+@Slf4j
 public class FileHandlerService {
 
     private static final String PDF2JPG_IMAGE_FORMAT = ".jpg";
     private static final String PDF_PASSWORD_MSG = "password";
-    private final Logger logger = LoggerFactory.getLogger(FileHandlerService.class);
     private final String fileDir = ConfigConstants.getFileDir();
     private final CacheService cacheService;
     @Value("${server.tomcat.uri-encoding:UTF-8}")
@@ -189,14 +189,14 @@ public class FileHandlerService {
             sb.append("<script src=\"js/excel.header.js\" type=\"text/javascript\"></script>");
             sb.append("<link rel=\"stylesheet\" href=\"bootstrap/css/xlsx.css\">");
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("修改文件编码失败，", e);
         }
         // 重新写入文件
         try (FileOutputStream fos = new FileOutputStream(outFilePath);
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos, StandardCharsets.UTF_8))) {
             writer.write(sb.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("修改文件编码失败，", e);
         }
     }
 
@@ -215,7 +215,7 @@ public class FileHandlerService {
         try {
             urlPrefix = baseUrl + URLEncoder.encode(pdfFolder, uriEncoding).replaceAll("\\+", "%20");
         } catch (UnsupportedEncodingException e) {
-            logger.error("UnsupportedEncodingException", e);
+            LOGGER.error("UnsupportedEncodingException", e);
             urlPrefix = baseUrl + pdfFolder;
         }
         return urlPrefix + "/" + index + PDF2JPG_IMAGE_FORMAT;
@@ -274,7 +274,7 @@ public class FileHandlerService {
             String folder = pdfFilePath.substring(0, index);
             File path = new File(folder);
             if (!path.exists() && !path.mkdirs()) {
-                logger.error("创建转换文件【{}】目录失败，请检查目录权限！", folder);
+                LOGGER.error("创建转换文件【{}】目录失败，请检查目录权限！", folder);
             }
             String imageFilePath;
             for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
@@ -300,7 +300,7 @@ public class FileHandlerService {
                         }
                     }
                 }
-                logger.error("Convert pdf exception, pdfFilePath：{}", pdfFilePath, e);
+                LOGGER.error("Convert pdf exception, pdfFilePath：{}", pdfFilePath, e);
             } finally {
                 if (pdfReader != null) { // 关闭
                     pdfReader.close();
@@ -311,7 +311,7 @@ public class FileHandlerService {
                 this.addPdf2jpgCache(pdfFilePath, pageCount);
             }
         } catch (IOException e) {
-            logger.error("Convert pdf to jpg exception, pdfFilePath：{}", pdfFilePath, e);
+            LOGGER.error("Convert pdf to jpg exception, pdfFilePath：{}", pdfFilePath, e);
             throw new Exception(e);
         } finally {
             if (doc != null) { // 关闭
@@ -375,7 +375,7 @@ public class FileHandlerService {
                         break;
                 }
             } catch (IOException e) {
-                logger.error("PDFFileNotFoundException，inputFilePath：{}", inputFilePath, e);
+                LOGGER.error("PDFFileNotFoundException，inputFilePath：{}", inputFilePath, e);
                 return null;
             } finally {
                 // 关闭
@@ -391,13 +391,13 @@ public class FileHandlerService {
             // 如果在超时时间内，没有数据返回：则抛出TimeoutException异常
             result.get(Long.parseLong(ConfigConstants.getCadTimeout()), TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            System.out.println("InterruptedException发生");
+            LOGGER.error("InterruptedException发生");
             return null;
         } catch (ExecutionException e) {
-            System.out.println("ExecutionException发生");
+            LOGGER.error("ExecutionException发生");
             return null;
         } catch (TimeoutException e) {
-            System.out.println("TimeoutException发生，意味着线程超时报错");
+            LOGGER.error("TimeoutException发生，意味着线程超时报错");
             return null;
         } finally {
             source.dispose();
