@@ -69,7 +69,7 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-liquibase</artifactId>
+            <artifactId>risenet-y9boot-starter-multi-tenant</artifactId>
             <version>${project.version}</version>
         </dependency>
 
