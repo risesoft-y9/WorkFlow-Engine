@@ -332,10 +332,11 @@ public class OpinionServiceImpl implements OpinionService {
                     boolean addable = (boolean)addableMap.get("addable");
                     if (!addable) {
                         // 没有意见框编辑权限时，增加代录权限
-                        boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", person.getPersonId()).getData();
-                        if (hasRole1) {
-                            addableMap.put("addAgent", true);
-                        }
+                        // boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "",
+                        // "代录意见角色", person.getPersonId()).getData();
+                        // if (hasRole1) {
+                        // addableMap.put("addAgent", true);
+                        // }
                     }
                     resList.add(addableMap);
                     return resList;
@@ -368,10 +369,11 @@ public class OpinionServiceImpl implements OpinionService {
                 boolean addable = (boolean)addableMap.get("addable");
                 if (!addable) {
                     // 没有意见框编辑权限时，增加代录权限
-                    boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", person.getPersonId()).getData();
-                    if (hasRole1) {
-                        addableMap.put("addAgent", true);
-                    }
+                    // boolean hasRole1 = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "",
+                    // "代录意见角色", person.getPersonId()).getData();
+                    // if (hasRole1) {
+                    // addableMap.put("addAgent", true);
+                    // }
                 }
             } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
                 /**
@@ -431,11 +433,11 @@ public class OpinionServiceImpl implements OpinionService {
                             addableMap.put("addable", false);
                         }
                     } else {// 收回件可编辑意见
-                        if (takeBack != null && Boolean.valueOf(takeBack) && Y9LoginUserHolder.getPositionId().equals(opinion.getPositionId())) {// 收回件
+                        if (takeBack != null && Boolean.valueOf(takeBack) && Y9LoginUserHolder.getPersonId().equals(opinion.getUserId())) {// 收回件
                             List<HistoricTaskInstanceModel> tlist = historicTaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "");
                             for (int i = tlist.size() - 1; i >= 0; i--) {
                                 HistoricTaskInstanceModel model = tlist.get(i);
-                                if (model.getEndTime() != null && model.getId().equals(opinion.getTaskId()) && model.getAssignee().equals(Y9LoginUserHolder.getPositionId())) {// 找到收回前的上一个任务
+                                if (model.getEndTime() != null && model.getId().equals(opinion.getTaskId())) {// 找到收回前的上一个任务
                                     map.put("editable", true);
                                     addableMap.put("addable", false);
                                     break;
