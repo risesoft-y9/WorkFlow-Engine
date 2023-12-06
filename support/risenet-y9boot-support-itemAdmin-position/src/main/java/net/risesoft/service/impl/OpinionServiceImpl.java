@@ -21,8 +21,10 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
+import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.entity.ItemOpinionFrameBind;
 import net.risesoft.entity.Opinion;
 import net.risesoft.entity.OpinionHistory;
@@ -38,6 +40,7 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.PersonExt;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
+import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
@@ -50,6 +53,7 @@ import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.ProcessTrackService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.util.CommentUtil;
+import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -81,6 +85,9 @@ public class OpinionServiceImpl implements OpinionService {
     private TaskApi taskManager;
 
     @Autowired
+    private HistoricTaskApi historicTaskApi;
+
+    @Autowired
     private SpmApproveItemService spmApproveItemService;
 
     @Autowired
@@ -103,6 +110,9 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Autowired
     private PositionApi positionManager;
+
+    @Autowired
+    private VariableApi variableApi;
 
     @Override
     public Boolean checkSignOpinion(String processSerialNumber, String taskId) {
@@ -393,7 +403,8 @@ public class OpinionServiceImpl implements OpinionService {
                     resList.add(addableMap);
                     return resList;
                 }
-
+                TaskModel task = taskManager.findById(tenantId, taskId);
+                String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK);
                 for (Opinion opinion : list) {
                     Map<String, Object> map = new HashMap<String, Object>(16);
                     opinion.setContent(CommentUtil.replaceEnter2Br(opinion.getContent()));
@@ -419,6 +430,18 @@ public class OpinionServiceImpl implements OpinionService {
                             map.put("editable", true);
                             addableMap.put("addable", false);
                         }
+                    } else {// 收回件可编辑意见
+                        if (takeBack != null && Boolean.valueOf(takeBack) && Y9LoginUserHolder.getPositionId().equals(opinion.getPositionId())) {// 收回件
+                            List<HistoricTaskInstanceModel> tlist = historicTaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "");
+                            for (int i = tlist.size() - 1; i >= 0; i--) {
+                                HistoricTaskInstanceModel model = tlist.get(i);
+                                if (model.getEndTime() != null && model.getId().equals(opinion.getTaskId()) && model.getAssignee().equals(Y9LoginUserHolder.getPositionId())) {// 找到收回前的上一个任务
+                                    map.put("editable", true);
+                                    addableMap.put("addable", false);
+                                    break;
+                                }
+                            }
+                        }
                     }
                     resList.add(map);
                 }
@@ -428,7 +451,6 @@ public class OpinionServiceImpl implements OpinionService {
                 Boolean addableTemp = (Boolean)addableMap.get("addable");
                 if (addableTemp) {
                     addableMap.put("addable", false);
-                    TaskModel task = taskManager.findById(tenantId, taskId);
                     ItemOpinionFrameBind bind = itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
                     if (null != bind) {
                         // 是否必填意见，与addable一起判定，都为true时提示必填。
