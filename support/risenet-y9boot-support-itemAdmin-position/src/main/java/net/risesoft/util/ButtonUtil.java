@@ -341,11 +341,14 @@ public class ButtonUtil {
                     if (!isParallelSponsor && !isLastParallel) {
                         ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
                         if (null != itemTaskConf && itemTaskConf.getSignTask()) {
-                            isButtonShow[8] = false;
-                            if (showSubmitButton) {
-                                isButtonShow[20] = true;
+                            if (outPutNodeCount > 0) {
+                                if (showSubmitButton) {
+                                    isButtonShow[20] = true;
+                                } else {
+                                    isButtonShow[1] = true;
+                                }
                             } else {
-                                isButtonShow[1] = true;
+                                isButtonShow[8] = false;
                             }
                         } else {
                             isButtonShow[8] = true;
@@ -410,17 +413,14 @@ public class ButtonUtil {
                 if (isAssignee && isContainEndEvent) {
                     // 如果是在并行状态下，那么就要看是不是并行状态主办人，如果是则显示办结按钮，否则不显示
                     if (isParallel) {
-                        // if (sponsorStatus) {// 是否设置了主协办状态
-                        if (isParallelSponsor) {
-                            // 如果是主办人，显示办结按钮
+                        ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
+                        if (null != itemTaskConf && itemTaskConf.getSignTask()) {
                             isButtonShow[11] = true;
+                        } else {
+                            if (isParallelSponsor || isLastParallel) {
+                                isButtonShow[11] = true;
+                            }
                         }
-                        // } else {
-                        if (isLastParallel) {
-                            // 如果是最后一个处理人，显示办结按钮
-                            isButtonShow[11] = true;
-                        }
-                        // }
 
                     } else if (isSequential) {
                         // 如果在串行状态下，那么就要看是不是最后一个用户，如果是则显示办结按钮，否则不显示

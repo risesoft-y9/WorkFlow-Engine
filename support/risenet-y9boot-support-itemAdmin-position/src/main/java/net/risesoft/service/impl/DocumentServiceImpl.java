@@ -460,12 +460,6 @@ public class DocumentServiceImpl implements DocumentService {
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
             String multiInstance = processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(), routeToTaskId);
             Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
-            // 子流程信息
-            if (multiInstance.equals(SysVariables.CALLACTIVITY)) {
-                Map<String, Object> initDataMap = new HashMap<String, Object>(16);
-                initDataMap.put(SysVariables.PARENTPROCESSSERIALNUMBER, processParam != null ? processParam.getProcessSerialNumber() : "");
-                variables.put(SysVariables.INITDATAMAP, initDataMap);
-            }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             /**
              * 并行发送超过20人时，启用异步后台处理。
@@ -1601,6 +1595,10 @@ public class DocumentServiceImpl implements DocumentService {
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             String itemId = processParam.getItemId();
             TaskModel task = taskManager.findById(tenantId, taskId);
+            if(null==task || null==task.getId()) {
+                map.put("msg", "该件已被处理。");
+                return map;
+            }
             String processDefinitionId = task.getProcessDefinitionId(), taskDefKey = task.getTaskDefinitionKey(), processInstanceId = task.getProcessInstanceId();
             Y9Result<Map<String, String>> routeToTaskIdResult = this.parserRouteToTaskId(itemId, processSerialNumber, processDefinitionId, taskDefKey, taskId);
             if (!routeToTaskIdResult.isSuccess()) {
@@ -1616,12 +1614,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
             List<String> userList = userResult.getData();
             Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
-            String sponsorHandle = "false";
-            ItemTaskConf itemTaskConf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
-            if (null != itemTaskConf && itemTaskConf.getSignTask()) {
-                sponsorHandle = "true";
-            }
-            asyncHandleService.forwarding4Task(processInstanceId, processParam, sponsorHandle, "", taskId, multiInstance, variables, userList);
+            asyncHandleService.forwarding4Task(processInstanceId, processParam, "", "", taskId, multiInstance, variables, userList);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "提交成功");
         } catch (Exception e) {

@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.msgremind.MsgRemindInfoApi;
 import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.PersonApi;
@@ -34,6 +33,7 @@ import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ChaoSong;
 import net.risesoft.entity.ErrorLog;
+import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.entity.Opinion;
 import net.risesoft.entity.OpinionHistory;
 import net.risesoft.entity.ProcessParam;
@@ -135,6 +135,9 @@ public class AsyncHandleService {
     @Autowired
     private DepartmentApi departmentManager;
 
+    @Autowired
+    private ItemTaskConfService itemTaskConfService;
+
     /**
      * 异步发送
      *
@@ -195,6 +198,11 @@ public class AsyncHandleService {
     public void forwarding4Task(String processInstanceId, ProcessParam processParam, String sponsorHandle, String sponsorGuid, String taskId, String multiInstance, Map<String, Object> variables, List<String> userList) throws Exception {
         Position position = Y9LoginUserHolder.getPosition();
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = position.getId();
+        TaskModel task = taskManager.findById(tenantId, taskId);
+        ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(processParam.getItemId(), task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+        if (null != itemTaskConf && itemTaskConf.getSignTask()) {
+            sponsorHandle = "true";
+        }
         // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
         if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
             List<TaskModel> taskNextList1 = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
