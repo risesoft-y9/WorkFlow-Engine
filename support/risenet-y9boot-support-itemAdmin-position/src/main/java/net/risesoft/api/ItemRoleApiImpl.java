@@ -263,7 +263,7 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
                 Position person = positionManager.getPosition(tenantId, orgUnitList.get(i).getId()).getData();
                 map.put("person", "6:" + person.getId());
                 map.put("name", person.getName());
-                map.put("duty", person.getDuty());
+                map.put("duty", person.getJobName());
             }
             item.add(map);
         }
