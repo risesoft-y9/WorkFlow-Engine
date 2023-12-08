@@ -140,7 +140,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                 m.put("userId", person.getId());
                 m.put("parentId", receivePerson.getPersonDeptId());
                 m.put("name", person.getName());
-                m.put("duty", StringUtils.isBlank(person.getDuty()) ? "" : person.getDuty());
+                m.put("duty", StringUtils.isBlank(person.getJobName()) ? "" : person.getJobName());
                 m.put("send", receivePerson.isSend() ? "是" : "否");
                 m.put("receive", receivePerson.isReceive() ? "是" : "否");
                 list.add(m);
