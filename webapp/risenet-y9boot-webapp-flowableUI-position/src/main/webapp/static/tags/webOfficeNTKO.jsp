@@ -18,7 +18,7 @@
 	<script src="${ctx}/static/tags/js/ntkobackground.min.js?s=1" type="text/javascript" charset="UTF-8"></script>
 	<body style="overflow: hidden;">
 	    <span id="risesoftNTKOWord" style="color:red;display: none;">不能装载文档控件。请在检查浏览器的选项中检查浏览器的安全设置。或者下载安装<a href="${ctx}/static/tags/exe/risesoftNTKOWord.exe">跨浏览器插件</a></span>  
-		<iframe id="wordformIframe" style="width: 100%;height: 100%;border: 0;overflow: hidden;"> </iframe>
+		<iframe id="wordformIframe" style="width: 100%;height: 100%;border: 0;overflow: hidden;display: none;"> </iframe>
 	</body>	
 	<script language="javascript">
 		var ctx = "${ctx}";
@@ -30,8 +30,10 @@
 		var browser = "";
 		var tenantId = "";
 		var userId = "";
+		var fileId = "";
 		var activitiUser = "";
 		var taskDefKey = "";
+		var positionId = "";
 		$(document).ready(function() {
 			
 		});
@@ -47,7 +49,19 @@
 				tenantId = obj.data.tenantId;
 				userId = obj.data.userId;
 				openWord();
-			}else if(msgType == "printWord"){//打印word
+			}if(msgType == "openFile"){//打开文件
+                itemId = obj.data.itemId;
+                itembox = obj.data.itembox;
+                processInstanceId = obj.data.processInstanceId;
+                taskId = obj.data.taskId;
+                processSerialNumber = obj.data.processSerialNumber;
+                browser = obj.data.browser;
+                tenantId = obj.data.tenantId;
+                userId = obj.data.userId;
+                fileId = obj.data.fileId;
+                positionId = obj.data.positionId;
+                openFile();
+            }else if(msgType == "printWord"){//打印word
 				itemId = obj.data.itemId;
 				itembox = obj.data.itembox;
 				processInstanceId = obj.data.processInstanceId;
@@ -99,6 +113,42 @@
 				}
 			}
 		}
+		
+		function openFile(){
+            var ignoreUrl = "/flowableUI/services/ntkoFile/showWord?itembox="+itembox+"&processSerialNumber="+processSerialNumber+"&taskId="+taskId+"&positionId="+positionId+"&browser="+browser+"&tenantId="+tenantId+"&userId="+userId+"&fileId="+fileId;
+            if (browser == "IE") {
+                $('#wordformIframe').attr('src',ignoreUrl);
+            }else if(browser == "firefox"){
+                if(version < 50){   
+                    $('#wordformIframe').attr('src',ignoreUrl);
+                }else{
+                    if(installed()){
+                        openWindow(ignoreUrl);
+                    }else{
+                        $('#wordformIframe').attr('src',ignoreUrl);
+                        $('#risesoftNTKOWord').css('display',"");
+                    }
+                }
+            }else if(browser == "chrome"){
+                    if(version < 42){   
+                        $('#wordformIframe').attr('src',ignoreUrl);
+                    }else{
+                        if(installed()){
+                            openWindow(ignoreUrl);
+                        }else{
+                            $('#wordformIframe').attr('src',ignoreUrl);
+                            $('#risesoftNTKOWord').css('display',"");
+                        }
+                    }
+            }else{
+                if(installed()){
+                    openWindow(ignoreUrl);
+                }else{
+                    $('#wordformIframe').attr('src',ntkoUrl);
+                    $('#risesoftNTKOWord').css('display',"");
+                }
+            }
+        }
 		
 		//word模板打印
 		function printWord(){

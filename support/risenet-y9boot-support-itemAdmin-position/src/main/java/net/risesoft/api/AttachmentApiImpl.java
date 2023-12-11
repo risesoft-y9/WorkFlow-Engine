@@ -21,14 +21,15 @@ import net.risesoft.api.org.PositionApi;
 import net.risesoft.entity.TransactionFile;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
-import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.repository.jpa.TransactionFileRepository;
 import net.risesoft.service.TransactionFileService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 附件接口
@@ -77,8 +78,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @param processSerialNumbers 流程编号
      */
     @Override
-    @PostMapping(value = "/delByProcessSerialNumbers", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/delByProcessSerialNumbers", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void delBatchByProcessSerialNumbers(String tenantId, @RequestBody List<String> processSerialNumbers) {
         Y9LoginUserHolder.setTenantId(tenantId);
         transactionFileService.delBatchByProcessSerialNumbers(processSerialNumbers);
@@ -144,8 +144,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      */
     @Override
     @GetMapping(value = "/getAttachmentList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getAttachmentList(String tenantId, String processSerialNumber, String fileSource,
-        int page, int rows) {
+    public Map<String, Object> getAttachmentList(String tenantId, String processSerialNumber, String fileSource, int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = transactionFileService.getAttachmentList(processSerialNumber, fileSource, page, rows);
@@ -162,14 +161,27 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      */
     @Override
     @GetMapping(value = "/getAttachmentModelList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<AttachmentModel> getAttachmentModelList(String tenantId, String processSerialNumber,
-        String fileSource) {
+    public List<AttachmentModel> getAttachmentModelList(String tenantId, String processSerialNumber, String fileSource) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<TransactionFile> transactionFileList =
-            transactionFileService.getAttachmentModelList(processSerialNumber, fileSource);
-        List<AttachmentModel> attachmentModelList =
-            ItemAdminModelConvertUtil.attachmentList2ModelList(transactionFileList);
+        List<TransactionFile> transactionFileList = transactionFileService.getAttachmentModelList(processSerialNumber, fileSource);
+        List<AttachmentModel> attachmentModelList = ItemAdminModelConvertUtil.attachmentList2ModelList(transactionFileList);
         return attachmentModelList;
+    }
+
+    /**
+     *
+     */
+    @Override
+    @GetMapping(value = "/getFile", produces = MediaType.APPLICATION_JSON_VALUE)
+    public AttachmentModel getFile(String tenantId, String fileId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        TransactionFile file = transactionFileRepository.findById(fileId).orElse(null);
+        AttachmentModel model = null;
+        if (file != null) {
+            model = new AttachmentModel();
+            Y9BeanUtil.copyProperties(file, model);
+        }
+        return model;
     }
 
     /**
@@ -232,9 +244,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      */
     @Override
     @PostMapping(value = "/saveOrUpdateUploadInfo", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String saveOrUpdateUploadInfo(String tenantId, String positionId, String fileName, String fileType,
-        String fileSizeString, String fileSource, String processInstanceId, String processSerialNumber, String taskId,
-        String y9FileStoreId) {
+    public String saveOrUpdateUploadInfo(String tenantId, String positionId, String fileName, String fileType, String fileSizeString, String fileSource, String processInstanceId, String processSerialNumber, String taskId, String y9FileStoreId) {
         String msg = null;
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId).getData();
@@ -276,6 +286,32 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
         return msg;
     }
 
+    @Override
+    @PostMapping(value = "/updateFile", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String updateFile(String tenantId, String userId, String positionId, String fileId, String fileSizeString, String taskId, String y9FileStoreId) {
+        String msg = null;
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Y9LoginUserHolder.setPosition(position);
+        Person person = personManager.getPerson(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
+        try {
+            TransactionFile attachment = transactionFileRepository.findById(fileId).orElse(null);
+            if (null != attachment) {
+                attachment.setFileStoreId(y9FileStoreId);
+                attachment.setFileSize(fileSizeString);
+                attachment.setUploadTime(sdf.format(new Date()));
+                transactionFileRepository.save(attachment);
+            }
+            msg = "success:true";
+        } catch (Exception e) {
+            e.printStackTrace();
+            msg = "success:false";
+        }
+        return msg;
+    }
+
     /**
      * 上传附件
      *
@@ -294,17 +330,14 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      */
     @Override
     @PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> upload(String tenantId, String userId, String positionId, String fileName,
-        String fileSize, String processInstanceId, String taskId, String describes, String processSerialNumber,
-        String fileSource, String y9FileStoreId) {
+    public Map<String, Object> upload(String tenantId, String userId, String positionId, String fileName, String fileSize, String processInstanceId, String taskId, String describes, String processSerialNumber, String fileSource, String y9FileStoreId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
-        map = transactionFileService.uploadRest(fileName, fileSize, processInstanceId, taskId, processSerialNumber,
-            describes, fileSource, y9FileStoreId);
+        map = transactionFileService.uploadRest(fileName, fileSize, processInstanceId, taskId, processSerialNumber, describes, fileSource, y9FileStoreId);
         return map;
     }
 
@@ -318,10 +351,8 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/uploadModel", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
-    public boolean uploadModel(String tenantId, String positionId, @RequestBody AttachmentModel attachmentModel)
-        throws Exception {
+    @PostMapping(value = "/uploadModel", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public boolean uploadModel(String tenantId, String positionId, @RequestBody AttachmentModel attachmentModel) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);

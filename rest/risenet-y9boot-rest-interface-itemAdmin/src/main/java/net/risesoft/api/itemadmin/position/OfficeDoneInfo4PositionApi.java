@@ -14,6 +14,14 @@ import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 public interface OfficeDoneInfo4PositionApi {
 
     /**
+     * 取消上会，当代研究所
+     *
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     */
+    void cancelMeeting(String tenantId, String processInstanceId);
+
+    /**
      * 监控办结统计
      *
      * @param tenantId 租户id
@@ -68,6 +76,20 @@ public interface OfficeDoneInfo4PositionApi {
      * @return OfficeDoneInfoModel
      */
     OfficeDoneInfoModel findByProcessInstanceId(String tenantId, String processInstanceId);
+
+    /**
+     * 上会台账列表，当代研究所
+     *
+     * @param tenantId 租户id
+     * @param userName 申请人
+     * @param deptName 部门名称
+     * @param title 标题
+     * @param meetingType 会议类型
+     * @param page 页码
+     * @param rows 条数
+     * @return
+     */
+    Map<String, Object> getMeetingList(String tenantId, String userName, String deptName, String title, String meetingType, Integer page, Integer rows);
 
     /**
      * 保存办结信息,不经过kafka消息队列，直接保存
@@ -170,5 +192,14 @@ public interface OfficeDoneInfo4PositionApi {
      * @return
      */
     Map<String, Object> searchByPositionIdAndSystemName(String tenantId, String positionId, String title, String systemName, String startdate, String enddate, Integer page, Integer rows);
+
+    /**
+     * 上会，当代研究所
+     *
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @param meetingType 会议类型
+     */
+    void setMeeting(String tenantId, String processInstanceId, String meetingType);
 
 }

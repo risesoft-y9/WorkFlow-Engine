@@ -23,6 +23,16 @@ import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 public interface OfficeDoneInfo4PositionApiClient extends OfficeDoneInfo4PositionApi {
 
     /**
+     * 取消上会，当代研究所
+     *
+     * @param tenantId
+     * @param processInstanceId
+     */
+    @Override
+    @PostMapping("/cancelMeeting")
+    void cancelMeeting(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+
+    /**
      * 监控办结统计
      *
      * @param tenantId
@@ -89,6 +99,14 @@ public interface OfficeDoneInfo4PositionApiClient extends OfficeDoneInfo4Positio
     @Override
     @GetMapping("/findByProcessInstanceId")
     OfficeDoneInfoModel findByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+
+    /**
+     *
+     */
+    @Override
+    @GetMapping("/getMeetingList")
+    Map<String, Object> getMeetingList(@RequestParam("tenantId") String tenantId, @RequestParam("userName") String userName, @RequestParam("deptName") String deptName, @RequestParam("title") String title, @RequestParam("meetingType") String meetingType, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 
     /**
      * 保存办结信息,不经过kafka消息队列，直接保存
@@ -211,5 +229,16 @@ public interface OfficeDoneInfo4PositionApiClient extends OfficeDoneInfo4Positio
     @GetMapping("/searchByPositionIdAndSystemName")
     Map<String, Object> searchByPositionIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("title") String title, @RequestParam("systemName") String systemName, @RequestParam("startdate") String startdate,
         @RequestParam("enddate") String enddate, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
+    /**
+     * 上会，当代研究所
+     *
+     * @param tenantId
+     * @param processInstanceId
+     * @param meetingType
+     */
+    @Override
+    @PostMapping("/setMeeting")
+    void setMeeting(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("meetingType") String meetingType);
 
 }
