@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class OfficeDoneInfo implements Serializable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 5418957558064846446L;
 
@@ -136,6 +136,12 @@ public class OfficeDoneInfo implements Serializable {
     private String deptId;
 
     /**
+     * 部门名称
+     */
+    @Field(type = FieldType.Keyword, index = true, store = true)
+    private String deptName = "";
+
+    /**
      * 委办局id
      */
     @Field(type = FieldType.Keyword, index = true, store = true)
@@ -158,5 +164,17 @@ public class OfficeDoneInfo implements Serializable {
      */
     @Field(type = FieldType.Keyword, index = true, store = true)
     private String userComplete;
+
+    /**
+     * 是否上会，1为上会,当代研究所使用
+     */
+    @Field(type = FieldType.Keyword, index = true, store = true)
+    private String meeting = "0";
+
+    /**
+     * 会议类型，党组会，办公会，专题会,当代研究所使用
+     */
+    @Field(type = FieldType.Keyword, index = true, store = true)
+    private String meetingType = "";
 
 }

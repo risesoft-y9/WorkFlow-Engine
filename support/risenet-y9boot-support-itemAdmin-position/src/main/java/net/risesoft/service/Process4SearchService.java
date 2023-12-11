@@ -27,9 +27,10 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.ErrorLogModel;
+import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
-import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.util.form.DbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -73,16 +74,13 @@ public class Process4SearchService {
         String processInstanceId = processParam.getProcessInstanceId();
         Connection connection = null;
         try {
-            String sql0 = "SELECT" + "	P .PROC_INST_ID_,"
-                + "	TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_," + "	P .PROC_DEF_ID_" + " FROM"
-                + "	ACT_HI_PROCINST P" + " WHERE" + "	P .PROC_INST_ID_ = '" + processInstanceId + "'";
+            String sql0 = "SELECT" + "	P .PROC_INST_ID_," + "	TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_," + "	P .PROC_DEF_ID_" + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + "	P .PROC_INST_ID_ = '" + processInstanceId + "'";
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             connection = dataSource.getConnection();
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
-                sql0 = "SELECT" + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,P.PROC_DEF_ID_"
-                    + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + " P.PROC_INST_ID_ = '" + processInstanceId + "'";
+                sql0 = "SELECT" + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,P.PROC_DEF_ID_" + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + " P.PROC_INST_ID_ = '" + processInstanceId + "'";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql0);
             Map<String, Object> map = list.get(0);
@@ -95,30 +93,23 @@ public class Process4SearchService {
             OfficeDoneInfo officeDoneInfo = new OfficeDoneInfo();
             officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             if (processParam != null && StringUtils.isNotBlank(processParam.getId())) {
-                officeDoneInfo.setDocNumber(
-                    StringUtils.isNotBlank(processParam.getCustomNumber()) ? processParam.getCustomNumber() : "");
-                officeDoneInfo
-                    .setItemId(StringUtils.isNotBlank(processParam.getItemId()) ? processParam.getItemId() : "");
-                officeDoneInfo
-                    .setItemName(StringUtils.isNotBlank(processParam.getItemName()) ? processParam.getItemName() : "");
-                officeDoneInfo.setProcessSerialNumber(StringUtils.isNotBlank(processParam.getProcessSerialNumber())
-                    ? processParam.getProcessSerialNumber() : "");
-                officeDoneInfo.setSystemCnName(
-                    StringUtils.isNotBlank(processParam.getSystemCnName()) ? processParam.getSystemCnName() : "");
-                officeDoneInfo.setSystemName(
-                    StringUtils.isNotBlank(processParam.getSystemName()) ? processParam.getSystemName() : "");
+                officeDoneInfo.setDocNumber(StringUtils.isNotBlank(processParam.getCustomNumber()) ? processParam.getCustomNumber() : "");
+                officeDoneInfo.setItemId(StringUtils.isNotBlank(processParam.getItemId()) ? processParam.getItemId() : "");
+                officeDoneInfo.setItemName(StringUtils.isNotBlank(processParam.getItemName()) ? processParam.getItemName() : "");
+                officeDoneInfo.setProcessSerialNumber(StringUtils.isNotBlank(processParam.getProcessSerialNumber()) ? processParam.getProcessSerialNumber() : "");
+                officeDoneInfo.setSystemCnName(StringUtils.isNotBlank(processParam.getSystemCnName()) ? processParam.getSystemCnName() : "");
+                officeDoneInfo.setSystemName(StringUtils.isNotBlank(processParam.getSystemName()) ? processParam.getSystemName() : "");
                 officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
-                officeDoneInfo.setUrgency(
-                    StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
-                officeDoneInfo
-                    .setCreatUserId(StringUtils.isNotBlank(processParam.getStartor()) ? processParam.getStartor() : "");
-                officeDoneInfo.setCreatUserName(
-                    StringUtils.isNotBlank(processParam.getStartorName()) ? processParam.getStartorName() : "");
+                officeDoneInfo.setUrgency(StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
+                officeDoneInfo.setCreatUserId(StringUtils.isNotBlank(processParam.getStartor()) ? processParam.getStartor() : "");
+                officeDoneInfo.setCreatUserName(StringUtils.isNotBlank(processParam.getStartorName()) ? processParam.getStartorName() : "");
             }
             officeDoneInfo.setUserComplete("");
             OrgUnit bureau = departmentManager.getBureau(tenantId, position.getParentId()).getData();
             officeDoneInfo.setBureauId(bureau != null ? bureau.getId() : "");
             officeDoneInfo.setDeptId(position.getParentId());
+            Department dept = departmentManager.getDepartment(tenantId, position.getParentId()).getData();
+            officeDoneInfo.setDeptName(dept != null ? dept.getName() : "");
             officeDoneInfo.setEntrustUserId("");
             officeDoneInfo.setAllUserId(processParam.getStartor());
             officeDoneInfo.setEndTime(null);
@@ -177,17 +168,13 @@ public class Process4SearchService {
         try {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfo == null) {
-                String sql0 = "SELECT" + "	P .PROC_INST_ID_,"
-                    + "	TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_," + "	P .PROC_DEF_ID_" + " FROM"
-                    + "	ACT_HI_PROCINST P" + " WHERE" + "	P .PROC_INST_ID_ = '" + processInstanceId + "'";
+                String sql0 = "SELECT" + "	P .PROC_INST_ID_," + "	TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_," + "	P .PROC_DEF_ID_" + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + "	P .PROC_INST_ID_ = '" + processInstanceId + "'";
                 DataSource dataSource = jdbcTemplate.getDataSource();
                 DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
                 connection = dataSource.getConnection();
                 String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
                 if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
-                    sql0 = "SELECT" + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,P.PROC_DEF_ID_"
-                        + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + " P.PROC_INST_ID_ = '" + processInstanceId
-                        + "'";
+                    sql0 = "SELECT" + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,P.PROC_DEF_ID_" + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + " P.PROC_INST_ID_ = '" + processInstanceId + "'";
                 }
                 List<Map<String, Object>> list = jdbcTemplate.queryForList(sql0);
                 Map<String, Object> map = list.get(0);
@@ -195,22 +182,14 @@ public class Process4SearchService {
                 String startTime = (String)map.get("START_TIME_");
                 officeDoneInfo = new OfficeDoneInfo();
                 officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                officeDoneInfo.setDocNumber(
-                    StringUtils.isNotBlank(processParam.getCustomNumber()) ? processParam.getCustomNumber() : "");
-                officeDoneInfo
-                    .setItemId(StringUtils.isNotBlank(processParam.getItemId()) ? processParam.getItemId() : "");
-                officeDoneInfo
-                    .setItemName(StringUtils.isNotBlank(processParam.getItemName()) ? processParam.getItemName() : "");
-                officeDoneInfo.setProcessSerialNumber(StringUtils.isNotBlank(processParam.getProcessSerialNumber())
-                    ? processParam.getProcessSerialNumber() : "");
-                officeDoneInfo.setSystemCnName(
-                    StringUtils.isNotBlank(processParam.getSystemCnName()) ? processParam.getSystemCnName() : "");
-                officeDoneInfo.setSystemName(
-                    StringUtils.isNotBlank(processParam.getSystemName()) ? processParam.getSystemName() : "");
-                officeDoneInfo
-                    .setCreatUserId(StringUtils.isNotBlank(processParam.getStartor()) ? processParam.getStartor() : "");
-                officeDoneInfo.setCreatUserName(
-                    StringUtils.isNotBlank(processParam.getStartorName()) ? processParam.getStartorName() : "");
+                officeDoneInfo.setDocNumber(StringUtils.isNotBlank(processParam.getCustomNumber()) ? processParam.getCustomNumber() : "");
+                officeDoneInfo.setItemId(StringUtils.isNotBlank(processParam.getItemId()) ? processParam.getItemId() : "");
+                officeDoneInfo.setItemName(StringUtils.isNotBlank(processParam.getItemName()) ? processParam.getItemName() : "");
+                officeDoneInfo.setProcessSerialNumber(StringUtils.isNotBlank(processParam.getProcessSerialNumber()) ? processParam.getProcessSerialNumber() : "");
+                officeDoneInfo.setSystemCnName(StringUtils.isNotBlank(processParam.getSystemCnName()) ? processParam.getSystemCnName() : "");
+                officeDoneInfo.setSystemName(StringUtils.isNotBlank(processParam.getSystemName()) ? processParam.getSystemName() : "");
+                officeDoneInfo.setCreatUserId(StringUtils.isNotBlank(processParam.getStartor()) ? processParam.getStartor() : "");
+                officeDoneInfo.setCreatUserName(StringUtils.isNotBlank(processParam.getStartorName()) ? processParam.getStartorName() : "");
                 officeDoneInfo.setStartTime(startTime);
                 officeDoneInfo.setProcessDefinitionId(processDefinitionId);
                 officeDoneInfo.setProcessDefinitionKey(processDefinitionId.split(":")[0]);
@@ -218,8 +197,7 @@ public class Process4SearchService {
                 officeDoneInfo.setTenantId(tenantId);
             }
             officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
-            officeDoneInfo
-                .setUrgency(StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
+            officeDoneInfo.setUrgency(StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
             officeDoneInfo.setUserComplete("");
             officeDoneInfo.setBureauId(processParam.getBureauIds());
             officeDoneInfo.setEndTime(null);

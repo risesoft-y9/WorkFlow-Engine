@@ -15,6 +15,13 @@ import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 public interface OfficeDoneInfoService {
 
     /**
+     * 取消上会，当代研究所
+     *
+     * @param processInstanceId
+     */
+    void cancelMeeting(String processInstanceId);
+
+    /**
      * 监控办结统计
      *
      * @param itemId
@@ -63,6 +70,19 @@ public interface OfficeDoneInfoService {
      * @return
      */
     OfficeDoneInfo findByProcessInstanceId(String processInstanceId);
+
+    /**
+     * 上会台账列表，当代研究所
+     *
+     * @param userName
+     * @param deptName
+     * @param title
+     * @param meetingType
+     * @param page
+     * @param rows
+     * @return
+     */
+    Map<String, Object> getMeetingList(String userName, String deptName, String title, String meetingType, Integer page, Integer rows);
 
     /**
      * 保存办件信息,不经过kafka消息队列，直接保存
@@ -157,5 +177,13 @@ public interface OfficeDoneInfoService {
      * @return
      */
     Map<String, Object> searchByUserId(String userId, String title, String itemId, String startdate, String enddate, Integer page, Integer rows);
+
+    /**
+     * 上会，当代研究所
+     *
+     * @param processInstanceId
+     * @param meetingType
+     */
+    void setMeeting(String processInstanceId, String meetingType);
 
 }

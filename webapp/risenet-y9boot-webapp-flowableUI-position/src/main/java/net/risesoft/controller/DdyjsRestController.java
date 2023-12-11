@@ -1,6 +1,5 @@
 package net.risesoft.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +9,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.WorkList4ddyjsService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -25,7 +26,10 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class DdyjsRestController {
 
     @Autowired
-    private VariableApi variableManager;
+    private OfficeDoneInfo4PositionApi officeDoneInfoApi;
+
+    @Autowired
+    private WorkList4ddyjsService workList4ddyjsService;
 
     /**
      * 取消上会
@@ -38,9 +42,7 @@ public class DdyjsRestController {
     public Y9Result<String> cancelMeeting(@RequestParam(required = true) String processInstanceId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Map<String, Object> val = new HashMap<String, Object>();
-            val.put("val", false);
-            variableManager.setVariableByProcessInstanceId(tenantId, processInstanceId, "meeting", val);
+            officeDoneInfoApi.cancelMeeting(tenantId, processInstanceId);
             return Y9Result.successMsg("取消上会成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -49,19 +51,36 @@ public class DdyjsRestController {
     }
 
     /**
+     * 获取上会台账
+     *
+     * @param meetingType
+     * @param userName
+     * @param deptName
+     * @param title
+     * @param page
+     * @param rows
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getMeetingList", method = RequestMethod.GET, produces = "application/json")
+    public Y9Page<Map<String, Object>> getMeetingList(@RequestParam(required = false) String meetingType, @RequestParam(required = false) String userName, @RequestParam(required = false) String deptName, @RequestParam(required = false) String title, @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows) {
+        return workList4ddyjsService.getMeetingList(userName, deptName, title, meetingType, page, rows);
+    }
+
+    /**
      * 上会
      *
      * @param processInstanceId 流程实例id
+     * @param meetingType 会议类型
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/setMeeting", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> setMeeting(@RequestParam(required = true) String processInstanceId) {
+    public Y9Result<String> setMeeting(@RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String meetingType) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Map<String, Object> val = new HashMap<String, Object>();
-            val.put("val", true);
-            variableManager.setVariableByProcessInstanceId(tenantId, processInstanceId, "meeting", val);
+            officeDoneInfoApi.setMeeting(tenantId, processInstanceId, meetingType);
             return Y9Result.successMsg("上会成功");
         } catch (Exception e) {
             e.printStackTrace();

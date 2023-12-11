@@ -66,7 +66,6 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.model.platform.Resource;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
-import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -370,14 +369,12 @@ public class DocumentServiceImpl implements DocumentService {
                 startTaskDefKey = Y9Util.genCustomStr(startTaskDefKey, map.get("taskDefKey"));
             }
             returnMap.put("startTaskDefKey", startTaskDefKey);
-            String meeting = variableManager.getVariableByProcessInstanceId(tenantId, processInstanceId, "meeting");
-            if (meeting != null && Boolean.valueOf(meeting)) {// 上会
-                returnMap.put("meeting", true);
-            }
+            OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+            returnMap.put("meeting", (officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1")) ? true : false);
         } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())) {
             HistoricProcessInstanceModel hpi = historicProcessManager.getById(tenantId, processInstanceId);
+            OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (hpi == null) {
-                OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
                 if (officeDoneInfo == null) {
                     String year = processParam.getCreateTime().substring(0, 4);
                     hpi = historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year);
@@ -387,20 +384,11 @@ public class DocumentServiceImpl implements DocumentService {
                     processDefinitionId = officeDoneInfo.getProcessDefinitionId();
                     processDefinitionKey = officeDoneInfo.getProcessDefinitionKey();
                 }
-                HistoricVariableInstanceModel meetingObj = historicVariableApi.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, "meeting", officeDoneInfo.getStartTime().substring(0, 4));
-                if (meetingObj != null) {
-                    if (meetingObj.getValue() != null && Boolean.valueOf((String)meetingObj.getValue())) {// 上会
-                        returnMap.put("meeting", true);
-                    }
-                }
             } else {
-                String meeting = variableManager.getVariableByProcessInstanceId(tenantId, processInstanceId, "meeting");
-                if (meeting != null && Boolean.valueOf(meeting)) {// 上会
-                    returnMap.put("meeting", true);
-                }
                 processDefinitionId = hpi.getProcessDefinitionId();
                 processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
             }
+            returnMap.put("meeting", (officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1")) ? true : false);
             processSerialNumber = processParam.getProcessSerialNumber();
             if (StringUtils.isNotEmpty(taskId)) {
                 if (taskId.contains(SysVariables.COMMA)) {
@@ -1595,7 +1583,7 @@ public class DocumentServiceImpl implements DocumentService {
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             String itemId = processParam.getItemId();
             TaskModel task = taskManager.findById(tenantId, taskId);
-            if(null==task || null==task.getId()) {
+            if (null == task || null == task.getId()) {
                 map.put("msg", "该件已被处理。");
                 return map;
             }

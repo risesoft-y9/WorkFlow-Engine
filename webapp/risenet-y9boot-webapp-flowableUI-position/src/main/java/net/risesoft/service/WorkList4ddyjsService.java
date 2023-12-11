@@ -40,6 +40,19 @@ public interface WorkList4ddyjsService {
     Y9Page<Map<String, Object>> followList(String itemId, String searchTerm, Integer page, Integer rows);
 
     /**
+     * 获取上会台账列表
+     *
+     * @param userName
+     * @param deptName
+     * @param title
+     * @param meetingType
+     * @param page
+     * @param rows
+     * @return
+     */
+    Y9Page<Map<String, Object>> getMeetingList(String userName, String deptName, String title, String meetingType, Integer page, Integer rows);
+
+    /**
      * 我的在办事项
      *
      * @param page

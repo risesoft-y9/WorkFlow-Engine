@@ -15,6 +15,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.ExistsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -41,6 +43,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
+import net.risesoft.model.platform.Department;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.nosql.elastic.repository.OfficeDoneInfoRepository;
 import net.risesoft.service.ErrorLogService;
@@ -70,6 +73,19 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
     @Autowired
     private RestHighLevelClient elasticsearchClient;
+
+    @Autowired
+    private DepartmentApi departmentApi;
+
+    @Override
+    public void cancelMeeting(String processInstanceId) {
+        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
+        if (info != null) {
+            info.setMeeting("0");
+            info.setMeetingType("");
+            officeDoneInfoRepository.save(info);
+        }
+    }
 
     @SuppressWarnings("deprecation")
     @Override
@@ -163,6 +179,63 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     @Override
     public OfficeDoneInfo findByProcessInstanceId(String processInstanceId) {
         return officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
+    }
+
+    @Override
+    public Map<String, Object> getMeetingList(String userName, String deptName, String title, String meetingType, Integer page, Integer rows) {
+        Map<String, Object> dataMap = new HashMap<String, Object>(16);
+        dataMap.put(UtilConsts.SUCCESS, true);
+        List<OfficeDoneInfoModel> list1 = new ArrayList<OfficeDoneInfoModel>();
+        int totalPages = 1;
+        long total = 0;
+        try {
+            if (page < 1) {
+                page = 1;
+            }
+            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+            BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("meeting", "1"));
+            builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
+            if (StringUtils.isNotBlank(title)) {
+                BoolQueryBuilder builder2 = QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
+                builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
+                builder.must(builder2);
+            }
+            if (StringUtils.isNotBlank(deptName)) {
+                builder.must(QueryBuilders.wildcardQuery("deptName", "*" + deptName + "*"));
+            }
+            if (StringUtils.isNotBlank(userName)) {
+                builder.must(QueryBuilders.wildcardQuery("creatUserName", "*" + userName + "*"));
+            }
+            if (StringUtils.isNotBlank(meetingType)) {
+                ExistsQueryBuilder builder2 = QueryBuilders.existsQuery("meetingType");
+                builder.must(builder2);
+                builder.must(QueryBuilders.termsQuery("meetingType", meetingType));
+            }
+            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+            NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
+            NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
+            searchQuery.setTrackTotalHits(true);
+            SearchHits<OfficeDoneInfo> searchHits = elasticsearchOperations.search(searchQuery, OfficeDoneInfo.class, index);
+            List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+            Page<OfficeDoneInfo> pageList = new PageImpl<OfficeDoneInfo>(list0, pageable, searchHits.getTotalHits());
+            List<OfficeDoneInfo> list = pageList.getContent();
+            OfficeDoneInfoModel officeDoneInfoModel = null;
+            for (OfficeDoneInfo officeDoneInfo : list) {
+                officeDoneInfoModel = new OfficeDoneInfoModel();
+                Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+                list1.add(officeDoneInfoModel);
+            }
+            totalPages = pageList != null ? pageList.getTotalPages() : 1;
+            total = pageList != null ? pageList.getTotalElements() : 0;
+        } catch (Exception e) {
+            dataMap.put(UtilConsts.SUCCESS, false);
+            LOGGER.warn("异常", e);
+        }
+        dataMap.put("currpage", page);
+        dataMap.put("totalpages", totalPages);
+        dataMap.put("total", total);
+        dataMap.put("rows", list1);
+        return dataMap;
     }
 
     @Override
@@ -588,6 +661,18 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         dataMap.put("total", total);
         dataMap.put("rows", list1);
         return dataMap;
+    }
+
+    @Override
+    public void setMeeting(String processInstanceId, String meetingType) {
+        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
+        if (info != null) {
+            info.setMeeting("1");
+            info.setMeetingType(meetingType);
+            Department dept = departmentApi.getDepartment(Y9LoginUserHolder.getTenantId(), info.getCreatUserId()).getData();
+            info.setDeptName(dept != null ? dept.getName() : "");
+            officeDoneInfoRepository.save(info);
+        }
     }
 
 }

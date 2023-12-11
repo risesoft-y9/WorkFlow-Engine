@@ -31,6 +31,13 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
     @Autowired
     private OfficeDoneInfoService officeDoneInfoService;
 
+    @Override
+    @PostMapping(value = "/cancelMeeting", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void cancelMeeting(String tenantId, String processInstanceId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        officeDoneInfoService.cancelMeeting(processInstanceId);
+    }
+
     /**
      * 监控办结统计
      *
@@ -119,6 +126,16 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
             Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
         }
         return officeDoneInfoModel;
+    }
+
+    /**
+     *
+     */
+    @Override
+    @GetMapping(value = "/getMeetingList", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getMeetingList(String tenantId, String userName, String deptName, String title, String meetingType, Integer page, Integer rows) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return officeDoneInfoService.getMeetingList(userName, deptName, title, meetingType, page, rows);
     }
 
     /**
@@ -257,6 +274,13 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
     public Map<String, Object> searchByPositionIdAndSystemName(String tenantId, String positionId, String title, String systemName, String startdate, String enddate, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchByPositionIdAndSystemName(positionId, title, systemName, startdate, enddate, page, rows);
+    }
+
+    @Override
+    @PostMapping(value = "/setMeeting", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void setMeeting(String tenantId, String processInstanceId, String meetingType) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        officeDoneInfoService.setMeeting(processInstanceId, meetingType);
     }
 
 }

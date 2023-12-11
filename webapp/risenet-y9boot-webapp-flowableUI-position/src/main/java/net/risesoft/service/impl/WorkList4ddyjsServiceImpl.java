@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 
+import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TaskVariableApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
@@ -25,18 +26,17 @@ import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.processadmin.DoingApi;
-import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.TaskVariableModel;
 import net.risesoft.model.platform.Position;
-import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -81,13 +81,13 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     private VariableApi variableManager;
 
     @Autowired
-    private HistoricVariableApi historicVariableApi;
-
-    @Autowired
     private ProcessDefinitionApi processDefinitionManager;
 
     @Autowired
     private TaskVariableApi taskVariableManager;
+
+    @Autowired
+    private FormDataApi formDataApi;
 
     @Value("${y9.common.flowableBaseUrl}")
     private String flowableBaseUrl;
@@ -151,10 +151,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
                         mapTemp.put("meeting", false);
                         if (item.getSystemName().equals("gongwenguanli")) {
-                            String meeting = variableManager.getVariableByProcessInstanceId(tenantId, processInstanceId, "meeting");
-                            if (meeting != null && Boolean.valueOf(meeting)) {// 上会
-                                mapTemp.put("meeting", true);
-                            }
+                            OfficeDoneInfoModel officeDoneInfo = officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+                            mapTemp.put("meeting", (officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1")) ? true : false);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -208,10 +206,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
                         mapTemp.put("meeting", false);
                         if (item.getSystemName().equals("gongwenguanli")) {
-                            String meeting = variableManager.getVariableByProcessInstanceId(tenantId, processInstanceId, "meeting");
-                            if (meeting != null && Boolean.valueOf(meeting)) {// 上会
-                                mapTemp.put("meeting", true);
-                            }
+                            OfficeDoneInfoModel officeDoneInfo = officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+                            mapTemp.put("meeting", (officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1")) ? true : false);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -270,12 +266,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 // mapTemp.put("follow", countFollow > 0 ? true : false);
                 mapTemp.put("meeting", false);
                 if (item.getSystemName().equals("gongwenguanli")) {
-                    HistoricVariableInstanceModel meetingObj = historicVariableApi.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, "meeting", hpim.getStartTime().substring(0, 4));
-                    if (meetingObj != null) {
-                        if (meetingObj.getValue() != null && Boolean.valueOf((String)meetingObj.getValue())) {// 上会
-                            mapTemp.put("meeting", true);
-                        }
-                    }
+                    mapTemp.put("meeting", (hpim.getMeeting() != null && hpim.getMeeting().equals("1")) ? true : false);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -372,6 +363,148 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         return list;
     }
 
+    private List<String> getAssigneeIdsAndAssigneeNames1(List<TaskModel> taskList) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9LoginUserHolder.getPositionId();
+        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
+        List<String> list = new ArrayList<String>();
+        int i = 0;
+        if (taskList.size() > 0) {
+            for (TaskModel task : taskList) {
+                if (StringUtils.isEmpty(taskIds)) {
+                    taskIds = task.getId();
+                    String assignee = task.getAssignee();
+                    if (StringUtils.isNotBlank(assignee)) {
+                        assigneeIds = assignee;
+                        Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
+                        if (personTemp != null) {
+                            assigneeNames = personTemp.getName();
+                        }
+                        i += 1;
+                        if (assignee.contains(userId)) {
+                            itembox = ItemBoxTypeEnum.TODO.getValue();
+                            taskId = task.getId();
+                        }
+                    } else {// 处理单实例未签收的当前办理人显示
+                        List<IdentityLinkModel> iList = identityManager.getIdentityLinksForTask(tenantId, task.getId());
+                        if (!iList.isEmpty()) {
+                            int j = 0;
+                            for (IdentityLinkModel identityLink : iList) {
+                                String assigneeId = identityLink.getUserId();
+                                Position ownerUser = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                if (j < 5) {
+                                    assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
+                                    assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
+                                } else {
+                                    assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
+                                    break;
+                                }
+                                j++;
+                            }
+                        }
+                    }
+                } else {
+                    String assignee = task.getAssignee();
+                    if (StringUtils.isNotBlank(assignee)) {
+                        if (i < 5) {
+                            assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
+                            Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
+                            if (personTemp != null) {
+                                assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
+                            }
+                            i += 1;
+                        }
+                        if (assignee.contains(userId)) {
+                            itembox = ItemBoxTypeEnum.TODO.getValue();
+                            taskId = task.getId();
+                        }
+                    }
+                }
+            }
+            if (taskList.size() > 5) {
+                assigneeNames += "等，共" + taskList.size() + "人";
+            }
+        }
+        list.add(taskIds);
+        list.add(assigneeIds);
+        list.add(assigneeNames);
+        list.add(itembox);
+        list.add(taskId);
+        return list;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Y9Page<Map<String, Object>> getMeetingList(String userName, String deptName, String title, String meetingType, Integer page, Integer rows) {
+        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            retMap = officeDoneInfoManager.getMeetingList(tenantId, userName, deptName, title, meetingType, page, rows);
+            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {});
+            int serialNumber = (page - 1) * rows;
+            Map<String, Object> mapTemp = null;
+            for (OfficeDoneInfoModel hpim : hpiList) {
+                mapTemp = new HashMap<String, Object>(16);
+                String processInstanceId = hpim.getProcessInstanceId();
+                try {
+                    String processDefinitionId = hpim.getProcessDefinitionId();
+                    String startTime = hpim.getStartTime().substring(0, 10);
+                    String processSerialNumber = hpim.getProcessSerialNumber();
+                    String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
+                    String level = hpim.getUrgency();
+                    String number = hpim.getDocNumber();
+                    String completer = hpim.getUserComplete();
+                    mapTemp.put("itemName", hpim.getItemName());
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("processDefinitionId", processDefinitionId);
+                    mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
+                    mapTemp.put("startTime", startTime);
+                    mapTemp.put("endTime", StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
+                    mapTemp.put("taskDefinitionKey", "");
+                    mapTemp.put("taskAssignee", completer);
+
+                    mapTemp.put("deptName", hpim.getDeptName());
+                    mapTemp.put("meetingType", hpim.getMeetingType());
+
+                    mapTemp.put("creatUserName", hpim.getCreatUserName());
+                    mapTemp.put("itemId", hpim.getItemId());
+                    mapTemp.put("level", level == null ? "" : level);
+                    mapTemp.put("number", number == null ? "" : number);
+                    mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
+                    if (StringUtils.isBlank(hpim.getEndTime())) {
+                        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
+                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
+                        mapTemp.put("taskId", listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                        mapTemp.put("taskAssigneeId", assigneeIds);
+                        mapTemp.put("taskAssignee", assigneeNames);
+                        mapTemp.put("itembox", listTemp.get(3));
+                    }
+                    mapTemp.put("beizhu", "");
+                    Map<String, Object> formDataMap = formDataApi.getData(tenantId, hpim.getItemId(), processSerialNumber);
+                    if (formDataMap.get("beizhu") != null) {
+                        mapTemp.put("beizhu", formDataMap.get("beizhu"));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                mapTemp.put("serialNumber", serialNumber + 1);
+                serialNumber += 1;
+                items.add(mapTemp);
+            }
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> homeDoingList(Integer page, Integer rows) {
@@ -427,10 +560,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     mapTemp.put("remindSetting", false);
                     mapTemp.put("follow", false);
                     mapTemp.put("meeting", false);
-                    String meeting = variableManager.getVariableByProcessInstanceId(tenantId, processInstanceId, "meeting");
-                    if (meeting != null && Boolean.valueOf(meeting)) {// 上会
-                        mapTemp.put("meeting", true);
-                    }
+                    OfficeDoneInfoModel officeDoneInfo = officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    mapTemp.put("meeting", (officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1")) ? true : false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -481,7 +612,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     int priority = task.getPriority();
                     keys = new ArrayList<String>();
                     keys.add(SysVariables.TASKSENDER);
-                    keys.add("meeting");
                     vars = variableManager.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys);
                     String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
@@ -535,18 +665,13 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     mapTemp.put("speakInfoNum", 0);
                     mapTemp.put("remindSetting", false);
 
-                    // int countFollow = officeFollowManager.countByProcessInstanceId(tenantId, positionId,
-                    // processInstanceId);
-                    // mapTemp.put("follow", countFollow > 0 ? true : false);
-
                     String rollBack = variableManager.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK);
                     if (rollBack != null && Boolean.valueOf(rollBack)) {// 退回件
                         mapTemp.put("rollBack", true);
                     }
                     mapTemp.put("meeting", false);
-                    if (vars.get("meeting") != null && Boolean.valueOf(String.valueOf(vars.get("meeting")))) {// 上会
-                        mapTemp.put("meeting", true);
-                    }
+                    OfficeDoneInfoModel officeDoneInfo = officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    mapTemp.put("meeting", (officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1")) ? true : false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
