@@ -1,6 +1,7 @@
 package net.risesoft.utils;
 
 import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
