@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.org.DepartmentApi;
+import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -43,7 +43,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
-import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.nosql.elastic.repository.OfficeDoneInfoRepository;
 import net.risesoft.service.ErrorLogService;
@@ -75,7 +75,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     private RestHighLevelClient elasticsearchClient;
 
     @Autowired
-    private DepartmentApi departmentApi;
+    private PersonApi personApi;
 
     @Override
     public void cancelMeeting(String processInstanceId) {
@@ -669,7 +669,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (info != null) {
             info.setMeeting("1");
             info.setMeetingType(meetingType);
-            Department dept = departmentApi.getDepartment(Y9LoginUserHolder.getTenantId(), info.getCreatUserId()).getData();
+            OrgUnit dept = personApi.getParent(Y9LoginUserHolder.getTenantId(), info.getCreatUserId()).getData();
             info.setDeptName(dept != null ? dept.getName() : "");
             officeDoneInfoRepository.save(info);
         }
