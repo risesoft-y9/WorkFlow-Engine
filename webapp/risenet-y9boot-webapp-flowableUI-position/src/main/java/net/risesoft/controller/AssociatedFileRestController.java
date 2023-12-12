@@ -61,9 +61,10 @@ public class AssociatedFileRestController {
     @ResponseBody
     public Y9Result<List<Map<String, Object>>> getAssociatedFileList(@RequestParam(required = true) String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            map = associatedFileManager.getAssociatedFileList(tenantId, processSerialNumber);
+            map = associatedFileManager.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.success((List<Map<String, Object>>)map.get("rows"), "获取成功");
             }
