@@ -47,7 +47,7 @@ public interface AssociatedFile4PositionApi {
      * @param processSerialNumber 流程编号
      * @return Map&lt;String, Object&gt;
      */
-    public Map<String, Object> getAssociatedFileAllList(String tenantId, String processSerialNumber);
+    public Map<String, Object> getAssociatedFileAllList(String tenantId, String positionId, String processSerialNumber);
 
     /**
      * 获取关联文件列表
@@ -67,6 +67,5 @@ public interface AssociatedFile4PositionApi {
      * @param processInstanceIds 关联的流程实例ids
      * @return boolean 是否保存成功
      */
-    public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber,
-        String processInstanceIds);
+    public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber, String processInstanceIds);
 }

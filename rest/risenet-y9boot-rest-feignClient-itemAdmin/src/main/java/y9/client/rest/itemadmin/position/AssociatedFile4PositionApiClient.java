@@ -11,13 +11,12 @@ import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
 
 /**
  * 关联文件接口
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "AssociatedFile4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/associatedFile4Position")
+@FeignClient(contextId = "AssociatedFile4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/associatedFile4Position")
 public interface AssociatedFile4PositionApiClient extends AssociatedFile4PositionApi {
 
     /**
@@ -29,8 +28,7 @@ public interface AssociatedFile4PositionApiClient extends AssociatedFile4Positio
      */
     @Override
     @GetMapping("/countAssociatedFile")
-    int countAssociatedFile(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    int countAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 删除关联文件
@@ -42,8 +40,7 @@ public interface AssociatedFile4PositionApiClient extends AssociatedFile4Positio
      */
     @Override
     @PostMapping("/deleteAllAssociatedFile")
-    public boolean deleteAllAssociatedFile(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delIds") String delIds);
+    public boolean deleteAllAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delIds") String delIds);
 
     /**
      * 删除关联文件
@@ -55,8 +52,7 @@ public interface AssociatedFile4PositionApiClient extends AssociatedFile4Positio
      */
     @Override
     @PostMapping("/deleteAssociatedFile")
-    public boolean deleteAssociatedFile(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delId") String delId);
+    public boolean deleteAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delId") String delId);
 
     /**
      * 获取关联文件列表,包括未办结件
@@ -67,8 +63,7 @@ public interface AssociatedFile4PositionApiClient extends AssociatedFile4Positio
      */
     @Override
     @GetMapping("/getAssociatedFileAllList")
-    public Map<String, Object> getAssociatedFileAllList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    public Map<String, Object> getAssociatedFileAllList(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 获取关联文件列表
@@ -79,8 +74,7 @@ public interface AssociatedFile4PositionApiClient extends AssociatedFile4Positio
      */
     @Override
     @GetMapping("/getAssociatedFileList")
-    public Map<String, Object> getAssociatedFileList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    public Map<String, Object> getAssociatedFileList(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存关联文件
@@ -93,7 +87,5 @@ public interface AssociatedFile4PositionApiClient extends AssociatedFile4Positio
      */
     @Override
     @PostMapping("/saveAssociatedFile")
-    public boolean saveAssociatedFile(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("processInstanceIds") String processInstanceIds);
+    public boolean saveAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processInstanceIds") String processInstanceIds);
 }
