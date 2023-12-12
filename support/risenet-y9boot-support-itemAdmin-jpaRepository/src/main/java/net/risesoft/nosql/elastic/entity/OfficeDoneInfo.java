@@ -139,7 +139,7 @@ public class OfficeDoneInfo implements Serializable {
      * 部门名称
      */
     @Field(type = FieldType.Keyword, index = true, store = true)
-    private String deptName = "";
+    private String deptName;
 
     /**
      * 委办局id
@@ -175,6 +175,6 @@ public class OfficeDoneInfo implements Serializable {
      * 会议类型，党组会，办公会，专题会,当代研究所使用
      */
     @Field(type = FieldType.Keyword, index = true, store = true)
-    private String meetingType = "";
+    private String meetingType;
 
 }
