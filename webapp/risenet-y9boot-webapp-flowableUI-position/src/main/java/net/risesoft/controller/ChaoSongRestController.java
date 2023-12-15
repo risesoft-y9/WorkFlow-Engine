@@ -66,8 +66,7 @@ public class ChaoSongRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/changeChaoSongState", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> changeChaoSongState(@RequestParam(required = true) String id,
-        @RequestParam(required = true) String type) {
+    public Y9Result<String> changeChaoSongState(@RequestParam(required = true) String id, @RequestParam(required = true) String type) {
         try {
             chaoSongInfoManager.changeChaoSongState(Y9LoginUserHolder.getTenantId(), id, type);
             return Y9Result.successMsg("操作成功");
@@ -125,9 +124,7 @@ public class ChaoSongRestController {
      * @return
      */
     @RequestMapping(value = "/detail", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> detail(@RequestParam(required = true) String id,
-        @RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String itemId,
-        @RequestParam(required = true) Integer status) {
+    public Y9Result<Map<String, Object>> detail(@RequestParam(required = true) String id, @RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String itemId, @RequestParam(required = true) Integer status) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -141,8 +138,7 @@ public class ChaoSongRestController {
             Integer fileNum = attachmentManager.fileCounts(tenantId, processSerialNumber);
             int docNum = 0;
             // 是否正文正常
-            Map<String, Object> wordMap =
-                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
+            Map<String, Object> wordMap = transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
             if (!wordMap.isEmpty() && wordMap.size() > 0) {
                 docNum = 1;
             }
@@ -177,25 +173,38 @@ public class ChaoSongRestController {
     @SuppressWarnings({"unchecked"})
     @ResponseBody
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> list(@RequestParam(required = true) String type,
-        @RequestParam(required = false) String userName, @RequestParam(required = true) String processInstanceId,
-        @RequestParam(required = true) int rows, @RequestParam(required = true) int page) {
+    public Y9Page<Map<String, Object>> list(@RequestParam(required = true) String type, @RequestParam(required = false) String userName, @RequestParam(required = true) String processInstanceId, @RequestParam(required = true) int rows, @RequestParam(required = true) int page) {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId(), senderId = Y9LoginUserHolder.getPositionId();
         try {
             if (type.equals("my")) {
-                map = chaoSongInfoManager.getListBySenderIdAndProcessInstanceId(tenantId, senderId, processInstanceId,
-                    userName, rows, page);
+                map = chaoSongInfoManager.getListBySenderIdAndProcessInstanceId(tenantId, senderId, processInstanceId, userName, rows, page);
             } else {
-                map = chaoSongInfoManager.getListByProcessInstanceId(tenantId, senderId, processInstanceId, userName,
-                    rows, page);
+                map = chaoSongInfoManager.getListByProcessInstanceId(tenantId, senderId, processInstanceId, userName, rows, page);
             }
-            return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
-                Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+            return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
         return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+    }
+
+    /**
+     * 我的抄送列表，我抄送出去的列表
+     *
+     * @param searchName 标题文号
+     * @param itemId 事项
+     * @param userName 接收人
+     * @param year 年度
+     * @param state 状态
+     * @param rows
+     * @param page
+     * @return
+     */
+    public Y9Page<Map<String, Object>> myChaoSongList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String year, @RequestParam(required = false) String state,
+        @RequestParam(required = true) int rows, @RequestParam(required = true) int page) {
+        String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        return chaoSongInfoManager.myChaoSongList(tenantId, positionId, searchName, itemId, userName, state, year, page, rows);
     }
 
     /**
@@ -214,19 +223,14 @@ public class ChaoSongRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<Map<String, Object>> save(@RequestParam(required = true) String processInstanceId,
-        @RequestParam(required = true) String users, @RequestParam(required = false) String isSendSms,
-        @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent,
-        @RequestParam(required = false) String smsPersonId, @RequestParam(required = false) String itemId,
-        @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processDefinitionKey) {
+    public Y9Result<Map<String, Object>> save(@RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String users, @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent,
+        @RequestParam(required = false) String smsPersonId, @RequestParam(required = false) String itemId, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processDefinitionKey) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         try {
             Map<String, Object> resMap = new HashMap<String, Object>(16);
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> map1 = documentManager.startProcess(Y9LoginUserHolder.getTenantId(),
-                    Y9LoginUserHolder.getPositionId(), itemId, processSerialNumber, processDefinitionKey);
+                Map<String, Object> map1 = documentManager.startProcess(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId, processSerialNumber, processDefinitionKey);
                 if ((boolean)map1.get(UtilConsts.SUCCESS)) {
                     processInstanceId = (String)map1.get("processInstanceId");
                     String taskId = (String)map1.get("taskId");
@@ -236,9 +240,7 @@ public class ChaoSongRestController {
                     return Y9Result.failure("抄送失败，流程启动失败");
                 }
             }
-            Map<String, Object> map =
-                chaoSongInfoManager.save(person.getTenantId(), userId, Y9LoginUserHolder.getPositionId(),
-                    processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
+            Map<String, Object> map = chaoSongInfoManager.save(person.getTenantId(), userId, Y9LoginUserHolder.getPositionId(), processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.success(resMap, "抄送成功");
             }
@@ -261,9 +263,7 @@ public class ChaoSongRestController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> search(@RequestParam(required = false) String documentTitle,
-        @RequestParam(required = false) String year, @RequestParam(required = false) Integer status,
-        @RequestParam(required = true) int rows, @RequestParam(required = true) int page) {
+    public Y9Page<Map<String, Object>> search(@RequestParam(required = false) String documentTitle, @RequestParam(required = false) String year, @RequestParam(required = false) Integer status, @RequestParam(required = true) int rows, @RequestParam(required = true) int page) {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -274,8 +274,7 @@ public class ChaoSongRestController {
             } else if (status == 2) {
                 map = chaoSongInfoManager.getOpinionChaosongByUserId(tenantId, positionId, documentTitle, rows, page);
             }
-            return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
-                Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+            return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
