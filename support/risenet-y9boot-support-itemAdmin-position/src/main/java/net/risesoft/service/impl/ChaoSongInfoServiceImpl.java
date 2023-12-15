@@ -319,8 +319,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
         // pageable);
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi = null;
         ProcessParam processParam = null;
@@ -330,13 +329,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             map.put("id", cs.getId());
             try {
                 String processInstanceId = cs.getProcessInstanceId();
-                map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
+                map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 map.put("processInstanceId", processInstanceId);
                 map.put("senderName", cs.getSenderName());
                 map.put("sendDeptId", cs.getSendDeptId());
                 map.put("sendDeptName", cs.getSendDeptName());
-                map.put("readTime", sdf.format(sdf1.parse(cs.getReadTime())));
+                map.put("readTime", sdf.format(sdf.parse(cs.getReadTime())));
                 map.put("title", processParam.getTitle());
                 map.put("status", cs.getStatus());
                 map.put("banjie", false);
@@ -400,8 +399,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi = null;
         ProcessParam processParam = null;
@@ -411,13 +409,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             map.put("id", cs.getId());
             try {
                 String processInstanceId = cs.getProcessInstanceId();
-                map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
+                map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 map.put("processInstanceId", processInstanceId);
                 map.put("senderName", cs.getSenderName());
                 map.put("sendDeptId", cs.getSendDeptId());
                 map.put("sendDeptName", cs.getSendDeptName());
-                map.put("readTime", sdf.format(sdf1.parse(cs.getReadTime())));
+                map.put("readTime", sdf.format(sdf.parse(cs.getReadTime())));
                 map.put("title", processParam.getTitle());
                 map.put("status", cs.getStatus());
                 map.put("banjie", false);
@@ -478,14 +476,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
 
             csList = pageList.getContent();
-            SimpleDateFormat sdf0 = new SimpleDateFormat("yy/MM/dd HH:mm");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             int startRow = (page - 1) * rows;
             for (ChaoSongInfo info : csList) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 map.put("id", info.getId());
                 try {
-                    map.put("createTime", sdf0.format(sdf1.parse(info.getCreateTime())));
+                    map.put("createTime", sdf.format(sdf.parse(info.getCreateTime())));
                     map.put("processInstanceId", processInstanceId);
                     map.put("senderName", info.getSenderName());
                     map.put("sendDeptId", info.getSendDeptId());
@@ -493,7 +490,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     if (StringUtils.isBlank(info.getReadTime())) {
                         map.put("readTime", "");
                     } else {
-                        map.put("readTime", sdf0.format(sdf1.parse(info.getReadTime())));
+                        map.put("readTime", sdf.format(sdf.parse(info.getReadTime())));
                     }
                     map.put("userName", info.getUserName());
                     map.put("userDeptName", info.getUserDeptName());
@@ -549,14 +546,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
             // pageable);
             csList = pageList.getContent();
-            SimpleDateFormat sdf0 = new SimpleDateFormat("yy/MM/dd HH:mm");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             int startRow = (page - 1) * rows;
             for (ChaoSongInfo cs : csList) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 map.put("id", cs.getId());
                 try {
-                    map.put("createTime", sdf0.format(sdf1.parse(cs.getCreateTime())));
+                    map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
                     map.put("processInstanceId", processInstanceId);
                     map.put("senderName", cs.getSenderName());
                     map.put("sendDeptId", cs.getSendDeptId());
@@ -564,7 +560,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     if (StringUtils.isBlank(cs.getReadTime())) {
                         map.put("readTime", "");
                     } else {
-                        map.put("readTime", sdf0.format(sdf1.parse(cs.getReadTime())));
+                        map.put("readTime", sdf.format(sdf.parse(cs.getReadTime())));
                     }
                     map.put("userName", cs.getUserName());
                     map.put("userDeptName", cs.getUserDeptName());
@@ -624,8 +620,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
             // pageable);
             csList = pageList.getContent();
-            SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             HistoricProcessInstanceModel hpi = null;
             ProcessParam processParam = null;
             int num = (page - 1) * rows;
@@ -634,13 +629,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 map.put("id", cs.getId());
                 try {
                     String processInstanceId = cs.getProcessInstanceId();
-                    map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
+                    map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
                     processParam = processParamService.findByProcessInstanceId(processInstanceId);
                     map.put("processInstanceId", processInstanceId);
                     map.put("senderName", cs.getSenderName());
                     map.put("sendDeptId", cs.getSendDeptId());
                     map.put("sendDeptName", cs.getSendDeptName());
-                    map.put("readTime", sdf.format(sdf1.parse(cs.getReadTime())));
+                    map.put("readTime", sdf.format(sdf.parse(cs.getReadTime())));
                     map.put("title", processParam.getTitle());
                     map.put("status", cs.getStatus());
                     map.put("banjie", false);
@@ -716,8 +711,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
         // pageable);
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi = null;
         ProcessParam processParam = null;
@@ -726,7 +720,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             map.put("id", cs.getId());
             try {
                 String processInstanceId = cs.getProcessInstanceId();
-                map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
+                map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 map.put("processInstanceId", processInstanceId);
                 map.put("senderName", cs.getSenderName());
@@ -801,8 +795,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
             csList = pageList.getContent();
-            SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             int num = (page - 1) * rows;
             OfficeDoneInfo hpi = null;
             for (ChaoSongInfo cs : csList) {
@@ -811,13 +804,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 try {
                     String processInstanceId = cs.getProcessInstanceId();
                     hpi = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-                    map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
+                    map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
                     map.put("processInstanceId", processInstanceId);
                     map.put("userId", cs.getUserId());
                     map.put("userName", cs.getUserName());
                     map.put("userDeptId", cs.getUserDeptId());
                     map.put("userDeptName", cs.getUserDeptName());
-                    map.put("readTime", StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf1.parse(cs.getReadTime())) : "--");
+                    map.put("readTime", StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
                     map.put("title", hpi.getTitle());
                     map.put("status", cs.getStatus());
                     map.put("banjie", false);
@@ -1000,8 +993,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
             // pageable);
             csList = pageList.getContent();
-            SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             int num = (page - 1) * rows;
             HistoricProcessInstanceModel hpi = null;
             ProcessParam processParam = null;
@@ -1010,13 +1002,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 map.put("id", cs.getId());
                 try {
                     String processInstanceId = cs.getProcessInstanceId();
-                    map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
+                    map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
                     processParam = processParamService.findByProcessInstanceId(processInstanceId);
                     map.put("processInstanceId", processInstanceId);
                     map.put("senderName", cs.getSenderName());
                     map.put("sendDeptId", cs.getSendDeptId());
                     map.put("sendDeptName", cs.getSendDeptName());
-                    map.put("readTime", StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf1.parse(cs.getReadTime())) : "--");
+                    map.put("readTime", StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
                     map.put("title", processParam.getTitle());
                     map.put("status", cs.getStatus());
                     map.put("banjie", false);
@@ -1092,8 +1084,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
             csList = pageList.getContent();
-            SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             int num = (page - 1) * rows;
             HistoricProcessInstanceModel hpi = null;
             ProcessParam processParam = null;
@@ -1102,13 +1093,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 map.put("id", cs.getId());
                 try {
                     String processInstanceId = cs.getProcessInstanceId();
-                    map.put("createTime", sdf.format(sdf1.parse(cs.getCreateTime())));
+                    map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
                     processParam = processParamService.findByProcessInstanceId(processInstanceId);
                     map.put("processInstanceId", processInstanceId);
                     map.put("senderName", cs.getSenderName());
                     map.put("sendDeptId", cs.getSendDeptId());
                     map.put("sendDeptName", cs.getSendDeptName());
-                    map.put("readTime", StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf1.parse(cs.getReadTime())) : "--");
+                    map.put("readTime", StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
                     map.put("title", processParam.getTitle());
                     map.put("status", cs.getStatus());
                     map.put("banjie", false);
