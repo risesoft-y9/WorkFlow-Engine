@@ -281,16 +281,17 @@ public class MobileButtonOperationController {
             Y9LoginUserHolder.setPosition(position);
             TaskModel task = taskManager.findById(tenantId, taskId);
             Map<String, Object> vars = task.getVariables();// 获取流程中当前任务的所有变量
-            vars.put(SysVariables.TASKSENDER, position.getName());
-            vars.put(SysVariables.TASKSENDERID, position.getId());
+            // vars.put(SysVariables.TASKSENDER, position.getName());
+            // vars.put(SysVariables.TASKSENDERID, position.getId());
             taskManager.completeWithVariables(tenantId, task.getId(), vars);
-            List<TaskModel> taskNextList1 = taskManager.findByProcessInstanceId(tenantId, task.getProcessInstanceId());
-            for (TaskModel taskNext : taskNextList1) {
-                Map<String, Object> vars1 = new HashMap<String, Object>(16);
-                vars1.put(SysVariables.TASKSENDER, position.getName());
-                vars1.put(SysVariables.TASKSENDERID, position.getId());
-                variableManager.setVariablesLocal(tenantId, taskNext.getId(), vars1);
-            }
+            // List<TaskModel> taskNextList1 = taskManager.findByProcessInstanceId(tenantId,
+            // task.getProcessInstanceId());
+            // for (TaskModel taskNext : taskNextList1) {
+            // Map<String, Object> vars1 = new HashMap<String, Object>(16);
+            // vars1.put(SysVariables.TASKSENDER, position.getName());
+            // vars1.put(SysVariables.TASKSENDERID, position.getId());
+            // variableManager.setVariablesLocal(tenantId, taskNext.getId(), vars1);
+            // }
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "办理成功!");

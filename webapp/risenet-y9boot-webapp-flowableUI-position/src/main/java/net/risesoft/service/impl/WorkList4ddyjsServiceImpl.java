@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TaskVariableApi;
+import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
@@ -91,6 +92,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
     @Value("${y9.common.flowableBaseUrl}")
     private String flowableBaseUrl;
+
+    @Autowired
+    private ChaoSong4PositionApi chaoSongInfoManager;
 
     @SuppressWarnings({"unchecked"})
     @Override
@@ -574,6 +578,95 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             e.printStackTrace();
         }
         return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Y9Page<Map<String, Object>> homeDoneList(Integer page, Integer rows) {
+        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        try {
+            String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+            retMap = officeDoneInfoManager.searchAllByPositionId(tenantId, positionId, "", "", "", "done", "", page, rows);
+            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {});
+            int serialNumber = (page - 1) * rows;
+            Map<String, Object> mapTemp = null;
+            for (OfficeDoneInfoModel hpim : hpiList) {
+                mapTemp = new HashMap<String, Object>(16);
+                String processInstanceId = hpim.getProcessInstanceId();
+                try {
+                    String processDefinitionId = hpim.getProcessDefinitionId();
+                    String startTime = hpim.getStartTime().substring(0, 16);
+                    String processSerialNumber = hpim.getProcessSerialNumber();
+                    String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
+                    String level = hpim.getUrgency();
+                    String number = hpim.getDocNumber();
+                    String completer = hpim.getUserComplete();
+                    mapTemp.put("itemName", hpim.getItemName());
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("processDefinitionId", processDefinitionId);
+                    mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
+                    mapTemp.put("startTime", startTime);
+                    mapTemp.put("endTime", StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
+                    mapTemp.put("taskDefinitionKey", "");
+                    mapTemp.put("taskAssignee", completer);
+                    mapTemp.put("creatUserName", hpim.getCreatUserName());
+                    mapTemp.put("itemId", hpim.getItemId());
+                    mapTemp.put("level", level == null ? "" : level);
+                    mapTemp.put("number", number == null ? "" : number);
+                    mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
+                    String url = flowableBaseUrl + "/index/edit?itemId=" + hpim.getItemId() + "&processSerialNumber=" + processSerialNumber + "&itembox=done&processInstanceId=" + processInstanceId + "&listType=done&systemName=" + hpim.getSystemName();
+                    mapTemp.put("url", url);
+                    mapTemp.put("meeting", (hpim.getMeeting() != null && hpim.getMeeting().equals("1")) ? true : false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                mapTemp.put("serialNumber", serialNumber + 1);
+                serialNumber += 1;
+                items.add(mapTemp);
+            }
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+    }
+
+    @Override
+    public Y9Page<Map<String, Object>> myChaoSongList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        Y9Page<Map<String, Object>> y9page = chaoSongInfoManager.myChaoSongList(tenantId, positionId, searchName, itemId, userName, state, year, page, rows);
+        List<Map<String, Object>> list = y9page.getRows();
+        for (Map<String, Object> map : list) {
+            String itemId1 = (String)map.get("itemId");
+            String processSerialNumber = (String)map.get("processSerialNumber");
+            String processInstanceId = (String)map.get("processInstanceId");
+            String systemName = (String)map.get("systemName");
+            boolean banjie = (boolean)map.get("banjie");
+            map.put("itembox", "done");
+            String taskId = "";
+            String itembox = "done";
+            if (!banjie) {
+                List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
+                String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
+                map.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
+                map.put("taskId", listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                map.put("taskAssigneeId", assigneeIds);
+                map.put("taskAssignee", assigneeNames);
+                map.put("itembox", listTemp.get(3));
+                itembox = listTemp.get(3);
+                taskId = listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4);
+            }
+            String url = flowableBaseUrl + "/index/edit?itemId=" + itemId1 + "&processSerialNumber=" + processSerialNumber + "&itembox=" + itembox + "&taskId=" + taskId + "&processInstanceId=" + processInstanceId + "&listType=chuanyueList&systemName=" + systemName;
+            map.put("url", url);
+        }
+        y9page.setRows(list);
+        return y9page;
     }
 
     @SuppressWarnings("unchecked")

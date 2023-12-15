@@ -264,6 +264,12 @@ public class ButtonUtil {
                             map.put("nextNode", true);
                         }
                     }
+
+                    // 没有发送按钮的时候，串并行显示加减签按钮
+                    boolean b = (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL)) && isButtonShow[1] == false;
+                    if (b) {
+                        isButtonShow[18] = true;
+                    }
                 }
                 /*----- 上面是可以打开选人界面的发送按钮的设置 -----*/
 

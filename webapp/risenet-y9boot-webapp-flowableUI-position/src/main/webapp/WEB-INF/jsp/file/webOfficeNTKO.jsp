@@ -32,6 +32,7 @@
 					<div class="layui-btn-group" style="background-color: #1e9fff;width: 100%;">
 					  <button id="saveDocument" onclick="saveDocument('btn');"  class="layui-btn layui-btn-normal" >保存</button>
 					  <button id="showToolbars" onclick="showToolbars(this);"  class="layui-btn layui-btn-normal">显示工具栏</button>
+					   <button id="showToolbars" onclick="showRevisions(this);"  class="layui-btn layui-btn-normal">隐藏修订</button>
 					  <%-- <button id="openTaoHong" onclick="openTaoHong();"  class="layui-btn layui-btn-normal" >选择套红</button>
 					  <button id="undoTaoHong" onclick="undoTaoHong();" class="layui-btn layui-btn-normal">撤销红头</button>
 					  <button id="saveEFileAndTopdf" onclick="saveEFileAndTopdf(this);"  class="layui-btn layui-btn-normal" >转PDF并上传</button>
@@ -645,6 +646,9 @@
 	//打开或者关闭修订模式
 	function trackRevisions(bool) {
 		NTKO.ActiveDocument.TrackRevisions = bool;
+		NTKO.ActiveDocument.EnterRevisionMode = bool;
+		/* NTKO.ActiveDocument.TrackRevisions(true);
+		NTKO.ActiveDocument.EnterRevisionMode(true); */
 	}
 	//允许或禁止显示修订工具栏和工具菜单（保护修订,用户不能更改当前修订状态）
 	function enableReviewBar(bool) {
@@ -778,7 +782,7 @@
 	//套红前要接受所有的修订，且不可以打开修订，之后不能修改正文的内容
 	function DoTaoHong(guid) {
 		try {
-			//setMarkModify(false);
+			//(false);
 			//trackRevisions(false);
 			//acceptAllRevisions();
 
@@ -1133,7 +1137,7 @@ if(cmd == 3) {//监听文档保存菜单按钮操作
 	event="OnDocumentOpened(File, Document)">
 	wordcount = Document.Words.Count;
 	document.getElementById("riseOffice").ActiveDocument.Saved = true;
-	
+	setMarkModify(true);//修订模式
 </script>
 </body>
 </html>

@@ -19,7 +19,7 @@ import net.risesoft.service.WorkList4ddyjsService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
- * 当代中国研究所使用
+ *
  *
  * @author zhangchongjie
  * @date 2023/11/20
@@ -39,6 +39,25 @@ public class WorkList4ddyjsRestController {
 
     @Autowired
     private Item4PositionApi itemManager;
+
+    /**
+     * 我的传阅列表
+     *
+     * @param searchName
+     * @param itemId
+     * @param userName
+     * @param state
+     * @param year
+     * @param page
+     * @param rows
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/chuanyueList", method = RequestMethod.GET, produces = "application/json")
+    public Y9Page<Map<String, Object>> chuanyueList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+        @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+        return workList4ddyjsService.myChaoSongList(searchName, itemId, userName, state, year, page, rows);
+    }
 
     /**
      * 获取已办件列表
@@ -106,6 +125,19 @@ public class WorkList4ddyjsRestController {
     }
 
     /**
+     * 首页已传阅列表
+     *
+     * @param page
+     * @param rows
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/homeChaosongList", method = RequestMethod.GET, produces = "application/json")
+    public Y9Page<Map<String, Object>> homeChaosongList(@RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+        return workList4ddyjsService.myChaoSongList("", "", "", "", "", page, rows);
+    }
+
+    /**
      * 首页我的在办事项
      *
      * @param page
@@ -116,6 +148,19 @@ public class WorkList4ddyjsRestController {
     @RequestMapping(value = "/homeDoingList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> homeDoingList(@RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return workList4ddyjsService.homeDoingList(page, rows);
+    }
+
+    /**
+     * 首页办结事项
+     *
+     * @param page
+     * @param rows
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/homeDoneList", method = RequestMethod.GET, produces = "application/json")
+    public Y9Page<Map<String, Object>> homeDoneList(@RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+        return workList4ddyjsService.homeDoneList(page, rows);
     }
 
     /**

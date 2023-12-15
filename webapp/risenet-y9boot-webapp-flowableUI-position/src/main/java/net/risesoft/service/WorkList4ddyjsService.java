@@ -62,6 +62,29 @@ public interface WorkList4ddyjsService {
     Y9Page<Map<String, Object>> homeDoingList(Integer page, Integer rows);
 
     /**
+     * 首页办结事项
+     *
+     * @param page
+     * @param rows
+     * @return
+     */
+    Y9Page<Map<String, Object>> homeDoneList(Integer page, Integer rows);
+
+    /**
+     * 我的传阅列表
+     *
+     * @param searchName
+     * @param itemId
+     * @param userName
+     * @param state
+     * @param year
+     * @param page
+     * @param rows
+     * @return
+     */
+    Y9Page<Map<String, Object>> myChaoSongList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows);
+
+    /**
      * 获取待办列表
      *
      * @param itemId 事项Id

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
+import net.risesoft.pojo.Y9Page;
 
 /**
  * @author qinman
@@ -35,9 +36,9 @@ public interface ChaoSongInfoService {
     void changeStatus(String[] ids);
 
     /**
-     * 
+     *
      * Description: 根据流程实例id统计除当前人外是否有抄送件
-     * 
+     *
      * @param userId
      * @param processInstanceId
      * @return
@@ -76,9 +77,9 @@ public interface ChaoSongInfoService {
     boolean deleteByProcessInstanceId(String processInstanceId);
 
     /**
-     * 
+     *
      * Description: 查看抄送件详情
-     * 
+     *
      * @param processInstanceId
      * @param status
      * @param mobile
@@ -130,9 +131,9 @@ public interface ChaoSongInfoService {
     int getDoneCountByUserId(String userId);
 
     /**
-     * 
+     *
      * Description: 获取抄送已阅件
-     * 
+     *
      * @param positionId
      * @param documentTitle
      * @param rows
@@ -142,9 +143,9 @@ public interface ChaoSongInfoService {
     Map<String, Object> getDoneList(String positionId, String documentTitle, int rows, int page);
 
     /**
-     * 
+     *
      * Description: 根据流程实例获取除当前人外的其他抄送件
-     * 
+     *
      * @param processInstanceId
      * @param userName
      * @param rows
@@ -154,9 +155,9 @@ public interface ChaoSongInfoService {
     Map<String, Object> getListByProcessInstanceId(String processInstanceId, String userName, int rows, int page);
 
     /**
-     * 
+     *
      * Description: 根据流程实例获取当前人的抄送件
-     * 
+     *
      * @param senderId
      * @param processInstanceId
      * @param userName
@@ -164,8 +165,7 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId,
-        String userName, int rows, int page);
+    Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId, String userName, int rows, int page);
 
     /**
      * 批阅件列表
@@ -198,6 +198,20 @@ public interface ChaoSongInfoService {
     Map<String, Object> getTodoList(String positionId, String documentTitle, int rows, int page);
 
     /**
+     * 我的抄送列表
+     *
+     * @param searchName
+     * @param itemId
+     * @param userName
+     * @param state
+     * @param year
+     * @param rows
+     * @param page
+     * @return
+     */
+    Y9Page<Map<String, Object>> myChaoSongList(String searchName, String itemId, String userName, String state, String year, int rows, int page);
+
+    /**
      * 保存抄送
      *
      * @param chaoSong
@@ -214,9 +228,9 @@ public interface ChaoSongInfoService {
     void save(List<ChaoSongInfo> chaoSongList);
 
     /**
-     * 
+     *
      * Description: 根据选择的人员保存抄送
-     * 
+     *
      * @param processInstanceId
      * @param users
      * @param isSendSms
@@ -225,13 +239,12 @@ public interface ChaoSongInfoService {
      * @param smsPersonId
      * @return
      */
-    Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
-        String smsContent, String smsPersonId);
+    Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId);
 
     /**
-     * 
+     *
      * Description: 个人阅件搜索
-     * 
+     *
      * @param searchName
      * @param itemId
      * @param userName
@@ -241,8 +254,7 @@ public interface ChaoSongInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllByUserId(String searchName, String itemId, String userName, String state, String year,
-        Integer page, Integer rows);
+    Map<String, Object> searchAllByUserId(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 监控阅件列表
@@ -257,8 +269,7 @@ public interface ChaoSongInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllList(String searchName, String itemId, String senderName, String userName,
-        String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllList(String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 更新抄送件标题
