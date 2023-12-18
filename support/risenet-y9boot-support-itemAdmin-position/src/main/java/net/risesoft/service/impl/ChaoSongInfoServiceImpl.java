@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -718,32 +720,59 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             if (page < 1) {
                 page = 1;
             }
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-
-            BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("senderId", userId));
-            builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
+            Pageable pageable = PageRequest.of(page - 1, rows, Sort.Direction.DESC, "createTime");
+            Criteria criteria = new Criteria();
+            criteria.and("senderId").is(userId);
+            criteria.and("tenantId").is(Y9LoginUserHolder.getTenantId());
+            
             if (StringUtils.isNotBlank(searchName)) {
-                builder.must(QueryBuilders.wildcardQuery("title", "*" + searchName + "*"));
+                criteria.and("title").contains(searchName);
             }
             if (StringUtils.isNotBlank(itemId)) {
-                builder.must(QueryBuilders.termQuery("itemId", itemId));
+                criteria.and("itemId").is(itemId);
             }
             if (StringUtils.isNotBlank(userName)) {
-                builder.must(QueryBuilders.wildcardQuery("userName", "*" + userName + "*"));
+                criteria.and("userName").contains(userName);
             }
             if (StringUtils.isNotBlank(state)) {
-                builder.must(QueryBuilders.termQuery("status", Integer.parseInt(state)));
+                criteria.and("status").is(Integer.parseInt(state));
             }
             if (StringUtils.isNotBlank(year)) {
-                builder.must(QueryBuilders.wildcardQuery("createTime", year + "*"));
+                criteria.and("createTime").contains(year);
             }
 
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-            NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
-            NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
-            searchQuery.setTrackTotalHits(true);
-            SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
-            List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+            Query query = new CriteriaQuery(criteria).setPageable(pageable);
+            SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, INDEX);
+            List<ChaoSongInfo> list = searchHits.stream()
+                .map(org.springframework.data.elasticsearch.core.SearchHit::getContent).collect(Collectors.toList());
+            
+            // TODO 下面注释为旧的写法，确认新的逻辑与下面注释的逻辑一致后可删除下面注释的代码
+            // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+            //
+            // BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("senderId", userId));
+            // builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
+            // if (StringUtils.isNotBlank(searchName)) {
+            //     builder.must(QueryBuilders.wildcardQuery("title", "*" + searchName + "*"));
+            // }
+            // if (StringUtils.isNotBlank(itemId)) {
+            //     builder.must(QueryBuilders.termQuery("itemId", itemId));
+            // }
+            // if (StringUtils.isNotBlank(userName)) {
+            //     builder.must(QueryBuilders.wildcardQuery("userName", "*" + userName + "*"));
+            // }
+            // if (StringUtils.isNotBlank(state)) {
+            //     builder.must(QueryBuilders.termQuery("status", Integer.parseInt(state)));
+            // }
+            // if (StringUtils.isNotBlank(year)) {
+            //     builder.must(QueryBuilders.wildcardQuery("createTime", year + "*"));
+            // }
+            //
+            // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+            // NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
+            // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
+            // searchQuery.setTrackTotalHits(true);
+            // SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(searchQuery, ChaoSongInfo.class, index);
+            // List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
             csList = pageList.getContent();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
