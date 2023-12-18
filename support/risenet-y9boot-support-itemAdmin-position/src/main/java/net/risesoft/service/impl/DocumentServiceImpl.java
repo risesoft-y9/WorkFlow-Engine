@@ -30,7 +30,6 @@ import net.risesoft.api.permission.RoleApi;
 import net.risesoft.api.processadmin.ConditionParserApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
-import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.RepositoryApi;
@@ -147,9 +146,6 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Autowired
     private VariableApi variableManager;
-
-    @Autowired
-    private HistoricVariableApi historicVariableApi;
 
     @Autowired
     private OrgUnitApi orgUnitManager;
@@ -805,7 +801,6 @@ public class DocumentServiceImpl implements DocumentService {
                 for (OrgUnit orgUnit : ouList) {
                     // if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT) ||
                     // orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                    orgUnitList.add(orgUnit);
                     if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                         Position position = positionManager.getPosition(tenantId, orgUnit.getId()).getData();
                         if (position != null && !position.getDisabled()) {
