@@ -30,6 +30,7 @@ import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
+import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.permission.PositionRoleApi;
@@ -43,6 +44,7 @@ import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.PersonExt;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.platform.Tenant;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
@@ -113,6 +115,12 @@ public class MobileDocumentController {
 
     @Autowired
     private HistoricProcessApi historicProcessManager;
+
+    @Autowired
+    private DepartmentApi departmentApi;
+
+    @Autowired
+    private PersonApi personApi;
 
     /**
      * 新建公文
@@ -522,6 +530,17 @@ public class MobileDocumentController {
             map.put("tenantName", tenant.getName());// 租户名称
             map.put("tenantId", tenant.getId());// 租户名称
             map.put("number", itemNumber);// 编号
+            map.put("sign", "");// 签名
+            PersonExt personExt = personApi.getPersonExtByPersonId(tenantId, userId).getData();
+            if (personExt != null && personExt.getSign() != null) {
+                map.put("sign", personExt.getSign());// 签名
+            }
+            List<OrgUnit> leaders = departmentApi.listLeaders(tenantId, parent.getId()).getData();
+            map.put("deptLeader", "未配置");// 岗位所在部门领导
+            if (!leaders.isEmpty()) {
+                List<Person> personLeaders = positionApi.listPersons(tenantId, leaders.get(0).getId()).getData();
+                map.put("deptLeader", personLeaders.isEmpty() ? leaders.get(0).getName() : personLeaders.get(0).getName());
+            }
             /** 办件表单数据初始化 **/
             map.put("zihao", second + "号");// 编号
             map.put("msg", "获取表单初始化数据成功");
