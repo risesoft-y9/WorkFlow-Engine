@@ -33,7 +33,7 @@
 					  <button id="saveDocument" onclick="saveDocument('btn');"  class="layui-btn layui-btn-normal" >保存正文</button>
 					  <button id="openTaoHong" onclick="openTaoHong();"  class="layui-btn layui-btn-normal" >选择套红</button>
 					  <button id="undoTaoHong" onclick="undoTaoHong();" class="layui-btn layui-btn-normal">撤销红头</button>
-					  <button id="saveEFileAndTopdf" onclick="saveEFileAndTopdf(this);"  class="layui-btn layui-btn-normal" >转PDF并上传</button>
+					  <!-- <button id="saveEFileAndTopdf" onclick="saveEFileAndTopdf(this);"  class="layui-btn layui-btn-normal" >转PDF并上传</button> -->
 					 <!--  <button id="undoFileAndTopdf" onclick="undoFileAndTopdf(2);"  class="layui-btn layui-btn-normal" >撤销PDF</button>  -->
 					  <!-- <button id="showRevisions" onclick="showRevisions(this);"  class="layui-btn layui-btn-normal" >隐藏修订</button>-->
 					  <button id="showToolbars" onclick="showToolbars(this);"  class="layui-btn layui-btn-normal">显示工具栏</button>
@@ -126,7 +126,7 @@
 		if (userAgent.indexOf("chrome") != -1 || userAgent.indexOf("firefox") != -1) {
 
 		} else {
-			NTKO.WebUserName=userName;
+			NTKO.WebUserName=" ";
 			//设置word控件自身按钮
 			sysFileCtr(true);
 		}
@@ -141,7 +141,7 @@
 	//文档打开后的事件，需要加载或者处理的方法
 	function setFileReadOnly(File, Document) {
 		NTKO.ActiveDocument.Saved = true;
-		NTKO.WebUserName=userName;
+		NTKO.WebUserName=" ";
 		NTKO.Activate(true);
 		//处理正文word是否只读
 		//wordBtnControl(wordReadOnly);
@@ -665,6 +665,7 @@
 	//打开或者关闭修订模式
 	function trackRevisions(bool) {
 		NTKO.ActiveDocument.TrackRevisions = bool;
+		NTKO.ActiveDocument.EnterRevisionMode = bool;
 	}
 	//允许或禁止显示修订工具栏和工具菜单（保护修订,用户不能更改当前修订状态）
 	function enableReviewBar(bool) {
@@ -1153,7 +1154,7 @@ if(cmd == 3) {//监听文档保存菜单按钮操作
 	event="OnDocumentOpened(File, Document)">
 	wordcount = Document.Words.Count;
 	document.getElementById("riseOffice").ActiveDocument.Saved = true;
-	
+	setMarkModify(true);//修订模式
 </script>
 </body>
 </html>

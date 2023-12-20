@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.customgroup.CustomGroupApi;
 import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.api.org.PositionApi;
@@ -43,9 +44,12 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.enums.ItemPermissionEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
+import net.risesoft.model.platform.CustomGroupMember;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
@@ -127,6 +131,9 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     @Autowired
     private TodoTaskApi todoTaskManager;
+
+    @Autowired
+    private CustomGroupApi customGroupApi;
 
     @Override
     @Transactional(readOnly = false)
@@ -871,15 +878,21 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 Integer type = Integer.valueOf(orgUnitArr[0]);
                 String orgUnitId = orgUnitArr[1];
                 List<Position> list = new ArrayList<Position>();
-                if (2 == type) {
+                if (ItemPermissionEnum.DEPARTMENT.getValue() == type) {
                     list = departmentManager.listPositions(tenantId, orgUnitId).getData();
                     for (Position position : list) {
                         userIdListAdd.add(position.getId());
                     }
-                } else if (6 == type) {
+                } else if (ItemPermissionEnum.POSITION.getValue() == type) {
                     userIdListAdd.add(orgUnitId);
-                } else if (7 == type) {
-
+                } else if (type == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
+                    List<CustomGroupMember> list0 = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId, Y9LoginUserHolder.getPersonId(), orgUnitId, OrgTypeEnum.POSITION).getData();
+                    for (CustomGroupMember pTemp : list0) {
+                        Position position = positionManager.getPosition(tenantId, pTemp.getMemberId()).getData();
+                        if (position != null && StringUtils.isNotBlank(position.getId())) {
+                            userIdListAdd.add(position.getId());
+                        }
+                    }
                 }
             }
             // 保存抄送
