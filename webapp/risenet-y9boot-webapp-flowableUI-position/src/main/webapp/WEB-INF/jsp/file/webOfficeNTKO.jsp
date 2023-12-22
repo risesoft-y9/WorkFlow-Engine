@@ -119,7 +119,7 @@
 		if (userAgent.indexOf("chrome") != -1 || userAgent.indexOf("firefox") != -1) {
 
 		} else {
-			NTKO.WebUserName=" ";
+			NTKO.WebUserName=userName;
 			//设置word控件自身按钮
 			sysFileCtr(true);
 		}
@@ -134,7 +134,7 @@
 	//文档打开后的事件，需要加载或者处理的方法
 	function setFileReadOnly(File, Document) {
 		NTKO.ActiveDocument.Saved = true;
-		NTKO.WebUserName=" ";
+		NTKO.WebUserName=userName;
 		NTKO.Activate(true);
 		//处理正文word是否只读
 		//wordBtnControl(wordReadOnly);
