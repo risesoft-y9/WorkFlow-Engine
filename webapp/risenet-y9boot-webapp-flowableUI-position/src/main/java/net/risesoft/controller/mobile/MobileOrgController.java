@@ -17,12 +17,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
 import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
@@ -60,6 +63,12 @@ public class MobileOrgController {
     @Autowired
     private DepartmentApi departmentManager;
 
+    @Autowired
+    private TodoTaskApi todoTaskManager;
+
+    @Autowired
+    private Entrust4PositionApi entrust4PositionApi;
+
     private List<String> addUserIds(List<String> userIds, String userId) {
         if (!userIds.contains(userId)) {
             userIds.add(userId);
@@ -85,9 +94,7 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getOrg")
-    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, String id, HttpServletRequest request,
-        HttpServletResponse response) {
+    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, String id, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -181,13 +188,44 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getPositionList")
-    public void getPositionList(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
+    public void getPositionList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
+            List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
             Y9LoginUserHolder.setTenantId(tenantId);
             List<Position> list = positionApi.listByPersonId(tenantId, userId).getData();
-            map.put("positionList", list);
+            for (Position p : list) {
+                Map<String, Object> map0 = new HashMap<String, Object>(16);
+                map0.put("id", p.getId());
+                map0.put("name", p.getName());
+                long todoCount = 0;
+                todoCount = todoTaskManager.countByReceiverId(tenantId, p.getId());
+                map0.put("todoCount", todoCount);
+                resList.add(map0);
+
+                // 获取当前岗被委托记录
+                try {
+                    List<EntrustModel> list1 = entrust4PositionApi.getMyEntrustList(tenantId, p.getId());
+                    for (EntrustModel model : list1) {
+                        if (model.getUsed().equals(1)) {// 使用中的委托，将委托岗位加入岗位列表
+                            Map<String, Object> map1 = new HashMap<String, Object>(16);
+                            String positionId = model.getOwnerId();
+                            Position position = positionApi.getPosition(tenantId, positionId).getData();
+                            if (position != null) {
+                                map1.put("id", position.getId());
+                                map1.put("name", position.getName());
+                                long todoCount1 = 0;
+                                todoCount1 = todoTaskManager.countByReceiverId(tenantId, position.getId());
+                                map1.put("todoCount", todoCount1);
+                                resList.add(map1);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            map.put("positionList", resList);
             map.put("msg", "获取数据成功");
             map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
@@ -209,8 +247,7 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getUserCount")
-    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, String userChoice,
-        HttpServletRequest request, HttpServletResponse response) {
+    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, String userChoice, HttpServletRequest request, HttpServletResponse response) {
         List<String> userIds = new ArrayList<String>();
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -251,9 +288,7 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getUserInfo")
-    public void getUserInfo(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        HttpServletRequest request, HttpServletResponse response) {
+    public void getUserInfo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
