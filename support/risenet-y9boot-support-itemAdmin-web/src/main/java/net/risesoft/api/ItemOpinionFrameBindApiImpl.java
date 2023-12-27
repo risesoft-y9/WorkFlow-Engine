@@ -50,12 +50,10 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
     }
 
     @Override
-    @GetMapping(value = "/findByItemIdAndProcessDefinitionIdAndTaskDefKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String tenantId,
-        String userId, String itemId, String processDefinitionId, String taskDefKey) {
+    @GetMapping(value = "/findByItemIdAndProcessDefinitionId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionId(String tenantId, String itemId, String processDefinitionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ItemOpinionFrameBind> list = itemOpinionFrameBindService
-            .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+        List<ItemOpinionFrameBind> list = itemOpinionFrameBindService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         List<ItemOpinionFrameBindModel> modelList = new ArrayList<ItemOpinionFrameBindModel>();
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
@@ -68,13 +66,26 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
     }
 
     @Override
-    @GetMapping(value = "/findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole",
-        produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String tenantId,
-        String userId, String itemId, String processDefinitionId, String taskDefKey) {
+    @GetMapping(value = "/findByItemIdAndProcessDefinitionIdAndTaskDefKey", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String tenantId, String userId, String itemId, String processDefinitionId, String taskDefKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ItemOpinionFrameBind> list = itemOpinionFrameBindService
-            .findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(itemId, processDefinitionId, taskDefKey);
+        List<ItemOpinionFrameBind> list = itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+        List<ItemOpinionFrameBindModel> modelList = new ArrayList<ItemOpinionFrameBindModel>();
+        for (ItemOpinionFrameBind o : list) {
+            ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
+            Y9BeanUtil.copyProperties(o, model);
+            OpinionFrame opinionFrame = opinionFrameService.findByMark(o.getOpinionFrameMark());
+            model.setOpinionFrameName(opinionFrame == null ? "意见框不存在" : opinionFrame.getName());
+            modelList.add(model);
+        }
+        return modelList;
+    }
+
+    @Override
+    @GetMapping(value = "/findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String tenantId, String userId, String itemId, String processDefinitionId, String taskDefKey) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<ItemOpinionFrameBind> list = itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(itemId, processDefinitionId, taskDefKey);
         List<ItemOpinionFrameBindModel> modelList = new ArrayList<ItemOpinionFrameBindModel>();
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
