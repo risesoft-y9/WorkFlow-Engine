@@ -15,7 +15,7 @@ public interface WorkList4ddyjsService {
      * @param rows 行数
      * @return
      */
-    Y9Page<Map<String, Object>> doingList(String itemId, String searchTerm, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> doingList(String itemId, String searchItemId, String searchTerm, Integer page, Integer rows);
 
     /**
      * 获取办结列表
@@ -26,7 +26,7 @@ public interface WorkList4ddyjsService {
      * @param rows 行数
      * @return
      */
-    Y9Page<Map<String, Object>> doneList(String itemId, String searchTerm, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> doneList(String itemId, String searchItemId, String searchTerm, Integer page, Integer rows);
 
     /**
      * 关注列表
@@ -93,5 +93,5 @@ public interface WorkList4ddyjsService {
      * @param rows 行数
      * @return
      */
-    Y9Page<Map<String, Object>> todoList(String itemId, String searchTerm, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> todoList(String itemId, String searchItemId, String searchTerm, Integer page, Integer rows);
 }
