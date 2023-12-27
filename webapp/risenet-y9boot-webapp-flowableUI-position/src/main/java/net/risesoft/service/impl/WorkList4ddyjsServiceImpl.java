@@ -98,7 +98,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
     @SuppressWarnings({"unchecked"})
     @Override
-    public Y9Page<Map<String, Object>> doingList(String itemId, String searchTerm, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> doingList(String itemId, String searchItemId, String searchTerm, Integer page, Integer rows) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         try {
             List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
@@ -106,7 +106,12 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemManager.getByItemId(tenantId, itemId);
             if (StringUtils.isBlank(searchTerm)) {
-                retMap = doingManager.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                if (StringUtils.isNotBlank(searchItemId)) {
+                    ItemModel item1 = itemManager.getByItemId(tenantId, searchItemId);
+                    retMap = doingManager.getListByUserIdAndProcessDefinitionKey(tenantId, positionId, item1.getWorkflowGuid(), page, rows);
+                } else {
+                    retMap = doingManager.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                }
                 List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {});
@@ -166,7 +171,12 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     items.add(mapTemp);
                 }
             } else {
-                retMap = doingManager.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), searchTerm, page, rows);
+                if (StringUtils.isNotBlank(searchItemId)) {
+                    ItemModel item1 = itemManager.getByItemId(tenantId, searchItemId);
+                    retMap = doingManager.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, item1.getWorkflowGuid(), searchTerm, page, rows);
+                } else {
+                    retMap = doingManager.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), searchTerm, page, rows);
+                }
                 List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {});
@@ -230,11 +240,15 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Y9Page<Map<String, Object>> doneList(String itemId, String searchTerm, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> doneList(String itemId, String searchItemId, String searchTerm, Integer page, Integer rows) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = itemManager.getByItemId(tenantId, itemId);
-        retMap = officeDoneInfoManager.searchByPositionIdAndSystemName(tenantId, userId, searchTerm, item.getSystemName(), "", "", page, rows);
+        if (StringUtils.isNotBlank(searchItemId)) {
+            retMap = officeDoneInfoManager.searchByPositionId(tenantId, userId, searchTerm, searchItemId, "", "", page, rows);
+        } else {
+            retMap = officeDoneInfoManager.searchByPositionIdAndSystemName(tenantId, userId, searchTerm, item.getSystemName(), "", "", page, rows);
+        }
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         List<OfficeDoneInfoModel> list = (List<OfficeDoneInfoModel>)retMap.get("rows");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -671,16 +685,26 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Y9Page<Map<String, Object>> todoList(String itemId, String searchTerm, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> todoList(String itemId, String searchItemId, String searchTerm, Integer page, Integer rows) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = itemManager.getByItemId(tenantId, itemId);
             if (StringUtils.isBlank(searchTerm)) {
-                retMap = todoManager.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                if (StringUtils.isNotBlank(searchItemId)) {
+                    ItemModel item1 = itemManager.getByItemId(tenantId, searchItemId);
+                    retMap = todoManager.getListByUserIdAndProcessDefinitionKey(tenantId, positionId, item1.getWorkflowGuid(), page, rows);
+                } else {
+                    retMap = todoManager.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                }
             } else {
-                retMap = todoManager.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), searchTerm, page, rows);
+                if (StringUtils.isNotBlank(searchItemId)) {
+                    ItemModel item1 = itemManager.getByItemId(tenantId, searchItemId);
+                    retMap = todoManager.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, item1.getWorkflowGuid(), searchTerm, page, rows);
+                } else {
+                    retMap = todoManager.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), searchTerm, page, rows);
+                }
             }
             List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
