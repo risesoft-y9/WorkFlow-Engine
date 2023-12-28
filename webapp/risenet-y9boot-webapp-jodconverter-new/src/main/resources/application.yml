@@ -16,7 +16,7 @@ cache:
         cron: 0 0 3 * * ?
         enabled: true
     enabled: true
-    type: redis    # 缓存类型 jdk/redis
+    type: jdk    # 缓存类型 jdk/redis
 cad:
     preview:
         type: svg

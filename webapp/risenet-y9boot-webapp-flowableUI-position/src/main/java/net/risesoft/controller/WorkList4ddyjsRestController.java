@@ -70,8 +70,8 @@ public class WorkList4ddyjsRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/doingList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> doingList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
-        return workList4ddyjsService.doingList(itemId, searchTerm, page, rows);
+    public Y9Page<Map<String, Object>> doingList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+        return workList4ddyjsService.doingList(itemId, searchItemId, searchTerm, page, rows);
     }
 
     /**
@@ -85,8 +85,8 @@ public class WorkList4ddyjsRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/doneList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> doneList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
-        return workList4ddyjsService.doneList(itemId, searchTerm, page, rows);
+    public Y9Page<Map<String, Object>> doneList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+        return workList4ddyjsService.doneList(itemId, searchItemId, searchTerm, page, rows);
     }
 
     /**
@@ -193,8 +193,8 @@ public class WorkList4ddyjsRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/todoList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> todoList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
-        return workList4ddyjsService.todoList(itemId, searchTerm, page, rows);
+    public Y9Page<Map<String, Object>> todoList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+        return workList4ddyjsService.todoList(itemId, searchItemId, searchTerm, page, rows);
     }
 
 }

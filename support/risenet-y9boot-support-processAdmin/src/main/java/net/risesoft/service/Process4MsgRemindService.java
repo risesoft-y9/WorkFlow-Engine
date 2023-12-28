@@ -18,13 +18,14 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.msgremind.MsgRemindInfoModel;
+import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.Position;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.Y9Util;
 
 /**
@@ -59,6 +60,9 @@ public class Process4MsgRemindService {
     @Autowired
     private OfficeDoneInfoApi officeDoneInfoManager;
 
+    @Autowired
+    private Y9Properties y9Conf;
+
     /**
      * 流程办结消息提醒
      *
@@ -68,12 +72,15 @@ public class Process4MsgRemindService {
     public void processComplete(final ProcessParamModel processParamModel, String personName) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
+            Boolean msgSwitch = y9Conf.getApp().getProcessAdmin().getMsgSwitch();
+            if (msgSwitch == null || !msgSwitch) {
+                return;
+            }
             String tenantId = Y9LoginUserHolder.getTenantId();
             String processInstanceId = processParamModel.getProcessInstanceId();
             Date date = new Date();
             String allUserId = "";
-            List<RemindInstanceModel> list = remindInstanceManager.findRemindInstanceByProcessInstanceIdAndRemindType(
-                tenantId, processInstanceId, RemindInstanceModel.processComplete);
+            List<RemindInstanceModel> list = remindInstanceManager.findRemindInstanceByProcessInstanceIdAndRemindType(tenantId, processInstanceId, RemindInstanceModel.processComplete);
             if (list.size() > 0) {
                 for (RemindInstanceModel remind : list) {
                     if (!allUserId.contains(remind.getUserId())) {
@@ -82,8 +89,7 @@ public class Process4MsgRemindService {
                 }
                 String itemId = processParamModel.getItemId();
                 String todoTaskUrlPrefix = processParamModel.getTodoTaskUrlPrefix();
-                String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processInstanceId
-                    + "&type=fromCplane";
+                String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processInstanceId + "&type=fromCplane";
                 String title = processParamModel.getTitle();
                 String content = "【" + title + "】";
                 MsgRemindInfoModel info = new MsgRemindInfoModel();
@@ -120,8 +126,11 @@ public class Process4MsgRemindService {
         String processSerialNumber = (String)variables.get("processSerialNumber");
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+            Boolean msgSwitch = y9Conf.getApp().getProcessAdmin().getMsgSwitch();
+            if (msgSwitch == null || !msgSwitch) {
+                return;
+            }
+            ProcessParamModel processParamModel = processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             String assignee = task.getAssignee();
             String taskKey = task.getTaskDefinitionKey();
             String taskName = task.getName();
@@ -137,9 +146,7 @@ public class Process4MsgRemindService {
             Date date = new Date();
             String allUserId = "";
             // 节点到达
-            List<RemindInstanceModel> list =
-                remindInstanceManager.findRemindInstanceByProcessInstanceIdAndArriveTaskKey(tenantId, processInstanceId,
-                    taskKey + ":" + taskName);
+            List<RemindInstanceModel> list = remindInstanceManager.findRemindInstanceByProcessInstanceIdAndArriveTaskKey(tenantId, processInstanceId, taskKey + ":" + taskName);
             if (list.size() > 0) {
                 for (RemindInstanceModel remind : list) {
                     if (!allUserId.contains(remind.getUserId())) {
@@ -148,8 +155,7 @@ public class Process4MsgRemindService {
                 }
                 String itemId = processParamModel.getItemId();
                 String todoTaskUrlPrefix = processParamModel.getTodoTaskUrlPrefix();
-                String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processInstanceId
-                    + "&type=fromCplane";
+                String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processInstanceId + "&type=fromCplane";
                 String title = processParamModel.getTitle();
                 String content = taskName;
                 MsgRemindInfoModel info = new MsgRemindInfoModel();
@@ -186,8 +192,11 @@ public class Process4MsgRemindService {
         String processSerialNumber = (String)variables.get("processSerialNumber");
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+            Boolean msgSwitch = y9Conf.getApp().getProcessAdmin().getMsgSwitch();
+            if (msgSwitch == null || !msgSwitch) {
+                return;
+            }
+            ProcessParamModel processParamModel = processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             String assignee = task.getAssignee();
             String taskId = task.getId();
             String taskKey = task.getTaskDefinitionKey();
@@ -206,12 +215,10 @@ public class Process4MsgRemindService {
             String title = processParamModel.getTitle();
             String itemId = processParamModel.getItemId();
             String todoTaskUrlPrefix = processParamModel.getTodoTaskUrlPrefix();
-            String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processInstanceId
-                + "&type=fromCplane";
+            String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processInstanceId + "&type=fromCplane";
 
             // 任务完成，针对任务设置
-            List<RemindInstanceModel> list = remindInstanceManager
-                .findRemindInstanceByProcessInstanceIdAndTaskId(tenantId, processInstanceId, taskId);
+            List<RemindInstanceModel> list = remindInstanceManager.findRemindInstanceByProcessInstanceIdAndTaskId(tenantId, processInstanceId, taskId);
             if (list.size() > 0) {
                 for (RemindInstanceModel remind : list) {
                     if (!allUserId.contains(remind.getUserId())) {
@@ -243,8 +250,7 @@ public class Process4MsgRemindService {
                 if (StringUtils.isNotBlank(personIds)) {
                     String newPersonIds = "";
                     String[] ids = personIds.split(",");
-                    OfficeDoneInfoModel officeDoneInfoModel =
-                        officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    OfficeDoneInfoModel officeDoneInfoModel = officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
                     for (String id : ids) {
                         if (officeDoneInfoModel != null && officeDoneInfoModel.getAllUserId().contains(id)) {
                             newPersonIds = Y9Util.genCustomStr(newPersonIds, id);
@@ -274,8 +280,7 @@ public class Process4MsgRemindService {
             }
 
             // 节点完成
-            list = remindInstanceManager.findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(tenantId,
-                processInstanceId, taskKey + ":" + taskName);
+            list = remindInstanceManager.findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(tenantId, processInstanceId, taskKey + ":" + taskName);
             if (list.size() > 0) {
                 for (RemindInstanceModel remind : list) {
                     if (!allUserId.contains(remind.getUserId())) {

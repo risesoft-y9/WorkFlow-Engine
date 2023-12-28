@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.msgremind.MsgRemindInfoApi;
 import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.PersonApi;
@@ -453,6 +454,10 @@ public class AsyncHandleService {
     @Async
     public void sendMsgRemind(final String tenantId, final String userId, final String processSerialNumber, final String content) {
         try {
+            Boolean msgSwitch = y9Conf.getApp().getItemAdmin().getMsgSwitch();
+            if (msgSwitch == null || !msgSwitch) {
+                return;
+            }
             Y9LoginUserHolder.setTenantId(tenantId);
             Position position = positionManager.getPosition(tenantId, userId).getData();
             String personIds = msgRemindInfoManager.getRemindConfig(tenantId, userId, "opinionRemind");

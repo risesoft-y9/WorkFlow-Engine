@@ -44,15 +44,12 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
                 Y9LoginUserHolder.setTenantId(tenant.getId());
                 FlowableTenantInfoHolder.setTenantId(tenant.getId());
                 try {
-                    ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
-                        .processDefinitionKey(processDefinitionKey).latestVersion().singleResult();
+                    ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).latestVersion().singleResult();
                     if (null == processDefinition) {
-                        String xmlPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "processXml"
-                            + File.separator + "ziyouliucheng.bpmn";
+                        String xmlPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "processXml" + File.separator + "ziyouliucheng.bpmn";
                         File file = new File(xmlPath);
                         InputStream fileInputStream = new FileInputStream(file);
-                        repositoryService.createDeployment().addInputStream("ziyouliucheng.bpmn", fileInputStream)
-                            .deploy();
+                        repositoryService.createDeployment().addInputStream("ziyouliucheng.bpmn", fileInputStream).deploy();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -68,7 +65,7 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
         LOGGER.info("processAdmin ApplicationReady...");
         // createSystem("processAdmin");
         // createTenantSystem("processAdmin");
-        createDeployment("ziyouliucheng");
+        // createDeployment("ziyouliucheng");
     }
 
 }
