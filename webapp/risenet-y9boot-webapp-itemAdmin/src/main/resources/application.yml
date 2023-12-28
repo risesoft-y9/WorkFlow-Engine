@@ -131,6 +131,7 @@ spring:
     jmx:
         default-domain: itemAdmin
     jpa:
+        generate-ddl: true
         hibernate:
             naming:
                 implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
@@ -292,18 +293,6 @@ y9:
             redis:
                 enabled: true
                 maxInactiveIntervalInSeconds: 3600
-        sso:
-            casFilterUrlPatterns: /*
-            casServerUrlPrefix: http://localhost:7055/sso
-            casServerUrlPrefixForValidation: http://localhost:7055/sso
-            logoutUrl: http://localhost:7055/sso/logout?service=http://localhost:7056
-            enabled: false
-            ignorePattern: /static,/services,/mobile,/engine,/ssoProxyCallback,/scheduled,/actuator
-            ignoreUrlPatternType: net.risesoft.matcher.RiseContainMatcher
-            saveLogMessage: false
-            saveOnlineMessage: false
-            serverName: http://localhost:7056
-            singleSignOutFilterOrder: 1
         security:
             enabled: true
             cors:

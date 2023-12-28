@@ -5,7 +5,7 @@ management:
                 include: '*'
 server:
     intranet:
-        ip: 192.168.x.x,10.161.x.x,10.1.x.x,172.20.x.x
+        ip: 192.168.x.x,10.161.x.x,10.x.x.x,172.20.x.x
     port: 8080
     servlet:
         encoding:
@@ -92,6 +92,7 @@ spring:
                 useGlobalDataSourceStat: true
                 validationQuery: SELECT 1 FROM DUAL
     jpa:
+        generate-ddl: true
         hibernate:
             naming:
                 implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
@@ -224,7 +225,7 @@ y9:
             packagesToScanEntityPublic: net.risesoft.y9public.entity
             packagesToScanEntityTenant: net.risesoft.entity
             packagesToScanRepositoryPublic: net.risesoft.y9public.repository
-            packagesToScanRepositoryTenant: 'net.risesoft.repository '
+            packagesToScanRepositoryTenant: net.risesoft.repository
         mongo:
             packagesToScanEntityPublic: net.risesoft.y9public.entity
             packagesToScanEntityTenant: net.risesoft.entity
@@ -293,5 +294,4 @@ y9:
                     client-secret: secret
                     introspection-uri: https://dev.youshengyun.com/sso/oauth2.0/introspect
                     profile-uri: https://dev.youshengyun.com/sso/oauth2.0/profile
-                jwt:
-                    jwkSetUri:
+

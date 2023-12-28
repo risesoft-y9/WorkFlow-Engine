@@ -124,6 +124,7 @@ spring:
                 useGlobalDataSourceStat: true
                 validationQuery: SELECT 1 FROM DUAL
     jpa:
+        generate-ddl: true
         hibernate:
             naming:
                 implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
@@ -264,6 +265,7 @@ y9:
             xss:
                 ignoreParam:
                     - json_xml
+                    - conditionExpression
         oauth2:
             resource:
                 enabled: true
