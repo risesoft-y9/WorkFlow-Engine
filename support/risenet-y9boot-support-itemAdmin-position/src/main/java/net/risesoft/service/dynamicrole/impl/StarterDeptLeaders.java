@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -47,6 +48,11 @@ public class StarterDeptLeaders extends AbstractDynamicRoleMember {
                 List<OrgUnit> leaders = departmentApi.listLeaders(tenantId, orgUnit.getParentId()).getData();
                 orgUnitList.addAll(leaders);
             }
+        } else {
+            String positionId = Y9LoginUserHolder.getPositionId();
+            Position position = positionManager.getPosition(tenantId, positionId).getData();
+            List<OrgUnit> leaders = departmentApi.listLeaders(tenantId, position.getParentId()).getData();
+            orgUnitList.addAll(leaders);
         }
         return orgUnitList;
     }
