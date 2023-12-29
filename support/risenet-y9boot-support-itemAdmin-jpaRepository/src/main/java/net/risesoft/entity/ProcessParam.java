@@ -1,6 +1,7 @@
 package net.risesoft.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -26,9 +27,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Comment("流程参数信息表")
-@Table(name = "FF_PROCESS_PARAM",
-    indexes = {@Index(name = "index_001_processInstanceId", columnList = "processInstanceId"),
-        @Index(name = "index_002_processSerialNumber", columnList = "processSerialNumber")})
+@Table(name = "FF_PROCESS_PARAM", indexes = {@Index(name = "index_001_processInstanceId", columnList = "processInstanceId"), @Index(name = "index_002_processSerialNumber", columnList = "processSerialNumber")})
 public class ProcessParam implements Serializable {
 
     private static final long serialVersionUID = -5245779237483037821L;
@@ -134,6 +133,7 @@ public class ProcessParam implements Serializable {
     @Column(name = "CREATETIME", length = 50)
     private String createTime;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否定制流程")
     @Column(name = "CUSTOMITEM", nullable = false)
     @ColumnDefault("0")

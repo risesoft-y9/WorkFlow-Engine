@@ -1,6 +1,7 @@
 package net.risesoft.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -58,6 +59,7 @@ public class DynamicRole implements Serializable {
     @Column(name = "TABINDEX", length = 10)
     private Integer tabIndex;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @ColumnDefault("0")
     @Comment("是否使用流程实例")
     @Column(name = "USEPROCESSINSTANCEID")

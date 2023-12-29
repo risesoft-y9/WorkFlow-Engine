@@ -1,6 +1,7 @@
 package net.risesoft.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -73,10 +74,12 @@ public class ReceivePerson implements Serializable {
     @Column(name = "CREATEDATE")
     private Date createDate;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否可以发送")
     @Column(name = "SEND")
     private boolean send = true;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否可以接收")
     @Column(name = "RECEIVE")
     private boolean receive = true;

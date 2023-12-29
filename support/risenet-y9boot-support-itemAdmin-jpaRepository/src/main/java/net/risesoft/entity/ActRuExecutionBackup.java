@@ -1,6 +1,7 @@
 package net.risesoft.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -73,22 +74,27 @@ public class ActRuExecutionBackup implements Serializable {
     @Column(name = "ACT_ID_", length = 64)
     private String actId;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否活着")
     @Column(name = "IS_ACTIVE_", length = 64)
     private boolean actived = true;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否是并发的")
     @Column(name = "IS_CONCURRENT_", length = 64)
     private boolean concurrent = false;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("范围")
     @Column(name = "IS_SCOPE_", length = 64)
     private boolean scope = false;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("事件范围")
     @Column(name = "IS_EVENT_SCOPE_", length = 64)
     private boolean eventScope = false;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否是流程实例Id")
     @Column(name = "IS_MI_ROOT_", length = 64)
     private boolean miRoot = false;
@@ -127,6 +133,7 @@ public class ActRuExecutionBackup implements Serializable {
     @Column(name = "LOCK_TIME_")
     private Date lockTime;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("开启计数")
     @Column(name = "IS_COUNT_ENABLED_", length = 10)
     private boolean countEnabled = true;

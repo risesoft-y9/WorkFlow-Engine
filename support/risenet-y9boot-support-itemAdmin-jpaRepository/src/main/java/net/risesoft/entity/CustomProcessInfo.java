@@ -1,6 +1,7 @@
 package net.risesoft.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -48,6 +49,7 @@ public class CustomProcessInfo implements Serializable {
     @Column(name = "TASKTYPE", length = 50, nullable = false)
     private String taskType;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("当前运行节点")
     @Column(name = "CURRENTTASK", nullable = false)
     @ColumnDefault("0")

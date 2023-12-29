@@ -1,6 +1,7 @@
 package net.risesoft.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -71,6 +72,7 @@ public class ItemOpinionFrameBind implements Serializable {
     @Column(name = "TASKDEFKEY", length = 100)
     private String taskDefKey;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否必签意见")
     @Column(name = "SIGNOPINION", length = 100)
     @ColumnDefault("true")

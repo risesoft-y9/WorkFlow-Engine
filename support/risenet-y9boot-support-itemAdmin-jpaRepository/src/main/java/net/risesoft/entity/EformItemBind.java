@@ -1,6 +1,7 @@
 package net.risesoft.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -75,14 +76,17 @@ public class EformItemBind implements Serializable {
     @Column(name = "TABINDEX", length = 10)
     private Integer tabIndex;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否显示意见附件")
     @Column(name = "SHOWFILETAB")
     private boolean showFileTab = true;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否显示正文")
     @Column(name = "SHOWDOCUMENTTAB")
     private boolean showDocumentTab = true;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否显示关联文件")
     @Column(name = "SHOWHISTORYTAB")
     private boolean showHistoryTab = true;

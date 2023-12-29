@@ -1,6 +1,7 @@
 package net.risesoft.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -52,16 +53,19 @@ public class ItemTaskConf implements Serializable {
     @Column(name = "TASKDEFKEY", length = 100)
     private String taskDefKey;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("区分主协办")
     @Column(name = "SPONSOR", nullable = false)
     @ColumnDefault("0")
     private Boolean sponsor = false;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("抢占式签收")
     @Column(name = "SIGNTASK", nullable = false)
     @ColumnDefault("0")
     private Boolean signTask = false;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("必签意见")
     @Column(name = "SIGNOPINION")
     @ColumnDefault("0")

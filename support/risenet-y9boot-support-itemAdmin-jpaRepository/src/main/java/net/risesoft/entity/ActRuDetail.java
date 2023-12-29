@@ -1,6 +1,7 @@
 package net.risesoft.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -111,21 +112,25 @@ public class ActRuDetail implements Serializable {
     @Column(name = "LASTTIME", length = 50)
     private Date lastTime;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @ColumnDefault("1")
     @Comment("流程是否开始")
     @Column(name = "STARTED")
     private boolean started;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @ColumnDefault("0")
     @Comment("流程是否结束")
     @Column(name = "ENDED")
     private boolean ended;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @ColumnDefault("0")
     @Comment("是否删除")
     @Column(name = "DELETED")
     private boolean deleted;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @ColumnDefault("0")
     @Comment("是否归档")
     @Column(name = "PLACEONFILE")

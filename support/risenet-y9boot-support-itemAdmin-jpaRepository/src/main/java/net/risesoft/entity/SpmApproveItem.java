@@ -1,6 +1,7 @@
 package net.risesoft.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -147,11 +148,13 @@ public class SpmApproveItem implements Serializable {
     @Column(name = "TODOTASKURLPREFIX", length = 200)
     private String todoTaskUrlPrefix;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否可定制事项")
     @Column(name = "CUSTOMITEM", nullable = false)
     @ColumnDefault("0")
     private Boolean customItem = false;
 
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("显示提交按钮")
     @Column(name = "SHOWSUBMITBUTTON", nullable = false)
     @ColumnDefault("0")

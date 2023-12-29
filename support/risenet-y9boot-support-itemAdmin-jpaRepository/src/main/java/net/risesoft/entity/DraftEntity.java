@@ -1,6 +1,7 @@
 package net.risesoft.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -135,6 +136,7 @@ public class DraftEntity implements Serializable {
     /**
      * 是否删除
      */
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否删除")
     @Column(name = "DELFLAG", length = 5)
     private boolean delFlag = false;
