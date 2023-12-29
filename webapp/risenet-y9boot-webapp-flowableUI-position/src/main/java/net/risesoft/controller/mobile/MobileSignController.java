@@ -297,30 +297,101 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/getDays")
     @ResponseBody
-    public void getDays(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, @RequestParam(required = false) String dateType, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public void getDays(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String startSel, @RequestParam(required = false) String endDate, @RequestParam(required = false) String endSel,
+        @RequestParam(required = false) String dateType, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         Map<String, Object> map = new HashMap<String, Object>(16);
+        map.put("day", 0);
+        map.put(UtilConsts.SUCCESS, true);
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
-            map.put(UtilConsts.SUCCESS, false);
-            if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
-                String year = startDate.substring(0, 4);
-                CalendarConfigModel calendarConfigModel = calendarConfigManager.findByYear(tenantId, year);
-                String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
-                if (StringUtils.isNotBlank(dateType) && dateType.equals("1")) {// 排除节假日，周末
-                    if (StringUtils.isNotBlank(everyYearHoliday)) {
-                        String day = daysBetween(startDate, endDate, everyYearHoliday);
-                        map.put("day", day);
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            String dayStr = "";
+            CalendarConfigModel calendarConfig = calendarConfigManager.findByYear(tenantId, endDate.split("-")[0]);
+            dayStr = calendarConfig != null ? calendarConfig.getEveryYearHoliday() : "";
+            if (StringUtils.isBlank(startSel) && StringUtils.isBlank(endSel)) {// 按天算
+                boolean isdel = dateType.equals("1") ? true : false;
+                if (startDate.equals(endDate)) {
+                    if (isdel && dayStr.contains(startDate)) {
+                        map.put("day", "0");
                         map.put(UtilConsts.SUCCESS, true);
-                    } else {
-                        String day = daysBetween(startDate, endDate);
-                        map.put("day", day);
-                        map.put(UtilConsts.SUCCESS, true);
+                        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+                        return;
                     }
-                } else {// 不排除节假日和周末
-                    String day = daysBetween(startDate, endDate);
-                    map.put("day", day);
-                    map.put(UtilConsts.SUCCESS, true);
                 }
+                String tmp = startDate;
+                int num = 0;
+                while (tmp.compareTo(endDate) <= 0) {
+                    LOGGER.debug("tmp={}", tmp);
+                    if (isdel) {
+                        if (!dayStr.contains(tmp)) {
+                            num++;
+                        }
+                    } else {
+                        num++;
+                    }
+                    tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                }
+                map.put("day", String.valueOf(num));
+                map.put(UtilConsts.SUCCESS, true);
+                Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+                return;
+            }
+            if (StringUtils.isNotBlank(startSel) && StringUtils.isNotBlank(endSel)) {// 按半天算
+                boolean isdel = dateType.equals("1") ? true : false;
+                if (startDate.equals(endDate)) {
+                    if (isdel && dayStr.contains(startDate)) {
+                        map.put("day", "0");
+                        map.put(UtilConsts.SUCCESS, true);
+                        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+                        return;
+                    }
+                }
+                String tmp = startDate;
+                int num = 0;
+                double start = 0;
+                while (tmp.compareTo(endDate) <= 0) {
+                    if (isdel) {// 去除节假日
+                        if (!dayStr.contains(tmp)) {
+                            if (tmp.equals(startDate) && startSel.equals("下午")) {// 开始日期选择下午，算半天
+                                start += 0.5;
+                                tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                                continue;
+                            }
+                            if (tmp.equals(endDate) && endSel.equals("上午")) {// 结束日期选择上午，算半天
+                                start += 0.5;
+                                tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                                continue;
+                            }
+                            num++;
+                        }
+                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                    } else {// 不去除节假日
+                        if (tmp.equals(startDate) && startSel.equals("下午")) {// 开始日期选择下午，算半天
+                            start += 0.5;
+                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                            continue;
+                        }
+                        if (tmp.equals(endDate) && endSel.equals("上午")) {// 结束日期选择上午，算半天
+                            start += 0.5;
+                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                            continue;
+                        }
+                        num++;
+                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                    }
+                    LOGGER.debug("tmp={}", tmp);
+                }
+                if (start > 0) {
+                    String day = String.valueOf(num + start);
+                    LOGGER.debug("day={}", day);
+                    map.put("day", day.contains(".0") ? String.valueOf((int)(num + start)) : day);
+                    map.put(UtilConsts.SUCCESS, true);
+                    Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+                    return;
+                }
+                map.put("day", String.valueOf(num));
+                map.put(UtilConsts.SUCCESS, true);
+                Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+                return;
             }
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
