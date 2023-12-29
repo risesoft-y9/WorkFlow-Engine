@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -52,16 +53,19 @@ public class ItemTaskConf implements Serializable {
     @Column(name = "TASKDEFKEY", length = 100)
     private String taskDefKey;
 
+    @Type(type = "numeric_boolean")
     @Comment("区分主协办")
     @Column(name = "SPONSOR", nullable = false)
     @ColumnDefault("0")
     private Boolean sponsor = false;
 
+    @Type(type = "numeric_boolean")
     @Comment("抢占式签收")
     @Column(name = "SIGNTASK", nullable = false)
     @ColumnDefault("0")
     private Boolean signTask = false;
 
+    @Type(type = "numeric_boolean")
     @Comment("必签意见")
     @Column(name = "SIGNOPINION")
     @ColumnDefault("0")

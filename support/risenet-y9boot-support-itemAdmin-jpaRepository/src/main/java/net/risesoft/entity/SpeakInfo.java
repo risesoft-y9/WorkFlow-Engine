@@ -11,6 +11,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -76,6 +77,7 @@ public class SpeakInfo implements Serializable {
     /**
      * 是否删除
      */
+    @Type(type = "numeric_boolean")
     @Comment("是否删除")
     @Column(name = "DELETED", length = 50)
     private boolean deleted;

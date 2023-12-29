@@ -15,6 +15,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -147,11 +148,13 @@ public class SpmApproveItem implements Serializable {
     @Column(name = "TODOTASKURLPREFIX", length = 200)
     private String todoTaskUrlPrefix;
 
+    @Type(type = "numeric_boolean")
     @Comment("是否可定制事项")
     @Column(name = "CUSTOMITEM", nullable = false)
     @ColumnDefault("0")
     private Boolean customItem = false;
 
+    @Type(type = "numeric_boolean")
     @Comment("显示提交按钮")
     @Column(name = "SHOWSUBMITBUTTON", nullable = false)
     @ColumnDefault("0")

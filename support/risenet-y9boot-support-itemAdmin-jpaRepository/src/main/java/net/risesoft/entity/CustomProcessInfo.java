@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -48,6 +49,7 @@ public class CustomProcessInfo implements Serializable {
     @Column(name = "TASKTYPE", length = 50, nullable = false)
     private String taskType;
 
+    @Type(type = "numeric_boolean")
     @Comment("当前运行节点")
     @Column(name = "CURRENTTASK", nullable = false)
     @ColumnDefault("0")

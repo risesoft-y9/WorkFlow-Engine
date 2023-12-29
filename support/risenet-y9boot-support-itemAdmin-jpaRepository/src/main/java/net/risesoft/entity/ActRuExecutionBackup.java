@@ -13,6 +13,7 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -73,22 +74,27 @@ public class ActRuExecutionBackup implements Serializable {
     @Column(name = "ACT_ID_", length = 64)
     private String actId;
 
+    @Type(type = "numeric_boolean")
     @Comment("是否活着")
     @Column(name = "IS_ACTIVE_", length = 64)
     private boolean actived = true;
 
+    @Type(type = "numeric_boolean")
     @Comment("是否是并发的")
     @Column(name = "IS_CONCURRENT_", length = 64)
     private boolean concurrent = false;
 
+    @Type(type = "numeric_boolean")
     @Comment("范围")
     @Column(name = "IS_SCOPE_", length = 64)
     private boolean scope = false;
 
+    @Type(type = "numeric_boolean")
     @Comment("事件范围")
     @Column(name = "IS_EVENT_SCOPE_", length = 64)
     private boolean eventScope = false;
 
+    @Type(type = "numeric_boolean")
     @Comment("是否是流程实例Id")
     @Column(name = "IS_MI_ROOT_", length = 64)
     private boolean miRoot = false;
@@ -127,6 +133,7 @@ public class ActRuExecutionBackup implements Serializable {
     @Column(name = "LOCK_TIME_")
     private Date lockTime;
 
+    @Type(type = "numeric_boolean")
     @Comment("开启计数")
     @Column(name = "IS_COUNT_ENABLED_", length = 10)
     private boolean countEnabled = true;

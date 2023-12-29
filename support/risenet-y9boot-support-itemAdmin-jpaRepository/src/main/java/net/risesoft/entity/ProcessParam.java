@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,9 +27,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @org.hibernate.annotations.Table(comment = "流程参数信息表", appliesTo = "FF_PROCESS_PARAM")
-@Table(name = "FF_PROCESS_PARAM",
-    indexes = {@Index(name = "index_001_processInstanceId", columnList = "processInstanceId"),
-        @Index(name = "index_002_processSerialNumber", columnList = "processSerialNumber")})
+@Table(name = "FF_PROCESS_PARAM", indexes = {@Index(name = "index_001_processInstanceId", columnList = "processInstanceId"), @Index(name = "index_002_processSerialNumber", columnList = "processSerialNumber")})
 public class ProcessParam implements Serializable {
 
     private static final long serialVersionUID = -5245779237483037821L;
@@ -134,6 +133,7 @@ public class ProcessParam implements Serializable {
     @Column(name = "CREATETIME", length = 50)
     private String createTime;
 
+    @Type(type = "numeric_boolean")
     @Comment("是否定制流程")
     @Column(name = "CUSTOMITEM", nullable = false)
     @ColumnDefault("0")

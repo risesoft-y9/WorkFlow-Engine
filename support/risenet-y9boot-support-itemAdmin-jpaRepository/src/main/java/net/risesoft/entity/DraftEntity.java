@@ -13,6 +13,7 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
@@ -135,6 +136,7 @@ public class DraftEntity implements Serializable {
     /**
      * 是否删除
      */
+    @Type(type = "numeric_boolean")
     @Comment("是否删除")
     @Column(name = "DELFLAG", length = 5)
     private boolean delFlag = false;

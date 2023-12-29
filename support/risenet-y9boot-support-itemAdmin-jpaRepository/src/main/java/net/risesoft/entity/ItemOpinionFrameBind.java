@@ -13,6 +13,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -71,6 +72,7 @@ public class ItemOpinionFrameBind implements Serializable {
     @Column(name = "TASKDEFKEY", length = 100)
     private String taskDefKey;
 
+    @Type(type = "numeric_boolean")
     @Comment("是否必签意见")
     @Column(name = "SIGNOPINION", length = 100)
     @ColumnDefault("true")

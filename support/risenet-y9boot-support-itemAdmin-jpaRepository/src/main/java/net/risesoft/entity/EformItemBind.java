@@ -11,6 +11,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -75,14 +76,17 @@ public class EformItemBind implements Serializable {
     @Column(name = "TABINDEX", length = 10)
     private Integer tabIndex;
 
+    @Type(type = "numeric_boolean")
     @Comment("是否显示意见附件")
     @Column(name = "SHOWFILETAB")
     private boolean showFileTab = true;
 
+    @Type(type = "numeric_boolean")
     @Comment("是否显示正文")
     @Column(name = "SHOWDOCUMENTTAB")
     private boolean showDocumentTab = true;
 
+    @Type(type = "numeric_boolean")
     @Comment("是否显示关联文件")
     @Column(name = "SHOWHISTORYTAB")
     private boolean showHistoryTab = true;

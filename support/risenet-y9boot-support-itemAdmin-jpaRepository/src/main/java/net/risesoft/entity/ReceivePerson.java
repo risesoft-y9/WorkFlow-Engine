@@ -13,6 +13,7 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -73,10 +74,12 @@ public class ReceivePerson implements Serializable {
     @Column(name = "CREATEDATE")
     private Date createDate;
 
+    @Type(type = "numeric_boolean")
     @Comment("是否可以发送")
     @Column(name = "SEND")
     private boolean send = true;
 
+    @Type(type = "numeric_boolean")
     @Comment("是否可以接收")
     @Column(name = "RECEIVE")
     private boolean receive = true;

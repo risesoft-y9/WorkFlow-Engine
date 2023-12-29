@@ -14,6 +14,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
@@ -111,21 +112,25 @@ public class ActRuDetail implements Serializable {
     @Column(name = "LASTTIME", length = 50)
     private Date lastTime;
 
+    @Type(type = "numeric_boolean")
     @ColumnDefault("1")
     @Comment("流程是否开始")
     @Column(name = "STARTED")
     private boolean started;
 
+    @Type(type = "numeric_boolean")
     @ColumnDefault("0")
     @Comment("流程是否结束")
     @Column(name = "ENDED")
     private boolean ended;
 
+    @Type(type = "numeric_boolean")
     @ColumnDefault("0")
     @Comment("是否删除")
     @Column(name = "DELETED")
     private boolean deleted;
 
+    @Type(type = "numeric_boolean")
     @ColumnDefault("0")
     @Comment("是否归档")
     @Column(name = "PLACEONFILE")

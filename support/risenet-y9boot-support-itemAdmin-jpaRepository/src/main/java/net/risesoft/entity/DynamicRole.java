@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -58,6 +59,7 @@ public class DynamicRole implements Serializable {
     @Column(name = "TABINDEX", length = 10)
     private Integer tabIndex;
 
+    @Type(type = "numeric_boolean")
     @ColumnDefault("0")
     @Comment("是否使用流程实例")
     @Column(name = "USEPROCESSINSTANCEID")
