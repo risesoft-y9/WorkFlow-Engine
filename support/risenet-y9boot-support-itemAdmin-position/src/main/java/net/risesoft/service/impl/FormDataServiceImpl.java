@@ -2,6 +2,9 @@ package net.risesoft.service.impl;
 
 import jakarta.annotation.Resource;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -264,7 +267,7 @@ public class FormDataServiceImpl implements FormDataService {
         try {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map = y9FormService.saveChildTableData(formId, tableId, processSerialNumber, jsonData);
-            if (!(boolean)map.get(UtilConsts.SUCCESS)) {
+            if (!(boolean) map.get(UtilConsts.SUCCESS)) {
                 throw new Exception("FormDataService saveFormData error");
             }
         } catch (Exception e) {
@@ -277,8 +280,8 @@ public class FormDataServiceImpl implements FormDataService {
     @Override
     @Transactional(readOnly = false)
     public void saveFormData(String formdata, String formId) throws Exception {
-        Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formdata, Map.class);
         try {
+            Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formdata, Map.class);
             List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("name", "form_Id");
@@ -294,12 +297,17 @@ public class FormDataServiceImpl implements FormDataService {
             }
             formdata = Y9JsonUtil.writeValueAsString(listMap);
             map = y9FormService.saveFormData(formdata);
-            if (!(boolean)map.get(UtilConsts.SUCCESS)) {
-                throw new Exception("FormDataService saveFormData error");
+            if (!(boolean) map.get(UtilConsts.SUCCESS)) {
+                throw new Exception("FormDataService saveFormData error0");
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception("FormDataService saveFormData error");
+            System.out.println("****************************formdata:" + formdata);
+            final Writer result = new StringWriter();
+            final PrintWriter print = new PrintWriter(result);
+            e.printStackTrace(print);
+            String msg = result.toString();
+            System.out.println(msg);
+            throw new Exception("FormDataService saveFormData error1");
         }
     }
 }

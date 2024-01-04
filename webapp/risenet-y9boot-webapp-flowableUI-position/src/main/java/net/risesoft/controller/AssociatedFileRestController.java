@@ -86,7 +86,7 @@ public class AssociatedFileRestController {
     @RequestMapping(value = "/getDoneList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String title, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
-        return searchService.getSearchList(title, itemId, "", "", "", page, rows);
+        return searchService.getSearchList(title, itemId, "", "", "", "", "", page, rows);
     }
 
     /**

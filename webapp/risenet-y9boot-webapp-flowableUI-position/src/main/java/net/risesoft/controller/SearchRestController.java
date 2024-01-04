@@ -98,8 +98,8 @@ public class SearchRestController {
     @ResponseBody
     @RequestMapping(value = "/getSearchList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
-        @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
-        return searchService.getSearchList(searchName, itemId, userName, state, year, page, rows);
+        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+        return searchService.getSearchList(searchName, itemId, userName, state, year, startDate, endDate, page, rows);
     }
 
     /**

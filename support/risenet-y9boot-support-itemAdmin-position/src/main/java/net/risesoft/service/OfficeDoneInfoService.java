@@ -108,7 +108,7 @@ public interface OfficeDoneInfoService {
     Map<String, Object> searchAllByDeptId(String deptId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows);
 
     /**
-     * Description: 个人所有件搜索
+     * 个人所有件搜索
      *
      * @param userId
      * @param title
@@ -116,11 +116,13 @@ public interface OfficeDoneInfoService {
      * @param userName
      * @param state
      * @param year
+     * @param startDate
+     * @param endDate
      * @param page
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllByUserId(String userId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllByUserId(String userId, String title, String itemId, String userName, String state, String year, String startDate, String endDate, Integer page, Integer rows);
 
     /**
      * 监控办件列表

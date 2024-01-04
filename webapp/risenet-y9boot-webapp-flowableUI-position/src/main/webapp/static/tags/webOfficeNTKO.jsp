@@ -47,6 +47,7 @@
 				processSerialNumber = obj.data.processSerialNumber;
 				browser = obj.data.browser;
 				tenantId = obj.data.tenantId;
+				positionId = obj.data.positionId;
 				userId = obj.data.userId;
 				openWord();
 			}if(msgType == "openFile"){//打开文件
@@ -79,7 +80,7 @@
 		function openWord(){
 			var ntkoUrl = ctx + "/transactionWord/showWord?itembox="+itembox+"&processSerialNumber="+processSerialNumber+"&itemId="+itemId+"&taskId="+taskId+"&processInstanceId="+processInstanceId+"&browser="+browser;
 			var ignoreUrl = "/flowableUI/services/ntkoForm/showWord?itembox="+itembox+"&processSerialNumber="+processSerialNumber+"&itemId="
-			+itemId+"&taskId="+taskId+"&processInstanceId="+processInstanceId+"&browser="+browser+"&tenantId="+tenantId+"&userId="+userId;
+			+itemId+"&taskId="+taskId+"&processInstanceId="+processInstanceId+"&browser="+browser+"&tenantId="+tenantId+"&userId="+userId+"&positionId="+positionId;
 			if (browser == "IE") {
 				$('#wordformIframe').attr('src',ntkoUrl);
 			}else if(browser == "firefox"){
