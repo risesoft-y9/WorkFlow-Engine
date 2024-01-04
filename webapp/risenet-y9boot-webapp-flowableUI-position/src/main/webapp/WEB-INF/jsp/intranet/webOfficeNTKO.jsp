@@ -83,6 +83,7 @@
 	var tenantId = "";
 	var userId = "";
 	var documentTitle = "";
+	var positionId = "";
 	function initDocument() {
 		fileType="${fileType}";
 		wordReadOnly = '${wordReadOnly}';
@@ -93,6 +94,7 @@
 		taskId="${taskId}";
 		itemId="${itemId}";
 		tenantId = "${tenantId}";
+		positionId = "${positionId}";
 		userId = "${userId}";
 		documentTitle = "${documentTitle}";
 		isTaoHong = "${isTaoHong}";
@@ -884,7 +886,7 @@
 		//acceptAllRevisions();
 		var url = "${ctx}/transactionWord/openTaoHong?activitiUser="+ activitiUser;
 		if (browser != "IE") {
-			url = "${ctx}/services/ntkoForm/openTaoHong?activitiUser="+ activitiUser+"&tenantId="+tenantId+"&userId="+userId;
+			url = "${ctx}/services/ntkoForm/openTaoHong?activitiUser="+ activitiUser+"&tenantId="+tenantId+"&userId="+userId+"&positionId="+positionId;
 		}
 		layer.open({
 	 	      type: 2,

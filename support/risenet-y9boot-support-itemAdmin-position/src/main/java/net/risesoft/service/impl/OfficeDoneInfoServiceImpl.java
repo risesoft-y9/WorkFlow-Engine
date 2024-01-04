@@ -344,7 +344,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchAllByUserId(String userId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllByUserId(String userId, String title, String itemId, String userName, String state, String year, String startDate, String endDate, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<String, Object>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<OfficeDoneInfoModel>();
@@ -370,6 +370,12 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             if (StringUtils.isNotBlank(year)) {
                 builder.must(QueryBuilders.wildcardQuery("startTime", year + "*"));
+            }
+            if (StringUtils.isNotBlank(startDate)) {
+                builder.must(QueryBuilders.rangeQuery("startTime").gte(startDate + " 00:00:00"));
+            }
+            if (StringUtils.isNotBlank(endDate)) {
+                builder.must(QueryBuilders.rangeQuery("startTime").lte(endDate + " 23:59:59"));
             }
             if (StringUtils.isNotBlank(state)) {
                 if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {

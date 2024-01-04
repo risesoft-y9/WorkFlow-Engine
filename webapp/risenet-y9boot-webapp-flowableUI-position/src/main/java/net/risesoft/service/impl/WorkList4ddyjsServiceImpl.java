@@ -600,7 +600,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            retMap = officeDoneInfoManager.searchAllByPositionId(tenantId, positionId, "", "", "", "done", "", page, rows);
+            retMap = officeDoneInfoManager.searchAllByPositionId(tenantId, positionId, "", "", "", "done", "", "", "", page, rows);
             List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
             List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();

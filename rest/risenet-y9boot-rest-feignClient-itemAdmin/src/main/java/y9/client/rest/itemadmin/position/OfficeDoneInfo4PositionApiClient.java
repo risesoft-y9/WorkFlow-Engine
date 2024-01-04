@@ -156,7 +156,7 @@ public interface OfficeDoneInfo4PositionApiClient extends OfficeDoneInfo4Positio
     @Override
     @GetMapping("/searchAllByPositionId")
     Map<String, Object> searchAllByPositionId(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("title") String title, @RequestParam("itemId") String itemId, @RequestParam("userName") String userName, @RequestParam("state") String state,
-        @RequestParam("year") String year, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+        @RequestParam("year") String year, @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      * 监控办件列表

@@ -191,9 +191,9 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      */
     @Override
     @GetMapping(value = "/searchAllByPositionId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchAllByPositionId(String tenantId, String positionId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllByPositionId(String tenantId, String positionId, String title, String itemId, String userName, String state, String year, String startDate, String endDate, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return officeDoneInfoService.searchAllByUserId(positionId, title, itemId, userName, state, year, page, rows);
+        return officeDoneInfoService.searchAllByUserId(positionId, title, itemId, userName, state, year, startDate, endDate, page, rows);
     }
 
     /**

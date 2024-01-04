@@ -127,11 +127,13 @@ public interface OfficeDoneInfo4PositionApi {
      * @param userName 用户名称
      * @param state 状态
      * @param year 年份
+     * @param startDate 查询开始日期
+     * @param endDate 查询结束日期
      * @param page page
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchAllByPositionId(String tenantId, String positionId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllByPositionId(String tenantId, String positionId, String title, String itemId, String userName, String state, String year, String startDate, String endDate, Integer page, Integer rows);
 
     /**
      * 监控办件列表
