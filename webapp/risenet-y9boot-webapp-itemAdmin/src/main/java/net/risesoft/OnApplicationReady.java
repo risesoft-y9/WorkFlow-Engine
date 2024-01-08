@@ -171,7 +171,7 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
             }
             try {
                 // 更新租户数据库里的表结构
-                updateTenantSchema();
+                // updateTenantSchema();
             } catch (Exception e) {
                 e.printStackTrace();
             }
