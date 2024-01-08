@@ -145,7 +145,7 @@ spring:
                 dialect: org.hibernate.dialect.MySQL8Dialect
                 hbm2ddl:
                     # 正式环境务必设置为none
-                    auto: update
+                    auto: none
                 jdbc:
                     batch_size: 100
                 show_sql: false
@@ -284,6 +284,8 @@ y9:
                 enabled: false
             redis:
                 enabled: true
+        liquibase:
+            tenant-enabled: true
         log:
             enabled: true
         publish:

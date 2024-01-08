@@ -1,9 +1,0 @@
-full文件夹
-是当前系统运行的数据文件的最新的全量xml,只有在数据库初始化的情况下才会用到,此文件夹只会存在一个liquibase的xml数据文件
-名称格式：系统名称+full+日期
-itemAdmin-full-2018-04-10.xml
-
-increment文件夹
-是当前系统的数据机构变化的一个历史，从最初的只有一个全量xml，随着数据库的改变而添加的改变的增量xml
-名称格式：系统名称+increment+操作类型+日期
-itemAdmin-increment-dropTable-2018-04-10.xml
