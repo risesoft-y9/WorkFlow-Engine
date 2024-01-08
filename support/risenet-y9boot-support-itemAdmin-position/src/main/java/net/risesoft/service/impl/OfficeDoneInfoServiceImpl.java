@@ -18,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.client.elc.QueryBuilders;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Criteria;
@@ -394,10 +393,10 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
                 criteria.and("startTime").contains(year);
             }
             if (StringUtils.isNotBlank(startDate)) {
-                builder.must(QueryBuilders.rangeQuery("startTime").gte(startDate + " 00:00:00"));
+                criteria.and("startTime").greaterThanEqual(startDate + " 00:00:00");
             }
             if (StringUtils.isNotBlank(endDate)) {
-                builder.must(QueryBuilders.rangeQuery("startTime").lte(endDate + " 23:59:59"));
+                criteria.and("startTime").greaterThanEqual(endDate + " 23:59:59");
             }
             if (StringUtils.isNotBlank(state)) {
                 if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
