@@ -1,0 +1,2208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1704700547152-1" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_act_ru_detail"/>
+            </not>
+        </preConditions>
+        <createTable remarks="流转信息表" tableName="ff_act_ru_detail">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ASSIGNEE" remarks="办理人" type="VARCHAR(50)"/>
+            <column name="ASSIGNEENAME" remarks="办理人姓名" type="VARCHAR(50)"/>
+            <column name="BUREAUID" remarks="办理部门所在委办局" type="VARCHAR(50)"/>
+            <column name="BUREAUNAME" remarks="办理部门所在委办局" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="生成时间" type="datetime"/>
+            <column defaultValueNumeric="0" name="DELETED" remarks="是否删除" type="INT"/>
+            <column name="DEPTID" remarks="办理部门" type="VARCHAR(50)"/>
+            <column name="DEPTNAME" remarks="办理部门" type="VARCHAR(50)"/>
+            <column defaultValueNumeric="0" name="ENDED" remarks="流程是否结束" type="INT"/>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)"/>
+            <column name="LASTTIME" remarks="最后办理时间" type="datetime"/>
+            <column defaultValueNumeric="0" name="PLACEONFILE" remarks="是否归档" type="INT"/>
+            <column name="PROCESSDEFINITIONKEY" remarks="流程定义key" type="VARCHAR(100)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例Id" type="VARCHAR(50)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="序列号" type="VARCHAR(50)"/>
+            <column name="STARTTIME" remarks="流程启动时间" type="VARCHAR(50)"/>
+            <column defaultValueNumeric="1" name="STARTED" remarks="流程是否开始" type="INT"/>
+            <column name="STATUS" remarks="状态" type="INT"/>
+            <column name="SYSTEMNAME" remarks="事项所属系统英文名称" type="VARCHAR(100)"/>
+            <column name="TASKID" remarks="任务Id" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-2" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_act_ru_execution_backup"/>
+            </not>
+        </preConditions>
+        <createTable remarks="执行实例备份表" tableName="ff_act_ru_execution_backup">
+            <column name="ID_" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ACT_ID_" remarks="节点Id" type="VARCHAR(64)"/>
+            <column name="IS_ACTIVE_" remarks="是否活着" type="INT"/>
+            <column name="BUSINESS_KEY_" remarks="流程业务key" type="VARCHAR(255)"/>
+            <column name="CACHED_ENT_STATE_" remarks="缓存状态" type="INT"/>
+            <column name="CALLBACK_ID_" remarks="callBackId" type="VARCHAR(255)"/>
+            <column name="CALLBACK_TYPE_" remarks="callBackType" type="VARCHAR(255)"/>
+            <column name="IS_CONCURRENT_" remarks="是否是并发的" type="INT"/>
+            <column name="IS_COUNT_ENABLED_" remarks="开启计数" type="INT"/>
+            <column name="DEADLETTER_JOB_COUNT_" remarks="死信工作计数" type="INT"/>
+            <column name="IS_EVENT_SCOPE_" remarks="事件范围" type="INT"/>
+            <column name="EVT_SUBSCR_COUNT_" remarks="evtSubscrCount" type="INT"/>
+            <column name="ID_LINK_COUNT_" remarks="idLinkCount" type="INT"/>
+            <column name="JOB_COUNT_" remarks="工作数量" type="INT"/>
+            <column name="LOCK_TIME_" remarks="加锁时间" type="datetime"/>
+            <column name="IS_MI_ROOT_" remarks="是否是流程实例Id" type="INT"/>
+            <column name="NAME_" remarks="节点名称" type="VARCHAR(255)"/>
+            <column name="PARENT_ID_" remarks="父流程实例Id" type="VARCHAR(64)"/>
+            <column name="PROC_DEF_ID_" remarks="流程定义Id" type="VARCHAR(64)"/>
+            <column name="PROC_INST_ID_" remarks="流程实例Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV_" remarks="版本" type="INT"/>
+            <column name="ROOT_PROC_INST_ID_" remarks="根流程实例Id" type="VARCHAR(64)"/>
+            <column name="IS_SCOPE_" remarks="范围" type="INT"/>
+            <column name="START_ACT_ID_" remarks="开始任务节点Id" type="VARCHAR(255)"/>
+            <column name="START_TIME_" remarks="创建时间" type="datetime"/>
+            <column name="START_USER_ID_" remarks="流程启动人Id" type="VARCHAR(255)"/>
+            <column name="SUPER_EXEC_" remarks="父执行实例Id" type="VARCHAR(64)"/>
+            <column name="SUSP_JOB_COUNT_" remarks="挂起的工作数量" type="INT"/>
+            <column name="SUSPENSION_STATE_" remarks="挂起状态" type="INT"/>
+            <column name="TASK_COUNT_" remarks="任务数量" type="INT"/>
+            <column name="TENANT_ID_" remarks="租户Id" type="VARCHAR(255)"/>
+            <column name="TIMER_JOB_COUNT_" remarks="定时器数量" type="INT"/>
+            <column name="VAR_COUNT_" remarks="流程变量数量" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-3" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_approveitem"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项定义信息表" tableName="ff_approveitem">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ACCOUNTABILITY" remarks="事项责任制" type="VARCHAR(200)"/>
+            <column name="APPURL" remarks="应用url" type="VARCHAR(200)"/>
+            <column name="CREATEDATE" remarks="创建时间" type="datetime"/>
+            <column name="CREATERID" remarks="创建人id" type="VARCHAR(255)"/>
+            <column name="CREATERNAME" remarks="创建人姓名" type="VARCHAR(255)"/>
+            <column defaultValueNumeric="0" name="CUSTOMITEM" remarks="是否可定制事项" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEPARTMENTID" remarks="部门id" type="VARCHAR(255)"/>
+            <column name="DEPARTMENTNAME" remarks="部门名称" type="VARCHAR(255)"/>
+            <column name="DOCKINGITEMID" remarks="对接事项id" type="VARCHAR(50)"/>
+            <column name="DOCKINGSYSTEM" remarks="对接外部系统标识" type="VARCHAR(50)"/>
+            <column name="EXPIRED" remarks="承诺时限" type="INT"/>
+            <column name="ICONDATA" remarks="图标内容" type="LONGTEXT"/>
+            <column name="ICONID" remarks="事项图标" type="VARCHAR(200)"/>
+            <column name="ISDOCKING" remarks="是否对接" type="VARCHAR(50)"/>
+            <column name="ISONLINE" remarks="是否网上申办" type="VARCHAR(50)"/>
+            <column name="LEGALLIMIT" remarks="法定期限" type="INT"/>
+            <column name="NAME" remarks="事项名称" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NATURE" remarks="事项管理员" type="VARCHAR(200)"/>
+            <column name="REVISEDATE" remarks="修改时间" type="datetime"/>
+            <column name="REVISERID" remarks="修改人id" type="VARCHAR(50)"/>
+            <column name="REVISERNAME" remarks="修改人姓名" type="VARCHAR(50)"/>
+            <column defaultValueNumeric="0" name="SHOWSUBMITBUTTON" remarks="显示提交按钮" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SYSLEVEL" remarks="系统级别" type="VARCHAR(50)"/>
+            <column name="SYSTEMNAME" remarks="系统名称" type="VARCHAR(50)"/>
+            <column name="TODOTASKURLPREFIX" remarks="统一待办url前缀" type="VARCHAR(200)"/>
+            <column name="TYPE" remarks="事项类型" type="VARCHAR(50)"/>
+            <column name="WORKFLOWGUID" remarks="工作流GUID" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-4" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_associatedfile"/>
+            </not>
+        </preConditions>
+        <createTable remarks="关联文件表" tableName="ff_associatedfile">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ASSOCIATEDID" remarks="关联流程实例id" type="LONGTEXT"/>
+            <column name="CREATETIME" remarks="关联时间" type="datetime"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="LONGTEXT"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERID" remarks="创建人id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="创建人姓名" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-5" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_attachment"/>
+            </not>
+        </preConditions>
+        <createTable remarks="附件信息表" tableName="ff_attachment">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DELETETIME" remarks="删除时间" type="VARCHAR(100)"/>
+            <column name="deleted" remarks="软删除标记" type="INT"/>
+            <column name="DEPTID" remarks="上传人员部门Id" type="VARCHAR(50)"/>
+            <column name="DEPTNAME" remarks="上传人员部门名称" type="VARCHAR(100)"/>
+            <column name="DESCRIBES" remarks="文件描述" type="VARCHAR(255)"/>
+            <column name="DETELEUSERID" remarks="删除操作的人员id" type="VARCHAR(38)"/>
+            <column name="FILESIZE" remarks="文件大小" type="VARCHAR(20)"/>
+            <column name="FILESOURCE" remarks="附件来源" type="VARCHAR(50)"/>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="FILETYPE" remarks="文件类型" type="VARCHAR(20)"/>
+            <column name="FULLPATH" remarks="绝对路径" type="VARCHAR(255)"/>
+            <column name="FILENAME" remarks="文件名称" type="VARCHAR(100)"/>
+            <column name="PERSONID" remarks="上传人员Id" type="VARCHAR(50)"/>
+            <column name="PERSONNAME" remarks="上传人" type="VARCHAR(100)"/>
+            <column name="POSITIONID" remarks="岗位id" type="VARCHAR(50)"/>
+            <column name="positionName" type="VARCHAR(255)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(38)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
+            <column name="REALFILENAME" remarks="存放的文件名称" type="VARCHAR(100)"/>
+            <column name="serialNumber" type="INT"/>
+            <column name="TABINDEX" remarks="文件索引" type="INT"/>
+            <column name="TASKID" remarks="任务id" type="VARCHAR(38)"/>
+            <column name="UPLOADTIME" remarks="上传时间" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-6" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_autoformsequence"/>
+            </not>
+        </preConditions>
+        <createTable remarks="序列编号" tableName="ff_autoformsequence">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CALENDARYEAR" remarks="年份" type="INT"/>
+            <column name="CHARACTERVALUE" remarks="字符值" type="VARCHAR(255)"/>
+            <column name="LABELNAME" remarks="标签名称" type="VARCHAR(255)"/>
+            <column name="SEQUENCEVALUE" remarks="序列值" type="INT"/>
+            <column name="TENANTID" remarks="租户id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-7" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_bookmarkbind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="正文模板书签绑定数据库表字段信息" tableName="ff_bookmarkbind">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="BOOKMARKNAME" remarks="书签名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BOOKMARKTYPE" remarks="书签类型" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COLUMNAME" remarks="绑定的数据库表字段" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATETIME" remarks="绑定时间" type="VARCHAR(100)"/>
+            <column name="TABLENAME" remarks="绑定的数据库表" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATETIME" remarks="更新绑定时间" type="VARCHAR(100)"/>
+            <column name="USERID" remarks="绑定的人员Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" remarks="绑定的人员名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WORDTEMPLATEID" remarks="正文模板Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-8" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_calendarconfig"/>
+            </not>
+        </preConditions>
+        <createTable remarks="日历配置表" tableName="ff_calendarconfig">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="everyYearHoliday" remarks="每年休假日期" type="LONGTEXT"/>
+            <column name="weekend2WorkingDay" remarks="周末补班日期" type="VARCHAR(1000)"/>
+            <column name="workingDay2Holiday" remarks="放假日期" type="VARCHAR(2000)"/>
+            <column name="year" remarks="年份" type="VARCHAR(10)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-9" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_chaosong"/>
+            </not>
+        </preConditions>
+        <createTable remarks="抄送信息表" tableName="ff_chaosong">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATETIME" remarks="抄送时间" type="VARCHAR(100)"/>
+            <column name="ITEMID" remarks="事项唯一标示" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMNAME" remarks="事项名称" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="opinionContent" remarks="知会意见" type="VARCHAR(500)"/>
+            <column name="opinionGroup" remarks="知会群组" type="VARCHAR(38)"/>
+            <column name="opinionState" remarks="意见状态" type="VARCHAR(10)"/>
+            <column name="PROCESSINSTANCEID" remarks="抄送的流程实例" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="抄送的流程实例" type="VARCHAR(50)"/>
+            <column name="READTIME" remarks="阅读时间" type="VARCHAR(100)"/>
+            <column name="SENDDEPTID" remarks="操作人员部门Id" type="VARCHAR(100)"/>
+            <column name="SENDDEPTNAME" remarks="操作人员部门名称" type="VARCHAR(150)"/>
+            <column name="SENDERID" remarks="操作人Id" type="VARCHAR(100)"/>
+            <column name="SENDERNAME" remarks="操作人名称" type="VARCHAR(50)"/>
+            <column name="STATUS" remarks="传阅状态" type="INT"/>
+            <column name="SYSTEMNAME" remarks="系统英文名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKID" remarks="抄送节点的任务Id" type="VARCHAR(50)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TITLE" remarks="抄送的标题" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERDEPTID" remarks="抄送目标人员部门Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERDEPTNAME" remarks="抄送目标人员部门名称" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERID" remarks="抄送目标人员Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" remarks="抄送目标人员名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-10" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_commonbutton"/>
+            </not>
+        </preConditions>
+        <createTable remarks="按钮信息表" tableName="ff_commonbutton">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATETIME" remarks="创建时间" type="VARCHAR(255)"/>
+            <column name="CUSTOMID" remarks="按钮标识" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="NAME" remarks="按钮名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATETIME" remarks="修改时间" type="VARCHAR(255)"/>
+            <column name="USERID" remarks="创建人id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="创建人名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-11" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_commonsentences"/>
+            </not>
+        </preConditions>
+        <createTable remarks="常用语表" tableName="ff_commonsentences">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CONTENT" remarks="常用语内容" type="VARCHAR(4000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TABINDEX" remarks="排序号" type="INT"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="USENUMGER" remarks="使用次数，点击次数" type="INT"/>
+            <column name="USERID" remarks="人员guid" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-12" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_commonsentencesinit"/>
+            </not>
+        </preConditions>
+        <createTable remarks="个人常用语初始化表" tableName="ff_commonsentencesinit">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="USERID" remarks="人员id" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-13" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_customprocessinfo"/>
+            </not>
+        </preConditions>
+        <createTable remarks="定制流程信息表" tableName="ff_customprocessinfo">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="CURRENTTASK" remarks="当前运行节点" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMID" remarks="事项id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ORGID" remarks="办理人id" type="VARCHAR(2000)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TABINDEX" remarks="排序号" type="INT"/>
+            <column name="TASKKEY" remarks="任务key" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKNAME" remarks="任务名称" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKTYPE" remarks="节点类型" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-14" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_documentnumberdetail"/>
+            </not>
+        </preConditions>
+        <createTable remarks="文号信息表" tableName="ff_documentnumberdetail">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CALENDARYEAR" remarks="文号年份" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NUMLENGTH" remarks="文号的序号长度" type="INT"/>
+            <column name="SEQUENCEINITVALUE" remarks="文号的序列号初始化值" type="INT"/>
+            <column name="TENANTID" remarks="租户id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-15" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_documentword"/>
+            </not>
+        </preConditions>
+        <createTable remarks="正文信息表" tableName="ff_documentword">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DELETED" remarks="是否删除" type="VARCHAR(10)"/>
+            <column name="FILENAME" remarks="文件名" type="VARCHAR(1000)"/>
+            <column name="FILESIZE" remarks="文件大小" type="VARCHAR(10)"/>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="FILETYPE" remarks="文件类型" type="VARCHAR(50)"/>
+            <column name="ISTAOHONG" remarks="是否套红" type="VARCHAR(10)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(64)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(38)"/>
+            <column name="SAVEDATE" remarks="保存时间" type="VARCHAR(100)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TITLE" remarks="标题" type="VARCHAR(1000)"/>
+            <column name="USERID" remarks="上传人员id" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-16" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_documentword_his"/>
+            </not>
+        </preConditions>
+        <createTable remarks="历史正文表" tableName="ff_documentword_his">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DELETED" remarks="是否删除" type="VARCHAR(10)"/>
+            <column name="FILENAME" remarks="文件名" type="VARCHAR(1000)"/>
+            <column name="FILESIZE" remarks="文件大小" type="VARCHAR(10)"/>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="FILETYPE" remarks="文件类型" type="VARCHAR(50)"/>
+            <column name="ISTAOHONG" remarks="是否套红" type="VARCHAR(10)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(64)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(38)"/>
+            <column name="SAVEDATE" remarks="保存时间" type="VARCHAR(38)"/>
+            <column name="TASKID" remarks="任务id" type="VARCHAR(50)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TITLE" remarks="标题" type="VARCHAR(1000)"/>
+            <column name="USERID" remarks="上传人员id" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" remarks="版本" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-17" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_documentwps"/>
+            </not>
+        </preConditions>
+        <createTable remarks="正文信息表" tableName="ff_documentwps">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="FILEID" remarks="文件Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FILENAME" remarks="文件名" type="VARCHAR(1000)"/>
+            <column name="FILETYPE" remarks="文件类型" type="VARCHAR(50)"/>
+            <column name="HASCONTENT" remarks="是否有内容" type="VARCHAR(2)"/>
+            <column name="ISTAOHONG" remarks="是否套红" type="VARCHAR(10)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(64)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(38)"/>
+            <column name="SAVEDATE" remarks="保存时间" type="VARCHAR(100)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERID" remarks="上传人员id" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VOLUMEID" remarks="卷Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-18" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_draftentity"/>
+            </not>
+        </preConditions>
+        <createTable remarks="草稿信息表" tableName="ff_draftentity">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATER" remarks="创建人" type="VARCHAR(200)"/>
+            <column name="CREATERID" remarks="创建人Id" type="VARCHAR(50)"/>
+            <column name="DELFLAG" remarks="是否删除" type="INT"/>
+            <column name="DOCNUMBER" remarks="编号" type="VARCHAR(50)"/>
+            <column name="DRAFTTIME" remarks="起草时间" type="datetime"/>
+            <column name="ITEMID" remarks="事项id" type="VARCHAR(50)"/>
+            <column name="NEIBU" remarks="是否内部文件" type="VARCHAR(50)"/>
+            <column name="PROCESSDEFINITIONKEY" remarks="流程定义key" type="VARCHAR(100)"/>
+            <column name="PROCESSINSTANCEID" remarks="实例id" type="VARCHAR(50)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(50)"/>
+            <column name="SERIALNUMBER" remarks="排序号" type="INT"/>
+            <column name="SYSTEMNAME" remarks="系统名称" type="VARCHAR(50)"/>
+            <column name="TITLE" remarks="文件标题" type="VARCHAR(1500)"/>
+            <column name="TYPE" remarks="类型" type="VARCHAR(100)"/>
+            <column name="URGENCY" remarks="紧急程度" type="VARCHAR(20)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-19" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_dynamicrole"/>
+            </not>
+        </preConditions>
+        <createTable remarks="动态角色表" tableName="ff_dynamicrole">
+            <column name="ID" remarks="主键" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CLASSPATH" remarks="类全路径" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" remarks="描述" type="LONGTEXT"/>
+            <column name="NAME" remarks="动态角色名称" type="VARCHAR(255)"/>
+            <column name="TABINDEX" remarks="序号" type="INT"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="USEPROCESSINSTANCEID" remarks="是否使用流程实例" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-20" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_entrust"/>
+            </not>
+        </preConditions>
+        <createTable remarks="出差委托表" tableName="ff_entrust">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ASSIGNEEID" remarks="委托对象Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATTIME" remarks="生成时间" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENDTIME" remarks="委托结束时间" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OWNERID" remarks="委托人Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STARTTIME" remarks="委托开始时间" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATETIME" remarks="编辑时间" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-21" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_entrust_history"/>
+            </not>
+        </preConditions>
+        <createTable remarks="出差委托历史表" tableName="ff_entrust_history">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ASSIGNEEID" remarks="受托人Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATTIME" remarks="生成时间" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENDTIME" remarks="委托结束时间" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OWNERID" remarks="委托人Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STARTTIME" remarks="委托开始时间" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updateTime" remarks="编辑时间" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-22" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_entrustdetail"/>
+            </not>
+        </preConditions>
+        <createTable remarks="出差委托表" tableName="ff_entrustdetail">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="OWNERID" remarks="委托人Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSINSTANCEID" remarks="流程实例Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKID" remarks="任务Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-23" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_errorlog"/>
+            </not>
+        </preConditions>
+        <createTable remarks="错误日志记录表" tableName="ff_errorlog">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATETIME" remarks="创建时间" type="VARCHAR(50)"/>
+            <column name="ERRORFLAG" remarks="错误标识" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ERRORTYPE" remarks="错误类型" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EXTENDFIELD" remarks="扩展字段" type="VARCHAR(255)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例" type="VARCHAR(50)"/>
+            <column name="TASKID" remarks="任务id" type="VARCHAR(50)"/>
+            <column name="TEXT" remarks="错误日志信息" type="LONGTEXT"/>
+            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-24" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_extended_content"/>
+            </not>
+        </preConditions>
+        <createTable remarks="扩展内容" tableName="ff_extended_content">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CATEGORY" remarks="内容标识" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTENT" remarks="内容" type="VARCHAR(4000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATEDATE" remarks="创建时间" type="datetime"/>
+            <column name="DEPARTMENTID" remarks="部门id" type="VARCHAR(38)"/>
+            <column name="DEPARTMENTNAME" remarks="部门名称" type="VARCHAR(50)"/>
+            <column name="MODIFYDATE" remarks="修改时间" type="datetime"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(64)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TABINDEX" remarks="序号" type="INT"/>
+            <column name="TASKID" remarks="任务id" type="VARCHAR(64)"/>
+            <column name="TENANTID" remarks="租户id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERID" remarks="人员id" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" remarks="人员姓名" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-25" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_extraneteformitembind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="外网电子表单与事项绑定" tableName="ff_extraneteformitembind">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="FORMID" remarks="表单ID" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FORMNAME" remarks="表单名称" type="VARCHAR(100)"/>
+            <column name="FORMURL" remarks="表单Url" type="VARCHAR(100)"/>
+            <column name="ITEMID" remarks="事项id" type="VARCHAR(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMNAME" remarks="事项名称" type="VARCHAR(50)"/>
+            <column name="TABINDEX" remarks="排序号" type="INT"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-26" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_button_role"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项和按钮绑定关系对应的角色" tableName="ff_item_button_role">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ITEMBUTTONID" remarks="事项和按钮的绑定关系" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROLEID" remarks="角色Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-27" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_buttonbind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项按钮绑定表" tableName="ff_item_buttonbind">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="BUTTONID" remarks="按钮id" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BUTTONTYPE" remarks="按钮类型" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TABINDEX" remarks="序号" type="INT"/>
+            <column name="TASKDEFKEY" remarks="流程节点Key" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+            <column name="USERID" remarks="创建人id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="创建人名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-28" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_eformbind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="电子表单与事项流程任务绑定表" tableName="ff_item_eformbind">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ALIAS" remarks="表单别名" type="VARCHAR(100)"/>
+            <column name="FORMID" remarks="表单ID" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FORMNAME" remarks="表单名称" type="VARCHAR(100)"/>
+            <column name="FORMURL" remarks="表单Url" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义Id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SHOWDOCUMENTTAB" remarks="是否显示正文" type="INT"/>
+            <column name="SHOWFILETAB" remarks="是否显示意见附件" type="INT"/>
+            <column name="SHOWHISTORYTAB" remarks="是否显示关联文件" type="INT"/>
+            <column name="TABINDEX" remarks="排序号" type="INT"/>
+            <column name="TASKDEFKEY" remarks="任务key" type="VARCHAR(255)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-29" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_mappingconf"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项和按钮绑定关系对应的角色" tableName="ff_item_mappingconf">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="COLUMNNAME" remarks="列名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MAPPINGID" remarks="映射系统标识" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MAPPINGNAME" remarks="映射字段名" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MAPPINGTABLENAME" remarks="映射表名称" type="VARCHAR(50)"/>
+            <column name="SYSTYPE" remarks="对接系统类型" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TABLENAME" remarks="表名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-30" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_opinionframe"/>
+            </not>
+        </preConditions>
+        <createTable remarks="意见框任务绑定表" tableName="ff_item_opinionframe">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(255)"/>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(255)"/>
+            <column name="OPINIONFRAMEMARK" remarks="意见框标识" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OPINIONFRAMENAME" remarks="意见框名称" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义Id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="1" name="SIGNOPINION" remarks="是否必签意见" type="INT"/>
+            <column name="TASKDEFKEY" remarks="任务key" type="VARCHAR(100)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-31" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_opinionframe_role"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项和意见框绑定关系对应的角色" tableName="ff_item_opinionframe_role">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ITEMOPINIONFRAMEID" remarks="事项和意见框的绑定关系" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROLEID" remarks="角色Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-32" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_organword"/>
+            </not>
+        </preConditions>
+        <createTable remarks="编号绑定事项和流程节点及角色" tableName="ff_item_organword">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(50)"/>
+            <column name="ORGANWORDCUSTOM" remarks="编号唯一标示" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义ID" type="VARCHAR(200)"/>
+            <column name="TASKDEFKEY" remarks="任务key" type="VARCHAR(100)"/>
+            <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-33" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_organword_role"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项和编号框绑定关系对应的角色" tableName="ff_item_organword_role">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ITEMORGANWORDBINDID" remarks="事项和编号框的绑定关系" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROLEID" remarks="角色Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-34" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_permission"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项权限绑定" tableName="ff_item_permission">
+            <column name="ID" remarks="主键" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATDATE" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义Id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROLEID" remarks="角色Id" type="VARCHAR(255)"/>
+            <column name="ROLETYPE" remarks="角色类型" type="INT"/>
+            <column name="TABINDEX" remarks="排序号" type="INT"/>
+            <column name="TASKDEFKEY" remarks="任务key" type="VARCHAR(255)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-35" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_printtemplate_bind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="打印表单绑定表" tableName="ff_item_printtemplate_bind">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATEID" remarks="模板ID" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATENAME" remarks="模板名称" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATETYPE" remarks="模板类型" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATEURL" remarks="模板Url" type="VARCHAR(100)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-36" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_startnode_role"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项和按钮绑定关系对应的角色" tableName="ff_item_startnode_role">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROLEIDS" remarks="角色Id" type="VARCHAR(500)"/>
+            <column name="TABINDEX" remarks="序号" type="INT"/>
+            <column name="TASKDEFKEY" remarks="流程节点Key" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKDEFNAME" remarks="流程节点名称" type="VARCHAR(100)"/>
+            <column name="USERNAME" remarks="创建人名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-37" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_tabbind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="页签与事项绑定表" tableName="ff_item_tabbind">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TABID" remarks="页签唯一标示" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TABINDEX" remarks="序号" type="INT"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+            <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-38" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_taskconf"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项绑定流程的任务配置表" tableName="ff_item_taskconf">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="SIGNOPINION" remarks="必签意见" type="INT"/>
+            <column defaultValueNumeric="0" name="SIGNTASK" remarks="抢占式签收" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="SPONSOR" remarks="区分主协办" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKDEFKEY" remarks="任务key" type="VARCHAR(100)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-39" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_viewconf"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项视图配置表" tableName="ff_item_viewconf">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="COLUMNNAME" remarks="属性名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="DISPLAYALIGN" remarks="排列" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DISPLAYNAME" remarks="显示名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DISPLAYWIDTH" remarks="显示宽度" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INPUTBOXTYPE" remarks="输入框类型" type="VARCHAR(20)"/>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LABELNAME" remarks="搜索名称" type="VARCHAR(20)"/>
+            <column defaultValueNumeric="0" name="OPENSEARCH" remarks="是否开启搜索条件" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OPTIONCLASS" remarks="绑定数据字典" type="VARCHAR(50)"/>
+            <column name="SPANWIDTH" remarks="搜索框宽度" type="VARCHAR(50)"/>
+            <column name="TABINDEX" remarks="序号" type="INT"/>
+            <column name="TABLENAME" remarks="表名称" type="VARCHAR(50)"/>
+            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+            <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
+            <column name="VIEWTYPE" remarks="视图类型" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-40" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_wordtemplate_bind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项正文模板绑定表" tableName="ff_item_wordtemplate_bind">
+            <column name="ID" remarks="主键" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)"/>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义Id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATEID" remarks="正文模板Id" type="VARCHAR(50)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-41" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_y9formbind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="Y9表单与事项流程任务绑定表" tableName="ff_item_y9formbind">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="FORMID" remarks="表单ID" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FORMNAME" remarks="表单名称" type="VARCHAR(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义Id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SHOWDOCUMENTTAB" remarks="是否显示正文" type="INT"/>
+            <column name="SHOWFILETAB" remarks="是否显示意见附件" type="INT"/>
+            <column name="SHOWHISTORYTAB" remarks="是否显示关联文件" type="INT"/>
+            <column name="TABINDEX" remarks="排序号" type="INT"/>
+            <column name="TASKDEFKEY" remarks="任务key" type="VARCHAR(255)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-42" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_y9formbind_mobile"/>
+            </not>
+        </preConditions>
+        <createTable remarks="Y9表单与事项流程任务绑定表_手机端" tableName="ff_item_y9formbind_mobile">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="FORMID" remarks="表单ID" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FORMNAME" remarks="表单名称" type="VARCHAR(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义Id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKDEFKEY" remarks="任务key" type="VARCHAR(255)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-43" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_office_follow"/>
+            </not>
+        </preConditions>
+        <createTable remarks="办件关注信息表" tableName="ff_office_follow">
+            <column name="GUID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="BUREAUID" remarks="委办局id" type="VARCHAR(50)"/>
+            <column name="BUREAUNAME" remarks="委办局名称" type="VARCHAR(200)"/>
+            <column name="CREATETIME" remarks="关注时间" type="VARCHAR(255)"/>
+            <column name="DOCUMENTTITLE" remarks="标题" type="VARCHAR(500)"/>
+            <column name="FILETYPE" remarks="文件类型" type="VARCHAR(50)"/>
+            <column name="handleTerm" remarks="办理期限" type="VARCHAR(50)"/>
+            <column name="ITEMID" remarks="事项id" type="VARCHAR(50)"/>
+            <column name="JINJICHENGDU" remarks="紧急程度" type="VARCHAR(50)"/>
+            <column name="NUMBERS" remarks="文件编号" type="VARCHAR(50)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="工作流流程序列号" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sendDept" remarks="来文单位/拟稿单位" type="VARCHAR(150)"/>
+            <column name="STARTTIME" remarks="流程启动时间" type="VARCHAR(255)"/>
+            <column name="SYSTEMNAME" remarks="系统名称" type="VARCHAR(50)"/>
+            <column name="USERID" remarks="关注人ID" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" remarks="关注人姓名" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-44" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_opinion"/>
+            </not>
+        </preConditions>
+        <createTable remarks="意见信息表" tableName="ff_opinion">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CONTENT" remarks="意见内容" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="DEPTID" remarks="部门id" type="VARCHAR(38)"/>
+            <column name="DEPTNAME" remarks="部门名称" type="VARCHAR(100)"/>
+            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(50)"/>
+            <column name="OPINIONFRAMEMARK" remarks="意见框标识" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="POSITIONID" remarks="岗位id" type="VARCHAR(38)"/>
+            <column name="POSITIONNAME" remarks="岗位名称" type="VARCHAR(50)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例Id" type="VARCHAR(64)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSTRACKID" remarks="自定义历程id" type="VARCHAR(50)"/>
+            <column name="TASKID" remarks="任务id" type="VARCHAR(200)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERID" remarks="人员id" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-45" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_opinion_history"/>
+            </not>
+        </preConditions>
+        <createTable remarks="意见历史表" tableName="ff_opinion_history">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="AGENTUSERDEPTID" remarks="代录对象的部门Id" type="VARCHAR(38)"/>
+            <column name="AGENTUSERDEPTNAME" remarks="代录对象的部门Name" type="VARCHAR(100)"/>
+            <column name="AGENTUSERID" remarks="意见代录人Guid" type="VARCHAR(38)"/>
+            <column name="AGENTUSERNAME" remarks="意见代录人姓名" type="VARCHAR(50)"/>
+            <column name="CONTENT" remarks="意见内容" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="DEPTID" remarks="部门id" type="VARCHAR(38)"/>
+            <column name="DEPTNAME" remarks="部门名称" type="VARCHAR(100)"/>
+            <column name="ISAGENT" remarks="是否是代录意见" type="INT"/>
+            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(50)"/>
+            <column name="OPINIONFRAMEMARK" remarks="意见框标识" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OPINIONTYPE" remarks="意见类型" type="VARCHAR(5)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例Id" type="VARCHAR(64)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SAVEDATE" remarks="操作、保存时间" type="VARCHAR(50)"/>
+            <column name="TASKID" remarks="任务id" type="VARCHAR(200)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERID" remarks="人员id" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-46" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_opinionframe"/>
+            </not>
+        </preConditions>
+        <createTable remarks="意见框信息表" tableName="ff_opinionframe">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(255)"/>
+            <column name="DELETED" remarks="是否删除" type="INT"/>
+            <column name="MARK" remarks="意见框标识" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(255)"/>
+            <column name="NAME" remarks="意见框名称" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)"/>
+            <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-47" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_organword"/>
+            </not>
+        </preConditions>
+        <createTable remarks="编号标识表" tableName="ff_organword">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(255)"/>
+            <column name="CUSTOM" remarks="编号标识标志" type="VARCHAR(50)">
+                <constraints unique="true"/>
+            </column>
+            <column name="NAME" remarks="编号标识名字" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-48" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_organword_detail"/>
+            </not>
+        </preConditions>
+        <createTable remarks="公文编号详细表" tableName="ff_organword_detail">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CHARACTERVALUE" remarks="机关代字" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATETIME" remarks="修改时间" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CUSTOM" remarks="机关代字标识" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CURRENTNUMBER" remarks="当前值" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="YEARS" remarks="文号年份" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-49" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_organword_propty"/>
+            </not>
+        </preConditions>
+        <createTable remarks="编号标识对应的机关代字表" tableName="ff_organword_propty">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="INITNUMBER" remarks="初始值" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" remarks="机关代字名字" type="VARCHAR(50)"/>
+            <column name="ORGANWORDID" remarks="编号标识Id" type="VARCHAR(50)"/>
+            <column name="TABINDEX" remarks="序号" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-50" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_organword_usehistory"/>
+            </not>
+        </preConditions>
+        <createTable remarks="公文编号使用历史表" tableName="ff_organword_usehistory">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATETIME" remarks="编号时间" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CUSTOM" remarks="机关代字标志" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NUMBERSTRING" remarks="编号" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程序列号" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERID" remarks="人员Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-51" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_printtemplate"/>
+            </not>
+        </preConditions>
+        <createTable remarks="打印模板信息表" tableName="ff_printtemplate">
+            <column name="ID" remarks="主键" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DESCRIBES" remarks="文件描述" type="VARCHAR(1000)"/>
+            <column name="FILENAME" remarks="文档名称" type="VARCHAR(50)"/>
+            <column name="FILEPATH" remarks="文档路径" type="VARCHAR(2000)"/>
+            <column name="FILESIZE" remarks="文件大小" type="VARCHAR(20)"/>
+            <column name="PERSONID" remarks="上传人Id" type="VARCHAR(50)"/>
+            <column name="PERSONNAME" remarks="上传人" type="VARCHAR(100)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)"/>
+            <column name="UPLOADTIME" remarks="上传时间" type="datetime"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-52" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_process_param"/>
+            </not>
+        </preConditions>
+        <createTable remarks="流程参数信息表" tableName="ff_process_param">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="BUREAUIDS" remarks="委办局Id" type="VARCHAR(200)"/>
+            <column name="COMPLETER" remarks="办结人员" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="创建时间" type="VARCHAR(50)"/>
+            <column defaultValueNumeric="0" name="CUSTOMITEM" remarks="是否定制流程" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CUSTOMLEVEL" remarks="自定义级别" type="VARCHAR(100)"/>
+            <column name="CUSTOMNUMBER" remarks="自定义编号" type="VARCHAR(100)"/>
+            <column name="DEPTIDS" remarks="科室Id" type="VARCHAR(4000)"/>
+            <column name="isSendSms" remarks="是否发送短信" type="VARCHAR(50)"/>
+            <column name="isShuMing" remarks="是否署名" type="VARCHAR(50)"/>
+            <column name="ITEMID" remarks="事项唯一标示" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMNAME" remarks="事项名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSINSTANCEID" remarks="流程实例" type="VARCHAR(50)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SEARCHTERM" remarks="搜索词" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SENDED" remarks="这个件是否发送过" type="VARCHAR(10)"/>
+            <column name="smsContent" remarks="发送短信内容" type="VARCHAR(2000)"/>
+            <column name="smsPersonId" remarks="接收短信人员id" type="LONGTEXT"/>
+            <column name="sponsorGuid" remarks="主办人id" type="VARCHAR(50)"/>
+            <column name="STARTOR" remarks="流程的启动人员id" type="VARCHAR(100)"/>
+            <column name="STARTORNAME" remarks="流程的启动人员姓名" type="VARCHAR(100)"/>
+            <column name="SYSTEMCNNAME" remarks="系统中文名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SYSTEMNAME" remarks="系统英文名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TITLE" remarks="标题" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TODOTASKURLPREFIX" remarks="统一待办url前缀" type="VARCHAR(200)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-53" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_processinstance"/>
+            </not>
+        </preConditions>
+        <createTable remarks="协作状态实例表" tableName="ff_processinstance">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="APPCNNAME" remarks="应用中文名称" type="VARCHAR(100)"/>
+            <column name="APPNAME" remarks="应用名称" type="VARCHAR(50)"/>
+            <column name="ASSIGNEE" remarks="参与人id" type="LONGTEXT"/>
+            <column name="ENDTIME" remarks="结束时间" type="datetime"/>
+            <column name="ISDELETED" remarks="删除标记" type="INT"/>
+            <column name="ITEMID" remarks="事项id" type="VARCHAR(50)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(50)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(50)"/>
+            <column name="SERIALNUMBER" remarks="编号" type="VARCHAR(50)"/>
+            <column name="STARTTIME" remarks="开始时间" type="datetime"/>
+            <column name="SYSTEMCNNAME" remarks="系统中文名称" type="VARCHAR(100)"/>
+            <column name="SYSTEMNAME" remarks="系统英文名称" type="VARCHAR(100)"/>
+            <column name="TITLE" remarks="文件标题" type="VARCHAR(1000)"/>
+            <column name="URL" remarks="详情链接" type="VARCHAR(200)"/>
+            <column name="USERNAME" remarks="发起人" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-54" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_processinstance_details"/>
+            </not>
+        </preConditions>
+        <createTable remarks="协作状态详情表" tableName="ff_processinstance_details">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="APPCNNAME" remarks="应用中文名称" type="VARCHAR(100)"/>
+            <column name="APPNAME" remarks="应用名称" type="VARCHAR(50)"/>
+            <column name="ASSIGNEEID" remarks="办理人id" type="VARCHAR(50)"/>
+            <column name="ASSIGNEENAME" remarks="办理人名称" type="VARCHAR(50)"/>
+            <column name="ENDTIME" remarks="结束时间" type="datetime"/>
+            <column name="ITEMID" remarks="事项id" type="VARCHAR(50)"/>
+            <column name="ITEMBOX" remarks="办件状态" type="VARCHAR(20)"/>
+            <column name="OPINIONCONTENT" remarks="意见内容" type="VARCHAR(500)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(50)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(50)"/>
+            <column name="SENDERID" remarks="发送人id" type="VARCHAR(50)"/>
+            <column name="SENDERNAME" remarks="发送人名称" type="VARCHAR(50)"/>
+            <column name="SERIALNUMBER" remarks="编号" type="VARCHAR(50)"/>
+            <column name="STARTTIME" remarks="开始时间" type="datetime"/>
+            <column name="SYSTEMCNNAME" remarks="系统中文名称" type="VARCHAR(100)"/>
+            <column name="SYSTEMNAME" remarks="系统英文名称" type="VARCHAR(100)"/>
+            <column name="TASKID" remarks="任务id" type="VARCHAR(50)"/>
+            <column name="TASKNAME" remarks="任务名称" type="VARCHAR(50)"/>
+            <column name="TITLE" remarks="文件标题" type="VARCHAR(1000)"/>
+            <column name="URL" remarks="详情链接" type="VARCHAR(200)"/>
+            <column name="USERNAME" remarks="发起人" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-55" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_processtrack"/>
+            </not>
+        </preConditions>
+        <createTable remarks="历程信息表" tableName="ff_processtrack">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DESCRIBED" remarks="描述" type="VARCHAR(500)"/>
+            <column name="ENDTIME" remarks="结束时间" type="VARCHAR(50)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RECEIVERNAME" remarks="接收人" type="VARCHAR(50)"/>
+            <column name="SENDERNAME" remarks="发送人" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STARTTIME" remarks="开始时间" type="VARCHAR(50)"/>
+            <column name="TASKDEFNAME" remarks="任务节点名称" type="VARCHAR(50)"/>
+            <column name="TASKID" remarks="任务节点Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-56" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_procinstancerelationship"/>
+            </not>
+        </preConditions>
+        <createTable remarks="流程实例关系表" tableName="ff_procinstancerelationship">
+            <column name="PROCINSTANCEID" remarks="子流程实例Id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PARENTPROCINSTANCEID" remarks="父流程实例Id" type="VARCHAR(255)"/>
+            <column name="PROCDEFINITIONKEY" remarks="流程实例Key" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-57" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_quick_send"/>
+            </not>
+        </preConditions>
+        <createTable remarks="快捷发送信息表" tableName="ff_quick_send">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ASSIGNEE" remarks="快捷发送办理人" type="VARCHAR(2000)"/>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)"/>
+            <column name="POSITIONID" remarks="岗位id" type="VARCHAR(50)"/>
+            <column name="TASKKEY" remarks="任务key" type="VARCHAR(50)"/>
+            <column name="UPDATETIME" remarks="生成时间" type="datetime"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-58" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_receivedepartment"/>
+            </not>
+        </preConditions>
+        <createTable remarks="收发管理部门表" tableName="ff_receivedepartment">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="BUREAUID" remarks="委办局Id" type="VARCHAR(50)"/>
+            <column name="CREATEDATE" remarks="创建时间" type="datetime"/>
+            <column name="DEPTID" remarks="收发部门Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEPTNAME" remarks="收发部门名称" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PARENTID" remarks="父节点Id" type="VARCHAR(50)"/>
+            <column name="TABINDEX" remarks="x序号" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-59" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_receiveperson"/>
+            </not>
+        </preConditions>
+        <createTable remarks="收发管理人员表" tableName="ff_receiveperson">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATEDATE" remarks="创建时间" type="datetime"/>
+            <column name="DEPTID" remarks="收发部门Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEPTNAME" remarks="收发部门名称" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PERSONDEPTID" remarks="收发人员部门Id" type="VARCHAR(50)"/>
+            <column name="PERSONID" remarks="收发人员Id" type="VARCHAR(50)"/>
+            <column name="RECEIVE" remarks="是否可以接收" type="INT"/>
+            <column name="SEND" remarks="是否可以发送" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-60" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_rejectreason"/>
+            </not>
+        </preConditions>
+        <createTable remarks="退回收回原因表" tableName="ff_rejectreason">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ACTION" remarks="动作标记" type="INT"/>
+            <column name="REASON" remarks="原因" type="VARCHAR(1000)"/>
+            <column name="TASKID" remarks="任务id" type="VARCHAR(50)"/>
+            <column name="USERID" remarks="人员id" type="VARCHAR(100)"/>
+            <column name="USERMOBILE" remarks="联系电话" type="VARCHAR(255)"/>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-61" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_remind_instance"/>
+            </not>
+        </preConditions>
+        <createTable remarks="消息提醒实例表" tableName="ff_remind_instance">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="arriveTaskKey" remarks="节点到达任务key" type="VARCHAR(500)"/>
+            <column name="completeTaskKey" remarks="节点完成任务key" type="VARCHAR(500)"/>
+            <column name="CREATETIME" remarks="创建时间" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REMIND_TYPE" remarks="消息提醒类型" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKID" remarks="任务id" type="LONGTEXT"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERID" remarks="人员id" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-62" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_reminder"/>
+            </not>
+        </preConditions>
+        <createTable remarks="催办信息表" tableName="ff_reminder">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATETIME" remarks="创建时间" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MODIFYTIME" remarks="修改时间" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MSGCONTENT" remarks="消息内容" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCINSTID" remarks="流程实例id" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="READTIME" remarks="阅读时间" type="datetime"/>
+            <column name="REMINDER_MAKE_TYPE" remarks="提醒类型" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REMINDER_SEND_TYPE" remarks="催办发送类型" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SENDERID" remarks="发送人id" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SENDERNAME" remarks="发送人名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKID" remarks="任务id" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-63" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_sendbutton"/>
+            </not>
+        </preConditions>
+        <createTable remarks="发送按钮表" tableName="ff_sendbutton">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATETIME" remarks="创建时间" type="VARCHAR(255)"/>
+            <column name="CUSTOMID" remarks="按钮标识" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="NAME" remarks="按钮名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATETIME" remarks="生成时间" type="VARCHAR(255)"/>
+            <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-64" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_signaturepicture"/>
+            </not>
+        </preConditions>
+        <createTable remarks="签名图片表" tableName="ff_signaturepicture">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(50)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERID" remarks="人员id" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-65" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_speakinfo"/>
+            </not>
+        </preConditions>
+        <createTable remarks="沟通交流信息表" tableName="ff_speakinfo">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CONTENT" remarks="发言信息" type="VARCHAR(1000)"/>
+            <column name="CREATETIME" remarks="发言时间" type="VARCHAR(50)"/>
+            <column name="DELETED" remarks="是否删除" type="INT"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="READUSERID" remarks="已看人员id" type="VARCHAR(2000)"/>
+            <column name="UPDATETIME" remarks="修改时间" type="VARCHAR(50)"/>
+            <column name="USERID" remarks="发言人Id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="发言人名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-66" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_tabentity"/>
+            </not>
+        </preConditions>
+        <createTable remarks="自定义页签表" tableName="ff_tabentity">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="NAME" remarks="页签名称" type="VARCHAR(50)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)"/>
+            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+            <column name="URL" remarks="页签对应的url" type="VARCHAR(50)"/>
+            <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-67" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_taohongtemplate"/>
+            </not>
+        </preConditions>
+        <createTable remarks="套红模板信息表" tableName="ff_taohongtemplate">
+            <column name="TEMPLATE_GUID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="BUREAU_GUID" remarks="委办局GUID" type="VARCHAR(38)"/>
+            <column name="BUREAU_NAME" remarks="委办局名称" type="VARCHAR(38)"/>
+            <column name="TABINDEX" remarks="排序号" type="INT"/>
+            <column name="TEMPLATE_CONTENT" remarks="文件内容" type="LONGBLOB"/>
+            <column name="TEMPLATE_FILENAME" remarks="文件名" type="VARCHAR(100)"/>
+            <column name="TEMPLATE_TYPE" remarks="模板类型" type="VARCHAR(100)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uploadTime" remarks="上传时间" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERID" remarks="上传人" type="VARCHAR(38)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-68" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_taohongtemplatetype"/>
+            </not>
+        </preConditions>
+        <createTable remarks="模板类型表" tableName="ff_taohongtemplatetype">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="BUREAUID" remarks="委办局Id" type="VARCHAR(50)"/>
+            <column name="TABINDEX" remarks="排序号" type="INT"/>
+            <column name="TYPENAME" remarks="类型名称" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-69" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_taskvariable"/>
+            </not>
+        </preConditions>
+        <createTable remarks="任务变量信息表" tableName="ff_taskvariable">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATETIME" remarks="创建时间" type="VARCHAR(50)"/>
+            <column name="KEYNAME" remarks="变量名称" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSINSTANCEID" remarks="流程实例" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKID" remarks="任务id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEXT" remarks="变量值" type="LONGTEXT"/>
+            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-70" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_viewtype"/>
+            </not>
+        </preConditions>
+        <createTable remarks="视图类型表" tableName="ff_viewtype">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(255)"/>
+            <column name="MARK" remarks="视图类型标识" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(255)"/>
+            <column name="NAME" remarks="视图类型名称" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-71" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_wordtemplate"/>
+            </not>
+        </preConditions>
+        <createTable remarks="正文模板信息表" tableName="ff_wordtemplate">
+            <column name="ID" remarks="主键" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="BUREAUID" remarks="委办局Id" type="VARCHAR(50)"/>
+            <column name="DESCRIBES" remarks="文件描述" type="VARCHAR(1000)"/>
+            <column name="FILENAME" remarks="文档名称" type="VARCHAR(50)"/>
+            <column name="FILEPATH" remarks="文档路径" type="VARCHAR(2000)"/>
+            <column name="FILESIZE" remarks="文件大小" type="VARCHAR(20)"/>
+            <column name="PERSONID" remarks="上传人Id" type="VARCHAR(50)"/>
+            <column name="PERSONNAME" remarks="上传人" type="VARCHAR(100)"/>
+            <column name="UPLOADTIME" remarks="上传时间" type="datetime"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-89" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="y9_form_workorder"/>
+            </not>
+        </preConditions>
+        <createTable remarks="工单信息表" tableName="y9_form_workorder">
+            <column name="GUID" remarks="主键" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="createDate" remarks="创建日期" type="VARCHAR(20)"/>
+            <column name="createTime" remarks="创建时间" type="VARCHAR(20)"/>
+            <column name="description" remarks="纯文本描述" type="LONGTEXT"/>
+            <column name="handleType" remarks="处理类型" type="VARCHAR(5)"/>
+            <column name="handler" remarks="处理人" type="VARCHAR(50)"/>
+            <column name="handlerMobile" remarks="处理人联系方式" type="VARCHAR(20)"/>
+            <column name="htmlDescription" remarks="带html格式描述" type="LONGTEXT"/>
+            <column name="mobile" remarks="联系电话" type="VARCHAR(15)"/>
+            <column name="number" remarks="工单编号" type="VARCHAR(50)"/>
+            <column name="processInstanceId" remarks="流程编号" type="VARCHAR(50)"/>
+            <column name="QQ" remarks="QQ" type="VARCHAR(15)"/>
+            <column name="realProcessInstanceId" remarks="工作流实例id" type="VARCHAR(50)"/>
+            <column name="resultFeedback" remarks="结果反馈" type="VARCHAR(2000)"/>
+            <column name="suggest" remarks="建议" type="VARCHAR(2000)"/>
+            <column name="tenantId" remarks="提交租户id" type="VARCHAR(50)"/>
+            <column name="tenantName" remarks="提交租户名称" type="VARCHAR(100)"/>
+            <column name="title" remarks="文件标题" type="VARCHAR(500)"/>
+            <column name="urgency" remarks="紧急程度" type="VARCHAR(10)"/>
+            <column name="userId" remarks="创建人Id" type="VARCHAR(50)"/>
+            <column name="userName" remarks="创建人" type="VARCHAR(50)"/>
+            <column name="workOrderType" remarks="工单类型" type="VARCHAR(20)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-95" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="y9form_define"/>
+            </not>
+        </preConditions>
+        <createTable remarks="表单定义" tableName="y9form_define">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CSSURL" remarks="引用css" type="VARCHAR(255)"/>
+            <column name="FILECONTENT" remarks="模板文件内容" type="LONGBLOB"/>
+            <column name="FILENAME" remarks="模板文件名称" type="VARCHAR(50)"/>
+            <column name="FORMJSON" remarks="表单json" type="LONGTEXT"/>
+            <column name="FORMNAME" remarks="表单名称" type="VARCHAR(50)"/>
+            <column name="FORMTYPE" remarks="表单类型" type="INT"/>
+            <column name="INITDATAURL" remarks="初始化数据url路径" type="VARCHAR(255)"/>
+            <column name="JSURL" remarks="引用js" type="VARCHAR(255)"/>
+            <column name="ORIGINALCONTENT" remarks="原始的页面内容" type="LONGTEXT"/>
+            <column name="PERSONID" remarks="修改人" type="VARCHAR(38)"/>
+            <column name="RESULTCONTENT" remarks="绑定后的页面内容" type="LONGTEXT"/>
+            <column name="SYSTEMCNNAME" remarks="系统中文名称" type="VARCHAR(50)"/>
+            <column name="SYSTEMNAME" remarks="系统名称" type="VARCHAR(50)"/>
+            <column name="TEMPLATETYPE" remarks="表单模板类型" type="INT"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(38)"/>
+            <column name="UPDATETIME" remarks="修改时间" type="datetime"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-96" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="y9form_field"/>
+            </not>
+        </preConditions>
+        <createTable remarks="表单字段绑定" tableName="y9form_field">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="FIELDCNNAME" remarks="字段中文名称" type="VARCHAR(50)"/>
+            <column name="FIELDNAME" remarks="字段名称" type="VARCHAR(50)"/>
+            <column name="FIELDTYPE" remarks="字段类型" type="VARCHAR(100)"/>
+            <column name="FORMID" remarks="表单Id" type="VARCHAR(38)"/>
+            <column name="OPTIONVALUE" remarks="选项值" type="VARCHAR(500)"/>
+            <column name="QUERYSIGN" remarks="开启查询条件" type="VARCHAR(2)"/>
+            <column name="QUERYTYPE" remarks="查询类型" type="VARCHAR(50)"/>
+            <column name="TABLEID" remarks="对应的表id" type="VARCHAR(50)"/>
+            <column name="TABLENAME" remarks="对应的表名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-97" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="y9form_field_perm"/>
+            </not>
+        </preConditions>
+        <createTable remarks="字段权限配置" tableName="y9form_field_perm">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="FIELDNAME" remarks="字段名称" type="VARCHAR(100)"/>
+            <column name="FORMID" remarks="表单Id" type="VARCHAR(38)"/>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义id" type="VARCHAR(200)"/>
+            <column name="TASKDEFKEY" remarks="任务key" type="VARCHAR(200)"/>
+            <column name="WRITEROLEID" remarks="写权限角色id" type="VARCHAR(200)"/>
+            <column name="WRITEROLENAME" remarks="写权限角色名称" type="VARCHAR(200)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-98" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="y9form_optionclass"/>
+            </not>
+        </preConditions>
+        <createTable remarks="字典类型表" tableName="y9form_optionclass">
+            <column name="TYPE" remarks="主键，类型名称" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="NAME" remarks="中文名称" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-99" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="y9form_optionvalue"/>
+            </not>
+        </preConditions>
+        <createTable remarks="字典数据表" tableName="y9form_optionvalue">
+            <column name="ID" remarks="主键id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CODE" remarks="数据代码" type="VARCHAR(255)"/>
+            <column name="DEFAULTSELECTED" remarks="是否默认选中" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" remarks="主键名称" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TABINDEX" remarks="排序号" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TYPE" remarks="字典类型" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-100" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="y9form_table"/>
+            </not>
+        </preConditions>
+        <createTable remarks="业务表定义" tableName="y9form_table">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CREATETIME" remarks="创建时间" type="VARCHAR(50)"/>
+            <column name="OLDTABLENAME" remarks="老表英文名称" type="VARCHAR(30)"/>
+            <column name="SYSTEMCNNAME" remarks="系统中文名称" type="VARCHAR(50)"/>
+            <column name="SYSTEMNAME" remarks="系统名称" type="VARCHAR(50)"/>
+            <column name="TABLEALIAS" remarks="表别名" type="VARCHAR(4)"/>
+            <column name="TABLECNNAME" remarks="表中文名称" type="VARCHAR(30)"/>
+            <column name="TABLEMEMO" remarks="表备注" type="VARCHAR(50)"/>
+            <column name="TABLENAME" remarks="表英文名称" type="VARCHAR(30)"/>
+            <column name="TABLETYPE" remarks="表类型" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-101" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="y9form_table_field"/>
+            </not>
+        </preConditions>
+        <createTable remarks="业务表字段定义" tableName="y9form_table_field">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DISPLAYORDER" remarks="显示排序" type="INT"/>
+            <column name="FIELDCNNAME" remarks="字段中文名称" type="VARCHAR(30)"/>
+            <column name="FIELDLENGTH" remarks="字段长度" type="INT"/>
+            <column name="FIELDNAME" remarks="字段英文名称" type="VARCHAR(30)"/>
+            <column name="FIELDTYPE" remarks="字段类型" type="VARCHAR(50)"/>
+            <column name="ISMAYNULL" remarks="是否允许为空" type="INT"/>
+            <column name="ISSYSTEMFIELD" remarks="是否系统字段" type="INT"/>
+            <column name="ISVAR" remarks="是否设置为流程变量" type="INT"/>
+            <column name="OLDFIELDNAME" remarks="旧字段英文名称" type="VARCHAR(30)"/>
+            <column name="STATE" remarks="字段状态" type="INT"/>
+            <column name="TABLEID" remarks="表Id" type="VARCHAR(50)"/>
+            <column name="TABLENAME" remarks="表名称" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700547152-102" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="y9form_validtype"/>
+            </not>
+        </preConditions>
+        <createTable remarks="校验规则定义" tableName="y9form_validtype">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PERSONID" remarks="修改人" type="VARCHAR(38)"/>
+            <column name="TENANTID" remarks="租户Id" type="VARCHAR(38)"/>
+            <column name="UPDATETIME" remarks="修改时间" type="datetime"/>
+            <column name="VALIDCNNAME" remarks="校验中文名称" type="VARCHAR(50)"/>
+            <column name="VALIDCONTENT" remarks="检验内容" type="LONGTEXT"/>
+            <column name="VALIDNAME" remarks="校验名称" type="VARCHAR(50)"/>
+            <column name="VALIDTYPE" remarks="校验类型" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1704700547152-104" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="ff_process_param" columnNames="PROCESSINSTANCEID"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="index_001_processInstanceId" tableName="ff_process_param">
+            <column name="PROCESSINSTANCEID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1704700547152-105" author="mengjuhua">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="ff_process_param" columnNames="PROCESSSERIALNUMBER"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="index_002_processSerialNumber" tableName="ff_process_param">
+            <column name="PROCESSSERIALNUMBER"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
