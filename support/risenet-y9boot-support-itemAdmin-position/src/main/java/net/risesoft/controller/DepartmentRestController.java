@@ -18,7 +18,7 @@ import com.google.common.collect.Maps;
 import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.OrganizationApi;
-import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
@@ -69,7 +69,7 @@ public class DepartmentRestController {
             }
         }
         /** items.addAll(genDeptTree(id)); */
-        List<OrgUnit> employees = orgUnitManager.getSubTree(tenantId, id, TreeTypeEnum.TREE_TYPE_POSITION).getData();
+        List<OrgUnit> employees = orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
         for (OrgUnit employee : employees) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("id", employee.getId());
@@ -191,7 +191,7 @@ public class DepartmentRestController {
 
     @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Result<List<OrgUnit>> getOrgTree(String id, TreeTypeEnum treeType) {
+    public Y9Result<List<OrgUnit>> getOrgTree(String id, OrgTreeTypeEnum treeType) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, treeType).getData();
         return Y9Result.success(list, "获取成功");
@@ -202,7 +202,7 @@ public class DepartmentRestController {
     public Y9Result<List<Map<String, Object>>> searchDept(@RequestParam(required = false) String name) {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> employees = orgUnitManager.treeSearch(tenantId, name, TreeTypeEnum.TREE_TYPE_DEPT).getData();
+        List<OrgUnit> employees = orgUnitManager.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_DEPT).getData();
         for (OrgUnit employee : employees) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("id", employee.getId());
@@ -222,7 +222,7 @@ public class DepartmentRestController {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> employees =
-            orgUnitManager.treeSearch(tenantId, name, TreeTypeEnum.TREE_TYPE_ORG_POSITION).getData();
+            orgUnitManager.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION).getData();
         for (OrgUnit employee : employees) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("id", employee.getId());
@@ -238,7 +238,7 @@ public class DepartmentRestController {
 
     @RequestMapping(value = "/treeSearch", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Result<List<OrgUnit>> treeSearch(String name, TreeTypeEnum treeType) {
+    public Y9Result<List<OrgUnit>> treeSearch(String name, OrgTreeTypeEnum treeType) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> list = orgUnitManager.treeSearch(tenantId, name, treeType).getData();
         return Y9Result.success(list, "获取成功");

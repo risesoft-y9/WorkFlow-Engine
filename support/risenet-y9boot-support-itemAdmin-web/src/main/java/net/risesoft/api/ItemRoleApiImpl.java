@@ -18,7 +18,7 @@ import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
-import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
 import net.risesoft.model.platform.Person;
@@ -132,7 +132,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
 
     @Override
     @GetMapping(value = "/getOrgTree", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getOrgTree(String tenantId, String userId, String id, TreeTypeEnum treeType,
+    public List<Map<String, Object>> getOrgTree(String tenantId, String userId, String id, OrgTreeTypeEnum treeType,
         String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId).getData();

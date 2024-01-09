@@ -21,7 +21,7 @@ import net.risesoft.entity.ReceiveDepartment;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
-import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.model.platform.CustomGroup;
 import net.risesoft.model.platform.CustomGroupMember;
 import net.risesoft.model.platform.Department;
@@ -78,7 +78,7 @@ public class RoleServiceImpl implements RoleService {
             if (StringUtils.isBlank(id) || UtilConsts.NULL.equals(id)) {
                 if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
                     Organization organization = orgUnitManager.getOrganization(tenantId, userId).getData();
-                    List<OrgUnit> orgUnitList = orgUnitManager.getSubTree(tenantId, organization.getId(), TreeTypeEnum.TREE_TYPE_POSITION).getData();
+                    List<OrgUnit> orgUnitList = orgUnitManager.getSubTree(tenantId, organization.getId(), OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
                     for (OrgUnit orgUnit : orgUnitList) {
                         Map<String, Object> map = new HashMap<>(16);
                         map.put("id", orgUnit.getId());
@@ -110,7 +110,7 @@ public class RoleServiceImpl implements RoleService {
                 }
             } else {
                 if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
-                    List<OrgUnit> orgList = orgUnitManager.getSubTree(tenantId, id, TreeTypeEnum.TREE_TYPE_POSITION).getData();
+                    List<OrgUnit> orgList = orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
                     for (OrgUnit orgunit : orgList) {
                         Map<String, Object> map = new HashMap<>(16);
                         String orgunitId = orgunit.getId();
@@ -183,7 +183,7 @@ public class RoleServiceImpl implements RoleService {
             List<Department> deptList = organizationManager.listDepartments(tenantId, organization.getId()).getData();
             List<OrgUnit> orgUnitListTemp = new ArrayList<>();
             for (OrgUnit orgUnitTemp : deptList) {
-                orgUnitListTemp.addAll(orgUnitManager.treeSearchByDn(tenantId, name, TreeTypeEnum.TREE_TYPE_ORG_POSITION, orgUnitTemp.getDn()).getData());
+                orgUnitListTemp.addAll(orgUnitManager.treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION, orgUnitTemp.getDn()).getData());
             }
             for (OrgUnit orgUnitTemp : orgUnitListTemp) {
                 Map<String, Object> map = new HashMap<>(16);
@@ -286,7 +286,7 @@ public class RoleServiceImpl implements RoleService {
                     }
                     for (OrgUnit org : deptList) {
                         if (OrgTypeEnum.ORGANIZATION.equals(org.getOrgType())) {
-                            List<OrgUnit> orgList = orgUnitManager.getSubTree(tenantId, org.getId(), TreeTypeEnum.TREE_TYPE_POSITION).getData();
+                            List<OrgUnit> orgList = orgUnitManager.getSubTree(tenantId, org.getId(), OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
                             for (OrgUnit orgUnit : orgList) {
                                 Map<String, Object> map = new HashMap<>(16);
                                 map.put("id", orgUnit.getId());
@@ -319,7 +319,7 @@ public class RoleServiceImpl implements RoleService {
                     }
                 } else {
                     // 取部门下的部门或人员
-                    List<OrgUnit> orgList = orgUnitManager.getSubTree(tenantId, id, TreeTypeEnum.TREE_TYPE_POSITION).getData();
+                    List<OrgUnit> orgList = orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
                     for (OrgUnit orgunit : orgList) {
                         Map<String, Object> map = new HashMap<>(16);
                         String orgunitId = orgunit.getId();
@@ -497,7 +497,7 @@ public class RoleServiceImpl implements RoleService {
                 if (OrgTypeEnum.DEPARTMENT.equals(org.getOrgType())) {
                     List<OrgUnit> orgUnitList = new ArrayList<>();
                     for (OrgUnit orgUnitTemp : deptList) {
-                        orgUnitList.addAll(orgUnitManager.treeSearchByDn(tenantId, name, TreeTypeEnum.TREE_TYPE_ORG_POSITION, orgUnitTemp.getDn()).getData());
+                        orgUnitList.addAll(orgUnitManager.treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION, orgUnitTemp.getDn()).getData());
                     }
                     for (OrgUnit orgUnitTemp : orgUnitList) {
                         Map<String, Object> map = new HashMap<>(16);
@@ -520,7 +520,7 @@ public class RoleServiceImpl implements RoleService {
                     }
                 } else if (OrgTypeEnum.ORGANIZATION.equals(org.getOrgType())) {
                     // 租户组织机构树查询，会查询多个组织机构
-                    List<OrgUnit> orgUnitList = orgUnitManager.treeSearch(tenantId, name, TreeTypeEnum.TREE_TYPE_ORG_POSITION).getData();
+                    List<OrgUnit> orgUnitList = orgUnitManager.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION).getData();
                     for (int i = 0; i < orgUnitList.size(); i++) {
                         if (OrgTypeEnum.ORGANIZATION.equals(orgUnitList.get(i).getOrgType())) {
                             continue;// 不显示组织机构
