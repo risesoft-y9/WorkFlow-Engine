@@ -24,7 +24,7 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.permission.PersonRoleApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.platform.OrgTypeEnum;
-import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -128,7 +128,7 @@ public class OpinionRestController {
         if (bureau != null) {
             List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
             orgUnitList =
-                orgUnitApi.treeSearchByDn(tenantId, name, TreeTypeEnum.TREE_TYPE_PERSON, bureau.getDn()).getData();
+                orgUnitApi.treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON, bureau.getDn()).getData();
             for (OrgUnit orgUnit : orgUnitList) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 map.put("id", orgUnit.getId());
@@ -190,7 +190,7 @@ public class OpinionRestController {
                 item.add(m);
             }
         } else {
-            List<OrgUnit> list = orgUnitApi.getSubTree(tenantId, id, TreeTypeEnum.TREE_TYPE_ORG).getData();
+            List<OrgUnit> list = orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_ORG).getData();
             for (OrgUnit orgUnit : list) {
                 Map<String, Object> m = new HashMap<String, Object>(16);
                 m.put("id", orgUnit.getId());

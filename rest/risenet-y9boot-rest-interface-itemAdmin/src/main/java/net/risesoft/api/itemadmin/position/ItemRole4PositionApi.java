@@ -3,7 +3,7 @@ package net.risesoft.api.itemadmin.position;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.enums.platform.OrgTreeTypeEnum;
 
 /**
  * @author qinman
@@ -111,6 +111,6 @@ public interface ItemRole4PositionApi {
      *
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> getOrgTree(String tenantId, String positionId, String id, TreeTypeEnum treeType,
+    List<Map<String, Object>> getOrgTree(String tenantId, String positionId, String id, OrgTreeTypeEnum treeType,
         String name);
 }

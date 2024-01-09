@@ -21,7 +21,7 @@ import net.risesoft.entity.ReceiveDepartment;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
-import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.model.platform.CustomGroup;
 import net.risesoft.model.platform.CustomGroupMember;
 import net.risesoft.model.platform.Department;
@@ -218,7 +218,7 @@ public class RoleServiceImpl implements RoleService {
             List<OrgUnit> orgUnitListTemp = new ArrayList<>();
             for (OrgUnit orgUnitTemp : deptList) {
                 orgUnitListTemp.addAll(orgUnitManager
-                    .treeSearchByDn(tenantId, name, TreeTypeEnum.TREE_TYPE_ORG, orgUnitTemp.getDn()).getData());
+                    .treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG, orgUnitTemp.getDn()).getData());
             }
             for (OrgUnit orgUnitTemp : orgUnitListTemp) {
                 Map<String, Object> map = new HashMap<>(16);
@@ -658,7 +658,7 @@ public class RoleServiceImpl implements RoleService {
                 } else if (OrgTypeEnum.ORGANIZATION.equals(org.getOrgType())) {
                     // 租户组织机构树查询，会查询多个组织机构
                     List<OrgUnit> orgUnitList =
-                        orgUnitManager.treeSearch(tenantId, name, TreeTypeEnum.TREE_TYPE_PERSON).getData();
+                        orgUnitManager.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
                     for (int i = 0; i < orgUnitList.size(); i++) {
                         if (OrgTypeEnum.ORGANIZATION.equals(orgUnitList.get(i).getOrgType())) {
                             continue;// 不显示组织机构
