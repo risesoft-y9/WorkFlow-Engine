@@ -110,7 +110,7 @@ spring:
                     batch_size: 100
                 show_sql: true
     kafka:
-        bootstrap-servers: dev.youshengyun.com:9092
+        bootstrap-servers: localhost:9092
         consumer:
             auto-commit-interval: 1000
             enable-auto-commit: true
@@ -123,7 +123,7 @@ spring:
             suffix: .jsp
     redis:
         database: 8
-        host: dev.youshengyun.com
+        host: localhost
         lettuce:
             pool:
                 max-active: 8
@@ -171,24 +171,24 @@ y9:
         tomcatUserName: tomcat
         calendarBaseUrl: http://localhost:7055/calendar
         cmsBaseUrl: http://localhost:7055/cms
-        flowableBaseUrl: https://dev.youshengyun.com/flowableUI
-        itemAdminBaseUrl: http://localhost:7056/itemAdmin
+        flowableBaseUrl: http://localhost:7058/flowableUI
+        itemAdminBaseUrl: http://localhost:7057/itemAdmin
         logBaseUrl: http://localhost:7055/log
-        messageBaseUrl: https://dev.youshengyun.com/message
-        orgBaseUrl: https://dev.youshengyun.com/platform
-        y9DigitalBaseUrl: https://dev.youshengyun.com/y9DigitalBase
+        messageBaseUrl: http://localhost:7058/message
+        orgBaseUrl: http://localhost:7055/platform
+        y9DigitalBaseUrl: http://localhost:7055/y9DigitalBase
         processAdminBaseUrl: http://localhost:7056/processAdmin
         emailBaseUrl: http://localhost:7056/email
         soaBaseUrl: http://localhost:7055/soa
-        todoBaseUrl: https://dev.youshengyun.com/todo
-        todoTaskUrlPrefix: https://dev.youshengyun.com/flowableUI/todoIndex
+        todoBaseUrl: http://localhost:7058/todo
+        todoTaskUrlPrefix: http://localhost:8080/flowableUI/todoIndex
         y9homeBaseUrl: http://localhost:7055/y9home
-        jodconverterBaseUrl: https://dev.youshengyun.com/jodconverter/onlinePreview?url=
-        attendanceBaseUrl: https://dev.youshengyun.com/attendance
+        jodconverterBaseUrl: http://localhost:7058/jodconverter/onlinePreview?url=
+        attendanceBaseUrl: http://localhost:7058/attendance
     feature:
         apisix:
             enabled: false
-            adminAddress: https://dev.youshengyun.com/apisix/admin/
+            adminAddress: http://localhost:8888/apisix/admin/
             adminKey: edd1c9f034335f136f87ad84b625c8f1
             upstreamType: roundrobin   #负载均衡算法，1、roundrobin:轮训 ; 2、chash:一致性哈希; 3、ewma:指数加权移动平均法; 4、least_conn:最小连接数
             #etcdAddress: http://localhost:2379  #有多个时逗号分隔
@@ -201,7 +201,7 @@ y9:
             rest:
                 fileManagerUrl: http://localhost:8080/fileManager
             ftp:
-                host: dev.youshengyun.com
+                host: localhost
                 port: 21
                 username: y9admin
                 password: '83204585'
@@ -292,6 +292,6 @@ y9:
                 opaque:
                     client-id: clientid
                     client-secret: secret
-                    introspection-uri: https://dev.youshengyun.com/sso/oauth2.0/introspect
-                    profile-uri: https://dev.youshengyun.com/sso/oauth2.0/profile
+                    introspection-uri: http://localhost:7055/sso/oauth2.0/introspect
+                    profile-uri: http://localhost:7055/sso/oauth2.0/profile
 
