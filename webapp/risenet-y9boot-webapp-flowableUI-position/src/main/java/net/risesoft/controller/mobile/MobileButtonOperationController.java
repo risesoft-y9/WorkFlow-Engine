@@ -1,6 +1,8 @@
 package net.risesoft.controller.mobile;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
+import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 import net.risesoft.api.org.PersonApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
@@ -30,6 +33,7 @@ import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
@@ -92,6 +96,9 @@ public class MobileButtonOperationController {
 
     @Autowired
     private MultiInstanceService multiInstanceService;
+
+    @Autowired
+    private ProcessTrack4PositionApi processTrackManager;
 
     /**
      * 签收：抢占式办理时，签收后，其他人不可再签收办理
@@ -590,6 +597,68 @@ public class MobileButtonOperationController {
             map.put("msg", "发送拟稿人成功");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+        return;
+    }
+
+    /**
+     * 特殊办结
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param positionId 岗位id
+     * @param taskId 任务id
+     * @param reason 办结原因
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "/specialComplete")
+    public void specialComplete(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String taskId, @RequestParam(required = false) String reason, HttpServletRequest request,
+        HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        try {
+            Person person = personManager.getPerson(tenantId, userId).getData();
+            Y9LoginUserHolder.setPerson(person);
+
+            Position position = positionApi.getPosition(tenantId, positionId).getData();
+            Y9LoginUserHolder.setPosition(position);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            TaskModel taskModel = taskManager.findById(tenantId, taskId);
+            buttonOperationManager.specialComplete(tenantId, positionId, taskId, reason);
+            // 更新自定义历程结束时间
+            List<ProcessTrackModel> ptModelList = processTrackManager.findByTaskId(tenantId, taskId);
+            for (ProcessTrackModel ptModel : ptModelList) {
+                if (StringUtils.isBlank(ptModel.getEndTime())) {
+                    try {
+                        processTrackManager.saveOrUpdate(tenantId, ptModel);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            /**
+             * 3保存历程
+             */
+            ProcessTrackModel ptModel = new ProcessTrackModel();
+            ptModel.setDescribed("已办结");
+            ptModel.setProcessInstanceId(taskModel.getProcessInstanceId());
+            ptModel.setReceiverName(position.getName());
+            ptModel.setSenderName(position.getName());
+            ptModel.setStartTime(sdf.format(new Date()));
+            ptModel.setEndTime(sdf.format(new Date()));
+            ptModel.setTaskDefName("特殊办结");
+            ptModel.setTaskId(taskId);
+            ptModel.setId("");
+            processTrackManager.saveOrUpdate(tenantId, ptModel);
+            map.put(UtilConsts.SUCCESS, true);
+            map.put("msg", "特殊办结成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put(UtilConsts.SUCCESS, false);
+            map.put("msg", "特殊办结失败");
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
         return;

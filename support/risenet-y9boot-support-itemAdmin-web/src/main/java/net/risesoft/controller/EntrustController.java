@@ -21,7 +21,7 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Entrust;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.enums.platform.OrgTypeEnum;
-import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
 import net.risesoft.model.platform.Person;
@@ -80,7 +80,7 @@ public class EntrustController {
                 this.recursionUpToOrg(tenantId, orgUnit.getId(), p.getParentId(), orgUnitList, false);
             }
         } else {
-            orgUnitList = orgUnitManager.treeSearch(tenantId, name, TreeTypeEnum.TREE_TYPE_PERSON).getData();
+            orgUnitList = orgUnitManager.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
         }
         for (OrgUnit orgUnit0 : orgUnitList) {
             Map<String, Object> map = new HashMap<String, Object>(16);
@@ -113,7 +113,7 @@ public class EntrustController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(id)) {
             List<OrgUnit> orgList = new ArrayList<>();
-            orgList = orgUnitManager.getSubTree(tenantId, id, TreeTypeEnum.TREE_TYPE_PERSON).getData();
+            orgList = orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
             for (OrgUnit orgunit : orgList) {
                 Map<String, Object> map = new HashMap<>(16);
                 String orgunitId = orgunit.getId();

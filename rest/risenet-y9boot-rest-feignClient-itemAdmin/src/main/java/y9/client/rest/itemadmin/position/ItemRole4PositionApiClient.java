@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
-import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.enums.platform.OrgTreeTypeEnum;
 
 /**
  * @author qinman
@@ -149,5 +149,5 @@ public interface ItemRole4PositionApiClient extends ItemRole4PositionApi {
     @GetMapping("/getOrgTree")
     public List<Map<String, Object>> getOrgTree(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("id") String id,
-        @RequestParam("treeType") TreeTypeEnum treeType, @RequestParam("name") String name);
+        @RequestParam("treeType") OrgTreeTypeEnum treeType, @RequestParam("name") String name);
 }

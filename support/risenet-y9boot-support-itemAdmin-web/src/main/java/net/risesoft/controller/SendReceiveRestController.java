@@ -20,7 +20,7 @@ import net.risesoft.api.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ReceiveDepartment;
 import net.risesoft.enums.platform.OrgTypeEnum;
-import net.risesoft.enums.platform.TreeTypeEnum;
+import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
@@ -157,7 +157,7 @@ public class SendReceiveRestController {
         }
         if (StringUtils.isNotBlank(id)) {
             List<OrgUnit> orgList = new ArrayList<>();
-            orgList = orgUnitManager.getSubTree(tenantId, id, TreeTypeEnum.TREE_TYPE_ORG).getData();
+            orgList = orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_ORG).getData();
             for (OrgUnit orgunit : orgList) {
                 Map<String, Object> map = new HashMap<>(16);
                 String orgunitId = orgunit.getId();
@@ -201,7 +201,7 @@ public class SendReceiveRestController {
      */
     @RequestMapping(value = "/getOrgChildTree", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getOrgChildTree(@RequestParam(required = false) String id,
-        TreeTypeEnum treeType) {
+        OrgTreeTypeEnum treeType) {
         List<Map<String, Object>> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(id)) {
@@ -240,7 +240,7 @@ public class SendReceiveRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> getOrgTree(@RequestParam String id, @RequestParam TreeTypeEnum treeType) {
+    public Y9Result<List<OrgUnit>> getOrgTree(@RequestParam String id, @RequestParam OrgTreeTypeEnum treeType) {
         List<OrgUnit> newOrgUnitList = new ArrayList<>();
         List<OrgUnit> orgUnitList = orgUnitManager.getSubTree(Y9LoginUserHolder.getTenantId(), id, treeType).getData();
         for (OrgUnit orgUnit : orgUnitList) {
@@ -309,7 +309,7 @@ public class SendReceiveRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/orgTreeSearch", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> orgTreeSearch(@RequestParam TreeTypeEnum treeType, @RequestParam String name) {
+    public Y9Result<List<OrgUnit>> orgTreeSearch(@RequestParam OrgTreeTypeEnum treeType, @RequestParam String name) {
         List<OrgUnit> newOrgUnitList = new ArrayList<>();
         List<OrgUnit> orgUnitList =
             orgUnitManager.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
@@ -463,7 +463,7 @@ public class SendReceiveRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/searchOrgTree", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> searchOrgTree(@RequestParam TreeTypeEnum treeType, @RequestParam String name) {
+    public Y9Result<List<OrgUnit>> searchOrgTree(@RequestParam OrgTreeTypeEnum treeType, @RequestParam String name) {
         List<OrgUnit> orgUnitList =
             orgUnitManager.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
         return Y9Result.success(orgUnitList, "获取成功");

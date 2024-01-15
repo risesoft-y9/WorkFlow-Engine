@@ -294,7 +294,8 @@ public class MainRestController {
             // 统计统一待办
             todoCount = todoTaskManager.countByReceiverId(tenantId, positionId);
             // 统计流程在办件
-            doingCount = doingApi.getCountByUserId(tenantId, positionId);
+            Map<String, Object> m = officeDoneInfoManager.searchAllByPositionId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
+            doingCount = Long.parseLong(m.get("total").toString());
             // 统计历史办结件
             doneCount = officeDoneInfoManager.countByPositionId(tenantId, positionId, "");
             map.put("todoCount", todoCount);
