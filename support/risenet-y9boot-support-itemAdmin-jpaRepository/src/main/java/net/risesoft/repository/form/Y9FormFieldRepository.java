@@ -2,6 +2,8 @@ package net.risesoft.repository.form;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -29,5 +31,7 @@ public interface Y9FormFieldRepository
     List<Y9FormField> findByFormIdAndTableName(String formId, String tableName);
 
     List<Y9FormField> findByTableName(String tableName);
+
+    Page<Y9FormField> findByFormId(String formId, Pageable pageable);
 
 }

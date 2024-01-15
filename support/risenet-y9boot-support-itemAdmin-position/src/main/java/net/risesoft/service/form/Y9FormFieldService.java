@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.risesoft.entity.form.Y9FormField;
+import org.springframework.data.domain.Page;
 
 /**
  * @author qinman
@@ -52,5 +53,21 @@ public interface Y9FormFieldService {
      * @return
      */
     public Map<String, Object> saveOrUpdate(Y9FormField formField);
+
+    /**
+     * 获取表单绑定的业务表字段
+     * @param formId
+     * @param page
+     * @param rows
+     * @return
+     */
+    public Page<Y9FormField> findByFormId(String formId, Integer page, Integer rows);
+
+    /**
+     * 删除表单绑定字段
+     * @param id
+     * @return
+     */
+    Map<String,Object> deleteFormFieldBind(String id);
 
 }
