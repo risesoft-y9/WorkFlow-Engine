@@ -15,7 +15,7 @@ public interface Draft4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param systemName 系统id
-     * @return
+     * @return int
      */
     int countBySystemName(String tenantId, String positionId, String systemName);
 
@@ -69,21 +69,23 @@ public interface Draft4PositionApi {
      * @param delFlag 是否删除
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getDraftList(String tenantId, String positionId, int page, int rows, String title, String itemId, boolean delFlag);
+    Map<String, Object> getDraftList(String tenantId, String positionId, int page, int rows, String title,
+        String itemId, boolean delFlag);
 
     /**
      * 根据系统获取草稿
      *
-     * @param tenantId
-     * @param positionId
-     * @param page
-     * @param rows
-     * @param title
-     * @param systemName
-     * @param b
-     * @return
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param page page
+     * @param rows rows
+     * @param title 标题
+     * @param systemName 系统名称
+     * @param delFlag 是否删除
+     * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getDraftListBySystemName(String tenantId, String positionId, int page, int rows, String title, String systemName, boolean delFlag);
+    Map<String, Object> getDraftListBySystemName(String tenantId, String positionId, int page, int rows, String title,
+        String systemName, boolean delFlag);
 
     /**
      * 编辑草稿
@@ -95,7 +97,8 @@ public interface Draft4PositionApi {
      * @param mobile 是否发送手机端
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> openDraft4Position(String tenantId, String positionId, String itemId, String processSerialNumber, boolean mobile);
+    Map<String, Object> openDraft4Position(String tenantId, String positionId, String itemId,
+        String processSerialNumber, boolean mobile);
 
     /**
      * 还原草稿
@@ -128,6 +131,7 @@ public interface Draft4PositionApi {
      * @param title 标题
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String title);
+    Map<String, Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber,
+        String processDefinitionKey, String number, String level, String title);
 
 }
