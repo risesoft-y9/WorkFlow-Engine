@@ -3,6 +3,13 @@ package net.risesoft.api.itemadmin;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
 
+/**
+ * 在办任务管理
+ *
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/19
+ */
 public interface ItemDoingApi {
 
     /**
