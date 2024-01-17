@@ -36,7 +36,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RestController
 @RequestMapping("/mobile/v1/sign")
 @Slf4j
-public class MobileSignController {
+public class MobileV1SignController {
 
     @Autowired
     private CalendarConfigApi calendarConfigManager;

@@ -29,9 +29,9 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequestMapping("/mobile/v1/draft")
-public class MobileDraftController {
+public class MobileV1DraftController {
 
-    protected Logger log = LoggerFactory.getLogger(MobileDraftController.class);
+    protected Logger log = LoggerFactory.getLogger(MobileV1DraftController.class);
 
     @Autowired
     private Draft4PositionApi draftManager;

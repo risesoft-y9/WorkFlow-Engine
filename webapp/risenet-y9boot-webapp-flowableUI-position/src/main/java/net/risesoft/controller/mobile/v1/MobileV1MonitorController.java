@@ -33,7 +33,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequestMapping("/mobile/v1/monitor")
-public class MobileMonitorController {
+public class MobileV1MonitorController {
 
     @Autowired
     private HistoricProcessApi historicProcessManager;

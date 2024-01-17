@@ -49,9 +49,9 @@ import net.risesoft.y9.json.Y9JsonUtil;
  */
 @RestController
 @RequestMapping("/mobile/v1/workList")
-public class MobileWorkListController {
+public class MobileV1WorkListController {
 
-    protected Logger log = LoggerFactory.getLogger(MobileWorkListController.class);
+    protected Logger log = LoggerFactory.getLogger(MobileV1WorkListController.class);
 
     @Autowired
     private TodoService todoService;
