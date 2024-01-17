@@ -27,7 +27,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
  */
 @RestController
 @RequestMapping("/mobile/v1/opintion")
-public class MobileOpintionController {
+public class MobileV1OpintionController {
 
     @Autowired
     private CommonSentencesApi commonSentencesManager;

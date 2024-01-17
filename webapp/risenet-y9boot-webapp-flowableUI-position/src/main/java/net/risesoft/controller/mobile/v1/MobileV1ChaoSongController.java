@@ -36,8 +36,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequestMapping("/mobile/v1/chaosong")
-public class MobileChaoSongController {
-    protected final Logger log = LoggerFactory.getLogger(MobileChaoSongController.class);
+public class MobileV1ChaoSongController {
+    protected final Logger log = LoggerFactory.getLogger(MobileV1ChaoSongController.class);
 
     @Autowired
     private ChaoSong4PositionApi chaoSongInfoManager;

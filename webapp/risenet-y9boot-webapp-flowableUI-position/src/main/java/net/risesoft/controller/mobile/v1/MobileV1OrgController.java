@@ -42,9 +42,9 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequestMapping("/mobile/v1/org")
-public class MobileOrgController {
+public class MobileV1OrgController {
 
-    protected final Logger log = LoggerFactory.getLogger(MobileOrgController.class);
+    protected final Logger log = LoggerFactory.getLogger(MobileV1OrgController.class);
 
     @Autowired
     private PersonApi personManager;

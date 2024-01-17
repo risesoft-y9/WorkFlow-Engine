@@ -28,7 +28,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequestMapping("/mobile/v1/item")
-public class MobileItemController {
+public class MobileV1ItemController {
 
     @Autowired
     private Item4PositionApi itemManager;

@@ -67,9 +67,9 @@ import net.risesoft.y9.util.Y9Util;
 @RestController
 @RequestMapping("/mobile/v1/document")
 @Slf4j
-public class MobileDocumentController {
+public class MobileV1DocumentController {
 
-    protected final Logger log = LoggerFactory.getLogger(MobileDocumentController.class);
+    protected final Logger log = LoggerFactory.getLogger(MobileV1DocumentController.class);
 
     @Autowired
     private PersonApi personManager;

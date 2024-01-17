@@ -38,7 +38,7 @@ import net.risesoft.y9public.service.Y9FileStoreService;
  */
 @RestController
 @RequestMapping("/mobile/v1/attachment")
-public class MobileAttachmentController {
+public class MobileV1AttachmentController {
 
     @Autowired
     private Y9FileStoreService y9FileStoreService;

@@ -55,9 +55,9 @@ import net.risesoft.y9.util.Y9Util;
  */
 @RestController
 @RequestMapping(value = "/mobile/v1/buttonOperation")
-public class MobileButtonOperationController {
+public class MobileV1ButtonOperationController {
 
-    protected Logger log = LoggerFactory.getLogger(MobileButtonOperationController.class);
+    protected Logger log = LoggerFactory.getLogger(MobileV1ButtonOperationController.class);
 
     @Autowired
     private PersonApi personManager;
