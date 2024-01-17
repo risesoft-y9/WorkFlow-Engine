@@ -5,8 +5,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -132,7 +130,6 @@ public class MobileV1SignController {
     @RequestMapping("/getDayOrHour")
     public Y9Result<String> getDayOrHour(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String type, @RequestParam(required = false) String leaveStartTime, @RequestParam(required = false) String leaveEndTime, @RequestParam(required = false) String startSel,
         @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime, @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType, HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
