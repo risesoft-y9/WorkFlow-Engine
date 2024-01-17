@@ -584,6 +584,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             retMap.put("totalpages", pageList.getTotalPages());
             retMap.put("total", pageList.getTotalElements());
             retMap.put("rows", listMap);
+            retMap.put("success", true);
             return retMap;
         } catch (Exception e) {
             e.printStackTrace();
@@ -593,6 +594,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         retMap.put("totalpages", 0);
         retMap.put("total", 0);
         retMap.put("rows", listMap);
+        retMap.put("success", false);
         return retMap;
     }
 
