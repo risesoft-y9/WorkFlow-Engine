@@ -83,6 +83,8 @@ pdf2jpg:
 prohibit: exe,dll,dat
 
 spring:
+    profiles:
+        active: prod
     thread-executor: virtual
     freemarker: # Freemarker 配置
         cache: false
