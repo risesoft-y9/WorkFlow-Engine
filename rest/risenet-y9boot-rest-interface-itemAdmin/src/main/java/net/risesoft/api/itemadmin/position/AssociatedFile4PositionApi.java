@@ -28,7 +28,7 @@ public interface AssociatedFile4PositionApi {
      * @param delIds 关联流程实例id(,隔开)
      * @return boolean 是否删除成功
      */
-    public boolean deleteAllAssociatedFile(String tenantId, String processSerialNumber, String delIds);
+    boolean deleteAllAssociatedFile(String tenantId, String processSerialNumber, String delIds);
 
     /**
      * 删除关联文件
@@ -38,25 +38,26 @@ public interface AssociatedFile4PositionApi {
      * @param delId 关联流程实例id
      * @return boolean 是否删除成功
      */
-    public boolean deleteAssociatedFile(String tenantId, String processSerialNumber, String delId);
+    boolean deleteAssociatedFile(String tenantId, String processSerialNumber, String delId);
 
     /**
      * 获取关联文件列表,包括未办结件
      *
      * @param tenantId 租户id
+     * @param positionId 岗位id
      * @param processSerialNumber 流程编号
-     * @return Map&lt;String, Object&gt;
+     * @return Map&lt;String, Object&gt; 关联文件列表
      */
-    public Map<String, Object> getAssociatedFileAllList(String tenantId, String positionId, String processSerialNumber);
+    Map<String, Object> getAssociatedFileAllList(String tenantId, String positionId, String processSerialNumber);
 
     /**
      * 获取关联文件列表
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return Map&lt;String, Object&gt;
+     * @return Map&lt;String, Object&gt; 关联文件列表
      */
-    public Map<String, Object> getAssociatedFileList(String tenantId, String processSerialNumber);
+    Map<String, Object> getAssociatedFileList(String tenantId, String processSerialNumber);
 
     /**
      * 保存关联文件
@@ -67,5 +68,6 @@ public interface AssociatedFile4PositionApi {
      * @param processInstanceIds 关联的流程实例ids
      * @return boolean 是否保存成功
      */
-    public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber, String processInstanceIds);
+    boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber,
+                               String processInstanceIds);
 }
