@@ -325,6 +325,36 @@ public class MobileDocumentController {
     }
 
     /**
+     * 发送选人搜索
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param positionId 岗位id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务key
+     * @param principalType 选人类型
+     * @param processInstanceId 流程实例id
+     * @param itemId 事项id
+     * @param name 搜索内容
+     * @param response
+     */
+    @RequestMapping("/findPermUserByName")
+    @ResponseBody
+    public void findPermUserByName(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey,
+        @RequestParam Integer principalType, @RequestParam String processInstanceId, @RequestParam(required = false) String name, @RequestParam String itemId, HttpServletResponse response) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
+        if (StringUtils.isBlank(processDefinitionId) || StringUtils.isBlank(itemId)) {
+            Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
+            return;
+        } else {
+            item = itemRole4PositionApi.findPermUserByName(Y9LoginUserHolder.getTenantId(), userId, positionId, name, principalType, itemId, processDefinitionId, taskDefKey, processInstanceId);
+            Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
+            return;
+        }
+    }
+
+    /**
      * 发送，同时保存表单数据
      *
      * @param tenantId 租户id

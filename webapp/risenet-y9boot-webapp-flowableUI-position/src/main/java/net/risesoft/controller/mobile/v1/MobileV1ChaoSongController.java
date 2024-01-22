@@ -127,7 +127,7 @@ public class MobileV1ChaoSongController {
      */
     @RequestMapping(value = "/findCsUser")
     @ResponseBody
-    public Y9Result<List<Map<String, Object>>> findCsUserBureau(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String id,
+    public Y9Result<List<Map<String, Object>>> findCsUser(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String id,
         @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
