@@ -54,19 +54,19 @@ public class FormNTKOController {
     private Y9FileStoreService y9FileStoreService;
 
     @Autowired
-    private PersonApi personManager;
+    private PersonApi personApi;
 
     @Autowired
     private PositionApi positionApi;
 
     @Autowired
-    private ProcessParamApi processParamManager;
+    private ProcessParamApi processParamApi;
 
     @Autowired
-    private Draft4PositionApi draftManager;
+    private Draft4PositionApi draft4PositionApi;
 
     @Autowired
-    private TransactionWordApi transactionWordManager;
+    private TransactionWordApi transactionWordApi;
 
     /**
      * 删除指定类型的正文
@@ -79,9 +79,9 @@ public class FormNTKOController {
     @ResponseBody
     public void deleteWordByIsTaoHong(@RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        transactionWordManager.deleteByIsTaoHong(tenantId, userId, processSerialNumber, isTaoHong);
+        transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, isTaoHong);
     }
 
     /**
@@ -96,14 +96,14 @@ public class FormNTKOController {
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId).getData();
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+                Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
                 documentTitle = retMap.get("title");
             } else {
-                ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";
@@ -150,16 +150,16 @@ public class FormNTKOController {
         HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId).getData();
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            Map<String, Object> map = transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
+            Map<String, Object> map = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
             String fileStoreId = map.get("fileStoreId").toString();
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+                Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
                 documentTitle = retMap.get("title");
             } else {
-                ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";
@@ -199,9 +199,9 @@ public class FormNTKOController {
     public void downLoadHistoryDoc(@RequestParam(required = false) String taskId, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String fileType, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> map = transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId);
+        Map<String, Object> map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId);
         String fileStoreId = map.get("fileStoreId").toString();
         ServletOutputStream out = null;
         try {
@@ -212,10 +212,10 @@ public class FormNTKOController {
             String title = "";
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+                Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
                 documentTitle = retMap.get("title");
             } else {
-                ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
             title = documentTitle != null ? (String)documentTitle : "正文";
@@ -258,16 +258,16 @@ public class FormNTKOController {
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId).getData();
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Object documentTitle = null;
             String[] pId = processInstanceId.split(",");
             processInstanceId = pId[0];
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+                Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
                 documentTitle = retMap.get("title").toString();
             } else {
-                ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";
@@ -307,10 +307,10 @@ public class FormNTKOController {
     public Map<String, Object> getUpdateWord(@RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, @RequestParam(required = false) String processSerialNumber) {
         Map<String, Object> map = new HashMap<>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         try {
-            map = transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
+            map = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             e.printStackTrace();
@@ -370,9 +370,9 @@ public class FormNTKOController {
     @ResponseBody
     public void openDoc(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String itemId, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId = transactionWordManager.openDocument(tenantId, userId, processSerialNumber, itemId);
+        String y9FileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId);
 
         ServletOutputStream out = null;
         try {
@@ -422,10 +422,10 @@ public class FormNTKOController {
     @ResponseBody
     public void openDocumentTemplate(@RequestParam(required = false) String templateGUID, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        transactionWordManager.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "0");// 删除未套红的正文
-        String content = transactionWordManager.openDocumentTemplate(tenantId, userId, templateGUID);
+        transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "0");// 删除未套红的正文
+        String content = transactionWordApi.openDocumentTemplate(tenantId, userId, templateGUID);
         ServletOutputStream out = null;
         try {
             byte[] result = null;
@@ -455,9 +455,9 @@ public class FormNTKOController {
     @ResponseBody
     public void openHistoryVersionDoc(@RequestParam(required = false) String taskId, @RequestParam(required = false) String itemId, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> map = transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId);
+        Map<String, Object> map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId);
         String fileStoreId = map.get("fileStoreId").toString();
         ServletOutputStream out = null;
         try {
@@ -508,9 +508,9 @@ public class FormNTKOController {
     @ResponseBody
     public void openPdf(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId = transactionWordManager.openPdf(tenantId, userId, processSerialNumber);
+        String y9FileStoreId = transactionWordApi.openPdf(tenantId, userId, processSerialNumber);
 
         ServletOutputStream out = null;
         try {
@@ -553,11 +553,11 @@ public class FormNTKOController {
     public void openRevokePDFAfterDocument(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String istaohong, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, HttpServletResponse response,
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         // 删除转PDF的文件
-        transactionWordManager.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "3");
-        String y9FileStoreId = transactionWordManager.openRevokePdfAfterDocument(tenantId, userId, processSerialNumber, istaohong);
+        transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "3");
+        String y9FileStoreId = transactionWordApi.openRevokePdfAfterDocument(tenantId, userId, processSerialNumber, istaohong);
 
         ServletOutputStream out = null;
         try {
@@ -608,9 +608,9 @@ public class FormNTKOController {
     @RequestMapping(value = "/openTaoHong")
     public String openTaoHong(@RequestParam String activitiUser, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, Model model) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        OrgUnit currentBureau = personManager.getBureau(tenantId, activitiUser).getData();
+        OrgUnit currentBureau = personApi.getBureau(tenantId, activitiUser).getData();
         model.addAttribute("currentBureauGuid", currentBureau.getId());
         model.addAttribute("tenantId", tenantId);
         model.addAttribute("userId", userId);
@@ -633,7 +633,7 @@ public class FormNTKOController {
         response.setContentType("text/html; charset=utf-8");
         response.setHeader("Cache-Control", "no-cache");
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
         MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
@@ -642,16 +642,16 @@ public class FormNTKOController {
         try {
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+                Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
                 documentTitle = retMap.get("title");
             } else {
-                ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
             title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath = Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
-            result = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
+            result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -665,9 +665,9 @@ public class FormNTKOController {
     @RequestMapping(value = "/showHistoryDoc")
     public String showHistoryDoc(@RequestParam(required = false) String taskId, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, @RequestParam(required = false) String historyFileType, ModelMap model) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> map = transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId);
+        Map<String, Object> map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId);
         model.putAll(map);
         model.addAttribute("taskId", taskId);
         model.addAttribute("historyFileType", historyFileType);
@@ -682,15 +682,15 @@ public class FormNTKOController {
     @RequestMapping("/showWord")
     public String showWord(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String itemId, @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
         @RequestParam(required = false) String browser, @RequestParam(required = false) String positionId, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, Model model) {
-        Map<String, Object> map = transactionWordManager.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId);
+        Map<String, Object> map = transactionWordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId);
         model.addAllAttributes(map);
         Object documentTitle = null;
         if (StringUtils.isBlank(processInstanceId)) {
-            Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+            Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
             documentTitle = retMap.get("title");
         } else {
             String[] pInstanceId = processInstanceId.split(",");
-            ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, pInstanceId[0]);
+            ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, pInstanceId[0]);
             documentTitle = processModel.getTitle();
             processInstanceId = pInstanceId[0];
         }
@@ -719,7 +719,7 @@ public class FormNTKOController {
                 currentBureauGuid = position.getParentId();
             }
         }
-        return transactionWordManager.taoHongTemplateList(tenantId, userId, currentBureauGuid);
+        return transactionWordApi.taoHongTemplateList(tenantId, userId, currentBureauGuid);
     }
 
     /**
@@ -739,7 +739,7 @@ public class FormNTKOController {
         map.put("msg", "上传成功");
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId).getData();
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             String fileName = file.getOriginalFilename();
             LOGGER.debug("fileName={}", fileName);
@@ -763,16 +763,16 @@ public class FormNTKOController {
             }
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+                Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
                 documentTitle = retMap.get("title");
             } else {
-                ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath = Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
-            String result = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
+            String result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
             if (result.contains("true")) {
                 map.put(UtilConsts.SUCCESS, true);
                 if (fileType.equals(".pdf") || fileType.equals(".tif")) {
@@ -800,7 +800,7 @@ public class FormNTKOController {
     public String uploadWord(@RequestParam(required = false) String fileType, @RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
         @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
         MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
@@ -809,17 +809,17 @@ public class FormNTKOController {
         try {
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+                Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
                 documentTitle = retMap.get("title");
             } else {
-                ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
 
             title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath = Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
-            result = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
+            result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
         } catch (Exception e) {
             e.printStackTrace();
         }

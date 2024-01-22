@@ -32,7 +32,7 @@ public class MobileDraftController {
     protected Logger log = LoggerFactory.getLogger(MobileDraftController.class);
 
     @Autowired
-    private Draft4PositionApi draftManager;
+    private Draft4PositionApi draft4PositionApi;
 
     /**
      * 彻底删除草稿
@@ -48,7 +48,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            map = draftManager.deleteDraft(tenantId, ids);
+            map = draft4PositionApi.deleteDraft(tenantId, ids);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "删除失败");
@@ -72,7 +72,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Integer count = draftManager.getDeleteDraftCount(tenantId, positionId, itemId);
+            Integer count = draft4PositionApi.getDeleteDraftCount(tenantId, positionId, itemId);
             map.put("count", count);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取数据成功");
@@ -99,7 +99,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Integer count = draftManager.getDraftCount(tenantId, positionId, itemId);
+            Integer count = draft4PositionApi.getDraftCount(tenantId, positionId, itemId);
             map.put("draftCount", count);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取草稿箱计数成功");
@@ -131,7 +131,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            map = draftManager.getDraftList(tenantId, positionId, page, rows, title, itemId, delFlag);
+            map = draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, delFlag);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "获取草稿列表失败");
@@ -156,7 +156,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            map = draftManager.reduction(tenantId, id);
+            map = draft4PositionApi.reduction(tenantId, id);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "还原失败");
@@ -180,7 +180,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            map = draftManager.removeDraft(tenantId, ids);
+            map = draft4PositionApi.removeDraft(tenantId, ids);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "删除失败");

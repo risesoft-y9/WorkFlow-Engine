@@ -17,13 +17,13 @@ import net.risesoft.api.todo.TodoTaskApi;
 public class AsyncUtilService {
 
     @Autowired
-    private TodoTaskApi todoTaskManager;
+    private TodoTaskApi todoTaskApi;
 
     @Autowired
-    private ChaoSong4PositionApi chaoSongInfoManager;
+    private ChaoSong4PositionApi chaoSong4PositionApi;
 
     @Autowired
-    private OfficeFollow4PositionApi officeFollowManager;
+    private OfficeFollow4PositionApi officeFollow4PositionApi;
 
     /**
      * 更新统一待办，抄送件标题
@@ -34,12 +34,11 @@ public class AsyncUtilService {
      * @return
      */
     @Async
-    public Future<Boolean> updateTitle(final String tenantId, final String processInstanceId,
-        final String documentTitle) {
+    public Future<Boolean> updateTitle(final String tenantId, final String processInstanceId, final String documentTitle) {
         try {
-            chaoSongInfoManager.updateTitle(tenantId, processInstanceId, documentTitle);
-            todoTaskManager.updateTitle(tenantId, processInstanceId, documentTitle);
-            officeFollowManager.updateTitle(tenantId, processInstanceId, documentTitle);
+            chaoSong4PositionApi.updateTitle(tenantId, processInstanceId, documentTitle);
+            todoTaskApi.updateTitle(tenantId, processInstanceId, documentTitle);
+            officeFollow4PositionApi.updateTitle(tenantId, processInstanceId, documentTitle);
             return new AsyncResult<>(true);
         } catch (Exception e) {
             e.printStackTrace();

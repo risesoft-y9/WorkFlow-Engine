@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.WorkOrderApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
@@ -25,7 +24,6 @@ import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.ButtonOperationService;
-import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Service(value = "buttonOperationService")
@@ -33,57 +31,53 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
-    private Document4PositionApi documentManager;
+    private Document4PositionApi document4PositionApi;
 
     @Autowired
-    private TaskApi taskManager;
+    private TaskApi taskApi;
 
     @Autowired
-    private VariableApi variableManager;
+    private VariableApi variableApi;
 
     @Autowired
-    private ProcessTrack4PositionApi processTrackManager;
+    private ProcessTrack4PositionApi processTrack4PositionApi;
 
     @Autowired
-    private RuntimeApi runtimeManager;
+    private RuntimeApi runtimeApi;
 
     @Autowired
-    private HistoricTaskApi historicTaskManager;
+    private HistoricTaskApi historictaskApi;
 
     @Autowired
-    private OfficeDoneInfo4PositionApi officeDoneInfoManager;
+    private OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
     @Autowired
-    private ProcessParamApi processParamManager;
-
-    @Autowired
-    private WorkOrderApi workOrderManager;
+    private ProcessParamApi processParamApi;
 
     @Override
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId(),
-            userName = Y9LoginUserHolder.getPosition().getName();
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId(), userName = Y9LoginUserHolder.getPosition().getName();
         Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotBlank(infoOvert)) {
             map.put("infoOvert", infoOvert);
         }
-        variableManager.setVariables(tenantId, taskId, map);
-        TaskModel taskModel = taskManager.findById(tenantId, taskId);
+        variableApi.setVariables(tenantId, taskId, map);
+        TaskModel taskModel = taskApi.findById(tenantId, taskId);
         String processInstanceId = taskModel.getProcessInstanceId();
 
         /**
          * 1办结
          */
-        documentManager.complete(tenantId, positionId, taskId);
+        document4PositionApi.complete(tenantId, positionId, taskId);
 
         /**
          * 2更新自定义历程结束时间
          */
-        List<ProcessTrackModel> ptModelList = processTrackManager.findByTaskId(tenantId, taskId);
+        List<ProcessTrackModel> ptModelList = processTrack4PositionApi.findByTaskId(tenantId, taskId);
         for (ProcessTrackModel ptModel : ptModelList) {
             if (StringUtils.isBlank(ptModel.getEndTime())) {
                 ptModel.setEndTime(sdf.format(new Date()));
-                processTrackManager.saveOrUpdate(tenantId, ptModel);
+                processTrack4PositionApi.saveOrUpdate(tenantId, ptModel);
             }
         }
         /**
@@ -100,19 +94,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         ptModel.setTaskId(taskId);
         ptModel.setId("");
 
-        processTrackManager.saveOrUpdate(tenantId, ptModel);
-
-        // 系统工单办结，修改工单处理状态
-        try {
-            if (taskModel.getProcessDefinitionId()
-                .contains(Y9Context.getProperty("y9.app.flowable.systemWorkOrderKey"))) {
-                ProcessParamModel processParamModel =
-                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
-                workOrderManager.changeWorkOrderState(processParamModel.getProcessSerialNumber(), "3", "", "");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        processTrack4PositionApi.saveOrUpdate(tenantId, ptModel);
     }
 
     @Override
@@ -133,8 +115,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public void resumeToDo(String processInstanceId, String desc) throws Exception {
-        String positionId = Y9LoginUserHolder.getPositionId(), userName = Y9LoginUserHolder.getPosition().getName(),
-            tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId(), userName = Y9LoginUserHolder.getPosition().getName(), tenantId = Y9LoginUserHolder.getTenantId();
         String newDate = sdf.format(new Date());
         try {
             /**
@@ -142,19 +123,16 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
              */
 
             String year = "";
-            OfficeDoneInfoModel officeDoneInfoModel =
-                officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+            OfficeDoneInfoModel officeDoneInfoModel = officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
             if (officeDoneInfoModel != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
             } else {
-                ProcessParamModel processParamModel =
-                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
             }
 
-            HistoricTaskInstanceModel hisTaskModelTemp =
-                historicTaskManager.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).get(0);
-            runtimeManager.recovery4Completed(tenantId, positionId, processInstanceId, year);
+            HistoricTaskInstanceModel hisTaskModelTemp = historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).get(0);
+            runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
             /**
              * 2、添加流程的历程
              */
@@ -168,7 +146,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setTaskDefName("恢复待办");
             ptm.setTaskId(hisTaskModelTemp.getId());
 
-            ptm = processTrackManager.saveOrUpdate(tenantId, ptm);
+            ptm = processTrack4PositionApi.saveOrUpdate(tenantId, ptm);
 
             /**
              * 2、添加流程的历程
@@ -182,10 +160,10 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setEndTime("");
             ptm.setTaskDefName(hisTaskModelTemp.getName());
             ptm.setTaskId(hisTaskModelTemp.getId());
-            ptm = processTrackManager.saveOrUpdate(tenantId, ptm);
+            ptm = processTrack4PositionApi.saveOrUpdate(tenantId, ptm);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("RuntimeManager resumeToDo error");
+            throw new Exception("runtimeApi resumeToDo error");
         }
     }
 }

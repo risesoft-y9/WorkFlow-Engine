@@ -35,25 +35,25 @@ import net.risesoft.y9.util.Y9Util;
 public class SearchServiceImpl implements SearchService {
 
     @Autowired
-    private ChaoSong4PositionApi chaoSongInfoManager;
+    private ChaoSong4PositionApi chaoSong4PositionApi;
 
     @Autowired
-    private OfficeFollow4PositionApi officeFollowManager;
+    private OfficeFollow4PositionApi officeFollow4PositionApi;
 
     @Autowired
-    private OfficeDoneInfo4PositionApi officeDoneInfoManager;
+    private OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
     @Autowired
-    private TaskApi taskManager;
+    private TaskApi taskApi;
 
     @Autowired
-    private PositionApi positionManager;
+    private PositionApi positionApi;
 
     @Autowired
-    private CustomEmailApi customEmailManager;
+    private CustomEmailApi customEmailApi;
 
     @Autowired
-    private IdentityApi identityManager;
+    private IdentityApi identityApi;
 
     /**
      * 当并行的时候，会获取到多个task，为了并行时当前办理人显示多人，而不是显示多条记录，需要分开分别进行处理
@@ -73,7 +73,7 @@ public class SearchServiceImpl implements SearchService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
+                        Position personTemp = positionApi.getPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                         }
@@ -83,12 +83,12 @@ public class SearchServiceImpl implements SearchService {
                             taskId = task.getId();
                         }
                     } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList = identityManager.getIdentityLinksForTask(tenantId, task.getId());
+                        List<IdentityLinkModel> iList = identityApi.getIdentityLinksForTask(tenantId, task.getId());
                         if (!iList.isEmpty()) {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                Position ownerUser = positionApi.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -105,7 +105,7 @@ public class SearchServiceImpl implements SearchService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
+                            Position personTemp = positionApi.getPosition(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             }
@@ -134,7 +134,7 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public Y9Page<Map<String, Object>> getEmailList(Integer page, Integer rows, String startDateStr, String endDateStr, Integer fileType, String userName, String title) {
         try {
-            Map<String, Object> map = customEmailManager.search(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), page, rows, startDateStr, endDateStr, fileType, userName, title);
+            Map<String, Object> map = customEmailApi.search(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), page, rows, startDateStr, endDateStr, fileType, userName, title);
             if ((boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
             }
@@ -150,7 +150,7 @@ public class SearchServiceImpl implements SearchService {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            retMap = officeDoneInfoManager.searchAllByPositionId(tenantId, positionId, searchTerm, itemId, userName, state, year, startDate, endDate, page, rows);
+            retMap = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, searchTerm, itemId, userName, state, year, startDate, endDate, page, rows);
             List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
             List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
@@ -184,7 +184,7 @@ public class SearchServiceImpl implements SearchService {
                     mapTemp.put("number", number == null ? "" : number);
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(hpim.getEndTime())) {
-                        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
@@ -193,7 +193,7 @@ public class SearchServiceImpl implements SearchService {
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("itembox", listTemp.get(3));
                     }
-                    int countFollow = officeFollowManager.countByProcessInstanceId(tenantId, positionId, processInstanceId);
+                    int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
                     mapTemp.put("follow", countFollow > 0 ? true : false);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -215,7 +215,7 @@ public class SearchServiceImpl implements SearchService {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            retMap = chaoSongInfoManager.searchAllByUserId(tenantId, positionId, searchName, itemId, userName, state, year, page, rows);
+            retMap = chaoSong4PositionApi.searchAllByUserId(tenantId, positionId, searchName, itemId, userName, state, year, page, rows);
             return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), (List<Map<String, Object>>)retMap.get("rows"), "获取列表成功");
         } catch (Exception e) {
             e.printStackTrace();

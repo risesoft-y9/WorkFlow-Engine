@@ -26,7 +26,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class FlowableReminderServiceImpl implements FlowableReminderService {
 
     @Autowired
-    private TaskApi taskManager;
+    private TaskApi taskApi;
 
     @Autowired
     private OrgUnitApi orgUnitApi;
@@ -37,7 +37,7 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
         Map<String, Object> retMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            retMap = taskManager.findListByProcessInstanceId(tenantId, processInstanceId, page, rows);
+            retMap = taskApi.findListByProcessInstanceId(tenantId, processInstanceId, page, rows);
             List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
             List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<List<TaskModel>>() {});
@@ -60,8 +60,7 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
         } catch (Exception e) {
             e.printStackTrace();
         }

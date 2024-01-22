@@ -28,12 +28,12 @@ import net.risesoft.api.processadmin.DoingApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
-import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -48,37 +48,37 @@ import net.risesoft.y9.util.Y9Util;
 public class DoingServiceImpl implements DoingService {
 
     @Autowired
-    private DoingApi doingManager;
+    private DoingApi doingApi;
 
     @Autowired
-    private TaskApi taskManager;
+    private TaskApi taskApi;
 
     @Autowired
-    private Item4PositionApi itemManager;
+    private Item4PositionApi item4PositionApi;
 
     @Autowired
-    private PositionApi positionManager;
+    private PositionApi positionApi;
 
     @Autowired
-    private ProcessParamApi processParamManager;
+    private ProcessParamApi processParamApi;
 
     @Autowired
-    private ChaoSong4PositionApi chaoSongInfoManager;
+    private ChaoSong4PositionApi chaoSong4PositionApi;
 
     @Autowired
-    private FormDataApi formDataManager;
+    private FormDataApi formDataApi;
 
     @Autowired
-    private SpeakInfoApi speakInfoManager;
+    private SpeakInfoApi speakInfoApi;
 
     @Autowired
-    private RemindInstanceApi remindInstanceManager;
+    private RemindInstanceApi remindInstanceApi;
 
     @Autowired
-    private OfficeFollow4PositionApi officeFollowManager;
+    private OfficeFollow4PositionApi officeFollow4PositionApi;
 
     @Autowired
-    private IdentityApi identityManager;
+    private IdentityApi identityApi;
 
     @Autowired
     private ItemDoingApi itemDoingApi;
@@ -100,19 +100,18 @@ public class DoingServiceImpl implements DoingService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
+                        Position personTemp = positionApi.getPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                             i += 1;
                         }
                     } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList = identityManager.getIdentityLinksForTask(tenantId, task.getId());
+                        List<IdentityLinkModel> iList = identityApi.getIdentityLinksForTask(tenantId, task.getId());
                         if (!iList.isEmpty()) {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser =
-                                    positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                Position ownerUser = positionApi.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -130,7 +129,7 @@ public class DoingServiceImpl implements DoingService {
                     if (i < 5) {
                         if (StringUtils.isNotBlank(assignee)) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, task.getAssignee(), SysVariables.COMMA);// 并行时，领导选取时存在顺序，因此这里也存在顺序
-                            Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
+                            Position personTemp = positionApi.getPosition(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");// 并行时，领导选取时存在顺序，因此这里也存在顺序
                                 i += 1;
@@ -167,17 +166,15 @@ public class DoingServiceImpl implements DoingService {
             List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemManager.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
-                // retMap = doingManager.getListByUserIdAndProcessDefinitionKey(tenantId,
+                // retMap = doingApi.getListByUserIdAndProcessDefinitionKey(tenantId,
                 // userId, processDefinitionKey, page, rows);
-                retMap = doingManager.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId,
-                    processDefinitionKey, page, rows);
+                retMap = doingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId, processDefinitionKey, page, rows);
                 List<Map<String, Object>> list = (List<Map<String, Object>>)retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<Map<String, Object>> hpiModelList =
-                    objectMapper.convertValue(list, new TypeReference<List<Map<String, Object>>>() {});
+                List<Map<String, Object>> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<Map<String, Object>>>() {});
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp = null;
                 ProcessParamModel processParam = null;
@@ -190,15 +187,13 @@ public class DoingServiceImpl implements DoingService {
                         Date endTime = sdfT.parse(hpim.get("endTime").toString());
                         endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
                         String taskCreateTime = hpim.get("endTime") != null ? sdf.format(endTime) : "";
-                        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                        processParam = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                         String processSerialNumber = processParam.getProcessSerialNumber();
-                        String documentTitle =
-                            StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
+                        String documentTitle = StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
                         String level = processParam.getCustomLevel();
                         String number = processParam.getCustomNumber();
                         mapTemp.put("itemName", itemName);
@@ -217,8 +212,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSongInfoManager.countByUserIdAndProcessInstanceId(tenantId, positionId,
-                            processInstanceId);
+                        int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
@@ -230,8 +224,7 @@ public class DoingServiceImpl implements DoingService {
                     items.add(mapTemp);
                 }
             } else {
-                retMap = doingManager.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
-                    processDefinitionKey, searchTerm, page, rows);
+                retMap = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey, searchTerm, page, rows);
                 List<ProcessInstanceModel> hpiModelList = (List<ProcessInstanceModel>)retMap.get("rows");
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp = null;
@@ -241,15 +234,13 @@ public class DoingServiceImpl implements DoingService {
                     try {
                         String processInstanceId = hpim.getId();
                         String processDefinitionId = hpim.getProcessDefinitionId();
-                        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                        processParam = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                         String processSerialNumber = processParam.getProcessSerialNumber();
-                        String documentTitle =
-                            StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
+                        String documentTitle = StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
                         String level = processParam.getCustomLevel();
                         String number = processParam.getCustomNumber();
                         mapTemp.put("itemName", itemName);
@@ -268,8 +259,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSongInfoManager.countByUserIdAndProcessInstanceId(tenantId, positionId,
-                            processInstanceId);
+                        int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
@@ -297,15 +287,13 @@ public class DoingServiceImpl implements DoingService {
             SimpleDateFormat sdfT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemManager.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
-                retMap = doingManager.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId,
-                    processDefinitionKey, page, rows);
+                retMap = doingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId, processDefinitionKey, page, rows);
                 List<Map<String, Object>> list = (List<Map<String, Object>>)retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<Map<String, Object>> hpiModelList =
-                    objectMapper.convertValue(list, new TypeReference<List<Map<String, Object>>>() {});
+                List<Map<String, Object>> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<Map<String, Object>>>() {});
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp = null;
                 Map<String, Object> formDataMap = null;
@@ -319,15 +307,13 @@ public class DoingServiceImpl implements DoingService {
                         Date endTime = sdfT.parse(hpim.get("endTime").toString());
                         endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
                         String taskCreateTime = hpim.get("endTime") != null ? sdf.format(endTime) : "";
-                        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                        processParam = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                         String processSerialNumber = processParam.getProcessSerialNumber();
-                        String documentTitle =
-                            StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
+                        String documentTitle = StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
                         String level = processParam.getCustomLevel();
                         String number = processParam.getCustomNumber();
                         mapTemp.put("itemName", itemName);
@@ -345,12 +331,11 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSongInfoManager.countByUserIdAndProcessInstanceId(tenantId, positionId,
-                            processInstanceId);
+                        int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
-                        formDataMap = formDataManager.getData(tenantId, itemId, processSerialNumber);
+                        formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                         if (formDataMap.get("leaveType") != null) {
                             String leaveType = (String)formDataMap.get("leaveType");
                             for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
@@ -362,19 +347,16 @@ public class DoingServiceImpl implements DoingService {
                         }
                         mapTemp.putAll(formDataMap);
                         mapTemp.put("processInstanceId", processInstanceId);
-                        int speakInfoNum = speakInfoManager.getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(),
-                            processInstanceId);
+                        int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
                         mapTemp.put("speakInfoNum", speakInfoNum);
 
                         mapTemp.put("remindSetting", false);
-                        RemindInstanceModel remindInstanceModel = remindInstanceManager.getRemindInstance(tenantId,
-                            Y9LoginUserHolder.getPersonId(), processInstanceId);
+                        RemindInstanceModel remindInstanceModel = remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
                         if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
                             mapTemp.put("remindSetting", true);
                         }
 
-                        int countFollow =
-                            officeFollowManager.countByProcessInstanceId(tenantId, positionId, processInstanceId);
+                        int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
                         mapTemp.put("follow", countFollow > 0 ? true : false);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -384,12 +366,10 @@ public class DoingServiceImpl implements DoingService {
                     items.add(mapTemp);
                 }
             } else {
-                retMap = doingManager.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
-                    processDefinitionKey, searchTerm, page, rows);
+                retMap = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey, searchTerm, page, rows);
                 List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<ProcessInstanceModel> hpiModelList =
-                    objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {});
+                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {});
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp = null;
                 Map<String, Object> formDataMap = null;
@@ -399,15 +379,13 @@ public class DoingServiceImpl implements DoingService {
                     try {
                         String processInstanceId = hpim.getId();
                         String processDefinitionId = hpim.getProcessDefinitionId();
-                        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                        processParam = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                         String processSerialNumber = processParam.getProcessSerialNumber();
-                        String documentTitle =
-                            StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
+                        String documentTitle = StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
                         String level = processParam.getCustomLevel();
                         String number = processParam.getCustomNumber();
                         mapTemp.put("itemName", itemName);
@@ -426,16 +404,14 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSongInfoManager.countByUserIdAndProcessInstanceId(tenantId, positionId,
-                            processInstanceId);
+                        int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
-                        formDataMap = formDataManager.getData(tenantId, itemId, processSerialNumber);
+                        formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                         mapTemp.putAll(formDataMap);
 
-                        int speakInfoNum = speakInfoManager.getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(),
-                            processInstanceId);
+                        int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
                         mapTemp.put("speakInfoNum", speakInfoNum);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -445,8 +421,7 @@ public class DoingServiceImpl implements DoingService {
                     items.add(mapTemp);
                 }
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -454,26 +429,22 @@ public class DoingServiceImpl implements DoingService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page,
-        Integer rows) {
+    public Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page, Integer rows) {
         ItemPage<ActRuDetailModel> itemPage = new ItemPage<ActRuDetailModel>();
         try {
             List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemManager.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchMapStr)) {
-                itemPage =
-                    itemDoingApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                itemPage = itemDoingApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
             } else {
-                itemPage = itemDoingApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
-                    tableName, searchMapStr, page, rows);
+                itemPage = itemDoingApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), tableName, searchMapStr, page, rows);
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> hpiModelList =
-                objectMapper.convertValue(list, new TypeReference<List<ActRuDetailModel>>() {});
+            List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ActRuDetailModel>>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp = null;
             Map<String, Object> formDataMap = null;
@@ -490,7 +461,7 @@ public class DoingServiceImpl implements DoingService {
                     mapTemp.put("taskCreateTime", sdf.format(ardModel.getLastTime()));
                     mapTemp.put(SysVariables.ITEMID, itemId);
 
-                    List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                     String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
                     Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
@@ -501,12 +472,11 @@ public class DoingServiceImpl implements DoingService {
                     mapTemp.put("taskAssigneeId", assigneeIds);
                     mapTemp.put("taskAssignee", assigneeNames);
                     mapTemp.put("isReminder", isReminder);
-                    int chaosongNum =
-                        chaoSongInfoManager.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
+                    int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
                     mapTemp.put("chaosongNum", chaosongNum);
                     mapTemp.put("status", 1);
                     mapTemp.put("taskDueDate", "");
-                    formDataMap = formDataManager.getData(tenantId, itemId, processSerialNumber);
+                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                     /*if (formDataMap.get("leaveType") != null) {
                         String leaveType = (String)formDataMap.get("leaveType");
                         for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
@@ -518,17 +488,14 @@ public class DoingServiceImpl implements DoingService {
                     }*/
                     mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
-                    int speakInfoNum =
-                        speakInfoManager.getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
+                    int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
                     mapTemp.put("speakInfoNum", speakInfoNum);
                     mapTemp.put("remindSetting", false);
-                    RemindInstanceModel remindInstanceModel = remindInstanceManager.getRemindInstance(tenantId,
-                        Y9LoginUserHolder.getPersonId(), processInstanceId);
+                    RemindInstanceModel remindInstanceModel = remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
                     if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
                         mapTemp.put("remindSetting", true);
                     }
-                    int countFollow =
-                        officeFollowManager.countByProcessInstanceId(tenantId, positionId, processInstanceId);
+                    int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
                     mapTemp.put("follow", countFollow > 0 ? true : false);
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -24,10 +24,10 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class ProcessTrackRestController {
 
     @Autowired
-    private ProcessTrack4PositionApi processTrackManager;
+    private ProcessTrack4PositionApi processTrack4PositionApi;
 
     @Autowired
-    private ChaoSong4PositionApi chaoSongInfoManager;
+    private ChaoSong4PositionApi chaoSong4PositionApi;
 
     /**
      * 获取历程数据
@@ -41,10 +41,9 @@ public class ProcessTrackRestController {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<String, Object>(16);
-        map = processTrackManager.processTrackList(tenantId, positionId, processInstanceId);
-        int mychaosongNum =
-            chaoSongInfoManager.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
-        int otherchaosongNum = chaoSongInfoManager.countByProcessInstanceId(tenantId, positionId, processInstanceId);
+        map = processTrack4PositionApi.processTrackList(tenantId, positionId, processInstanceId);
+        int mychaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
+        int otherchaosongNum = chaoSong4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
         map.put("mychaosongNum", mychaosongNum);
         map.put("otherchaosongNum", otherchaosongNum);
         return Y9Result.success(map, "获取成功");
@@ -63,8 +62,7 @@ public class ProcessTrackRestController {
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         try {
-            Map<String, Object> map =
-                processTrackManager.processTrackList4Simple(tenantId, positionId, processInstanceId);
+            Map<String, Object> map = processTrack4PositionApi.processTrackList4Simple(tenantId, positionId, processInstanceId);
             if ((boolean)map.get(UtilConsts.SUCCESS)) {
                 list = (List<Map<String, Object>>)map.get("rows");
                 return Y9Result.success(list, "获取成功");

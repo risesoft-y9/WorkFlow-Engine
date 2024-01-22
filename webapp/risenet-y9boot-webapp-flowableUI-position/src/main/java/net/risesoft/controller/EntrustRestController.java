@@ -8,16 +8,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
+import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
+import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
-import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
-
-import y9.client.platform.org.OrgUnitApiClient;
 
 @RestController
 @RequestMapping("/vue/entrust")
@@ -27,7 +26,7 @@ public class EntrustRestController {
     private Entrust4PositionApi entrust4PositionApi;
 
     @Autowired
-    private OrgUnitApiClient orgUnitManager;
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private OrganizationApi organizationApi;
@@ -95,7 +94,7 @@ public class EntrustRestController {
     public Y9Result<List<OrgUnit>> getOrgTree(String id, OrgTreeTypeEnum treeType) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, treeType).getData();
+            List<OrgUnit> list = orgUnitApi.getSubTree(tenantId, id, treeType).getData();
             return Y9Result.success(list, "获取成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -133,7 +132,7 @@ public class EntrustRestController {
     public Y9Result<List<OrgUnit>> treeSearch(String name, OrgTreeTypeEnum treeType) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            List<OrgUnit> list = orgUnitManager.treeSearch(tenantId, name, treeType).getData();
+            List<OrgUnit> list = orgUnitApi.treeSearch(tenantId, name, treeType).getData();
             return Y9Result.success(list, "获取成功");
         } catch (Exception e) {
             e.printStackTrace();

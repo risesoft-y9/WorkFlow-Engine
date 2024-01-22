@@ -98,13 +98,11 @@ public class TaoHongUtil {
     public void word2RedDocument(String content, String destDocx) {
         try {
             // 模板文件地址
-            String model = "C:\\Users\\10858\\Desktop\\开发资料\\深圳罗湖区.docx";
+            String model = "";
             // 模板文件 参数填写
             // model = Y9Context.getWebRootRealPath() + "static" + File.separator +
             // "official_doc_model.docx";
-            String contentStr =
-                Y9Context.getBean(TransactionWordApi.class).openDocumentTemplate("c425281829dc4d4496ddddf7fc0198d0",
-                    "3cfe10631fb348bfaadd21045f0f0659", "67ea3abfc53b4ca88de409d2a7744a1a");
+            String contentStr = Y9Context.getBean(TransactionWordApi.class).openDocumentTemplate("c425281829dc4d4496ddddf7fc0198d0", "3cfe10631fb348bfaadd21045f0f0659", "67ea3abfc53b4ca88de409d2a7744a1a");
             ByteArrayInputStream bin = null;
             BufferedOutputStream bos = null;
             FileOutputStream fos = null;
@@ -112,8 +110,7 @@ public class TaoHongUtil {
             try {
                 byte[] result = null;
                 result = jodd.util.Base64.decode(contentStr);
-                filePath =
-                    Y9Context.getWebRootRealPath() + "static" + File.separator + "word" + File.separator + "1111.docx";
+                filePath = Y9Context.getWebRootRealPath() + "static" + File.separator + "word" + File.separator + "1111.docx";
                 File file = null;
                 file = new File(filePath);
                 fos = new FileOutputStream(file);
@@ -137,13 +134,11 @@ public class TaoHongUtil {
                     }
                 }
             }
-            XWPFTemplate template = XWPFTemplate.compile(
-                "E:\\workspace-y9boot-9.4.0\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp1\\wtpwebapps\\risenet-y9boot-webapp-flowableUI\\static\\word\\1111.docx");
+            XWPFTemplate template = XWPFTemplate.compile("E:\\workspace-y9boot-9.4.0\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp1\\wtpwebapps\\risenet-y9boot-webapp-flowableUI\\static\\word\\1111.docx");
             // 获取模板文件 公文
             NiceXWPFDocument main = template.getXWPFDocument();
             String downloadUrl = "";
-            AppFilesApi apiInstance =
-                new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
+            AppFilesApi apiInstance = new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
             try {
                 FileContent result = apiInstance.appGetFileContent("6061", "305029920583589888", null);
                 LOGGER.debug("result:{}", result);

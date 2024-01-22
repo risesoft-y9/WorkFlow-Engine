@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
-import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
@@ -26,17 +26,17 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     @Autowired
-    private ItemApi itemManager;
+    private Item4PositionApi item4PositionApi;
 
     @Autowired
-    private ProcessParamApi processParamManager;
+    private ProcessParamApi processParamApi;
 
     @Autowired
-    private ActRuDetailApi actRuDetailManager;
+    private ActRuDetailApi actRuDetailApi;
 
     @Override
     public Y9Result<String> complete(String processSerialNumber) {
-        boolean b = actRuDetailManager.endByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber);
+        boolean b = actRuDetailApi.endByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber);
         if (b) {
             return Y9Result.successMsg("办结成功");
         }
@@ -47,16 +47,13 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     public Y9Result<String> saveOrUpdate(String itemId, String processSerialNumber) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(),
-                personName = person.getName();
-            List<ActRuDetailModel> ardmList =
-                actRuDetailManager.findByProcessSerialNumberAndStatus(tenantId, processSerialNumber, 0);
+            String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(), personName = person.getName();
+            List<ActRuDetailModel> ardmList = actRuDetailApi.findByProcessSerialNumberAndStatus(tenantId, processSerialNumber, 0);
             if (!ardmList.isEmpty()) {
                 return Y9Result.successMsg("已设置办理人信息");
             }
-            ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
-            ItemModel item = itemManager.getByItemId(tenantId, itemId);
+            ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
             actRuDetailModel.setCreateTime(new Date());
             actRuDetailModel.setEnded(false);
@@ -73,7 +70,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             actRuDetailModel.setAssignee(personId);
             actRuDetailModel.setAssigneeName(personName);
             actRuDetailModel.setDeptId(person.getParentId());
-            actRuDetailManager.saveOrUpdate(tenantId, actRuDetailModel);
+            actRuDetailApi.saveOrUpdate(tenantId, actRuDetailModel);
             return Y9Result.successMsg("设置办理人信息正常");
         } catch (Exception e) {
             e.printStackTrace();

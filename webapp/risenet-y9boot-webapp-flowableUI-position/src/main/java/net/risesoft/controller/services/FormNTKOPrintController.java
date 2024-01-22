@@ -30,9 +30,9 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.util.SysVariables;
 import net.risesoft.util.ToolUtil;
@@ -51,28 +51,28 @@ public class FormNTKOPrintController {
     private Y9FileStoreService y9FileStoreService;
 
     @Autowired
-    private PrintApi printManager;
+    private PrintApi printApi;
 
     @Autowired
-    private PersonApi personManager;
+    private PersonApi personApi;
 
     @Autowired
-    private ProcessParamApi processParamManager;
+    private ProcessParamApi processParamApi;
 
     @Autowired
-    private Draft4PositionApi draftManager;
+    private Draft4PositionApi draft4PositionApi;
 
     @Autowired
-    private TransactionWordApi transactionWordManager;
+    private TransactionWordApi transactionWordApi;
 
     @Autowired
-    private FormDataApi formDataManager;
+    private FormDataApi formDataApi;
 
     @Autowired
-    private Opinion4PositionApi opinionManager;
+    private Opinion4PositionApi opinion4PositionApi;
 
     @Autowired
-    private ItemOpinionFrameBindApi itemOpinionFrameBindManager;
+    private ItemOpinionFrameBindApi itemOpinionFrameBindApi;
 
     /**
      * 下载正文
@@ -82,23 +82,20 @@ public class FormNTKOPrintController {
      * @param request
      */
     @RequestMapping(value = "/downloadWord")
-    public void downloadWord(@RequestParam(required = false) String id, @RequestParam(required = false) String fileType,
-        @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String tenantId,
+    public void downloadWord(@RequestParam(required = false) String id, @RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId).getData();
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Object documentTitle = null;
             String[] pId = processInstanceId.split(",");
             processInstanceId = pId[0];
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+                Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
                 documentTitle = retMap.get("title").toString();
             } else {
-                ProcessParamModel processModel =
-                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";
@@ -106,8 +103,7 @@ public class FormNTKOPrintController {
             // String fileName = y9FileStore.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
-            if (-1 < userAgent.indexOf("MSIE 8.0") || -1 < userAgent.indexOf("MSIE 6.0")
-                || -1 < userAgent.indexOf("MSIE 7.0")) {
+            if (-1 < userAgent.indexOf("MSIE 8.0") || -1 < userAgent.indexOf("MSIE 6.0") || -1 < userAgent.indexOf("MSIE 7.0")) {
                 title = new String(title.getBytes("gb2312"), "ISO8859-1");
                 response.reset();
                 response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
@@ -115,9 +111,7 @@ public class FormNTKOPrintController {
                 response.setContentType("application/octet-stream");
             } else {
                 if (-1 != userAgent.indexOf("Firefox")) {
-                    title = "=?UTF-8?B?"
-                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes("UTF-8"))))
-                        + "?=";
+                    title = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes("UTF-8")))) + "?=";
                 } else {
                     title = java.net.URLEncoder.encode(title, "UTF-8");
                     title = StringUtils.replace(title, "+", "%20");// 替换空格
@@ -138,24 +132,21 @@ public class FormNTKOPrintController {
 
     @ResponseBody
     @RequestMapping(value = "/getPrintLayuiTempalteData")
-    public Map<String, Object> getPrintLayuiTempalteData(@RequestParam(required = false) String activitiUser,
-        @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String itembox, @RequestParam(required = false) String tenantId,
-        @RequestParam(required = false) String userId, String itemId, String processSerialNumber) {
+    public Map<String, Object> getPrintLayuiTempalteData(@RequestParam(required = false) String activitiUser, @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String taskId, @RequestParam(required = false) String itembox,
+        @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, String itemId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> map = formDataManager.getData(tenantId, itemId, processSerialNumber);
+        Map<String, Object> map = formDataApi.getData(tenantId, itemId, processSerialNumber);
 
         // 意见框
         List<Map<String, Object>> opinioListMap = new ArrayList<Map<String, Object>>();
-        List<ItemOpinionFrameBindModel> opinionFrameList = itemOpinionFrameBindManager.findByItemId(tenantId, itemId);
+        List<ItemOpinionFrameBindModel> opinionFrameList = itemOpinionFrameBindApi.findByItemId(tenantId, itemId);
         for (ItemOpinionFrameBindModel opinionFrame : opinionFrameList) {
             Map<String, Object> opinionMap = new HashMap<String, Object>(16);
             String opinionFrameMark = opinionFrame.getOpinionFrameMark();
             List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-            listMap = opinionManager.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
-                opinionFrameMark, itemId, taskDefKey, activitiUser);
+            listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefKey, activitiUser);
             opinionMap.put("opinionFrameMark", opinionFrameMark);
             opinionMap.put("opinionFrameName", opinionFrame.getOpinionFrameName());
             opinionMap.put("opinionList", listMap);
@@ -171,14 +162,10 @@ public class FormNTKOPrintController {
 
     @ResponseBody
     @RequestMapping(value = "/getPrintTempalteData")
-    public Map<String, Object> getPrintTempalteData(@RequestParam(required = false) String activitiUser,
-        @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String formIds,
-        @RequestParam(required = false) String formNames, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String itembox,
-        @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String tenantId,
-        @RequestParam(required = false) String userId) {
+    public Map<String, Object> getPrintTempalteData(@RequestParam(required = false) String activitiUser, @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String formIds, @RequestParam(required = false) String formNames, @RequestParam(required = false) String taskId,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String itembox, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         // 表单数据
@@ -204,13 +191,12 @@ public class FormNTKOPrintController {
 
         // 意见框
         List<Map<String, Object>> opinioListMap = new ArrayList<Map<String, Object>>();
-        List<ItemOpinionFrameBindModel> opinionFrameList = itemOpinionFrameBindManager.findByItemId(tenantId, itemId);
+        List<ItemOpinionFrameBindModel> opinionFrameList = itemOpinionFrameBindApi.findByItemId(tenantId, itemId);
         for (ItemOpinionFrameBindModel opinionFrame : opinionFrameList) {
             Map<String, Object> opinionMap = new HashMap<String, Object>(16);
             String opinionFrameMark = opinionFrame.getOpinionFrameMark();
             List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-            listMap = opinionManager.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
-                opinionFrameMark, itemId, taskDefKey, activitiUser);
+            listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefKey, activitiUser);
             opinionMap.put("opinionFrameMark", opinionFrameMark);
             opinionMap.put("opinionFrameName", opinionFrame.getOpinionFrameName());
             opinionMap.put("opinionList", listMap);
@@ -230,13 +216,11 @@ public class FormNTKOPrintController {
      */
     @RequestMapping(value = "/openDoc")
     @ResponseBody
-    public void openDoc(@RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String tenantId,
-        @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
+    public void openDoc(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String itemId, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId = transactionWordManager.openDocument(tenantId, userId, processSerialNumber, itemId);
+        String y9FileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId);
 
         ServletOutputStream out = null;
         try {
@@ -244,9 +228,7 @@ public class FormNTKOPrintController {
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileName = y9FileStore.getFileName();
             if (-1 != agent.indexOf("Firefox")) {
-                fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8"))))
-                    + "?=";
+                fileName = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8")))) + "?=";
             } else {
                 fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
                 fileName = StringUtils.replace(fileName, "+", "%20");// 替换空格
@@ -281,12 +263,11 @@ public class FormNTKOPrintController {
 
     @ResponseBody
     @RequestMapping(value = "/openDocument")
-    public void openDocument(String itemId, String tenantId, String userId, HttpServletResponse response,
-        HttpServletRequest request) {
+    public void openDocument(String itemId, String tenantId, String userId, HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId = printManager.openDocument(tenantId, userId, itemId);
+        String y9FileStoreId = printApi.openDocument(tenantId, userId, itemId);
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();
@@ -294,9 +275,7 @@ public class FormNTKOPrintController {
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileName = y9FileStore.getFileName();
             if (-1 != agent.indexOf("Firefox")) {
-                fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8"))))
-                    + "?=";
+                fileName = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8")))) + "?=";
             } else {
                 fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
                 fileName = StringUtils.replace(fileName, "+", "%20");// 替换空格
@@ -341,12 +320,8 @@ public class FormNTKOPrintController {
      * @return
      */
     @RequestMapping(value = "/showPrintTemplate")
-    public String showPrintTemplate(@RequestParam(required = false) String activitiUser,
-        @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String itembox,
-        @RequestParam(required = false) String taskId, @RequestParam(required = false) String formIds,
-        @RequestParam(required = false) String formNames, @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String tenantId,
-        @RequestParam(required = false) String userId, Model model) {
+    public String showPrintTemplate(@RequestParam(required = false) String activitiUser, @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId, @RequestParam(required = false) String formIds,
+        @RequestParam(required = false) String formNames, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String itemId, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, Model model) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         model.addAttribute("userName", person != null ? person.getName() : "");
         model.addAttribute("activitiUser", activitiUser);

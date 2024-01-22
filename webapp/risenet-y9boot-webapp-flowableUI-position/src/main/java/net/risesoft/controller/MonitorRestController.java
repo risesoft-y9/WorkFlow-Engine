@@ -33,19 +33,19 @@ public class MonitorRestController {
     private MonitorService monitorService;
 
     @Autowired
-    private HistoricProcessApi historicProcessManager;
+    private HistoricProcessApi historicProcessApi;
 
     @Autowired
-    private TransactionWordApi transactionWordManager;
+    private TransactionWordApi transactionWordApi;
 
     @Autowired
-    private Attachment4PositionApi attachmentManager;
+    private Attachment4PositionApi attachment4PositionApi;
 
     @Autowired
-    private ProcessParamApi processParamManager;
+    private ProcessParamApi processParamApi;
 
     @Autowired
-    private Item4PositionApi itemManager;
+    private Item4PositionApi item4PositionApi;
 
     /**
      * 单位所有件
@@ -60,9 +60,7 @@ public class MonitorRestController {
      * @return
      */
     @RequestMapping(value = "/deptList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> deptList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = false) String searchName, @RequestParam(required = false) String userName,
-        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+    public Y9Page<Map<String, Object>> deptList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchName, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return monitorService.deptList(itemId, searchName, userName, state, year, page, rows);
     }
@@ -76,7 +74,7 @@ public class MonitorRestController {
     @RequestMapping(value = "/getAllItemList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemModel>> getAllItemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemModel> listMap = itemManager.getAllItemList(tenantId);
+        List<ItemModel> listMap = item4PositionApi.getAllItemList(tenantId);
         return Y9Result.success(listMap, "获取成功");
     }
 
@@ -94,9 +92,7 @@ public class MonitorRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/monitorBanjianList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> monitorBanjianList(@RequestParam(required = false) String searchName,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
-        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+    public Y9Page<Map<String, Object>> monitorBanjianList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return monitorService.monitorBanjianList(searchName, itemId, userName, state, year, page, rows);
     }
@@ -116,11 +112,8 @@ public class MonitorRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/monitorChaosongList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> monitorChaosongList(@RequestParam(required = false) String searchName,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String senderName,
-        @RequestParam(required = false) String userName, @RequestParam(required = false) String state,
-        @RequestParam(required = false) String year, @RequestParam(required = true) Integer page,
-        @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> monitorChaosongList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String senderName, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return monitorService.monitorChaosongList(searchName, itemId, senderName, userName, state, year, page, rows);
     }
 
@@ -135,9 +128,7 @@ public class MonitorRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/monitorDoingList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page,
-        @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return monitorService.monitorDoingList(itemId, searchTerm, page, rows);
     }
 
@@ -152,9 +143,7 @@ public class MonitorRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/monitorDoneList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page,
-        @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return monitorService.monitorDoneList(itemId, searchTerm, page, rows);
     }
 
@@ -175,18 +164,18 @@ public class MonitorRestController {
                 list = new ArrayList<String>();
                 String[] ids = processInstanceIds.split(SysVariables.COMMA);
                 for (String processInstanceId : ids) {
-                    processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                     if (processParamModel != null) {
                         list.add(processParamModel.getProcessSerialNumber());
                     }
                 }
             }
-            boolean b = historicProcessManager.removeProcess4Position(tenantId, processInstanceIds);
+            boolean b = historicProcessApi.removeProcess4Position(tenantId, processInstanceIds);
             if (b) {
                 // 批量删除附件表
-                attachmentManager.delBatchByProcessSerialNumbers(tenantId, list);
+                attachment4PositionApi.delBatchByProcessSerialNumbers(tenantId, list);
                 // 批量删除正文表
-                transactionWordManager.delBatchByProcessSerialNumbers(tenantId, list);
+                transactionWordApi.delBatchByProcessSerialNumbers(tenantId, list);
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {

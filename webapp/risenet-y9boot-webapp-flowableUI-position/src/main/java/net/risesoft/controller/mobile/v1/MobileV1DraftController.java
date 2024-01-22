@@ -34,7 +34,7 @@ public class MobileV1DraftController {
     protected Logger log = LoggerFactory.getLogger(MobileV1DraftController.class);
 
     @Autowired
-    private Draft4PositionApi draftManager;
+    private Draft4PositionApi draft4PositionApi;
 
     /**
      * 彻底删除草稿
@@ -50,7 +50,7 @@ public class MobileV1DraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            map = draftManager.deleteDraft(tenantId, ids);
+            map = draft4PositionApi.deleteDraft(tenantId, ids);
             if ((boolean)map.get("success")) {
                 return Y9Result.successMsg("删除成功");
             }
@@ -73,7 +73,7 @@ public class MobileV1DraftController {
     public Y9Result<Integer> getDeleteDraftCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Integer count = draftManager.getDeleteDraftCount(tenantId, positionId, itemId);
+            Integer count = draft4PositionApi.getDeleteDraftCount(tenantId, positionId, itemId);
             return Y9Result.success(count, "获取数据成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,7 +101,7 @@ public class MobileV1DraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            map = draftManager.getDraftList(tenantId, positionId, page, rows, title, itemId, delFlag);
+            map = draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, delFlag);
             if ((boolean)map.get("success")) {
                 List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
                 return Y9Page.success(page, Integer.valueOf(map.get("totalpage").toString()), Long.valueOf(map.get("total").toString()), list, "获取成功");
@@ -126,7 +126,7 @@ public class MobileV1DraftController {
     public Y9Result<Integer> getDraftCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Integer count = draftManager.getDraftCount(tenantId, positionId, itemId);
+            Integer count = draft4PositionApi.getDraftCount(tenantId, positionId, itemId);
             return Y9Result.success(count, "获取数据成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -148,7 +148,7 @@ public class MobileV1DraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            map = draftManager.reduction(tenantId, id);
+            map = draft4PositionApi.reduction(tenantId, id);
             if ((boolean)map.get("success")) {
                 return Y9Result.successMsg("还原成功");
             }
@@ -172,7 +172,7 @@ public class MobileV1DraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            map = draftManager.removeDraft(tenantId, ids);
+            map = draft4PositionApi.removeDraft(tenantId, ids);
             if ((boolean)map.get("success")) {
                 return Y9Result.successMsg("删除成功");
             }

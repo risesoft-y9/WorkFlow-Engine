@@ -39,13 +39,13 @@ public class MobileChaoSongController {
     protected final Logger log = LoggerFactory.getLogger(MobileChaoSongController.class);
 
     @Autowired
-    private ChaoSong4PositionApi chaoSongInfoManager;
+    private ChaoSong4PositionApi chaoSong4PositionApi;
 
     @Autowired
-    private ItemRole4PositionApi itemRoleManager;
+    private ItemRole4PositionApi itemRole4PositionApi;
 
     @Autowired
-    private PersonApi personManager;
+    private PersonApi personApi;
 
     /**
      * 抄送件收回
@@ -63,7 +63,7 @@ public class MobileChaoSongController {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             String id[] = ids.split(",");
-            chaoSongInfoManager.deleteByIds(tenantId, id);
+            chaoSong4PositionApi.deleteByIds(tenantId, id);
             map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
@@ -93,9 +93,9 @@ public class MobileChaoSongController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setPositionId(positionId);
-            Person person = personManager.getPerson(tenantId, userId).getData();
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            map = chaoSongInfoManager.detail(tenantId, positionId, id, processInstanceId, status, true);
+            map = chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, true);
             String processSerialNumber = (String)map.get("processSerialNumber");
             String activitiUser = (String)map.get(SysVariables.ACTIVITIUSER);
             String processDefinitionId = (String)map.get("processDefinitionId");
@@ -136,7 +136,7 @@ public class MobileChaoSongController {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         try {
-            item = itemRoleManager.findCsUser(Y9LoginUserHolder.getTenantId(), userId, positionId, id, principalType, processInstanceId);
+            item = itemRole4PositionApi.findCsUser(Y9LoginUserHolder.getTenantId(), userId, positionId, id, principalType, processInstanceId);
         } catch (Exception e) {
             log.error("手机端跟踪获取抄送选人");
             e.printStackTrace();
@@ -163,7 +163,7 @@ public class MobileChaoSongController {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         try {
-            item = itemRoleManager.findCsUserSearch(tenantId, userId, positionId, name, principalType, processInstanceId);
+            item = itemRole4PositionApi.findCsUserSearch(tenantId, userId, positionId, name, principalType, processInstanceId);
         } catch (Exception e) {
             log.error("手机端跟踪选人搜索");
             e.printStackTrace();
@@ -191,9 +191,9 @@ public class MobileChaoSongController {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             if (type.equals("my")) {
-                map = chaoSongInfoManager.getListBySenderIdAndProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
+                map = chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
             } else {
-                map = chaoSongInfoManager.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
+                map = chaoSong4PositionApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
             }
         } catch (Exception e) {
             log.error("手机端跟踪办件抄送列表");
@@ -223,9 +223,9 @@ public class MobileChaoSongController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             if (status == 0) {
-                map = chaoSongInfoManager.getTodoList(tenantId, positionId, documentTitle, rows, page);
+                map = chaoSong4PositionApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
             } else if (status == 1) {
-                map = chaoSongInfoManager.getDoneList(tenantId, positionId, documentTitle, rows, page);
+                map = chaoSong4PositionApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
             }
             map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
@@ -257,7 +257,7 @@ public class MobileChaoSongController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(1);
         try {
-            map = chaoSongInfoManager.save(tenantId, userId, positionId, processInstanceId, users, isSendSms, isShuMing, smsContent, "");
+            map = chaoSong4PositionApi.save(tenantId, userId, positionId, processInstanceId, users, isSendSms, isShuMing, smsContent, "");
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             log.error("手机端跟踪查看抄送件发送");

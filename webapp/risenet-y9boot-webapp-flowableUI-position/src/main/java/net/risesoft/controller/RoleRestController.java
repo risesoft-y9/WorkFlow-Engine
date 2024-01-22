@@ -26,10 +26,10 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class RoleRestController {
 
     @Autowired
-    private ItemRole4PositionApi itemRoleManager;
+    private ItemRole4PositionApi itemRole4PositionApi;
 
     @Autowired
-    private DepartmentApi departmentManager;
+    private DepartmentApi departmentApi;
 
     private List<String> addUserIds(List<String> userIds, String userId) {
         if (!userIds.contains(userId)) {
@@ -48,11 +48,9 @@ public class RoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> findAll(@RequestParam(required = false) String id,
-        @RequestParam(required = true) OrgTreeTypeEnum treeType, @RequestParam(required = false) String name) {
+    public Y9Result<List<Map<String, Object>>> findAll(@RequestParam(required = false) String id, @RequestParam(required = true) OrgTreeTypeEnum treeType, @RequestParam(required = false) String name) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        item = itemRoleManager.getOrgTree(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), id,
-            treeType, name);
+        item = itemRole4PositionApi.getOrgTree(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), id, treeType, name);
         return Y9Result.success(item, "获取成功");
     }
 
@@ -66,12 +64,9 @@ public class RoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/findCsUser", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> findCsUser(@RequestParam(required = false) String id,
-        @RequestParam(required = true) Integer principalType,
-        @RequestParam(required = false) String processInstanceId) {
+    public Y9Result<List<Map<String, Object>>> findCsUser(@RequestParam(required = false) String id, @RequestParam(required = true) Integer principalType, @RequestParam(required = false) String processInstanceId) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        item = itemRoleManager.findCsUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9LoginUserHolder.getPositionId(), id, principalType, processInstanceId);
+        item = itemRole4PositionApi.findCsUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), id, principalType, processInstanceId);
         return Y9Result.success(item, "获取成功");
     }
 
@@ -85,12 +80,9 @@ public class RoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/findCsUserSearch", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> findCsUserSearch(@RequestParam(required = false) String name,
-        @RequestParam(required = true) Integer principalType,
-        @RequestParam(required = false) String processInstanceId) {
+    public Y9Result<List<Map<String, Object>>> findCsUserSearch(@RequestParam(required = false) String name, @RequestParam(required = true) Integer principalType, @RequestParam(required = false) String processInstanceId) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        item = itemRoleManager.findCsUserSearch(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9LoginUserHolder.getPositionId(), name, principalType, processInstanceId);
+        item = itemRole4PositionApi.findCsUserSearch(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), name, principalType, processInstanceId);
         return Y9Result.success(item, "获取成功");
     }
 
@@ -107,17 +99,13 @@ public class RoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/findAllPermUser", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> findPermUser(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey,
-        @RequestParam(required = true) Integer principalType, @RequestParam(required = false) String processInstanceId,
-        @RequestParam(required = false) String id) {
+    public Y9Result<List<Map<String, Object>>> findPermUser(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey, @RequestParam(required = true) Integer principalType,
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String id) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(id)) {
             id = "";
         }
-        item = itemRoleManager.findPermUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId, taskDefKey, principalType, id,
-            processInstanceId);
+        item = itemRole4PositionApi.findPermUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
         return Y9Result.success(item, "获取成功");
     }
 
@@ -134,15 +122,11 @@ public class RoleRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/findPermUserByName", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> findPermUserByName(@RequestParam(required = false) String name,
-        @RequestParam(required = true) Integer principalType, @RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey,
-        @RequestParam(required = false) String processInstanceId) {
+    public Y9Result<List<Map<String, Object>>> findPermUserByName(@RequestParam(required = false) String name, @RequestParam(required = true) Integer principalType, @RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId,
+        @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        item = itemRoleManager.findPermUserByName(tenantId, Y9LoginUserHolder.getPersonId(),
-            Y9LoginUserHolder.getPositionId(), name, principalType, itemId, processDefinitionId, taskDefKey,
-            processInstanceId);
+        item = itemRole4PositionApi.findPermUserByName(tenantId, Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), name, principalType, itemId, processDefinitionId, taskDefKey, processInstanceId);
         return Y9Result.success(item, "获取成功");
     }
 
@@ -188,9 +172,9 @@ public class RoleRestController {
 
     private void recursionAllPosition(String parentID, List<Position> list) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        list.addAll(departmentManager.listPositions(tenantId, parentID).getData());
+        list.addAll(departmentApi.listPositions(tenantId, parentID).getData());
         if (list.size() < 101) {
-            List<Department> deptList = departmentManager.listSubDepartments(tenantId, parentID).getData();
+            List<Department> deptList = departmentApi.listSubDepartments(tenantId, parentID).getData();
             for (Department dept : deptList) {
                 recursionAllPosition(dept.getId(), list);
             }

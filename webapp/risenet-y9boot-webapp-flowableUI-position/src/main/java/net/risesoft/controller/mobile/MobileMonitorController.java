@@ -31,13 +31,13 @@ import net.risesoft.y9.util.Y9Util;
 public class MobileMonitorController {
 
     @Autowired
-    private HistoricProcessApi historicProcessManager;
+    private HistoricProcessApi historicProcessApi;
 
     @Autowired
-    private MonitorApi monitorManager;
+    private MonitorApi monitorApi;
 
     @Autowired
-    private Item4PositionApi itemManager;
+    private Item4PositionApi item4PositionApi;
 
     /**
      * 删除流程实例
@@ -49,12 +49,10 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/deleteProcessInstance")
-    public void deleteProcessInstance(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String processInstanceId, HttpServletResponse response) {
+    public void deleteProcessInstance(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processInstanceId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            boolean b = historicProcessManager.deleteProcessInstance(tenantId, processInstanceId);
+            boolean b = historicProcessApi.deleteProcessInstance(tenantId, processInstanceId);
             map.put(UtilConsts.SUCCESS, b);
         } catch (Exception e) {
             map.put("msg", "发生异常");
@@ -75,15 +73,13 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/monitorDoingCount")
-    public void monitorDoingCount(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, HttpServletResponse response) {
+    public void monitorDoingCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            ItemModel item = itemManager.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             String processDefinitionKey = item.getWorkflowGuid();
-            long monitorDoingCount = monitorManager.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey);
+            long monitorDoingCount = monitorApi.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey);
             map.put("monitorDoingCount", monitorDoingCount);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取数据成功");
@@ -109,9 +105,7 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/monitorDoingList")
-    public void monitorDoingList(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
+    public void monitorDoingList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
         HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -136,15 +130,13 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/monitorDoneCount")
-    public void monitorDoneCount(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, HttpServletResponse response) {
+    public void monitorDoneCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            ItemModel item = itemManager.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             String processDefinitionKey = item.getWorkflowGuid();
-            long monitorDoneCount = monitorManager.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey);
+            long monitorDoneCount = monitorApi.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey);
             map.put("monitorDoneCount", monitorDoneCount);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取数据成功");
@@ -170,9 +162,7 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/monitorDoneList")
-    public void monitorDoneList(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
+    public void monitorDoneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
         HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -197,12 +187,10 @@ public class MobileMonitorController {
      * @param response
      */
     @RequestMapping(value = "/removeProcess")
-    public void removeProcess(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String processInstanceId, HttpServletResponse response) {
+    public void removeProcess(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processInstanceId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            boolean b = historicProcessManager.removeProcess4Position(tenantId, processInstanceId);
+            boolean b = historicProcessApi.removeProcess4Position(tenantId, processInstanceId);
             map.put(UtilConsts.SUCCESS, b);
         } catch (Exception e) {
             map.put("msg", "发生异常");

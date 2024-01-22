@@ -20,7 +20,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class OrganWordRestController {
 
     @Autowired
-    private OrganWordApi organWordManager;
+    private OrganWordApi organWordApi;
 
     /**
      * 检查编号
@@ -35,21 +35,17 @@ public class OrganWordRestController {
      * @return
      */
     @RequestMapping(value = "/checkNumber", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<Map<String, Object>> checkNumber(@RequestParam String characterValue, @RequestParam String custom,
-        @RequestParam Integer year, @RequestParam Integer number, @RequestParam String itemId,
-        @RequestParam Integer common, @RequestParam String processSerialNumber) {
+    public Y9Result<Map<String, Object>> checkNumber(@RequestParam String characterValue, @RequestParam String custom, @RequestParam Integer year, @RequestParam Integer number, @RequestParam String itemId, @RequestParam Integer common, @RequestParam String processSerialNumber) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
         Map<String, Object> map = new HashMap<>(16);
         try {
-            Integer status = organWordManager.checkNumberStr(tenantId, userId, characterValue, custom, year, number,
-                itemId, common, processSerialNumber);
+            Integer status = organWordApi.checkNumberStr(tenantId, userId, characterValue, custom, year, number, itemId, common, processSerialNumber);
             if (status == 0) {
                 /**
                  * 当前编号已被使用，获取最新的可以用的编号
                  */
-                Integer numberTemp =
-                    organWordManager.getNumberOnly(tenantId, userId, custom, characterValue, year, 0, itemId);
+                Integer numberTemp = organWordApi.getNumberOnly(tenantId, userId, custom, characterValue, year, 0, itemId);
                 map.put("newNumber", numberTemp);
             }
             map.put("status", status);
@@ -70,12 +66,10 @@ public class OrganWordRestController {
      * @return
      */
     @RequestMapping(value = "/findByCustom", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> findByCustom(@RequestParam String custom, @RequestParam String itemId,
-        @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
+    public Y9Result<List<Map<String, Object>>> findByCustom(@RequestParam String custom, @RequestParam String itemId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            List<Map<String, Object>> listMap = organWordManager.findByCustom(tenantId,
-                Y9LoginUserHolder.getPositionId(), custom, itemId, processDefinitionId, taskDefKey);
+            List<Map<String, Object>> listMap = organWordApi.findByCustom(tenantId, Y9LoginUserHolder.getPositionId(), custom, itemId, processDefinitionId, taskDefKey);
             return Y9Result.success(listMap, "获取成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -94,13 +88,11 @@ public class OrganWordRestController {
      * @return
      */
     @RequestMapping(value = "/getNumber", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getNumber(@RequestParam String custom, @RequestParam String itemId,
-        @RequestParam String characterValue, @RequestParam Integer year, @RequestParam Integer common) {
+    public Y9Result<Map<String, Object>> getNumber(@RequestParam String custom, @RequestParam String itemId, @RequestParam String characterValue, @RequestParam Integer year, @RequestParam Integer common) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
         try {
-            Map<String, Object> map =
-                organWordManager.getNumber(tenantId, userId, custom, characterValue, year, common, itemId);
+            Map<String, Object> map = organWordApi.getNumber(tenantId, userId, custom, characterValue, year, common, itemId);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
             e.printStackTrace();

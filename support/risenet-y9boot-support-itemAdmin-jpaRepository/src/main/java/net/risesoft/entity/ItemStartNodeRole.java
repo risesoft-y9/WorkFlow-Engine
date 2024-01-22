@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_ITEM_STARTNODE_ROLE")
-@org.hibernate.annotations.Table(comment = "事项和按钮绑定关系对应的角色", appliesTo = "FF_ITEM_STARTNODE_ROLE")
+@org.hibernate.annotations.Table(comment = "启动节点绑定角色信息表", appliesTo = "FF_ITEM_STARTNODE_ROLE")
 public class ItemStartNodeRole implements Serializable {
 
     private static final long serialVersionUID = 5753820699147405666L;

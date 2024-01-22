@@ -36,25 +36,25 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class MobileV1MonitorController {
 
     @Autowired
-    private HistoricProcessApi historicProcessManager;
+    private HistoricProcessApi historicProcessApi;
 
     @Autowired
-    private MonitorApi monitorManager;
+    private MonitorApi monitorApi;
 
     @Autowired
-    private Item4PositionApi itemManager;
+    private Item4PositionApi item4PositionApi;
 
     @Autowired
     private MonitorService monitorService;
 
     @Autowired
-    private ProcessParamApi processParamManager;
+    private ProcessParamApi processParamApi;
 
     @Autowired
-    private TransactionWordApi transactionWordManager;
+    private TransactionWordApi transactionWordApi;
 
     @Autowired
-    private Attachment4PositionApi attachmentManager;
+    private Attachment4PositionApi attachment4PositionApi;
 
     /**
      * 删除流程实例
@@ -68,7 +68,7 @@ public class MobileV1MonitorController {
     /* @RequestMapping(value = "/deleteProcessInstance")
     public Y9Result<String> deleteProcessInstance(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processInstanceId, HttpServletResponse response) {
         try {
-            boolean b = historicProcessManager.deleteProcessInstance(tenantId, processInstanceId);
+            boolean b = historicProcessApi.deleteProcessInstance(tenantId, processInstanceId);
             if (b) {
                 return Y9Result.successMsg("删除成功");
             }
@@ -91,9 +91,9 @@ public class MobileV1MonitorController {
     public Y9Result<Long> monitorDoingCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            ItemModel item = itemManager.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             String processDefinitionKey = item.getWorkflowGuid();
-            long monitorDoingCount = monitorManager.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey);
+            long monitorDoingCount = monitorApi.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey);
             return Y9Result.success(monitorDoingCount, "获取数据成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -134,9 +134,9 @@ public class MobileV1MonitorController {
     public Y9Result<Long> monitorDoneCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            ItemModel item = itemManager.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             String processDefinitionKey = item.getWorkflowGuid();
-            long monitorDoneCount = monitorManager.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey);
+            long monitorDoneCount = monitorApi.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey);
             return Y9Result.success(monitorDoneCount, "获取数据成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -177,16 +177,16 @@ public class MobileV1MonitorController {
         try {
             ProcessParamModel processParamModel = null;
             List<String> list = new ArrayList<String>();
-            processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+            processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
             if (processParamModel != null) {
                 list.add(processParamModel.getProcessSerialNumber());
             }
-            boolean b = historicProcessManager.removeProcess4Position(tenantId, processInstanceId);
+            boolean b = historicProcessApi.removeProcess4Position(tenantId, processInstanceId);
             if (b) {
                 // 批量删除附件表
-                attachmentManager.delBatchByProcessSerialNumbers(tenantId, list);
+                attachment4PositionApi.delBatchByProcessSerialNumbers(tenantId, list);
                 // 批量删除正文表
-                transactionWordManager.delBatchByProcessSerialNumbers(tenantId, list);
+                transactionWordApi.delBatchByProcessSerialNumbers(tenantId, list);
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
