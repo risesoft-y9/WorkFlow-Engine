@@ -35,10 +35,10 @@ public class WorkList4ddyjsRestController {
     private QueryListService queryListService;
 
     @Autowired
-    private Draft4PositionApi draftManager;
+    private Draft4PositionApi draft4PositionApi;
 
     @Autowired
-    private Item4PositionApi itemManager;
+    private Item4PositionApi item4PositionApi;
 
     /**
      * 我的传阅列表
@@ -103,8 +103,8 @@ public class WorkList4ddyjsRestController {
     @RequestMapping(value = "/draftList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> draftList(@RequestParam(required = true) int page, @RequestParam(required = true) int rows, @RequestParam(required = true) String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-        ItemModel item = itemManager.getByItemId(tenantId, itemId);
-        Map<String, Object> map = draftManager.getDraftListBySystemName(tenantId, positionId, page, rows, title, item.getSystemName(), false);
+        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+        Map<String, Object> map = draft4PositionApi.getDraftListBySystemName(tenantId, positionId, page, rows, title, item.getSystemName(), false);
         List<Map<String, Object>> draftList = (List<Map<String, Object>>)map.get("rows");
         return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), draftList, "获取列表成功");
     }

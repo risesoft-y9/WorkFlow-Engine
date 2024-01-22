@@ -27,7 +27,7 @@ public class SearchRestController {
     private SearchService searchService;
 
     @Autowired
-    private Item4PositionApi itemManager;
+    private Item4PositionApi item4PositionApi;
 
     /**
      * 获取公务邮件列表
@@ -57,7 +57,7 @@ public class SearchRestController {
     public Y9Result<List<Map<String, Object>>> getMyItemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        List<Map<String, Object>> listMap = itemManager.getMyItemList(tenantId, userId);
+        List<Map<String, Object>> listMap = item4PositionApi.getMyItemList(tenantId, userId);
         return Y9Result.success(listMap, "获取成功");
     }
 
@@ -70,7 +70,7 @@ public class SearchRestController {
     @RequestMapping(value = "/getMyItemSystemList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getMyItemSystemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemModel> listMap = itemManager.getAllItemList(tenantId);
+        List<ItemModel> listMap = item4PositionApi.getAllItemList(tenantId);
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         for (ItemModel itemModel : listMap) {
             Map<String, Object> newmap = new HashMap<String, Object>(16);

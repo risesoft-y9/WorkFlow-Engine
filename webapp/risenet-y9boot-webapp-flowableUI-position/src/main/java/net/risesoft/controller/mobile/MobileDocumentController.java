@@ -72,55 +72,52 @@ public class MobileDocumentController {
     protected final Logger log = LoggerFactory.getLogger(MobileDocumentController.class);
 
     @Autowired
-    private PersonApi personManager;
+    private PersonApi personApi;
 
     @Autowired
     private PositionRoleApi positionRoleApi;
 
     @Autowired
-    private TenantApi tenantManager;
+    private TenantApi tenantApi;
 
     @Autowired
     private PositionApi positionApi;
 
     @Autowired
-    private Document4PositionApi documentManager;
+    private Document4PositionApi document4PositionApi;
 
     @Autowired
-    private ItemOpinionFrameBindApi itemOpinionFrameBindManager;
+    private ItemOpinionFrameBindApi itemOpinionFrameBindApi;
 
     @Autowired
-    private TaskApi taskManager;
+    private TaskApi taskApi;
 
     @Autowired
-    private AssociatedFile4PositionApi associatedFileManager;
+    private AssociatedFile4PositionApi associatedFile4PositionApi;
 
     @Autowired
-    private Draft4PositionApi draftManager;
+    private Draft4PositionApi draft4PositionApi;
 
     @Autowired
-    private ItemRole4PositionApi itemRoleManager;
+    private ItemRole4PositionApi itemRole4PositionApi;
 
     @Autowired
-    private FormDataApi formDataManager;
+    private FormDataApi formDataApi;
 
     @Autowired
-    private ProcessParamApi processParamManager;
+    private ProcessParamApi processParamApi;
 
     @Autowired
     private ProcessParamService processParamService;
 
     @Autowired
-    private TodoTaskApi todoTaskManager;
+    private TodoTaskApi todotaskApi;
 
     @Autowired
-    private HistoricProcessApi historicProcessManager;
+    private HistoricProcessApi historicProcessApi;
 
     @Autowired
     private DepartmentApi departmentApi;
-
-    @Autowired
-    private PersonApi personApi;
 
     /**
      * 新建公文
@@ -138,7 +135,7 @@ public class MobileDocumentController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            map = documentManager.add(Y9LoginUserHolder.getTenantId(), positionId, itemId, true);
+            map = document4PositionApi.add(Y9LoginUserHolder.getTenantId(), positionId, itemId, true);
             // 意见框？？？？？？？？？？
             String formIds = (String)map.get("formId");
             String taskDefKey = (String)map.get("taskDefKey");
@@ -146,7 +143,7 @@ public class MobileDocumentController {
             String formId[] = formIds.split(SysVariables.COMMA);
             List<Map<String, Object>> fieldDefineList = new ArrayList<Map<String, Object>>();
             List<Map<String, Object>> opinionFrameList = new ArrayList<Map<String, Object>>();
-            List<ItemOpinionFrameBindModel> bindList = itemOpinionFrameBindManager.findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(tenantId, positionId, itemId, processDefinitionId, taskDefKey);
+            List<ItemOpinionFrameBindModel> bindList = itemOpinionFrameBindApi.findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(tenantId, positionId, itemId, processDefinitionId, taskDefKey);
             for (ItemOpinionFrameBindModel bind : bindList) {
                 Map<String, Object> opinionFrameMap = new HashMap<String, Object>(16);
                 opinionFrameMap.put("hasRole", false);
@@ -165,7 +162,7 @@ public class MobileDocumentController {
             for (int i = 0; i < formId.length; i++) {// 获取表单定义字段
                 Map<String, Object> fieldDefineMap = new HashMap<String, Object>(16);
                 List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
-                listMap = formDataManager.getFormFieldDefine(tenantId, formId[i]);
+                listMap = formDataApi.getFormFieldDefine(tenantId, formId[i]);
                 fieldDefineMap.put(formId[i], listMap);
                 fieldDefineList.add(fieldDefineMap);
             }
@@ -197,7 +194,7 @@ public class MobileDocumentController {
     public void delAssociatedFile(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, String processSerialNumber, String processInstanceId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
-        boolean b = associatedFileManager.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceId);
+        boolean b = associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceId);
         map.put(UtilConsts.SUCCESS, b);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
         return;
@@ -222,12 +219,12 @@ public class MobileDocumentController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId).getData();
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             if (StringUtils.isNotBlank(processInstanceId)) {// 打开办件
-                map = documentManager.edit(tenantId, positionId, itembox, taskId, processInstanceId, itemId, true);
+                map = document4PositionApi.edit(tenantId, positionId, itembox, taskId, processInstanceId, itemId, true);
             } else {// 打开草稿
-                map = draftManager.openDraft4Position(tenantId, positionId, itemId, processSerialNumber, true);
+                map = draft4PositionApi.openDraft4Position(tenantId, positionId, itemId, processSerialNumber, true);
             }
             String activitiUser = (String)map.get(SysVariables.ACTIVITIUSER);
             String processDefinitionId = (String)map.get("processDefinitionId");
@@ -266,13 +263,13 @@ public class MobileDocumentController {
         map.put(UtilConsts.SUCCESS, false);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Y9LoginUserHolder.setPerson(personManager.getPerson(tenantId, userId).getData());
+            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId).getData());
             if (StringUtils.isNotBlank(taskId)) {// 打开办件
-                TaskModel taskModel = taskManager.findById(tenantId, taskId);
+                TaskModel taskModel = taskApi.findById(tenantId, taskId);
                 if (taskModel != null && taskModel.getId() != null) {
-                    ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId());
+                    ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId());
                     String itemId = processParamModel.getItemId();
-                    map = documentManager.edit(tenantId, positionId, itembox, taskId, taskModel.getProcessInstanceId(), itemId, true);
+                    map = document4PositionApi.edit(tenantId, positionId, itembox, taskId, taskModel.getProcessInstanceId(), itemId, true);
                     String activitiUser = (String)map.get(SysVariables.ACTIVITIUSER);
                     String processDefinitionId = (String)map.get("processDefinitionId");
                     String taskDefKey = (String)map.get("taskDefKey");
@@ -285,7 +282,7 @@ public class MobileDocumentController {
                     map.put("msg", "获取数据成功");
                     map.put(UtilConsts.SUCCESS, true);
                 } else {
-                    todoTaskManager.deleteTodoTaskByTaskId(tenantId, taskId);
+                    todotaskApi.deleteTodoTaskByTaskId(tenantId, taskId);
                 }
             }
         } catch (Exception e) {
@@ -321,7 +318,7 @@ public class MobileDocumentController {
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
             return;
         } else {
-            item = itemRoleManager.findPermUser(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
+            item = itemRole4PositionApi.findPermUser(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
             return;
         }
@@ -367,7 +364,7 @@ public class MobileDocumentController {
                 level = (String)mapFormJsonData.get("workLevel");
             }
             if (StringUtils.isBlank(taskId)) {// 保存草稿
-                draftManager.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number, level, title);
+                draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number, level, title);
             }
             Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, title, number, level, false);
             if (!map1.isSuccess()) {
@@ -380,15 +377,15 @@ public class MobileDocumentController {
                 List<String> TempIdList = Y9Util.stringToList(temp_Ids, SysVariables.COMMA);
                 LOGGER.debug("****************表单数据：{}*******************", formJsonData);
                 for (String formId : TempIdList) {
-                    formDataManager.saveFormData(tenantId, formId, formJsonData);
+                    formDataApi.saveFormData(tenantId, formId, formJsonData);
                 }
             }
             Map<String, Object> variables = new HashMap<String, Object>(16);
             if (processDefinitionKey.equals(Y9Context.getProperty("y9.app.workOrder.processDefinitionKey"))) {
                 String startRouteToTaskId = Y9Context.getProperty("y9.app.workOrder.inNetrouteToTaskId");
-                map = documentManager.saveAndForwardingByTaskKey(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, startRouteToTaskId, variables);
+                map = document4PositionApi.saveAndForwardingByTaskKey(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, startRouteToTaskId, variables);
             } else {
-                map = documentManager.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
+                map = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
             }
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
@@ -415,7 +412,7 @@ public class MobileDocumentController {
     public void getAllFieldPerm(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey, @RequestParam String formId,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> list = formDataManager.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
+        List<Map<String, Object>> list = formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(list));
         return;
     }
@@ -434,7 +431,7 @@ public class MobileDocumentController {
     public void getAssociatedFileList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
-        map = associatedFileManager.getAssociatedFileList(tenantId, processSerialNumber);
+        map = associatedFile4PositionApi.getAssociatedFileList(tenantId, processSerialNumber);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
         return;
     }
@@ -457,20 +454,20 @@ public class MobileDocumentController {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             if (StringUtils.isNotBlank(taskId)) {
-                TaskModel taskModel = taskManager.findById(tenantId, taskId);
-                ProcessParamModel processParam = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                TaskModel taskModel = taskApi.findById(tenantId, taskId);
+                ProcessParamModel processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 if (taskModel != null && taskModel.getId() != null) {
                     map.put("itembox", ItemBoxTypeEnum.TODO.getValue());
                     map.put("processSerialNumber", processParam.getProcessSerialNumber());
                     map.put("itemId", processParam.getItemId());
                 } else {
-                    HistoricProcessInstanceModel hpi = historicProcessManager.getById(tenantId, processInstanceId);
+                    HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId);
                     if (hpi == null) {
                         map.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     } else {
                         taskId = "";
                         map.put("itembox", new HashMap<String, String>(16));
-                        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                         for (TaskModel task : taskList) {
                             taskId = Y9Util.genCustomStr(taskId, task.getId(), SysVariables.COMMA);
                         }
@@ -507,7 +504,7 @@ public class MobileDocumentController {
         map.put("msg", "获取表单初始化数据失败");
         map.put("success", false);
         try {
-            Person person = personManager.getPerson(tenantId, userId).getData();
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Position position = positionApi.getPosition(tenantId, positionId).getData();
             Date date = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -518,7 +515,7 @@ public class MobileDocumentController {
             String second = sesdf.format(date);
             String itemNumber = "〔" + year + "〕" + second + "号";
             OrgUnit parent = positionApi.getParent(tenantId, positionId).getData();
-            Tenant tenant = tenantManager.getById(tenantId).getData();
+            Tenant tenant = tenantApi.getById(tenantId).getData();
             /** 办件表单数据初始化 **/
             map.put("deptName", parent.getName());// 创建部门
             map.put("userName", person.getName());// 创建人
@@ -573,7 +570,7 @@ public class MobileDocumentController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
         try {
-            map = documentManager.docUserChoise(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId, processDefinitionKey, processDefinitionId, taskId, taskDefKey, processInstanceId);
+            map = document4PositionApi.docUserChoise(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId, processDefinitionKey, processDefinitionId, taskId, taskDefKey, processInstanceId);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取数据成功");
         } catch (Exception e) {
@@ -601,7 +598,7 @@ public class MobileDocumentController {
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
-        boolean b = associatedFileManager.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
+        boolean b = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
         map.put(UtilConsts.SUCCESS, b);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
         return;
@@ -641,7 +638,7 @@ public class MobileDocumentController {
                 level = (String)mapFormJsonData.get("workLevel");
             }
             if (StringUtils.isBlank(processInstanceId)) {// 保存草稿
-                draftManager.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number, level, title);
+                draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number, level, title);
             }
             Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, title, number, level, false);
             if (!map1.isSuccess()) {
@@ -654,7 +651,7 @@ public class MobileDocumentController {
                 List<String> TempIdList = Y9Util.stringToList(temp_Ids, SysVariables.COMMA);
                 LOGGER.debug("****************表单数据：{}*******************", formJsonData);
                 for (String formId : TempIdList) {
-                    formDataManager.saveFormData(tenantId, formId, formJsonData);
+                    formDataApi.saveFormData(tenantId, formId, formJsonData);
                 }
             }
         } catch (Exception e) {
@@ -700,9 +697,9 @@ public class MobileDocumentController {
             }
             String processInstanceId = "";
             if (StringUtils.isBlank(taskId)) {// 保存草稿
-                draftManager.saveDraft(tenantId, positionId, itemId, processSerialNumber, "", number, level, title);
+                draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, "", number, level, title);
             } else {
-                TaskModel task = taskManager.findById(tenantId, taskId);
+                TaskModel task = taskApi.findById(tenantId, taskId);
                 if (null != task) {
                     processInstanceId = task.getProcessInstanceId();
                 }
@@ -718,10 +715,10 @@ public class MobileDocumentController {
                 List<String> TempIdList = Y9Util.stringToList(temp_Ids, SysVariables.COMMA);
                 LOGGER.debug("****************表单数据：{}*******************", formJsonData);
                 for (String formId : TempIdList) {
-                    formDataManager.saveFormData(tenantId, formId, formJsonData);
+                    formDataApi.saveFormData(tenantId, formId, formJsonData);
                 }
             }
-            map = documentManager.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
+            map = document4PositionApi.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "发送失败");

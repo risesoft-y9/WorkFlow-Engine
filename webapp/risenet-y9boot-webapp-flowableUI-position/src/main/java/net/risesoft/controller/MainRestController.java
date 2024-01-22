@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.WorkOrderApi;
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
@@ -22,7 +21,6 @@ import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.permission.PositionRoleApi;
-import net.risesoft.api.processadmin.DoingApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -44,43 +42,37 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class MainRestController {
 
     @Autowired
-    private Item4PositionApi itemManager;
+    private Item4PositionApi item4PositionApi;
 
     @Autowired
-    private HistoricProcessApi historicProcessManager;
+    private HistoricProcessApi historicProcessApi;
 
     @Autowired
     private PositionRoleApi positionRoleApi;
 
     @Autowired
-    private TaskApi taskManager;
+    private TaskApi taskApi;
 
     @Autowired
     private PositionApi positionApi;
 
     @Autowired
-    private ProcessTodoApi todoManager;
+    private ProcessTodoApi processTodoApi;
 
     @Autowired
-    private Draft4PositionApi draftManager;
+    private Draft4PositionApi draft4PositionApi;
 
     @Autowired
-    private ChaoSong4PositionApi chaoSongInfoManager;
+    private ChaoSong4PositionApi chaoSong4PositionApi;
 
     @Autowired
-    private OfficeDoneInfo4PositionApi officeDoneInfoManager;
+    private OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
     @Autowired
-    private TodoTaskApi todoTaskManager;
+    private TodoTaskApi todotaskApi;
 
     @Autowired
-    private ProcessParamApi processParamManager;
-
-    @Autowired
-    private WorkOrderApi workOrderManager;
-
-    @Autowired
-    private DoingApi doingApi;
+    private ProcessParamApi processParamApi;
 
     @Autowired
     private Entrust4PositionApi entrust4PositionApi;
@@ -95,7 +87,7 @@ public class MainRestController {
     public Y9Result<Map<String, Object>> geAllItemList() {
         Map<String, Object> map = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemModel> list = itemManager.getAllItemList(tenantId);
+        List<ItemModel> list = item4PositionApi.getAllItemList(tenantId);
         boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", null, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
         map.put("monitorManage", b);
         map.put("itemList", list);
@@ -135,23 +127,17 @@ public class MainRestController {
         map.put("monitorDone", monitorDone);
         map.put("monitorRecycle", recycleCount);
         try {
-            ItemModel itemModel = itemManager.getByItemId(tenantId, itemId);
+            ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId);
             String processDefinitionKey = itemModel.getWorkflowGuid();
             if (itemModel != null && itemModel.getId() != null) {
                 map.put("processDefinitionKey", processDefinitionKey);
-                if (processDefinitionKey.equals(Y9Context.getProperty("y9.app.flowable.systemWorkOrderKey"))) {
-                    Map<String, Object> m = workOrderManager.getAdminCount();
-                    map.put("wtodoCount", m.get("todoCount"));
-                    map.put("wdoneCount", m.get("doneCount"));
-                } else {
-                    draftCount = draftManager.getDraftCount(tenantId, positionId, itemId);
-                    draftRecycleCount = draftManager.getDeleteDraftCount(tenantId, positionId, itemId);
-                }
-                Map<String, Object> countMap = todoManager.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
+                draftCount = draft4PositionApi.getDraftCount(tenantId, positionId, itemId);
+                draftRecycleCount = draft4PositionApi.getDeleteDraftCount(tenantId, positionId, itemId);
+                Map<String, Object> countMap = processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
                 todoCount = countMap != null ? Long.parseLong(countMap.get("todoCount").toString()) : 0;
                 doingCount = countMap != null ? Long.parseLong(countMap.get("doingCount").toString()) : 0;
                 try {
-                    doneCount = officeDoneInfoManager.countByPositionId(tenantId, positionId, itemId);
+                    doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, itemId);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -164,8 +150,8 @@ public class MainRestController {
 
             if (person.isGlobalManager()) {
                 try {
-                    monitorDoing = officeDoneInfoManager.countDoingByItemId(tenantId, itemId);
-                    monitorDone = officeDoneInfoManager.countByItemId(tenantId, itemId);
+                    monitorDoing = officeDoneInfo4PositionApi.countDoingByItemId(tenantId, itemId);
+                    monitorDone = officeDoneInfo4PositionApi.countByItemId(tenantId, itemId);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -212,13 +198,13 @@ public class MainRestController {
         map.put("monitorDoing", monitorDoing);
         map.put("monitorDone", monitorDone);
         try {
-            draftCount = draftManager.countBySystemName(tenantId, positionId, systemName);
-            // draftRecycleCount = draftManager.getDeleteDraftCount(tenantId, positionId, systemName);
-            Map<String, Object> countMap = todoManager.getCountByUserIdAndSystemName(tenantId, positionId, systemName);
+            draftCount = draft4PositionApi.countBySystemName(tenantId, positionId, systemName);
+            // draftRecycleCount = draft4PositionApi.getDeleteDraftCount(tenantId, positionId, systemName);
+            Map<String, Object> countMap = processTodoApi.getCountByUserIdAndSystemName(tenantId, positionId, systemName);
             todoCount = countMap != null ? Long.parseLong(countMap.get("todoCount").toString()) : 0;
             doingCount = countMap != null ? Long.parseLong(countMap.get("doingCount").toString()) : 0;
             try {
-                doneCount = officeDoneInfoManager.countByPositionIdAndSystemName(tenantId, positionId, systemName);
+                doneCount = officeDoneInfo4PositionApi.countByPositionIdAndSystemName(tenantId, positionId, systemName);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -247,7 +233,7 @@ public class MainRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("tenantManager", person.isGlobalManager());
-        ItemModel itemModel = itemManager.getByItemId(tenantId, itemId);
+        ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId);
         map.put("itemModel", itemModel);
         map.put("tenantId", tenantId);
         map.put("dzxhTenantId", Y9Context.getProperty("y9.app.flowable.dzxhTenantId"));
@@ -268,7 +254,7 @@ public class MainRestController {
     @ResponseBody
     public Y9Result<Map<String, Object>> getItemBySystemName(@RequestParam(required = true) String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemModel> itemList = itemManager.findAll(tenantId, systemName);
+        List<ItemModel> itemList = item4PositionApi.findAll(tenantId, systemName);
         Map<String, Object> map = new HashMap<String, Object>(16);
         boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
         map.put("monitorManage", b);
@@ -292,12 +278,12 @@ public class MainRestController {
         int doneCount = 0;
         try {
             // 统计统一待办
-            todoCount = todoTaskManager.countByReceiverId(tenantId, positionId);
+            todoCount = todotaskApi.countByReceiverId(tenantId, positionId);
             // 统计流程在办件
-            Map<String, Object> m = officeDoneInfoManager.searchAllByPositionId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
+            Map<String, Object> m = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
             doingCount = Long.parseLong(m.get("total").toString());
             // 统计历史办结件
-            doneCount = officeDoneInfoManager.countByPositionId(tenantId, positionId, "");
+            doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, "");
             map.put("todoCount", todoCount);
             map.put("doingCount", doingCount);
             map.put("doneCount", doneCount);
@@ -328,15 +314,15 @@ public class MainRestController {
             long todoCount = 0;
             if (StringUtils.isNotBlank(count)) {// 是否统计待办数量
                 if (StringUtils.isNotBlank(itemId)) {// 单个事项获取待办数量
-                    ItemModel itemModel = itemManager.getByItemId(tenantId, itemId);
-                    todoCount = todoManager.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, p.getId(), itemModel.getWorkflowGuid());
+                    ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId);
+                    todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, p.getId(), itemModel.getWorkflowGuid());
                     allCount = allCount + todoCount;
                 } else if (StringUtils.isNotBlank(systemName)) {// 单个事项获取待办数量
-                    todoCount = todoManager.getTodoCountByUserIdAndSystemName(tenantId, p.getId(), systemName);
+                    todoCount = processTodoApi.getTodoCountByUserIdAndSystemName(tenantId, p.getId(), systemName);
                     allCount = allCount + todoCount;
                 } else {// 工作台获取所有待办数量
                     try {
-                        todoCount = todoTaskManager.countByReceiverId(tenantId, p.getId());
+                        todoCount = todotaskApi.countByReceiverId(tenantId, p.getId());
                         allCount = allCount + todoCount;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -359,15 +345,15 @@ public class MainRestController {
                         long todoCount1 = 0;
                         if (StringUtils.isNotBlank(count)) {// 是否统计待办数量
                             if (StringUtils.isNotBlank(itemId)) {// 单个事项获取待办数量
-                                ItemModel itemModel = itemManager.getByItemId(tenantId, itemId);
-                                todoCount1 = todoManager.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, position.getId(), itemModel.getWorkflowGuid());
+                                ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId);
+                                todoCount1 = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, position.getId(), itemModel.getWorkflowGuid());
                                 allCount = allCount + todoCount1;
                             } else if (StringUtils.isNotBlank(systemName)) {// 单个事项获取待办数量
-                                todoCount1 = todoManager.getTodoCountByUserIdAndSystemName(tenantId, position.getId(), systemName);
+                                todoCount1 = processTodoApi.getTodoCountByUserIdAndSystemName(tenantId, position.getId(), systemName);
                                 allCount = allCount + todoCount1;
                             } else {// 工作台获取所有待办数量
                                 try {
-                                    todoCount1 = todoTaskManager.countByReceiverId(tenantId, position.getId());
+                                    todoCount1 = todotaskApi.countByReceiverId(tenantId, position.getId());
                                     allCount = allCount + todoCount1;
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -395,9 +381,9 @@ public class MainRestController {
     public Y9Result<Map<String, Object>> getReadCount() {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = new HashMap<String, Object>(16);
-        map.put("notReadCount", chaoSongInfoManager.getTodoCount(tenantId, positionId));
-        map.put("hasReadCount", chaoSongInfoManager.getDoneCount(tenantId, positionId));
-        map.put("hasOpinionCount", chaoSongInfoManager.getDone4OpinionCountByUserId(tenantId, positionId));
+        map.put("notReadCount", chaoSong4PositionApi.getTodoCount(tenantId, positionId));
+        map.put("hasReadCount", chaoSong4PositionApi.getDoneCount(tenantId, positionId));
+        map.put("hasOpinionCount", chaoSong4PositionApi.getDone4OpinionCountByUserId(tenantId, positionId));
         return Y9Result.success(map, "获取成功");
     }
 
@@ -438,19 +424,19 @@ public class MainRestController {
 
             if (type.equals("fromTodo")) {
                 try {
-                    TaskModel taskModel = taskManager.findById(tenantId, taskId);
+                    TaskModel taskModel = taskApi.findById(tenantId, taskId);
                     if (taskModel == null || taskModel.getId() == null) {
                         try {
-                            todoTaskManager.deleteTodoTaskByTaskId(tenantId, taskId);
+                            todotaskApi.deleteTodoTaskByTaskId(tenantId, taskId);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                         map.put("taskId", "");
                     }
                     processInstanceId = taskModel.getProcessInstanceId();
-                    ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                     String itemId = processParamModel.getItemId();
-                    ItemModel itemModel = itemManager.getByItemId(tenantId, itemId);
+                    ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId);
                     map.put("itemModel", itemModel);
                     processSerialNumber = processParamModel.getProcessSerialNumber();
                 } catch (Exception e) {
@@ -458,18 +444,18 @@ public class MainRestController {
                 }
             } else if (type.equals("fromCplane")) {
                 taskId = "";// 等于空为办结件
-                HistoricProcessInstanceModel hisProcess = historicProcessManager.getById(tenantId, processInstanceId);
-                ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                HistoricProcessInstanceModel hisProcess = historicProcessApi.getById(tenantId, processInstanceId);
+                ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 processSerialNumber = processParamModel.getProcessSerialNumber();
                 String itemId = processParamModel.getItemId();
-                ItemModel itemModel = itemManager.getByItemId(tenantId, itemId);
+                ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId);
                 map.put("itemModel", itemModel);
                 if (hisProcess == null || hisProcess.getId() == null) {// 办结件
-                    // todoTaskManager.deleteTodoTaskByTaskId(tenantId, taskId);
+                    // todotaskApi.deleteTodoTaskByTaskId(tenantId, taskId);
                     // model.addAttribute("type", "");
                 } else {
                     if (hisProcess.getEndTime() == null) {// 协作状态未办结
-                        List<TaskModel> list = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                         boolean isTodo = false;
                         if (list != null) {
                             for (TaskModel task : list) {
@@ -488,17 +474,17 @@ public class MainRestController {
                 }
                 map.put("taskId", taskId);
             } else if (type.equals("fromHistory")) {
-                HistoricProcessInstanceModel processModel = historicProcessManager.getById(tenantId, processInstanceId);
+                HistoricProcessInstanceModel processModel = historicProcessApi.getById(tenantId, processInstanceId);
                 if (processModel == null || processModel.getId() == null) {
-                    OfficeDoneInfoModel officeDoneInfoModel = officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    OfficeDoneInfoModel officeDoneInfoModel = officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
                     if (officeDoneInfoModel == null) {
                         processInstanceId = "";
                     } else {
                         processSerialNumber = officeDoneInfoModel.getProcessSerialNumber();
                     }
                 }
-                ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
-                ItemModel itemModel = itemManager.getByItemId(tenantId, processParamModel.getItemId());
+                ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                ItemModel itemModel = item4PositionApi.getByItemId(tenantId, processParamModel.getItemId());
                 map.put("itemModel", itemModel);
             }
         } catch (Exception e) {

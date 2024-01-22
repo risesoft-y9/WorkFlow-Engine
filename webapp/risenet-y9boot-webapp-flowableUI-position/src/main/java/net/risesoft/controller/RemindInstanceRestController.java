@@ -35,19 +35,19 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class RemindInstanceRestController {
 
     @Autowired
-    private RemindInstanceApi remindInstanceManager;
+    private RemindInstanceApi remindInstanceApi;
 
     @Autowired
-    private TaskApi taskManager;
+    private TaskApi taskApi;
 
     @Autowired
-    private HistoricProcessApi historicProcessManager;
+    private HistoricProcessApi historicProcessApi;
 
     @Autowired
     private OrgUnitApi orgUnitApi;
 
     @Autowired
-    private ProcessDefinitionApi processDefinitionManager;
+    private ProcessDefinitionApi processDefinitionApi;
 
     /**
      * 获取任务节点信息和流程定义信息
@@ -61,11 +61,9 @@ public class RemindInstanceRestController {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        HistoricProcessInstanceModel his = historicProcessManager.getById(tenantId, processInstanceId);
-        List<Map<String, Object>> list0 =
-            processDefinitionManager.getNodes(tenantId, his.getProcessDefinitionId(), false);
-        RemindInstanceModel remindInstance =
-            remindInstanceManager.getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId);
+        HistoricProcessInstanceModel his = historicProcessApi.getById(tenantId, processInstanceId);
+        List<Map<String, Object>> list0 = processDefinitionApi.getNodes(tenantId, his.getProcessDefinitionId(), false);
+        RemindInstanceModel remindInstance = remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId);
         retMap.put("remindType", "");
         retMap.put("completeTaskKey", "");
         retMap.put("arriveTaskKey", "");
@@ -113,14 +111,12 @@ public class RemindInstanceRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveRemindInstance", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveRemindInstance(@RequestParam(required = true) String processInstanceId,
-        @RequestParam(required = false) String taskIds, @RequestParam(required = true) Boolean process,
-        @RequestParam(required = false) String arriveTaskKey, @RequestParam(required = false) String completeTaskKey) {
+    public Y9Result<String> saveRemindInstance(@RequestParam(required = true) String processInstanceId, @RequestParam(required = false) String taskIds, @RequestParam(required = true) Boolean process, @RequestParam(required = false) String arriveTaskKey,
+        @RequestParam(required = false) String completeTaskKey) {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            map = remindInstanceManager.saveRemindInstance(tenantId, userId, processInstanceId, taskIds, process,
-                arriveTaskKey, completeTaskKey);
+            map = remindInstanceApi.saveRemindInstance(tenantId, userId, processInstanceId, taskIds, process, arriveTaskKey, completeTaskKey);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("保存成功");
             }
@@ -143,7 +139,7 @@ public class RemindInstanceRestController {
         Map<String, Object> retMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            retMap = taskManager.findListByProcessInstanceId(tenantId, processInstanceId, 1, 500);
+            retMap = taskApi.findListByProcessInstanceId(tenantId, processInstanceId, 1, 500);
             List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
             List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<List<TaskModel>>() {});
@@ -152,8 +148,7 @@ public class RemindInstanceRestController {
             Map<String, Object> mapTemp = null;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date currentTime = new Date();
-            RemindInstanceModel remindInstance =
-                remindInstanceManager.getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId);
+            RemindInstanceModel remindInstance = remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId);
             retMap.put("remindType", "");
             retMap.put("taskIds", "");
             if (remindInstance != null) {
@@ -165,8 +160,7 @@ public class RemindInstanceRestController {
                 String taskId = task.getId();
                 String taskName = task.getName();
                 mapTemp.put("taskId", taskId);
-                mapTemp.put("userName", StringUtils.isBlank(task.getAssignee()) ? ""
-                    : orgUnitApi.getOrgUnit(tenantId, task.getAssignee()).getData().getName());
+                mapTemp.put("userName", StringUtils.isBlank(task.getAssignee()) ? "" : orgUnitApi.getOrgUnit(tenantId, task.getAssignee()).getData().getName());
                 mapTemp.put("taskName", taskName);
                 mapTemp.put("createTime", sdf.format(task.getCreateTime()));
                 mapTemp.put("duration", longTime(task.getCreateTime(), currentTime));

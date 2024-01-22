@@ -21,8 +21,8 @@ import net.risesoft.api.org.DepartmentApi;
 import net.risesoft.api.org.OrgUnitApi;
 import net.risesoft.api.org.OrganizationApi;
 import net.risesoft.api.org.PersonApi;
-import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
+import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -40,19 +40,19 @@ public class OpinionRestController {
     private static final Logger log = LoggerFactory.getLogger(OpinionRestController.class);
 
     @Autowired
-    private Opinion4PositionApi opinionManager;
+    private Opinion4PositionApi opinion4PositionApi;
 
     @Autowired
-    private OrgUnitApi orgUnitManager;
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
-    private DepartmentApi departmentManager;
+    private DepartmentApi departmentApi;
 
     @Autowired
-    private PersonApi personManager;
+    private PersonApi personApi;
 
     @Autowired
-    private OrganizationApi organizationManager;
+    private OrganizationApi organizationApi;
 
     @RequestMapping(value = "/checkSignOpinion")
     public Map<String, Object> checkSignOpinion(@RequestParam(required = false) String taskId, @RequestParam(required = false) String processSerialNumber) {
@@ -60,7 +60,7 @@ public class OpinionRestController {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String userId = person.getPersonId(), tenantId = person.getTenantId();
-            Boolean checkSignOpinion = opinionManager.checkSignOpinion(tenantId, userId, processSerialNumber, taskId);
+            Boolean checkSignOpinion = opinion4PositionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId);
             map.put("checkSignOpinion", checkSignOpinion);
         } catch (Exception e) {
             log.error("查询" + taskId + "是否签写意见失败！");
@@ -79,7 +79,7 @@ public class OpinionRestController {
     @RequestMapping(value = "/countOpinionHistory", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Integer> countOpinionHistory(@RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String opinionFrameMark) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Integer num = opinionManager.countOpinionHistory(tenantId, processSerialNumber, opinionFrameMark);
+        Integer num = opinion4PositionApi.countOpinionHistory(tenantId, processSerialNumber, opinionFrameMark);
         return Y9Result.success(num, "获取成功");
     }
 
@@ -93,7 +93,7 @@ public class OpinionRestController {
     public Y9Result<String> delete(@RequestParam(required = true) String id) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            opinionManager.delete(tenantId, id);
+            opinion4PositionApi.delete(tenantId, id);
             return Y9Result.successMsg("刪除成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,10 +111,9 @@ public class OpinionRestController {
     public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = false) String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        OrgUnit bureau = personManager.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
+        OrgUnit bureau = personApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
         if (bureau != null) {
-            List<OrgUnit> orgUnitList =
-                orgUnitManager.treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON, bureau.getDn()).getData();
+            List<OrgUnit> orgUnitList = orgUnitApi.treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON, bureau.getDn()).getData();
             for (OrgUnit orgUnit : orgUnitList) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 map.put("id", orgUnit.getId());
@@ -123,7 +122,7 @@ public class OpinionRestController {
                 map.put("parentId", orgUnit.getParentId());
                 map.put("isParent", true);
                 if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
-                    Person per = personManager.getPerson(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                    Person per = personApi.getPerson(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                     if (per.getDisabled()) {// 除去禁用的人员
                         continue;
                     }
@@ -148,7 +147,7 @@ public class OpinionRestController {
     @RequestMapping(value = "/getBindOpinionFrame", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<String>> getBindOpinionFrame(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<String> list = opinionManager.getBindOpinionFrame(tenantId, itemId, processDefinitionId);
+        List<String> list = opinion4PositionApi.getBindOpinionFrame(tenantId, itemId, processDefinitionId);
         return Y9Result.success(list, "获取成功");
     }
 
@@ -163,7 +162,7 @@ public class OpinionRestController {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(id)) {
-            OrgUnit orgUnit = personManager.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
+            OrgUnit orgUnit = personApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
             if (orgUnit != null) {
                 Map<String, Object> m = new HashMap<String, Object>(16);
                 id = orgUnit.getId();
@@ -175,7 +174,7 @@ public class OpinionRestController {
                 item.add(m);
             }
         } else {
-            List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_ORG).getData();
+            List<OrgUnit> list = orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_ORG).getData();
             for (OrgUnit orgUnit : list) {
                 Map<String, Object> m = new HashMap<String, Object>(16);
                 m.put("id", orgUnit.getId());
@@ -185,14 +184,13 @@ public class OpinionRestController {
                 m.put("isParent", true);
                 if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON)) {
                     m.put("isParent", false);
-                    Person person = personManager.getPerson(tenantId, orgUnit.getId()).getData();
+                    Person person = personApi.getPerson(tenantId, orgUnit.getId()).getData();
                     if (person.getDisabled()) {
                         continue;
                     }
                     m.put("sex", person.getSex());
                 }
-                if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON)
-                    || orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
+                if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON) || orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                     item.add(m);
                 }
             }
@@ -201,8 +199,8 @@ public class OpinionRestController {
     }
 
     public OrgUnit getParent(String tenantId, String nodeId, String parentId) {
-        Organization parent = organizationManager.getOrganization(tenantId, parentId).getData();
-        return parent.getId() != null ? parent : departmentManager.getDepartment(tenantId, parentId).getData();
+        Organization parent = organizationApi.getOrganization(tenantId, parentId).getData();
+        return parent.getId() != null ? parent : departmentApi.getDepartment(tenantId, parentId).getData();
     }
 
     /**
@@ -216,7 +214,7 @@ public class OpinionRestController {
     public Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String opinionFrameMark) {
         List<OpinionHistoryModel> list = new ArrayList<OpinionHistoryModel>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        list = opinionManager.opinionHistoryList(tenantId, processSerialNumber, opinionFrameMark);
+        list = opinion4PositionApi.opinionHistoryList(tenantId, processSerialNumber, opinionFrameMark);
         return Y9Result.success(list, "获取成功");
     }
 
@@ -234,7 +232,7 @@ public class OpinionRestController {
         map.put("date", sdf.format(new Date()));
         OpinionModel opinion = new OpinionModel();
         if (StringUtils.isNotBlank(id)) {
-            opinion = opinionManager.getById(tenantId, id);
+            opinion = opinion4PositionApi.getById(tenantId, id);
             map.put("opinion", opinion);
             map.put("date", opinion.getCreateDate());
         }
@@ -259,7 +257,7 @@ public class OpinionRestController {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
-        listMap = opinionManager.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
+        listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
         return Y9Result.success(listMap, "获取成功");
     }
 
@@ -303,7 +301,7 @@ public class OpinionRestController {
             String userId = person.getPersonId(), tenantId = person.getTenantId();
             OpinionModel opinion = Y9JsonUtil.readValue(jsonData, OpinionModel.class);
             String positionId = Y9LoginUserHolder.getPositionId();
-            OpinionModel opinionModel = opinionManager.saveOrUpdate(tenantId, userId, positionId, opinion);
+            OpinionModel opinionModel = opinion4PositionApi.saveOrUpdate(tenantId, userId, positionId, opinion);
             return Y9Result.success(opinionModel, "保存成功");
         } catch (Exception e) {
             e.printStackTrace();

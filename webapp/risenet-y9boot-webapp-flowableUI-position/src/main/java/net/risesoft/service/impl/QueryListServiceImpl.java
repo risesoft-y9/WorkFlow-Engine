@@ -22,11 +22,11 @@ import net.risesoft.api.org.PositionApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
@@ -40,25 +40,25 @@ import net.risesoft.y9.util.Y9Util;
 public class QueryListServiceImpl implements QueryListService {
 
     @Autowired
-    private Item4PositionApi itemManager;
+    private Item4PositionApi item4PositionApi;
 
     @Autowired
-    private FormDataApi formDataManager;
+    private FormDataApi formDataApi;
 
     @Autowired
-    private OfficeFollow4PositionApi officeFollowManager;
+    private OfficeFollow4PositionApi officeFollow4PositionApi;
 
     @Autowired
     private QueryListApi queryListApi;
 
     @Autowired
-    private TaskApi taskManager;
+    private TaskApi taskApi;
 
     @Autowired
-    private PositionApi positionManager;
+    private PositionApi positionApi;
 
     @Autowired
-    private IdentityApi identityManager;
+    private IdentityApi identityApi;
 
     @Autowired
     private OfficeDoneInfo4PositionApi officeDoneInfoApi;
@@ -66,8 +66,7 @@ public class QueryListServiceImpl implements QueryListService {
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
-            taskId = "";
+        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
         List<String> list = new ArrayList<String>();
         int i = 0;
         if (taskList.size() > 0) {
@@ -77,7 +76,7 @@ public class QueryListServiceImpl implements QueryListService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
+                        Position personTemp = positionApi.getPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                         }
@@ -87,13 +86,12 @@ public class QueryListServiceImpl implements QueryListService {
                             taskId = task.getId();
                         }
                     } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList = identityManager.getIdentityLinksForTask(tenantId, task.getId());
+                        List<IdentityLinkModel> iList = identityApi.getIdentityLinksForTask(tenantId, task.getId());
                         if (!iList.isEmpty()) {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser =
-                                    positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                Position ownerUser = positionApi.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -110,7 +108,7 @@ public class QueryListServiceImpl implements QueryListService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
+                            Position personTemp = positionApi.getPosition(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             }
@@ -136,19 +134,16 @@ public class QueryListServiceImpl implements QueryListService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> queryList(String itemId, String state, String createDate, String tableName,
-        String searchMapStr, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> queryList(String itemId, String state, String createDate, String tableName, String searchMapStr, Integer page, Integer rows) {
         ItemPage<ActRuDetailModel> itemPage = new ItemPage<ActRuDetailModel>();
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            ItemModel item = itemManager.getByItemId(tenantId, itemId);
-            itemPage = queryListApi.getQueryList(tenantId, userId, item.getSystemName(), state, createDate, tableName,
-                searchMapStr, page, rows);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            itemPage = queryListApi.getQueryList(tenantId, userId, item.getSystemName(), state, createDate, tableName, searchMapStr, page, rows);
             List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> hpiModelList =
-                objectMapper.convertValue(list, new TypeReference<List<ActRuDetailModel>>() {});
+            List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ActRuDetailModel>>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp = null;
             Map<String, Object> formDataMap = null;
@@ -157,15 +152,13 @@ public class QueryListServiceImpl implements QueryListService {
                 String processInstanceId = hpim.getProcessInstanceId();
                 String processSerialNumber = hpim.getProcessSerialNumber();
                 try {
-                    OfficeDoneInfoModel officeDoneInfo =
-                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    OfficeDoneInfoModel officeDoneInfo = officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId);
                     String startTime = officeDoneInfo.getStartTime().substring(0, 16);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
                     mapTemp.put("startTime", startTime);
-                    mapTemp.put("endTime", StringUtils.isBlank(officeDoneInfo.getEndTime()) ? "--"
-                        : officeDoneInfo.getEndTime().substring(0, 16));
+                    mapTemp.put("endTime", StringUtils.isBlank(officeDoneInfo.getEndTime()) ? "--" : officeDoneInfo.getEndTime().substring(0, 16));
                     mapTemp.put("taskDefinitionKey", "");
                     mapTemp.put("taskAssignee", officeDoneInfo.getUserComplete());
                     mapTemp.put("creatUserName", officeDoneInfo.getCreatUserName());
@@ -176,21 +169,19 @@ public class QueryListServiceImpl implements QueryListService {
                     mapTemp.put("number", number == null ? "" : number);
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
-                        List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                        mapTemp.put("taskId",
-                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                        mapTemp.put("taskId", listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
                         mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("itembox", listTemp.get(3));
                     }
-                    formDataMap = formDataManager.getData(tenantId, itemId, processSerialNumber);
+                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                     mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
-                    int countFollow = officeFollowManager.countByProcessInstanceId(tenantId, userId, processInstanceId);
+                    int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId, processInstanceId);
                     mapTemp.put("follow", countFollow > 0 ? true : false);
                 } catch (Exception e) {
                     e.printStackTrace();

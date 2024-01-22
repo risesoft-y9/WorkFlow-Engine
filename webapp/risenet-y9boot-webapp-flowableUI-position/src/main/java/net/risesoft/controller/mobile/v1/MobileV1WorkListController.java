@@ -63,19 +63,19 @@ public class MobileV1WorkListController {
     private DoneService doneService;
 
     @Autowired
-    private ProcessTrack4PositionApi processTrackManager;
+    private ProcessTrack4PositionApi processTrack4PositionApi;
 
     @Autowired
-    private ProcessTodoApi processTodoManager;
+    private ProcessTodoApi processTodoApi;
 
     @Autowired
-    private Item4PositionApi itemManager;
+    private Item4PositionApi item4PositionApi;
 
     @Autowired
-    private OfficeDoneInfo4PositionApi officeDoneInfoManager;
+    private OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
     @Autowired
-    private ResourceApi resourceManager;
+    private ResourceApi resourceApi;
 
     @Autowired
     private PositionResourceApi positionResourceApi;
@@ -150,7 +150,7 @@ public class MobileV1WorkListController {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setPositionId(positionId);
-            Resource resource = resourceManager.getResource(tenantId).getData();
+            Resource resource = resourceApi.getResource(tenantId).getData();
             List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
             if (null != resource && null != resource.getId()) {
                 String resourceId = resource.getId();
@@ -166,9 +166,9 @@ public class MobileV1WorkListController {
                         continue;
                     }
                     String itemId = url.split("itemId=")[1];
-                    ItemModel item = itemManager.getByItemId(tenantId, itemId);
+                    ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
                     String processDefinitionKey = item.getWorkflowGuid();
-                    long todoCount = processTodoManager.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
+                    long todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
                     Map<String, Object> m = new HashMap<String, Object>(16);
                     Map<String, Object> resMap = todoService.list(item.getId(), "", 1, 1);
                     List<Map<String, Object>> todoList = (List<Map<String, Object>>)resMap.get("rows");
@@ -189,7 +189,7 @@ public class MobileV1WorkListController {
                     if (workOrder) {// 拥有系统工单角色,才在我的工作中显示系统工单事项
                         map = new HashMap<String, Object>(16);
                         String workOrderItemId = Y9Context.getProperty("y9.app.flowable.workOrderItemId");
-                        ItemModel item = itemManager.getByItemId(tenantId, workOrderItemId);
+                        ItemModel item = item4PositionApi.getByItemId(tenantId, workOrderItemId);
                         map.put("id", workOrderItemId);
                         map.put("name", item.getName());
                         map.put("url", workOrderItemId);
@@ -197,7 +197,7 @@ public class MobileV1WorkListController {
                         map.put("todoCount", 0);
                         if (item != null && item.getId() != null) {
                             String processDefinitionKey = item.getWorkflowGuid();
-                            long todoCount = processTodoManager.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
+                            long todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
                             Map<String, Object> m = new HashMap<String, Object>(16);
                             Map<String, Object> resMap = todoService.list(item.getId(), "", 1, 1);
                             List<Map<String, Object>> todoList = (List<Map<String, Object>>)resMap.get("rows");
@@ -303,13 +303,13 @@ public class MobileV1WorkListController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            ItemModel item = itemManager.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             String processDefinitionKey = item.getWorkflowGuid();
-            Map<String, Object> countMap = processTodoManager.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
+            Map<String, Object> countMap = processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
             int todoCount = countMap != null ? (int)countMap.get("todoCount") : 0;
             int doingCount = countMap != null ? (int)countMap.get("doingCount") : 0;
             // int doneCount = countMap != null ? (int) countMap.get("doneCount") : 0;
-            int doneCount = officeDoneInfoManager.countByPositionId(tenantId, positionId, itemId);
+            int doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, itemId);
             map.put("todoCount", todoCount);
             map.put("doingCount", doingCount);
             map.put("doneCount", doneCount);
@@ -335,7 +335,7 @@ public class MobileV1WorkListController {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            retMap = processTrackManager.processTrackList(tenantId, positionId, processInstanceId);
+            retMap = processTrack4PositionApi.processTrackList(tenantId, positionId, processInstanceId);
             if ((boolean)retMap.get("success")) {
                 return Y9Result.success((List<Map<String, Object>>)retMap.get("rows"), "获取成功");
             }

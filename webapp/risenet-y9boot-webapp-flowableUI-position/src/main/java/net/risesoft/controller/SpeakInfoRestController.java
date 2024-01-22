@@ -23,7 +23,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class SpeakInfoRestController {
 
     @Autowired
-    private SpeakInfoApi speakInfoManager;
+    private SpeakInfoApi speakInfoApi;
 
     /**
      * 删除沟通交流信息
@@ -37,7 +37,7 @@ public class SpeakInfoRestController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
         try {
-            Map<String, Object> map = speakInfoManager.deleteById(tenantId, userId, id);
+            Map<String, Object> map = speakInfoApi.deleteById(tenantId, userId, id);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg((String)map.get("msg"));
             } else {
@@ -58,14 +58,13 @@ public class SpeakInfoRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrUpdate(@RequestParam(required = true) String content,
-        @RequestParam(required = true) String processInstanceId) {
+    public Y9Result<String> saveOrUpdate(@RequestParam(required = true) String content, @RequestParam(required = true) String processInstanceId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
         SpeakInfoModel speakInfoModel = new SpeakInfoModel();
         speakInfoModel.setContent(content);
         speakInfoModel.setProcessInstanceId(processInstanceId);
-        speakInfoManager.saveOrUpdate(tenantId, userId, speakInfoModel);
+        speakInfoApi.saveOrUpdate(tenantId, userId, speakInfoModel);
         return Y9Result.successMsg("提交成功");
     }
 
@@ -80,8 +79,7 @@ public class SpeakInfoRestController {
     public Y9Result<Map<String, Object>> speakInfoList(@RequestParam(required = true) String processInstanceId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = person.getTenantId();
-        List<SpeakInfoModel> siModelList =
-            speakInfoManager.findByProcessInstanceId(tenantId, userId, processInstanceId);
+        List<SpeakInfoModel> siModelList = speakInfoApi.findByProcessInstanceId(tenantId, userId, processInstanceId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("rows", siModelList);
         map.put("processInstanceId", processInstanceId);

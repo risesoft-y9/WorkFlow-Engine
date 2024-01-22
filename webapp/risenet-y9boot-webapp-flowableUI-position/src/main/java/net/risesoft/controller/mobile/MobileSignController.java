@@ -38,7 +38,7 @@ import net.risesoft.y9.util.Y9Util;
 public class MobileSignController {
 
     @Autowired
-    private CalendarConfigApi calendarConfigManager;
+    private CalendarConfigApi calendarConfigApi;
 
     // 两个日期时间相隔天数
     public String daysBetween(String startTime, String endTime) {
@@ -97,7 +97,7 @@ public class MobileSignController {
             map.put(UtilConsts.SUCCESS, false);
             if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
                 String year = startDate.substring(0, 4);
-                CalendarConfigModel calendarConfigModel = calendarConfigManager.findByYear(tenantId, year);
+                CalendarConfigModel calendarConfigModel = calendarConfigApi.findByYear(tenantId, year);
                 String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
                 if (StringUtils.isNotBlank(everyYearHoliday)) {
                     String day = daysBetween(startDate, endDate, everyYearHoliday);
@@ -144,7 +144,7 @@ public class MobileSignController {
             Y9LoginUserHolder.setTenantId(tenantId);
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr = "";
-            CalendarConfigModel calendarConfig = calendarConfigManager.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
+            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
             dayStr = calendarConfig.getEveryYearHoliday();
             if (type.equals("天")) {
                 boolean isdel = true;
@@ -305,7 +305,7 @@ public class MobileSignController {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr = "";
-            CalendarConfigModel calendarConfig = calendarConfigManager.findByYear(tenantId, endDate.split("-")[0]);
+            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(tenantId, endDate.split("-")[0]);
             dayStr = calendarConfig != null ? calendarConfig.getEveryYearHoliday() : "";
             if (StringUtils.isBlank(startSel) && StringUtils.isBlank(endSel)) {// 按天算
                 boolean isdel = dateType.equals("1") ? true : false;

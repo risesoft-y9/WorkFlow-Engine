@@ -14,7 +14,7 @@ public class TaoHongService {
     public void word2RedDocument(String content, String destDocx) {
         try {
             // 模板文件地址
-            String model = "C:\\Users\\10858\\Desktop\\开发资料\\深圳罗湖区.docx";
+            String model = "";
             // 模板文件 参数填写
 
             XWPFTemplate template = XWPFTemplate.compile(model);

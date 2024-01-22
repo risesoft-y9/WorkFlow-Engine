@@ -21,7 +21,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class CommonSentencesRestController {
 
     @Autowired
-    private CommonSentencesApi commonSentencesManager;
+    private CommonSentencesApi commonSentencesApi;
 
     /**
      * 获取个人常用语
@@ -36,7 +36,7 @@ public class CommonSentencesRestController {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String userId = person.getPersonId(), tenantId = person.getTenantId();
             resList = new ArrayList<Map<String, Object>>();
-            resList = commonSentencesManager.listSentencesService(tenantId, userId);
+            resList = commonSentencesApi.listSentencesService(tenantId, userId);
             return Y9Result.success(resList, "获取成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,8 +55,7 @@ public class CommonSentencesRestController {
     public Y9Result<String> remove(@RequestParam(required = true) int tabIndex) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
-            commonSentencesManager.removeCommonSentences(Y9LoginUserHolder.getTenantId(), person.getPersonId(),
-                tabIndex);
+            commonSentencesApi.removeCommonSentences(Y9LoginUserHolder.getTenantId(), person.getPersonId(), tabIndex);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,7 +73,7 @@ public class CommonSentencesRestController {
     public Y9Result<String> removeUseNumber() {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
-            commonSentencesManager.removeUseNumber(Y9LoginUserHolder.getTenantId(), person.getPersonId());
+            commonSentencesApi.removeUseNumber(Y9LoginUserHolder.getTenantId(), person.getPersonId());
             return Y9Result.successMsg("操作成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -94,7 +93,7 @@ public class CommonSentencesRestController {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String userId = person.getPersonId(), tenantId = person.getTenantId();
-            commonSentencesManager.save(tenantId, userId, "", content);
+            commonSentencesApi.save(tenantId, userId, "", content);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,13 +110,11 @@ public class CommonSentencesRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveEdit", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveEdit(@RequestParam(required = true) String content,
-        @RequestParam(required = true) String tabIndex) {
+    public Y9Result<String> saveEdit(@RequestParam(required = true) String content, @RequestParam(required = true) String tabIndex) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         try {
-            commonSentencesManager.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content,
-                Integer.parseInt(tabIndex));
+            commonSentencesApi.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content, Integer.parseInt(tabIndex));
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -135,7 +132,7 @@ public class CommonSentencesRestController {
     @RequestMapping(value = "/updateUseNumber", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> updateUseNumber(@RequestParam(required = true) String id) {
         try {
-            commonSentencesManager.updateUseNumber(Y9LoginUserHolder.getTenantId(), id);
+            commonSentencesApi.updateUseNumber(Y9LoginUserHolder.getTenantId(), id);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();

@@ -33,7 +33,7 @@ import net.risesoft.y9.util.Y9Util;
 public class MobileItemController {
 
     @Autowired
-    private Item4PositionApi itemManager;
+    private Item4PositionApi item4PositionApi;
 
     /**
      * 获取事项列表
@@ -46,19 +46,17 @@ public class MobileItemController {
      */
     @ResponseBody
     @RequestMapping(value = "/getItemList")
-    public void getItemList(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        HttpServletRequest request, HttpServletResponse response) {
+    public void getItemList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            List<Map<String, Object>> listMap = itemManager.getItemList(tenantId, positionId);
+            List<Map<String, Object>> listMap = item4PositionApi.getItemList(tenantId, positionId);
             List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
             for (Map<String, Object> app : listMap) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 map.put("itemId", app.get("url"));
                 map.put("itemName", app.get("name"));
-                ItemModel itemModel = itemManager.getByItemId(tenantId, (String)app.get("url"));
+                ItemModel itemModel = item4PositionApi.getByItemId(tenantId, (String)app.get("url"));
                 map.put("appIcon", StringUtils.isBlank(itemModel.getIconData()) ? "" : itemModel.getIconData());
                 map.put("processDefinitionKey", itemModel.getWorkflowGuid());
                 resList.add(map);

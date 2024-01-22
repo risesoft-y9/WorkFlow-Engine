@@ -26,7 +26,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class DdyjsRestController {
 
     @Autowired
-    private OfficeDoneInfo4PositionApi officeDoneInfoApi;
+    private OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
     @Autowired
     private WorkList4ddyjsService workList4ddyjsService;
@@ -42,7 +42,7 @@ public class DdyjsRestController {
     public Y9Result<String> cancelMeeting(@RequestParam(required = true) String processInstanceId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            officeDoneInfoApi.cancelMeeting(tenantId, processInstanceId);
+            officeDoneInfo4PositionApi.cancelMeeting(tenantId, processInstanceId);
             return Y9Result.successMsg("取消上会成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,7 +80,7 @@ public class DdyjsRestController {
     public Y9Result<String> setMeeting(@RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String meetingType) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            officeDoneInfoApi.setMeeting(tenantId, processInstanceId, meetingType);
+            officeDoneInfo4PositionApi.setMeeting(tenantId, processInstanceId, meetingType);
             return Y9Result.successMsg("上会成功");
         } catch (Exception e) {
             e.printStackTrace();

@@ -30,10 +30,10 @@ import net.risesoft.y9.json.Y9JsonUtil;
 public class MobileV1OpintionController {
 
     @Autowired
-    private CommonSentencesApi commonSentencesManager;
+    private CommonSentencesApi commonSentencesApi;
 
     @Autowired
-    private Opinion4PositionApi opinionManager;
+    private Opinion4PositionApi opinion4PositionApi;
 
     /**
      * 保存意见
@@ -50,7 +50,7 @@ public class MobileV1OpintionController {
             Y9LoginUserHolder.setTenantId(tenantId);
             OpinionModel opinionModel = Y9JsonUtil.readValue(formJsonData, OpinionModel.class);
             opinionModel.setTenantId(tenantId + ":mobile");
-            opinionManager.saveOrUpdate(tenantId, userId, positionId, opinionModel);
+            opinion4PositionApi.saveOrUpdate(tenantId, userId, positionId, opinionModel);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,7 +72,7 @@ public class MobileV1OpintionController {
     public Y9Result<Boolean> checkSignOpinion(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String taskId, @RequestParam(required = false) String processSerialNumber,
         HttpServletResponse response) {
         try {
-            boolean b = opinionManager.checkSignOpinion(tenantId, userId, processSerialNumber, taskId);
+            boolean b = opinion4PositionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId);
             return Y9Result.success(b, "获取成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -93,7 +93,7 @@ public class MobileV1OpintionController {
     public Y9Result<String> deleteComment(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String id, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            opinionManager.delete(tenantId, id);
+            opinion4PositionApi.delete(tenantId, id);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,7 +112,7 @@ public class MobileV1OpintionController {
     @RequestMapping(value = "/personalSetup")
     public Y9Result<List<Map<String, Object>>> personalSetup(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> listMap = commonSentencesManager.listSentencesService(tenantId, userId);
+        List<Map<String, Object>> listMap = commonSentencesApi.listSentencesService(tenantId, userId);
         return Y9Result.success(listMap, "获取成功");
     }
 
@@ -136,7 +136,7 @@ public class MobileV1OpintionController {
         @RequestParam String itembox, @RequestParam String opinionFrameMark, @RequestParam String itemId, @RequestParam String taskDefinitionKey, @RequestParam String activitiUser, HttpServletResponse response) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         Y9LoginUserHolder.setTenantId(tenantId);
-        listMap = opinionManager.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
+        listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
         return Y9Result.success(listMap, "获取成功");
     }
 
@@ -153,7 +153,7 @@ public class MobileV1OpintionController {
     public Y9Result<String> removeCommonSentences(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String id, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            commonSentencesManager.delete(tenantId, id);
+            commonSentencesApi.delete(tenantId, id);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -176,7 +176,7 @@ public class MobileV1OpintionController {
     public Y9Result<String> saveCommonSentences(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String content, @RequestParam String id, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            commonSentencesManager.save(tenantId, userId, id, content);
+            commonSentencesApi.save(tenantId, userId, id, content);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -195,7 +195,7 @@ public class MobileV1OpintionController {
     @RequestMapping(value = "/systemSetup")
     public Y9Result<List<Map<String, Object>>> systemSetup(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> listMap = commonSentencesManager.listSentencesService(tenantId, userId);
+        List<Map<String, Object>> listMap = commonSentencesApi.listSentencesService(tenantId, userId);
         return Y9Result.success(listMap, "获取成功");
     }
 }

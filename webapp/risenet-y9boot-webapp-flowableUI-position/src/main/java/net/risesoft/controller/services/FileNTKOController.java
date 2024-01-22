@@ -39,7 +39,7 @@ public class FileNTKOController {
     private Y9FileStoreService y9FileStoreService;
 
     @Autowired
-    private PersonApi personManager;
+    private PersonApi personApi;
 
     @Autowired
     private Attachment4PositionApi attachment4PositionApi;
@@ -114,7 +114,7 @@ public class FileNTKOController {
         @RequestParam(required = false) String fileId, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, @RequestParam(required = false) String positionId, @RequestParam(required = false) String fileUrl, Model model) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            Person person = personManager.getPerson(tenantId, userId).getData();
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
             String downloadUrl = y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + file.getFileStoreId() + "." + file.getFileType();
@@ -156,7 +156,7 @@ public class FileNTKOController {
         try {
             LOGGER.debug("*****************fileId={}", fileId);
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personManager.getPerson(tenantId, userId).getData();
+            Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;

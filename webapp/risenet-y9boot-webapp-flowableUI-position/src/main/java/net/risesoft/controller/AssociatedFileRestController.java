@@ -26,7 +26,7 @@ public class AssociatedFileRestController {
     private SearchService searchService;
 
     @Autowired
-    private AssociatedFile4PositionApi associatedFileManager;
+    private AssociatedFile4PositionApi associatedFile4PositionApi;
 
     /**
      * 删除关联文件
@@ -40,7 +40,7 @@ public class AssociatedFileRestController {
     public Y9Result<String> delAssociatedFile(@RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String processInstanceIds) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            boolean b = associatedFileManager.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceIds);
+            boolean b = associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceIds);
             if (b) {
                 return Y9Result.successMsg("删除成功");
             }
@@ -64,7 +64,7 @@ public class AssociatedFileRestController {
         String positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            map = associatedFileManager.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
+            map = associatedFile4PositionApi.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.success((List<Map<String, Object>>)map.get("rows"), "获取成功");
             }
@@ -101,7 +101,7 @@ public class AssociatedFileRestController {
     public Y9Result<String> saveAssociatedFile(@RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String processInstanceIds) {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            boolean b = associatedFileManager.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
+            boolean b = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
             if (b) {
                 return Y9Result.successMsg("保存成功");
             }
