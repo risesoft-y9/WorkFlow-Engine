@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!-- <groupId>net.risesoft</groupId> -->
-    <artifactId>risenet-y9boot-support-itemAdmin-position</artifactId>
-    <!-- <version>9.1.2</version> -->
+    <artifactId>risenet-y9boot-support-processadmin</artifactId>
+    <!-- <version>v9.6.3-SNAPSHOT</version> -->
 
     <parent>
         <groupId>net.risesoft</groupId>
@@ -19,35 +18,50 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <maven.javadoc.skip>true</maven.javadoc.skip>
 
-        <java.version>1.8</java.version>
+        <flowable.version>6.8.0</flowable.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-support-itemAdmin-jpaRepository</artifactId>
+            <artifactId>risenet-y9boot-starter-idgenerator</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignClient</artifactId>
+            <artifactId>risenet-y9boot-starter-kafka</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-spring-boot-starter-basic</artifactId>
+            <version>${flowable.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-ui-modeler-rest</artifactId>
+            <version>${flowable.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-json-converter</artifactId>
+            <version>${flowable.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-core</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-interface-itemAdmin</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
         </dependency>
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignClient-processAdmin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignClient-platform</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-common-model</artifactId>
@@ -62,37 +76,31 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-common-sqlddl</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient-platform</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-log</artifactId>
+            <artifactId>risenet-y9boot-starter-multi-tenant</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-support-fileService-FTP</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-jpa-public</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient-itemadmin</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-jpa-tenant</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-cache-redis</artifactId>
+            <artifactId>risenet-y9boot-rest-interface-processadmin</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -104,14 +112,13 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-listener-kafka</artifactId>
+            <artifactId>risenet-y9boot-common-push</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-elasticsearch</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
         </dependency>
 
         <dependency>
@@ -126,19 +133,28 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jodd</groupId>
-            <artifactId>jodd-mail</artifactId>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjtools</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
         </dependency>
 
+        <!-- <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency> -->
+
         <dependency>
-            <groupId>com.github.alexheretic</groupId>
-            <artifactId>fluent</artifactId>
-            <version>2.0</version>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
         </dependency>
 
         <dependency>
@@ -146,6 +162,7 @@
             <artifactId>jxl</artifactId>
             <version>2.6</version>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -163,8 +180,8 @@
                         <goals>
                             <goal>html</goal>
                             <!-- <goal>markdown</goal> -->
-                            <!--应在接口部署后再推送到 torna -->
-                            <!--<goal>torna-rest</goal> -->
+                            <!--应在接口部署后再推送到 torna-->
+                            <!--<goal>torna-rest</goal>-->
                         </goals>
                     </execution>
                 </executions>
@@ -177,8 +194,7 @@
         </plugins>
         <pluginManagement>
             <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings 
-                    only. It has no influence on the Maven build itself. -->
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>

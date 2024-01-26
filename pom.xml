@@ -16,23 +16,23 @@
     </parent>
 
     <modules>
-        <module>rest/risenet-y9boot-rest-interface-itemAdmin</module>
-        <module>rest/risenet-y9boot-rest-interface-processAdmin</module>
-        <module>rest/risenet-y9boot-rest-feignClient-itemAdmin</module>
-        <module>rest/risenet-y9boot-rest-feignClient-processAdmin</module>
+        <module>rest/risenet-y9boot-rest-interface-itemadmin</module>
+        <module>rest/risenet-y9boot-rest-interface-processadmin</module>
+        <module>rest/risenet-y9boot-rest-feignclient-itemadmin</module>
+        <module>rest/risenet-y9boot-rest-feignclient-processadmin</module>
 
-        <module>support/risenet-y9boot-support-itemAdmin-jpaRepository</module>
-        <module>support/risenet-y9boot-support-itemAdmin-position</module>
-        <module>support/risenet-y9boot-support-itemAdmin-web</module>
+        <module>support/risenet-y9boot-support-itemadmin-jpa-repository</module>
+        <module>support/risenet-y9boot-support-itemadmin-position</module>
+        <module>support/risenet-y9boot-support-itemadmin-web</module>
         <module>support/risenet-y9boot-support-jodconverter</module>
-        <module>support/risenet-y9boot-support-processAdmin</module>
+        <module>support/risenet-y9boot-support-processadmin</module>
 
-        <module>webapp/risenet-y9boot-webapp-flowableUI</module>
-        <module>webapp/risenet-y9boot-webapp-flowableUI-position</module>
-        <module>webapp/risenet-y9boot-webapp-itemAdmin</module>
+        <module>webapp/risenet-y9boot-webapp-flowableui</module>
+        <module>webapp/risenet-y9boot-webapp-flowableui-position</module>
+        <module>webapp/risenet-y9boot-webapp-itemadmin</module>
         <!--<module>webapp/risenet-y9boot-webapp-jodconverter</module>-->
         <module>webapp/risenet-y9boot-webapp-jodconverter-new</module>
-        <module>webapp/risenet-y9boot-webapp-processAdmin</module>
+        <module>webapp/risenet-y9boot-webapp-processadmin</module>
     </modules>
 
 </project>

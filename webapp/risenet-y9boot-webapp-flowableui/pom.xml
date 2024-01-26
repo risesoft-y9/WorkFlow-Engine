@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- <groupId>net.risesoft</groupId> -->
-    <artifactId>risenet-y9boot-webapp-flowableUI</artifactId>
+    <artifactId>risenet-y9boot-webapp-flowableui</artifactId>
     <packaging>war</packaging>
 
     <parent>
@@ -23,7 +23,7 @@
     <dependencies>
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-idGenerator</artifactId>
+            <artifactId>risenet-y9boot-starter-idgenerator</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -60,7 +60,7 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-support-fileService-FTP</artifactId>
+            <artifactId>risenet-y9boot-support-file-service-ftp</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -83,31 +83,31 @@
         </dependency>
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-dbComment</artifactId>
+            <artifactId>risenet-y9boot-starter-dbcomment</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignClient-platform</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient-platform</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignClient</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignClient-itemAdmin</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient-itemadmin</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignClient-processAdmin</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient-processadmin</artifactId>
             <version>${project.version}</version>
         </dependency>
 

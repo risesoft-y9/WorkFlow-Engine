@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!-- <groupId>net.risesoft</groupId> -->
-    <artifactId>risenet-y9boot-support-itemAdmin-web</artifactId>
+    <artifactId>risenet-y9boot-support-itemadmin-web</artifactId>
     <!-- <version>9.1.2</version> -->
 
     <parent>
@@ -24,37 +24,37 @@
     <dependencies>
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-support-itemAdmin-jpaRepository</artifactId>
+            <artifactId>risenet-y9boot-support-itemadmin-jpa-repository</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-idGenerator</artifactId>
+            <artifactId>risenet-y9boot-starter-idgenerator</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignClient</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignClient-processAdmin</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient-processadmin</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignClient-platform</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient-platform</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-interface-itemAdmin</artifactId>
+            <artifactId>risenet-y9boot-rest-interface-itemadmin</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -84,7 +84,7 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-support-fileService-FTP</artifactId>
+            <artifactId>risenet-y9boot-support-file-service-ftp</artifactId>
             <version>${project.version}</version>
         </dependency>
 

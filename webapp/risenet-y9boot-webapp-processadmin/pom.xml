@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!-- <groupId>net.risesoft</groupId> -->
-    <artifactId>risenet-y9boot-webapp-processAdmin</artifactId>
+    <artifactId>risenet-y9boot-webapp-processadmin</artifactId>
     <!-- <version>v9.6.3-SNAPSHOT</version> -->
     <packaging>war</packaging>
 
@@ -38,7 +38,7 @@
     <dependencies>
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-support-processAdmin</artifactId>
+            <artifactId>risenet-y9boot-support-processadmin</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
@@ -64,7 +64,7 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-common-tenantDataSource</artifactId>
+            <artifactId>risenet-y9boot-common-tenant-datasource</artifactId>
             <version>${project.version}</version>
         </dependency>
 
