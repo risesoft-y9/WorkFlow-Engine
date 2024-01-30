@@ -18,6 +18,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -82,8 +83,8 @@ public class SyncYearTableService {
             for (String tenantId : list) {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 String sql = "SELECT" + "	count(t.ID)" + " FROM" + "	rs_common_tenant_system t"
-                    + " LEFT JOIN rs_common_system s on t.SYSTEMID = s.ID" + " WHERE" + "	t.TENANTID = '" + tenantId
-                    + "'" + " and s.SYSTEMNAME = 'itemAdmin'";
+                        + " LEFT JOIN rs_common_system s on t.SYSTEMID = s.ID" + " WHERE" + "	t.TENANTID = '" + tenantId
+                        + "'" + " and s.SYSTEMNAME = 'itemAdmin'";
                 int count = jdbcTemplate4Public.queryForObject(sql, Integer.class);
                 if (count > 0) {
                     this.syncYearTable(year0);
@@ -113,12 +114,23 @@ public class SyncYearTableService {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
                 year = sdf.format(new Date());
             }
+            Integer count = -1;
+            try {
+                count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM act_hi_actinst_" + year, Integer.class);
+            } catch (Exception ignored) {
+            }
+            if (null != count && count >= 0) {
+                map.put(UtilConsts.SUCCESS, true);
+                map.put("msg", year + "年度表结构已存在！");
+                LOGGER.info("************************" + year + "年度表结构已存在！****************************");
+                return map;
+            }
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             connection = dataSource.getConnection();
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
             String filePath = Y9Context.getWebRootRealPath() + "static" + File.separator + "yearTableSql"
-                + File.separator + dialectName + File.separator + "yearTable.sql";
+                    + File.separator + dialectName + File.separator + "yearTable.sql";
             File file = new File(filePath);
             byte[] buffer = null;
             String droptable = "droptable";
