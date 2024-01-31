@@ -23,7 +23,7 @@ $ yum install libSM
 $ yum update nss  
 ```
 
-### 2.2 国产系统 arm架构 
+### 1.2 国产系统 arm架构 
 1.下载并上传到服务器 /opt 目录下  
 [libreoffice-7.5.9.2 arm 安装包](https://vue.youshengyun.com/storage/s/1621472837644587008.xz)  
 ```shell
@@ -39,7 +39,7 @@ mv instdir libreoffice7
 [1] 2803  
 ```
 
-### 3.字体安装
+### 2.字体安装
 
 [myFonts.tar.gz](https://vue.youshengyun.com/storage/s/1586775089787965440.gz)  
 /* 将字体文件放入以下目录并解压，会生成chinese目录 */  
@@ -50,11 +50,11 @@ $ mkfontscale （如果提示 mkfontscale: command not found，需安装 # yum i
 $ mkfontdir
 $ fc-cache -fv （如果提示 fc-cache: command not found，则需要安装# yum install fontconfig ）
 
-### 4.替换字体配置
+### 3.替换字体配置
 
 用以下文件，替换/opt/libreoffice7/share/fonts/truetype/fc_local.conf  
 [fc_local.conf](https://vue.youshengyun.com/storage/s/1586775102685450240.conf)
 
-### 5.后续若需添加新字体，参照并修改/opt/libreoffice7/usr/share/fonts/truetype/fc_local.conf 文件，如下：
+### 4.后续若需添加新字体，参照并修改/opt/libreoffice7/usr/share/fonts/truetype/fc_local.conf 文件，如下：
 
 ![img.png](https://vue.youshengyun.com/storage/s/1586745686706098176.png)
