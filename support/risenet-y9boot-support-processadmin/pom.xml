@@ -24,7 +24,7 @@
     <dependencies>
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-idGenerator</artifactId>
+            <artifactId>risenet-y9boot-starter-idgenerator</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -77,7 +77,7 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignClient-platform</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient-platform</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -89,19 +89,19 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignClient</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignClient-itemAdmin</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient-itemadmin</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-interface-processAdmin</artifactId>
+            <artifactId>risenet-y9boot-rest-interface-processadmin</artifactId>
             <version>${project.version}</version>
         </dependency>
 
