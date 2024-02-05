@@ -1,5 +1,4 @@
 FROM tomcat:9.0-jre11-temurin
-MAINTAINER lizhiwen "lizhiwen@youshengyun.com"
 # 内置一些常用的中文字体，避免普遍性乱码
 COPY ./myFonts.tar.gz /usr/share/fonts/
 COPY ./LibreOffice_7.5.3.2_Linux_x86-64_deb.tar.gz /opt/
