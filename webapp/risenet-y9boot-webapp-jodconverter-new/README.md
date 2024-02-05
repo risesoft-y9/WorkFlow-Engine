@@ -41,7 +41,7 @@ mv instdir libreoffice7
 
 ### 2.字体安装
 
-[myFonts.tar.gz](https://vue.youshengyun.com/storage/s/1586775089787965440.gz)  
+[myFonts.tar.gz](https://vue.youshengyun.com/storage/s/1621470919820054528.gz)  
 /* 将字体文件放入以下目录并解压，会生成chinese目录 */  
 $ cd /usr/share/fonts
 $ tar -zxvf myFonts.tar.gz
