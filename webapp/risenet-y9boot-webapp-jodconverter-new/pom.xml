@@ -380,10 +380,6 @@
                             <from>
                                 <!--<image>eclipse-temurin:11-jre</image>-->
                                 <image>docker-registry-internal.youshengyun.com/libreoffice-tomcat9:v7.5.3.2</image>
-                                <auth>
-                                    <username>admin</username>
-                                    <password>admin</password>
-                                </auth>
                                 <platforms>
                                     <platform>
                                         <architecture>amd64</architecture>
@@ -396,10 +392,6 @@
                                 <tags>
                                     <tag>${project.version}</tag>
                                 </tags>
-                                <auth>
-                                    <username>admin</username>
-                                    <password>admin</password>
-                                </auth>
                             </to>
                         </configuration>
                         <executions>
