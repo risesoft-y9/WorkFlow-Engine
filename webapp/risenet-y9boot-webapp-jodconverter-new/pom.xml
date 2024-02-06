@@ -387,21 +387,7 @@
                                     </platform>
                                 </platforms>
                             </from>
-                            <to>
-                                <image>docker-registry-internal.youshengyun.com/${project.artifactId}</image>
-                                <tags>
-                                    <tag>${project.version}</tag>
-                                </tags>
-                            </to>
                         </configuration>
-                        <executions>
-                            <execution>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
