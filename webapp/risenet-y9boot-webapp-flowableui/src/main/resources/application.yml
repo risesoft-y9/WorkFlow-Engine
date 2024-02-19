@@ -31,7 +31,9 @@ spring:
                 namespace: dev
                 server-addr: https://dev.youshengyun.com:443
                 username: nacos
-                password: Risesoft@2022
+                password: nacos@2022
+            discovery:
+                enabled: false
     config:
         import:
             - optional:nacos:flowableUI.yml
