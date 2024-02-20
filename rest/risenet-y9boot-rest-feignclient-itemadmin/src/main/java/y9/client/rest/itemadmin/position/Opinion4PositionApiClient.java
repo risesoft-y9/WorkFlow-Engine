@@ -19,8 +19,8 @@ import net.risesoft.model.itemadmin.OpinionModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "Opinion4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/opinion4Position")
+@FeignClient(contextId = "Opinion4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/opinion4Position")
 public interface Opinion4PositionApiClient extends Opinion4PositionApi {
 
     /**

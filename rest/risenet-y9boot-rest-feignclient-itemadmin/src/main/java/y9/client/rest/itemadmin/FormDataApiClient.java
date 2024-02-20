@@ -16,8 +16,8 @@ import net.risesoft.model.itemadmin.Y9FormFieldModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "FormDataApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/formData")
+@FeignClient(contextId = "FormDataApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/formData")
 public interface FormDataApiClient extends FormDataApi {
 
     /**

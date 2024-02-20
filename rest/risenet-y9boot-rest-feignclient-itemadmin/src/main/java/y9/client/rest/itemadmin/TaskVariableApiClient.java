@@ -12,8 +12,8 @@ import net.risesoft.model.itemadmin.TaskVariableModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "TaskVariableApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/taskVariable")
+@FeignClient(contextId = "TaskVariableApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/taskVariable")
 public interface TaskVariableApiClient extends TaskVariableApi {
 
     /**

@@ -15,8 +15,8 @@ import net.risesoft.model.platform.Person;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ReceiveDeptAndPersonApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/receiveDeptAndPerson")
+@FeignClient(contextId = "ReceiveDeptAndPersonApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/receiveDeptAndPerson")
 public interface ReceiveDeptAndPersonApiClient extends ReceiveDeptAndPersonApi {
 
     /**

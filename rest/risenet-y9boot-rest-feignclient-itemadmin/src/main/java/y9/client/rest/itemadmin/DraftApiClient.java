@@ -14,8 +14,8 @@ import net.risesoft.api.itemadmin.DraftApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "DraftApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/draft")
+@FeignClient(contextId = "DraftApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/draft")
 public interface DraftApiClient extends DraftApi {
 
     /**

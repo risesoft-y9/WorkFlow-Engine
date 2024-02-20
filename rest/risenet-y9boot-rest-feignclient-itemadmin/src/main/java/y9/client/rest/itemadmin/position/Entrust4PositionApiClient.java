@@ -9,8 +9,8 @@ import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "Entrust4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/entrust4Position")
+@FeignClient(contextId = "Entrust4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/entrust4Position")
 public interface Entrust4PositionApiClient extends Entrust4PositionApi {
 
 }

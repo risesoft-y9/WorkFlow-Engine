@@ -15,8 +15,8 @@ import net.risesoft.model.itemadmin.DocumentWpsModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "DocumentWpsApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/documentWps")
+@FeignClient(contextId = "DocumentWpsApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/documentWps")
 public interface DocumentWpsApiClient extends DocumentWpsApi {
 
     /**

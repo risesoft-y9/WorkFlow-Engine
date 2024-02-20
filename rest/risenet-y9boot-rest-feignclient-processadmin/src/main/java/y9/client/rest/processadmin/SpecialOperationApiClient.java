@@ -15,8 +15,8 @@ import net.risesoft.api.processadmin.SpecialOperationApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "SpecialOperationApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
-    path = "/services/rest/specialOperation")
+@FeignClient(contextId = "SpecialOperationApiClient", name = "${y9.service.processAdmin.name:processAdmin}", url = "${y9.service.processAdmin.directUrl:}",
+    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/specialOperation")
 public interface SpecialOperationApiClient extends SpecialOperationApi {
 
     /**

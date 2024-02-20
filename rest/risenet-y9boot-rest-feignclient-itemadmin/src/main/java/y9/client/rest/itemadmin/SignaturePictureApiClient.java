@@ -13,8 +13,8 @@ import net.risesoft.model.itemadmin.SignaturePictureModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "SignaturePictureApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/signaturePicture")
+@FeignClient(contextId = "SignaturePictureApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/signaturePicture")
 public interface SignaturePictureApiClient extends SignaturePictureApi {
 
     /**

@@ -19,8 +19,8 @@ import net.risesoft.model.processadmin.TaskModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "TaskApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
-    path = "/services/rest/task")
+@FeignClient(contextId = "TaskApiClient", name = "${y9.service.processAdmin.name:processAdmin}", url = "${y9.service.processAdmin.directUrl:}",
+    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/task")
 public interface TaskApiClient extends TaskApi {
 
     /**
