@@ -17,8 +17,8 @@ import net.risesoft.model.itemadmin.OfficeFollowModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "OfficeFollowApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/officeFollow")
+@FeignClient(contextId = "OfficeFollowApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/officeFollow")
 public interface OfficeFollowApiClient extends OfficeFollowApi {
 
     /**

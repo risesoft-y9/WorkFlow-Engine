@@ -14,7 +14,7 @@ import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ItemOpinionFrameBindApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/itemOpinionFrameBind")
+@FeignClient(contextId = "ItemOpinionFrameBindApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemOpinionFrameBind")
 public interface ItemOpinionFrameBindApiClient extends ItemOpinionFrameBindApi {
 
     /**

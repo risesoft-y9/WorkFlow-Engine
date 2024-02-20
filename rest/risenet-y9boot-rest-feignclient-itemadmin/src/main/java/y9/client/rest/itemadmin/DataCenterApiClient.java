@@ -11,8 +11,8 @@ import net.risesoft.api.itemadmin.DataCenterApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "DataCenterApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/dataCenter")
+@FeignClient(contextId = "DataCenterApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/dataCenter")
 public interface DataCenterApiClient extends DataCenterApi {
 
     /**

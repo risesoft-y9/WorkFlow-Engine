@@ -19,7 +19,7 @@ import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "OfficeDoneInfo4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/officeDoneInfo4Position")
+@FeignClient(contextId = "OfficeDoneInfo4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/officeDoneInfo4Position")
 public interface OfficeDoneInfo4PositionApiClient extends OfficeDoneInfo4PositionApi {
 
     /**

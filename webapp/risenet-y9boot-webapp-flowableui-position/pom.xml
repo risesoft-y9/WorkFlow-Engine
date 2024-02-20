@@ -101,7 +101,7 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignclient</artifactId>
+            <artifactId>risenet-y9boot-rest-feignclient-todo</artifactId>
             <version>${project.version}</version>
         </dependency>
 

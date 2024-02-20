@@ -204,6 +204,19 @@ y9:
             weiXinSwitch: true
             weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage
         risesoftTenantId: 993f08e4a9624c7d82b0bd0766f45f10
+    service:
+        processAdmin:
+            directUrl: http://localhost:7056
+        msgRemind:
+            directUrl: https://dev.youshengyun.com
+        datacenter:
+            directUrl: https://dev.youshengyun.com
+        sms:
+            directUrl: http://localhost:7056
+        todo:
+            directUrl: https://dev.youshengyun.com
+        org:
+            directUrl: http://localhost:7055
     common:
         cacheEnabled: true
         kafkaEnabled: true

@@ -17,8 +17,8 @@ import net.risesoft.model.itemadmin.EntrustModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "EntrustApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/entrust")
+@FeignClient(contextId = "EntrustApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/entrust")
 public interface EntrustApiClient extends EntrustApi {
 
     /**

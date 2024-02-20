@@ -9,8 +9,8 @@ import net.risesoft.api.itemadmin.QuickSendApi;
  * @author zhangchongjie
  * @date 2023/09/07
  */
-@FeignClient(contextId = "QuickSendApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/quickSend")
+@FeignClient(contextId = "QuickSendApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/quickSend")
 public interface QuickSendApiClient extends QuickSendApi {
 
 }

@@ -18,8 +18,8 @@ import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "HistoricVariableApiClient", name = "processAdmin", url = "${y9.common.processAdminBaseUrl}",
-    path = "/services/rest/historicVariable")
+@FeignClient(contextId = "HistoricVariableApiClient", name = "${y9.service.processAdmin.name:processAdmin}", url = "${y9.service.processAdmin.directUrl:}",
+    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/historicVariable")
 public interface HistoricVariableApiClient extends HistoricVariableApi {
 
     /**

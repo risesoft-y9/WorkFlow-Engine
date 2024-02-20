@@ -16,7 +16,7 @@ import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "AssociatedFile4PositionApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/associatedFile4Position")
+@FeignClient(contextId = "AssociatedFile4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/associatedFile4Position")
 public interface AssociatedFile4PositionApiClient extends AssociatedFile4PositionApi {
 
     /**

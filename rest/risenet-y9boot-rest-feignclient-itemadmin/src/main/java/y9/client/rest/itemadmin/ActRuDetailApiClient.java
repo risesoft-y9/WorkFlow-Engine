@@ -17,8 +17,8 @@ import net.risesoft.model.itemadmin.ActRuDetailModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ActRuDetailApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/actRuDetail")
+@FeignClient(contextId = "ActRuDetailApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/actRuDetail")
 public interface ActRuDetailApiClient extends ActRuDetailApi {
 
     /**

@@ -19,7 +19,7 @@ import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "OfficeDoneInfoApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}", path = "/services/rest/officeDoneInfo")
+@FeignClient(contextId = "OfficeDoneInfoApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/officeDoneInfo")
 public interface OfficeDoneInfoApiClient extends OfficeDoneInfoApi {
 
     /**

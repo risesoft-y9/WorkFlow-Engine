@@ -16,8 +16,8 @@ import net.risesoft.api.itemadmin.ReminderApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ReminderApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/reminder")
+@FeignClient(contextId = "ReminderApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/reminder")
 public interface ReminderApiClient extends ReminderApi {
 
     /**

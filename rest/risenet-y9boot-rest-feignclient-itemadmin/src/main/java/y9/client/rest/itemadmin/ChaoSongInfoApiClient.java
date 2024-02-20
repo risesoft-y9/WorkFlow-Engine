@@ -16,8 +16,8 @@ import net.risesoft.api.itemadmin.ChaoSongInfoApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ChaoSongInfoApiClient", name = "itemAdmin", url = "${y9.common.itemAdminBaseUrl}",
-    path = "/services/rest/chaoSongInfo")
+@FeignClient(contextId = "ChaoSongInfoApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/chaoSongInfo")
 public interface ChaoSongInfoApiClient extends ChaoSongInfoApi {
 
     /**

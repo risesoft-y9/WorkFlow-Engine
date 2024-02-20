@@ -193,6 +193,17 @@ y9:
             todoSwitch: false
             weiXinSwitch: false
             weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage
+    service:
+        itemAdmin:
+            directUrl: http://localhost:7056
+        sms:
+            directUrl: http://localhost:7056
+        todo:
+            directUrl: http://localhost:7056
+        msgRemind:
+            directUrl: http://localhost:7056
+        org:
+            directUrl: http://localhost:7055
     common:
         cacheEnabled: true
         kafkaEnabled: true

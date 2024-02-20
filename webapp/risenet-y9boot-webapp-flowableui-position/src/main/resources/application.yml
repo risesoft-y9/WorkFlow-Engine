@@ -166,6 +166,15 @@ y9:
             inNetrouteToTaskId: qicao
             outNetrouteToTaskId: fenpei
             processDefinitionKey: workOrderManage
+    service:
+        itemAdmin:
+            directUrl: http://localhost:7057
+        processAdmin:
+            directUrl: http://localhost:7056
+        todo:
+            directUrl: http://localhost:7056
+        org:
+            directUrl: http://localhost:7055
     common:
         cacheEnabled: true
         kafkaEnabled: true
