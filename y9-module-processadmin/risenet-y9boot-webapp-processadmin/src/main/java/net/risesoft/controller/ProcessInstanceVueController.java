@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.org.OrgUnitApi;
-import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;

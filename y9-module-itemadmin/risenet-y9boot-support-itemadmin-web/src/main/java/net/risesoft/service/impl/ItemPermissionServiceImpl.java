@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.api.org.OrgUnitApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.ItemPermission;
 import net.risesoft.entity.SpmApproveItem;

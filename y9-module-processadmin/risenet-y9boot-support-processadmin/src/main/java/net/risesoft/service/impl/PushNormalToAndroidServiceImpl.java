@@ -13,11 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.Y9Push;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.platform.Person;
 import net.risesoft.service.PushNormalToAndroidService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.configuration.Y9Properties;

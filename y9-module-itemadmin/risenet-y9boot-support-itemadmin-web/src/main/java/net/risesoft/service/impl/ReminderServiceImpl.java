@@ -18,7 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.Reminder;
 import net.risesoft.enums.ItemUrgeTypeEnum;
 import net.risesoft.id.IdType;

@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.org.OrgUnitApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.id.IdType;
@@ -87,7 +87,8 @@ public class TodoTaskServiceImpl implements TodoTaskService {
                 errorLogModel.setText("false");
                 errorLogModel.setUpdateTime(time);
                 errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
-                LOGGER.info("##########################删除超级待办：失败-delete,taskId:{}##########################", task.getId());
+                LOGGER.info("##########################删除超级待办：失败-delete,taskId:{}##########################",
+                    task.getId());
             }
         } catch (Exception e) {
             LOGGER.warn("##########################删除超级待办：失败{}##########################", task.getId());
@@ -128,7 +129,8 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             if (msg) {
                 LOGGER.info("##########################删除超级待办：成功-delete##########################");
             } else {
-                LOGGER.info("##########################删除超级待办：失败-delete,taskId:{}##########################", executionEntity.getProcessInstanceId());
+                LOGGER.info("##########################删除超级待办：失败-delete,taskId:{}##########################",
+                    executionEntity.getProcessInstanceId());
             }
         } catch (Exception e) {
             LOGGER.warn("##########################删除超级待办：失败##########################");
@@ -159,7 +161,8 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             String tenantId = (String)map.get("tenantId");
             Y9LoginUserHolder.setTenantId(tenantId);
             String processSerialNumber = (String)map.get("processSerialNumber");
-            ProcessParamModel processParamModel = processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             String itemId = processParamModel.getItemId();
             String itemName = processParamModel.getItemName();
             if (StringUtils.isNotBlank(tenantId)) {
@@ -217,12 +220,14 @@ public class TodoTaskServiceImpl implements TodoTaskService {
                 todo.setUrgency(urgency);
                 todo.setDocNumber(docNumber);
                 todo.setEmailAble(false);
-                if (StringUtils.isBlank(processParamModel.getSended()) || UtilConsts.FALSE.equals(processParamModel.getSended())) {
+                if (StringUtils.isBlank(processParamModel.getSended())
+                    || UtilConsts.FALSE.equals(processParamModel.getSended())) {
                     // 第一步新建产生的任务，不进行提醒
                     todo.setEmailAble(true);
                 }
                 todo.setProcessInstanceId(task.getProcessInstanceId());
-                String url = todoTaskUrlPrefix + "?taskId=" + task.getId() + "&itemId=" + itemId + "&processInstanceId=&type=fromTodo";
+                String url = todoTaskUrlPrefix + "?taskId=" + task.getId() + "&itemId=" + itemId
+                    + "&processInstanceId=&type=fromTodo";
                 todo.setUrl(url);
                 boolean b = todoTaskManager.saveTodoTask(tenantId, todo);
                 if (b) {
@@ -241,7 +246,8 @@ public class TodoTaskServiceImpl implements TodoTaskService {
                     errorLogModel.setText("false");
                     errorLogModel.setUpdateTime(time);
                     errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
-                    LOGGER.info("##########################保存超级待办失败-生成超级待办信息时发生异常-taskId:{}##########################", task.getId());
+                    LOGGER.info("##########################保存超级待办失败-生成超级待办信息时发生异常-taskId:{}##########################",
+                        task.getId());
                 }
             }
         } catch (Exception e) {

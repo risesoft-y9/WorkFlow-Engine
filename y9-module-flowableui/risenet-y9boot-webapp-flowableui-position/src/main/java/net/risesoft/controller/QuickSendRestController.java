@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.customgroup.CustomGroupApi;
+import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.itemadmin.QuickSendApi;
-import net.risesoft.api.org.DepartmentApi;
-import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.model.platform.CustomGroup;

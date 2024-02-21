@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.ReminderApi;
-import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Reminder;

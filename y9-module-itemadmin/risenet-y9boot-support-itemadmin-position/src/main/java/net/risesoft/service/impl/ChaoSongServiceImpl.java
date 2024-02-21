@@ -22,9 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.org.DepartmentApi;
-import net.risesoft.api.org.OrganizationApi;
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrganizationApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.sms.SmsHttpApi;

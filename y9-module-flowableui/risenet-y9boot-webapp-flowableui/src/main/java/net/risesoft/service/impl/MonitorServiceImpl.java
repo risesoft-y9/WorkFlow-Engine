@@ -18,7 +18,7 @@ import net.risesoft.api.itemadmin.ChaoSongInfoApi;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.MonitorApi;
 import net.risesoft.api.processadmin.TaskApi;

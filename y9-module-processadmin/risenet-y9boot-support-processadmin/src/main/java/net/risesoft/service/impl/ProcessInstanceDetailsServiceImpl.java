@@ -13,13 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.Position;
 import net.risesoft.service.ProcessInstanceDetailsService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.configuration.Y9Properties;

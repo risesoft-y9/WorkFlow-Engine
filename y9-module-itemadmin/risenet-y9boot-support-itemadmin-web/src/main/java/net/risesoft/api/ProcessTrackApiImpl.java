@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.ProcessTrackApi;
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ProcessTrack;
-import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
+import net.risesoft.model.platform.Person;
 import net.risesoft.service.ProcessTrackService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;

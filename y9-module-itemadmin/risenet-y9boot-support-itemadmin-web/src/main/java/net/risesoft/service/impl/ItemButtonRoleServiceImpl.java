@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.entity.ItemButtonRole;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;

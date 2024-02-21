@@ -24,8 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.org.ManagerApi;
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.ManagerApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.TaoHongTemplate;
 import net.risesoft.entity.TaoHongTemplateType;
 import net.risesoft.model.platform.Manager;

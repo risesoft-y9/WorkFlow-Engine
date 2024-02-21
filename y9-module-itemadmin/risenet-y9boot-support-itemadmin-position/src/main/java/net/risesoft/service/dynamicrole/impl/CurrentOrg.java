@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.risesoft.api.org.OrgUnitApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;

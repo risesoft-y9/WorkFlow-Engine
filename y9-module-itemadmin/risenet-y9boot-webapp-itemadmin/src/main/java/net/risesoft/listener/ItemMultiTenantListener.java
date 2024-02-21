@@ -11,9 +11,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.resource.AppApi;
-import net.risesoft.api.resource.SystemApi;
-import net.risesoft.api.tenant.TenantApi;
+import net.risesoft.api.platform.resource.AppApi;
+import net.risesoft.api.platform.resource.SystemApi;
+import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.enums.platform.ManagerLevelEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;

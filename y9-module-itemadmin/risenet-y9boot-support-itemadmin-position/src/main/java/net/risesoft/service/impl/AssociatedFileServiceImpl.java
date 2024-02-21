@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -142,7 +142,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
+        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
+            taskId = "";
         List<String> list = new ArrayList<String>();
         int i = 0;
         if (taskList.size() > 0) {
@@ -167,7 +168,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser = positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                Position ownerUser =
+                                    positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -241,7 +243,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                             mapTemp.put("processDefinitionId", processDefinitionId);
                             mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
                             mapTemp.put("startTime", startTime);
-                            mapTemp.put("endTime", StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
+                            mapTemp.put("endTime",
+                                StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
                             mapTemp.put("taskDefinitionKey", "");
                             mapTemp.put("taskAssignee", completer);
                             mapTemp.put("creatUserName", hpim.getCreatUserName());
@@ -254,9 +257,11 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                             if (StringUtils.isBlank(hpim.getEndTime())) {
                                 List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                                 List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                                String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
+                                String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
+                                    assigneeNames = listTemp.get(2);
                                 mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                                mapTemp.put("taskId", listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                                mapTemp.put("taskId", listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds
+                                    : listTemp.get(4));
                                 mapTemp.put("taskAssigneeId", assigneeIds);
                                 mapTemp.put("taskAssignee", assigneeNames);
                                 mapTemp.put("itembox", listTemp.get(3));
@@ -334,7 +339,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                                     endTime = sdf.format(sdf1.parse(officeDoneInfoModel.getEndTime()));
                                 } else {
                                     String year = processParam.getCreateTime().substring(0, 4);
-                                    HistoricProcessInstanceModel hpi = historicProcessManager.getByIdAndYear(tenantId, id, year);
+                                    HistoricProcessInstanceModel hpi =
+                                        historicProcessManager.getByIdAndYear(tenantId, id, year);
                                     startTime = sdf.format(hpi.getStartTime());
                                     endTime1 = sdf1.format(hpi.getEndTime());
                                     endTime = sdf.format(hpi.getEndTime());
@@ -344,7 +350,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                             String itemId = processParam.getItemId();
                             String itemName = processParam.getItemName();
                             String documentTitle = processParam.getTitle();
-                            String user4Complete = StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter();
+                            String user4Complete =
+                                StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter();
                             mapTemp.put("itemName", itemName);
                             mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber1);
                             mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);

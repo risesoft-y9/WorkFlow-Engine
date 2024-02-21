@@ -19,7 +19,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.risesoft.api.itemadmin.RemindInstanceApi;
-import net.risesoft.api.org.OrgUnitApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -63,7 +63,8 @@ public class RemindInstanceRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         HistoricProcessInstanceModel his = historicProcessApi.getById(tenantId, processInstanceId);
         List<Map<String, Object>> list0 = processDefinitionApi.getNodes(tenantId, his.getProcessDefinitionId(), false);
-        RemindInstanceModel remindInstance = remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId);
+        RemindInstanceModel remindInstance =
+            remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId);
         retMap.put("remindType", "");
         retMap.put("completeTaskKey", "");
         retMap.put("arriveTaskKey", "");
@@ -111,12 +112,14 @@ public class RemindInstanceRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveRemindInstance", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveRemindInstance(@RequestParam(required = true) String processInstanceId, @RequestParam(required = false) String taskIds, @RequestParam(required = true) Boolean process, @RequestParam(required = false) String arriveTaskKey,
-        @RequestParam(required = false) String completeTaskKey) {
+    public Y9Result<String> saveRemindInstance(@RequestParam(required = true) String processInstanceId,
+        @RequestParam(required = false) String taskIds, @RequestParam(required = true) Boolean process,
+        @RequestParam(required = false) String arriveTaskKey, @RequestParam(required = false) String completeTaskKey) {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            map = remindInstanceApi.saveRemindInstance(tenantId, userId, processInstanceId, taskIds, process, arriveTaskKey, completeTaskKey);
+            map = remindInstanceApi.saveRemindInstance(tenantId, userId, processInstanceId, taskIds, process,
+                arriveTaskKey, completeTaskKey);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("保存成功");
             }
@@ -148,7 +151,8 @@ public class RemindInstanceRestController {
             Map<String, Object> mapTemp = null;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date currentTime = new Date();
-            RemindInstanceModel remindInstance = remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId);
+            RemindInstanceModel remindInstance =
+                remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId);
             retMap.put("remindType", "");
             retMap.put("taskIds", "");
             if (remindInstance != null) {
@@ -160,7 +164,8 @@ public class RemindInstanceRestController {
                 String taskId = task.getId();
                 String taskName = task.getName();
                 mapTemp.put("taskId", taskId);
-                mapTemp.put("userName", StringUtils.isBlank(task.getAssignee()) ? "" : orgUnitApi.getOrgUnit(tenantId, task.getAssignee()).getData().getName());
+                mapTemp.put("userName", StringUtils.isBlank(task.getAssignee()) ? ""
+                    : orgUnitApi.getOrgUnit(tenantId, task.getAssignee()).getData().getName());
                 mapTemp.put("taskName", taskName);
                 mapTemp.put("createTime", sdf.format(task.getCreateTime()));
                 mapTemp.put("duration", longTime(task.getCreateTime(), currentTime));

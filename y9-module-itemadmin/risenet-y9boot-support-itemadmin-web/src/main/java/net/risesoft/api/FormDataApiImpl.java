@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.FormDataApi;
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.model.platform.Person;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
+import net.risesoft.model.platform.Person;
 import net.risesoft.service.FormDataService;
 import net.risesoft.y9.Y9LoginUserHolder;
 

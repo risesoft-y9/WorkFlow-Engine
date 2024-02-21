@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import net.risesoft.api.org.DepartmentApi;
+import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.TransactionFile;
 import net.risesoft.id.IdType;

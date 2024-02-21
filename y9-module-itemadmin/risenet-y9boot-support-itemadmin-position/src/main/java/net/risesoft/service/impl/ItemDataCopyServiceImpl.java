@@ -10,12 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.api.org.OrgUnitApi;
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.permission.RoleApi;
+import net.risesoft.api.platform.resource.SystemApi;
 import net.risesoft.api.processadmin.ProcessDataCopyApi;
 import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.api.resource.SystemApi;
 import net.risesoft.entity.BookMarkBind;
 import net.risesoft.entity.CalendarConfig;
 import net.risesoft.entity.CommonButton;

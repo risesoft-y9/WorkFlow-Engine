@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.org.DepartmentApi;
-import net.risesoft.api.org.OrganizationApi;
-import net.risesoft.api.resource.AppIconApi;
+import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrganizationApi;
+import net.risesoft.api.platform.resource.AppIconApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;

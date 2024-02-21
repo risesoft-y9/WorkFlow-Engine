@@ -21,10 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import net.risesoft.api.permission.PersonResourceApi;
-import net.risesoft.enums.platform.AuthorityEnum;
+import net.risesoft.api.platform.permission.PersonResourceApi;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
+import net.risesoft.enums.platform.AuthorityEnum;
 import net.risesoft.model.platform.Resource;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.service.CustomRepositoryService;

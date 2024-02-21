@@ -1,32 +1,14 @@
 package net.risesoft.service.impl;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import net.risesoft.api.customgroup.CustomGroupApi;
-import net.risesoft.api.org.DepartmentApi;
-import net.risesoft.api.org.OrgUnitApi;
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.PersonResourceApi;
-import net.risesoft.api.permission.PersonRoleApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.platform.customgroup.CustomGroupApi;
+import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.permission.PersonResourceApi;
+import net.risesoft.api.platform.permission.PersonRoleApi;
+import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ItemButtonBind;
@@ -84,8 +66,11 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.Y9Util;
-
-import y9.client.rest.open.todo.TodoTaskApiClient;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import y9.client.rest.processadmin.HistoricProcessApiClient;
 import y9.client.rest.processadmin.HistoricTaskApiClient;
 import y9.client.rest.processadmin.ProcessDefinitionApiClient;
@@ -94,6 +79,18 @@ import y9.client.rest.processadmin.RepositoryApiClient;
 import y9.client.rest.processadmin.RuntimeApiClient;
 import y9.client.rest.processadmin.TaskApiClient;
 import y9.client.rest.processadmin.VariableApiClient;
+import y9.client.rest.todo.TodoTaskApiClient;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman

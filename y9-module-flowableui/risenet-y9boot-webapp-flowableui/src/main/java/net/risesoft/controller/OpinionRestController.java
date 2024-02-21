@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.OpinionApi;
-import net.risesoft.api.org.DepartmentApi;
-import net.risesoft.api.org.OrgUnitApi;
-import net.risesoft.api.org.OrganizationApi;
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.PersonRoleApi;
+import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.OrganizationApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.permission.PersonRoleApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;

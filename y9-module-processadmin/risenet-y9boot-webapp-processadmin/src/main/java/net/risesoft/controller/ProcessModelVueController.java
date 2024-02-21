@@ -48,7 +48,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import net.risesoft.api.permission.PersonResourceApi;
+import net.risesoft.api.platform.permission.PersonResourceApi;
 import net.risesoft.enums.platform.AuthorityEnum;
 import net.risesoft.enums.platform.ManagerLevelEnum;
 import net.risesoft.model.platform.Resource;

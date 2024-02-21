@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;

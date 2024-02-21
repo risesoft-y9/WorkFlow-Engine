@@ -13,14 +13,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.api.resource.AppApi;
-import net.risesoft.api.resource.SystemApi;
+import net.risesoft.api.platform.resource.AppApi;
+import net.risesoft.api.platform.resource.SystemApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.entity.SpmApproveItem;
+import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.platform.App;
 import net.risesoft.model.platform.System;
-import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;

@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 
-import net.risesoft.api.org.ManagerApi;
+import net.risesoft.api.platform.org.ManagerApi;
 import net.risesoft.model.platform.Manager;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.service.FlowableTenantInfoHolder;

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.AssociatedFile;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SpmApproveItem;
@@ -28,12 +28,12 @@ import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Person;
 import net.risesoft.model.datacenter.AttachmentInfo;
 import net.risesoft.model.datacenter.EformInfo;
 import net.risesoft.model.datacenter.HistoryInfo;
 import net.risesoft.model.datacenter.OfficeInfo;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.form.Y9FormFieldRepository;
@@ -44,7 +44,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
 
-import y9.client.rest.open.datacenter.OfficeInfoApiClient;
+import y9.client.rest.datacenter.OfficeInfoApiClient;
 import y9.client.rest.processadmin.HistoricProcessApiClient;
 import y9.client.rest.processadmin.HistoricVariableApiClient;
 

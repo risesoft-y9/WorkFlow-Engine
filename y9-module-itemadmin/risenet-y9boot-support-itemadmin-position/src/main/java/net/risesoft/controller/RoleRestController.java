@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.permission.RoleApi;
-import net.risesoft.api.resource.AppApi;
-import net.risesoft.api.resource.SystemApi;
+import net.risesoft.api.platform.permission.RoleApi;
+import net.risesoft.api.platform.resource.AppApi;
+import net.risesoft.api.platform.resource.SystemApi;
 import net.risesoft.enums.platform.RoleTypeEnum;
 import net.risesoft.model.platform.App;
 import net.risesoft.model.platform.Role;

@@ -9,12 +9,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.risesoft.api.customgroup.CustomGroupApi;
-import net.risesoft.api.org.DepartmentApi;
-import net.risesoft.api.org.OrgUnitApi;
-import net.risesoft.api.org.OrganizationApi;
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.platform.customgroup.CustomGroupApi;
+import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.OrganizationApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemPermission;
 import net.risesoft.entity.ReceiveDepartment;

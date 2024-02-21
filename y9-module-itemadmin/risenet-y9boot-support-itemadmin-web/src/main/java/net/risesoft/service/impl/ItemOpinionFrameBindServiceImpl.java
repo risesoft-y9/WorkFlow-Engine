@@ -14,7 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.consts.PunctuationConsts;
 import net.risesoft.entity.ItemOpinionFrameBind;
 import net.risesoft.entity.ItemOpinionFrameRole;

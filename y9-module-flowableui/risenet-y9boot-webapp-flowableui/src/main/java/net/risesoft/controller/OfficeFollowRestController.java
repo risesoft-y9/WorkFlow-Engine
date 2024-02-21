@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.org.DepartmentApi;
+import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.id.IdType;

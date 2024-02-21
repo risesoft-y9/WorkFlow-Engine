@@ -29,7 +29,7 @@ import net.risesoft.api.itemadmin.DocumentWpsApi;
 import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.BrowserTypeEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;

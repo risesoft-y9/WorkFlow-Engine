@@ -1,30 +1,9 @@
 package net.risesoft.service;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
-
-import net.risesoft.api.org.DepartmentApi;
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ChaoSong;
@@ -38,9 +17,9 @@ import net.risesoft.entity.TaskVariable;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.msgremind.MsgRemindInfoModel;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.todo.TodoTask;
 import net.risesoft.model.user.UserInfo;
@@ -55,13 +34,30 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.Y9Util;
-
-import y9.client.rest.open.msgremind.MsgRemindInfoApiClient;
-import y9.client.rest.open.todo.TodoTaskApiClient;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import y9.client.rest.msgremind.MsgRemindInfoApiClient;
 import y9.client.rest.processadmin.HistoricTaskApiClient;
 import y9.client.rest.processadmin.TaskApiClient;
+import y9.client.rest.todo.TodoTaskApiClient;
 
-import jodd.util.StringUtil;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman

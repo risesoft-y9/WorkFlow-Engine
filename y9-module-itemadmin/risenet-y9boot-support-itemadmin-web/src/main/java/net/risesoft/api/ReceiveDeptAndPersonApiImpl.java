@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.ReceiveDeptAndPersonApi;
-import net.risesoft.api.org.DepartmentApi;
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.ReceiveDepartment;
 import net.risesoft.entity.ReceivePerson;
 import net.risesoft.model.platform.Department;

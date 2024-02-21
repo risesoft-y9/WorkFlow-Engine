@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.DataCenterApi;
-import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.platform.Position;
 import net.risesoft.service.DataCenterService;
 import net.risesoft.y9.Y9LoginUserHolder;

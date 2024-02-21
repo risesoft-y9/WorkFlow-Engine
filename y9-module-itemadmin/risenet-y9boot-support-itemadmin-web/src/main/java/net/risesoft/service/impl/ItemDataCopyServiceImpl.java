@@ -1,18 +1,8 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import net.risesoft.api.org.OrgUnitApi;
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.permission.RoleApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.entity.BookMarkBind;
 import net.risesoft.entity.CalendarConfig;
 import net.risesoft.entity.CommonButton;
@@ -91,9 +81,17 @@ import net.risesoft.service.form.Y9ValidTypeService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.sqlddl.DbColumn;
-
-import y9.client.platform.resource.SystemApiClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import y9.client.rest.platform.resource.SystemApiClient;
 import y9.client.rest.processadmin.RepositoryApiClient;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman

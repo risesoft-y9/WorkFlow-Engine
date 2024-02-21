@@ -20,15 +20,15 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
-import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.util.form.DbMetaDataUtil;

@@ -29,7 +29,7 @@ import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.api.itemadmin.PrintApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.PunctuationConsts;
 import net.risesoft.enums.BrowserTypeEnum;
 import net.risesoft.model.platform.Person;

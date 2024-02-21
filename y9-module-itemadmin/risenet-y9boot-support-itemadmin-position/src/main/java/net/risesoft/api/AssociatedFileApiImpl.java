@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
-import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.platform.Position;
 import net.risesoft.service.AssociatedFileService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -90,7 +90,8 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      */
     @Override
     @GetMapping(value = "/getAssociatedFileAllList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getAssociatedFileAllList(String tenantId, String positionId, String processSerialNumber) {
+    public Map<String, Object> getAssociatedFileAllList(String tenantId, String positionId,
+        String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -126,7 +127,8 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      */
     @Override
     @PostMapping(value = "/saveAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber, String processInstanceIds) {
+    public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber,
+        String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);

@@ -16,8 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.y9.Y9Context;
@@ -31,7 +31,8 @@ public class CheckUserLoginFilter4Flowable implements Filter {
     public void destroy() {}
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
+        throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest)servletRequest;
         HttpSession session = request.getSession();
         try {
@@ -48,7 +49,8 @@ public class CheckUserLoginFilter4Flowable implements Filter {
                     }
                 } else {
                     PersonApi personApi = Y9Context.getBean(PersonApi.class);
-                    List<Position> list = personApi.listPositions(loginPerson.getTenantId(), loginPerson.getPersonId()).getData();
+                    List<Position> list =
+                        personApi.listPositions(loginPerson.getTenantId(), loginPerson.getPersonId()).getData();
                     if (list.size() > 0) {
                         Y9LoginUserHolder.setPosition(list.get(0));
                     }

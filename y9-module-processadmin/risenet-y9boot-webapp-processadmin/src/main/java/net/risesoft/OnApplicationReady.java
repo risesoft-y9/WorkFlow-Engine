@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.tenant.TenantApi;
+import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.enums.platform.TenantTypeEnum;
 import net.risesoft.model.platform.Tenant;
 import net.risesoft.service.FlowableTenantInfoHolder;
@@ -44,12 +44,15 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
                 Y9LoginUserHolder.setTenantId(tenant.getId());
                 FlowableTenantInfoHolder.setTenantId(tenant.getId());
                 try {
-                    ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).latestVersion().singleResult();
+                    ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+                        .processDefinitionKey(processDefinitionKey).latestVersion().singleResult();
                     if (null == processDefinition) {
-                        String xmlPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "processXml" + File.separator + "ziyouliucheng.bpmn";
+                        String xmlPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "processXml"
+                            + File.separator + "ziyouliucheng.bpmn";
                         File file = new File(xmlPath);
                         InputStream fileInputStream = new FileInputStream(file);
-                        repositoryService.createDeployment().addInputStream("ziyouliucheng.bpmn", fileInputStream).deploy();
+                        repositoryService.createDeployment().addInputStream("ziyouliucheng.bpmn", fileInputStream)
+                            .deploy();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

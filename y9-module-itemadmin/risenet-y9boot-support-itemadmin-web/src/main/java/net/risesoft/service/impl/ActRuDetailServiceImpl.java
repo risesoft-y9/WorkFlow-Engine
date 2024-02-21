@@ -12,7 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.api.org.DepartmentApi;
+import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.ProcessParam;

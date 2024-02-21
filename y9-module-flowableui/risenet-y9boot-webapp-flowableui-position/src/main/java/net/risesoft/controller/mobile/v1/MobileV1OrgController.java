@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
-import net.risesoft.api.org.DepartmentApi;
-import net.risesoft.api.org.OrgUnitApi;
-import net.risesoft.api.org.OrganizationApi;
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.OrganizationApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.platform.Department;
@@ -92,7 +92,9 @@ public class MobileV1OrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getOrg")
-    public Y9Result<List<Map<String, Object>>> getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, String id, HttpServletRequest request, HttpServletResponse response) {
+    public Y9Result<List<Map<String, Object>>> getOrg(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, String id,
+        HttpServletRequest request, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
@@ -180,7 +182,8 @@ public class MobileV1OrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getPositionList")
-    public Y9Result<List<Map<String, Object>>> getPositionList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
+    public Y9Result<List<Map<String, Object>>> getPositionList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
         try {
             List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -233,7 +236,8 @@ public class MobileV1OrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getUserCount")
-    public Y9Result<Integer> getUserCount(@RequestHeader("auth-tenantId") String tenantId, String userChoice, HttpServletRequest request, HttpServletResponse response) {
+    public Y9Result<Integer> getUserCount(@RequestHeader("auth-tenantId") String tenantId, String userChoice,
+        HttpServletRequest request, HttpServletResponse response) {
         List<String> userIds = new ArrayList<String>();
         Y9LoginUserHolder.setTenantId(tenantId);
         if (StringUtils.isNotBlank(userChoice)) {
@@ -271,7 +275,9 @@ public class MobileV1OrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getUserInfo")
-    public Y9Result<Map<String, Object>> getUserInfo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletRequest request, HttpServletResponse response) {
+    public Y9Result<Map<String, Object>> getUserInfo(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);

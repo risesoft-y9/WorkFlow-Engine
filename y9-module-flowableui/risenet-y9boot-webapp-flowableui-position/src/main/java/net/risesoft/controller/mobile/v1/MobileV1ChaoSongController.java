@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.exception.GlobalErrorCodeEnum;
 import net.risesoft.model.platform.Person;
@@ -59,7 +59,9 @@ public class MobileV1ChaoSongController {
      */
     @ResponseBody
     @RequestMapping(value = "/deleteList")
-    public Y9Result<String> deleteList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, String ids, String processInstanceId, HttpServletResponse response) {
+    public Y9Result<String> deleteList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, String ids,
+        String processInstanceId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             String id[] = ids.split(",");
@@ -85,7 +87,9 @@ public class MobileV1ChaoSongController {
      */
     @RequestMapping(value = "/detail")
     @ResponseBody
-    public Y9Result<Map<String, Object>> detail(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String id, @RequestParam(required = false) String processInstanceId,
+    public Y9Result<Map<String, Object>> detail(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam(required = false) String id, @RequestParam(required = false) String processInstanceId,
         Integer status, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -104,7 +108,8 @@ public class MobileV1ChaoSongController {
             String itemId = (String)map.get("itemId");
             String itembox = (String)map.get("itembox");
             DocumentUtil documentUtil = new DocumentUtil();
-            Map<String, Object> dataMap = documentUtil.documentDetail(itemId, processDefinitionId, processSerialNumber, processInstanceId, taskDefKey, taskId, itembox, activitiUser, formIds, formNames);
+            Map<String, Object> dataMap = documentUtil.documentDetail(itemId, processDefinitionId, processSerialNumber,
+                processInstanceId, taskDefKey, taskId, itembox, activitiUser, formIds, formNames);
             map.putAll(dataMap);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
@@ -127,12 +132,15 @@ public class MobileV1ChaoSongController {
      */
     @RequestMapping(value = "/findCsUser")
     @ResponseBody
-    public Y9Result<List<Map<String, Object>>> findCsUser(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String id,
-        @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId, HttpServletResponse response) {
+    public Y9Result<List<Map<String, Object>>> findCsUser(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam(required = false) String id, @RequestParam(required = false) Integer principalType,
+        @RequestParam(required = false) String processInstanceId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         try {
-            item = itemRole4PositionApi.findCsUser(Y9LoginUserHolder.getTenantId(), userId, positionId, id, principalType, processInstanceId);
+            item = itemRole4PositionApi.findCsUser(Y9LoginUserHolder.getTenantId(), userId, positionId, id,
+                principalType, processInstanceId);
             return Y9Result.success(item, "获取成功");
         } catch (Exception e) {
             log.error("手机端跟踪获取抄送选人");
@@ -154,12 +162,15 @@ public class MobileV1ChaoSongController {
      */
     @RequestMapping(value = "/findCsUserSearch")
     @ResponseBody
-    public Y9Result<List<Map<String, Object>>> findCsUserSearch(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String name,
-        @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId, HttpServletResponse response) {
+    public Y9Result<List<Map<String, Object>>> findCsUserSearch(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam(required = false) String name, @RequestParam(required = false) Integer principalType,
+        @RequestParam(required = false) String processInstanceId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         try {
-            item = itemRole4PositionApi.findCsUserSearch(tenantId, userId, positionId, name, principalType, processInstanceId);
+            item = itemRole4PositionApi.findCsUserSearch(tenantId, userId, positionId, name, principalType,
+                processInstanceId);
             return Y9Result.success(item, "获取成功");
         } catch (Exception e) {
             log.error("手机端跟踪选人搜索");
@@ -183,24 +194,30 @@ public class MobileV1ChaoSongController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/list")
-    public Y9Page<Map<String, Object>> list(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, String type, String processInstanceId, int rows, int page, HttpServletResponse response) {
+    public Y9Page<Map<String, Object>> list(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, String type,
+        String processInstanceId, int rows, int page, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             if (type.equals("my")) {
-                map = chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
+                map = chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId,
+                    processInstanceId, "", rows, page);
             } else {
-                map = chaoSong4PositionApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
+                map = chaoSong4PositionApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "", rows,
+                    page);
             }
             if ((boolean)map.get("success")) {
                 List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
-                return Y9Page.success(page, Integer.valueOf(map.get("totalpages").toString()), Long.valueOf(map.get("total").toString()), list, "获取成功");
+                return Y9Page.success(page, Integer.valueOf(map.get("totalpages").toString()),
+                    Long.valueOf(map.get("total").toString()), list, "获取成功");
             }
         } catch (Exception e) {
             log.error("手机端跟踪办件抄送列表");
             e.printStackTrace();
         }
-        return Y9Page.failure(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取失败", GlobalErrorCodeEnum.FAILURE.getCode());
+        return Y9Page.failure(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取失败",
+            GlobalErrorCodeEnum.FAILURE.getCode());
     }
 
     /**
@@ -218,7 +235,9 @@ public class MobileV1ChaoSongController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/search")
     @ResponseBody
-    public Y9Page<Map<String, Object>> search(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String year, @RequestParam(required = false) String documentTitle,
+    public Y9Page<Map<String, Object>> search(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam(required = false) String year, @RequestParam(required = false) String documentTitle,
         Integer status, int rows, int page, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -229,12 +248,14 @@ public class MobileV1ChaoSongController {
                 map = chaoSong4PositionApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
             }
             List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
-            return Y9Page.success(page, Integer.valueOf(map.get("totalpages").toString()), Long.valueOf(map.get("total").toString()), list, "获取成功");
+            return Y9Page.success(page, Integer.valueOf(map.get("totalpages").toString()),
+                Long.valueOf(map.get("total").toString()), list, "获取成功");
         } catch (Exception e) {
             log.error("手机端跟踪查看抄送件列表");
             e.printStackTrace();
         }
-        return Y9Page.failure(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取失败", GlobalErrorCodeEnum.FAILURE.getCode());
+        return Y9Page.failure(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取失败",
+            GlobalErrorCodeEnum.FAILURE.getCode());
     }
 
     /**
@@ -252,12 +273,16 @@ public class MobileV1ChaoSongController {
      */
     @RequestMapping(value = "/send")
     @ResponseBody
-    public Y9Result<String> send(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String users,
-        @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent, HttpServletResponse response) {
+    public Y9Result<String> send(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String users,
+        @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing,
+        @RequestParam(required = false) String smsContent, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(1);
         try {
-            map = chaoSong4PositionApi.save(tenantId, userId, positionId, processInstanceId, users, isSendSms, isShuMing, smsContent, "");
+            map = chaoSong4PositionApi.save(tenantId, userId, positionId, processInstanceId, users, isSendSms,
+                isShuMing, smsContent, "");
             if ((boolean)map.get("success")) {
                 return Y9Result.success("抄送成功");
             }

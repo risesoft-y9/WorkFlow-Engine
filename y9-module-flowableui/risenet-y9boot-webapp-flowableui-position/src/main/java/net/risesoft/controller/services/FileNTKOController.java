@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.y9.Y9Context;
@@ -54,7 +54,8 @@ public class FileNTKOController {
      */
     @RequestMapping(value = "/openDoc")
     @ResponseBody
-    public void openDoc(@RequestParam(required = false) String fileId, @RequestParam(required = false) String tenantId, HttpServletResponse response, HttpServletRequest request) {
+    public void openDoc(@RequestParam(required = false) String fileId, @RequestParam(required = false) String tenantId,
+        HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
         ServletOutputStream out = null;
@@ -62,7 +63,9 @@ public class FileNTKOController {
             String agent = request.getHeader("USER-AGENT");
             String fileName = file.getName();
             if (-1 != agent.indexOf("Firefox")) {
-                fileName = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8")))) + "?=";
+                fileName = "=?UTF-8?B?"
+                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8"))))
+                    + "?=";
             } else {
                 fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
                 fileName = StringUtils.replace(fileName, "+", "%20");// 替换空格
@@ -110,14 +113,19 @@ public class FileNTKOController {
      * @return
      */
     @RequestMapping("/showWord")
-    public String showWord(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String fileName, @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId, @RequestParam(required = false) String browser,
-        @RequestParam(required = false) String fileId, @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, @RequestParam(required = false) String positionId, @RequestParam(required = false) String fileUrl, Model model) {
+    public String showWord(@RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String fileName, @RequestParam(required = false) String itembox,
+        @RequestParam(required = false) String taskId, @RequestParam(required = false) String browser,
+        @RequestParam(required = false) String fileId, @RequestParam(required = false) String tenantId,
+        @RequestParam(required = false) String userId, @RequestParam(required = false) String positionId,
+        @RequestParam(required = false) String fileUrl, Model model) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             Person person = personApi.getPerson(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
-            String downloadUrl = y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + file.getFileStoreId() + "." + file.getFileType();
+            String downloadUrl =
+                y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + file.getFileStoreId() + "." + file.getFileType();
             model.addAttribute("fileName", file.getName());
             model.addAttribute("browser", browser);
             model.addAttribute("fileUrl", downloadUrl);
@@ -150,7 +158,9 @@ public class FileNTKOController {
      */
     @RequestMapping(value = "/uploadWord", method = RequestMethod.POST)
     @ResponseBody
-    public String uploadWord(@RequestParam(required = false) String fileId, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String positionId, @RequestParam(required = false) String taskId, @RequestParam(required = false) String tenantId,
+    public String uploadWord(@RequestParam(required = false) String fileId,
+        @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String positionId,
+        @RequestParam(required = false) String taskId, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, HttpServletRequest request, HttpServletResponse response) {
         String result = "success:false";
         try {
@@ -161,9 +171,11 @@ public class FileNTKOController {
             AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
             MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
-            String fullPath = "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
+            String fullPath =
+                "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, file.getName());
-            result = attachment4PositionApi.updateFile(tenantId, userId, positionId, fileId, y9FileStore.getDisplayFileSize(), taskId, y9FileStore.getId());
+            result = attachment4PositionApi.updateFile(tenantId, userId, positionId, fileId,
+                y9FileStore.getDisplayFileSize(), taskId, y9FileStore.getId());
         } catch (Exception e) {
             e.printStackTrace();
         }

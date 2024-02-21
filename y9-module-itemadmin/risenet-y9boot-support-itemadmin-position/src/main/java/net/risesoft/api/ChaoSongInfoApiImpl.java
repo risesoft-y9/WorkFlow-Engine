@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
-import net.risesoft.api.org.PersonApi;
-import net.risesoft.api.org.PositionApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
@@ -62,7 +62,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param ids 抄送件ids
      */
     @Override
-    @PostMapping(value = "/changeStatus", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/changeStatus", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void changeStatus(String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.changeStatus(ids);
@@ -117,7 +118,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param ids 抄送ids
      */
     @Override
-    @PostMapping(value = "/deleteByIds", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/deleteByIds", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void deleteByIds(String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.deleteByIds(ids);
@@ -149,7 +151,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      */
     @Override
     @GetMapping(value = "/detail", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> detail(String tenantId, String positionId, String id, String processInstanceId, Integer status, boolean mobile) {
+    public Map<String, Object> detail(String tenantId, String positionId, String id, String processInstanceId,
+        Integer status, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -207,7 +210,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      */
     @Override
     @GetMapping(value = "/getDoneList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getDoneList(String tenantId, String positionId, String documentTitle, int rows, int page) {
+    public Map<String, Object> getDoneList(String tenantId, String positionId, String documentTitle, int rows,
+        int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = chaoSongInfoService.getDoneList(positionId, documentTitle, rows, page);
         return map;
@@ -226,10 +230,12 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      */
     @Override
     @GetMapping(value = "/getListByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByProcessInstanceId(String tenantId, String positionId, String processInstanceId, String userName, int rows, int page) {
+    public Map<String, Object> getListByProcessInstanceId(String tenantId, String positionId, String processInstanceId,
+        String userName, int rows, int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        Map<String, Object> map = chaoSongInfoService.getListByProcessInstanceId(processInstanceId, userName, rows, page);
+        Map<String, Object> map =
+            chaoSongInfoService.getListByProcessInstanceId(processInstanceId, userName, rows, page);
         return map;
     }
 
@@ -246,9 +252,11 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      */
     @Override
     @GetMapping(value = "/getListBySenderIdAndProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId, String processInstanceId, String userName, int rows, int page) {
+    public Map<String, Object> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId,
+        String processInstanceId, String userName, int rows, int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = chaoSongInfoService.getListBySenderIdAndProcessInstanceId(senderId, processInstanceId, userName, rows, page);
+        Map<String, Object> map = chaoSongInfoService.getListBySenderIdAndProcessInstanceId(senderId, processInstanceId,
+            userName, rows, page);
         return map;
     }
 
@@ -264,7 +272,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      */
     @Override
     @GetMapping(value = "/getOpinionChaosongByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getOpinionChaosongByUserId(String tenantId, String positionId, String documentTitle, int rows, int page) {
+    public Map<String, Object> getOpinionChaosongByUserId(String tenantId, String positionId, String documentTitle,
+        int rows, int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = chaoSongInfoService.getOpinionChaosongByUserId(positionId, documentTitle, rows, page);
         return map;
@@ -297,7 +306,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      */
     @Override
     @GetMapping(value = "/getTodoList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getTodoList(String tenantId, String positionId, String documentTitle, int rows, int page) {
+    public Map<String, Object> getTodoList(String tenantId, String positionId, String documentTitle, int rows,
+        int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = chaoSongInfoService.getTodoList(positionId, documentTitle, rows, page);
         return map;
@@ -308,7 +318,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      */
     @Override
     @GetMapping(value = "/myChaoSongList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Page<Map<String, Object>> myChaoSongList(String tenantId, String positionId, String searchName, String itemId, String userName, String state, String year, int page, int rows) {
+    public Y9Page<Map<String, Object>> myChaoSongList(String tenantId, String positionId, String searchName,
+        String itemId, String userName, String state, String year, int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         return chaoSongInfoService.myChaoSongList(searchName, itemId, userName, state, year, rows, page);
@@ -330,13 +341,15 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      */
     @Override
     @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> save(String tenantId, String userId, String positionId, String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
+    public Map<String, Object> save(String tenantId, String userId, String positionId, String processInstanceId,
+        String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> map = chaoSongInfoService.save(processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
+        Map<String, Object> map =
+            chaoSongInfoService.save(processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
         return map;
     }
 
@@ -356,10 +369,12 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      */
     @Override
     @GetMapping(value = "/searchAllByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchAllByUserId(String tenantId, String positionId, String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllByUserId(String tenantId, String positionId, String searchName, String itemId,
+        String userName, String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        Map<String, Object> map = chaoSongInfoService.searchAllByUserId(searchName, itemId, userName, state, year, page, rows);
+        Map<String, Object> map =
+            chaoSongInfoService.searchAllByUserId(searchName, itemId, userName, state, year, page, rows);
         return map;
     }
 
@@ -379,9 +394,11 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      */
     @Override
     @GetMapping(value = "/searchAllList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String senderName,
+        String userName, String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = chaoSongInfoService.searchAllList(searchName, itemId, senderName, userName, state, year, page, rows);
+        Map<String, Object> map =
+            chaoSongInfoService.searchAllList(searchName, itemId, senderName, userName, state, year, page, rows);
         return map;
     }
 

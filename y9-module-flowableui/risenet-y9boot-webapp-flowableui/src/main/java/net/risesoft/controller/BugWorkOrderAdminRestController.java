@@ -16,7 +16,7 @@ import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.WorkOrderApi;
-import net.risesoft.api.permission.PersonRoleApi;
+import net.risesoft.api.platform.permission.PersonRoleApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.WorkOrderHandleTypeEnum;

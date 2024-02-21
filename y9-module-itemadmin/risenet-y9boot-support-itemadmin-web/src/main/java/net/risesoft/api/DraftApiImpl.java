@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.DraftApi;
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.DraftEntity;
 import net.risesoft.entity.SpmApproveItem;
@@ -81,7 +81,8 @@ public class DraftApiImpl implements DraftApi {
 
     @Override
     @GetMapping(value = "/getDraftByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getDraftByProcessSerialNumber(String tenantId, String userId, String processSerialNumber) {
+    public Map<String, Object> getDraftByProcessSerialNumber(String tenantId, String userId,
+        String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -131,7 +132,8 @@ public class DraftApiImpl implements DraftApi {
 
     @Override
     @GetMapping(value = "/getDraftList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getDraftList(String tenantId, String userId, int page, int rows, String title, String itemId, boolean delFlag) {
+    public Map<String, Object> getDraftList(String tenantId, String userId, int page, int rows, String title,
+        String itemId, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -199,7 +201,8 @@ public class DraftApiImpl implements DraftApi {
 
     @Override
     @GetMapping(value = "/getDraftListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getDraftListBySystemName(String tenantId, String userId, int page, int rows, String title, String systemName, boolean delFlag) {
+    public Map<String, Object> getDraftListBySystemName(String tenantId, String userId, int page, int rows,
+        String title, String systemName, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -210,7 +213,8 @@ public class DraftApiImpl implements DraftApi {
             if (StringUtils.isEmpty(title)) {
                 title = "";
             }
-            Page<DraftEntity> pageList = draftEntityService.getDraftListBySystemName(systemName, userId, page, rows, title, delFlag);
+            Page<DraftEntity> pageList =
+                draftEntityService.getDraftListBySystemName(systemName, userId, page, rows, title, delFlag);
             List<Map<String, Object>> draftList = new ArrayList<Map<String, Object>>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             int number = (page - 1) * rows;
@@ -252,7 +256,8 @@ public class DraftApiImpl implements DraftApi {
 
     @Override
     @GetMapping(value = "/openDraft", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> openDraft(String tenantId, String userId, String itemId, String processSerialNumber, boolean mobile) {
+    public Map<String, Object> openDraft(String tenantId, String userId, String itemId, String processSerialNumber,
+        boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -288,7 +293,8 @@ public class DraftApiImpl implements DraftApi {
 
     @Override
     @PostMapping(value = "/saveDraft", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveDraft(String tenantId, String userId, String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String title) {
+    public Map<String, Object> saveDraft(String tenantId, String userId, String itemId, String processSerialNumber,
+        String processDefinitionKey, String number, String level, String title) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -299,23 +305,28 @@ public class DraftApiImpl implements DraftApi {
 
     @Override
     @PostMapping(value = "/saveDraft1", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveDraft(String tenantId, String userId, String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String jijian, String title) {
+    public Map<String, Object> saveDraft(String tenantId, String userId, String itemId, String processSerialNumber,
+        String processDefinitionKey, String number, String level, String jijian, String title) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
-        map = draftEntityService.saveDraft(itemId, processSerialNumber, processDefinitionKey, number, level, jijian, title, "");
+        map = draftEntityService.saveDraft(itemId, processSerialNumber, processDefinitionKey, number, level, jijian,
+            title, "");
         return map;
     }
 
     @Override
     @PostMapping(value = "/saveDraftAndType", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveDraftAndType(String tenantId, String userId, String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String title, String type) {
+    public Map<String, Object> saveDraftAndType(String tenantId, String userId, String itemId,
+        String processSerialNumber, String processDefinitionKey, String number, String level, String title,
+        String type) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
-        map = draftEntityService.saveDraft(itemId, processSerialNumber, processDefinitionKey, number, level, title, type);
+        map =
+            draftEntityService.saveDraft(itemId, processSerialNumber, processDefinitionKey, number, level, title, type);
         return map;
     }
 }

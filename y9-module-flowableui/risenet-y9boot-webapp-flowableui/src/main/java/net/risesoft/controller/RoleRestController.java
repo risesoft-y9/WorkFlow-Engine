@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.ItemRoleApi;
-import net.risesoft.api.org.DepartmentApi;
+import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.Person;

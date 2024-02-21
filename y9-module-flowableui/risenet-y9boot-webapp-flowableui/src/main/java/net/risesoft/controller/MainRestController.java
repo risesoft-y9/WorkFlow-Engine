@@ -19,7 +19,7 @@ import net.risesoft.api.itemadmin.ItemApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.WorkOrderApi;
-import net.risesoft.api.permission.PersonRoleApi;
+import net.risesoft.api.platform.permission.PersonRoleApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.MonitorApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;

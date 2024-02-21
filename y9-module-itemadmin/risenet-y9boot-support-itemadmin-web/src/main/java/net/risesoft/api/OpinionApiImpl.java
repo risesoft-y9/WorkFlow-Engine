@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.OpinionApi;
-import net.risesoft.api.org.PersonApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.Opinion;
-import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionModel;
+import net.risesoft.model.platform.Person;
 import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.OpinionService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
