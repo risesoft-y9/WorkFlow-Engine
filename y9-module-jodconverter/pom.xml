@@ -3,23 +3,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <!-- <groupId>net.risesoft</groupId> -->
-    <artifactId>y9-flowable</artifactId>
+    <groupId>net.risesoft</groupId>
+    <artifactId>y9-module-jodconverter</artifactId>
     <packaging>pom</packaging>
-    <!-- <version>v9.6.4-SNAPSHOT</version> -->
+    <version>v9.6.4-SNAPSHOT</version>
 
     <parent>
         <groupId>net.risesoft</groupId>
-        <artifactId>y9-digitalbase-pro</artifactId>
+        <artifactId>y9-flowable</artifactId>
         <version>v9.6.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modules>
-        <module>y9-module-flowableui</module>
-        <module>y9-module-itemadmin</module>
-        <module>y9-module-jodconverter</module>
-        <module>y9-module-processadmin</module>
+        <module>risenet-y9boot-support-jodconverter</module>
+        <!--<module>risenet-y9boot-webapp-jodconverter</module>-->
+        <module>risenet-y9boot-webapp-jodconverter-new</module>
     </modules>
 
 </project>
