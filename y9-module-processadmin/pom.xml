@@ -16,8 +16,8 @@
     </parent>
 
     <modules>
-        <module>risenet-y9boot-rest-feignclient-processadmin</module>
-        <module>risenet-y9boot-rest-interface-processadmin</module>
+        <module>risenet-y9boot-api-feignclient-processadmin</module>
+        <module>risenet-y9boot-api-interface-processadmin</module>
 
         <module>risenet-y9boot-support-processadmin</module>
 

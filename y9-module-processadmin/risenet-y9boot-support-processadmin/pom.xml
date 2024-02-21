@@ -76,7 +76,7 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignclient-platform</artifactId>
+            <artifactId>risenet-y9boot-api-feignclient-platform</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -88,31 +88,37 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignclient-sms</artifactId>
+            <artifactId>risenet-y9boot-api-feignclient-sms</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignclient-todo</artifactId>
+            <artifactId>risenet-y9boot-api-feignclient-todo</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignclient-msgremind</artifactId>
+            <artifactId>risenet-y9boot-api-feignclient-msgremind</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-feignclient-itemadmin</artifactId>
+            <artifactId>risenet-y9boot-api-feignclient-itemadmin</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-interface-processadmin</artifactId>
+            <artifactId>risenet-y9boot-api-feignclient-datacenter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-api-interface-processadmin</artifactId>
             <version>${project.version}</version>
         </dependency>
 

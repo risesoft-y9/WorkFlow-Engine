@@ -16,8 +16,8 @@
     </parent>
 
     <modules>
-        <module>risenet-y9boot-rest-feignclient-itemadmin</module>
-        <module>risenet-y9boot-rest-interface-itemadmin</module>
+        <module>risenet-y9boot-api-feignclient-itemadmin</module>
+        <module>risenet-y9boot-api-interface-itemadmin</module>
         <module>risenet-y9boot-support-itemadmin-jpa-repository</module>
         <module>risenet-y9boot-support-itemadmin-position</module>
         <module>risenet-y9boot-support-itemadmin-web</module>

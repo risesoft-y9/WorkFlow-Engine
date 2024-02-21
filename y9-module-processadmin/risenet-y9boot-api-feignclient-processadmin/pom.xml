@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <!-- <groupId>net.risesoft</groupId> -->
-    <artifactId>risenet-y9boot-rest-feignclient-itemadmin</artifactId>
+    <artifactId>risenet-y9boot-api-feignclient-processadmin</artifactId>
     <version>v9.6.4-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -30,10 +30,10 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-rest-interface-itemadmin</artifactId>
+            <artifactId>risenet-y9boot-api-interface-processadmin</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
