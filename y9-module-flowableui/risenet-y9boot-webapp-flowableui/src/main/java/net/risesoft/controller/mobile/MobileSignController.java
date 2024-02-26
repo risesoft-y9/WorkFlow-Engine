@@ -34,6 +34,7 @@ import net.risesoft.api.itemadmin.CalendarConfigApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.CalendarConfigModel;
+import net.risesoft.model.platform.Person;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -68,7 +69,7 @@ public class MobileSignController {
 
     /**
      * Description: 两个日期时间相隔天数
-     * 
+     *
      * @param startTime
      * @param endTime
      * @return
@@ -89,7 +90,7 @@ public class MobileSignController {
 
     /**
      * Description: 两个日期之间相隔天数，去除节假日
-     * 
+     *
      * @param startTime
      * @param endTime
      * @param everyYearHoliday
@@ -119,6 +120,25 @@ public class MobileSignController {
     }
 
     /**
+     * 获取个人年休假
+     *
+     * @param tenantId
+     * @param userId
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "/getAnnualLeaveDay")
+    @ResponseBody
+    public void getAnnualLeaveDay(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+        return;
+    }
+
+    /**
      * 获取两个日期之间的天数，除去节假日
      *
      * @param tenantId
@@ -130,9 +150,7 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/getDay")
     @ResponseBody
-    public void getDay(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
-        HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public void getDay(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -171,11 +189,8 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/lyToReturn")
     @ResponseBody
-    public void lyToReturn(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestParam(required = false, name = "lysp_bianhao") String bianhao,
-        @RequestParam(required = false, name = "lysp_shifouzhanshi") String shifouzhanshi,
-        @RequestParam(required = false, name = "lysp_huifuneirong") String huifuneirong, HttpServletRequest request,
-        HttpServletResponse response) {
+    public void lyToReturn(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false, name = "lysp_bianhao") String bianhao, @RequestParam(required = false, name = "lysp_shifouzhanshi") String shifouzhanshi,
+        @RequestParam(required = false, name = "lysp_huifuneirong") String huifuneirong, HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String methodUrl = "http://www.caghp.org.cn/index.php/Member/returnback.html";
         HttpURLConnection connection = null;
@@ -234,6 +249,37 @@ public class MobileSignController {
                 connection.disconnect();
             }
         }
+        return;
+    }
+
+    /**
+     * 地灾接口，针对请假、出差、外勤做考勤记录
+     *
+     * @param tenantId
+     * @param userId
+     * @param username
+     * @param startDate
+     * @param endDate
+     * @param type
+     * @param leaveYear
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "/saveToSign")
+    @ResponseBody
+    public void saveToSign(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String username, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
+        @RequestParam(required = false) String type, @RequestParam(required = false) String leaveYear, HttpServletRequest request, HttpServletResponse response) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Person person = personApi.getPerson(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        try {
+            map.put(UtilConsts.SUCCESS, true);
+        } catch (Exception e) {
+            map.put(UtilConsts.SUCCESS, false);
+            e.printStackTrace();
+        }
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
         return;
     }
 }

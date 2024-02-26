@@ -12,14 +12,12 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.risesoft.api.email.CustomEmailApi;
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.platform.Position;
@@ -48,9 +46,6 @@ public class SearchServiceImpl implements SearchService {
 
     @Autowired
     private PositionApi positionApi;
-
-    @Autowired
-    private CustomEmailApi customEmailApi;
 
     @Autowired
     private IdentityApi identityApi;
@@ -130,14 +125,13 @@ public class SearchServiceImpl implements SearchService {
         return list;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> getEmailList(Integer page, Integer rows, String startDateStr, String endDateStr, Integer fileType, String userName, String title) {
         try {
-            Map<String, Object> map = customEmailApi.search(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), page, rows, startDateStr, endDateStr, fileType, userName, title);
+            /*Map<String, Object> map = customEmailApi.search(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), page, rows, startDateStr, endDateStr, fileType, userName, title);
             if ((boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
-            }
+            }*/
         } catch (Exception e) {
             e.printStackTrace();
         }
