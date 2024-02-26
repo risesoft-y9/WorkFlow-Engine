@@ -30,13 +30,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.dzxh.AttendanceApi;
 import net.risesoft.api.itemadmin.CalendarConfigApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.platform.Person;
-import net.risesoft.model.attendance.Attendance;
 import net.risesoft.model.itemadmin.CalendarConfigModel;
+import net.risesoft.model.platform.Person;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -67,14 +65,11 @@ public class MobileSignController {
     private PersonApi personApi;
 
     @Autowired
-    private AttendanceApi attendanceApi;
-
-    @Autowired
     private CalendarConfigApi calendarConfigManager;
 
     /**
      * Description: 两个日期时间相隔天数
-     * 
+     *
      * @param startTime
      * @param endTime
      * @return
@@ -95,7 +90,7 @@ public class MobileSignController {
 
     /**
      * Description: 两个日期之间相隔天数，去除节假日
-     * 
+     *
      * @param startTime
      * @param endTime
      * @param everyYearHoliday
@@ -134,42 +129,11 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/getAnnualLeaveDay")
     @ResponseBody
-    public void getAnnualLeaveDay(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
+    public void getAnnualLeaveDay(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
-        // 应休年假
-        map.put("actualAnnualLeave", "0");
-        // 已休年假
-        map.put("alreadyAnnualLeave", "0");
-
-        // 应休探亲假
-        map.put("actualVisitLeave", "0");
-        // 已休探亲假
-        map.put("alreadyVisitLeave", "0");
-        try {
-            map.put(UtilConsts.SUCCESS, true);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            String nowDate = sdf.format(new Date());
-            Attendance attendance =
-                attendanceApi.findAnnualLeaveDaysByPersonIdAndYear(tenantId, userId, nowDate.substring(0, 4));
-            if (attendance != null && StringUtils.isNotBlank(attendance.getId())) {
-                // 应休年假
-                map.put("actualAnnualLeave", attendance.getActualAnnualLeave());
-                // 已休年假
-                map.put("alreadyAnnualLeave", attendance.getAlreadyAnnualLeave());
-
-                // 应休探亲假
-                map.put("actualVisitLeave", attendance.getActualVisitLeave());
-                // 已休探亲假
-                map.put("alreadyVisitLeave", attendance.getAlreadyVisitLeave());
-            }
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
-        }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
         return;
     }
@@ -186,9 +150,7 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/getDay")
     @ResponseBody
-    public void getDay(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
-        HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public void getDay(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -227,11 +189,8 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/lyToReturn")
     @ResponseBody
-    public void lyToReturn(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestParam(required = false, name = "lysp_bianhao") String bianhao,
-        @RequestParam(required = false, name = "lysp_shifouzhanshi") String shifouzhanshi,
-        @RequestParam(required = false, name = "lysp_huifuneirong") String huifuneirong, HttpServletRequest request,
-        HttpServletResponse response) {
+    public void lyToReturn(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false, name = "lysp_bianhao") String bianhao, @RequestParam(required = false, name = "lysp_shifouzhanshi") String shifouzhanshi,
+        @RequestParam(required = false, name = "lysp_huifuneirong") String huifuneirong, HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String methodUrl = "http://www.caghp.org.cn/index.php/Member/returnback.html";
         HttpURLConnection connection = null;
@@ -308,18 +267,14 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/saveToSign")
     @ResponseBody
-    public void saveToSign(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestParam(required = false) String username, @RequestParam(required = false) String startDate,
-        @RequestParam(required = false) String endDate, @RequestParam(required = false) String type,
-        @RequestParam(required = false) String leaveYear, HttpServletRequest request, HttpServletResponse response) {
+    public void saveToSign(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String username, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
+        @RequestParam(required = false) String type, @RequestParam(required = false) String leaveYear, HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.getPerson(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
-            map = attendanceApi.saveLeaveList(Y9LoginUserHolder.getTenantId(), username, startDate, endDate, type,
-                leaveYear);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             e.printStackTrace();
