@@ -241,6 +241,8 @@ public class MainRestController {
         boolean deptManage = false;
         map.put("deptManage", deptManage);
         map.put("monitorManage", b);
+        boolean b1 = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", null, "重定向角色", Y9LoginUserHolder.getPositionId()).getData();
+        map.put("repositionrManage", b1);
         return Y9Result.success(map, "获取成功");
     }
 
@@ -258,6 +260,8 @@ public class MainRestController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
         map.put("monitorManage", b);
+        boolean b1 = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", null, "重定向角色", Y9LoginUserHolder.getPositionId()).getData();
+        map.put("repositionrManage", b1);
         map.put("itemList", itemList);
         return Y9Result.success(map, "获取成功");
     }
