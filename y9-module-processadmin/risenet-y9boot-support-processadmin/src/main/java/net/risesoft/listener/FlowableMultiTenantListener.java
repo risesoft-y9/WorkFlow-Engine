@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+import net.risesoft.api.platform.tenant.TenantApi;
+import net.risesoft.model.platform.Tenant;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class FlowableMultiTenantListener implements TenantDataInitializer {
     @Autowired
     private RepositoryService repositoryService;
 
+    @Autowired
+    private TenantApi tenantApi;
+
     private void createDeployment(String processDefinitionKey, String tenantId) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -53,7 +58,8 @@ public class FlowableMultiTenantListener implements TenantDataInitializer {
 
     @Override
     public void init(String tenantId) {
-        LOGGER.info("租户:{} 租用processAdmin 初始化数据.........", tenantId);
+        Tenant tenant = tenantApi.getById(tenantId).getData();
+        LOGGER.info("【{}】租用processAdmin 初始化表结构开始.........", tenant.getName());
         if (this.multiTenantProcessEngineConfiguration == null) {
             try {
                 this.multiTenantProcessEngineConfiguration = Y9Context.getBean("processEngineConfiguration");
@@ -63,8 +69,10 @@ public class FlowableMultiTenantListener implements TenantDataInitializer {
             }
         }
         this.multiTenantProcessEngineConfiguration.buildProcessEngine();
+        LOGGER.info("【{}】租用processAdmin 初始化表结构结束.........", tenant.getName());
+        LOGGER.info("【{}】租用processAdmin 初始化【自由办件】开始.........", tenant.getName());
         createDeployment("ziyouliucheng", tenantId);
-        LOGGER.info(Y9Context.getSystemName() + ", 同步租户数据源信息, 成功！");
+        LOGGER.info("【{}】租用processAdmin 初始化【自由办件】结束.........", tenant.getName());
     }
 
 }
