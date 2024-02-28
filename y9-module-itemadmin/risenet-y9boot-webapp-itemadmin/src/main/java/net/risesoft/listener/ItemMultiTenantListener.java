@@ -90,7 +90,7 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
                             + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', '" + tenant.getId() + "', '"
                             + tenant.getName() + "', '" + y9System.getId() + "', '" + app.getId() + "','"
                             + app.getName() + "','" + sdf.format(new Date()) + "','"
-                            + ManagerLevelEnum.SYSTEM_MANAGER.getName() + "','','微内核默认租用',1,1)";
+                            + ManagerLevelEnum.SYSTEM_MANAGER.getName() + "','','数字底座生成的默认租户自动租用',1,1)";
                     jdbcTemplate.execute(sql1);
                 }
             }
