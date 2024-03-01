@@ -256,11 +256,6 @@ y9:
             packagesToScanEntityTenant: net.risesoft.entity
             packagesToScanRepositoryPublic: net.risesoft.y9public.repository
             packagesToScanRepositoryTenant: net.risesoft.repository
-        mongo:
-            packagesToScanEntityPublic: net.risesoft.y9public.entity
-            packagesToScanEntityTenant: net.risesoft.entity
-            packagesToScanRepositoryPublic: net.risesoft.y9public.repository
-            packagesToScanRepositoryTenant: net.risesoft.repository
         license:
             publicKey: "30820122300d06092a864886f70d01010105000382010f00303032301006072a8648ce3d02002EC311215SHA512withECDSA106052b81040006031e0004766422ea9a7afb8dae15b491c6ef1e591d9d4bfc992437f82f8a480bG82010a02820101008675a892587630b07efbb4a55d20190348f8ce88b42c311362a4527c6cf0774233b77ef2a50084d3338c76ada1c9039d6935d4bfb635312f5a0d6a700bb2c41745f29bb7ed4f9712fba324bb68cfed5cb38556a7782b795b1243c64a03RSA4204813SHA512withRSA649e6772e14983d65ae7b3bae9fef7f8ff47443e545d4917808946b9a1bdbaf1d8378951f4cfae5c49377b7e92ee7aac300cd204d0f5c0766c8a9800f4f2fb6232c93b68c68c867d1bfe013e2b81f3497f9de02eee384f97cc704800c6a0d32684592ce08087d8619626493ceb1308d61c26a81e703af6a5abffce0d56f11e24dc48b9aaf1277b7181c35bc537fabf47ef756102a14964728ee2b9462cfff4d7a7ed5ddd0203010001"
             internalString: risesoft-youshengyun-y9
@@ -273,15 +268,10 @@ y9:
         listener:
             kafka:
                 enabled: false
-            redis:
-                enabled: true
         liquibase:
             tenant-enabled: true
         log:
             enabled: true
-        publish:
-            kafka:
-                enabled: true
         session:
             redis:
                 enabled: true
