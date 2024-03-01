@@ -29,7 +29,7 @@ spring:
     cloud:
         nacos:
             config:
-                enabled: false
+                enabled: true
                 group: DEFAULT_GROUP
                 namespace: dev
                 server-addr: https://dev.youshengyun.com:443
@@ -190,16 +190,8 @@ y9:
         itemAdmin:
             comment: 知悉。,同意。,已阅。,已核。,如拟。,呈XX同志阅示。,呈XX同志审签。,请XX研究办理。,请XX传阅。,请抓紧办理。,请速办。,不同意。,供参考。
             freeFlowKey: ziyouliucheng
-            systemCnName: \u4e8b\u9879\u7ba1\u7406
+            systemCnName: 事项管理
             systemName: itemAdmin
-            weekend2WorkingDay: weekendToWorkingDay
-            workHolidayPropFile: classpath:/properties/WorkHoliday.properties
-            workingDay2Holiday: workingDayToHoliday
-            formType: 2
-            tenantId: c425281829dc4d4496ddddf7fc0198d0
-            workOrderRoleId:
-            workOrderItemId: 9ec9bcf8990f472292419cab4e52b33c
-            workOrderIndex: http://127.0.0.1:7056/flowableUI/index
             smsSwitch: false
             weiXinSwitch: true
             weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage
@@ -220,8 +212,6 @@ y9:
     common:
         cacheEnabled: true
         kafkaEnabled: true
-        tomcatPassword: tomcat
-        tomcatUserName: tomcat
         orgBaseUrl: http://localhost:7055/platform
         processAdminBaseUrl: http://localhost:7056/processAdmin
         itemAdminBaseUrl: http://localhost:7056/itemAdmin
@@ -231,18 +221,14 @@ y9:
         datacenterBaseUrl: https://dev.youshengyun.com/datacenter
         dataServiceBaseUrl: http://localhost:7056/dataService
         emailBaseUrl: http://localhost:7056/email
-        graphDataBaseUrl: http://localhost:7056/graphData
         logBaseUrl: http://localhost:7056/log
         msgRemindBaseUrl: https://dev.youshengyun.com/msgRemind
         smsBaseUrl: http://localhost:7056/sms
-        soaBaseUrl: http://localhost:7056/soa
-        subscriptionBaseUrl: http://localhost:7056/subscription
         todoBaseUrl: https://dev.youshengyun.com/todo
         userOnlineBaseUrl: http://localhost:7056/userOnline
         y9homeBaseUrl: http://localhost:7056/y9home
         y9DigitalBaseUrl: http://localhost:7055/y9DigitalBase
         flowableBaseUrl: https://dev.youshengyun.com/flowableUI/index
-        attendanceBaseUrl: https://www.youshengyun.com/attendance
     feature:
         file:
             base64FileName: false
