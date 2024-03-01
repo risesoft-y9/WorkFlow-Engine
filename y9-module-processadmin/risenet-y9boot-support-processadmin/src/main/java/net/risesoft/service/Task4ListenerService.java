@@ -60,14 +60,12 @@ public class Task4ListenerService {
      * @param task
      */
     @Async
-    public void task4CreateListener(final DelegateTask task, final Map<String, Object> variables,
-        final Map<String, Object> localvariables) {
+    public void task4CreateListener(final DelegateTask task, final Map<String, Object> variables, final Map<String, Object> localvariables) {
 
         /**
          * 统一待办
          */
-        boolean b = !"xinjian".equals(task.getTaskDefinitionKey()) && !"faqiren".equals(task.getTaskDefinitionKey())
-            && !"qicao".equals(task.getTaskDefinitionKey()) && !"fenpei".equals(task.getTaskDefinitionKey());
+        boolean b = !"xinjian".equals(task.getTaskDefinitionKey()) && !"faqiren".equals(task.getTaskDefinitionKey()) && !"qicao".equals(task.getTaskDefinitionKey()) && !"fenpei".equals(task.getTaskDefinitionKey());
         if (b) {
             // 新建这一步不使用异步方式保存
             todoTaskService.saveTodoTask(task, variables);
@@ -82,11 +80,6 @@ public class Task4ListenerService {
          * 消息推送提醒
          */
         pushNormalToAndroidService.pushNormalToAndroid(task, variables);
-
-        /**
-         * 地灾协会，短信提醒
-         */
-        smsRemindService.dzxhSmsRemind(task, variables, localvariables);
 
         /**
          * 协作状态

@@ -81,7 +81,6 @@ import net.risesoft.util.CommonOpt;
 import net.risesoft.util.ListUtil;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.Y9Util;
 
 import y9.client.rest.processadmin.HistoricProcessApiClient;
@@ -193,9 +192,6 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Autowired
     private AsyncHandleService asyncHandleService;
-
-    @Autowired
-    private Y9Properties y9Conf;
 
     @Autowired
     private Y9FormRepository y9FormRepository;
@@ -695,16 +691,6 @@ public class DocumentServiceImpl implements DocumentService {
                 String itemId = url.split("itemId=")[1];
                 return itemId;
             }
-            // 系统工单为大有生租户专用,不创建应用,不生成资源,避免其他租户可租用,大有生租户添加系统工单
-            String riseTenantId = y9Conf.getApp().getItemAdmin().getTenantId();
-            if (riseTenantId.equals(Y9LoginUserHolder.getTenantId())) {
-                boolean workOrder = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", userId).getData();
-                // 拥有系统工单角色,才在我的工作中显示系统工单事项
-                if (workOrder) {
-                    String workOrderItemId = y9Conf.getApp().getItemAdmin().getWorkOrderItemId();
-                    return workOrderItemId;
-                }
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -794,25 +780,6 @@ public class DocumentServiceImpl implements DocumentService {
                     map.put("name", spmApproveitem.getName());
                     map.put("iconData", StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
                     listMap.add(map);
-                }
-            }
-            // 系统工单为大有生租户专用,不创建应用,不生成资源,避免其他租户可租用,大有生租户添加系统工单
-            String riseTenantId = y9Conf.getApp().getItemAdmin().getTenantId();
-            if (riseTenantId.equals(Y9LoginUserHolder.getTenantId())) {
-                boolean workOrder = personRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", userId).getData();
-                // 拥有系统工单角色,才在我的工作中显示系统工单事项
-                if (workOrder) {
-                    map = new HashMap<String, Object>(16);
-                    String workOrderItemId = y9Conf.getApp().getItemAdmin().getWorkOrderItemId();
-                    SpmApproveItem spmApproveitem = spmApproveitemRepository.findById(workOrderItemId).orElse(null);
-                    map.put("id", workOrderItemId);
-                    map.put("name", spmApproveitem.getName());
-                    map.put("itemId", workOrderItemId);
-                    map.put("iconData", "");
-                    if (spmApproveitem != null && spmApproveitem.getId() != null) {
-                        map.put("iconData", StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
-                        listMap.add(map);
-                    }
                 }
             }
         } catch (Exception e) {
