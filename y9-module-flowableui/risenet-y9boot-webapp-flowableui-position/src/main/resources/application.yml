@@ -1,10 +1,10 @@
 management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
+    endpoints:
+        web:
+            exposure:
+                include: '*'
 server:
-    port: 8080
+      port: 8080
     servlet:
         encoding:
             charset: UTF-8
@@ -49,13 +49,13 @@ spring:
         redis:
             database: 8
             host: localhost
-      port: 6379
+            port: 6379
             username: default
             password: '12345678'
             ssl:
                 enabled: false
             lettuce:
-        pool:
+                pool:
                     max-active: 8
                     max-idle: 8
                     max-wait: -1
@@ -63,24 +63,24 @@ spring:
             repositories:
                 enabled: false
     datasource:
-        hikari:
-      y9-public:
-        driverClassName: com.mysql.cj.jdbc.Driver
-        jdbcUrl: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
-        username: root
-        password: '12345678'
-        maximumPoolSize: 20
-        minimumIdle: 1
+                hikari:
+            y9-public:
+                driverClassName: com.mysql.cj.jdbc.Driver
+                jdbcUrl: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                username: root
+                password: '12345678'
+                maximumPoolSize: 20
+                minimumIdle: 1
     jpa:
-        properties:
+                properties:
             hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        hbm2ddl:
+                dialect: org.hibernate.dialect.MySQL8Dialect
+                hbm2ddl:
                     auto: update
-        jdbc:
+                jdbc:
                     batchSize: 100
-        showSql: true
-        hibernate:
+                showSql: true
+                hibernate:
             ddl-auto: update
             naming:
                 implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
@@ -98,16 +98,16 @@ spring:
         view:
             prefix: /WEB-INF/jsp/
             suffix: .jsp
-  servlet:
-    multipart:
-      max-file-size: 200MB
-      max-request-size: 1000MB
-  web:
-    resources:
-      static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:///d:/y9config/
+    servlet:
+        multipart:
+            max-file-size: 200MB
+            max-request-size: 1000MB
+    web:
+        resources:
+            static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:///d:/y9config/
 y9:
-  systemName: flowableUI
-  internalIp: 192.168.x.x,10.161.x.x,10.1.x.x,172.20.x.x
+    systemName: flowableUI
+    internalIp: 192.168.x.x,10.161.x.x,10.1.x.x,172.20.x.x
     app:
         flowable:
       systemCnName: 办件
