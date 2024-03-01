@@ -195,7 +195,6 @@ y9:
             smsSwitch: false
             weiXinSwitch: true
             weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage
-        risesoftTenantId: 993f08e4a9624c7d82b0bd0766f45f10
     service:
         processAdmin:
             directUrl: http://localhost:7056
@@ -215,19 +214,10 @@ y9:
         orgBaseUrl: http://localhost:7055/platform
         processAdminBaseUrl: http://localhost:7056/processAdmin
         itemAdminBaseUrl: http://localhost:7056/itemAdmin
-        addressBookBaseUrl: http://localhost:7056/addressBook
-        calendarBaseUrl: http://localhost:7056/calendar
-        cmsBaseUrl: http://localhost:7056/cms
         datacenterBaseUrl: https://dev.youshengyun.com/datacenter
-        dataServiceBaseUrl: http://localhost:7056/dataService
-        emailBaseUrl: http://localhost:7056/email
-        logBaseUrl: http://localhost:7056/log
         msgRemindBaseUrl: https://dev.youshengyun.com/msgRemind
         smsBaseUrl: http://localhost:7056/sms
         todoBaseUrl: https://dev.youshengyun.com/todo
-        userOnlineBaseUrl: http://localhost:7056/userOnline
-        y9homeBaseUrl: http://localhost:7056/y9home
-        y9DigitalBaseUrl: http://localhost:7055/y9DigitalBase
         flowableBaseUrl: https://dev.youshengyun.com/flowableUI/index
     feature:
         file:
