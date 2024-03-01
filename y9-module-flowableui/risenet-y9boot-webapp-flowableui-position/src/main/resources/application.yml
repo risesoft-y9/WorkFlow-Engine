@@ -148,6 +148,7 @@ y9:
   systemName: flowableUI
   app:
     flowable:
+      systemCnName: 办件
       systemName: flowableUI
   service:
     itemAdmin:
