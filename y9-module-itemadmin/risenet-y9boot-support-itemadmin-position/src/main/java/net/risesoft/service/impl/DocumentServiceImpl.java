@@ -90,7 +90,6 @@ import net.risesoft.service.Process4SearchService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.RoleService;
 import net.risesoft.service.SpmApproveItemService;
-import net.risesoft.service.WorkOrderService;
 import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.service.form.Y9FormService;
 import net.risesoft.util.ButtonUtil;
@@ -188,9 +187,6 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Autowired
     private OfficeDoneInfoService officeDoneInfoService;
-
-    @Autowired
-    private WorkOrderService workOrderService;
 
     @Autowired
     private TaskVariableRepository taskVariableRepository;
@@ -688,33 +684,6 @@ public class DocumentServiceImpl implements DocumentService {
                     map.put("todoCount", todoCount);
                     map.put("iconData", StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
                     listMap.add(map);
-                }
-            }
-            // 系统工单为大有生租户专用,不创建应用,不生成资源,避免其他租户可租用,大有生租户添加系统工单
-            String riseTenantId = y9Conf.getApp().getItemAdmin().getTenantId();
-            if (riseTenantId.equals(Y9LoginUserHolder.getTenantId())) {
-                boolean workOrder = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", positionId).getData();
-                // 拥有系统工单角色,才在我的工作中显示系统工单事项
-                if (workOrder) {
-                    map = new HashMap<String, Object>(16);
-                    String workOrderItemId = y9Conf.getApp().getItemAdmin().getWorkOrderItemId();
-                    SpmApproveItem spmApproveitem = spmApproveitemRepository.findById(workOrderItemId).orElse(null);
-                    map.put("id", workOrderItemId);
-                    map.put("name", spmApproveitem.getName());
-                    map.put("url", workOrderItemId);
-                    map.put("iconData", "");
-                    map.put("todoCount", 0);
-                    if (spmApproveitem != null && spmApproveitem.getId() != null) {
-                        todoCount = todoManager.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId, spmApproveitem.getWorkflowGuid());
-                        boolean workOrderManage = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单管理员", positionId).getData();
-                        if (workOrderManage) {
-                            int workOrdertodoCount = workOrderService.getAdminTodoCount();
-                            todoCount += workOrdertodoCount;
-                        }
-                        map.put("todoCount", todoCount);
-                        map.put("iconData", StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
-                        listMap.add(map);
-                    }
                 }
             }
         } catch (Exception e) {
