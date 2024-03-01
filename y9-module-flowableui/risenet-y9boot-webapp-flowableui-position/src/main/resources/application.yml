@@ -110,6 +110,7 @@ y9:
   internalIp: 192.168.x.x,10.161.x.x,10.1.x.x,172.20.x.x
     app:
         flowable:
+      systemCnName: 办件
       systemName: flowableUI
   service:
     itemAdmin:
