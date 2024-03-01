@@ -1,8 +1,8 @@
 management:
-    endpoints:
-        web:
-            exposure:
-                include: '*'
+  endpoints:
+    web:
+      exposure:
+        include: '*'
 server:
     port: 8080
     servlet:
@@ -49,13 +49,13 @@ spring:
         redis:
             database: 8
             host: localhost
-            port: 6379
+      port: 6379
             username: default
             password: '12345678'
             ssl:
                 enabled: false
             lettuce:
-                pool:
+        pool:
                     max-active: 8
                     max-idle: 8
                     max-wait: -1
@@ -64,22 +64,22 @@ spring:
                 enabled: false
     datasource:
         hikari:
-            y9-public:
-                driverClassName: com.mysql.cj.jdbc.Driver
-                jdbcUrl: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
-                username: root
-                password: '12345678'
-                maximumPoolSize: 20
-                minimumIdle: 1
+      y9-public:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        jdbcUrl: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+        username: root
+        password: '12345678'
+        maximumPoolSize: 20
+        minimumIdle: 1
     jpa:
         properties:
             hibernate:
-                dialect: org.hibernate.dialect.MySQL8Dialect
-                hbm2ddl:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        hbm2ddl:
                     auto: update
-                jdbc:
+        jdbc:
                     batchSize: 100
-                showSql: true
+        showSql: true
         hibernate:
             ddl-auto: update
             naming:
@@ -98,107 +98,79 @@ spring:
         view:
             prefix: /WEB-INF/jsp/
             suffix: .jsp
-    servlet:
-        multipart:
-            max-file-size: 200MB
-            max-request-size: 1000MB
-    web:
-        resources:
-            static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:///d:/y9config/
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 1000MB
+  web:
+    resources:
+      static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:///d:/y9config/
 y9:
-    systemName: flowableUI
-    internalIp: 192.168.x.x,10.161.x.x,10.1.x.x,172.20.x.x
+  systemName: flowableUI
+  internalIp: 192.168.x.x,10.161.x.x,10.1.x.x,172.20.x.x
     app:
-        admin:
-            mainIndexView: newIndex
         flowable:
-            systemCnName: 办件3.0
-            systemName: flowableUI
-            tenantId: c425281829dc4d4496ddddf7fc0198d0
-            formType: 2
-            systemWorkOrderKey: systemWorkOrder
-            workOrderItemId: 9ec9bcf8990f472292419cab4e52b33c
-            dzxhTenantId: 9df5638286044bea8c771e5a4e2325c9
-            dzxhLyspItemId: 22d36e615eb04c10a58762ec122c005e
-            dzxhLyspFormId: e2c60021877a4f23b35727405c309137
-            emailUrl: https://www.youshengyun.com/sms/emailIndex
-        itemAdmin:
-            systemName: itemAdmin
-        workOrder:
-            inNetrouteToTaskId: qicao
-            outNetrouteToTaskId: fenpei
-            processDefinitionKey: workOrderManage
-    service:
-        itemAdmin:
-            directUrl: http://localhost:7057
-        processAdmin:
-            directUrl: http://localhost:7056
-        todo:
-            directUrl: http://localhost:7056
-        org:
-            directUrl: http://localhost:7055
-    common:
-        cacheEnabled: true
-        kafkaEnabled: true
-        tomcatPassword: '83204585'
-        tomcatUserName: tomcat
-        calendarBaseUrl: http://localhost:7055/calendar
-        cmsBaseUrl: http://localhost:7055/cms
-        flowableBaseUrl: http://localhost:7058/flowableUI
-        itemAdminBaseUrl: http://localhost:7057/itemAdmin
-        logBaseUrl: http://localhost:7055/log
-        messageBaseUrl: http://localhost:7058/message
-        orgBaseUrl: http://localhost:7055/platform
-        y9DigitalBaseUrl: http://localhost:7055/y9DigitalBase
-        processAdminBaseUrl: http://localhost:7056/processAdmin
-        emailBaseUrl: http://localhost:7056/email
-        soaBaseUrl: http://localhost:7055/soa
-        todoBaseUrl: http://localhost:7058/todo
-        todoTaskUrlPrefix: http://localhost:8080/flowableUI/todoIndex
-        y9homeBaseUrl: http://localhost:7055/y9home
-        jodconverterBaseUrl: http://localhost:7058/jodconverter/onlinePreview?url=
-        attendanceBaseUrl: http://localhost:7058/attendance
-    feature:
-        apisix:
-            enabled: false
-            adminAddress: http://localhost:8888/apisix/admin/
-            adminKey: edd1c9f034335f136f87ad84b625c8f1
-            upstreamType: roundrobin   #负载均衡算法，1、roundrobin:轮训 ; 2、chash:一致性哈希; 3、ewma:指数加权移动平均法; 4、least_conn:最小连接数
-            #etcdAddress: http://localhost:2379  #有多个时逗号分隔
-            apiBasePackages: net.risesoft.controller.mobile #有多个时逗号分隔
-        file:
-            base64FileName: false
-            encryptionFileContent: false
-            #privateKey: 
-            #publicKey: 
-            rest:
-                fileManagerUrl: http://localhost:8080/fileManager
-            ftp:
-                host: localhost
-                port: 21
-                username: y9admin
-                password: '83204585'
-                blockWhenExhausted: true
-                bufferSize: 10240
-                connectTimeOut: 50000
-                controlEncoding: UTF-8
-                dataTimeout: 1200000
-                fileType: 2
-                maxIdle: 10
-                maxTotal: 50
-                minIdle: 2
-                maxWaitMillis: 5400000
-                testOnBorrow: true
-                testOnCreate: true
-                testOnReturn: true
-                testWhileIdle: true
-                useEPSVwithIPv4: false
-                passiveMode: true
-        jpa:
-            packagesToScanEntityPublic: net.risesoft.y9public.entity
-            packagesToScanEntityTenant: net.risesoft.entity
-            packagesToScanRepositoryPublic: net.risesoft.y9public.repository
-            packagesToScanRepositoryTenant: 'net.risesoft.repository '
+      systemName: flowableUI
+  service:
+    itemAdmin:
+      directUrl: http://localhost:7057
+    processAdmin:
+      directUrl: http://localhost:7056
+    todo:
+      directUrl: http://localhost:7056
+    org:
+      directUrl: http://localhost:7055
+  common:
+    cacheEnabled: true
+    kafkaEnabled: true
+    flowableBaseUrl: http://localhost:7058/flowableUI
+    itemAdminBaseUrl: http://localhost:7057/itemAdmin
+    orgBaseUrl: http://localhost:7055/platform
+    processAdminBaseUrl: http://localhost:7056/processAdmin
+    todoBaseUrl: http://localhost:7058/todo
+    todoTaskUrlPrefix: http://localhost:8080/flowableUI/todoIndex
+    jodconverterBaseUrl: http://localhost:7058/jodconverter/onlinePreview?url=
+  feature:
+    apisix:
+      enabled: false
+      adminAddress: http://localhost:8888/apisix/admin/
+      adminKey: edd1c9f034335f136f87ad84b625c8f1
+      upstreamType: roundrobin   #负载均衡算法，1、roundrobin:轮训 ; 2、chash:一致性哈希; 3、ewma:指数加权移动平均法; 4、least_conn:最小连接数
+      #etcdAddress: http://localhost:2379  #有多个时逗号分隔
+      apiBasePackages: net.risesoft.controller.mobile #有多个时逗号分隔
+    file:
+      base64FileName: false
+      encryptionFileContent: false
+      #privateKey:
+      #publicKey:
+      rest:
+        fileManagerUrl: http://localhost:8080/fileManager
+      ftp:
+        host: localhost
+        port: 21
+        username: y9admin
+        password: '83204585'
+        blockWhenExhausted: true
+        bufferSize: 10240
+        connectTimeOut: 50000
+        controlEncoding: UTF-8
+        dataTimeout: 1200000
+        fileType: 2
+        maxIdle: 10
+        maxTotal: 50
+        minIdle: 2
+        maxWaitMillis: 5400000
+        testOnBorrow: true
+        testOnCreate: true
+        testOnReturn: true
+        testWhileIdle: true
+        useEPSVwithIPv4: false
+        passiveMode: true
+    jpa:
+      packagesToScanEntityPublic: net.risesoft.y9public.entity
+      packagesToScanEntityTenant: net.risesoft.entity
+      packagesToScanRepositoryPublic: net.risesoft.y9public.repository
+      packagesToScanRepositoryTenant: 'net.risesoft.repository '
         mongo:
             packagesToScanEntityPublic: net.risesoft.y9public.entity
             packagesToScanEntityTenant: net.risesoft.entity

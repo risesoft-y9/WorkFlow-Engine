@@ -34,9 +34,9 @@ import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
+import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -53,7 +53,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.util.DocumentUtil;
 import net.risesoft.util.SysVariables;
-import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -393,12 +392,9 @@ public class MobileV1DocumentController {
                 }
             }
             Map<String, Object> variables = new HashMap<String, Object>(16);
-            if (processDefinitionKey.equals(Y9Context.getProperty("y9.app.workOrder.processDefinitionKey"))) {
-                String startRouteToTaskId = Y9Context.getProperty("y9.app.workOrder.inNetrouteToTaskId");
-                map = document4PositionApi.saveAndForwardingByTaskKey(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, startRouteToTaskId, variables);
-            } else {
+            
                 map = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
-            }
+            
             if ((boolean)map.get("success")) {
                 return Y9Result.success(map, (String)map.get("msg"));
             }

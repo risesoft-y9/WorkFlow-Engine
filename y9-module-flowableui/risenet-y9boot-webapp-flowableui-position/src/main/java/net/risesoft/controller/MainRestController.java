@@ -34,7 +34,6 @@ import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Controller
@@ -236,7 +235,6 @@ public class MainRestController {
         ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId);
         map.put("itemModel", itemModel);
         map.put("tenantId", tenantId);
-        map.put("dzxhTenantId", Y9Context.getProperty("y9.app.flowable.dzxhTenantId"));
         boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);

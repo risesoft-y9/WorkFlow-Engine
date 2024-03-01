@@ -26,8 +26,8 @@ import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 import net.risesoft.api.platform.permission.PositionResourceApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
-import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.platform.resource.ResourceApi;
+import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.platform.AuthorityEnum;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -201,37 +201,6 @@ public class MobileWorkListController {
                     m.put("itemId", item.getId());
                     m.put("itemName", item.getName());
                     list.add(m);
-                }
-                // 系统工单为大有生租户专用,不创建应用,不生成资源,避免其他租户可租用,大有生租户添加系统工单
-                String riseTenantId = Y9Context.getProperty("y9.app.flowable.tenantId");
-                if (riseTenantId.equals(Y9LoginUserHolder.getTenantId())) {
-                    boolean workOrder = positionRoleApi.hasRole(tenantId, "itemAdmin", "", "系统工单角色", positionId).getData();
-                    if (workOrder) {// 拥有系统工单角色,才在我的工作中显示系统工单事项
-                        map = new HashMap<String, Object>(16);
-                        String workOrderItemId = Y9Context.getProperty("y9.app.flowable.workOrderItemId");
-                        ItemModel item = item4PositionApi.getByItemId(tenantId, workOrderItemId);
-                        map.put("id", workOrderItemId);
-                        map.put("name", item.getName());
-                        map.put("url", workOrderItemId);
-                        map.put("iconData", "");
-                        map.put("todoCount", 0);
-                        if (item != null && item.getId() != null) {
-                            String processDefinitionKey = item.getWorkflowGuid();
-                            long todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
-                            Map<String, Object> m = new HashMap<String, Object>(16);
-                            Map<String, Object> resMap = todoService.list(item.getId(), "", 1, 1);
-                            List<Map<String, Object>> todoList = (List<Map<String, Object>>)resMap.get("rows");
-                            if (todoList != null && todoList.size() > 0) {
-                                Map<String, Object> todo = todoList.get(0);
-                                m.put("title", todo.get(SysVariables.DOCUMENTTITLE));
-                                m.put("time", todo.get("taskCreateTime"));
-                            }
-                            m.put("todoCount", todoCount);
-                            m.put("itemId", item.getId());
-                            m.put("itemName", item.getName());
-                            list.add(m);
-                        }
-                    }
                 }
             }
             Map<String, Object> m1 = this.getCalendar(tenantId, userId);
