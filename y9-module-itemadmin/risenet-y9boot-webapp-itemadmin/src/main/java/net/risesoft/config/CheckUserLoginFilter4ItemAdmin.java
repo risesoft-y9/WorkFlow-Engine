@@ -1,4 +1,4 @@
-package filters;
+package net.risesoft.config;
 
 import java.io.IOException;
 
