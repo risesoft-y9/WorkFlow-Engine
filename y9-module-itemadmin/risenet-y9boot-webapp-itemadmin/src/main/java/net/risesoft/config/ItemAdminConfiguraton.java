@@ -20,8 +20,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
 
-import filters.CheckUserLoginFilter4ItemAdmin;
-
 /**
  * @author qinman
  * @author zhangchongjie

@@ -1,4 +1,4 @@
-package filters;
+package net.risesoft.config;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
