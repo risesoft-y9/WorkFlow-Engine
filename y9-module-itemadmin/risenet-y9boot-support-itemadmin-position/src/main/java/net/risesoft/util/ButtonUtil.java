@@ -494,6 +494,7 @@ public class ButtonUtil {
             // 抄送
             isButtonShow[17] = true;
             ProcessInstanceModel processInstanceModel = runtimeManager.getProcessInstance(tenantId, task.getProcessInstanceId());
+            isButtonShow[15] = true;// 重定向按钮
             if (positionId.equals(processInstanceModel.getStartUserId())) {
                 // 重定向
                 // isButtonShow[15] = true;

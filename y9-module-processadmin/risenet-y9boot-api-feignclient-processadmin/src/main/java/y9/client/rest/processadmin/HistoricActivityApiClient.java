@@ -14,8 +14,7 @@ import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "HistoricActivityApiClient", name = "${y9.service.processAdmin.name:processAdmin}", url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/historicActivity")
+@FeignClient(contextId = "HistoricActivityApiClient", name = "${y9.service.processAdmin.name:processAdmin}", url = "${y9.service.processAdmin.directUrl:}", path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/historicActivity")
 public interface HistoricActivityApiClient extends HistoricActivityApi {
 
     /**
@@ -27,6 +26,12 @@ public interface HistoricActivityApiClient extends HistoricActivityApi {
      */
     @Override
     @GetMapping("/getByProcessInstanceId")
-    public List<HistoricActivityInstanceModel> getByProcessInstanceId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId);
+    public List<HistoricActivityInstanceModel> getByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+
+    /**
+     *
+     */
+    @Override
+    @GetMapping("/getByProcessInstanceIdAndYear")
+    public List<HistoricActivityInstanceModel> getByProcessInstanceIdAndYear(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("year") String year);
 }

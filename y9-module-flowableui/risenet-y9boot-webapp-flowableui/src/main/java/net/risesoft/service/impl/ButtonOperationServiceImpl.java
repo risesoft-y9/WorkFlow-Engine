@@ -8,14 +8,12 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import net.risesoft.api.itemadmin.DocumentApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
-import net.risesoft.api.itemadmin.WorkOrderApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -61,12 +59,6 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     @Autowired
     private ProcessParamApi processParamManager;
 
-    @Autowired
-    private WorkOrderApi workOrderManager;
-
-    @Value("${y9.app.flowable.systemWorkOrderKey}")
-    private String systemWorkOrderKey;
-
     @Override
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -111,16 +103,6 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
         processTrackManager.saveOrUpdate(tenantId, ptModel);
 
-        // 系统工单办结，修改工单处理状态
-        try {
-            if (taskModel.getProcessDefinitionId().contains(systemWorkOrderKey)) {
-                ProcessParamModel processParamModel =
-                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
-                workOrderManager.changeWorkOrderState(processParamModel.getProcessSerialNumber(), "3", "", "");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -143,8 +125,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     public void resumeToDo(String processInstanceId, String desc) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        String userId = userInfo.getPersonId(), userName = userInfo.getName(),
-            tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = userInfo.getPersonId(), userName = userInfo.getName(), tenantId = Y9LoginUserHolder.getTenantId();
         String newDate = sdf.format(new Date());
         try {
             /**
@@ -152,18 +133,15 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
              */
 
             String year = "";
-            OfficeDoneInfoModel officeDoneInfoModel =
-                officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+            OfficeDoneInfoModel officeDoneInfoModel = officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
             if (officeDoneInfoModel != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
             } else {
-                ProcessParamModel processParamModel =
-                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                 year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
             }
 
-            HistoricTaskInstanceModel hisTaskModelTemp =
-                historicTaskManager.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).get(0);
+            HistoricTaskInstanceModel hisTaskModelTemp = historicTaskManager.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).get(0);
             runtimeManager.recovery4Completed(tenantId, userId, processInstanceId, year);
             /**
              * 2、添加流程的历程

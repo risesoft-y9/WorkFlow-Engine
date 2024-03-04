@@ -164,25 +164,11 @@ spring:
 y9:
     systemName: flowableUI
     app:
-        admin:
-            mainIndexView: newIndex
         flowable:
-            systemCnName: 办件3.0
+            systemCnName: 办件
             systemName: flowableUI
-            tenantId: c425281829dc4d4496ddddf7fc0198d0
-            formType: 2
-            systemWorkOrderKey: systemWorkOrder
-            workOrderItemId: 9ec9bcf8990f472292419cab4e52b33c
-            dzxhTenantId: 9df5638286044bea8c771e5a4e2325c9
-            dzxhLyspItemId: 22d36e615eb04c10a58762ec122c005e
-            dzxhLyspFormId: e2c60021877a4f23b35727405c309137
-            emailUrl: https://www.youshengyun.com/sms/emailIndex
         itemAdmin:
             systemName: itemAdmin
-        workOrder:
-            inNetrouteToTaskId: qicao
-            outNetrouteToTaskId: fenpei
-            processDefinitionKey: workOrderManage
     service:
         itemAdmin:
             directUrl: http://127.0.0.1:7056
@@ -195,22 +181,12 @@ y9:
     common:
         cacheEnabled: true
         kafkaEnabled: true
-        tomcatPassword: '83204585'
-        tomcatUserName: tomcat
-        calendarBaseUrl: http://localhost:7055/calendar
-        cmsBaseUrl: http://localhost:7055/cms
         flowableBaseUrl: http://localhost:7056/flowableUI
         itemAdminBaseUrl: http://localhost:7056/itemAdmin
-        logBaseUrl: http://localhost:7055/log
-        messageBaseUrl: http://localhost:7055/message
         orgBaseUrl: http://localhost:7055/platform
-        y9DigitalBaseUrl: http://localhost:7055/y9DigitalBase
         processAdminBaseUrl: http://localhost:7056/processAdmin
-        emailBaseUrl: http://localhost:7056/email
-        soaBaseUrl: http://localhost:7055/soa
         todoBaseUrl: http://localhost:7056/todo
         todoTaskUrlPrefix: http://localhost:7056/flowableUI/todoIndex
-        y9homeBaseUrl: http://localhost:7055/y9home
         jodconverterBaseUrl: https://www.youshengyun.com/jodconverter/onlinePreview?url=
     feature:
         file:

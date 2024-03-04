@@ -20,7 +20,6 @@ import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.service.SmsRemindService;
 import net.risesoft.util.SysVariables;
-import net.risesoft.util.Y9DzxhSendMsgUtil;
 import net.risesoft.y9.configuration.Y9Properties;
 
 /**
@@ -47,45 +46,6 @@ public class SmsRemindServiceImpl implements SmsRemindService {
     @Autowired
     private SmsHttpApi smsHttpManager;
 
-    @Override
-    public void dzxhSmsRemind(final DelegateTask task, final Map<String, Object> map, final Map<String, Object> local) {
-        Boolean smsSwitch = y9Conf.getApp().getProcessAdmin().getDzxhSmsSwitch();
-        if (smsSwitch == null || !smsSwitch) {
-            LOGGER.info("######################短信提醒开关已关闭,如需短信提醒请更改配置文件######################");
-            return;
-        }
-        try {
-            String assignee = task.getAssignee();
-            String tenantId = (String)map.get("tenantId");
-            String dzxhTenantId = y9Conf.getApp().getProcessAdmin().getDzxhTenantId();
-            // 不是地灾租户不使用
-            if (!tenantId.equals(dzxhTenantId)) {
-                return;
-            }
-            String processInstanceId = task.getProcessInstanceId();
-            ProcessParamModel processParamModel =
-                processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
-            // 收回或者退回产生的任务不进行短信提醒，主要针对串行的收回或者退回，串行时的收回退回是办结所有串行任务，因此产生的新任务无需提醒
-            if (local.get(SysVariables.TAKEBACK) != null) {
-                return;
-            }
-            String sended = processParamModel.getSended();
-            // 第一步新建产生的任务，不发送提醒
-            if (StringUtils.isBlank(sended) || UtilConsts.FALSE.equals(sended)) {
-                return;
-            }
-            String userId = map.get(SysVariables.TASKSENDERID).toString();
-            Person user = personManager.getPerson(tenantId, userId).getData();
-            Person person = personManager.getPerson(tenantId, assignee).getData();
-            String mobile = person.getMobile();
-            Y9DzxhSendMsgUtil.sendMsgByphoneAndParams(mobile, person.getName(), "OA待办", user.getName(),
-                processParamModel.getTitle());
-            return;
-        } catch (Exception e) {
-            LOGGER.warn("##########################短信提醒时发生异常-taskId:{}##########################", task.getId(), e);
-        }
-    }
-
     /**
      * 短信提醒
      */
@@ -101,8 +61,7 @@ public class SmsRemindServiceImpl implements SmsRemindService {
             String assignee = task.getAssignee();
             String tenantId = (String)map.get("tenantId");
             String processInstanceId = task.getProcessInstanceId();
-            ProcessParamModel processParamModel =
-                processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+            ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
             String isSendSms = processParamModel.getIsSendSms();
             String isShuMing = processParamModel.getIsShuMing();
             String smsContent = processParamModel.getSmsContent();
