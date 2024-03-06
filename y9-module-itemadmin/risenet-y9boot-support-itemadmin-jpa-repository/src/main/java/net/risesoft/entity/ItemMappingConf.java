@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_ITEM_MAPPINGCONF")
-@Comment("事项和按钮绑定关系对应的角色")
+@Comment("事项对接字段映射配置")
 public class ItemMappingConf implements Serializable {
 
     private static final long serialVersionUID = 6023418927806462716L;
