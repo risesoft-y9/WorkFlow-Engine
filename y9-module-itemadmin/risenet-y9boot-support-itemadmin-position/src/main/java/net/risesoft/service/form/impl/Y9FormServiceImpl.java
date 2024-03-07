@@ -112,6 +112,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             String[] id = ids.split(",");
             for (String idTemp : id) {
                 y9FormRepository.deleteById(idTemp);
+                y9FormFieldRepository.deleteByFormId(idTemp);
             }
             map.put("msg", "删除成功");
             map.put(UtilConsts.SUCCESS, true);
@@ -488,10 +489,10 @@ public class Y9FormServiceImpl implements Y9FormService {
                                         sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 } else {
-                                    if(keyValue.get(fieldName) instanceof ArrayList){
+                                    if (keyValue.get(fieldName) instanceof ArrayList) {
                                         sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString()) ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String) keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    } else {
+                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
                             }
@@ -560,10 +561,10 @@ public class Y9FormServiceImpl implements Y9FormService {
                                         sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 } else {
-                                    if(keyValue.get(fieldName) instanceof ArrayList){
+                                    if (keyValue.get(fieldName) instanceof ArrayList) {
                                         sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString()) ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }else {
-                                        sqlStr.append(StringUtils.isNotBlank((String) keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    } else {
+                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
                                 isHaveField = true;

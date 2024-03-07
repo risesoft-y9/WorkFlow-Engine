@@ -27,6 +27,7 @@ import net.risesoft.entity.form.Y9TableField;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.form.Y9TableRepository;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;
@@ -49,6 +50,9 @@ public class Y9TableServiceImpl implements Y9TableService {
 
     @Autowired
     private Y9TableFieldRepository y9TableFieldRepository;
+
+    @Autowired
+    private Y9FormFieldRepository y9FormFieldRepository;
 
     @Autowired
     @Qualifier("jdbcTemplate4Tenant")
@@ -85,8 +89,7 @@ public class Y9TableServiceImpl implements Y9TableService {
             for (DbColumn dbColumn : list) {
                 Y9TableField y9TableField = new Y9TableField();
                 y9TableField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                y9TableField.setFieldCnName(
-                    StringUtils.isNotBlank(dbColumn.getComment()) ? dbColumn.getComment() : dbColumn.getColumnName());
+                y9TableField.setFieldCnName(StringUtils.isNotBlank(dbColumn.getComment()) ? dbColumn.getComment() : dbColumn.getColumnName());
                 y9TableField.setFieldLength(dbColumn.getDataLength());
                 y9TableField.setFieldType(dbColumn.getTypeName() + "(" + dbColumn.getDataLength() + ")");
                 y9TableField.setIsMayNull(dbColumn.getNullable() ? 1 : 0);
@@ -169,6 +172,7 @@ public class Y9TableServiceImpl implements Y9TableService {
             for (String idTemp : id) {
                 y9TableRepository.deleteById(idTemp);
                 y9TableFieldRepository.deleteByTableId(idTemp);
+                y9FormFieldRepository.deleteByTableId(idTemp);
             }
             map.put("msg", "删除成功");
             map.put(UtilConsts.SUCCESS, true);
@@ -337,8 +341,7 @@ public class Y9TableServiceImpl implements Y9TableService {
      * @return
      */
     @Transactional(readOnly = false)
-    public List<DbColumn> saveField(String tableId, String tableName, List<Map<String, Object>> listMap,
-        List<String> ids) {
+    public List<DbColumn> saveField(String tableId, String tableName, List<Map<String, Object>> listMap, List<String> ids) {
         List<DbColumn> dbcs = new ArrayList<DbColumn>();
         int order = 1;
         Y9TableField fieldTemp = null;

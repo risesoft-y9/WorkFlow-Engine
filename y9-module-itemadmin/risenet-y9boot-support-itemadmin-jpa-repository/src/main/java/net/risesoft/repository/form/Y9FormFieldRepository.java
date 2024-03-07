@@ -17,21 +17,24 @@ import net.risesoft.entity.form.Y9FormField;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface Y9FormFieldRepository
-    extends JpaRepository<Y9FormField, String>, JpaSpecificationExecutor<Y9FormField> {
+public interface Y9FormFieldRepository extends JpaRepository<Y9FormField, String>, JpaSpecificationExecutor<Y9FormField> {
 
     @Modifying
     @Transactional(readOnly = false)
     void deleteByFormId(String formId);
 
+    @Modifying
+    @Transactional(readOnly = false)
+    void deleteByTableId(String id);
+
     List<Y9FormField> findByFormId(String formId);
+
+    Page<Y9FormField> findByFormId(String formId, Pageable pageable);
 
     Y9FormField findByFormIdAndFieldName(String formId, String fieldName);
 
     List<Y9FormField> findByFormIdAndTableName(String formId, String tableName);
 
     List<Y9FormField> findByTableName(String tableName);
-
-    Page<Y9FormField> findByFormId(String formId, Pageable pageable);
 
 }
