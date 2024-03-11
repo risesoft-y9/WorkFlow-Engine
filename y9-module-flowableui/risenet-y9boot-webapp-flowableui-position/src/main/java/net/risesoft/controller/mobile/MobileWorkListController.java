@@ -25,7 +25,6 @@ import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 import net.risesoft.api.platform.permission.PositionResourceApi;
-import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.resource.ResourceApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.consts.UtilConsts;
@@ -80,9 +79,6 @@ public class MobileWorkListController {
 
     @Autowired
     private PositionResourceApi positionResourceApi;
-
-    @Autowired
-    private PositionRoleApi positionRoleApi;
 
     /**
      * 获取在办件列表
