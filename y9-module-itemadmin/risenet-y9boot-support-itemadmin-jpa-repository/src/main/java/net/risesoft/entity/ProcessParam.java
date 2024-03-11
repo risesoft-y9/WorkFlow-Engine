@@ -1,5 +1,7 @@
 package net.risesoft.entity;
 
+import java.io.Serializable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -8,8 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
-
-import java.io.Serializable;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
@@ -27,7 +27,9 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Comment("流程参数信息表")
-@Table(name = "FF_PROCESS_PARAM", indexes = {@Index(name = "index_001_processInstanceId", columnList = "processInstanceId"), @Index(name = "index_002_processSerialNumber", columnList = "processSerialNumber")})
+@Table(name = "FF_PROCESS_PARAM",
+    indexes = {@Index(name = "index_001_processInstanceId", columnList = "processInstanceId"),
+        @Index(name = "index_002_processSerialNumber", columnList = "processSerialNumber")})
 public class ProcessParam implements Serializable {
 
     private static final long serialVersionUID = -5245779237483037821L;

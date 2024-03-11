@@ -1,8 +1,8 @@
 package net.risesoft.config;
 
-import jakarta.annotation.PostConstruct;
-
 import javax.sql.DataSource;
+
+import jakarta.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

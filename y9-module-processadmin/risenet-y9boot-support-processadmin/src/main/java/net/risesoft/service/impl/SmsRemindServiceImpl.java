@@ -16,8 +16,8 @@ import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.sms.SmsHttpApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.platform.Person;
 import net.risesoft.service.SmsRemindService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -61,7 +61,8 @@ public class SmsRemindServiceImpl implements SmsRemindService {
             String assignee = task.getAssignee();
             String tenantId = (String)map.get("tenantId");
             String processInstanceId = task.getProcessInstanceId();
-            ProcessParamModel processParamModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+            ProcessParamModel processParamModel =
+                processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
             String isSendSms = processParamModel.getIsSendSms();
             String isShuMing = processParamModel.getIsShuMing();
             String smsContent = processParamModel.getSmsContent();

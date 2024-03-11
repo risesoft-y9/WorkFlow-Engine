@@ -59,7 +59,8 @@ public interface OfficeFollow4PositionApi {
      * @param rows
      * @return
      */
-    Map<String, Object> getFollowListBySystemName(String tenantId, String positionId, String systemName, String searchName, int page, int rows);
+    Map<String, Object> getFollowListBySystemName(String tenantId, String positionId, String systemName,
+        String searchName, int page, int rows);
 
     /**
      * 获取关注列表

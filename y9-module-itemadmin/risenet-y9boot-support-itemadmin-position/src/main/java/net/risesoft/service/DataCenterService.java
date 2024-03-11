@@ -31,12 +31,12 @@ import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Position;
 import net.risesoft.model.datacenter.AttachmentInfo;
 import net.risesoft.model.datacenter.EformInfo;
 import net.risesoft.model.datacenter.HistoryInfo;
 import net.risesoft.model.datacenter.OfficeInfo;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.repository.form.Y9FormFieldRepository;
@@ -77,8 +77,7 @@ public class DataCenterService {
     private ProcessParamService processParamService;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
 
     @Autowired
     private Y9FormRepository y9FormRepository;

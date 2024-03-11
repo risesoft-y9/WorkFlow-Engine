@@ -1,7 +1,5 @@
 package net.risesoft.web.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
@@ -34,7 +34,6 @@ import net.risesoft.utils.WebUtils;
 @RestController
 @Slf4j
 public class FileController {
-
 
     private final String fileDir = ConfigConstants.getFileDir();
     private final String demoDir = "demo";

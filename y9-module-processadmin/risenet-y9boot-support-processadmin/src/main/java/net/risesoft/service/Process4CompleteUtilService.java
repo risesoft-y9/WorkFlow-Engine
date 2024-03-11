@@ -1,7 +1,5 @@
 package net.risesoft.service;
 
-import jakarta.annotation.Resource;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -12,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
+
+import jakarta.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

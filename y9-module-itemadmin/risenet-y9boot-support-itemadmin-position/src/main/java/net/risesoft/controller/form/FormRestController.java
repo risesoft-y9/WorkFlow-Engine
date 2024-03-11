@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.entity.form.Y9FormField;
-import net.risesoft.service.form.Y9FormFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9Form;
+import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.form.Y9FormFieldService;
 import net.risesoft.service.form.Y9FormService;
 
 /**
@@ -140,6 +140,7 @@ public class FormRestController {
 
     /**
      * 获取表单绑定的业务表字段列表
+     * 
      * @param formId 应用名称
      * @param page 页码
      * @param rows 条数
@@ -147,23 +148,22 @@ public class FormRestController {
      */
     @RequestMapping(value = "/getFormBindFieldList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Page<Y9FormField> getFormBindFieldList(
-            @RequestParam(required = true) String formId,
-            @RequestParam(required = true) Integer page,
-            @RequestParam(required = true) Integer rows) {
-            Page<Y9FormField> pageList = y9FormFieldService.findByFormId(formId,page,rows);
+    public Y9Page<Y9FormField> getFormBindFieldList(@RequestParam(required = true) String formId,
+        @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+        Page<Y9FormField> pageList = y9FormFieldService.findByFormId(formId, page, rows);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
-                "获取表单绑定的业务表字段列表成功");
+            "获取表单绑定的业务表字段列表成功");
     }
 
     /**
      * 删除表单绑定的字段
+     * 
      * @param id
      * @return
      */
     @RequestMapping(value = "/deleteFormFieldBind", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> deleteFormFieldBind(@RequestParam(required = true) String id){
+    public Y9Result<String> deleteFormFieldBind(@RequestParam(required = true) String id) {
         Map<String, Object> map = y9FormFieldService.deleteFormFieldBind(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));

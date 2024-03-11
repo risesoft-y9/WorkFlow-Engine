@@ -1,12 +1,12 @@
 package net.risesoft.controller.mobile;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -94,7 +94,9 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getOrg")
-    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, String id, HttpServletRequest request, HttpServletResponse response) {
+    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestHeader("auth-positionId") String positionId, String id, HttpServletRequest request,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -188,7 +190,8 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getPositionList")
-    public void getPositionList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
+    public void getPositionList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
@@ -247,7 +250,8 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getUserCount")
-    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, String userChoice, HttpServletRequest request, HttpServletResponse response) {
+    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, String userChoice,
+        HttpServletRequest request, HttpServletResponse response) {
         List<String> userIds = new ArrayList<String>();
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -288,7 +292,9 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getUserInfo")
-    public void getUserInfo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletRequest request, HttpServletResponse response) {
+    public void getUserInfo(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);

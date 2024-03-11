@@ -91,18 +91,18 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
     @Override
     public Page<Y9FormField> findByFormId(String formId, Integer page, Integer rows) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows);
-        return y9FormFieldRepository.findByFormId(formId,pageable);
+        return y9FormFieldRepository.findByFormId(formId, pageable);
     }
 
     @Override
     @Transactional(readOnly = false)
     public Map<String, Object> deleteFormFieldBind(String id) {
         Map<String, Object> map = new HashMap<>(16);
-        try{
+        try {
             y9FormFieldRepository.deleteById(id);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "删除表单绑定字段成功");
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "删除表单绑定字段失败");

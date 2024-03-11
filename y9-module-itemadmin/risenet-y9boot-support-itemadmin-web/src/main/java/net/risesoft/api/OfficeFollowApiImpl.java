@@ -1,8 +1,8 @@
 package net.risesoft.api;
 
-import jakarta.annotation.Resource;
-
 import java.util.Map;
+
+import jakarta.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.OfficeFollow;
-import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.OfficeFollowModel;
+import net.risesoft.model.platform.Person;
 import net.risesoft.service.OfficeFollowService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;

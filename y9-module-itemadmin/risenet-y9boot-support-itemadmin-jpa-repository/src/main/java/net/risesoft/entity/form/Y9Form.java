@@ -1,5 +1,8 @@
 package net.risesoft.entity.form;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -7,9 +10,6 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-
-import java.io.Serializable;
-import java.util.Date;
 
 import org.hibernate.annotations.Comment;
 import org.springframework.format.annotation.DateTimeFormat;

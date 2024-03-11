@@ -66,20 +66,21 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     private OfficeDoneInfoRepository officeDoneInfoRepository;
 
     private final ElasticsearchTemplate elasticsearchTemplate;
-    
+
     @Autowired
     private PersonApi personApi;
 
     @Override
     public void cancelMeeting(String processInstanceId) {
-        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
+        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId,
+            Y9LoginUserHolder.getTenantId());
         if (info != null) {
             info.setMeeting("0");
             info.setMeetingType("");
             officeDoneInfoRepository.save(info);
         }
     }
-    
+
     @Override
     public int countByItemId(String itemId) {
         Criteria criteria = new Criteria();
@@ -171,7 +172,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> getMeetingList(String userName, String deptName, String title, String meetingType, Integer page, Integer rows) {
+    public Map<String, Object> getMeetingList(String userName, String deptName, String title, String meetingType,
+        Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<String, Object>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<OfficeDoneInfoModel>();
@@ -217,34 +219,36 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("meeting", "1"));
             // builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
             // if (StringUtils.isNotBlank(title)) {
-            //     BoolQueryBuilder builder2 = QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
-            //     builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
-            //     builder.must(builder2);
+            // BoolQueryBuilder builder2 = QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" +
+            // title + "*"));
+            // builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
+            // builder.must(builder2);
             // }
             // if (StringUtils.isNotBlank(deptName)) {
-            //     builder.must(QueryBuilders.wildcardQuery("deptName", "*" + deptName + "*"));
+            // builder.must(QueryBuilders.wildcardQuery("deptName", "*" + deptName + "*"));
             // }
             // if (StringUtils.isNotBlank(userName)) {
-            //     builder.must(QueryBuilders.wildcardQuery("creatUserName", "*" + userName + "*"));
+            // builder.must(QueryBuilders.wildcardQuery("creatUserName", "*" + userName + "*"));
             // }
             // if (StringUtils.isNotBlank(meetingType)) {
-            //     ExistsQueryBuilder builder2 = QueryBuilders.existsQuery("meetingType");
-            //     builder.must(builder2);
-            //     builder.must(QueryBuilders.termsQuery("meetingType", meetingType));
+            // ExistsQueryBuilder builder2 = QueryBuilders.existsQuery("meetingType");
+            // builder.must(builder2);
+            // builder.must(QueryBuilders.termsQuery("meetingType", meetingType));
             // }
             // IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
             // NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
             // NativeSearchQuery searchQuery = searchQueryBuilder.withQuery(builder).withPageable(pageable).build();
             // searchQuery.setTrackTotalHits(true);
-            // SearchHits<OfficeDoneInfo> searchHits = elasticsearchOperations.search(searchQuery, OfficeDoneInfo.class, index);
+            // SearchHits<OfficeDoneInfo> searchHits = elasticsearchOperations.search(searchQuery, OfficeDoneInfo.class,
+            // index);
             // List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             // Page<OfficeDoneInfo> pageList = new PageImpl<OfficeDoneInfo>(list0, pageable, searchHits.getTotalHits());
             // List<OfficeDoneInfo> list = pageList.getContent();
             // OfficeDoneInfoModel officeDoneInfoModel = null;
             // for (OfficeDoneInfo officeDoneInfo : list) {
-            //     officeDoneInfoModel = new OfficeDoneInfoModel();
-            //     Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
-            //     list1.add(officeDoneInfoModel);
+            // officeDoneInfoModel = new OfficeDoneInfoModel();
+            // Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+            // list1.add(officeDoneInfoModel);
             // }
             // totalPages = pageList != null ? pageList.getTotalPages() : 1;
             // total = pageList != null ? pageList.getTotalElements() : 0;
@@ -715,7 +719,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
     @Override
     public void setMeeting(String processInstanceId, String meetingType) {
-        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
+        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId,
+            Y9LoginUserHolder.getTenantId());
         if (info != null) {
             info.setMeeting("1");
             info.setMeetingType(meetingType);

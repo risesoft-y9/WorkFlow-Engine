@@ -46,7 +46,9 @@ public class MobileV1DraftController {
      * @param response
      */
     @RequestMapping(value = "/delDraft")
-    public Y9Result<String> delDraft(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String ids, HttpServletResponse response) {
+    public Y9Result<String> delDraft(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String ids, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -70,7 +72,9 @@ public class MobileV1DraftController {
      * @param response
      */
     @RequestMapping(value = "/getDeleteDraftCount")
-    public Y9Result<Integer> getDeleteDraftCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletResponse response) {
+    public Y9Result<Integer> getDeleteDraftCount(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String itemId, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Integer count = draft4PositionApi.getDeleteDraftCount(tenantId, positionId, itemId);
@@ -96,7 +100,9 @@ public class MobileV1DraftController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getDraft")
-    public Y9Page<Map<String, Object>> getDraft(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, @RequestParam(required = false) String title, boolean delFlag,
+    public Y9Page<Map<String, Object>> getDraft(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String itemId, @RequestParam(required = false) String title, boolean delFlag,
         @RequestParam Integer page, @RequestParam Integer rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -104,13 +110,15 @@ public class MobileV1DraftController {
             map = draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, delFlag);
             if ((boolean)map.get("success")) {
                 List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
-                return Y9Page.success(page, Integer.valueOf(map.get("totalpage").toString()), Long.valueOf(map.get("total").toString()), list, "获取成功");
+                return Y9Page.success(page, Integer.valueOf(map.get("totalpage").toString()),
+                    Long.valueOf(map.get("total").toString()), list, "获取成功");
             }
         } catch (Exception e) {
             log.error("草稿箱列表异常：");
             e.printStackTrace();
         }
-        return Y9Page.failure(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取失败", GlobalErrorCodeEnum.FAILURE.getCode());
+        return Y9Page.failure(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取失败",
+            GlobalErrorCodeEnum.FAILURE.getCode());
     }
 
     /**
@@ -123,7 +131,9 @@ public class MobileV1DraftController {
      * @param response
      */
     @RequestMapping(value = "/getDraftCount")
-    public Y9Result<Integer> getDraftCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletResponse response) {
+    public Y9Result<Integer> getDraftCount(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String itemId, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Integer count = draft4PositionApi.getDraftCount(tenantId, positionId, itemId);
@@ -144,7 +154,9 @@ public class MobileV1DraftController {
      * @param response
      */
     @RequestMapping(value = "/reduction")
-    public Y9Result<String> reduction(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String id, HttpServletResponse response) {
+    public Y9Result<String> reduction(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String id, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -168,7 +180,9 @@ public class MobileV1DraftController {
      * @param response
      */
     @RequestMapping(value = "/removeDraft")
-    public Y9Result<String> removeDraft(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String ids, HttpServletResponse response) {
+    public Y9Result<String> removeDraft(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String ids, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);

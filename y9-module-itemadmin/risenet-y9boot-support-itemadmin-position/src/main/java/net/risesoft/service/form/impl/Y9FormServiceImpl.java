@@ -60,8 +60,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     private Y9FormFieldRepository y9FormFieldRepository;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
 
     @Autowired
     private Y9TableFieldRepository y9TableFieldRepository;
@@ -505,10 +504,11 @@ public class Y9FormServiceImpl implements Y9FormService {
                                     }
                                 } else {
                                     if (keyValue.get(fieldName) instanceof ArrayList) {
-                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString()) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     } else {
                                         sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
                             }
@@ -583,10 +583,11 @@ public class Y9FormServiceImpl implements Y9FormService {
                                     }
                                 } else {
                                     if (keyValue.get(fieldName) instanceof ArrayList) {
-                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString()) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     } else {
                                         sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
                                 isHaveField = true;

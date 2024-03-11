@@ -3,8 +3,9 @@ package net.risesoft.service.form;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.entity.form.Y9FormField;
 import org.springframework.data.domain.Page;
+
+import net.risesoft.entity.form.Y9FormField;
 
 /**
  * @author qinman
@@ -56,6 +57,7 @@ public interface Y9FormFieldService {
 
     /**
      * 获取表单绑定的业务表字段
+     * 
      * @param formId
      * @param page
      * @param rows
@@ -65,9 +67,10 @@ public interface Y9FormFieldService {
 
     /**
      * 删除表单绑定字段
+     * 
      * @param id
      * @return
      */
-    Map<String,Object> deleteFormFieldBind(String id);
+    Map<String, Object> deleteFormFieldBind(String id);
 
 }

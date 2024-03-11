@@ -30,13 +30,16 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     private AsyncUtilService asyncUtilService;
 
     @Override
-    public Y9Result<String> saveOrUpdate(String itemId, String processSerialNumber, String processInstanceId, String documentTitle, String number, String level, Boolean customItem) {
+    public Y9Result<String> saveOrUpdate(String itemId, String processSerialNumber, String processInstanceId,
+        String documentTitle, String number, String level, Boolean customItem) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
-            ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             if (StringUtils.isNotBlank(processInstanceId)) {
-                if (StringUtils.isNotBlank(documentTitle) && (StringUtils.isBlank(processParamModel.getTitle()) || !processParamModel.getTitle().equals(documentTitle))) {
+                if (StringUtils.isNotBlank(documentTitle) && (StringUtils.isBlank(processParamModel.getTitle())
+                    || !processParamModel.getTitle().equals(documentTitle))) {
                     asyncUtilService.updateTitle(tenantId, processInstanceId, documentTitle);
                 }
             }
@@ -59,7 +62,8 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             pp.setTodoTaskUrlPrefix(item.getTodoTaskUrlPrefix());
             pp.setCustomItem(processParamModel != null ? processParamModel.getCustomItem() : customItem);
             StringBuffer searchTerm = new StringBuffer();
-            searchTerm.append(documentTitle).append("|").append(number).append("|").append(level).append("|").append(item.getName());
+            searchTerm.append(documentTitle).append("|").append(number).append("|").append(level).append("|")
+                .append(item.getName());
             pp.setSearchTerm(searchTerm.toString());
             processParamApi.saveOrUpdate(tenantId, pp);
             return Y9Result.successMsg("保存成功");

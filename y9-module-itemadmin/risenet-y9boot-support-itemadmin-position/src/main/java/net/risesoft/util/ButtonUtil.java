@@ -227,7 +227,9 @@ public class ButtonUtil {
                             // 主办办理
                             map.put("sponsorHandle", "true");
                         } else {
-                            ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
+                            ItemTaskConf itemTaskConf =
+                                itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId,
+                                    processDefinitionId, taskDefKey);
                             if (null != itemTaskConf && itemTaskConf.getSignTask()) {
                                 if (showSubmitButton) {
                                     isButtonShow[20] = true;
@@ -273,7 +275,9 @@ public class ButtonUtil {
                     }
 
                     // 没有发送按钮的时候，串并行显示加减签按钮
-                    boolean b = (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL)) && isButtonShow[1] == false;
+                    boolean b =
+                        (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL))
+                            && isButtonShow[1] == false;
                     if (b) {
                         isButtonShow[18] = true;
                     }
@@ -353,7 +357,9 @@ public class ButtonUtil {
                     // if (sponsorStatus) {// 在基本是否配置了主协办，没有配置为false，配置了使用主协办为true，不使用主协办为false
                     // 如果不是主办人，并且不是最后一个处理人，显示办理完成按钮
                     if (!isParallelSponsor && !isLastParallel) {
-                        ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
+                        ItemTaskConf itemTaskConf =
+                            itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId,
+                                processDefinitionId, taskDefKey);
                         if (null != itemTaskConf && itemTaskConf.getSignTask()) {
                             if (outPutNodeCount > 0) {
                                 if (showSubmitButton) {
@@ -431,7 +437,9 @@ public class ButtonUtil {
                 if (isAssignee && isContainEndEvent) {
                     // 如果是在并行状态下，那么就要看是不是并行状态主办人，如果是则显示办结按钮，否则不显示
                     if (isParallel) {
-                        ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, processDefinitionId, taskDefKey);
+                        ItemTaskConf itemTaskConf =
+                            itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId,
+                                processDefinitionId, taskDefKey);
                         if (null != itemTaskConf && itemTaskConf.getSignTask()) {
                             isButtonShow[11] = true;
                         } else {
@@ -510,7 +518,8 @@ public class ButtonUtil {
             }
             // 抄送
             isButtonShow[17] = true;
-            ProcessInstanceModel processInstanceModel = runtimeManager.getProcessInstance(tenantId, task.getProcessInstanceId());
+            ProcessInstanceModel processInstanceModel =
+                runtimeManager.getProcessInstance(tenantId, task.getProcessInstanceId());
             isButtonShow[15] = true;// 重定向按钮
             if (positionId.equals(processInstanceModel.getStartUserId())) {
                 // 重定向

@@ -60,7 +60,8 @@ public class BpmnViewerRestController {
      */
     @RequestMapping(value = "/getTaskList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam(required = true) String processInstanceId) {
+    public Y9Result<List<HistoricActivityInstanceModel>>
+        getTaskList(@RequestParam(required = true) String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricActivityInstanceModel> list = new ArrayList<HistoricActivityInstanceModel>();
         try {
@@ -76,14 +77,16 @@ public class BpmnViewerRestController {
                 task.setExecutionId("");
                 if (assignee != null) {
                     // 意见
-                    List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(task.getTaskId(), StringUtils.isBlank(assignee) ? "" : assignee);
+                    List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(
+                        task.getTaskId(), StringUtils.isBlank(assignee) ? "" : assignee);
                     task.setTenantId(opinion.size() > 0 ? opinion.get(0).getContent() : "");
                     Position employee = positionApi.getPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
                     if (employee != null) {
                         String employeeName = employee.getName();
                         HistoricVariableInstanceModel zhuBan = null;
                         try {
-                            zhuBan = historicVariableApi.getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLELSPONSOR, year);
+                            zhuBan = historicVariableApi.getByTaskIdAndVariableName(tenantId, task.getTaskId(),
+                                SysVariables.PARALLELSPONSOR, year);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

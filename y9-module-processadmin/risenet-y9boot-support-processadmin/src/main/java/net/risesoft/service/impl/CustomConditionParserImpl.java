@@ -22,7 +22,7 @@ public class CustomConditionParserImpl implements CustomConditionParser {
         try {
             VariableContainerWrapper variableContainer = new VariableContainerWrapper(variables);
             Object object = processEngineConfiguration.getExpressionManager().createExpression(conditionExpression)
-            .getValue(variableContainer);
+                .getValue(variableContainer);
             return Boolean.parseBoolean(String.valueOf(object));
         } catch (Exception e) {
             e.printStackTrace();

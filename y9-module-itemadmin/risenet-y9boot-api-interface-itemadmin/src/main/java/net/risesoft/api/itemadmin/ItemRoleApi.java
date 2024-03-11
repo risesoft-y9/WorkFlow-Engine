@@ -106,5 +106,6 @@ public interface ItemRoleApi {
      *
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> getOrgTree(String tenantId, String userId, String id, OrgTreeTypeEnum treeType, String name);
+    List<Map<String, Object>> getOrgTree(String tenantId, String userId, String id, OrgTreeTypeEnum treeType,
+        String name);
 }

@@ -14,7 +14,8 @@ import net.risesoft.model.itemadmin.ItemViewConfModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ItemViewConfApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+@FeignClient(contextId = "ItemViewConfApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
+    url = "${y9.service.itemAdmin.directUrl:}",
     path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemViewConf")
 public interface ItemViewConfApiClient extends ItemViewConfApi {
 

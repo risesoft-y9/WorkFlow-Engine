@@ -31,8 +31,7 @@ public class AutoFormSequenceController {
     private AutoFormSequenceService autoFormSequenceService;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate;
 
     /**
      * 自动获取日期

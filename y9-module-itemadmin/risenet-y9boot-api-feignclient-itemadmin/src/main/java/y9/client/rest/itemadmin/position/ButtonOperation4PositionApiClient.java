@@ -15,7 +15,8 @@ import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ButtonOperation4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+@FeignClient(contextId = "ButtonOperation4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
+    url = "${y9.service.itemAdmin.directUrl:}",
     path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/buttonOperation4Position")
 public interface ButtonOperation4PositionApiClient extends ButtonOperation4PositionApi {
 

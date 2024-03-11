@@ -88,7 +88,9 @@ public class MobileV1MonitorController {
      * @param response
      */
     @RequestMapping(value = "/monitorDoingCount")
-    public Y9Result<Long> monitorDoingCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletResponse response) {
+    public Y9Result<Long> monitorDoingCount(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String itemId, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
@@ -115,7 +117,9 @@ public class MobileV1MonitorController {
      * @return
      */
     @RequestMapping(value = "/monitorDoingList")
-    public Y9Page<Map<String, Object>> monitorDoingList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
+    public Y9Page<Map<String, Object>> monitorDoingList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return monitorService.monitorDoingList(itemId, title, page, rows);
@@ -131,7 +135,9 @@ public class MobileV1MonitorController {
      * @param response
      */
     @RequestMapping(value = "/monitorDoneCount")
-    public Y9Result<Long> monitorDoneCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletResponse response) {
+    public Y9Result<Long> monitorDoneCount(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String itemId, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
@@ -157,7 +163,9 @@ public class MobileV1MonitorController {
      * @param response
      */
     @RequestMapping(value = "/monitorDoneList")
-    public Y9Page<Map<String, Object>> monitorDoneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
+    public Y9Page<Map<String, Object>> monitorDoneList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return monitorService.monitorDoneList(itemId, title, page, rows);
@@ -173,7 +181,9 @@ public class MobileV1MonitorController {
      * @param response
      */
     @RequestMapping(value = "/removeProcess")
-    public Y9Result<String> removeProcess(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processInstanceId, HttpServletResponse response) {
+    public Y9Result<String> removeProcess(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam String processInstanceId, HttpServletResponse response) {
         try {
             ProcessParamModel processParamModel = null;
             List<String> list = new ArrayList<String>();

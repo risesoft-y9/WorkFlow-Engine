@@ -1,15 +1,15 @@
 package net.risesoft.controller;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -37,8 +37,7 @@ import net.risesoft.pojo.Y9Result;
 public class LeaveCountController {
 
     @Autowired
-    @Qualifier("y9TenantDataSource")
-    private DataSource y9TenantDS;
+    @Qualifier("y9TenantDataSource") private DataSource y9TenantDS;
 
     private JdbcTemplate jdbcTemplate4Tenant = null;
 

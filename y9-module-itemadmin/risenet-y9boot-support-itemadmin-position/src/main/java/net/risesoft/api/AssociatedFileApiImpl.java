@@ -1,9 +1,9 @@
 package net.risesoft.api;
 
-import jakarta.annotation.Resource;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import jakarta.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -90,7 +90,8 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      */
     @Override
     @GetMapping(value = "/getAssociatedFileAllList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getAssociatedFileAllList(String tenantId, String positionId, String processSerialNumber) {
+    public Map<String, Object> getAssociatedFileAllList(String tenantId, String positionId,
+        String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -126,7 +127,8 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      */
     @Override
     @PostMapping(value = "/saveAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber, String processInstanceIds) {
+    public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber,
+        String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.getPosition(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);

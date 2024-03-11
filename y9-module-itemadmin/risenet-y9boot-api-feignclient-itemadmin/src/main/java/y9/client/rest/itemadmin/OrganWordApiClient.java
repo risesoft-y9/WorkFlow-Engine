@@ -14,7 +14,8 @@ import net.risesoft.api.itemadmin.OrganWordApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "OrganWordApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+@FeignClient(contextId = "OrganWordApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
+    url = "${y9.service.itemAdmin.directUrl:}",
     path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/organWord")
 public interface OrganWordApiClient extends OrganWordApi {
 

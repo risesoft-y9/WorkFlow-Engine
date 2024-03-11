@@ -56,8 +56,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
     private ProcessParamService processParamService;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
 
     @Override
     public Y9Result<String> dataTransfer(String processDefinitionId, String processInstanceId) {

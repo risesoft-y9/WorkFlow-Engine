@@ -1,7 +1,5 @@
 package net.risesoft.service;
 
-import jakarta.annotation.Resource;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -9,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import jakarta.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,10 +71,12 @@ public class Process4SearchService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             ProcessParamModel processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
-            OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+            OfficeDoneInfoModel officeDoneInfo =
+                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
             if (officeDoneInfo != null) {
                 officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
-                officeDoneInfo.setUrgency(StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
+                officeDoneInfo.setUrgency(
+                    StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
                 officeDoneInfo.setUserComplete("");
                 officeDoneInfo.setBureauId(processParam.getBureauIds());
                 officeDoneInfo.setEndTime(null);
@@ -93,7 +95,8 @@ public class Process4SearchService {
                 officeDoneInfo.setEntrustUserId(entrustUserId);*/
 
                 // 处理参与人
-                sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId + "'";
+                sql =
+                    "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId + "'";
                 List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql);
                 String allUserId = "";
                 String deptIds = "";
@@ -155,16 +158,19 @@ public class Process4SearchService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String processInstanceId = processParam.getProcessInstanceId();
         try {
-            OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+            OfficeDoneInfoModel officeDoneInfo =
+                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
             if (officeDoneInfo != null) {
                 officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
-                officeDoneInfo.setUrgency(StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
+                officeDoneInfo.setUrgency(
+                    StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
                 officeDoneInfo.setUserComplete("");
                 officeDoneInfo.setBureauId(processParam.getBureauIds());
                 officeDoneInfo.setEndTime(null);
 
                 // 处理委托人
-                String sql = "SELECT e.OWNERID from FF_ENTRUSTDETAIL e where e.PROCESSINSTANCEID = '" + processInstanceId + "'";
+                String sql =
+                    "SELECT e.OWNERID from FF_ENTRUSTDETAIL e where e.PROCESSINSTANCEID = '" + processInstanceId + "'";
                 List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
                 String entrustUserId = "";
                 for (Map<String, Object> m : list2) {
@@ -176,7 +182,8 @@ public class Process4SearchService {
                 officeDoneInfo.setEntrustUserId(entrustUserId);
 
                 // 处理参与人
-                sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId + "'";
+                sql =
+                    "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId + "'";
                 List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql);
                 String allUserId = "";
                 String deptIds = "";

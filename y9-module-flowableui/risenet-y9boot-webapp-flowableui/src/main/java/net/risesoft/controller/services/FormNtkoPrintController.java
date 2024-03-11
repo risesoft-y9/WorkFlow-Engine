@@ -1,9 +1,5 @@
 package net.risesoft.controller.services;
 
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,6 +7,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +32,9 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.PunctuationConsts;
 import net.risesoft.enums.BrowserTypeEnum;
-import net.risesoft.model.platform.Person;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.platform.Person;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.util.SysVariables;
 import net.risesoft.util.ToolUtil;

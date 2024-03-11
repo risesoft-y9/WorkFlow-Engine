@@ -28,5 +28,6 @@ public interface HistoricActivityApi {
      * @param year 年度
      * @return
      */
-    public List<HistoricActivityInstanceModel> getByProcessInstanceIdAndYear(String tenantId, String processInstanceId, String year);
+    public List<HistoricActivityInstanceModel> getByProcessInstanceIdAndYear(String tenantId, String processInstanceId,
+        String year);
 }

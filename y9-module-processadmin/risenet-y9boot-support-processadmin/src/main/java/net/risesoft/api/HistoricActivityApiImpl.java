@@ -39,7 +39,8 @@ public class HistoricActivityApiImpl implements HistoricActivityApi {
     public List<HistoricActivityInstanceModel> getByProcessInstanceId(String tenantId, String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricActivityInstance> list = customHistoricActivityService.getByProcessInstanceId(processInstanceId);
-        List<HistoricActivityInstanceModel> haiModel = FlowableModelConvertUtil.historicActivityInstanceList2Model(list);
+        List<HistoricActivityInstanceModel> haiModel =
+            FlowableModelConvertUtil.historicActivityInstanceList2Model(list);
         return haiModel;
     }
 
@@ -48,10 +49,13 @@ public class HistoricActivityApiImpl implements HistoricActivityApi {
      */
     @Override
     @GetMapping(value = "/getByProcessInstanceIdAndYear", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoricActivityInstanceModel> getByProcessInstanceIdAndYear(String tenantId, String processInstanceId, String year) {
+    public List<HistoricActivityInstanceModel> getByProcessInstanceIdAndYear(String tenantId, String processInstanceId,
+        String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<HistoricActivityInstance> list = customHistoricActivityService.getByProcessInstanceIdAndYear(processInstanceId, year);
-        List<HistoricActivityInstanceModel> haiModel = FlowableModelConvertUtil.historicActivityInstanceList2Model(list);
+        List<HistoricActivityInstance> list =
+            customHistoricActivityService.getByProcessInstanceIdAndYear(processInstanceId, year);
+        List<HistoricActivityInstanceModel> haiModel =
+            FlowableModelConvertUtil.historicActivityInstanceList2Model(list);
         return haiModel;
     }
 

@@ -1,5 +1,7 @@
 package net.risesoft.entity;
 
+import java.io.Serializable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -7,8 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
-
-import java.io.Serializable;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
