@@ -102,12 +102,10 @@ public class InitTableDataService {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    @Qualifier("jdbcTemplate4Public")
-    private JdbcTemplate jdbcTemplate;
+    @Qualifier("jdbcTemplate4Public") private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
 
     @Autowired
     private SyncYearTableService syncYearTableService;

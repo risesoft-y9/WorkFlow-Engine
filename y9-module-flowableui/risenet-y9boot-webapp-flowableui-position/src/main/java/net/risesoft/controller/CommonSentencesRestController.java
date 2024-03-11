@@ -110,11 +110,13 @@ public class CommonSentencesRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveEdit", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveEdit(@RequestParam(required = true) String content, @RequestParam(required = true) String tabIndex) {
+    public Y9Result<String> saveEdit(@RequestParam(required = true) String content,
+        @RequestParam(required = true) String tabIndex) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         try {
-            commonSentencesApi.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content, Integer.parseInt(tabIndex));
+            commonSentencesApi.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content,
+                Integer.parseInt(tabIndex));
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();

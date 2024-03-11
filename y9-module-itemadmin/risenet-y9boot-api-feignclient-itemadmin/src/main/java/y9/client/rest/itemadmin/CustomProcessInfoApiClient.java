@@ -16,7 +16,8 @@ import net.risesoft.model.itemadmin.CustomProcessInfoModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "CustomProcessInfoApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+@FeignClient(contextId = "CustomProcessInfoApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
+    url = "${y9.service.itemAdmin.directUrl:}",
     path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/customProcessInfo")
 public interface CustomProcessInfoApiClient extends CustomProcessInfoApi {
 

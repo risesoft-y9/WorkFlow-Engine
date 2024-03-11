@@ -44,7 +44,9 @@ public class MobileV1ItemController {
      */
     @ResponseBody
     @RequestMapping(value = "/getItemList")
-    public Y9Result<List<Map<String, Object>>> getItemList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletRequest request, HttpServletResponse response) {
+    public Y9Result<List<Map<String, Object>>> getItemList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        HttpServletRequest request, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             List<Map<String, Object>> listMap = item4PositionApi.getItemList(tenantId, positionId);

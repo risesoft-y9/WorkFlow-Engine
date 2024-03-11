@@ -60,8 +60,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     private Y9FormFieldRepository y9FormFieldRepository;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
 
     @Autowired
     private Y9TableFieldRepository y9TableFieldRepository;
@@ -152,7 +151,8 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber) throws Exception {
+    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber)
+        throws Exception {
         Connection connection = null;
         List<Map<String, Object>> datamap = new ArrayList<Map<String, Object>>();
         try {
@@ -256,10 +256,12 @@ public class Y9FormServiceImpl implements Y9FormService {
                     }
                     List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), guid);
                     if (datamap.size() > 0) {
-                        List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
+                        List<Y9FormField> elementList =
+                            y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
                         for (Y9FormField element : elementList) {
                             String fieldName = element.getFieldName();
-                            resMap.put(fieldName, datamap.get(0).get(fieldName) != null ? datamap.get(0).get(fieldName).toString() : "");
+                            resMap.put(fieldName,
+                                datamap.get(0).get(fieldName) != null ? datamap.get(0).get(fieldName).toString() : "");
                         }
                     }
                 }
@@ -306,11 +308,13 @@ public class Y9FormServiceImpl implements Y9FormService {
                     }
                     List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), guid);
                     if (datamap.size() > 0) {
-                        List<Y9TableField> tableFieldList = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(y9Table.getId());
+                        List<Y9TableField> tableFieldList =
+                            y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(y9Table.getId());
                         for (Y9TableField tableField : tableFieldList) {
                             if (null != tableField.getIsVar() && 1 == tableField.getIsVar()) {
                                 String fieldName = tableField.getFieldName();
-                                map.put(fieldName, datamap.get(0).get(fieldName) != null ? datamap.get(0).get(fieldName).toString() : "");
+                                map.put(fieldName, datamap.get(0).get(fieldName) != null
+                                    ? datamap.get(0).get(fieldName).toString() : "");
                             }
                         }
                     }
@@ -390,7 +394,8 @@ public class Y9FormServiceImpl implements Y9FormService {
     @SuppressWarnings("unchecked")
     @Override
     @Transactional(readOnly = false)
-    public Map<String, Object> saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData) {
+    public Map<String, Object> saveChildTableData(String formId, String tableId, String processSerialNumber,
+        String jsonData) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Connection connection = null;
         try {
@@ -460,39 +465,50 @@ public class Y9FormServiceImpl implements Y9FormService {
                                     sqlStr1.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd')");
 
                                 } else {
-                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
                                 }
                             } else if (y9TableField.getFieldType().toUpperCase().contains("TIMESTAMP")) {
                                 if ("oracle".equals(dialect)) {
-                                    sqlStr1.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
+                                    sqlStr1
+                                        .append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
 
                                 } else if ("kingbase".equals(dialect)) {
-                                    sqlStr1.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
+                                    sqlStr1
+                                        .append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
 
                                 } else if ("dm".equals(dialect)) {
-                                    sqlStr1.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
+                                    sqlStr1
+                                        .append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
 
                                 } else {
-                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
                                 }
                             } else {
-                                if (fieldName.equals("guid") || fieldName.equals("GUID") || fieldName.equals("Z_GUID") || fieldName.equals("z_guid")) {
+                                if (fieldName.equals("guid") || fieldName.equals("GUID") || fieldName.equals("Z_GUID")
+                                    || fieldName.equals("z_guid")) {
                                     if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
                                         sqlStr1.append("'" + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "'");
                                     } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
-                                } else if (fieldName.equals("processInstanceId") || fieldName.equals("PROCESSINSTANCEID")) {
+                                } else if (fieldName.equals("processInstanceId")
+                                    || fieldName.equals("PROCESSINSTANCEID")) {
                                     if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
                                         sqlStr1.append("'" + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "'");
                                     } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 } else {
                                     if (keyValue.get(fieldName) instanceof ArrayList) {
-                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString()) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
                             }
@@ -548,23 +564,30 @@ public class Y9FormServiceImpl implements Y9FormService {
                                     } else if ("kingbase".equals(dialect)) {
                                         sqlStr.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd')");
                                     } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 } else if (y9TableField.getFieldType().toUpperCase().contains("TIMESTAMP")) {
                                     if ("oracle".equals(dialect)) {
-                                        sqlStr.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
+                                        sqlStr.append(
+                                            "TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
                                     } else if ("dm".equals(dialect)) {
-                                        sqlStr.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
+                                        sqlStr.append(
+                                            "TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
                                     } else if ("kingbase".equals(dialect)) {
-                                        sqlStr.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
+                                        sqlStr.append(
+                                            "TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
                                     } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 } else {
                                     if (keyValue.get(fieldName) instanceof ArrayList) {
-                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString()) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 }
                                 isHaveField = true;
@@ -672,36 +695,46 @@ public class Y9FormServiceImpl implements Y9FormService {
                                     sqlStr1.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd')");
 
                                 } else {
-                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
                                 }
                             } else if (y9TableField.getFieldType().toUpperCase().contains("TIMESTAMP")) {
                                 if ("oracle".equals(dialect)) {
-                                    sqlStr1.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
+                                    sqlStr1
+                                        .append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
 
                                 } else if ("kingbase".equals(dialect)) {
-                                    sqlStr1.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
+                                    sqlStr1
+                                        .append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
 
                                 } else if ("dm".equals(dialect)) {
-                                    sqlStr1.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
+                                    sqlStr1
+                                        .append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
 
                                 } else {
-                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
                                 }
                             } else {
-                                if (fieldName.equals("guid") || fieldName.equals("GUID") || fieldName.equals("Z_GUID") || fieldName.equals("z_guid")) {
+                                if (fieldName.equals("guid") || fieldName.equals("GUID") || fieldName.equals("Z_GUID")
+                                    || fieldName.equals("z_guid")) {
                                     if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
                                         sqlStr1.append("'" + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "'");
                                     } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
-                                } else if (fieldName.equals("processInstanceId") || fieldName.equals("PROCESSINSTANCEID")) {
+                                } else if (fieldName.equals("processInstanceId")
+                                    || fieldName.equals("PROCESSINSTANCEID")) {
                                     if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
                                         sqlStr1.append("'" + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "'");
                                     } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 } else {
-                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
                                 }
                             }
                             isHaveField = true;
@@ -757,20 +790,26 @@ public class Y9FormServiceImpl implements Y9FormService {
                                     } else if ("kingbase".equals(dialect)) {
                                         sqlStr.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd')");
                                     } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 } else if (y9TableField.getFieldType().toUpperCase().contains("TIMESTAMP")) {
                                     if ("oracle".equals(dialect)) {
-                                        sqlStr.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
+                                        sqlStr.append(
+                                            "TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
                                     } else if ("dm".equals(dialect)) {
-                                        sqlStr.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
+                                        sqlStr.append(
+                                            "TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
                                     } else if ("kingbase".equals(dialect)) {
-                                        sqlStr.append("TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
+                                        sqlStr.append(
+                                            "TO_DATE('" + keyValue.get(fieldName) + "','yyyy-MM-dd HH24:mi:ss')");
                                     } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
                                     }
                                 } else {
-                                    sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName)) ? "'" + keyValue.get(fieldName) + "'" : "''");
+                                    sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
+                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
                                 }
                                 isHaveField = true;
                             }
@@ -907,7 +946,8 @@ public class Y9FormServiceImpl implements Y9FormService {
         Y9Form y9Form = y9FormRepository.findById(formId).orElse(null);
         try {
             if (y9Form != null) {
-                String jspPath = Y9Context.getWebRootRealPath() + "WEB-INF" + File.separator + "jsp" + File.separator + "forms" + File.separator + "tenant_" + tenantId + File.separator;
+                String jspPath = Y9Context.getWebRootRealPath() + "WEB-INF" + File.separator + "jsp" + File.separator
+                    + "forms" + File.separator + "tenant_" + tenantId + File.separator;
 
                 String filePath = jspPath + formId + ".jsp";
                 String resultContent = y9Form.getResultContent();

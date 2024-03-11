@@ -18,7 +18,8 @@ import net.risesoft.entity.DraftEntity;
  */
 @Repository
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface DraftEntityRepository extends JpaRepository<DraftEntity, String>, JpaSpecificationExecutor<DraftEntity> {
+public interface DraftEntityRepository
+    extends JpaRepository<DraftEntity, String>, JpaSpecificationExecutor<DraftEntity> {
 
     /**
      * 获取草稿箱计数
@@ -131,7 +132,8 @@ public interface DraftEntityRepository extends JpaRepository<DraftEntity, String
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByItemIdAndCreaterIdAndDelFlagTrue(String itemId, String positionId, Pageable pageable);
+    public Page<DraftEntity> findByItemIdAndCreaterIdAndDelFlagTrue(String itemId, String positionId,
+        Pageable pageable);
 
     /**
      * 根据事项Id获取搜索的未删除草稿
@@ -142,7 +144,8 @@ public interface DraftEntityRepository extends JpaRepository<DraftEntity, String
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByItemIdAndCreaterIdAndTitleLikeAndDelFlagFalse(String itemId, String userId, String title, Pageable pageable);
+    public Page<DraftEntity> findByItemIdAndCreaterIdAndTitleLikeAndDelFlagFalse(String itemId, String userId,
+        String title, Pageable pageable);
 
     /**
      * 根据获取删除草稿
@@ -153,7 +156,8 @@ public interface DraftEntityRepository extends JpaRepository<DraftEntity, String
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByItemIdAndCreaterIdAndTitleLikeAndDelFlagTrue(String itemId, String userId, String title, Pageable pageable);
+    public Page<DraftEntity> findByItemIdAndCreaterIdAndTitleLikeAndDelFlagTrue(String itemId, String userId,
+        String title, Pageable pageable);
 
     /**
      * 根据processSerialNumber获取草稿
@@ -173,7 +177,8 @@ public interface DraftEntityRepository extends JpaRepository<DraftEntity, String
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByTypeAndCreaterIdAndTitleLikeAndDelFlagFalse(String systemName, String userId, String title, Pageable pageable);
+    public Page<DraftEntity> findByTypeAndCreaterIdAndTitleLikeAndDelFlagFalse(String systemName, String userId,
+        String title, Pageable pageable);
 
     /**
      * 根据获取删除草稿
@@ -184,6 +189,7 @@ public interface DraftEntityRepository extends JpaRepository<DraftEntity, String
      * @param pageable
      * @return
      */
-    public Page<DraftEntity> findByTypeAndCreaterIdAndTitleLikeAndDelFlagTrue(String systemName, String userId, String title, Pageable pageable);
+    public Page<DraftEntity> findByTypeAndCreaterIdAndTitleLikeAndDelFlagTrue(String systemName, String userId,
+        String title, Pageable pageable);
 
 }

@@ -50,8 +50,7 @@ public class TableManagerService {
     private Y9TableRepository y9TableRepository;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
 
     @Autowired
     private Y9TableFieldRepository y9TableFieldRepository;

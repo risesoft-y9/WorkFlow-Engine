@@ -162,7 +162,8 @@ public class DraftApiImpl implements Draft4PositionApi {
      */
     @Override
     @GetMapping(value = "/getDraftList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getDraftList(String tenantId, String positionId, int page, int rows, String title, String itemId, boolean delFlag) {
+    public Map<String, Object> getDraftList(String tenantId, String positionId, int page, int rows, String title,
+        String itemId, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -172,7 +173,8 @@ public class DraftApiImpl implements Draft4PositionApi {
             if (StringUtils.isEmpty(title)) {
                 title = "";
             }
-            Page<DraftEntity> pageList = draftEntityService.getDraftList(itemId, positionId, page, rows, title, delFlag);
+            Page<DraftEntity> pageList =
+                draftEntityService.getDraftList(itemId, positionId, page, rows, title, delFlag);
             List<Map<String, Object>> draftList = new ArrayList<Map<String, Object>>();
             Map<String, Object> formDataMap = null;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -229,7 +231,8 @@ public class DraftApiImpl implements Draft4PositionApi {
 
     @Override
     @GetMapping(value = "/getDraftListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getDraftListBySystemName(String tenantId, String positionId, int page, int rows, String title, String systemName, boolean delFlag) {
+    public Map<String, Object> getDraftListBySystemName(String tenantId, String positionId, int page, int rows,
+        String title, String systemName, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -239,7 +242,8 @@ public class DraftApiImpl implements Draft4PositionApi {
             if (StringUtils.isEmpty(title)) {
                 title = "";
             }
-            Page<DraftEntity> pageList = draftEntityService.getDraftListBySystemName(systemName, positionId, page, rows, title, delFlag);
+            Page<DraftEntity> pageList =
+                draftEntityService.getDraftListBySystemName(systemName, positionId, page, rows, title, delFlag);
             List<Map<String, Object>> draftList = new ArrayList<Map<String, Object>>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             int number = (page - 1) * rows;
@@ -291,7 +295,8 @@ public class DraftApiImpl implements Draft4PositionApi {
      */
     @Override
     @GetMapping(value = "/openDraft4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> openDraft4Position(String tenantId, String positionId, String itemId, String processSerialNumber, boolean mobile) {
+    public Map<String, Object> openDraft4Position(String tenantId, String positionId, String itemId,
+        String processSerialNumber, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         Map<String, Object> map = new HashMap<>(16);
@@ -348,7 +353,8 @@ public class DraftApiImpl implements Draft4PositionApi {
      */
     @Override
     @PostMapping(value = "/saveDraft", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber, String processDefinitionKey, String number, String level, String title) {
+    public Map<String, Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber,
+        String processDefinitionKey, String number, String level, String title) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         Map<String, Object> map = new HashMap<String, Object>(16);

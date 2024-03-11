@@ -31,16 +31,13 @@ import y9.dbcomment.Y9CommentUtil;
 public class Y9CommentController {
 
     @Autowired
-    @Qualifier("y9PublicDS")
-    private DruidDataSource y9PublicDs;
+    @Qualifier("y9PublicDS") private DruidDataSource y9PublicDs;
 
     @Autowired
-    @Qualifier("defaultDataSource")
-    private DruidDataSource y9FlowableDs;
+    @Qualifier("defaultDataSource") private DruidDataSource y9FlowableDs;
 
     @Autowired
-    @Qualifier("y9TenantDataSource")
-    private Y9TenantDataSource y9TenantDs;
+    @Qualifier("y9TenantDataSource") private Y9TenantDataSource y9TenantDs;
 
     private JdbcTemplate jdbcTemplate4Public = null;
 

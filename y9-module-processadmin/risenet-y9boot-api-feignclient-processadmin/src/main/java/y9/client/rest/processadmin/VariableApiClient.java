@@ -18,7 +18,8 @@ import net.risesoft.api.processadmin.VariableApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "VariableApiClient", name = "${y9.service.processAdmin.name:processAdmin}", url = "${y9.service.processAdmin.directUrl:}",
+@FeignClient(contextId = "VariableApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
+    url = "${y9.service.processAdmin.directUrl:}",
     path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/variable")
 public interface VariableApiClient extends VariableApi {
 

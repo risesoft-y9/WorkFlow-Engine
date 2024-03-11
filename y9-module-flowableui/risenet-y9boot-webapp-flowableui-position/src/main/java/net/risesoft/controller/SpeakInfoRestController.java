@@ -58,7 +58,8 @@ public class SpeakInfoRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrUpdate(@RequestParam(required = true) String content, @RequestParam(required = true) String processInstanceId) {
+    public Y9Result<String> saveOrUpdate(@RequestParam(required = true) String content,
+        @RequestParam(required = true) String processInstanceId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
         SpeakInfoModel speakInfoModel = new SpeakInfoModel();

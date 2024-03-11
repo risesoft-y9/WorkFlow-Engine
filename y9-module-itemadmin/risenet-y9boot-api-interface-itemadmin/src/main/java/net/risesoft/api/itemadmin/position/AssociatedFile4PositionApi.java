@@ -69,5 +69,5 @@ public interface AssociatedFile4PositionApi {
      * @return boolean 是否保存成功
      */
     boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber,
-                               String processInstanceIds);
+        String processInstanceIds);
 }

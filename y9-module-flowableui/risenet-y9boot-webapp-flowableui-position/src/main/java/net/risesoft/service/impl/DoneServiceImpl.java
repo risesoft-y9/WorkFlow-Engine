@@ -64,11 +64,13 @@ public class DoneServiceImpl implements DoneService {
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
         String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
-        retMap = officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
+        retMap =
+            officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
         ObjectMapper objectMapper = new ObjectMapper();
-        List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {});
+        List<OfficeDoneInfoModel> hpiList =
+            objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {});
         int serialNumber = (page - 1) * rows;
         Map<String, Object> mapTemp = null;
         for (OfficeDoneInfoModel hpim : hpiList) {
@@ -95,7 +97,8 @@ public class DoneServiceImpl implements DoneService {
                 mapTemp.put("itemId", itemId);
                 mapTemp.put("level", level);
                 mapTemp.put("number", number);
-                int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
+                int chaosongNum =
+                    chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
                 mapTemp.put("chaosongNum", chaosongNum);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -104,7 +107,8 @@ public class DoneServiceImpl implements DoneService {
             serialNumber += 1;
             items.add(mapTemp);
         }
-        return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
+            Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
     }
 
     @SuppressWarnings({"unchecked"})
@@ -114,11 +118,13 @@ public class DoneServiceImpl implements DoneService {
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
         String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
-        retMap = officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
+        retMap =
+            officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         List<OfficeDoneInfoModel> list = (List<OfficeDoneInfoModel>)retMap.get("rows");
         ObjectMapper objectMapper = new ObjectMapper();
-        List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<OfficeDoneInfoModel>>() {});
+        List<OfficeDoneInfoModel> hpiModelList =
+            objectMapper.convertValue(list, new TypeReference<List<OfficeDoneInfoModel>>() {});
         int serialNumber = (page - 1) * rows;
         Map<String, Object> mapTemp = null;
         Map<String, Object> formDataMap = null;
@@ -146,7 +152,8 @@ public class DoneServiceImpl implements DoneService {
                 mapTemp.put("itemId", itemId);
                 mapTemp.put("level", level);
                 mapTemp.put("number", number);
-                int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
+                int chaosongNum =
+                    chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
                 mapTemp.put("chaosongNum", chaosongNum);
                 formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                 if (formDataMap.get("leaveType") != null) {
@@ -161,7 +168,8 @@ public class DoneServiceImpl implements DoneService {
                 mapTemp.putAll(formDataMap);
                 mapTemp.put("processInstanceId", processInstanceId);
 
-                int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId, processInstanceId);
+                int countFollow =
+                    officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId, processInstanceId);
                 mapTemp.put("follow", countFollow > 0 ? true : false);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -170,11 +178,13 @@ public class DoneServiceImpl implements DoneService {
             serialNumber += 1;
             items.add(mapTemp);
         }
-        return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
+            Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
     }
 
     @Override
-    public Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page,
+        Integer rows) {
         ItemPage<ActRuDetailModel> itemPage = new ItemPage<ActRuDetailModel>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -184,12 +194,14 @@ public class DoneServiceImpl implements DoneService {
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage = itemDoneApi.findByUserIdAndSystemName(tenantId, userId, item.getSystemName(), page, rows);
             } else {
-                itemPage = itemDoneApi.searchByUserIdAndSystemName(tenantId, userId, item.getSystemName(), tableName, searchMapStr, page, rows);
+                itemPage = itemDoneApi.searchByUserIdAndSystemName(tenantId, userId, item.getSystemName(), tableName,
+                    searchMapStr, page, rows);
             }
             List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ActRuDetailModel>>() {});
+            List<ActRuDetailModel> hpiModelList =
+                objectMapper.convertValue(list, new TypeReference<List<ActRuDetailModel>>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp = null;
             Map<String, Object> formDataMap = null;
@@ -210,10 +222,12 @@ public class DoneServiceImpl implements DoneService {
                     mapTemp.put("endTime", sdf.format(hpim.getLastTime()));
                     mapTemp.put("taskDefinitionKey", "");
 
-                    ProcessParamModel processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    ProcessParamModel processParam =
+                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
 
                     mapTemp.put("user4Complete", processParam.getCompleter());
-                    int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
+                    int chaosongNum =
+                        chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
                     mapTemp.put("chaosongNum", chaosongNum);
                     formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                     /*if (formDataMap.get("leaveType") != null) {
@@ -227,7 +241,8 @@ public class DoneServiceImpl implements DoneService {
                     }*/
                     mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
-                    int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId, processInstanceId);
+                    int countFollow =
+                        officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId, processInstanceId);
                     mapTemp.put("follow", countFollow > 0 ? true : false);
                 } catch (Exception e) {
                     e.printStackTrace();

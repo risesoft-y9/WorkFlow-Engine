@@ -69,11 +69,13 @@ public class ItemWordTemplateBindController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefinitionKey = item.getWorkflowGuid(), tenantId = Y9LoginUserHolder.getTenantId();
-        ProcessDefinitionModel processDefinition = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+        ProcessDefinitionModel processDefinition =
+            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
         String processDefinitionId = processDefinition.getId();
         map.put("processDefinitionId", processDefinitionId);
         List<WordTemplate> templateList = wordTemplateService.findAll();
-        ItemWordTemplateBind wordTemplateBind = itemWordTemplateBindService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+        ItemWordTemplateBind wordTemplateBind =
+            itemWordTemplateBindService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         String tempName = "", bindId = "";
         if (wordTemplateBind != null) {
             for (WordTemplate wordTemplate : templateList) {
@@ -98,7 +100,8 @@ public class ItemWordTemplateBindController {
      * @return
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> save(@RequestParam String itemId, @RequestParam String processDefinitionId, @RequestParam String templateId) {
+    public Y9Result<String> save(@RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam String templateId) {
         Map<String, Object> map = itemWordTemplateBindService.save(itemId, processDefinitionId, templateId);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));

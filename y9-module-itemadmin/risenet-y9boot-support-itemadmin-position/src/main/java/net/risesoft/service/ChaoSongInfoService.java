@@ -165,7 +165,8 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId, String userName, int rows, int page);
+    Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId,
+        String userName, int rows, int page);
 
     /**
      * 批阅件列表
@@ -209,7 +210,8 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Y9Page<Map<String, Object>> myChaoSongList(String searchName, String itemId, String userName, String state, String year, int rows, int page);
+    Y9Page<Map<String, Object>> myChaoSongList(String searchName, String itemId, String userName, String state,
+        String year, int rows, int page);
 
     /**
      * 保存抄送
@@ -239,7 +241,8 @@ public interface ChaoSongInfoService {
      * @param smsPersonId
      * @return
      */
-    Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId);
+    Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
+        String smsContent, String smsPersonId);
 
     /**
      *
@@ -254,7 +257,8 @@ public interface ChaoSongInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllByUserId(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllByUserId(String searchName, String itemId, String userName, String state, String year,
+        Integer page, Integer rows);
 
     /**
      * 监控阅件列表
@@ -269,7 +273,8 @@ public interface ChaoSongInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllList(String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows);
+    Map<String, Object> searchAllList(String searchName, String itemId, String senderName, String userName,
+        String state, String year, Integer page, Integer rows);
 
     /**
      * 更新抄送件标题

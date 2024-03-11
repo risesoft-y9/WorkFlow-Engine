@@ -28,7 +28,8 @@ public interface ItemOpinionFrameBindApi {
      * @param processDefinitionId 流程定义id
      * @return
      */
-    List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionId(String tenantId, String itemId, String processDefinitionId);
+    List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionId(String tenantId, String itemId,
+        String processDefinitionId);
 
     /**
      * 根据事项id和任务id获取绑定意见框
@@ -40,7 +41,8 @@ public interface ItemOpinionFrameBindApi {
      * @param taskDefKey taskDefKey
      * @return List&lt;ItemOpinionFrameBindModel&gt;
      */
-    List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String tenantId, String userId, String itemId, String processDefinitionId, String taskDefKey);
+    List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String tenantId, String userId,
+        String itemId, String processDefinitionId, String taskDefKey);
 
     /**
      * 根据事项id和任务id获取绑定意见框（包含角色信息）
@@ -52,5 +54,6 @@ public interface ItemOpinionFrameBindApi {
      * @param taskDefKey taskDefKey
      * @return List&lt;ItemOpinionFrameBindModel&gt;
      */
-    List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String tenantId, String userId, String itemId, String processDefinitionId, String taskDefKey);
+    List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String tenantId,
+        String userId, String itemId, String processDefinitionId, String taskDefKey);
 }

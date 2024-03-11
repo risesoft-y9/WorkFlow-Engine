@@ -16,7 +16,9 @@ import net.risesoft.api.itemadmin.position.Document4PositionApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "Document4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/document4Position")
+@FeignClient(contextId = "Document4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
+    url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/document4Position")
 public interface Document4PositionApiClient extends Document4PositionApi {
 
     /**
@@ -31,7 +33,9 @@ public interface Document4PositionApiClient extends Document4PositionApi {
      */
     @Override
     @GetMapping("/add")
-    public Map<String, Object> add(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId, @RequestParam("mobile") boolean mobile);
+    public Map<String, Object> add(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
+        @RequestParam("mobile") boolean mobile);
 
     /**
      * 流程办结
@@ -43,7 +47,8 @@ public interface Document4PositionApiClient extends Document4PositionApi {
      */
     @Override
     @PostMapping("/complete")
-    public void complete(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId) throws Exception;
+    public void complete(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,
+        @RequestParam("taskId") String taskId) throws Exception;
 
     /**
      *
@@ -62,8 +67,11 @@ public interface Document4PositionApiClient extends Document4PositionApi {
      */
     @Override
     @GetMapping("/docUserChoise")
-    public Map<String, Object> docUserChoise(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskId") String taskId, @RequestParam("routeToTask") String routeToTask, @RequestParam("processInstanceId") String processInstanceId);
+    public Map<String, Object> docUserChoise(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
+        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskId") String taskId,
+        @RequestParam("routeToTask") String routeToTask, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      *
@@ -80,7 +88,9 @@ public interface Document4PositionApiClient extends Document4PositionApi {
      */
     @Override
     @GetMapping("/edit")
-    public Map<String, Object> edit(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("itembox") String itembox, @RequestParam("taskId") String taskId, @RequestParam("processInstanceId") String processInstanceId,
+    public Map<String, Object> edit(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("itembox") String itembox,
+        @RequestParam("taskId") String taskId, @RequestParam("processInstanceId") String processInstanceId,
         @RequestParam("itemId") String itemId, @RequestParam("mobile") boolean mobile);
 
     /**
@@ -102,8 +112,12 @@ public interface Document4PositionApiClient extends Document4PositionApi {
      */
     @Override
     @PostMapping(value = "/saveAndForwarding", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveAndForwarding(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId, @RequestParam("sponsorHandle") String sponsorHandle,
-        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("userChoice") String userChoice, @RequestParam("sponsorGuid") String sponsorGuid,
+    public Map<String, Object> saveAndForwarding(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("taskId") String taskId, @RequestParam("sponsorHandle") String sponsorHandle,
+        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("userChoice") String userChoice, @RequestParam("sponsorGuid") String sponsorGuid,
         @RequestParam("routeToTaskId") String routeToTaskId, @RequestBody Map<String, Object> variables);
 
     /**
@@ -125,7 +139,9 @@ public interface Document4PositionApiClient extends Document4PositionApi {
      */
     @Override
     @PostMapping(value = "/saveAndSubmitTo", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Map<String, Object> saveAndSubmitTo(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId, @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber);
+    Map<String, Object> saveAndSubmitTo(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId,
+        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      *
@@ -148,9 +164,14 @@ public interface Document4PositionApiClient extends Document4PositionApi {
      */
     @Override
     @PostMapping(value = "/saveAndForwardingByTaskKey", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveAndForwardingByTaskKey(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId, @RequestParam("sponsorHandle") String sponsorHandle,
-        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("userChoice") String userChoice, @RequestParam("sponsorGuid") String sponsorGuid,
-        @RequestParam("routeToTaskId") String routeToTaskId, @RequestParam("startRouteToTaskId") String startRouteToTaskId, @RequestBody Map<String, Object> variables);
+    public Map<String, Object> saveAndForwardingByTaskKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("taskId") String taskId, @RequestParam("sponsorHandle") String sponsorHandle,
+        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("userChoice") String userChoice, @RequestParam("sponsorGuid") String sponsorGuid,
+        @RequestParam("routeToTaskId") String routeToTaskId,
+        @RequestParam("startRouteToTaskId") String startRouteToTaskId, @RequestBody Map<String, Object> variables);
 
     /**
      * 获取签收任务配置
@@ -165,7 +186,10 @@ public interface Document4PositionApiClient extends Document4PositionApi {
      */
     @Override
     @GetMapping("/signTaskConfig")
-    public Map<String, Object> signTaskConfig(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefinitionKey") String taskDefinitionKey,
+    public Map<String, Object> signTaskConfig(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
+        @RequestParam("processDefinitionId") String processDefinitionId,
+        @RequestParam("taskDefinitionKey") String taskDefinitionKey,
         @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
@@ -181,7 +205,9 @@ public interface Document4PositionApiClient extends Document4PositionApi {
      */
     @Override
     @PostMapping("/startProcess")
-    public Map<String, Object> startProcess(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber,
+    public Map<String, Object> startProcess(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam("processDefinitionKey") String processDefinitionKey) throws Exception;
 
     /**
@@ -198,7 +224,10 @@ public interface Document4PositionApiClient extends Document4PositionApi {
      */
     @Override
     @PostMapping("/startProcess1")
-    public Map<String, Object> startProcess(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("positionIds") String positionIds) throws Exception;
+    public Map<String, Object> startProcess(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("positionIds") String positionIds) throws Exception;
 
 }

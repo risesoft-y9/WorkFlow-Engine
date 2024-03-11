@@ -18,7 +18,8 @@ import net.risesoft.entity.OfficeFollow;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface OfficeFollowRepository extends JpaRepository<OfficeFollow, String>, JpaSpecificationExecutor<OfficeFollow> {
+public interface OfficeFollowRepository
+    extends JpaRepository<OfficeFollow, String>, JpaSpecificationExecutor<OfficeFollow> {
 
     Integer countByProcessInstanceIdAndUserId(String processInstanceId, String userId);
 
@@ -42,7 +43,8 @@ public interface OfficeFollowRepository extends JpaRepository<OfficeFollow, Stri
     OfficeFollow findByProcessInstanceIdAndUserId(String processInstanceId, String userId);
 
     @Query("from OfficeFollow h where h.systemName = ?1 and h.userId = ?2 and (h.documentTitle like ?3 or h.numbers like ?3) ")
-    Page<OfficeFollow> findBySystemNameAndParamsLike(String systemName, String positionId, String searchName, Pageable pageable);
+    Page<OfficeFollow> findBySystemNameAndParamsLike(String systemName, String positionId, String searchName,
+        Pageable pageable);
 
     @Query("from OfficeFollow h where h.systemName = ?1 and h.userId = ?2")
     Page<OfficeFollow> findBySystemNameAndUserId(String systemName, String positionId, Pageable pageable);

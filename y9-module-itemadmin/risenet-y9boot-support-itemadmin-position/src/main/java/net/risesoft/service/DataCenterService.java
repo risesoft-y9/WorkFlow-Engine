@@ -77,8 +77,7 @@ public class DataCenterService {
     private ProcessParamService processParamService;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
 
     @Autowired
     private Y9FormRepository y9FormRepository;
