@@ -18,6 +18,7 @@ import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.platform.Position;
@@ -100,7 +101,10 @@ public class MobileV1SystemDockingController {
                 }
             }
             Map<String, Object> map = document4PositionApi.startProcess(tenantId, positionId, itemId, formMap.get("guid").toString(), item.getWorkflowGuid(), userChoice);
-            return Y9Result.success(map, "提交成功");
+            if ((boolean)map.get(UtilConsts.SUCCESS)) {
+                return Y9Result.success(map, "提交成功");
+            }
+            return Y9Result.failure(map.get("msg").toString());
         } catch (Exception e) {
             return Y9Result.failure("提交失败");
         }
