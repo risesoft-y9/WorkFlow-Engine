@@ -52,7 +52,9 @@ public class WorkListRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/doingList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> doingList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> doingList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows) {
         return doingService.listNew(itemId, searchTerm, page, rows);
     }
 
@@ -66,7 +68,8 @@ public class WorkListRestController {
     @RequestMapping(value = "/doingViewConf", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemViewConfModel>> doingViewConf(@RequestParam(required = true) String itemId) {
         List<ItemViewConfModel> itemViewConfList = new ArrayList<>();
-        itemViewConfList = itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DOING.getValue());
+        itemViewConfList = itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId,
+            ItemBoxTypeEnum.DOING.getValue());
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 
@@ -81,7 +84,9 @@ public class WorkListRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/doneList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> doneList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> doneList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows) {
         return doneService.listNew(itemId, searchTerm, page, rows);
     }
 
@@ -95,7 +100,8 @@ public class WorkListRestController {
     @RequestMapping(value = "/doneViewConf", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemViewConfModel>> doneViewConf(@RequestParam(required = true) String itemId) {
         List<ItemViewConfModel> itemViewConfList = new ArrayList<>();
-        itemViewConfList = itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DONE.getValue());
+        itemViewConfList = itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId,
+            ItemBoxTypeEnum.DONE.getValue());
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 
@@ -113,7 +119,9 @@ public class WorkListRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/queryList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> queryList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String state, @RequestParam(required = false) String createDate, @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
+    public Y9Page<Map<String, Object>> queryList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String createDate,
+        @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return queryListService.queryList(itemId, state, createDate, tableName, searchMapStr, page, rows);
     }
@@ -130,7 +138,9 @@ public class WorkListRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/searchDoingList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> searchDoingList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> searchDoingList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
+        @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return doingService.searchList(itemId, tableName, searchMapStr, page, rows);
     }
 
@@ -146,7 +156,9 @@ public class WorkListRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/searchDoneList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> searchDoneList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> searchDoneList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
+        @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return doneService.searchList(itemId, tableName, searchMapStr, page, rows);
     }
 
@@ -162,7 +174,9 @@ public class WorkListRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/searchTodoList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> searchTodoList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> searchTodoList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
+        @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         return todoService.searchList(itemId, tableName, searchMapStr, page, rows);
     }
 
@@ -177,7 +191,9 @@ public class WorkListRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/todoList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> todoList(@RequestParam(required = true) String itemId, @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> todoList(@RequestParam(required = true) String itemId,
+        @RequestParam(required = false) String searchTerm, @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer rows) {
         return todoService.listNew(itemId, searchTerm, page, rows);
     }
 
@@ -191,7 +207,8 @@ public class WorkListRestController {
     @RequestMapping(value = "/todoViewConf", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemViewConfModel>> todoViewConf(@RequestParam(required = true) String itemId) {
         List<ItemViewConfModel> itemViewConfList = new ArrayList<>();
-        itemViewConfList = itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.TODO.getValue());
+        itemViewConfList = itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId,
+            ItemBoxTypeEnum.TODO.getValue());
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 

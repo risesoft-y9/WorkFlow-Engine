@@ -42,12 +42,10 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
     public static final String ITEM_ID = "11111111-1111-1111-1111-111111111111";
 
     @Autowired
-    @Qualifier("jdbcTemplate4Public")
-    private JdbcTemplate jdbcTemplate;
+    @Qualifier("jdbcTemplate4Public") private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
 
     @Autowired
     private Y9TenantDataSourceLookup y9TenantDataSourceLookup;

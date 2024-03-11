@@ -13,7 +13,8 @@ import net.risesoft.api.processadmin.DoneApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "DoneApiClient", name = "${y9.service.processAdmin.name:processAdmin}", url = "${y9.service.processAdmin.directUrl:}",
+@FeignClient(contextId = "DoneApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
+    url = "${y9.service.processAdmin.directUrl:}",
     path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/done")
 public interface DoneApiClient extends DoneApi {
 

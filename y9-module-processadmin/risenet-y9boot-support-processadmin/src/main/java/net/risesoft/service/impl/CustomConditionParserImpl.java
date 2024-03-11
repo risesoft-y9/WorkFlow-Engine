@@ -21,7 +21,8 @@ public class CustomConditionParserImpl implements CustomConditionParser {
     public Boolean parser(String conditionExpression, Map<String, Object> variables) {
         try {
             VariableContainerWrapper variableContainer = new VariableContainerWrapper(variables);
-            Object object = processEngineConfiguration.getExpressionManager().createExpression(conditionExpression).getValue(variableContainer);
+            Object object = processEngineConfiguration.getExpressionManager().createExpression(conditionExpression)
+                .getValue(variableContainer);
             return Boolean.parseBoolean(String.valueOf(object));
         } catch (Exception e) {
             e.printStackTrace();

@@ -16,8 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.model.platform.Position;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.platform.Position;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 

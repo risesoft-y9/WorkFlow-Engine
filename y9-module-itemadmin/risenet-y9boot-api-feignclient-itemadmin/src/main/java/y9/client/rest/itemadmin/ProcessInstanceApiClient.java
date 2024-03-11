@@ -18,7 +18,8 @@ import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
  * @author zhangchongjie
  * @date 2023/02/06
  */
-@FeignClient(contextId = "ProcessInstanceApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+@FeignClient(contextId = "ProcessInstanceApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
+    url = "${y9.service.itemAdmin.directUrl:}",
     path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/processInstance")
 public interface ProcessInstanceApiClient extends ProcessInstanceApi {
 

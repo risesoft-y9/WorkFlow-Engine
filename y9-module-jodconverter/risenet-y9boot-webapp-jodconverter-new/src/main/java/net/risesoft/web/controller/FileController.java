@@ -35,7 +35,6 @@ import net.risesoft.utils.WebUtils;
 @Slf4j
 public class FileController {
 
-
     private final String fileDir = ConfigConstants.getFileDir();
     private final String demoDir = "demo";
     private final String demoPath = demoDir + File.separator;

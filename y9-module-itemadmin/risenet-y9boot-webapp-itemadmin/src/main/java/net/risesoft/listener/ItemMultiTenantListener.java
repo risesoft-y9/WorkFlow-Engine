@@ -37,8 +37,7 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
     public static final String ITEM_ID = "11111111-1111-1111-1111-111111111111";
 
     @Autowired
-    @Qualifier("jdbcTemplate4Public")
-    private JdbcTemplate jdbcTemplate;
+    @Qualifier("jdbcTemplate4Public") private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private TenantApi tenantApi;

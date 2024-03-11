@@ -35,8 +35,7 @@ public class TableFieldRestController {
     private Y9TableFieldService y9TableFieldService;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
 
     /**
      * 删除表字段定义

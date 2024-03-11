@@ -14,7 +14,9 @@ import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ItemOpinionFrameBindApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemOpinionFrameBind")
+@FeignClient(contextId = "ItemOpinionFrameBindApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
+    url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemOpinionFrameBind")
 public interface ItemOpinionFrameBindApiClient extends ItemOpinionFrameBindApi {
 
     /**
@@ -26,11 +28,13 @@ public interface ItemOpinionFrameBindApiClient extends ItemOpinionFrameBindApi {
      */
     @Override
     @GetMapping("/findByItemId")
-    public List<ItemOpinionFrameBindModel> findByItemId(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId);
+    public List<ItemOpinionFrameBindModel> findByItemId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("itemId") String itemId);
 
     @Override
     @GetMapping("/findByItemIdAndProcessDefinitionId")
-    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionId(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId);
+    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 根据事项id和任务id获取绑定意见框
@@ -44,7 +48,9 @@ public interface ItemOpinionFrameBindApiClient extends ItemOpinionFrameBindApi {
      */
     @Override
     @GetMapping("/findByItemIdAndProcessDefinitionIdAndTaskDefKey")
-    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKey(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
+    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKey(
+        @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
         @RequestParam("taskDefKey") String taskDefKey);
 
     /**
@@ -59,6 +65,8 @@ public interface ItemOpinionFrameBindApiClient extends ItemOpinionFrameBindApi {
      */
     @Override
     @GetMapping("/findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole")
-    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
+    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(
+        @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
         @RequestParam("taskDefKey") String taskDefKey);
 }

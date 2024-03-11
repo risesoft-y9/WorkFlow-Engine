@@ -36,8 +36,7 @@ import net.risesoft.pojo.Y9Result;
 public class LeaveCountController {
 
     @Autowired
-    @Qualifier("y9TenantDataSource")
-    private DataSource y9TenantDS;
+    @Qualifier("y9TenantDataSource") private DataSource y9TenantDS;
 
     private JdbcTemplate jdbcTemplate4Tenant = null;
 

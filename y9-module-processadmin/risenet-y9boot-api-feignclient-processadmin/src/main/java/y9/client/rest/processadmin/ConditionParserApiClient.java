@@ -14,7 +14,9 @@ import net.risesoft.api.processadmin.ConditionParserApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ConditionParserApiClient", name = "${y9.service.processAdmin.name:processAdmin}", url = "${y9.service.processAdmin.directUrl:}", path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/conditionParser")
+@FeignClient(contextId = "ConditionParserApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
+    url = "${y9.service.processAdmin.directUrl:}",
+    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/conditionParser")
 public interface ConditionParserApiClient extends ConditionParserApi {
 
     /**
@@ -27,5 +29,6 @@ public interface ConditionParserApiClient extends ConditionParserApi {
      */
     @Override
     @GetMapping("/parser")
-    Boolean parser(@RequestParam("tenantId") String tenantId, @RequestParam("conditionExpression") String conditionExpression, @RequestBody Map<String, Object> variables);
+    Boolean parser(@RequestParam("tenantId") String tenantId,
+        @RequestParam("conditionExpression") String conditionExpression, @RequestBody Map<String, Object> variables);
 }

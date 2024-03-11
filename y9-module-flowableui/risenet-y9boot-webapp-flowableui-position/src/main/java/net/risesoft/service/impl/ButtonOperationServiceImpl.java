@@ -56,7 +56,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId(), userName = Y9LoginUserHolder.getPosition().getName();
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId(),
+            userName = Y9LoginUserHolder.getPosition().getName();
         Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotBlank(infoOvert)) {
             map.put("infoOvert", infoOvert);
@@ -115,7 +116,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public void resumeToDo(String processInstanceId, String desc) throws Exception {
-        String positionId = Y9LoginUserHolder.getPositionId(), userName = Y9LoginUserHolder.getPosition().getName(), tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId(), userName = Y9LoginUserHolder.getPosition().getName(),
+            tenantId = Y9LoginUserHolder.getTenantId();
         String newDate = sdf.format(new Date());
         try {
             /**
@@ -123,15 +125,18 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
              */
 
             String year = "";
-            OfficeDoneInfoModel officeDoneInfoModel = officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+            OfficeDoneInfoModel officeDoneInfoModel =
+                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
             if (officeDoneInfoModel != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
             } else {
-                ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processParamModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
             }
 
-            HistoricTaskInstanceModel hisTaskModelTemp = historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).get(0);
+            HistoricTaskInstanceModel hisTaskModelTemp =
+                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
             /**
              * 2、添加流程的历程

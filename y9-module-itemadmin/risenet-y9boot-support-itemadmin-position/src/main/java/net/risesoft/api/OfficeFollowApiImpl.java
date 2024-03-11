@@ -104,7 +104,8 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
      */
     @Override
     @GetMapping(value = "/getFollowListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getFollowListBySystemName(String tenantId, String positionId, String systemName, String searchName, int page, int rows) {
+    public Map<String, Object> getFollowListBySystemName(String tenantId, String positionId, String systemName,
+        String searchName, int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         return officeFollowService.getFollowListBySystemName(systemName, searchName, page, rows);
@@ -122,7 +123,8 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
      */
     @Override
     @GetMapping(value = "/getOfficeFollowList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getOfficeFollowList(String tenantId, String positionId, String searchName, int page, int rows) {
+    public Map<String, Object> getOfficeFollowList(String tenantId, String positionId, String searchName, int page,
+        int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         return officeFollowService.getOfficeFollowList(searchName, page, rows);
@@ -136,7 +138,8 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
      * @return Map<String, Object>
      */
     @Override
-    @PostMapping(value = "/saveOfficeFollow", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/saveOfficeFollow", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> saveOfficeFollow(String tenantId, @RequestBody OfficeFollowModel officeFollowModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OfficeFollow officeFollow = new OfficeFollow();

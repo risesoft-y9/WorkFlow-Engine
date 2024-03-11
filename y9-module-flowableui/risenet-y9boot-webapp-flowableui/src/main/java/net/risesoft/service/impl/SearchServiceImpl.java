@@ -90,9 +90,11 @@ public class SearchServiceImpl implements SearchService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Person ownerUser = personApi.getPerson(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                Person ownerUser =
+                                    personApi.getPerson(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
-                                    assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : ""), "、");
+                                    assigneeNames = Y9Util.genCustomStr(assigneeNames,
+                                        ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : ""), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
                                 } else {
                                     assigneeNames.append("等，共" + iList.size() + "人");
@@ -134,7 +136,8 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> getEmailList(Integer page, Integer rows, String startDateStr, String endDateStr, Integer fileType, String userName, String title) {
+    public Y9Page<Map<String, Object>> getEmailList(Integer page, Integer rows, String startDateStr, String endDateStr,
+        Integer fileType, String userName, String title) {
         try {
             /*Map<String, Object> map = customEmailApi.search(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), page, rows, startDateStr, endDateStr, fileType, userName, title);
             if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -148,16 +151,19 @@ public class SearchServiceImpl implements SearchService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Y9Page<Map<String, Object>> getSearchList(String searchTerm, String itemId, String userName, String state, String year, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> getSearchList(String searchTerm, String itemId, String userName, String state,
+        String year, Integer page, Integer rows) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-            retMap = officeDoneInfoManager.searchAllByUserId(tenantId, userId, searchTerm, itemId, userName, state, year, page, rows);
+            retMap = officeDoneInfoManager.searchAllByUserId(tenantId, userId, searchTerm, itemId, userName, state,
+                year, page, rows);
             List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
             List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {});
+            List<OfficeDoneInfoModel> hpiList =
+                objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp = null;
             for (OfficeDoneInfoModel hpim : hpiList) {
@@ -178,7 +184,8 @@ public class SearchServiceImpl implements SearchService {
                     mapTemp.put("processDefinitionId", processDefinitionId);
                     mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
                     mapTemp.put("startTime", startTime);
-                    mapTemp.put("endTime", StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
+                    mapTemp.put("endTime",
+                        StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
                     mapTemp.put("taskDefinitionKey", "");
                     mapTemp.put("taskAssignee", completer);
                     mapTemp.put("creatUserName", hpim.getCreatUserName());
@@ -189,9 +196,11 @@ public class SearchServiceImpl implements SearchService {
                     if (StringUtils.isBlank(hpim.getEndTime())) {
                         List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
+                            assigneeNames = listTemp.get(2);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                        mapTemp.put("taskId", listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                        mapTemp.put("taskId",
+                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
                         mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("itembox", listTemp.get(3));
@@ -206,7 +215,8 @@ public class SearchServiceImpl implements SearchService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
+                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -215,13 +225,17 @@ public class SearchServiceImpl implements SearchService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Y9Page<Map<String, Object>> getYuejianList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> getYuejianList(String searchName, String itemId, String userName, String state,
+        String year, Integer page, Integer rows) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-            retMap = chaoSongInfoManager.searchAllByUserId(tenantId, userId, searchName, itemId, userName, state, year, page, rows);
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), (List<Map<String, Object>>)retMap.get("rows"), "获取列表成功");
+            retMap = chaoSongInfoManager.searchAllByUserId(tenantId, userId, searchName, itemId, userName, state, year,
+                page, rows);
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
+                Integer.parseInt(retMap.get("total").toString()), (List<Map<String, Object>>)retMap.get("rows"),
+                "获取列表成功");
         } catch (Exception e) {
             e.printStackTrace();
         }

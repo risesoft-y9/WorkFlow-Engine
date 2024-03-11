@@ -14,7 +14,8 @@ import net.risesoft.model.itemadmin.ItemOpinionFrameRoleModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ItemOpinionFrameRoleApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}",
+@FeignClient(contextId = "ItemOpinionFrameRoleApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
+    url = "${y9.service.itemAdmin.directUrl:}",
     path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemOpinionFrameRole")
 public interface ItemOpinionFrameRoleApiClient extends ItemOpinionFrameRoleApi {
 
