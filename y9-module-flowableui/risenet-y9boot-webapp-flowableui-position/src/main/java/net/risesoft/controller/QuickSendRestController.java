@@ -61,13 +61,13 @@ public class QuickSendRestController {
                 String orgId = id.split(":")[1];
                 Integer principalType = Integer.parseInt(type);
                 if (principalType == ItemPermissionEnum.POSITION.getValue()) {
-                    Position position = positionApi.getPosition(tenantId, orgId).getData();
+                    Position position = positionApi.get(tenantId, orgId).getData();
                     map.put("id", position.getId());
                     map.put("name", position.getName());
                     map.put("orgType", OrgTypeEnum.POSITION.getEnName());
                     list.add(map);
                 } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {
-                    Department dept = departmentApi.getDepartment(tenantId, orgId).getData();
+                    Department dept = departmentApi.get(tenantId, orgId).getData();
                     map.put("id", dept.getId());
                     map.put("name", dept.getName());
                     map.put("orgType", OrgTypeEnum.DEPARTMENT.getEnName());

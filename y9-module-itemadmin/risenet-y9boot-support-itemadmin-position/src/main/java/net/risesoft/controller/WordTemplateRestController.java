@@ -6,12 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.BookMarkBind;
@@ -48,8 +47,8 @@ public class WordTemplateRestController {
     @Autowired
     private PersonApi personManager;
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private BookMarkBindService bookMarkBindService;
@@ -196,7 +195,7 @@ public class WordTemplateRestController {
             list = wordTemplateService.findAll();
         } else {
             list = wordTemplateService
-                .findByBureauIdOrderByUploadTimeDesc(personManager.getBureau(tenantId, personId).getData().getId());
+                .findByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
         }
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         for (WordTemplate wordTemplate : list) {

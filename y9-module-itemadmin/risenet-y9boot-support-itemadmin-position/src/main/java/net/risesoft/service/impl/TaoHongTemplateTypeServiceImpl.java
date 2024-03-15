@@ -2,6 +2,7 @@ package net.risesoft.service.impl;
 
 import java.util.List;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,9 @@ public class TaoHongTemplateTypeServiceImpl implements TaoHongTemplateTypeServic
 
     @Autowired
     private PersonApi personManager;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Override
     public List<TaoHongTemplateType> findAll() {
@@ -82,7 +86,7 @@ public class TaoHongTemplateTypeServiceImpl implements TaoHongTemplateTypeServic
 
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
-        OrgUnit orgUnit = personManager.getBureau(tenantId, personId).getData();
+        OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, personId).getData();
         TaoHongTemplateType thtNew = new TaoHongTemplateType();
         thtNew.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         thtNew.setBureauId(orgUnit.getId());

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.OptionClassApi;
 import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.tenant.TenantApi;
@@ -38,6 +39,9 @@ public class Y9FormRestController {
 
     @Autowired
     private PositionApi positionApi;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private PersonApi personApi;
@@ -206,7 +210,7 @@ public class Y9FormRestController {
         String second = sesdf.format(date);
         String itemNumber = "〔" + year + "〕" + second + "号";
         OrgUnit parent =
-            positionApi.getParent(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
+            orgUnitApi.getParent(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
         Tenant tenant = tenantApi.getById(Y9LoginUserHolder.getTenantId()).getData();
         /** 办件表单数据初始化 **/
         map.put("deptName", parent.getName());// 创建部门
@@ -231,7 +235,7 @@ public class Y9FormRestController {
         map.put("deptLeader", "未配置");// 岗位所在部门领导
         if (!leaders.isEmpty()) {
             List<Person> personLeaders =
-                positionApi.listPersons(Y9LoginUserHolder.getTenantId(), leaders.get(0).getId()).getData();
+                positionApi.listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), leaders.get(0).getId()).getData();
             map.put("deptLeader", personLeaders.isEmpty() ? leaders.get(0).getName() : personLeaders.get(0).getName());
         }
         /** 办件表单数据初始化 **/

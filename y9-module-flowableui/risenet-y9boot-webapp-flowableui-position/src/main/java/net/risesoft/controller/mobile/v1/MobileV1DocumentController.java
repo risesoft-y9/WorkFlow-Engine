@@ -31,6 +31,7 @@ import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
 import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
@@ -81,6 +82,9 @@ public class MobileV1DocumentController {
 
     @Autowired
     private PositionApi positionApi;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private Document4PositionApi document4PositionApi;
@@ -222,7 +226,7 @@ public class MobileV1DocumentController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             if (StringUtils.isNotBlank(processInstanceId)) {// 打开办件
                 map = document4PositionApi.edit(tenantId, positionId, itembox, taskId, processInstanceId, itemId, true);
@@ -265,7 +269,7 @@ public class MobileV1DocumentController {
         map.put(UtilConsts.SUCCESS, false);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId).getData());
+            Y9LoginUserHolder.setPerson(personApi.get(tenantId, userId).getData());
             if (StringUtils.isNotBlank(taskId)) {// 打开办件
                 TaskModel taskModel = taskApi.findById(tenantId, taskId);
                 if (taskModel != null && taskModel.getId() != null) {
@@ -549,8 +553,8 @@ public class MobileV1DocumentController {
         map.put("msg", "获取表单初始化数据失败");
         map.put("success", false);
         try {
-            Person person = personApi.getPerson(tenantId, userId).getData();
-            Position position = positionApi.getPosition(tenantId, positionId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
+            Position position = positionApi.get(tenantId, positionId).getData();
             Date date = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String nowDate = sdf.format(date);
@@ -559,7 +563,7 @@ public class MobileV1DocumentController {
             String year = yearsdf.format(date);
             String second = sesdf.format(date);
             String itemNumber = "〔" + year + "〕" + second + "号";
-            OrgUnit parent = positionApi.getParent(tenantId, positionId).getData();
+            OrgUnit parent = orgUnitApi.getParent(tenantId, positionId).getData();
             Tenant tenant = tenantApi.getById(tenantId).getData();
             /** 办件表单数据初始化 **/
             map.put("deptName", parent.getName());// 创建部门
@@ -580,7 +584,8 @@ public class MobileV1DocumentController {
             List<OrgUnit> leaders = departmentApi.listLeaders(tenantId, parent.getId()).getData();
             map.put("deptLeader", "未配置");// 岗位所在部门领导
             if (!leaders.isEmpty()) {
-                List<Person> personLeaders = positionApi.listPersons(tenantId, leaders.get(0).getId()).getData();
+                List<Person> personLeaders =
+                    positionApi.listPersonsByPositionId(tenantId, leaders.get(0).getId()).getData();
                 map.put("deptLeader",
                     personLeaders.isEmpty() ? leaders.get(0).getName() : personLeaders.get(0).getName());
             }

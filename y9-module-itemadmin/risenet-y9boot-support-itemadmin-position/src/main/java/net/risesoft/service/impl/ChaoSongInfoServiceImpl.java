@@ -265,7 +265,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             TaskModel taskTemp = taskManager.findById(tenantId, taskId);
             taskDefinitionKey = taskTemp.getTaskDefinitionKey();
         }
-        Position position = positionManager.getPosition(tenantId, Y9LoginUserHolder.getPositionId()).getData();
+        Position position = positionManager.get(tenantId, Y9LoginUserHolder.getPositionId()).getData();
         returnMap.put("title", processParam.getTitle());
         returnMap.put("startor", startor);
         returnMap.put("itembox", itembox);
@@ -902,7 +902,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 String orgUnitId = orgUnitArr[1];
                 List<Position> list = new ArrayList<Position>();
                 if (ItemPermissionEnum.DEPARTMENT.getValue() == type) {
-                    list = departmentManager.listPositions(tenantId, orgUnitId).getData();
+                    list = positionManager.listByParentId(tenantId, orgUnitId).getData();
                     for (Position position : list) {
                         userIdListAdd.add(position.getId());
                     }
@@ -912,7 +912,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     List<CustomGroupMember> list0 = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
                         Y9LoginUserHolder.getPersonId(), orgUnitId, OrgTypeEnum.POSITION).getData();
                     for (CustomGroupMember pTemp : list0) {
-                        Position position = positionManager.getPosition(tenantId, pTemp.getMemberId()).getData();
+                        Position position = positionManager.get(tenantId, pTemp.getMemberId()).getData();
                         if (position != null && StringUtils.isNotBlank(position.getId())) {
                             userIdListAdd.add(position.getId());
                         }
@@ -920,15 +920,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 }
             }
             // 保存抄送
-            OrgUnit dept =
-                departmentManager.getDepartment(tenantId, Y9LoginUserHolder.getPosition().getParentId()).getData();
+            OrgUnit dept = departmentManager.get(tenantId, Y9LoginUserHolder.getPosition().getParentId()).getData();
             if (null == dept || null == dept.getId()) {
-                dept = organizationManager.getOrganization(tenantId, Y9LoginUserHolder.getPosition().getParentId())
-                    .getData();
+                dept = organizationManager.get(tenantId, Y9LoginUserHolder.getPosition().getParentId()).getData();
             }
             List<String> mobile = new ArrayList<String>();
             for (String userId : userIdListAdd) {
-                Position position = positionManager.getPosition(tenantId, userId).getData();
+                Position position = positionManager.get(tenantId, userId).getData();
                 ChaoSongInfo cs = new ChaoSongInfo();
                 cs.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 cs.setCreateTime(sdf.format(new Date()));
@@ -942,7 +940,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 cs.setTitle(title);
                 cs.setUserId(position.getId());
                 cs.setUserName(position.getName());
-                Department department = departmentManager.getDepartment(tenantId, position.getParentId()).getData();
+                Department department = departmentManager.get(tenantId, position.getParentId()).getData();
                 cs.setUserDeptId(department.getId());
                 cs.setUserDeptName(department.getName());
                 cs.setItemId(itemId);

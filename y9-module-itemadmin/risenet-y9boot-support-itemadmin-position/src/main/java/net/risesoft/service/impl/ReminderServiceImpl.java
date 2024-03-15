@@ -120,7 +120,7 @@ public class ReminderServiceImpl implements ReminderService {
             if (null != historicTaskTemp) {
                 map.put("taskName", historicTaskTemp.getName());
                 if (StringUtils.isNotBlank(historicTaskTemp.getAssignee())) {
-                    pTemp = positionApi.getPosition(tenantId, historicTaskTemp.getAssignee()).getData();
+                    pTemp = positionApi.get(tenantId, historicTaskTemp.getAssignee()).getData();
                     if (null != pTemp) {
                         map.put("userName", pTemp.getName());
                     }
@@ -174,7 +174,7 @@ public class ReminderServiceImpl implements ReminderService {
             if (null != taskTemp) {
                 map.put("taskName", taskTemp.getName());
                 if (StringUtils.isNotBlank(taskTemp.getAssignee())) {
-                    pTemp = positionApi.getPosition(tenantId, taskTemp.getAssignee()).getData();
+                    pTemp = positionApi.get(tenantId, taskTemp.getAssignee()).getData();
                     if (null != pTemp) {
                         map.put("userName", pTemp.getName());
                     }
@@ -209,7 +209,7 @@ public class ReminderServiceImpl implements ReminderService {
         SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         TaskModel taskTemp = taskManager.findById(tenantId, taskId);
-        Position pTemp = positionApi.getPosition(tenantId, taskTemp.getAssignee()).getData();
+        Position pTemp = positionApi.get(tenantId, taskTemp.getAssignee()).getData();
         for (Reminder reminder : reminderList) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("id", reminder.getId());

@@ -54,7 +54,7 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     @Override
     @GetMapping(value = "/listSentencesService", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> listSentencesService(String tenantId, String userId) {
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = commonSentencesService.listSentencesService();
@@ -64,7 +64,7 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     @Override
     @PostMapping(value = "/removeCommonSentences", produces = MediaType.APPLICATION_JSON_VALUE)
     public void removeCommonSentences(String tenantId, String userId, int tabIndex) {
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         commonSentencesService.removeCommonSentences(tabIndex);
@@ -81,7 +81,7 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     @Override
     @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
     public void save(String tenantId, String userId, String id, String content) {
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         commonSentencesService.save(id, content);
@@ -90,7 +90,7 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     @Override
     @PostMapping(value = "/saveCommonSentences", produces = MediaType.APPLICATION_JSON_VALUE)
     public void saveCommonSentences(String tenantId, String userId, String content, int tabIndex) {
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         commonSentencesService.saveCommonSentences(userId, content, tabIndex);

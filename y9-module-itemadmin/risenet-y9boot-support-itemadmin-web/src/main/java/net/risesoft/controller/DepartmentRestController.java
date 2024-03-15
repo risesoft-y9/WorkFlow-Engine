@@ -18,6 +18,7 @@ import com.google.common.collect.Maps;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
+import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
@@ -44,6 +45,9 @@ public class DepartmentRestController {
     @Autowired
     private DepartmentApi departmentManager;
 
+    @Autowired
+    private PersonApi personApi;
+
     /**
      * 查找部门及部门下的人员
      *
@@ -69,7 +73,7 @@ public class DepartmentRestController {
             id = orgUnit.getId();
         }
         items.addAll(genDeptTree(id));
-        List<Person> employees = departmentManager.listPersons(tenantId, id).getData();
+        List<Person> employees = personApi.listByParentId(tenantId, id).getData();
         for (Person employee : employees) {
             Map<String, Object> map = new HashMap<>(16);
             map.put("id", employee.getId());
@@ -120,7 +124,7 @@ public class DepartmentRestController {
             items.add(map);
             id = orgUnit.getId();
         }
-        List<Department> departments = departmentManager.listSubDepartments(tenantId, id).getData();
+        List<Department> departments = departmentManager.listByParentId(tenantId, id).getData();
         for (Department department : departments) {
             Map<String, Object> map = new HashMap<>(16);
             map.put("id", department.getId());
@@ -135,7 +139,7 @@ public class DepartmentRestController {
                     map.put("isParent", true);
                 }
             } else {
-                if (departmentManager.listSubDepartments(tenantId, department.getId()).getData().size() > 0) {
+                if (departmentManager.listByParentId(tenantId, department.getId()).getData().size() > 0) {
                     map.put("isParent", true);
                 } else {
                     map.put("isParent", false);
@@ -158,7 +162,7 @@ public class DepartmentRestController {
     public List<Map<String, Object>> genDeptTree(String deptGuid) {
         List<Map<String, Object>> items = new ArrayList<>();
         List<Department> deptList =
-            departmentManager.listSubDepartments(Y9LoginUserHolder.getTenantId(), deptGuid).getData();
+            departmentManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptGuid).getData();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         orgUnitList.addAll(deptList);
         List<Map<String, Object>> listMap = new ArrayList<>();
@@ -186,7 +190,7 @@ public class DepartmentRestController {
     @ResponseBody
     public Y9Result<List<Organization>> getOrgList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Organization> list = organizationApi.listAllOrganizations(tenantId).getData();
+        List<Organization> list = organizationApi.list(tenantId).getData();
         return Y9Result.success(list, "获取成功");
     }
 

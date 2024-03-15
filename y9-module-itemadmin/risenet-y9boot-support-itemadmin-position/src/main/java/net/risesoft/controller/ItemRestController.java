@@ -139,13 +139,12 @@ public class ItemRestController {
     public void getJson(StringBuffer sb, String deptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(deptId)) {
-            List<Organization> orgList = organizationManager.listAllOrganizations(tenantId).getData();
+            List<Organization> orgList = organizationManager.list(tenantId).getData();
             if (orgList != null && orgList.size() > 0) {
                 List<Department> deptList =
-                    organizationManager.listDepartments(tenantId, orgList.get(0).getId()).getData();
+                    departmentManager.listByParentId(tenantId, orgList.get(0).getId()).getData();
                 for (Department dept : deptList) {
-                    List<Department> subDeptList =
-                        departmentManager.listSubDepartments(tenantId, dept.getId()).getData();
+                    List<Department> subDeptList = departmentManager.listByParentId(tenantId, dept.getId()).getData();
                     boolean isParent = false;
                     if (subDeptList != null && subDeptList.size() > 0) {
                         isParent = true;
@@ -155,9 +154,9 @@ public class ItemRestController {
                 }
             }
         } else {
-            List<Department> deptList = departmentManager.listSubDepartments(tenantId, deptId).getData();
+            List<Department> deptList = departmentManager.listByParentId(tenantId, deptId).getData();
             for (Department dept : deptList) {
-                List<Department> subDeptList = departmentManager.listSubDepartments(tenantId, dept.getId()).getData();
+                List<Department> subDeptList = departmentManager.listByParentId(tenantId, dept.getId()).getData();
                 boolean isParent = false;
                 if (subDeptList != null && subDeptList.size() > 0) {
                     isParent = true;
@@ -201,7 +200,7 @@ public class ItemRestController {
             if (StringUtils.isNotBlank(item.getNature())) {// 事项管理员
                 String idStr = item.getNature();
                 for (String positionId : idStr.split(";")) {
-                    Position position = positionApi.getPosition(tenantId, positionId).getData();
+                    Position position = positionApi.get(tenantId, positionId).getData();
                     if (position != null) {
                         manager.add(position);
                     }

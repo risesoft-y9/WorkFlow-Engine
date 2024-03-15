@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.TaoHongTemplateType;
 import net.risesoft.model.platform.OrgUnit;
@@ -33,6 +34,9 @@ public class TaoHongTemplateTypeRestController {
     @Autowired
     private PersonApi personManager;
 
+    @Autowired
+    private OrgUnitApi orgUnitApi;
+
     /**
      * 获取模板类型
      *
@@ -47,7 +51,7 @@ public class TaoHongTemplateTypeRestController {
         if (person.isGlobalManager()) {
             list = taoHongTemplateTypeService.findAll();
         } else {
-            OrgUnit orgUnit = personManager.getBureau(tenantId, personId).getData();
+            OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, personId).getData();
             list = taoHongTemplateTypeService.findByBureauId(orgUnit.getId());
         }
         return Y9Result.success(list, "获取成功");

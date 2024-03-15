@@ -351,7 +351,7 @@ public class MainRestController {
                 if (model.getUsed().equals(1)) {// 使用中的委托，将委托岗位加入岗位列表
                     Map<String, Object> map1 = new HashMap<String, Object>(16);
                     String positionId = model.getOwnerId();
-                    Position position = positionApi.getPosition(tenantId, positionId).getData();
+                    Position position = positionApi.get(tenantId, positionId).getData();
                     if (position != null) {
                         map1.put("id", position.getId());
                         map1.put("name", position.getName());

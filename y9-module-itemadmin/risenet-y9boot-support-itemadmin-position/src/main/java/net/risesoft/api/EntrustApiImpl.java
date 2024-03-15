@@ -59,7 +59,7 @@ public class EntrustApiImpl implements Entrust4PositionApi {
     public void saveOrUpdate(String tenantId, String positionId, @RequestBody EntrustModel entrustModel)
         throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.getPosition(tenantId, positionId).getData();
+        Position position = positionApi.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Entrust entrust = new Entrust();
         Y9BeanUtil.copyProperties(entrustModel, entrust);

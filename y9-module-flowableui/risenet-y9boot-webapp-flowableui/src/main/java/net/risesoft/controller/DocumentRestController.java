@@ -310,7 +310,7 @@ public class DocumentRestController {
                 for (TaskModel task : list) {
                     if (i < 5) {
                         String assigneeId = task.getAssignee();
-                        Person employee = personApi.getPerson(tenantId, assigneeId).getData();
+                        Person employee = personApi.get(tenantId, assigneeId).getData();
                         if (employee != null && !employee.getId().equals(userId)) {
                             if (StringUtils.isBlank(parallelDoing)) {
                                 parallelDoing.append(employee.getName());

@@ -445,7 +445,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             }
 
             Department dept =
-                departmentApi.getDepartment(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
+                departmentApi.get(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
             ActRuDetail newActRuDetail = new ActRuDetail();
             newActRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             newActRuDetail.setProcessSerialNumber(actRuDetail.getProcessSerialNumber());

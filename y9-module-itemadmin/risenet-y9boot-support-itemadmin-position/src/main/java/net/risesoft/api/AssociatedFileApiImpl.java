@@ -93,7 +93,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     public Map<String, Object> getAssociatedFileAllList(String tenantId, String positionId,
         String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = associatedFileService.getAssociatedFileAllList(processSerialNumber);
@@ -130,7 +130,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     public boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber,
         String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         boolean b = associatedFileService.saveAssociatedFile(processSerialNumber, processInstanceIds);
         return b;

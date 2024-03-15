@@ -220,7 +220,7 @@ public class Sync2DataCenterController {
                                 newActRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                                 newActRuDetail.setProcessSerialNumber(processParam.getProcessSerialNumber());
                                 newActRuDetail.setAssignee(owner);
-                                Position position = positionApi.getPosition(tenantId, owner).getData();
+                                Position position = positionApi.get(tenantId, owner).getData();
                                 newActRuDetail.setAssigneeName(position.getName());
                                 newActRuDetail.setDeptId(position.getParentId());
                                 OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, position.getParentId()).getData();
@@ -245,7 +245,7 @@ public class Sync2DataCenterController {
                             newActRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                             newActRuDetail.setProcessSerialNumber(processParam.getProcessSerialNumber());
                             newActRuDetail.setAssignee(assignee);
-                            Position position1 = positionApi.getPosition(tenantId, assignee).getData();
+                            Position position1 = positionApi.get(tenantId, assignee).getData();
                             newActRuDetail.setAssigneeName(position1.getName());
                             newActRuDetail.setDeptId(position1.getParentId());
                             OrgUnit orgUnit1 = orgUnitApi.getOrgUnit(tenantId, position1.getParentId()).getData();
@@ -363,7 +363,7 @@ public class Sync2DataCenterController {
                                 newActRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                                 newActRuDetail.setProcessSerialNumber(processParam.getProcessSerialNumber());
                                 newActRuDetail.setAssignee(owner);
-                                Position position = positionApi.getPosition(tenantId, owner).getData();
+                                Position position = positionApi.get(tenantId, owner).getData();
                                 newActRuDetail.setAssigneeName(position.getName());
                                 newActRuDetail.setDeptId(position.getParentId());
                                 OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, position.getParentId()).getData();
@@ -388,7 +388,7 @@ public class Sync2DataCenterController {
                             newActRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                             newActRuDetail.setProcessSerialNumber(processParam.getProcessSerialNumber());
                             newActRuDetail.setAssignee(assignee);
-                            Position position1 = positionApi.getPosition(tenantId, assignee).getData();
+                            Position position1 = positionApi.get(tenantId, assignee).getData();
                             newActRuDetail.setAssigneeName(position1.getName());
                             newActRuDetail.setDeptId(position1.getParentId());
                             OrgUnit orgUnit1 = orgUnitApi.getOrgUnit(tenantId, position1.getParentId()).getData();

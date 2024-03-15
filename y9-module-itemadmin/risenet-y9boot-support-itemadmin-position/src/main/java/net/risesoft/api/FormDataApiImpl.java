@@ -64,7 +64,7 @@ public class FormDataApiImpl implements FormDataApi {
     @GetMapping(value = "/getAllFieldPerm", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getAllFieldPerm(String tenantId, String userId, String formId, String taskDefKey,
         String processDefinitionId) {
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         return formDataService.getAllFieldPerm(formId, taskDefKey, processDefinitionId);
@@ -118,7 +118,7 @@ public class FormDataApiImpl implements FormDataApi {
     @GetMapping(value = "/getFieldPerm", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getFieldPerm(String tenantId, String userId, String formId, String fieldName,
         String taskDefKey, String processDefinitionId) {
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         return formDataService.getFieldPerm(formId, fieldName, taskDefKey, processDefinitionId);

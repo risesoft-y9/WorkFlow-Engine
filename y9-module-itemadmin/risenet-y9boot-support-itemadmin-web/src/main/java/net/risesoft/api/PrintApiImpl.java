@@ -31,7 +31,7 @@ public class PrintApiImpl implements PrintApi {
     @Override
     @GetMapping(value = "/openDocument", produces = MediaType.APPLICATION_JSON_VALUE)
     public String openDocument(String tenantId, String userId, String itemId) {
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
         ItemPrintTemplateBind bind = printTemplateItemBindRepository.findByItemId(itemId);

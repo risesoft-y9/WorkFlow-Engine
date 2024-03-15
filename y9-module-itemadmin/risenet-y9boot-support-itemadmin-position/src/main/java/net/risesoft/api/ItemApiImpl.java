@@ -159,7 +159,7 @@ public class ItemApiImpl implements Item4PositionApi {
     @GetMapping(value = "/getFirstItem", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getFirstItem(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         return documentService.getFirstItem();
     }
@@ -190,7 +190,7 @@ public class ItemApiImpl implements Item4PositionApi {
     @GetMapping(value = "/getItemList", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getItemList(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         listMap = documentService.getItemList();
@@ -250,7 +250,7 @@ public class ItemApiImpl implements Item4PositionApi {
     @GetMapping(value = "/getMyItemList", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getMyItemList(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         listMap = documentService.getMyItemList();

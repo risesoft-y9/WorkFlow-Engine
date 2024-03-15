@@ -29,6 +29,7 @@ import net.risesoft.api.itemadmin.DocumentWpsApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -145,6 +146,9 @@ public class DocumentWpsController {
     private PersonApi personApi;
 
     @Autowired
+    private OrgUnitApi orgUnitApi;
+
+    @Autowired
     private ProcessParamApi processParamApi;
 
     @Autowired
@@ -251,7 +255,7 @@ public class DocumentWpsController {
      */
     @RequestMapping(value = "/openTaoHong")
     public String openTaoHong(Model model) {
-        OrgUnit currentBureau = personApi
+        OrgUnit currentBureau = orgUnitApi
             .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
         model.addAttribute("currentBureauGuid", currentBureau.getId());
         model.addAttribute("tenantId", Y9LoginUserHolder.getTenantId());

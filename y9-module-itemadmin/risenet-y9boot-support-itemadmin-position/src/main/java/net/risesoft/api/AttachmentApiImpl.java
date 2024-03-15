@@ -203,7 +203,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
     @PostMapping(value = "/saveAttachment", produces = MediaType.APPLICATION_JSON_VALUE)
     public Boolean saveAttachment(String tenantId, String positionId, String attachjson, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Boolean checkSave = false;
         try {
@@ -254,7 +254,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
         String y9FileStoreId) {
         String msg = null;
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
         try {
@@ -299,9 +299,9 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
         String taskId, String y9FileStoreId) {
         String msg = null;
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
         try {
@@ -342,9 +342,9 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
         String fileSize, String processInstanceId, String taskId, String describes, String processSerialNumber,
         String fileSource, String y9FileStoreId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = transactionFileService.uploadRest(fileName, fileSize, processInstanceId, taskId, processSerialNumber,
@@ -367,7 +367,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
     public boolean uploadModel(String tenantId, String positionId, @RequestBody AttachmentModel attachmentModel)
         throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         boolean success = false;
         TransactionFile transactionFile = ItemAdminModelConvertUtil.attachmentModel2TransactionFile(attachmentModel);

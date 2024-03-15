@@ -12,6 +12,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,6 +51,9 @@ public class WpsRestController {
 
     @Autowired
     private PersonApi personApi;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private ProcessParamApi processParamManager;
@@ -222,7 +226,7 @@ public class WpsRestController {
     public List<Map<String, Object>> taoHongTemplateList(@RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        OrgUnit currentBureau = personApi.getBureau(tenantId, userId).getData();
+        OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, userId).getData();
         String currentBureauGuid = currentBureau != null ? currentBureau.getId() : "";
         if (StringUtils.isBlank(currentBureauGuid)) {
             currentBureauGuid = userInfo.getParentId();

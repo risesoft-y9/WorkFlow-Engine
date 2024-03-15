@@ -80,7 +80,7 @@ public class VueNTKOController {
         @RequestParam(required = false) String fileUrl) {
         try {
             Map<String, Object> map = new HashMap<String, Object>();
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
             String downloadUrl =
@@ -144,7 +144,7 @@ public class VueNTKOController {
             map.put("tenantId", tenantId);
             map.put("userId", userId);
             map.put("positionId", positionId);
-            Position position = positionApi.getPosition(tenantId, positionId).getData();
+            Position position = positionApi.get(tenantId, positionId).getData();
             OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, position.getParentId()).getData();
             model.addAttribute("currentBureauGuid", currentBureau != null ? currentBureau.getId() : "");
             return Y9Result.success(map, "获取信息成功");

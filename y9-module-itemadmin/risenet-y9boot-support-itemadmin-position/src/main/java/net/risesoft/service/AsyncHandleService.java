@@ -275,7 +275,7 @@ public class AsyncHandleService {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
-            Position position = positionManager.getPosition(tenantId, positionId).getData();
+            Position position = positionManager.get(tenantId, positionId).getData();
             Y9LoginUserHolder.setPosition(position);
             // 更新自定义历程结束时间
             List<ProcessTrack> ptModelList = processTrackRepository.findByTaskId(taskId);
@@ -321,9 +321,8 @@ public class AsyncHandleService {
     }
 
     private String getSponsorPosition(String id, String deptId) {
-        List<Department> deptList =
-            departmentManager.listSubDepartments(Y9LoginUserHolder.getTenantId(), deptId).getData();
-        List<Position> list0 = departmentManager.listPositions(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        List<Department> deptList = departmentManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        List<Position> list0 = positionManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
         if (!list0.isEmpty()) {
             id = list0.get(0).getId();
         } else {
@@ -471,7 +470,7 @@ public class AsyncHandleService {
                 return;
             }
             Y9LoginUserHolder.setTenantId(tenantId);
-            Position position = positionManager.getPosition(tenantId, userId).getData();
+            Position position = positionManager.get(tenantId, userId).getData();
             String personIds = msgRemindInfoManager.getRemindConfig(tenantId, userId, "opinionRemind");
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             if (StringUtils.isNotBlank(personIds) && StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
@@ -572,7 +571,7 @@ public class AsyncHandleService {
             String documentTitle = processParam.getTitle();
             String itemId = processParam.getItemId();
             String itemName = processParam.getItemName();
-            Person person = personManager.getPerson(tenantId, userId).getData();
+            Person person = personManager.get(tenantId, userId).getData();
             for (ChaoSong cs : list) {
                 String assignee = cs.getUserId();
                 HttpClient client = new HttpClient();
@@ -624,7 +623,7 @@ public class AsyncHandleService {
             String documentTitle = processParam.getTitle();
             String itemId = processParam.getItemId();
             String itemName = processParam.getItemName();
-            Person person = personManager.getPerson(tenantId, userId).getData();
+            Person person = personManager.get(tenantId, userId).getData();
             OfficeDoneInfo officeDoneInfo =
                 officeDoneInfoService.findByProcessInstanceId(list.get(0).getProcessInstanceId());
             for (ChaoSongInfo cs : list) {

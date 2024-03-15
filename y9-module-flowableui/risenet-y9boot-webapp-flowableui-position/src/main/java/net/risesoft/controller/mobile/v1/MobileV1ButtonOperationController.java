@@ -123,7 +123,7 @@ public class MobileV1ButtonOperationController {
                     taskApi.claim(tenantId, positionId, taskId);
                     return Y9Result.successMsg("签收成功");
                 } else {
-                    String assigneeName = positionApi.getPosition(tenantId, assigneeId).getData().getName();
+                    String assigneeName = positionApi.get(tenantId, assigneeId).getData().getName();
                     return Y9Result.failure("任务已被用户:" + assigneeName + "签收！");
                 }
             }
@@ -149,10 +149,10 @@ public class MobileV1ButtonOperationController {
         @RequestParam String taskId, HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
 
-            Position position = positionApi.getPosition(tenantId, positionId).getData();
+            Position position = positionApi.get(tenantId, positionId).getData();
             Y9LoginUserHolder.setPosition(position);
             if (StringUtils.isNotBlank(taskId)) {
                 buttonOperationService.complete(taskId, "办结", "已办结", "");
@@ -273,7 +273,7 @@ public class MobileV1ButtonOperationController {
         @RequestParam String taskId, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Position position = positionApi.getPosition(tenantId, positionId).getData();
+            Position position = positionApi.get(tenantId, positionId).getData();
             Y9LoginUserHolder.setPosition(position);
             TaskModel task = taskApi.findById(tenantId, taskId);
             Map<String, Object> vars = task.getVariables();// 获取流程中当前任务的所有变量
@@ -313,7 +313,7 @@ public class MobileV1ButtonOperationController {
         @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String desc,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.getPosition(tenantId, positionId).getData();
+        Position position = positionApi.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         try {
             buttonOperationService.multipleResumeToDo(processInstanceId, desc);
@@ -367,7 +367,7 @@ public class MobileV1ButtonOperationController {
                         }
                         taskApi.deleteCandidateUser(tenantId, taskId, activitiUser);
                     } else {
-                        String assigneeName = positionApi.getPosition(tenantId, assigneeId).getData().getName();
+                        String assigneeName = positionApi.get(tenantId, assigneeId).getData().getName();
                         return Y9Result.failure("任务已被用户:" + assigneeName + "签收！");
                     }
                 }
@@ -457,7 +457,7 @@ public class MobileV1ButtonOperationController {
         @RequestParam String taskId, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Position position = positionApi.getPosition(tenantId, positionId).getData();
+            Position position = positionApi.get(tenantId, positionId).getData();
             Y9LoginUserHolder.setPosition(position);
             TaskModel task = taskApi.findById(tenantId, taskId);
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId());
@@ -589,10 +589,10 @@ public class MobileV1ButtonOperationController {
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
 
-            Position position = positionApi.getPosition(tenantId, positionId).getData();
+            Position position = positionApi.get(tenantId, positionId).getData();
             Y9LoginUserHolder.setPosition(position);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

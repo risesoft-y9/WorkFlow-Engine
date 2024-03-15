@@ -121,7 +121,7 @@ public class FileNTKOController {
         @RequestParam(required = false) String fileUrl, Model model) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
             String downloadUrl =
@@ -166,7 +166,7 @@ public class FileNTKOController {
         try {
             LOGGER.debug("*****************fileId={}", fileId);
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;

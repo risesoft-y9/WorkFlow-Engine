@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
@@ -55,6 +56,9 @@ public class FormNTKOController {
 
     @Autowired
     private PersonApi personApi;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private PositionApi positionApi;
@@ -81,7 +85,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, isTaoHong);
     }
@@ -100,7 +104,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
@@ -160,7 +164,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Map<String, Object> map = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
             String fileStoreId = map.get("fileStoreId").toString();
@@ -216,7 +220,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId,
         HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId);
         String fileStoreId = map.get("fileStoreId").toString();
@@ -281,7 +285,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Object documentTitle = null;
             String[] pId = processInstanceId.split(",");
@@ -335,7 +339,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String userId, @RequestParam(required = false) String processSerialNumber) {
         Map<String, Object> map = new HashMap<>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         try {
             map = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
@@ -403,7 +407,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         String y9FileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId);
 
@@ -459,7 +463,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "0");// 删除未套红的正文
         String content = transactionWordApi.openDocumentTemplate(tenantId, userId, templateGUID);
@@ -494,7 +498,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId);
         String fileStoreId = map.get("fileStoreId").toString();
@@ -551,7 +555,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         String y9FileStoreId = transactionWordApi.openPdf(tenantId, userId, processSerialNumber);
 
@@ -597,7 +601,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String istaohong, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         // 删除转PDF的文件
         transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "3");
@@ -656,9 +660,9 @@ public class FormNTKOController {
     public String openTaoHong(@RequestParam String activitiUser, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, Model model) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        OrgUnit currentBureau = personApi.getBureau(tenantId, activitiUser).getData();
+        OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, activitiUser).getData();
         model.addAttribute("currentBureauGuid", currentBureau.getId());
         model.addAttribute("tenantId", tenantId);
         model.addAttribute("userId", userId);
@@ -684,7 +688,7 @@ public class FormNTKOController {
         response.setContentType("text/html; charset=utf-8");
         response.setHeader("Cache-Control", "no-cache");
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
         MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
@@ -721,7 +725,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId,
         @RequestParam(required = false) String historyFileType, ModelMap model) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId);
         model.putAll(map);
@@ -777,7 +781,7 @@ public class FormNTKOController {
         Y9LoginUserHolder.setTenantId(tenantId);
         if (StringUtils.isBlank(currentBureauGuid)) {
             if (StringUtils.isNotBlank(positionId)) {
-                Position position = positionApi.getPosition(tenantId, positionId).getData();
+                Position position = positionApi.get(tenantId, positionId).getData();
                 currentBureauGuid = position.getParentId();
             }
         }
@@ -803,7 +807,7 @@ public class FormNTKOController {
         map.put("msg", "上传成功");
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             String fileName = file.getOriginalFilename();
             LOGGER.debug("fileName={}", fileName);
@@ -871,7 +875,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId,
         HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
         MultipartFile multipartFile = multipartRequest.getFile("currentDoc");

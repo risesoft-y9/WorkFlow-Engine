@@ -31,7 +31,7 @@ public class RejectReasonApiImpl implements RejectReasonApi {
     @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
     public void save(String tenantId, String userId, Integer action, String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
 
         rejectReasonService.save(reason, taskId, action);

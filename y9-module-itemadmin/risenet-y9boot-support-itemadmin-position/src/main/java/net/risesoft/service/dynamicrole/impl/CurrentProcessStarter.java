@@ -39,7 +39,7 @@ public class CurrentProcessStarter extends AbstractDynamicRoleMember {
             String userIdAndDeptId = processInstance.getStartUserId();
             if (StringUtils.isNotEmpty(userIdAndDeptId)) {
                 String userId = userIdAndDeptId.split(":")[0];
-                OrgUnit orgUnit = positionManager.getPosition(tenantId, userId).getData();
+                OrgUnit orgUnit = positionManager.get(tenantId, userId).getData();
                 orgUnitList.add(orgUnit);
             }
         }

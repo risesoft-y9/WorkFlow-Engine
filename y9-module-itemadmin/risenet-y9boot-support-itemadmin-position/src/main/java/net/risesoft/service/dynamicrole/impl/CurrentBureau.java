@@ -45,8 +45,8 @@ public class CurrentBureau extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
-        OrgUnit orgUnit = departmentManager.getBureau(tenantId, position.getParentId()).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
+        OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, position.getParentId()).getData();
         orgUnitList.add(orgUnit);
         return orgUnitList;
     }
@@ -56,8 +56,8 @@ public class CurrentBureau extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
-        OrgUnit orgUnit = departmentManager.getBureau(tenantId, position.getParentId()).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
+        OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, position.getParentId()).getData();
         if (StringUtils.isNotBlank(processInstanceId)) {
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             if (null != processParam && StringUtils.isNotBlank(processParam.getBureauIds())) {

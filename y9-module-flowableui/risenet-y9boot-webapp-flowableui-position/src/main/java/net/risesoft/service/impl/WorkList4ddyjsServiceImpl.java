@@ -329,7 +329,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionApi.getPosition(tenantId, assignee).getData();
+                        Position personTemp = positionApi.get(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                             i += 1;
@@ -340,7 +340,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser = positionApi.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                Position ownerUser = positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -358,7 +358,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     if (i < 5) {
                         if (StringUtils.isNotBlank(assignee)) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, task.getAssignee(), SysVariables.COMMA);// 并行时，领导选取时存在顺序，因此这里也存在顺序
-                            Position personTemp = positionApi.getPosition(tenantId, assignee).getData();
+                            Position personTemp = positionApi.get(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");// 并行时，领导选取时存在顺序，因此这里也存在顺序
                                 i += 1;
@@ -400,7 +400,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionApi.getPosition(tenantId, assignee).getData();
+                        Position personTemp = positionApi.get(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                         }
@@ -415,7 +415,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser = positionApi.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                Position ownerUser = positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -432,7 +432,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Position personTemp = positionApi.getPosition(tenantId, assignee).getData();
+                            Position personTemp = positionApi.get(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             }

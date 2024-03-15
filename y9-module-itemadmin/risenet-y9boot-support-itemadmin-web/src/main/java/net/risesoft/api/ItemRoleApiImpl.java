@@ -51,7 +51,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     public List<Map<String, Object>> findCsUser(String tenantId, String userId, String id, Integer principalType,
         String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         listMap = roleService.findCsUser(id, principalType, processInstanceId);
@@ -63,10 +63,10 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     public List<Map<String, Object>> findCsUserBureau(String tenantId, String userId, Integer principalType) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         if (principalType == ItemPrincipalTypeEnum.DEPT.getValue()) {
-            OrgUnit orgunit = personManager.getBureau(tenantId, userId).getData();
+            OrgUnit orgunit = orgUnitManager.getBureau(tenantId, userId).getData();
             Map<String, Object> map = new HashMap<String, Object>(16);
             String orgunitId = orgunit.getId();
             map.put("id", orgunitId);
@@ -86,7 +86,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     public List<Map<String, Object>> findCsUserSearch(String tenantId, String userId, String name,
         Integer principalType, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         listMap = roleService.findCsUserSearch(name, principalType, processInstanceId);
@@ -98,7 +98,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     public List<Map<String, Object>> findPermUser(String tenantId, String userId, String itemId,
         String processDefinitionId, String taskDefKey, Integer principalType, String id, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         listMap =
@@ -111,7 +111,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     public List<Map<String, Object>> findPermUserByName(String tenantId, String userId, String name,
         Integer principalType, String itemId, String processDefinitionId, String taskDefKey, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         listMap = roleService.findPermUserByName(name, itemId, processDefinitionId, taskDefKey, principalType,
@@ -123,7 +123,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     @GetMapping(value = "/findPermUserSendReceive", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> findPermUserSendReceive(String tenantId, String userId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         listMap = roleService.findPermUserSendReceive(id);
@@ -135,11 +135,11 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     public List<Map<String, Object>> getOrgTree(String tenantId, String userId, String id, OrgTreeTypeEnum treeType,
         String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(id)) {
-            List<Organization> org = organizationManager.listAllOrganizations(tenantId).getData();
+            List<Organization> org = organizationManager.list(tenantId).getData();
             if (org != null && org.size() > 0) {
                 id = org.get(0).getId();
             }
@@ -161,7 +161,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
             if (OrgTypeEnum.DEPARTMENT.equals(orgUnitList.get(i).getOrgType())) {
                 map.put("isParent", true);
             } else if (OrgTypeEnum.PERSON.equals(orgUnitList.get(i).getOrgType())) {
-                person = personManager.getPerson(tenantId, orgUnitList.get(i).getId()).getData();
+                person = personManager.get(tenantId, orgUnitList.get(i).getId()).getData();
                 if (person.getDisabled()) {
                     continue;
                 }

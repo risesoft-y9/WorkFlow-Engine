@@ -49,7 +49,7 @@ public class Task4ActRuDetaillService {
                 String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESSSERIALNUMBER);
                 String assignee = taskEntity.getAssignee();
 
-                Position position = positionApi.getPosition(tenantId, assignee).getData();
+                Position position = positionApi.get(tenantId, assignee).getData();
                 ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
                 actRuDetailModel.setCreateTime(taskEntity.getCreateTime());
                 actRuDetailModel.setAssignee(assignee);
@@ -102,7 +102,7 @@ public class Task4ActRuDetaillService {
                 Set<IdentityLink> linkSet = taskEntity.getCandidates();
                 for (IdentityLink link : linkSet) {
                     String userId = link.getUserId();
-                    Position position = positionApi.getPosition(tenantId, userId).getData();
+                    Position position = positionApi.get(tenantId, userId).getData();
                     ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
                     actRuDetailModel.setCreateTime(taskEntity.getCreateTime());
                     actRuDetailModel.setAssignee(userId);
@@ -152,7 +152,7 @@ public class Task4ActRuDetaillService {
                 Set<IdentityLink> linkSet = taskEntity.getCandidates();
                 for (IdentityLink link : linkSet) {
                     String userId = link.getUserId();
-                    Position position = positionApi.getPosition(tenantId, userId).getData();
+                    Position position = positionApi.get(tenantId, userId).getData();
                     ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
                     actRuDetailModel.setCreateTime(taskEntity.getCreateTime());
                     actRuDetailModel.setAssignee(userId);
@@ -199,7 +199,7 @@ public class Task4ActRuDetaillService {
                 Set<IdentityLink> linkSet = taskEntity.getCandidates();
                 for (IdentityLink link : linkSet) {
                     String userId = link.getUserId();
-                    Position position = positionApi.getPosition(tenantId, userId).getData();
+                    Position position = positionApi.get(tenantId, userId).getData();
                     ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
                     actRuDetailModel.setCreateTime(taskEntity.getCreateTime());
                     actRuDetailModel.setAssignee(userId);

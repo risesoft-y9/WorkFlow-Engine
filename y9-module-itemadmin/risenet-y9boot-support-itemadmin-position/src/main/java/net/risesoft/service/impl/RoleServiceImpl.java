@@ -140,7 +140,7 @@ public class RoleServiceImpl implements RoleService {
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
                             Position position =
-                                positionManager.getPosition(tenantId, customGroupMember.getMemberId()).getData();
+                                positionManager.get(tenantId, customGroupMember.getMemberId()).getData();
                             Map<String, Object> map = new HashMap<>();
                             map.put("id", customGroupMember.getMemberId());
                             map.put("parentId", id);
@@ -186,7 +186,7 @@ public class RoleServiceImpl implements RoleService {
         List<Map<String, Object>> item = new ArrayList<>();
         if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
             Organization organization = orgUnitManager.getOrganization(tenantId, userId).getData();
-            List<Department> deptList = organizationManager.listDepartments(tenantId, organization.getId()).getData();
+            List<Department> deptList = departmentManager.listByParentId(tenantId, organization.getId()).getData();
             List<OrgUnit> orgUnitListTemp = new ArrayList<>();
             for (OrgUnit orgUnitTemp : deptList) {
                 orgUnitListTemp.addAll(orgUnitManager
@@ -238,7 +238,7 @@ public class RoleServiceImpl implements RoleService {
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
                             Position position =
-                                positionManager.getPosition(tenantId, customGroupMember.getMemberId()).getData();
+                                positionManager.get(tenantId, customGroupMember.getMemberId()).getData();
                             if (position != null && position.getName().contains(name)) {
                                 Map<String, Object> map0 = new HashMap<>();
                                 map0.put("id", customGroupMember.getMemberId());
@@ -423,7 +423,7 @@ public class RoleServiceImpl implements RoleService {
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
                             Position position =
-                                positionManager.getPosition(tenantId, customGroupMember.getMemberId()).getData();
+                                positionManager.get(tenantId, customGroupMember.getMemberId()).getData();
                             Map<String, Object> map = new HashMap<>();
                             map.put("id", customGroupMember.getMemberId());
                             map.put("parentId", id);
@@ -526,7 +526,7 @@ public class RoleServiceImpl implements RoleService {
                     }
                 }
                 if (o.getRoleType() == 2) {
-                    Department dept = departmentManager.getDepartment(tenantId, o.getRoleId()).getData();
+                    Department dept = departmentManager.get(tenantId, o.getRoleId()).getData();
                     if (dept != null) {
                         deptList.add(dept);
                     }
@@ -645,7 +645,7 @@ public class RoleServiceImpl implements RoleService {
                     if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
                             Position position =
-                                positionManager.getPosition(tenantId, customGroupMember.getMemberId()).getData();
+                                positionManager.get(tenantId, customGroupMember.getMemberId()).getData();
                             if (position != null && position.getName().contains(name)) {
                                 Map<String, Object> map0 = new HashMap<>();
                                 map0.put("id", customGroupMember.getMemberId());
@@ -682,8 +682,7 @@ public class RoleServiceImpl implements RoleService {
             if (StringUtils.isBlank(id)) {
                 List<ReceiveDepartment> list = receiveDepartmentRepository.findAll();
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Department department =
-                        departmentManager.getDepartment(tenantId, receiveDepartment.getDeptId()).getData();
+                    Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }
@@ -701,8 +700,7 @@ public class RoleServiceImpl implements RoleService {
             } else {
                 List<ReceiveDepartment> list = receiveDepartmentRepository.findByParentIdOrderByTabIndex(id);
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Department department =
-                        departmentManager.getDepartment(tenantId, receiveDepartment.getDeptId()).getData();
+                    Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }

@@ -52,7 +52,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map = draftManager.deleteDraft(tenantId, userId, ids);
         } catch (Exception e) {
@@ -78,7 +78,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId).getData());
+            Y9LoginUserHolder.setPerson(personApi.get(tenantId, userId).getData());
             Integer count = draftManager.getDeleteDraftCount(tenantId, userId, itemId);
             map.put("count", count);
             map.put(UtilConsts.SUCCESS, true);
@@ -106,7 +106,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Y9LoginUserHolder.setPerson(personApi.getPerson(tenantId, userId).getData());
+            Y9LoginUserHolder.setPerson(personApi.get(tenantId, userId).getData());
             Integer count = draftManager.getDraftCount(tenantId, userId, itemId);
             map.put("draftCount", count);
             map.put(UtilConsts.SUCCESS, true);
@@ -139,7 +139,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map = draftManager.getDraftList(tenantId, userId, page, rows, title, itemId, delFlag);
         } catch (Exception e) {
@@ -166,7 +166,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map = draftManager.reduction(tenantId, userId, id);
         } catch (Exception e) {
@@ -192,7 +192,7 @@ public class MobileDraftController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map = draftManager.removeDraft(tenantId, userId, ids);
         } catch (Exception e) {

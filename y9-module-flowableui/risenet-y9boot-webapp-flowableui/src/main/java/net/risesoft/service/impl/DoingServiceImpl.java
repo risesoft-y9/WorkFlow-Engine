@@ -101,7 +101,7 @@ public class DoingServiceImpl implements DoingService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Person personTemp = personApi.getPerson(tenantId, assignee).getData();
+                        Person personTemp = personApi.get(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames.append(personTemp.getName());
                             i += 1;
@@ -113,7 +113,7 @@ public class DoingServiceImpl implements DoingService {
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
                                 Person ownerUser =
-                                    personApi.getPerson(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                    personApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames,
                                         ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : ""), "、");
@@ -132,7 +132,7 @@ public class DoingServiceImpl implements DoingService {
                     if (i < 5) {
                         if (StringUtils.isNotBlank(assignee)) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, task.getAssignee(), SysVariables.COMMA);
-                            Person personTemp = personApi.getPerson(tenantId, assignee).getData();
+                            Person personTemp = personApi.get(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                                 i += 1;

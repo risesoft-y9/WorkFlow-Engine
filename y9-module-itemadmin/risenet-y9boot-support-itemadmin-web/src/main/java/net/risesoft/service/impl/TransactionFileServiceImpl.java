@@ -242,7 +242,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 file.setPersonId(map.get("personId") == null ? "" : map.get("personId").toString());
                 file.setPersonName(map.get("personName") == null ? "" : map.get("personName").toString());
                 Department department = departmentManager
-                    .getDepartment(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
+                    .get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
                 file.setDeptId(Y9LoginUserHolder.getDeptId());
                 file.setDeptName(department != null ? department.getName() : "");
                 file.setProcessSerialNumber(processSerialNumber);
@@ -304,7 +304,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             transactionFile.setFileStoreId(y9FileStore.getId());
             transactionFile.setFileType(fileType);
             Department department = departmentManager
-                .getDepartment(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
+                .get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
             transactionFile.setDeptId(Y9LoginUserHolder.getDeptId());
             transactionFile.setDeptName(department != null ? department.getName() : "");
             transactionFileRepository.save(transactionFile);
@@ -343,7 +343,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             transactionFile.setPersonName(userInfo.getName());
             transactionFile.setPersonId(userInfo.getPersonId());
             Department department = departmentManager
-                .getDepartment(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
+                .get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
             transactionFile.setDeptId(Y9LoginUserHolder.getDeptId());
             transactionFile.setDeptName(department != null ? department.getName() : "");
             transactionFile.setFileStoreId(y9FileStoreId);

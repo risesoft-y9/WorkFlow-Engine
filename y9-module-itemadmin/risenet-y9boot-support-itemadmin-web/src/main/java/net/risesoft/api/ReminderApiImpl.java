@@ -99,7 +99,7 @@ public class ReminderApiImpl implements ReminderApi {
     @GetMapping(value = "/getReminder", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getReminder(String tenantId, String userId, String taskId, String type) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         taskId = taskId.contains(SysVariables.COMMA) ? taskId.split(SysVariables.COMMA)[0] : taskId;
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -136,7 +136,7 @@ public class ReminderApiImpl implements ReminderApi {
     public Map<String, Object> saveReminder(String tenantId, String userId, String processInstanceId,
         @RequestBody String[] taskIds, String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
@@ -168,7 +168,7 @@ public class ReminderApiImpl implements ReminderApi {
     public Map<String, Object> sendReminderMessage(String tenantId, String userId, String remType, String procInstId,
         String processInstanceId, String documentTitle, String taskId, String taskAssigneeId, String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {

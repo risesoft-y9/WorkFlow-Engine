@@ -44,7 +44,7 @@ public class StarterDeptLeader extends AbstractDynamicRoleMember {
             String userIdAndDeptId = processInstance.getStartUserId();
             if (StringUtils.isNotEmpty(userIdAndDeptId)) {
                 String userId = userIdAndDeptId.split(":")[0];
-                OrgUnit orgUnit = personManager.getPerson(tenantId, userId).getData();
+                OrgUnit orgUnit = personManager.get(tenantId, userId).getData();
                 List<OrgUnit> leaders = departmentApi.listLeaders(tenantId, orgUnit.getParentId()).getData();
                 orgUnitList.addAll(leaders);
             }

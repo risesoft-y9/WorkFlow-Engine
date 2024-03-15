@@ -48,8 +48,7 @@ public class ProcessAdminCheckUserLoginFilter implements Filter {
                 if (StringUtils.isNotBlank(personId)) {
                     try {
                         ManagerApi managerApi = Y9Context.getBean(ManagerApi.class);
-                        Manager manager =
-                            managerApi.getManagerById(personId.split(":")[0], personId.split(":")[1]).getData();
+                        Manager manager = managerApi.get(personId.split(":")[0], personId.split(":")[1]).getData();
                         loginUser = manager.toUserInfo();
                     } catch (BeansException e) {
                         e.printStackTrace();

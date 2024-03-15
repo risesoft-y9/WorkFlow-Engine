@@ -75,7 +75,7 @@ public class EntrustRestController {
     public Y9Result<List<Organization>> getOrgList() {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            List<Organization> list = organizationApi.listAllOrganizations(tenantId).getData();
+            List<Organization> list = organizationApi.list(tenantId).getData();
             return Y9Result.success(list, "获取成功");
         } catch (Exception e) {
             e.printStackTrace();

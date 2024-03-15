@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.permission.PersonRoleApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
@@ -73,6 +74,9 @@ public class OrganWordServiceImpl implements OrganWordService {
 
     @Autowired
     private PersonApi personManager;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private PersonRoleApi personRoleApi;
@@ -169,7 +173,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         Integer common, String processSerialNumber) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
-            OrgUnit bureau = personManager.getBureau(Y9LoginUserHolder.getTenantId(), person.getParentId()).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), person.getParentId()).getData();
             String deptName = bureau.getName();
             if (1 == common) {
                 itemId = "common";
@@ -511,7 +515,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         Integer numberTemp = 0;
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
-            OrgUnit bureau = personManager.getBureau(Y9LoginUserHolder.getTenantId(), person.getParentId()).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), person.getParentId()).getData();
             String deptName = bureau.getName();
             if (1 == common) {
                 itemId = "common";

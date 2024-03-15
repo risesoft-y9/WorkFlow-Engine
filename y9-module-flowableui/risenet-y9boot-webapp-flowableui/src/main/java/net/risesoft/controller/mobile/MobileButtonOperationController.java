@@ -97,7 +97,7 @@ public class MobileButtonOperationController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             TaskModel task = taskManager.findById(tenantId, taskId);
             if (task != null) {
@@ -107,7 +107,7 @@ public class MobileButtonOperationController {
                     map.put(UtilConsts.SUCCESS, true);
                     map.put("msg", "签收成功");
                 } else {
-                    String assigneeName = personApi.getPerson(tenantId, assigneeId).getData().getName();
+                    String assigneeName = personApi.get(tenantId, assigneeId).getData().getName();
                     map.put(UtilConsts.SUCCESS, false);
                     map.put("msg", "任务已被用户:" + assigneeName + "签收！");
                 }
@@ -136,7 +136,7 @@ public class MobileButtonOperationController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             if (StringUtils.isNotBlank(taskId)) {
                 buttonOperationService.complete(taskId, "办结", "已办结", "");
@@ -174,7 +174,7 @@ public class MobileButtonOperationController {
         String itembox = ItemBoxTypeEnum.TODO.getValue();
         map.put("itembox", itembox);
         try {
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             TaskModel taskModel = taskManager.findById(tenantId, taskId);
             HistoricProcessInstanceModel hpi = historicProcessManager.getById(tenantId, processInstanceId);
@@ -213,7 +213,7 @@ public class MobileButtonOperationController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "办理成功");
@@ -272,7 +272,7 @@ public class MobileButtonOperationController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             TaskModel task = taskManager.findById(tenantId, taskId);
             Map<String, Object> vars = task.getVariables();
@@ -313,7 +313,7 @@ public class MobileButtonOperationController {
         @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String desc, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -348,7 +348,7 @@ public class MobileButtonOperationController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         String activitiUser = "";
         try {
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             TaskModel task = taskManager.findById(tenantId, taskId);
             map.put(UtilConsts.SUCCESS, true);
@@ -378,7 +378,7 @@ public class MobileButtonOperationController {
                         }
                         taskManager.deleteCandidateUser(tenantId, taskId, activitiUser);
                     } else {
-                        String assigneeName = personApi.getPerson(tenantId, assigneeId).getData().getName();
+                        String assigneeName = personApi.get(tenantId, assigneeId).getData().getName();
                         map.put(UtilConsts.SUCCESS, false);
                         map.put("msg", "任务已被用户:" + assigneeName + "签收！");
                     }
@@ -411,7 +411,7 @@ public class MobileButtonOperationController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             if (StringUtils.isNotBlank(taskId)) {
                 specialOperationManager.reposition(tenantId, userId, taskId, repositionToTaskId,
@@ -447,7 +447,7 @@ public class MobileButtonOperationController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             TaskModel task = taskManager.findById(tenantId, taskId);
             buttonOperationManager.reposition(tenantId, userId, taskId, "", Y9Util.stringToList(userChoice, ","), "重定向",
@@ -478,7 +478,7 @@ public class MobileButtonOperationController {
         map.put("msg", "退回成功");
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             buttonOperationManager.rollBack(tenantId, userId, taskId, "退回");
         } catch (Exception e) {
@@ -506,7 +506,7 @@ public class MobileButtonOperationController {
         map.put("msg", "返回发起人失败");
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             buttonOperationManager.rollbackToStartor(tenantId, userId, taskId, "");
             map.put(UtilConsts.SUCCESS, true);
@@ -534,7 +534,7 @@ public class MobileButtonOperationController {
         map.put("msg", "返回发送人失败");
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             buttonOperationManager.rollbackToSender(tenantId, userId, taskId);
             map.put(UtilConsts.SUCCESS, true);
@@ -562,7 +562,7 @@ public class MobileButtonOperationController {
         map.put("msg", "发送拟稿人失败");
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             TaskModel taskModel = taskManager.findById(tenantId, taskId);
             String routeToTaskId = taskModel.getTaskDefinitionKey();
@@ -610,7 +610,7 @@ public class MobileButtonOperationController {
         try {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "收回成功");
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             buttonOperationManager.takeback(tenantId, userId, taskId, "收回");
         } catch (Exception e) {
@@ -637,7 +637,7 @@ public class MobileButtonOperationController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             if (StringUtils.isNotBlank(taskId)) {
                 taskManager.unclaim(tenantId, taskId);

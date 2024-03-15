@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
@@ -57,6 +58,9 @@ public class Process4SearchService {
 
     @Autowired
     private DepartmentApi departmentManager;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private ErrorLogService errorLogService;
@@ -117,10 +121,10 @@ public class Process4SearchService {
                     StringUtils.isNotBlank(processParam.getStartorName()) ? processParam.getStartorName() : "");
             }
             officeDoneInfo.setUserComplete("");
-            OrgUnit bureau = departmentManager.getBureau(tenantId, position.getParentId()).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, position.getParentId()).getData();
             officeDoneInfo.setBureauId(bureau != null ? bureau.getId() : "");
             officeDoneInfo.setDeptId(position.getParentId());
-            Department dept = departmentManager.getDepartment(tenantId, position.getParentId()).getData();
+            Department dept = departmentManager.get(tenantId, position.getParentId()).getData();
             officeDoneInfo.setDeptName(dept != null ? dept.getName() : "");
             officeDoneInfo.setEntrustUserId("");
             officeDoneInfo.setAllUserId(processParam.getStartor());
@@ -254,7 +258,7 @@ public class Process4SearchService {
                     allUserId = Y9Util.genCustomStr(allUserId, userId);
                 }
                 if (StringUtils.isNotEmpty(userId)) {
-                    Position position = positionManager.getPosition(tenantId, userId).getData();
+                    Position position = positionManager.get(tenantId, userId).getData();
                     if (position != null && position.getId() != null) {
                         if (!deptIds.contains(position.getParentId())) {
                             deptIds = Y9Util.genCustomStr(deptIds, position.getParentId());

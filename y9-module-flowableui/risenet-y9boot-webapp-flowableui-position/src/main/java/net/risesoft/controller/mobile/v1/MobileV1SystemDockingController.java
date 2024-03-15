@@ -94,13 +94,15 @@ public class MobileV1SystemDockingController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/forwarding")
-    public Y9Result<Map<String, Object>> forwarding(@RequestParam String tenantId, @RequestParam String itemId, @RequestParam String mappingId, @RequestParam String userId, @RequestParam String positionId, @RequestParam String userChoice, @RequestParam String formJsonData,
+    public Y9Result<Map<String, Object>> forwarding(@RequestParam String tenantId, @RequestParam String itemId,
+        @RequestParam String mappingId, @RequestParam String userId, @RequestParam String positionId,
+        @RequestParam String userChoice, @RequestParam String formJsonData,
         @RequestParam(required = false) MultipartFile[] files, HttpServletResponse response) throws Exception {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Position position = positionApi.getPosition(tenantId, positionId).getData();
+            Position position = positionApi.get(tenantId, positionId).getData();
             Y9LoginUserHolder.setPosition(position);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Map<String, Object> mapForm = Y9JsonUtil.readValue(formJsonData, Map.class);
             List<ItemMappingConfModel> list = item4PositionApi.getItemMappingConf(tenantId, itemId, mappingId);
@@ -139,7 +141,8 @@ public class MobileV1SystemDockingController {
                         String originalFilename = file.getOriginalFilename();
                         String fileName = FilenameUtils.getName(originalFilename);
                         fileName = URLDecoder.decode(fileName, "UTF-8");
-                        String fullPath = Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "attachmentFile", guid);
+                        String fullPath =
+                            Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "attachmentFile", guid);
                         Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
                         DecimalFormat df = new DecimalFormat("#.00");
                         Long fileSize = file.getSize();
@@ -153,7 +156,8 @@ public class MobileV1SystemDockingController {
                         } else {
                             fileSizeString = df.format((double)fileSize / 1073741824) + "G";
                         }
-                        Map<String, Object> att_map = attachment4PositionApi.upload(tenantId, userId, positionId, fileName, fileSizeString, "", "", "", guid, "", y9FileStore.getId());
+                        Map<String, Object> att_map = attachment4PositionApi.upload(tenantId, userId, positionId,
+                            fileName, fileSizeString, "", "", "", guid, "", y9FileStore.getId());
                         if (!(boolean)att_map.get(UtilConsts.SUCCESS)) {
                             System.out.println("***********************" + title + "**********保存附件失败");
                             return Y9Result.failure("保存附件失败");
@@ -161,7 +165,8 @@ public class MobileV1SystemDockingController {
                     }
                 }
             }
-            Map<String, Object> map = document4PositionApi.startProcess(tenantId, positionId, itemId, guid, item.getWorkflowGuid(), userChoice);
+            Map<String, Object> map = document4PositionApi.startProcess(tenantId, positionId, itemId, guid,
+                item.getWorkflowGuid(), userChoice);
             if ((boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.success(map, "提交成功");
             }

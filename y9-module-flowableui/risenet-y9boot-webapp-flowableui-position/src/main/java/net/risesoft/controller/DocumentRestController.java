@@ -365,7 +365,7 @@ public class DocumentRestController {
                 for (TaskModel task : list) {
                     if (i < 5) {
                         String assigneeId = task.getAssignee();
-                        Position employee = positionApi.getPosition(tenantId, assigneeId).getData();
+                        Position employee = positionApi.get(tenantId, assigneeId).getData();
                         if (employee != null && !employee.getId().equals(positionId)) { // 协办人员
                             if (StringUtils.isBlank(parallelDoing)) {
                                 parallelDoing = employee.getName();

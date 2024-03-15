@@ -160,7 +160,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             // 收件人
             String assignee = hai.getAssignee();
             if (StringUtils.isNotBlank(assignee)) {
-                Person employee = personManager.getPerson(Y9LoginUserHolder.getTenantId(), assignee).getData();
+                Person employee = personManager.get(Y9LoginUserHolder.getTenantId(), assignee).getData();
                 if (employee != null) {
                     map.put("assigneeId", assignee);
                     // 承办人id,用于数据中心保存
@@ -169,7 +169,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     String employeeName = employee.getName();
                     // 恢复待办，如不是办结人恢复，Owner有值，需显示Owner
                     if (StringUtils.isNotBlank(ownerId)) {
-                        Person ownerUser = personManager.getPerson(Y9LoginUserHolder.getTenantId(), ownerId).getData();
+                        Person ownerUser = personManager.get(Y9LoginUserHolder.getTenantId(), ownerId).getData();
                         employeeName = ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : "");
                         map.put("undertakerId", ownerUser.getId());
                     }
@@ -177,7 +177,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     // 出差委托标识
                     if (entrustDetail != null) {
                         String owner4Entrust = entrustDetail.getOwnerId();
-                        Person owner = personManager.getPerson(tenantId, owner4Entrust).getData();
+                        Person owner = personManager.get(tenantId, owner4Entrust).getData();
                         employeeName =
                             employeeName + "(" + owner.getName() + (owner.getDisabled() ? "(已禁用)" : "") + "委托)";
                     }
@@ -202,7 +202,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     for (IdentityLinkModel identityLink : iList) {
                         String assigneeId = identityLink.getUserId();
                         Person ownerUser =
-                            personManager.getPerson(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                            personManager.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                         if (j < 5) {
                             assignees = Y9Util.genCustomStr(assignees,
                                 ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : ""), "、");
@@ -357,7 +357,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     }
                     if (start) {
                         Map<String, Object> map = new HashMap<String, Object>(16);
-                        Person employee = personManager.getPerson(Y9LoginUserHolder.getTenantId(), user).getData();
+                        Person employee = personManager.get(Y9LoginUserHolder.getTenantId(), user).getData();
                         map.put("assignee", employee.getName());
                         map.put("name", "串行办理");
                         map.put("endTime", "");
@@ -406,12 +406,12 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             // 收件人
             String assignee = hai.getAssignee();
             if (StringUtils.isNotBlank(assignee)) {
-                Person employee = personManager.getPerson(Y9LoginUserHolder.getTenantId(), assignee).getData();
+                Person employee = personManager.get(Y9LoginUserHolder.getTenantId(), assignee).getData();
                 String ownerId = hai.getOwner();
                 String employeeName = employee.getName();
                 // 恢复待办，如不是办结人恢复，Owner有值，需显示Owner
                 if (StringUtils.isNotBlank(ownerId)) {
-                    Person ownerUser = personManager.getPerson(Y9LoginUserHolder.getTenantId(), ownerId).getData();
+                    Person ownerUser = personManager.get(Y9LoginUserHolder.getTenantId(), ownerId).getData();
                     employeeName = ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : "");
                 }
                 if (employee != null) {
@@ -432,7 +432,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     for (IdentityLinkModel identityLink : iList) {
                         String assigneeId = identityLink.getUserId();
                         Person ownerUser =
-                            personManager.getPerson(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                            personManager.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                         if (j < 5) {
                             assignees = Y9Util.genCustomStr(assignees,
                                 ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : ""), "、");
@@ -527,7 +527,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     }
                     if (start) {
                         Map<String, Object> map = new HashMap<String, Object>(16);
-                        Person employee = personManager.getPerson(Y9LoginUserHolder.getTenantId(), user).getData();
+                        Person employee = personManager.get(Y9LoginUserHolder.getTenantId(), user).getData();
                         map.put("assignee", employee.getName());
                         map.put("name", "串行办理");
                         map.put("endTime", "");

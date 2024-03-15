@@ -27,7 +27,7 @@ public class CurrentDeptPositions extends AbstractDynamicRoleMember {
     public List<Position> getPositionList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        Position position = positionApi.getPosition(tenantId, positionId).getData();
+        Position position = positionApi.get(tenantId, positionId).getData();
         List<Position> positionList = positionApi.listByParentId(tenantId, position.getParentId()).getData();
         positionList.remove(position);
         return positionList;

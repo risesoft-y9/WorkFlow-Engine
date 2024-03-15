@@ -958,7 +958,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        OrgUnit orgUnit = personManager.getBureau(targetTenantId, userInfo.getPersonId()).getData();
+        OrgUnit orgUnit = orgUnitManager.getBureau(targetTenantId, userInfo.getPersonId()).getData();
         String bureauId = orgUnit.getId(), bureauName = orgUnit.getName();
         for (TaoHongTemplate tt : sourcettList) {
             tt.setBureauGuid(bureauId);

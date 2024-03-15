@@ -331,8 +331,7 @@ public class OpinionServiceImpl implements OpinionService {
                         Y9BeanUtil.copyProperties(opinion, opinionModel);
                         if (StringUtils.isNotBlank(opinion.getPositionId())
                             && StringUtils.isBlank(opinion.getPositionName())) {
-                            Position position =
-                                positionManager.getPosition(tenantId, opinion.getPositionId()).getData();
+                            Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
                             opinionModel.setPositionName(position != null ? position.getName() : "");
                         }
                         PersonExt personExt =
@@ -410,8 +409,7 @@ public class OpinionServiceImpl implements OpinionService {
                         Y9BeanUtil.copyProperties(opinion, opinionModel);
                         if (StringUtils.isNotBlank(opinion.getPositionId())
                             && StringUtils.isBlank(opinion.getPositionName())) {
-                            Position position =
-                                positionManager.getPosition(tenantId, opinion.getPositionId()).getData();
+                            Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
                             opinionModel.setPositionName(position != null ? position.getName() : "");
                         }
                         PersonExt personExt =
@@ -438,7 +436,7 @@ public class OpinionServiceImpl implements OpinionService {
                     Y9BeanUtil.copyProperties(opinion, opinionModel);
                     if (StringUtils.isNotBlank(opinion.getPositionId())
                         && StringUtils.isBlank(opinion.getPositionName())) {
-                        Position position = positionManager.getPosition(tenantId, opinion.getPositionId()).getData();
+                        Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
                         opinionModel.setPositionName(position != null ? position.getName() : "");
                     }
                     PersonExt personExt =
@@ -550,7 +548,7 @@ public class OpinionServiceImpl implements OpinionService {
                     Y9BeanUtil.copyProperties(opinion, opinionModel);
                     if (StringUtils.isNotBlank(opinion.getPositionId())
                         && StringUtils.isBlank(opinion.getPositionName())) {
-                        Position position = positionManager.getPosition(tenantId, opinion.getPositionId()).getData();
+                        Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
                         opinionModel.setPositionName(position != null ? position.getName() : "");
                     }
                     PersonExt personExt =
@@ -592,7 +590,7 @@ public class OpinionServiceImpl implements OpinionService {
                     Y9BeanUtil.copyProperties(opinion, opinionModel);
                     if (StringUtils.isNotBlank(opinion.getPositionId())
                         && StringUtils.isBlank(opinion.getPositionName())) {
-                        Position position = positionManager.getPosition(tenantId, opinion.getPositionId()).getData();
+                        Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
                         opinionModel.setPositionName(position != null ? position.getName() : "");
                     }
                     PersonExt personExt =

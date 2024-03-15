@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -151,6 +152,9 @@ public class DocumentWpsController {
     private PersonApi personApi;
 
     @Autowired
+    private OrgUnitApi orgUnitApi;
+
+    @Autowired
     private ProcessParamApi processParamManager;
 
     @Autowired
@@ -258,7 +262,7 @@ public class DocumentWpsController {
      */
     @RequestMapping(value = "/openTaoHong")
     public String openTaoHong(Model model) {
-        OrgUnit currentBureau = personApi
+        OrgUnit currentBureau = orgUnitApi
             .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
         model.addAttribute("currentBureauGuid", currentBureau.getId());
         model.addAttribute("tenantId", Y9LoginUserHolder.getTenantId());

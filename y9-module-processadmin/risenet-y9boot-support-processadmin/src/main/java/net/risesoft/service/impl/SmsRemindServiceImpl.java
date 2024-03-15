@@ -88,13 +88,13 @@ public class SmsRemindServiceImpl implements SmsRemindService {
             }
             List<String> list = new ArrayList<String>();
             String userId = map.get(SysVariables.TASKSENDERID).toString();
-            Person user = personManager.getPerson(tenantId, userId).getData();
+            Person user = personManager.get(tenantId, userId).getData();
             if (UtilConsts.TRUE.equals(isShuMing)) {
                 smsContent = smsContent + "--" + user.getName();
             }
-            Person person = personManager.getPerson(tenantId, assignee).getData();
+            Person person = personManager.get(tenantId, assignee).getData();
             if (person == null || StringUtils.isBlank(person.getId())) {
-                List<Person> plist = positionApi.listPersons(tenantId, assignee).getData();
+                List<Person> plist = positionApi.listPersonsByPositionId(tenantId, assignee).getData();
                 for (Person p : plist) {
                     list.add(p.getMobile());
                 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.ReceiveDeptAndPersonApi;
 import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.ReceiveDepartment;
 import net.risesoft.entity.ReceivePerson;
@@ -41,6 +42,9 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
     private DepartmentApi departmentManager;
 
     @Autowired
+    private OrgUnitApi orgUnitApi;
+
+    @Autowired
     ReceiveDeptAndPersonService receiveDeptAndPersonService;
 
     @Autowired
@@ -61,14 +65,14 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         List<ReceiveDepartment> list = receiveDepartmentRepository.findByDeptNameLikeOrderByTabIndex(name);
         for (ReceiveDepartment receiveDepartment : list) {
             Map<String, Object> data = new HashMap<String, Object>(16);
-            Department department = departmentManager.getDepartment(tenantId, receiveDepartment.getDeptId()).getData();
+            Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
             if (department == null || department.getId() == null) {
                 continue;
             }
             data.put("id", receiveDepartment.getDeptId());
             data.put("parentId", receiveDepartment.getParentId());
             data.put("name", department.getName());
-            OrgUnit bureau = departmentManager.getBureau(tenantId, department.getId()).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, department.getId()).getData();
             if (bureau != null && bureau.getId() != null && !bureau.getId().equals(department.getId())) {
                 data.put("name", department.getName() + "(" + bureau.getName() + ")");
             }
@@ -86,13 +90,13 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         for (ReceiveDepartment receiveDepartment : list) {
             Map<String, Object> data = new HashMap<String, Object>(16);
             data.put("id", receiveDepartment.getDeptId());
-            Department department = departmentManager.getDepartment(tenantId, receiveDepartment.getDeptId()).getData();
+            Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
             if (department == null || department.getId() == null) {
                 continue;
             }
             data.put("parentId", receiveDepartment.getParentId());
             data.put("name", department.getName());
-            OrgUnit bureau = departmentManager.getBureau(tenantId, department.getId()).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, department.getId()).getData();
             if (bureau != null && bureau.getId() != null && !bureau.getId().equals(department.getId())) {
                 data.put("name", department.getName() + "(" + bureau.getName() + ")");
             }
@@ -112,14 +116,13 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
             for (ReceiveDepartment receiveDepartment : list) {
                 Map<String, Object> data = new HashMap<String, Object>(16);
                 data.put("id", receiveDepartment.getDeptId());
-                Department department =
-                    departmentManager.getDepartment(tenantId, receiveDepartment.getDeptId()).getData();
+                Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
                 if (department == null || department.getId() == null) {
                     continue;
                 }
                 data.put("parentID", receiveDepartment.getParentId());
                 data.put("name", department.getName());
-                OrgUnit bureau = departmentManager.getBureau(tenantId, department.getId()).getData();
+                OrgUnit bureau = orgUnitApi.getBureau(tenantId, department.getId()).getData();
                 if (bureau != null && bureau.getId() != null && !bureau.getId().equals(department.getId())) {
                     data.put("name", department.getName() + "(" + bureau.getName() + ")");
                 }
@@ -138,8 +141,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
                 for (ReceiveDepartment receiveDepartment : list) {
                     Map<String, Object> data = new HashMap<String, Object>(16);
                     data.put("id", receiveDepartment.getDeptId());
-                    Department department =
-                        departmentManager.getDepartment(tenantId, receiveDepartment.getDeptId()).getData();
+                    Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }
@@ -159,8 +161,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
                 for (ReceiveDepartment receiveDepartment : list) {
                     Map<String, Object> data = new HashMap<String, Object>(16);
                     data.put("id", receiveDepartment.getDeptId());
-                    Department department =
-                        departmentManager.getDepartment(tenantId, receiveDepartment.getDeptId()).getData();
+                    Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
                         continue;
                     }
@@ -187,7 +188,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         List<ReceivePerson> list = receivePersonRepository.findByDeptId(deptId);
         List<Person> users = new ArrayList<Person>();
         for (ReceivePerson receivePerson : list) {
-            Person person = personManager.getPerson(tenantId, receivePerson.getPersonId()).getData();
+            Person person = personManager.get(tenantId, receivePerson.getPersonId()).getData();
             if (person != null && StringUtils.isNotBlank(person.getId()) && !person.getDisabled()) {
                 users.add(person);
             }
@@ -199,7 +200,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
     @GetMapping(value = "/getSendReceiveByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getSendReceiveByUserId(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         Y9LoginUserHolder.setPerson(person);
         if (StringUtils.isBlank(userId)) {
@@ -210,7 +211,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         if (list.size() > 0) {
             for (ReceivePerson receivePerson : list) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
-                Department department = departmentManager.getDepartment(tenantId, receivePerson.getDeptId()).getData();
+                Department department = departmentManager.get(tenantId, receivePerson.getDeptId()).getData();
                 if (department == null || department.getId() == null) {
                     continue;
                 }

@@ -96,7 +96,7 @@ public class MobileChaoSongController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setPositionId(positionId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map = chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, true);
             String processSerialNumber = (String)map.get("processSerialNumber");

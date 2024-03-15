@@ -62,7 +62,7 @@ public interface OpinionApiClient extends OpinionApi {
     @Override
     @PostMapping("/delete")
     public void delete(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("id") String id) throws Exception;
+        @RequestParam("departmentId") String id) throws Exception;
 
     /**
      * 获取事项绑定的意见框列表
