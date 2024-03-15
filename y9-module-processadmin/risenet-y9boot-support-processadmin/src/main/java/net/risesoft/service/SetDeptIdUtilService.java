@@ -41,9 +41,6 @@ public class SetDeptIdUtilService {
     private PositionApi positionApi;
 
     @Autowired
-    private DepartmentApi departmentApi;
-
-    @Autowired
     private OrgUnitApi orgUnitManager;
 
     /**
@@ -59,15 +56,15 @@ public class SetDeptIdUtilService {
             String tenantId = (String)map.get("tenantId");
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
-                Person person = personManager.getPerson(tenantId, assignee).getData();
+                Person person = personManager.get(tenantId, assignee).getData();
                 OrgUnit bureau = null;
                 OrgUnit orgUnit = null;
                 if (person == null || StringUtils.isBlank(person.getId())) {
-                    Position position = positionApi.getPosition(tenantId, assignee).getData();
-                    bureau = departmentApi.getBureau(tenantId, position.getParentId()).getData();
+                    Position position = positionApi.get(tenantId, assignee).getData();
+                    bureau = orgUnitManager.getBureau(tenantId, position.getParentId()).getData();
                     orgUnit = orgUnitManager.getOrgUnit(tenantId, position.getParentId()).getData();
                 } else {// 人员
-                    bureau = personManager.getBureau(tenantId, person.getId()).getData();
+                    bureau = orgUnitManager.getBureau(tenantId, person.getId()).getData();
                     orgUnit = orgUnitManager.getOrgUnit(tenantId, person.getParentId()).getData();
                 }
                 ProcessParamModel processParamModel =

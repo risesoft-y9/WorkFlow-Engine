@@ -3,6 +3,7 @@ package net.risesoft.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,6 +34,9 @@ public class TaoHongTemplateTypeRestController {
     @Autowired
     private PersonApi personManager;
 
+    @Autowired
+    private OrgUnitApi orgUnitApi;
+
     /**
      * 获取模板类型
      *
@@ -47,7 +51,7 @@ public class TaoHongTemplateTypeRestController {
         if (userInfo.isGlobalManager()) {
             list = taoHongTemplateTypeService.findAll();
         } else {
-            OrgUnit orgUnit = personManager.getBureau(tenantId, personId).getData();
+            OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, personId).getData();
             list = taoHongTemplateTypeService.findByBureauId(orgUnit.getId());
         }
         return Y9Result.success(list, "获取成功");

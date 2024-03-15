@@ -29,7 +29,7 @@ public class CurrentDept extends AbstractDynamicRoleMember {
     public Department getDepartment() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String deptId = Y9LoginUserHolder.getDeptId();
-        return departmentManager.getDepartment(tenantId, deptId).getData();
+        return departmentManager.get(tenantId, deptId).getData();
     }
 
     @Override

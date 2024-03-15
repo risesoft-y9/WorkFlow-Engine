@@ -10,6 +10,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,8 +49,8 @@ public class WordTemplateRestController {
     @Autowired
     private PersonApi personManager;
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private BookMarkBindService bookMarkBindService;
@@ -195,7 +196,7 @@ public class WordTemplateRestController {
             list = wordTemplateService.findAll();
         } else {
             list = wordTemplateService
-                .findByBureauIdOrderByUploadTimeDesc(personManager.getBureau(tenantId, personId).getData().getId());
+                .findByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
         }
         List<Map<String, Object>> items = new ArrayList<>();
         for (WordTemplate wordTemplate : list) {

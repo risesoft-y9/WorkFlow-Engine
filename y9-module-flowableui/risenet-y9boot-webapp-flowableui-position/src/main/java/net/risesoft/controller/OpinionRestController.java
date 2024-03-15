@@ -114,7 +114,7 @@ public class OpinionRestController {
     public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = false) String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        OrgUnit bureau = personApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
+        OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
         if (bureau != null) {
             List<OrgUnit> orgUnitList =
                 orgUnitApi.treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON, bureau.getDn()).getData();
@@ -126,7 +126,7 @@ public class OpinionRestController {
                 map.put("parentId", orgUnit.getParentId());
                 map.put("isParent", true);
                 if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
-                    Person per = personApi.getPerson(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                    Person per = personApi.get(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                     if (per.getDisabled()) {// 除去禁用的人员
                         continue;
                     }
@@ -167,7 +167,7 @@ public class OpinionRestController {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(id)) {
-            OrgUnit orgUnit = personApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
+            OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
             if (orgUnit != null) {
                 Map<String, Object> m = new HashMap<String, Object>(16);
                 id = orgUnit.getId();
@@ -189,7 +189,7 @@ public class OpinionRestController {
                 m.put("isParent", true);
                 if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON)) {
                     m.put("isParent", false);
-                    Person person = personApi.getPerson(tenantId, orgUnit.getId()).getData();
+                    Person person = personApi.get(tenantId, orgUnit.getId()).getData();
                     if (person.getDisabled()) {
                         continue;
                     }
@@ -205,8 +205,8 @@ public class OpinionRestController {
     }
 
     public OrgUnit getParent(String tenantId, String nodeId, String parentId) {
-        Organization parent = organizationApi.getOrganization(tenantId, parentId).getData();
-        return parent.getId() != null ? parent : departmentApi.getDepartment(tenantId, parentId).getData();
+        Organization parent = organizationApi.get(tenantId, parentId).getData();
+        return parent.getId() != null ? parent : departmentApi.get(tenantId, parentId).getData();
     }
 
     /**

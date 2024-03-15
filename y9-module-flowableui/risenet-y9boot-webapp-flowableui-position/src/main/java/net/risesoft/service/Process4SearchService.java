@@ -109,7 +109,7 @@ public class Process4SearchService {
                         allUserId = Y9Util.genCustomStr(allUserId, USER_ID_);
                     }
                     if (!USER_ID_.equals("")) {
-                        Position position = positionApi.getPosition(tenantId, USER_ID_).getData();
+                        Position position = positionApi.get(tenantId, USER_ID_).getData();
                         if (position != null && position.getId() != null) {
                             if (!deptIds.contains(position.getParentId())) {
                                 deptIds = Y9Util.genCustomStr(deptIds, position.getParentId());
@@ -196,7 +196,7 @@ public class Process4SearchService {
                         allUserId = Y9Util.genCustomStr(allUserId, USER_ID_);
                     }
                     if (!USER_ID_.equals("")) {
-                        Position position = positionApi.getPosition(tenantId, USER_ID_).getData();
+                        Position position = positionApi.get(tenantId, USER_ID_).getData();
                         if (position != null && position.getId() != null) {
                             if (!deptIds.contains(position.getParentId())) {
                                 deptIds = Y9Util.genCustomStr(deptIds, position.getParentId());

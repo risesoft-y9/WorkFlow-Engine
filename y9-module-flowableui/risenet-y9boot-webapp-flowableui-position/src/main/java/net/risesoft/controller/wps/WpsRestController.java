@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -46,6 +47,9 @@ public class WpsRestController {
 
     @Autowired
     private PersonApi personApi;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private ProcessParamApi processParamApi;
@@ -212,7 +216,7 @@ public class WpsRestController {
     public List<Map<String, Object>> taoHongTemplateList(@RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        OrgUnit currentBureau = personApi.getBureau(tenantId, userId).getData();
+        OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, userId).getData();
         String currentBureauGuid = currentBureau != null ? currentBureau.getId() : "";
         if (StringUtils.isBlank(currentBureauGuid)) {
             currentBureauGuid = person.getParentId();

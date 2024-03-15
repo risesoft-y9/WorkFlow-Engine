@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -49,6 +50,9 @@ public class ItemWordTemplateBindController {
     @Autowired
     private PersonApi personManager;
 
+    @Autowired
+    private OrgUnitApi orgUnitApi;
+
     /**
      * 删除正文模板绑定
      *
@@ -82,7 +86,7 @@ public class ItemWordTemplateBindController {
         String processDefinitionId = processDefinition.getId();
         map.put("processDefinitionId", processDefinitionId);
         List<WordTemplate> templateList = wordTemplateService
-            .findByBureauIdOrderByUploadTimeDesc(personManager.getBureau(tenantId, personId).getData().getId());
+            .findByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
         ItemWordTemplateBind wordTemplateBind =
             itemWordTemplateBindService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         String tempName = "", bindId = "";

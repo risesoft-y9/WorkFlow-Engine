@@ -195,7 +195,7 @@ public class ReminderApiImpl implements ReminderApi {
     public Map<String, Object> saveReminder(String tenantId, String userId, String processInstanceId,
         @RequestBody String[] taskIds, String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.getPosition(tenantId, userId).getData();
+        Position position = positionApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
@@ -241,7 +241,7 @@ public class ReminderApiImpl implements ReminderApi {
     public Map<String, Object> sendReminderMessage(String tenantId, String userId, String remType, String procInstId,
         String processInstanceId, String documentTitle, String taskId, String taskAssigneeId, String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.getPosition(tenantId, userId).getData();
+        Position position = positionApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {

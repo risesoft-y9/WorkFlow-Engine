@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -68,7 +68,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     private final ElasticsearchTemplate elasticsearchTemplate;
 
     @Autowired
-    private PersonApi personApi;
+    private OrgUnitApi orgUnitApi;
 
     @Override
     public void cancelMeeting(String processInstanceId) {
@@ -724,7 +724,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (info != null) {
             info.setMeeting("1");
             info.setMeetingType(meetingType);
-            OrgUnit dept = personApi.getParent(Y9LoginUserHolder.getTenantId(), info.getCreatUserId()).getData();
+            OrgUnit dept = orgUnitApi.getParent(Y9LoginUserHolder.getTenantId(), info.getCreatUserId()).getData();
             info.setDeptName(dept != null ? dept.getName() : "");
             officeDoneInfoRepository.save(info);
         }

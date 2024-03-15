@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.datacenter.OfficeInfoApi;
 import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.HistoricVariableApi;
@@ -77,7 +78,8 @@ public class DataCenterService {
     private ProcessParamService processParamService;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate4Tenant;
 
     @Autowired
     private Y9FormRepository y9FormRepository;
@@ -87,6 +89,9 @@ public class DataCenterService {
 
     @Autowired
     private DepartmentApi departmentApi;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private Y9FormFieldRepository y9FormFieldRepository;
@@ -255,8 +260,8 @@ public class DataCenterService {
             SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
             String startProUserId = processInstance.getStartUserId();
             String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
-            Position startProUser = positionApi.getPosition(tenantId, startUserId).getData();
-            OrgUnit dept = departmentApi.getBureau(tenantId, startProUser.getParentId()).getData();
+            Position startProUser = positionApi.get(tenantId, startUserId).getData();
+            OrgUnit dept = orgUnitApi.getBureau(tenantId, startProUser.getParentId()).getData();
 
             // 获取历程
             Map<String, Object> map = this.historyExcel(processSerialNumber, processInstanceId);
@@ -356,8 +361,8 @@ public class DataCenterService {
             SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
             String startProUserId = processParam.getStartor();
             String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
-            Position startProUser = positionApi.getPosition(tenantId, startUserId).getData();
-            OrgUnit dept = departmentApi.getBureau(tenantId, startProUser.getParentId()).getData();
+            Position startProUser = positionApi.get(tenantId, startUserId).getData();
+            OrgUnit dept = orgUnitApi.getBureau(tenantId, startProUser.getParentId()).getData();
 
             // 获取历程
             Map<String, Object> map = this.historyExcel(processSerialNumber, processInstanceId);

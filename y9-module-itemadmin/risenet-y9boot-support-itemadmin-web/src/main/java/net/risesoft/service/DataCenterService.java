@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -79,13 +80,17 @@ public class DataCenterService {
     private ProcessParamService processParamService;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate4Tenant;
 
     @Autowired
     private Y9FormRepository y9FormRepository;
 
     @Autowired
     private PersonApi personManager;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private Y9FormFieldRepository y9FormFieldRepository;
@@ -256,8 +261,8 @@ public class DataCenterService {
             SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
             String startProUserId = processInstance.getStartUserId();
             String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
-            Person startProUser = personManager.getPerson(tenantId, startUserId).getData();
-            OrgUnit dept = personManager.getBureau(tenantId, startProUser.getId()).getData();
+            Person startProUser = personManager.get(tenantId, startUserId).getData();
+            OrgUnit dept = orgUnitApi.getBureau(tenantId, startProUser.getId()).getData();
 
             // 获取历程
             Map<String, Object> map = this.historyExcel(processSerialNumber, processInstanceId);
@@ -362,8 +367,8 @@ public class DataCenterService {
             SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
             String startProUserId = processParam.getStartor();
             String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
-            Person startProUser = personManager.getPerson(tenantId, startUserId).getData();
-            OrgUnit dept = personManager.getBureau(tenantId, startProUser.getId()).getData();
+            Person startProUser = personManager.get(tenantId, startUserId).getData();
+            OrgUnit dept = orgUnitApi.getBureau(tenantId, startProUser.getId()).getData();
 
             // 获取历程
             Map<String, Object> map = this.historyExcel(processSerialNumber, processInstanceId);

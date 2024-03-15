@@ -42,7 +42,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     @Override
     @PostMapping(value = "/deleteById", produces = MediaType.APPLICATION_JSON_VALUE)
     public void deleteById(String tenantId, String userId, String id) throws Exception {
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         processTrackService.deleteById(id);
@@ -68,7 +68,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     @GetMapping(value = "/findByTaskIdAsc", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ProcessTrackModel> findByTaskIdAsc(String tenantId, String userId, String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<ProcessTrackModel> items = new ArrayList<ProcessTrackModel>();
         try {
@@ -86,7 +86,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     @GetMapping(value = "/processTrackList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> processTrackList(String tenantId, String userId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         retMap.put(UtilConsts.SUCCESS, false);
@@ -108,7 +108,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     @GetMapping(value = "/processTrackList4Simple", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> processTrackList4Simple(String tenantId, String userId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         retMap.put(UtilConsts.SUCCESS, false);

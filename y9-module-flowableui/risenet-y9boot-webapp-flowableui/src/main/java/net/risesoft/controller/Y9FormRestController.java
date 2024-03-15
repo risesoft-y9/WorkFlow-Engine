@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.OptionClassApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.consts.UtilConsts;
@@ -37,6 +38,9 @@ public class Y9FormRestController {
 
     @Autowired
     private PersonApi personApi;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private FormDataApi formDataManager;
@@ -180,7 +184,7 @@ public class Y9FormRestController {
         String year = yearsdf.format(date);
         String second = sesdf.format(date);
         String itemNumber = "〔" + year + "〕" + second + "号";
-        OrgUnit parent = personApi.getParent(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId()).getData();
+        OrgUnit parent = orgUnitApi.getParent(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId()).getData();
         Tenant tenant = tenantApi.getById(Y9LoginUserHolder.getTenantId()).getData();
         /** 办件表单数据初始化 **/
         map.put("deptName", parent.getName());

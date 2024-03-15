@@ -28,7 +28,7 @@ public interface CommonSentencesApiClient extends CommonSentencesApi {
      */
     @Override
     @PostMapping("/delete")
-    public void delete(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
+    public void delete(@RequestParam("tenantId") String tenantId, @RequestParam("departmentId") String id);
 
     /**
      * 获取常用语字符串

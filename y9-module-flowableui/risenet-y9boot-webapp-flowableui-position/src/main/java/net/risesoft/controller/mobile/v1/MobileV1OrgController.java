@@ -101,8 +101,8 @@ public class MobileV1OrgController {
             if (StringUtils.isBlank(id)) {// 只获取当前组织架构
                 Organization org = orgUnitApi.getOrganization(tenantId, userId).getData();
                 String orgId = org.getId();
-                List<Department> deptList = organizationApi.listDepartments(tenantId, orgId).getData();
-                List<Person> personList = organizationApi.listPersons(tenantId, orgId).getData();
+                List<Department> deptList = departmentApi.listByParentId(tenantId, orgId).getData();
+                List<Person> personList = personApi.listByParentId(tenantId, orgId).getData();
                 for (Department dept : deptList) {
                     Map<String, Object> m = new HashMap<String, Object>(16);
                     m.put("id", dept.getId());
@@ -133,8 +133,8 @@ public class MobileV1OrgController {
                     item.add(m);
                 }
             } else {// 展开部门
-                List<Department> deptList = organizationApi.listDepartments(tenantId, id).getData();
-                List<Person> personList = organizationApi.listPersons(tenantId, id).getData();
+                List<Department> deptList = departmentApi.listByParentId(tenantId, id).getData();
+                List<Person> personList = personApi.listByParentId(tenantId, id).getData();
                 for (Department dept : deptList) {
                     Map<String, Object> m = new HashMap<String, Object>(16);
                     m.put("id", dept.getId());
@@ -204,7 +204,7 @@ public class MobileV1OrgController {
                         if (model.getUsed().equals(1)) {// 使用中的委托，将委托岗位加入岗位列表
                             Map<String, Object> map1 = new HashMap<String, Object>(16);
                             String positionId = model.getOwnerId();
-                            Position position = positionApi.getPosition(tenantId, positionId).getData();
+                            Position position = positionApi.get(tenantId, positionId).getData();
                             if (position != null) {
                                 map1.put("id", position.getId());
                                 map1.put("name", position.getName());
@@ -281,8 +281,8 @@ public class MobileV1OrgController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Position position = positionApi.getPosition(tenantId, positionId).getData();
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Position position = positionApi.get(tenantId, positionId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, positionId).getData();
             OrgUnit orgUnit1 = orgUnitApi.getParent(tenantId, positionId).getData();
             Y9LoginUserHolder.setPerson(person);
@@ -299,9 +299,9 @@ public class MobileV1OrgController {
 
     private void recursionAllPersons(String parentID, List<Position> personList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        personList.addAll(departmentApi.listPositions(tenantId, parentID).getData());
+        personList.addAll(positionApi.listByParentId(tenantId, parentID).getData());
         if (personList.size() < 101) {
-            List<Department> deptList = departmentApi.listSubDepartments(tenantId, parentID).getData();
+            List<Department> deptList = departmentApi.listByParentId(tenantId, parentID).getData();
             for (Department dept : deptList) {
                 recursionAllPersons(dept.getId(), personList);
             }

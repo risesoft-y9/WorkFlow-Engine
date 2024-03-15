@@ -61,7 +61,8 @@ public interface Opinion4PositionApiClient extends Opinion4PositionApi {
      */
     @Override
     @PostMapping("/delete")
-    public void delete(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id) throws Exception;
+    public void delete(@RequestParam("tenantId") String tenantId, @RequestParam("departmentId") String id)
+        throws Exception;
 
     /**
      * 获取事项绑定的意见框列表

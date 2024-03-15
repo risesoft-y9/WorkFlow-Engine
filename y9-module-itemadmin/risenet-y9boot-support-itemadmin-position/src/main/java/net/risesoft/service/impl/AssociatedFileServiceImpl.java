@@ -153,7 +153,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
                         assigneeIds = assignee;
-                        Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
+                        Position personTemp = positionManager.get(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                         }
@@ -169,7 +169,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
                                 Position ownerUser =
-                                    positionManager.getPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                    positionManager.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -186,7 +186,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                     if (StringUtils.isNotBlank(assignee)) {
                         if (i < 5) {
                             assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            Position personTemp = positionManager.getPosition(tenantId, assignee).getData();
+                            Position personTemp = positionManager.get(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
                             }

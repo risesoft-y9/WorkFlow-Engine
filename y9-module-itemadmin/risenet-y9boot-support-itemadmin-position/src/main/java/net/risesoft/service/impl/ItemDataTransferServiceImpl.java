@@ -55,7 +55,8 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
     private ProcessParamService processParamService;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate4Tenant;
 
     @Override
     public Y9Result<String> dataTransfer(String processDefinitionId, String processInstanceId) {
@@ -134,7 +135,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
                 String assignee = task.getAssignee();
                 if (i < 5) {
                     if (StringUtils.isNotBlank(assignee)) {
-                        Position personTemp = positionApi.getPosition(tenantId, assignee).getData();
+                        Position personTemp = positionApi.get(tenantId, assignee).getData();
                         if (personTemp != null) {
                             // 并行时，领导选取时存在顺序，因此这里也存在顺序
                             assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");

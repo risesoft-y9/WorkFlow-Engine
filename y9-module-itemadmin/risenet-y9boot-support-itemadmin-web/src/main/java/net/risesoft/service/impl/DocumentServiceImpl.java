@@ -874,7 +874,7 @@ public class DocumentServiceImpl implements DocumentService {
                     // OrgTypeEnum.PERSON.equals(orgUnit.getOrgType()))
                     // {
                     if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
-                        Person person = personManager.getPerson(tenantId, orgUnit.getId()).getData();
+                        Person person = personManager.get(tenantId, orgUnit.getId()).getData();
                         if (person != null && !person.getDisabled()) {
                             orgUnitList.add(orgUnit);
                         }
@@ -1116,14 +1116,13 @@ public class DocumentServiceImpl implements DocumentService {
                 Integer principalType = Integer.parseInt(s2[0]);
                 String userIdTemp = s2[1];
                 if (principalType == ItemPermissionEnum.USER.getValue()) {
-                    Person person = personManager.getPerson(tenantId, s2[1]).getData();
+                    Person person = personManager.get(tenantId, s2[1]).getData();
                     if (null == person) {
                         continue;
                     }
                     users = this.addUserId(users, userIdTemp);
                 } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {
-                    List<Person> employeeList =
-                        departmentManager.listAllPersonsByDisabled(tenantId, s2[1], false).getData();
+                    List<Person> employeeList = personManager.listRecursivelyByParentId(tenantId, s2[1]).getData();
                     for (Person pTemp : employeeList) {
                         users = this.addUserId(users, pTemp.getId());
                     }

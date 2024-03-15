@@ -380,7 +380,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     continue;
                 }
                 String userId = his.getAssignee();
-                Person person = personManager.getPerson(tenantId, userId).getData();
+                Person person = personManager.get(tenantId, userId).getData();
                 if ("".equals(activityId) || activityId.equals(his.getActivityId())) {
                     Map<String, Object> map = new HashMap<String, Object>(16);
                     map.put("id", taskId);

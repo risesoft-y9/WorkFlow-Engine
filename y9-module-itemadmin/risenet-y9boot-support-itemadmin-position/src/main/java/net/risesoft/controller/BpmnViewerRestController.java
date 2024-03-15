@@ -80,7 +80,7 @@ public class BpmnViewerRestController {
                     List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(
                         task.getTaskId(), StringUtils.isBlank(assignee) ? "" : assignee);
                     task.setTenantId(opinion.size() > 0 ? opinion.get(0).getContent() : "");
-                    Position employee = positionApi.getPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
+                    Position employee = positionApi.get(Y9LoginUserHolder.getTenantId(), assignee).getData();
                     if (employee != null) {
                         String employeeName = employee.getName();
                         HistoricVariableInstanceModel zhuBan = null;

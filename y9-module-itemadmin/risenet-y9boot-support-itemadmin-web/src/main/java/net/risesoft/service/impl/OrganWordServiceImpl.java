@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -73,6 +74,9 @@ public class OrganWordServiceImpl implements OrganWordService {
 
     @Autowired
     private PersonApi personManager;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private PersonRoleApi personRoleApi;
@@ -163,7 +167,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         Integer common, String processSerialNumber) {
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-            OrgUnit bureau = personManager.getBureau(Y9LoginUserHolder.getTenantId(), userInfo.getParentId()).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), userInfo.getParentId()).getData();
             String deptName = bureau.getName();
             if (1 == common) {
                 itemId = "common";
@@ -492,7 +496,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         Integer numberTemp = 0;
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-            OrgUnit bureau = personManager.getBureau(Y9LoginUserHolder.getTenantId(), userInfo.getParentId()).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), userInfo.getParentId()).getData();
             String deptName = bureau.getName();
             if (1 == common) {
                 itemId = "common";

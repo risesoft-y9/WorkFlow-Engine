@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.platform.Department;
@@ -44,9 +43,6 @@ public class MobileOrgController {
 
     @Autowired
     private PersonApi personApi;
-
-    @Autowired
-    private OrganizationApi organizationApi;
 
     @Autowired
     private OrgUnitApi orgUnitApi;
@@ -87,8 +83,8 @@ public class MobileOrgController {
             if (StringUtils.isBlank(id)) {
                 Organization org = orgUnitApi.getOrganization(tenantId, userId).getData();
                 String orgId = org.getId();
-                List<Department> deptList = organizationApi.listDepartments(tenantId, orgId).getData();
-                List<Person> personList = organizationApi.listPersons(tenantId, orgId).getData();
+                List<Department> deptList = departmentApi.listByParentId(tenantId, orgId).getData();
+                List<Person> personList = personApi.listByParentId(tenantId, orgId).getData();
                 for (Department dept : deptList) {
                     Map<String, Object> m = new HashMap<String, Object>(16);
                     m.put("id", dept.getId());
@@ -119,8 +115,8 @@ public class MobileOrgController {
                     item.add(m);
                 }
             } else {// 展开部门
-                List<Department> deptList = organizationApi.listDepartments(tenantId, id).getData();
-                List<Person> personList = organizationApi.listPersons(tenantId, id).getData();
+                List<Department> deptList = departmentApi.listByParentId(tenantId, id).getData();
+                List<Person> personList = personApi.listByParentId(tenantId, id).getData();
                 for (Department dept : deptList) {
                     Map<String, Object> m = new HashMap<String, Object>(16);
                     m.put("id", dept.getId());
@@ -221,9 +217,9 @@ public class MobileOrgController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
-            OrgUnit orgUnit = personApi.getBureau(tenantId, userId).getData();
-            OrgUnit orgUnit1 = personApi.getParent(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
+            OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, userId).getData();
+            OrgUnit orgUnit1 = orgUnitApi.getParent(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             map.put("bureauName", orgUnit != null ? orgUnit.getName() : "");
             map.put("deptName", orgUnit1 != null ? orgUnit1.getName() : "");
@@ -241,10 +237,10 @@ public class MobileOrgController {
 
     private void recursionAllPersons(String parentId, List<Person> personList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        personList.addAll(departmentApi.listPersonsByDisabled(tenantId, parentId, false).getData());
+        personList.addAll(personApi.listByParentIdAndDisabled(tenantId, parentId, false).getData());
         boolean b = personList.size() < 101;
         if (b) {
-            List<Department> deptList = departmentApi.listSubDepartments(tenantId, parentId).getData();
+            List<Department> deptList = departmentApi.listByParentId(tenantId, parentId).getData();
             for (Department dept : deptList) {
                 recursionAllPersons(dept.getId(), personList);
             }

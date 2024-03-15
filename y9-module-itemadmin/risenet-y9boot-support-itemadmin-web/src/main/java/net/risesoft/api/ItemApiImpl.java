@@ -53,7 +53,7 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/findAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemModel> findAll(String tenantId, String userId, String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<SpmApproveItem> list = spmApproveItemRepository.findAll(systemName);
         List<ItemModel> itemModelList = new ArrayList<ItemModel>();
@@ -76,7 +76,7 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/getAllItem", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemModel> getAllItem(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<SpmApproveItem> list = spmApproveItemRepository.findAll();
         List<ItemModel> itemModelList = new ArrayList<ItemModel>();
@@ -121,7 +121,7 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/getFirstItem", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getFirstItem(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         return documentService.getFirstItem();
     }
@@ -137,7 +137,7 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/getItemList", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getItemList(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         listMap = documentService.getItemList();
@@ -148,7 +148,7 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/getItemPageList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getItemList(String tenantId, String personId, Integer page, Integer rows, String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, personId).getData();
+        Person person = personManager.get(tenantId, personId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = spmApproveItemService.list();
@@ -187,7 +187,7 @@ public class ItemApiImpl implements ItemApi {
     @GetMapping(value = "/getMyItemList", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getMyItemList(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         listMap = documentService.getMyItemList();

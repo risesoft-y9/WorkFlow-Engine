@@ -138,10 +138,10 @@ public class Process4MsgRemindService {
             String taskKey = task.getTaskDefinitionKey();
             String taskName = task.getName();
             String processInstanceId = task.getProcessInstanceId();
-            Person person = personManager.getPerson(tenantId, assignee).getData();
+            Person person = personManager.get(tenantId, assignee).getData();
             String userName = "";
             if (person == null || StringUtils.isBlank(person.getId())) {
-                Position position = positionApi.getPosition(tenantId, assignee).getData();
+                Position position = positionApi.get(tenantId, assignee).getData();
                 userName = position.getName();
             } else {
                 userName = person.getName();
@@ -210,9 +210,9 @@ public class Process4MsgRemindService {
             String taskName = task.getName();
             String processInstanceId = task.getProcessInstanceId();
             String userName = "";
-            Person person = personManager.getPerson(tenantId, assignee).getData();
+            Person person = personManager.get(tenantId, assignee).getData();
             if (person == null || StringUtils.isBlank(person.getId())) {
-                Position position = positionApi.getPosition(tenantId, assignee).getData();
+                Position position = positionApi.get(tenantId, assignee).getData();
                 userName = position.getName();
             } else {
                 userName = person.getName();

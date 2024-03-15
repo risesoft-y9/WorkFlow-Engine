@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -56,6 +57,9 @@ public class TransactionWordController {
 
     @Autowired
     private PersonApi personApi;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private ProcessParamApi processParamApi;
@@ -564,7 +568,7 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/openTaoHong")
     public String openTaoHong(@RequestParam String activitiUser, Model model) {
-        OrgUnit currentBureau = personApi.getBureau(Y9LoginUserHolder.getTenantId(), activitiUser).getData();
+        OrgUnit currentBureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), activitiUser).getData();
         model.addAttribute("currentBureauGuid", currentBureau.getId());
         model.addAttribute("tenantId", Y9LoginUserHolder.getTenantId());
         model.addAttribute("userId", Y9LoginUserHolder.getPersonId());

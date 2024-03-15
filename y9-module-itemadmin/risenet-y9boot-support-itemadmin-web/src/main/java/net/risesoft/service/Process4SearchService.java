@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
@@ -55,6 +56,9 @@ public class Process4SearchService {
 
     @Autowired
     private PersonApi personManager;
+
+    @Autowired
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private ErrorLogService errorLogService;
@@ -115,7 +119,7 @@ public class Process4SearchService {
                     StringUtils.isNotBlank(processParam.getStartorName()) ? processParam.getStartorName() : "");
             }
             officeDoneInfo.setUserComplete("");
-            OrgUnit bureau = personManager.getBureau(tenantId, person.getPersonId()).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, person.getPersonId()).getData();
             officeDoneInfo.setBureauId(bureau != null ? bureau.getId() : "");
             officeDoneInfo.setDeptId(person.getParentId());
             officeDoneInfo.setEntrustUserId("");
@@ -250,7 +254,7 @@ public class Process4SearchService {
                     allUserId = Y9Util.genCustomStr(allUserId, userId);
                 }
                 if (!"".equals(userId)) {
-                    Person person = personManager.getPerson(tenantId, userId).getData();
+                    Person person = personManager.get(tenantId, userId).getData();
                     if (person != null && person.getId() != null) {
                         if (!deptIds.contains(person.getParentId())) {
                             deptIds = Y9Util.genCustomStr(deptIds, person.getParentId());

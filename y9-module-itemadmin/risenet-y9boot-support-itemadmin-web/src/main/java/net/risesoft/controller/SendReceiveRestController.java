@@ -104,12 +104,11 @@ public class SendReceiveRestController {
         @RequestParam String deptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<>();
-        List<Person> personList =
-            departmentManager.listAllPersonsByDisabledAndName(tenantId, deptId, false, name).getData();
+        List<Person> personList = personManager.listRecursivelyByParentIdAndName(tenantId, deptId, name).getData();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         for (Person person : personList) {
             orgUnitList.add(person);
-            Person p = personManager.getPerson(tenantId, person.getId()).getData();
+            Person p = personManager.get(tenantId, person.getId()).getData();
             this.recursionUpToOrg(tenantId, deptId, p.getParentId(), orgUnitList, false);
         }
         for (OrgUnit orgUnit : orgUnitList) {
@@ -120,7 +119,7 @@ public class SendReceiveRestController {
             map.put("parentId", orgUnit.getParentId());
             map.put("isParent", true);
             if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
-                Person per = personManager.getPerson(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                Person per = personManager.get(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                 map.put("sex", per.getSex());
                 map.put("duty", per.getDuty());
                 map.put("isParent", false);
@@ -144,7 +143,7 @@ public class SendReceiveRestController {
         List<Map<String, Object>> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(deptId)) {
-            Department dept = departmentManager.getDepartment(tenantId, deptId).getData();
+            Department dept = departmentManager.get(tenantId, deptId).getData();
             if (dept != null && dept.getId() != null) {
                 Map<String, Object> map = new HashMap<>(16);
                 map.put("id", dept.getId());
@@ -168,7 +167,7 @@ public class SendReceiveRestController {
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     map.put("isParent", true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
-                    Person person = personManager.getPerson(tenantId, orgunit.getId()).getData();
+                    Person person = personManager.get(tenantId, orgunit.getId()).getData();
                     map.put("isParent", false);
                     map.put("sex", person.getSex());
                     map.put("duty", person.getDuty());
@@ -189,7 +188,7 @@ public class SendReceiveRestController {
     @ResponseBody
     @RequestMapping(value = "/getOrg", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Organization>> getOrg() {
-        List<Organization> list = organizationManager.listAllOrganizations(Y9LoginUserHolder.getTenantId()).getData();
+        List<Organization> list = organizationManager.list(Y9LoginUserHolder.getTenantId()).getData();
         return Y9Result.success(list, "获取成功");
     }
 
@@ -218,7 +217,7 @@ public class SendReceiveRestController {
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     map.put("isParent", true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
-                    Person person = personManager.getPerson(tenantId, orgunit.getId()).getData();
+                    Person person = personManager.get(tenantId, orgunit.getId()).getData();
                     map.put("isParent", false);
                     map.put("sex", person.getSex());
                     map.put("duty", person.getDuty());
@@ -248,8 +247,8 @@ public class SendReceiveRestController {
                 // 该部门下没有收发部门
                 orgUnit.setDn("false");
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
-                List<Department> deptList =
-                    orgUnitManager.getDeptTrees(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                List<Department> deptList = departmentManager
+                    .listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                 // 用来判断下面是否有子部门
                 orgUnit.setGuidPath("false");
                 // 判断该部门下是否有收发部门
@@ -282,8 +281,8 @@ public class SendReceiveRestController {
     }
 
     public OrgUnit getParent(String tenantId, String nodeId, String parentId) {
-        Organization parent = organizationManager.getOrganization(tenantId, parentId).getData();
-        return parent.getId() != null ? parent : departmentManager.getDepartment(tenantId, parentId).getData();
+        Organization parent = organizationManager.get(tenantId, parentId).getData();
+        return parent.getId() != null ? parent : departmentManager.get(tenantId, parentId).getData();
     }
 
     @RequestMapping(value = "/orderDeptList")
@@ -292,8 +291,8 @@ public class SendReceiveRestController {
         Map<String, Object> map = new HashMap<>(16);
         List<ReceiveDepartment> list = receiveDepartmentRepository.findAllOrderByTabIndex();
         for (ReceiveDepartment receiveDeptAndPerson : list) {
-            Department department = departmentManager
-                .getDepartment(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
+            Department department =
+                departmentManager.get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
             receiveDeptAndPerson.setDeptName(department.getName());
         }
         map.put("rows", list);
@@ -318,8 +317,8 @@ public class SendReceiveRestController {
                 // 该部门下没有收发部门
                 orgUnit.setDn("false");
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
-                List<Department> deptList =
-                    orgUnitManager.getDeptTrees(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                List<Department> deptList = departmentManager
+                    .listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                 // 用来判断下面是否有子部门
                 orgUnit.setGuidPath("false");
                 // 判断该部门下是否有收发部门
@@ -348,7 +347,7 @@ public class SendReceiveRestController {
                 newOrgUnitList.add(orgUnit);
             }
         }
-        List<Organization> list = organizationManager.listAllOrganizations(Y9LoginUserHolder.getTenantId()).getData();
+        List<Organization> list = organizationManager.list(Y9LoginUserHolder.getTenantId()).getData();
         if (list.size() > 0) {
             newOrgUnitList.addAll(list);
         }

@@ -73,7 +73,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     public void addMultiInstanceExecution(String tenantId, String userId, String activityId, String parentExecutionId,
         String taskId, String elementUser) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
 
         multiInstanceService.addMultiInstanceExecution(activityId, parentExecutionId, taskId, elementUser);
@@ -84,7 +84,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     public void deleteMultiInstanceExecution(String tenantId, String userId, String executionId, String taskId,
         String elementUser) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
 
         multiInstanceService.deleteMultiInstanceExecution(executionId, taskId, elementUser);
@@ -95,7 +95,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     public boolean directSend(String tenantId, String userId, String taskId, String routeToTask,
         String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         boolean b = false;
         try {
@@ -114,7 +114,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     @PostMapping(value = "/refuseClaimRollback", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> refuseClaimRollback(String tenantId, String userId, String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         String deptId = person.getParentId();
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -171,7 +171,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     @PostMapping(value = "/rollBack", produces = MediaType.APPLICATION_JSON_VALUE)
     public void rollBack(String tenantId, String userId, String taskId, String reason) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         specialOperationManager.rollBack(tenantId, userId, taskId, reason);
     }
@@ -180,7 +180,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     @PostMapping(value = "/rollbackToSender", produces = MediaType.APPLICATION_JSON_VALUE)
     public void rollbackToSender(String tenantId, String userId, String taskId) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
 
         specialOperationManager.rollbackToSender(tenantId, userId, taskId);
@@ -190,7 +190,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     @PostMapping(value = "/rollbackToStartor", produces = MediaType.APPLICATION_JSON_VALUE)
     public void rollbackToStartor(String tenantId, String userId, String taskId, String reason) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
 
         specialOperationManager.rollbackToStartor(tenantId, userId, taskId, reason);
@@ -200,7 +200,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     @PostMapping(value = "/specialComplete", produces = MediaType.APPLICATION_JSON_VALUE)
     public void specialComplete(String tenantId, String userId, String taskId, String reason) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         specialOperationManager.specialComplete(tenantId, userId, taskId, reason);
     }
@@ -209,7 +209,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     @PostMapping(value = "/takeback", produces = MediaType.APPLICATION_JSON_VALUE)
     public void takeback(String tenantId, String userId, String taskId, String reason) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
 
         specialOperationManager.takeBack(tenantId, userId, taskId, reason);

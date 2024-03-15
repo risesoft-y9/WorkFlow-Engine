@@ -50,7 +50,7 @@ public class FormServiceController {
         String tenantId = request.getParameter("y9Form_TenantId");
         String userId = request.getParameter("y9Form_UerId");
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = y9FormService.saveFormData(formdata);
@@ -71,7 +71,7 @@ public class FormServiceController {
         String tenantId = request.getParameter("y9Form_TenantId");
         String userId = request.getParameter("y9Form_UerId");
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = y9FormService.getData(guid, formId);

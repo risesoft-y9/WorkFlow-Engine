@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
 import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.Position;
@@ -30,6 +31,9 @@ public class RoleRestController {
 
     @Autowired
     private DepartmentApi departmentApi;
+
+    @Autowired
+    private PositionApi positionApi;
 
     private List<String> addUserIds(List<String> userIds, String userId) {
         if (!userIds.contains(userId)) {
@@ -188,9 +192,9 @@ public class RoleRestController {
 
     private void recursionAllPosition(String parentID, List<Position> list) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        list.addAll(departmentApi.listPositions(tenantId, parentID).getData());
+        list.addAll(positionApi.listByParentId(tenantId, parentID).getData());
         if (list.size() < 101) {
-            List<Department> deptList = departmentApi.listSubDepartments(tenantId, parentID).getData();
+            List<Department> deptList = departmentApi.listByParentId(tenantId, parentID).getData();
             for (Department dept : deptList) {
                 recursionAllPosition(dept.getId(), list);
             }

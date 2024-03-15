@@ -58,7 +58,7 @@ public class DocumentApiImpl implements Document4PositionApi {
     @GetMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> add(String tenantId, String positionId, String itemId, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> returnMap = new HashMap<>(16);
         returnMap = documentService.add(itemId, mobile, returnMap);
@@ -77,7 +77,7 @@ public class DocumentApiImpl implements Document4PositionApi {
     @PostMapping(value = "/complete", produces = MediaType.APPLICATION_JSON_VALUE)
     public void complete(String tenantId, String positionId, String taskId) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         documentService.complete(taskId);
     }
@@ -102,9 +102,9 @@ public class DocumentApiImpl implements Document4PositionApi {
         String processDefinitionKey, String processDefinitionId, String taskId, String routeToTask,
         String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> returnMap = new HashMap<>(16);
         returnMap = documentService.docUserChoise(itemId, processDefinitionKey, processDefinitionId, taskId,
@@ -129,7 +129,7 @@ public class DocumentApiImpl implements Document4PositionApi {
     public Map<String, Object> edit(String tenantId, String positionId, String itembox, String taskId,
         String processInstanceId, String itemId, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> returnMap = new HashMap<>(16);
         returnMap = documentService.edit(itembox, taskId, processInstanceId, itemId, mobile);
@@ -160,7 +160,7 @@ public class DocumentApiImpl implements Document4PositionApi {
         String taskId, String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey,
         String userChoice, String sponsorGuid, String routeToTaskId, @RequestBody Map<String, Object> variables) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> map = new HashMap<String, Object>(16);
         if (StringUtils.isBlank(processInstanceId) || UtilConsts.NULL.equals(processInstanceId)) {
@@ -179,7 +179,7 @@ public class DocumentApiImpl implements Document4PositionApi {
     public Map<String, Object> saveAndSubmitTo(String tenantId, String positionId, String taskId, String itemId,
         String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> map = new HashMap<String, Object>(16);
         if (StringUtils.isBlank(taskId) || UtilConsts.NULL.equals(taskId)) {
@@ -216,7 +216,7 @@ public class DocumentApiImpl implements Document4PositionApi {
         String userChoice, String sponsorGuid, String routeToTaskId, String startRouteToTaskId,
         @RequestBody Map<String, Object> variables) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> map = new HashMap<String, Object>(16);
         if (StringUtils.isBlank(processInstanceId) || UtilConsts.NULL.equals(processInstanceId)) {
@@ -247,7 +247,7 @@ public class DocumentApiImpl implements Document4PositionApi {
     public Map<String, Object> signTaskConfig(String tenantId, String positionId, String itemId,
         String processDefinitionId, String taskDefinitionKey, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> map =
             documentService.signTaskConfig(itemId, processDefinitionId, taskDefinitionKey, processSerialNumber);
@@ -270,7 +270,7 @@ public class DocumentApiImpl implements Document4PositionApi {
     public Map<String, Object> startProcess(String tenantId, String positionId, String itemId,
         String processSerialNumber, String processDefinitionKey) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> map = documentService.startProcess(itemId, processSerialNumber, processDefinitionKey);
         return map;
@@ -293,7 +293,7 @@ public class DocumentApiImpl implements Document4PositionApi {
     public Map<String, Object> startProcess(String tenantId, String positionId, String itemId,
         String processSerialNumber, String processDefinitionKey, String positionIds) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Map<String, Object> map =
             documentService.startProcess(itemId, processSerialNumber, processDefinitionKey, positionIds);

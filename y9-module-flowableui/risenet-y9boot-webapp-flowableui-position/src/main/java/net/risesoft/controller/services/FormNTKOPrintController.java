@@ -88,7 +88,7 @@ public class FormNTKOPrintController {
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.getPerson(tenantId, userId).getData();
+            Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Object documentTitle = null;
             String[] pId = processInstanceId.split(",");
@@ -143,7 +143,7 @@ public class FormNTKOPrintController {
         @RequestParam(required = false) String itembox, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, String itemId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = formDataApi.getData(tenantId, itemId, processSerialNumber);
 
@@ -178,7 +178,7 @@ public class FormNTKOPrintController {
         @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map = new HashMap<String, Object>(16);
         // 表单数据
@@ -234,7 +234,7 @@ public class FormNTKOPrintController {
         @RequestParam(required = false) String itemId, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         String y9FileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId);
 
@@ -284,7 +284,7 @@ public class FormNTKOPrintController {
     public void openDocument(String itemId, String tenantId, String userId, HttpServletResponse response,
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.getPerson(tenantId, userId).getData();
+        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         String y9FileStoreId = printApi.openDocument(tenantId, userId, itemId);
         ServletOutputStream out = null;

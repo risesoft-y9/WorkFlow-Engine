@@ -612,9 +612,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     private void getAllPosition(List<Position> list, String deptId) {
-        List<Department> deptList =
-            departmentManager.listSubDepartments(Y9LoginUserHolder.getTenantId(), deptId).getData();
-        List<Position> list0 = departmentManager.listPositions(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        List<Department> deptList = departmentManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
+        List<Position> list0 = positionManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
         if (!list0.isEmpty()) {
             list.addAll(list0);
         }
@@ -776,7 +775,7 @@ public class DocumentServiceImpl implements DocumentService {
                     // if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT) ||
                     // orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                     if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                        Position position = positionManager.getPosition(tenantId, orgUnit.getId()).getData();
+                        Position position = positionManager.get(tenantId, orgUnit.getId()).getData();
                         if (position != null && !position.getDisabled()) {
                             orgUnitList.add(orgUnit);
                         }
@@ -1086,7 +1085,7 @@ public class DocumentServiceImpl implements DocumentService {
                 Integer principalType = Integer.parseInt(s2[0]);
                 String userIdTemp = s2[1];
                 if (principalType == ItemPermissionEnum.POSITION.getValue()) {
-                    Position position = positionManager.getPosition(tenantId, s2[1]).getData();
+                    Position position = positionManager.get(tenantId, s2[1]).getData();
                     if (null == position) {
                         continue;
                     }
@@ -1101,7 +1100,7 @@ public class DocumentServiceImpl implements DocumentService {
                     List<CustomGroupMember> list = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
                         Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION).getData();
                     for (CustomGroupMember pTemp : list) {
-                        Position position = positionManager.getPosition(tenantId, pTemp.getMemberId()).getData();
+                        Position position = positionManager.get(tenantId, pTemp.getMemberId()).getData();
                         if (position != null && StringUtils.isNotBlank(position.getId())) {
                             users = this.addUserId(users, position.getId());
                         }

@@ -279,7 +279,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                     draft.setProcessDefinitionKey(processDefinitionKey);
                     draft.setCreaterId(Y9LoginUserHolder.getPositionId());
                     Position position = positionManager
-                        .getPosition(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
+                        .get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
                     draft.setCreater(position.getName());
                     draft.setDelFlag(false);
                     draft.setDraftTime(new Date());

@@ -344,9 +344,9 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
     public Map<String, Object> save(String tenantId, String userId, String positionId, String processInstanceId,
         String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionManager.getPosition(tenantId, positionId).getData();
+        Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        Person person = personManager.getPerson(tenantId, userId).getData();
+        Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Map<String, Object> map =
             chaoSongInfoService.save(processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);

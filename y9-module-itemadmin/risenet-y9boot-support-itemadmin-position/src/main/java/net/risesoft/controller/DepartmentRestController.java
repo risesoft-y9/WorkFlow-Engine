@@ -56,7 +56,7 @@ public class DepartmentRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(id)) {
-            List<Organization> list = organizationApi.listAllOrganizations(tenantId).getData();
+            List<Organization> list = organizationApi.list(tenantId).getData();
             for (Organization orgUnit : list) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 map.put("id", orgUnit.getId());
@@ -107,7 +107,7 @@ public class DepartmentRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(id)) {
-            List<Organization> list = organizationApi.listAllOrganizations(tenantId).getData();
+            List<Organization> list = organizationApi.list(tenantId).getData();
             for (Organization orgUnit : list) {
                 Map<String, Object> map = new HashMap<String, Object>(16);
                 map.put("id", orgUnit.getId());
@@ -119,7 +119,7 @@ public class DepartmentRestController {
                 items.add(map);
             }
         }
-        List<Department> departments = departmentManager.listSubDepartments(tenantId, id).getData();
+        List<Department> departments = departmentManager.listByParentId(tenantId, id).getData();
         for (Department department : departments) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("id", department.getId());
@@ -134,7 +134,7 @@ public class DepartmentRestController {
                     map.put("isParent", true);
                 }
             } else {
-                if (departmentManager.listSubDepartments(tenantId, department.getId()).getData().size() > 0) {
+                if (departmentManager.listByParentId(tenantId, department.getId()).getData().size() > 0) {
                     map.put("isParent", true);
                 } else {
                     map.put("isParent", false);
@@ -157,7 +157,7 @@ public class DepartmentRestController {
     public List<Map<String, Object>> genDeptTree(String deptGuid) {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         List<Department> deptList =
-            departmentManager.listSubDepartments(Y9LoginUserHolder.getTenantId(), deptGuid).getData();
+            departmentManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptGuid).getData();
         List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
         orgUnitList.addAll(deptList);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
@@ -185,7 +185,7 @@ public class DepartmentRestController {
     @ResponseBody
     public Y9Result<List<Organization>> getOrgList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Organization> list = organizationApi.listAllOrganizations(tenantId).getData();
+        List<Organization> list = organizationApi.list(tenantId).getData();
         return Y9Result.success(list, "获取成功");
     }
 
