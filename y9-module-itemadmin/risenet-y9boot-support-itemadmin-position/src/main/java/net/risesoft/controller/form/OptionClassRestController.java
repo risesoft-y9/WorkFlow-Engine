@@ -30,7 +30,7 @@ public class OptionClassRestController {
     /**
      * 删除数据字典
      *
-     * @param type
+     * @param type 字典类型
      * @return
      */
     @RequestMapping(value = "/delOptionClass", method = RequestMethod.POST, produces = "application/json")
@@ -45,7 +45,7 @@ public class OptionClassRestController {
     /**
      * 删除数据字典值
      *
-     * @param id
+     * @param id 主键id
      * @return
      */
     @RequestMapping(value = "/delOptionValue", method = RequestMethod.POST, produces = "application/json")
@@ -72,7 +72,7 @@ public class OptionClassRestController {
     /**
      * 获取数据字典列表
      *
-     * @param name
+     * @param name 数据字典名称
      * @return
      */
     @RequestMapping(value = "/getOptionClassList", method = RequestMethod.GET, produces = "application/json")
@@ -84,7 +84,7 @@ public class OptionClassRestController {
     /**
      * 数据字典值
      *
-     * @param id
+     * @param id 主键id
      * @return
      */
     @RequestMapping(value = "/getOptionValue", method = RequestMethod.GET, produces = "application/json")
@@ -96,7 +96,7 @@ public class OptionClassRestController {
     /**
      * 获取数据字典值列表
      *
-     * @param name
+     * @param type 字典标识
      * @return
      */
     @RequestMapping(value = "/getOptionValueList", method = RequestMethod.GET, produces = "application/json")
@@ -108,7 +108,7 @@ public class OptionClassRestController {
     /**
      * 保存数据字典
      *
-     * @param optionClass
+     * @param optionClass 字典类型数据
      * @return
      */
     @RequestMapping(value = "/saveOptionClass", method = RequestMethod.POST, produces = "application/json")
@@ -123,7 +123,7 @@ public class OptionClassRestController {
     /**
      * 保存数据字典值
      *
-     * @param optionValue
+     * @param optionValue 字典值数据
      * @return
      */
     @RequestMapping(value = "/saveOptionValue", method = RequestMethod.POST, produces = "application/json")
@@ -138,7 +138,7 @@ public class OptionClassRestController {
     /**
      * 保存排序
      *
-     * @param ids
+     * @param ids 主键ids
      * @return
      */
     @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = "application/json")
@@ -153,7 +153,7 @@ public class OptionClassRestController {
     /**
      * 设置默认选中
      *
-     * @param id
+     * @param id 主键id
      * @return
      */
     @RequestMapping(value = "/updateOptionValue", method = RequestMethod.POST, produces = "application/json")
