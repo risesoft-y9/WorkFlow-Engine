@@ -36,6 +36,22 @@ public class FormRestController {
     private Y9FormFieldService y9FormFieldService;
 
     /**
+     * 删除表单绑定的字段
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/deleteFormFieldBind", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public Y9Result<String> deleteFormFieldBind(@RequestParam(required = true) String id) {
+        Map<String, Object> map = y9FormFieldService.deleteFormFieldBind(id);
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
+        }
+        return Y9Result.failure((String)map.get("msg"));
+    }
+
+    /**
      * 获取表单信息
      *
      * @param id 表单id
@@ -52,6 +68,21 @@ public class FormRestController {
     }
 
     /**
+     * 获取表单绑定的业务表字段列表
+     *
+     * @param formId 应用名称
+     * @param page 页码
+     * @param rows 条数
+     * @return
+     */
+    @RequestMapping(value = "/getFormBindFieldList", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public Y9Page<Y9FormField> getFormBindFieldList(@RequestParam(required = true) String formId, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
+        Page<Y9FormField> pageList = y9FormFieldService.findByFormId(formId, page, rows);
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(), "获取表单绑定的业务表字段列表成功");
+    }
+
+    /**
      * 获取表单列表
      *
      * @param systemName 应用名称
@@ -62,12 +93,10 @@ public class FormRestController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getFormList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Page<Map<String, Object>> getFormList(@RequestParam(required = false) String systemName,
-        @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
+    public Y9Page<Map<String, Object>> getFormList(@RequestParam(required = false) String systemName, @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
         Map<String, Object> map = y9FormService.getFormList(systemName, page, rows);
         List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
-            Integer.parseInt(map.get("total").toString()), list, "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), list, "获取列表成功");
     }
 
     /**
@@ -103,16 +132,15 @@ public class FormRestController {
     }
 
     /**
-     * 保存表单JSON信息
+     * 保存表单字段绑定信息
      *
      * @param formId 表单id
-     * @param fieldJson 表单json
+     * @param fieldJson 字段绑定信息
      * @return
      */
     @RequestMapping(value = "/saveFormField", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> saveFormField(@RequestParam(required = true) String formId,
-        @RequestParam(required = false) String fieldJson) {
+    public Y9Result<String> saveFormField(@RequestParam(required = true) String formId, @RequestParam(required = false) String fieldJson) {
         Map<String, Object> map = y9FormService.saveFormField(formId, fieldJson);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -129,42 +157,8 @@ public class FormRestController {
      */
     @RequestMapping(value = "/saveFormJson", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> saveFormJson(@RequestParam(required = true) String id,
-        @RequestParam(required = false) String formJson) {
+    public Y9Result<String> saveFormJson(@RequestParam(required = true) String id, @RequestParam(required = false) String formJson) {
         Map<String, Object> map = y9FormService.saveFormJson(id, formJson);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
-        }
-        return Y9Result.failure((String)map.get("msg"));
-    }
-
-    /**
-     * 获取表单绑定的业务表字段列表
-     * 
-     * @param formId 应用名称
-     * @param page 页码
-     * @param rows 条数
-     * @return
-     */
-    @RequestMapping(value = "/getFormBindFieldList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    public Y9Page<Y9FormField> getFormBindFieldList(@RequestParam(required = true) String formId,
-        @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
-        Page<Y9FormField> pageList = y9FormFieldService.findByFormId(formId, page, rows);
-        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
-            "获取表单绑定的业务表字段列表成功");
-    }
-
-    /**
-     * 删除表单绑定的字段
-     * 
-     * @param id
-     * @return
-     */
-    @RequestMapping(value = "/deleteFormFieldBind", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
-    public Y9Result<String> deleteFormFieldBind(@RequestParam(required = true) String id) {
-        Map<String, Object> map = y9FormFieldService.deleteFormFieldBind(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
         }

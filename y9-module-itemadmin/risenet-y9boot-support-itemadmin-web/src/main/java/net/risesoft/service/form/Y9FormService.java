@@ -14,7 +14,7 @@ public interface Y9FormService {
 
     /**
      * 删除子表数据
-     * 
+     *
      * @param formId
      * @param tableId
      * @param guid
@@ -24,7 +24,7 @@ public interface Y9FormService {
 
     /**
      * 根据id删除表单
-     * 
+     *
      * @param id
      * @return
      */
@@ -32,7 +32,7 @@ public interface Y9FormService {
 
     /**
      * Description:
-     * 
+     *
      * @param y9TableId
      * @param guid
      * @return
@@ -41,7 +41,7 @@ public interface Y9FormService {
 
     /**
      * 获取所有表单信息
-     * 
+     *
      * @param id
      * @return
      */
@@ -49,7 +49,7 @@ public interface Y9FormService {
 
     /**
      * 根据id获取表单信息
-     * 
+     *
      * @param id
      * @return
      */
@@ -57,19 +57,18 @@ public interface Y9FormService {
 
     /**
      * Description: 获取子表数据
-     * 
+     *
      * @param formId
      * @param tableId
      * @param processSerialNumber
      * @return
      * @throws Exception
      */
-    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber)
-        throws Exception;
+    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber) throws Exception;
 
     /**
      * 获取表单是否有数据
-     * 
+     *
      * @param guid
      * @param formId
      * @return
@@ -78,7 +77,7 @@ public interface Y9FormService {
 
     /**
      * 获取表单数据
-     * 
+     *
      * @param formId
      * @param guid
      * @return
@@ -87,7 +86,7 @@ public interface Y9FormService {
 
     /**
      * 获取表单绑定字段信息
-     * 
+     *
      * @param id
      * @return
      */
@@ -95,7 +94,7 @@ public interface Y9FormService {
 
     /**
      * Description: 根据应用id分页获取表单列表
-     * 
+     *
      * @param systemName
      * @param page
      * @param rows
@@ -105,19 +104,18 @@ public interface Y9FormService {
 
     /**
      * 保存子表数据
-     * 
+     *
      * @param formId
      * @param tableId
      * @param processSerialNumber
      * @param jsonData
      * @return
      */
-    public Map<String, Object> saveChildTableData(String formId, String tableId, String processSerialNumber,
-        String jsonData);
+    public Map<String, Object> saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData);
 
     /**
      * 保存表单数据
-     * 
+     *
      * @param formdata
      * @return
      */
@@ -125,7 +123,7 @@ public interface Y9FormService {
 
     /**
      * 保存绑定表单字段信息
-     * 
+     *
      * @param formId
      * @param fieldJson
      * @return
@@ -134,7 +132,7 @@ public interface Y9FormService {
 
     /**
      * 保存表单json
-     * 
+     *
      * @param id
      * @param formJson
      * @return
@@ -143,19 +141,10 @@ public interface Y9FormService {
 
     /**
      * 保存表单信息
-     * 
+     *
      * @param form
      * @return
      */
     public Map<String, Object> saveOrUpdate(Y9Form form);
-
-    /**
-     * 更新表单文件
-     * 
-     * @param formId
-     * @param tenantId
-     * @return
-     */
-    public boolean updateFormFile(String formId, String tenantId);
 
 }
