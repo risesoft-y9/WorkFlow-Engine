@@ -2,6 +2,7 @@ package net.risesoft.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -150,7 +151,7 @@ public class ProcessModelVueController {
         map.put("key", model.getModelKey());
         map.put("name", model.getName());
         bpmnBytes = model.getModelByte();
-        map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes));
+        map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes, Charset.forName("UTF-8")));
         return Y9Result.success(map, "获取成功");
     }
 
