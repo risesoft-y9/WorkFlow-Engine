@@ -3,6 +3,7 @@ package net.risesoft.controller;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -265,7 +266,7 @@ public class ProcessModelVueController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes));
+        map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes, Charset.forName("UTF-8")));
         return Y9Result.success(map, "获取成功");
     }
 
