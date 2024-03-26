@@ -90,9 +90,7 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/getDay")
     @ResponseBody
-    public void getDay(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
-        HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public void getDay(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -136,12 +134,8 @@ public class MobileSignController {
     @SuppressWarnings("deprecation")
     @ResponseBody
     @RequestMapping("/getDayOrHour")
-    public void getDayOrHour(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestParam(required = false) String type, @RequestParam(required = false) String leaveStartTime,
-        @RequestParam(required = false) String leaveEndTime, @RequestParam(required = false) String startSel,
-        @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime,
-        @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType,
-        HttpServletRequest request, HttpServletResponse response) {
+    public void getDayOrHour(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String type, @RequestParam(required = false) String leaveStartTime, @RequestParam(required = false) String leaveEndTime, @RequestParam(required = false) String startSel,
+        @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime, @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("data", "");
         map.put("msg", "获取成功");
@@ -150,13 +144,11 @@ public class MobileSignController {
             Y9LoginUserHolder.setTenantId(tenantId);
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr = "";
-            CalendarConfigModel calendarConfig =
-                calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
+            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
             dayStr = calendarConfig.getEveryYearHoliday();
             if (type.equals("天")) {
                 boolean isdel = true;
-                if (StringUtils.isNotBlank(leaveType) && (leaveType.equals("离京报备") || leaveType.equals("产假")
-                    || leaveType.equals("婚假") || leaveType.equals("陪产假"))) {// 产假不排除节假日，直接算天数
+                if (StringUtils.isNotBlank(leaveType) && (leaveType.equals("离京报备") || leaveType.equals("产假") || leaveType.equals("婚假") || leaveType.equals("陪产假"))) {// 产假不排除节假日，直接算天数
                     isdel = false;
                 }
                 if (leaveStartTime.equals(leaveEndTime)) {
@@ -237,14 +229,44 @@ public class MobileSignController {
                         BigDecimal a = BigDecimal.valueOf(hours);
                         double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                         // 减去中间包含的1.5个小时
-                        if (Integer.valueOf(selStartTime.split(":")[0]) < 12
-                            && Integer.valueOf(selEndTime.split(":")[0]) > 12) {
+                        if (Integer.valueOf(selStartTime.split(":")[0]) < 12 && Integer.valueOf(selEndTime.split(":")[0]) > 12) {
                             waitTime = waitTime - 1.5;
                         }
                         map.put("data", String.valueOf(waitTime));
                         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
                         return;
                     }
+                }
+
+                if (leaveType.equals("哺乳假")) {
+                    // 计算天数
+                    String tmp = leaveStartTime;
+                    int num = 0;
+                    while (tmp.compareTo(leaveEndTime) <= 0) {
+                        LOGGER.debug("tmp={}", tmp);
+                        if (!dayStr.contains(tmp)) {
+                            num++;
+                        }
+                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                    }
+                    // 计算小时
+                    if (StringUtils.isBlank(selStartTime)) {
+                        selStartTime = "09:00";
+                    }
+                    if (StringUtils.isBlank(selEndTime)) {
+                        selEndTime = "17:30";
+                    }
+                    long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
+                    double hours = (double)time / (60 * 60 * 1000);
+                    BigDecimal a = BigDecimal.valueOf(hours);
+                    double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    // 减去中间包含的1.5个小时
+                    if (Integer.valueOf(selStartTime.split(":")[0]) < 12 && Integer.valueOf(selEndTime.split(":")[0]) > 12) {
+                        waitTime = waitTime - 1.5;
+                    }
+                    map.put("data", String.valueOf(num * waitTime));
+                    Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+                    return;
                 }
 
                 String tmp = leaveStartTime;
@@ -306,11 +328,8 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/getDays")
     @ResponseBody
-    public void getDays(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestParam(required = false) String startDate, @RequestParam(required = false) String startSel,
-        @RequestParam(required = false) String endDate, @RequestParam(required = false) String endSel,
-        @RequestParam(required = false) String dateType, HttpServletRequest request, HttpServletResponse response,
-        HttpSession session) {
+    public void getDays(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String startSel, @RequestParam(required = false) String endDate, @RequestParam(required = false) String endSel,
+        @RequestParam(required = false) String dateType, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("day", 0);
         map.put(UtilConsts.SUCCESS, true);

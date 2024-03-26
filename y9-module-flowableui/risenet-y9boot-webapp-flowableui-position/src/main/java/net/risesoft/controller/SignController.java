@@ -80,8 +80,7 @@ public class SignController {
      * @return
      */
     @RequestMapping(value = "/getDay")
-    public Y9Result<String> getDay(@RequestParam(required = false) String startDate,
-        @RequestParam(required = false) String endDate) {
+    public Y9Result<String> getDay(@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             String day = "";
@@ -115,18 +114,15 @@ public class SignController {
      * @return
      */
     @RequestMapping("/getDayOrHour")
-    public Y9Result<String> getDayOrHour(String type, String leaveStartTime, String leaveEndTime, String startSel,
-        String endSel, String selStartTime, String selEndTime, String leaveType) {
+    public Y9Result<String> getDayOrHour(String type, String leaveStartTime, String leaveEndTime, String startSel, String endSel, String selStartTime, String selEndTime, String leaveType) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr = "";
-            CalendarConfigModel calendarConfig =
-                calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
+            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
             dayStr = calendarConfig.getEveryYearHoliday();
             if (type.equals("天")) {
                 boolean isdel = true;
-                if (StringUtils.isNotBlank(leaveType) && (leaveType.equals("离京报备") || leaveType.equals("产假")
-                    || leaveType.equals("婚假") || leaveType.equals("陪产假"))) {// 产假不排除节假日，直接算天数
+                if (StringUtils.isNotBlank(leaveType) && (leaveType.equals("离京报备") || leaveType.equals("产假") || leaveType.equals("婚假") || leaveType.equals("陪产假"))) {// 产假不排除节假日，直接算天数
                     isdel = false;
                 }
                 if (leaveStartTime.equals(leaveEndTime)) {
@@ -195,12 +191,40 @@ public class SignController {
                         BigDecimal a = BigDecimal.valueOf(hours);
                         double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                         // 减去中间包含的1.5个小时
-                        if (Integer.valueOf(selStartTime.split(":")[0]) < 12
-                            && Integer.valueOf(selEndTime.split(":")[0]) > 12) {
+                        if (Integer.valueOf(selStartTime.split(":")[0]) < 12 && Integer.valueOf(selEndTime.split(":")[0]) > 12) {
                             waitTime = waitTime - 1.5;
                         }
                         return Y9Result.success(String.valueOf(waitTime), "获取成功");
                     }
+                }
+
+                if (leaveType.equals("哺乳假")) {
+                    // 计算天数
+                    String tmp = leaveStartTime;
+                    int num = 0;
+                    while (tmp.compareTo(leaveEndTime) <= 0) {
+                        LOGGER.debug("tmp={}", tmp);
+                        if (!dayStr.contains(tmp)) {
+                            num++;
+                        }
+                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                    }
+                    // 计算小时
+                    if (StringUtils.isBlank(selStartTime)) {
+                        selStartTime = "09:00";
+                    }
+                    if (StringUtils.isBlank(selEndTime)) {
+                        selEndTime = "17:30";
+                    }
+                    long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
+                    double hours = (double)time / (60 * 60 * 1000);
+                    BigDecimal a = BigDecimal.valueOf(hours);
+                    double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    // 减去中间包含的1.5个小时
+                    if (Integer.valueOf(selStartTime.split(":")[0]) < 12 && Integer.valueOf(selEndTime.split(":")[0]) > 12) {
+                        waitTime = waitTime - 1.5;
+                    }
+                    return Y9Result.success(String.valueOf(num * waitTime), "获取成功");
                 }
 
                 String tmp = leaveStartTime;
