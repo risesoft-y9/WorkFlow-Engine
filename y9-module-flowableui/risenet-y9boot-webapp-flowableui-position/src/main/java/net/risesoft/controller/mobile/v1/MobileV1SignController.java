@@ -89,9 +89,7 @@ public class MobileV1SignController {
      */
     @RequestMapping(value = "/getDay")
     @ResponseBody
-    public Y9Result<String> getDay(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
-        HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public Y9Result<String> getDay(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
@@ -130,23 +128,17 @@ public class MobileV1SignController {
     @SuppressWarnings("deprecation")
     @ResponseBody
     @RequestMapping("/getDayOrHour")
-    public Y9Result<String> getDayOrHour(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestParam(required = false) String type, @RequestParam(required = false) String leaveStartTime,
-        @RequestParam(required = false) String leaveEndTime, @RequestParam(required = false) String startSel,
-        @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime,
-        @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType,
-        HttpServletRequest request, HttpServletResponse response) {
+    public Y9Result<String> getDayOrHour(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String type, @RequestParam(required = false) String leaveStartTime, @RequestParam(required = false) String leaveEndTime, @RequestParam(required = false) String startSel,
+        @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime, @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType, HttpServletRequest request, HttpServletResponse response) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr = "";
-            CalendarConfigModel calendarConfig =
-                calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
+            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
             dayStr = calendarConfig.getEveryYearHoliday();
             if (type.equals("天")) {
                 boolean isdel = true;
-                if (StringUtils.isNotBlank(leaveType) && (leaveType.equals("离京报备") || leaveType.equals("产假")
-                    || leaveType.equals("婚假") || leaveType.equals("陪产假"))) {// 产假不排除节假日，直接算天数
+                if (StringUtils.isNotBlank(leaveType) && (leaveType.equals("离京报备") || leaveType.equals("产假") || leaveType.equals("婚假") || leaveType.equals("陪产假"))) {// 产假不排除节假日，直接算天数
                     isdel = false;
                 }
                 if (leaveStartTime.equals(leaveEndTime)) {
@@ -215,12 +207,40 @@ public class MobileV1SignController {
                         BigDecimal a = BigDecimal.valueOf(hours);
                         double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                         // 减去中间包含的1.5个小时
-                        if (Integer.valueOf(selStartTime.split(":")[0]) < 12
-                            && Integer.valueOf(selEndTime.split(":")[0]) > 12) {
+                        if (Integer.valueOf(selStartTime.split(":")[0]) < 12 && Integer.valueOf(selEndTime.split(":")[0]) > 12) {
                             waitTime = waitTime - 1.5;
                         }
                         return Y9Result.success(String.valueOf(waitTime), "获取成功");
                     }
+                }
+
+                if (leaveType.equals("哺乳假")) {
+                    // 计算天数
+                    String tmp = leaveStartTime;
+                    int num = 0;
+                    while (tmp.compareTo(leaveEndTime) <= 0) {
+                        LOGGER.debug("tmp={}", tmp);
+                        if (!dayStr.contains(tmp)) {
+                            num++;
+                        }
+                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                    }
+                    // 计算小时
+                    if (StringUtils.isBlank(selStartTime)) {
+                        selStartTime = "09:00";
+                    }
+                    if (StringUtils.isBlank(selEndTime)) {
+                        selEndTime = "17:30";
+                    }
+                    long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
+                    double hours = (double)time / (60 * 60 * 1000);
+                    BigDecimal a = BigDecimal.valueOf(hours);
+                    double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    // 减去中间包含的1.5个小时
+                    if (Integer.valueOf(selStartTime.split(":")[0]) < 12 && Integer.valueOf(selEndTime.split(":")[0]) > 12) {
+                        waitTime = waitTime - 1.5;
+                    }
+                    return Y9Result.success(String.valueOf(num * waitTime), "获取成功");
                 }
 
                 String tmp = leaveStartTime;
@@ -277,11 +297,8 @@ public class MobileV1SignController {
      */
     @RequestMapping(value = "/getDays")
     @ResponseBody
-    public Y9Result<String> getDays(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestParam(required = false) String startDate, @RequestParam(required = false) String startSel,
-        @RequestParam(required = false) String endDate, @RequestParam(required = false) String endSel,
-        @RequestParam(required = false) String dateType, HttpServletRequest request, HttpServletResponse response,
-        HttpSession session) {
+    public Y9Result<String> getDays(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String startSel, @RequestParam(required = false) String endDate, @RequestParam(required = false) String endSel,
+        @RequestParam(required = false) String dateType, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr = "";
