@@ -192,9 +192,9 @@ public class MobileV1SystemDockingController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/startAndForwarding")
     public Y9Result<Map<String, Object>> startAndForwarding(@RequestParam String tenantId, @RequestParam String itemId,
-                                                           @RequestParam String mappingId, @RequestParam String userId, @RequestParam String positionId,
-                                                           @RequestParam String positionChoice, @RequestParam String formJsonData,
-                                                           @RequestParam(required = false) MultipartFile[] files, HttpServletResponse response) throws Exception {
+                                                            @RequestParam String mappingId, @RequestParam String userId, @RequestParam String positionId,
+                                                            @RequestParam String routeToTaskId, @RequestParam String positionChoice, @RequestParam String formJsonData,
+                                                            @RequestParam(required = false) MultipartFile[] files, HttpServletResponse response) throws Exception {
         try {
             /**
              * 1设置当前用户基本信息
@@ -214,15 +214,15 @@ public class MobileV1SystemDockingController {
                 String text = mapForm.get(mapping.getMappingName()).toString();
                 formMap.put(mapping.getColumnName(), text);
             }
-            String title = formMap.get("title").toString();
-            String number = formMap.get("number").toString();
-            String level = formMap.get("level").toString();
+            String title = null != formMap.get("title") ? formMap.get("title").toString():"无标题";
+            String number = null != formMap.get("number") ? formMap.get("number").toString():"";
+            String level = null != formMap.get("level") ? formMap.get("level").toString():"";
             String guid = Y9IdGenerator.genId(IdType.SNOWFLAKE);
             if (formMap.get("guid") == null || StringUtils.isBlank(formMap.get("guid").toString())) {
                 formMap.put("guid", guid);
                 formMap.put("processInstanceId", guid);
             } else {
-                guid = formMap.get("guid").toString();
+                guid = formMap.get("GUID").toString();
             }
             Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, guid, "", title, number, level, false);
             if (!map1.isSuccess()) {
@@ -243,7 +243,7 @@ public class MobileV1SystemDockingController {
              */
             Map<String, Object> map = document4PositionApi.saveAndForwarding(tenantId, positionId, "", "",
                     "", itemId, guid, item.getWorkflowGuid(), positionChoice,
-                    "", "shenheyuan", new HashMap<>());
+                    "", routeToTaskId, new HashMap<>());
             if ((boolean) map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.success(map, "提交成功");
             }
