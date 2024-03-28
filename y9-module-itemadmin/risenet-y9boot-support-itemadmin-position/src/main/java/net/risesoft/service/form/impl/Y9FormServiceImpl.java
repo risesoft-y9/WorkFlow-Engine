@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -376,7 +377,7 @@ public class Y9FormServiceImpl implements Y9FormService {
      * @return
      */
     private Map<String, Object> listMapToKeyValue(List<Map<String, Object>> listMap) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new CaseInsensitiveMap<>(16);
         for (Map<String, Object> m : listMap) {
             map.put((String)m.get("name"), (String)m.get("value"));
         }
