@@ -217,8 +217,10 @@ public class MobileV1SystemDockingController {
             List<ItemMappingConfModel> list = item4PositionApi.getItemMappingConf(tenantId, itemId, mappingId);
             Map<String, Object> bindFormDataMap = new CaseInsensitiveMap();
             for (ItemMappingConfModel mapping : list) {
-                String text = mapFormData.get(mapping.getMappingName()).toString();
-                bindFormDataMap.put(mapping.getColumnName(), text);
+                if (null != mapFormData.get(mapping.getMappingName())) {
+                    String text = mapFormData.get(mapping.getMappingName()).toString();
+                    bindFormDataMap.put(mapping.getColumnName(), text);
+                }
             }
             String title = null != bindFormDataMap.get("title") ? bindFormDataMap.get("title").toString() : "无标题";
             String number = null != bindFormDataMap.get("number") ? bindFormDataMap.get("number").toString() : "";
