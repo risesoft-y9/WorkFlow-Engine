@@ -7,6 +7,7 @@ import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -14,6 +15,7 @@ import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
+import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.util.SysVariables;
@@ -23,6 +25,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
+import org.apache.commons.collections.map.CaseInsensitiveMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +76,9 @@ public class MobileV1SystemDockingController {
 
     @Autowired
     private Attachment4PositionApi attachment4PositionApi;
+
+    @Autowired
+    private TaskApi taskApi;
 
     /**
      * 对接系统提交接口
@@ -194,7 +200,7 @@ public class MobileV1SystemDockingController {
     public Y9Result<Map<String, Object>> startAndForwarding(@RequestParam String tenantId, @RequestParam String itemId,
                                                             @RequestParam String mappingId, @RequestParam String userId, @RequestParam String positionId,
                                                             @RequestParam String routeToTaskId, @RequestParam String positionChoice, @RequestParam String formJsonData,
-                                                            @RequestParam(required = false) MultipartFile[] files, HttpServletResponse response) throws Exception {
+                                                            @RequestParam(required = false) String taskId, @RequestParam(required = false) MultipartFile[] files, HttpServletResponse response) throws Exception {
         try {
             /**
              * 1设置当前用户基本信息
@@ -207,41 +213,50 @@ public class MobileV1SystemDockingController {
             /**
              * 2保存表单数据和流转参数数据
              */
-            Map<String, Object> mapForm = Y9JsonUtil.readValue(formJsonData, Map.class);
+            Map<String, Object> mapFormData = Y9JsonUtil.readValue(formJsonData, Map.class);
             List<ItemMappingConfModel> list = item4PositionApi.getItemMappingConf(tenantId, itemId, mappingId);
-            Map<String, Object> formMap = new HashMap<String, Object>(16);
+            Map<String, Object> bindFormDataMap = new CaseInsensitiveMap();
             for (ItemMappingConfModel mapping : list) {
-                String text = mapForm.get(mapping.getMappingName()).toString();
-                formMap.put(mapping.getColumnName(), text);
+                String text = mapFormData.get(mapping.getMappingName()).toString();
+                bindFormDataMap.put(mapping.getColumnName(), text);
             }
-            String title = null != formMap.get("title") ? formMap.get("title").toString():"无标题";
-            String number = null != formMap.get("number") ? formMap.get("number").toString():"";
-            String level = null != formMap.get("level") ? formMap.get("level").toString():"";
+            String title = null != bindFormDataMap.get("title") ? bindFormDataMap.get("title").toString() : "无标题";
+            String number = null != bindFormDataMap.get("number") ? bindFormDataMap.get("number").toString() : "";
+            String level = null != bindFormDataMap.get("level") ? bindFormDataMap.get("level").toString() : "";
             String guid = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-            if (formMap.get("guid") == null || StringUtils.isBlank(formMap.get("guid").toString())) {
-                formMap.put("guid", guid);
-                formMap.put("processInstanceId", guid);
+            if (bindFormDataMap.get("guid") == null || StringUtils.isBlank(bindFormDataMap.get("guid").toString())) {
+                bindFormDataMap.put("guid", guid);
+                bindFormDataMap.put("processInstanceId", guid);
             } else {
-                guid = formMap.get("GUID").toString();
+                guid = bindFormDataMap.get("guid").toString();
             }
-            Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, guid, "", title, number, level, false);
+            String processInstanceId = "";
+            if (StringUtils.isNotBlank(taskId)) {
+                TaskModel taskModel = taskApi.findById(tenantId, taskId);
+                if (null == taskModel) {
+                    return Y9Result.failure("待办已被处理");
+                } else {
+                    processInstanceId = taskModel.getProcessInstanceId();
+                }
+            }
+            Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, guid, processInstanceId, title, number, level, false);
             if (!map1.isSuccess()) {
                 return Y9Result.failure("发生异常");
             }
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
-            formJsonData = Y9JsonUtil.writeValueAsString(formMap);
+            String bindFormJsonData = Y9JsonUtil.writeValueAsString(bindFormDataMap);
             String tempIds = item4PositionApi.getFormIdByItemId(tenantId, itemId, item.getWorkflowGuid());
             if (StringUtils.isNotBlank(tempIds)) {
                 List<String> tempIdList = Y9Util.stringToList(tempIds, SysVariables.COMMA);
-                LOGGER.debug("****************表单数据：{}*******************", formJsonData);
+                LOGGER.debug("****************表单数据：{}*******************", bindFormJsonData);
                 for (String formId : tempIdList) {
-                    formDataApi.saveFormData(tenantId, formId, formJsonData);
+                    formDataApi.saveFormData(tenantId, formId, bindFormJsonData);
                 }
             }
             /**
              * 3启动流程并发送
              */
-            Map<String, Object> map = document4PositionApi.saveAndForwarding(tenantId, positionId, "", "",
+            Map<String, Object> map = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId,
                     "", itemId, guid, item.getWorkflowGuid(), positionChoice,
                     "", routeToTaskId, new HashMap<>());
             if ((boolean) map.get(UtilConsts.SUCCESS)) {
