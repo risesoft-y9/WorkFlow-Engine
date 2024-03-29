@@ -262,12 +262,12 @@ public class MobileV1SystemDockingController {
                     "", itemId, guid, item.getWorkflowGuid(), positionChoice,
                     "", routeToTaskId, new HashMap<>());
             if ((boolean) map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.success(map, "提交成功");
+                return Y9Result.success(map, "操作成功");
             }
             return Y9Result.failure(map.get("msg").toString());
         } catch (Exception e) {
             e.printStackTrace();
-            return Y9Result.failure("提交失败");
+            return Y9Result.failure("操作失败");
         }
     }
 }
