@@ -250,8 +250,8 @@ y9:
                     - http://localhost:8080
                     - http://localhost:8081
                     - http://127.0.0.1:7056
-                    - http://localhost:17057
-                    - http://127.0.0.1:17057
+                    - http://localhost:17056
+                    - http://127.0.0.1:17056
             xss:
                 ignoreParam:
                     - json_xml
