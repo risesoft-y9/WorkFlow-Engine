@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -67,19 +66,14 @@ public class SetDeptIdUtilService {
                     bureau = orgUnitManager.getBureau(tenantId, person.getId()).getData();
                     orgUnit = orgUnitManager.getOrgUnit(tenantId, person.getParentId()).getData();
                 }
-                ProcessParamModel processParamModel =
-                    processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
-                String oldDeptId =
-                    StringUtils.isBlank(processParamModel.getDeptIds()) ? "" : processParamModel.getDeptIds();
-                String oldDeptId1 =
-                    StringUtils.isBlank(processParamModel.getDeptIds()) ? "" : processParamModel.getDeptIds();
+                ProcessParamModel processParamModel = processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+                String oldDeptId = StringUtils.isBlank(processParamModel.getDeptIds()) ? "" : processParamModel.getDeptIds();
+                String oldDeptId1 = StringUtils.isBlank(processParamModel.getDeptIds()) ? "" : processParamModel.getDeptIds();
                 if (!oldDeptId.contains(orgUnit.getId())) {
                     oldDeptId = Y9Util.genCustomStr(oldDeptId, orgUnit.getId());
                 }
-                String oldBureauId =
-                    StringUtils.isBlank(processParamModel.getBureauIds()) ? "" : processParamModel.getBureauIds();
-                String oldBureauId1 =
-                    StringUtils.isBlank(processParamModel.getBureauIds()) ? "" : processParamModel.getBureauIds();
+                String oldBureauId = StringUtils.isBlank(processParamModel.getBureauIds()) ? "" : processParamModel.getBureauIds();
+                String oldBureauId1 = StringUtils.isBlank(processParamModel.getBureauIds()) ? "" : processParamModel.getBureauIds();
                 if (bureau != null) {
                     if (!oldBureauId.contains(bureau.getId())) {
                         oldBureauId = Y9Util.genCustomStr(oldBureauId, bureau.getId());
@@ -99,8 +93,7 @@ public class SetDeptIdUtilService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn("##########################保存科室id失败-taskId:{}##########################", taskEntity.getId(),
-                e);
+            LOGGER.warn("##########################保存科室id失败-taskId:{}##########################", taskEntity.getId(), e);
         }
     }
 

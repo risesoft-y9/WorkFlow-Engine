@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
-import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -52,9 +51,6 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
     private OrgUnitApi orgUnitManager;
 
     @Autowired
-    private DepartmentApi departmentManager;
-
-    @Autowired
     private OrganizationApi organizationManager;
 
     /**
@@ -70,8 +66,7 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      */
     @Override
     @GetMapping(value = "/findCsUser", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findCsUser(String tenantId, String userId, String positionId, String id,
-        Integer principalType, String processInstanceId) {
+    public List<Map<String, Object>> findCsUser(String tenantId, String userId, String positionId, String id, Integer principalType, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -93,8 +88,7 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      */
     @Override
     @GetMapping(value = "/findCsUserBureau", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findCsUserBureau(String tenantId, String userId, String positionId,
-        Integer principalType) {
+    public List<Map<String, Object>> findCsUserBureau(String tenantId, String userId, String positionId, Integer principalType) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -128,8 +122,7 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      */
     @Override
     @GetMapping(value = "/findCsUserSearch", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findCsUserSearch(String tenantId, String userId, String positionId, String name,
-        Integer principalType, String processInstanceId) {
+    public List<Map<String, Object>> findCsUserSearch(String tenantId, String userId, String positionId, String name, Integer principalType, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -156,16 +149,14 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      */
     @Override
     @GetMapping(value = "/findPermUser", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findPermUser(String tenantId, String userId, String positionId, String itemId,
-        String processDefinitionId, String taskDefKey, Integer principalType, String id, String processInstanceId) {
+    public List<Map<String, Object>> findPermUser(String tenantId, String userId, String positionId, String itemId, String processDefinitionId, String taskDefKey, Integer principalType, String id, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-        listMap =
-            roleService.findPermUser(itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
+        listMap = roleService.findPermUser(itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
         return listMap;
     }
 
@@ -185,16 +176,14 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      */
     @Override
     @GetMapping(value = "/findPermUserByName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findPermUserByName(String tenantId, String userId, String positionId, String name,
-        Integer principalType, String itemId, String processDefinitionId, String taskDefKey, String processInstanceId) {
+    public List<Map<String, Object>> findPermUserByName(String tenantId, String userId, String positionId, String name, Integer principalType, String itemId, String processDefinitionId, String taskDefKey, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-        listMap = roleService.findPermUserByName(name, itemId, processDefinitionId, taskDefKey, principalType,
-            processInstanceId);
+        listMap = roleService.findPermUserByName(name, itemId, processDefinitionId, taskDefKey, principalType, processInstanceId);
         return listMap;
     }
 
@@ -231,8 +220,7 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      */
     @Override
     @GetMapping(value = "/getOrgTree", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getOrgTree(String tenantId, String positionId, String id, OrgTreeTypeEnum treeType,
-        String name) {
+    public List<Map<String, Object>> getOrgTree(String tenantId, String positionId, String id, OrgTreeTypeEnum treeType, String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);

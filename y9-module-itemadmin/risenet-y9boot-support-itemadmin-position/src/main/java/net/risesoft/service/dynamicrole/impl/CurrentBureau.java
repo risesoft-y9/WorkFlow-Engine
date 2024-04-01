@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ProcessParam;
@@ -20,7 +19,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 当前人员所在委办局和当前历程参与过的所有的委办局
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -30,9 +29,6 @@ public class CurrentBureau extends AbstractDynamicRoleMember {
 
     @Autowired
     private PositionApi positionManager;
-
-    @Autowired
-    private DepartmentApi departmentManager;
 
     @Autowired
     private OrgUnitApi orgUnitManager;

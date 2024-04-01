@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.TaoHongTemplateType;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
@@ -30,9 +29,6 @@ public class TaoHongTemplateTypeRestController {
 
     @Autowired
     private TaoHongTemplateTypeService taoHongTemplateTypeService;
-
-    @Autowired
-    private PersonApi personManager;
 
     @Autowired
     private OrgUnitApi orgUnitApi;
