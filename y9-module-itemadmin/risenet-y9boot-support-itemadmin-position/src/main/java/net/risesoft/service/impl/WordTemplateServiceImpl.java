@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.risesoft.api.platform.org.OrgUnitApi;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.BookMarkBind;
 import net.risesoft.entity.WordTemplate;
@@ -55,9 +54,6 @@ public class WordTemplateServiceImpl implements WordTemplateService {
 
     @Autowired
     private BookMarkBindService bookMarkBindService;
-
-    @Autowired
-    private PersonApi personManager;
 
     @Autowired
     private OrgUnitApi orgUnitApi;
@@ -168,8 +164,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     @Transactional(readOnly = false)
     public void saveOrUpdate(WordTemplate wordTemplate) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(),
-            personName = person.getName();
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(), personName = person.getName();
         String id = wordTemplate.getId();
         if (StringUtils.isNotEmpty(id)) {
             WordTemplate oldWord = this.findById(id);

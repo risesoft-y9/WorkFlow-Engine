@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.BookMarkBind;
 import net.risesoft.entity.WordTemplate;
@@ -45,9 +44,6 @@ public class WordTemplateRestController {
     private WordTemplateService wordTemplateService;
 
     @Autowired
-    private PersonApi personManager;
-
-    @Autowired
     private OrgUnitApi orgUnitApi;
 
     @Autowired
@@ -69,8 +65,7 @@ public class WordTemplateRestController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/bookMarKList")
-    public Y9Result<List<Map<String, Object>>> bookMarkList(String wordTemplateId,
-        @RequestParam(required = true) String wordTemplateType) {
+    public Y9Result<List<Map<String, Object>>> bookMarkList(String wordTemplateId, @RequestParam(required = true) String wordTemplateType) {
         Map<String, Object> map = wordTemplateService.getBookMarkList(wordTemplateId, wordTemplateType);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.success((List<Map<String, Object>>)map.get("rows"), (String)map.get("msg"));
@@ -102,8 +97,7 @@ public class WordTemplateRestController {
      * @param request
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam(required = true) String id, HttpServletResponse response,
-        HttpServletRequest request) {
+    public void download(@RequestParam(required = true) String id, HttpServletResponse response, HttpServletRequest request) {
         wordTemplateService.download(id, response, request);
     }
 
@@ -116,13 +110,11 @@ public class WordTemplateRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getBookMarkBind", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBookMarkBind(@RequestParam(required = true) String bookMarkName,
-        @RequestParam(required = true) String wordTemplateId) {
+    public Y9Result<Map<String, Object>> getBookMarkBind(@RequestParam(required = true) String bookMarkName, @RequestParam(required = true) String wordTemplateId) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         List<Y9Table> tableList = y9TableService.getAllTable();
         List<String> columnList = new ArrayList<String>();
-        BookMarkBind bookMarkBind =
-            bookMarkBindService.findByWordTemplateIdAndBookMarkName(wordTemplateId, bookMarkName);
+        BookMarkBind bookMarkBind = bookMarkBindService.findByWordTemplateIdAndBookMarkName(wordTemplateId, bookMarkName);
         if (null != bookMarkBind) {
             String tableId = "";
             for (Y9Table table : tableList) {
@@ -194,8 +186,7 @@ public class WordTemplateRestController {
         if (person.isGlobalManager()) {
             list = wordTemplateService.findAll();
         } else {
-            list = wordTemplateService
-                .findByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
+            list = wordTemplateService.findByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
         }
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         for (WordTemplate wordTemplate : list) {
