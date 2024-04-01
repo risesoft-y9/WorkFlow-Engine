@@ -67,8 +67,7 @@ public class FlowableModelConvertUtil {
         return eModel;
     }
 
-    public static List<HistoricActivityInstanceModel>
-        historicActivityInstanceList2Model(List<HistoricActivityInstance> haiList) {
+    public static List<HistoricActivityInstanceModel> historicActivityInstanceList2Model(List<HistoricActivityInstance> haiList) {
         List<HistoricActivityInstanceModel> htiModelList = new ArrayList<HistoricActivityInstanceModel>();
         for (HistoricActivityInstance hai : haiList) {
             htiModelList.add(historicActivityInstanceModel2Model(hai));
@@ -122,8 +121,7 @@ public class FlowableModelConvertUtil {
         return hpiModel;
     }
 
-    public static List<HistoricProcessInstanceModel>
-        historicProcessInstanceList2ModelList(List<HistoricProcessInstance> hpiList) {
+    public static List<HistoricProcessInstanceModel> historicProcessInstanceList2ModelList(List<HistoricProcessInstance> hpiList) {
         List<HistoricProcessInstanceModel> pdiModelList = new ArrayList<HistoricProcessInstanceModel>();
         for (HistoricProcessInstance hpi : hpiList) {
             pdiModelList.add(historicProcessInstance2Model(hpi));
@@ -152,8 +150,7 @@ public class FlowableModelConvertUtil {
         return histim;
     }
 
-    public static List<HistoricTaskInstanceModel>
-        historicTaskInstanceList2ModelList(List<HistoricTaskInstance> htiList) {
+    public static List<HistoricTaskInstanceModel> historicTaskInstanceList2ModelList(List<HistoricTaskInstance> htiList) {
         List<HistoricTaskInstanceModel> htiModelList = new ArrayList<HistoricTaskInstanceModel>();
         for (HistoricTaskInstance hti : htiList) {
             htiModelList.add(historicTaskInstance2Model(hti));
@@ -175,8 +172,7 @@ public class FlowableModelConvertUtil {
         return hviModel;
     }
 
-    public static List<HistoricVariableInstanceModel>
-        historicVariableInstanceList2ModelList(List<HistoricVariableInstance> hviList) {
+    public static List<HistoricVariableInstanceModel> historicVariableInstanceList2ModelList(List<HistoricVariableInstance> hviList) {
         List<HistoricVariableInstanceModel> htiModelList = new ArrayList<HistoricVariableInstanceModel>();
         for (HistoricVariableInstance hvi : hviList) {
             htiModelList.add(historicVariableInstance2Model(hvi));
@@ -256,8 +252,9 @@ public class FlowableModelConvertUtil {
     }
 
     public static TaskModel task2TaskModel(Task task) {
-        TaskModel tm = new TaskModel();
+        TaskModel tm = null;
         if (task != null) {
+            tm = new TaskModel();
             tm.setId(task.getId());
             tm.setName(task.getName());
             tm.setDescription(task.getDescription());
