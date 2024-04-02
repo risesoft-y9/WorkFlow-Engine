@@ -186,8 +186,6 @@ y9:
             messagePushSwitch: false
             pushSwitch: false
             smsSwitch: false
-            dzxhSmsSwitch: false
-            dzxhTenantId: 9df5638286044bea8c771e5a4e2325c9
             systemCnName: 流程管理器
             systemName: processAdmin
             todoSwitch: false
