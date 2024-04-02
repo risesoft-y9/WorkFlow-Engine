@@ -191,6 +191,7 @@ y9:
             todoSwitch: false
             weiXinSwitch: false
             weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage
+            imageCountUrl: http://localhost:8081/imageCount
     service:
         itemAdmin:
             directUrl: http://localhost:7056
