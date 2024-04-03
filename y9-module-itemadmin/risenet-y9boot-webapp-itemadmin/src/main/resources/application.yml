@@ -127,7 +127,7 @@ spring:
                 validationQuery: SELECT 1 FROM DUAL
     elasticsearch:
         rest:
-            uris: dev.youshengyun.com:9200
+            uris: localhost:9200
             username: elastic
             password: 'risesoft'
     jmx:
