@@ -45,6 +45,7 @@ public class AlgorithmListener implements ExecutionListener {
             params.add(new NameValuePair("positionId", positionId));
             params.add(new NameValuePair("processSerialNumber", processSerialNumber));
             Y9Result<Boolean> y9Result = RemoteCallUtil.postCallRemoteService(requestUrl, params, Y9Result.class);
+            LOGGER.error("调用计算接口返回信息：" + y9Result.getMsg());
             if (!y9Result.isSuccess()) {
                 throw new RuntimeException("调用计算接口失败：" + y9Result.getMsg());
             }
