@@ -7,6 +7,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
@@ -16,8 +17,7 @@ import net.risesoft.model.itemadmin.Y9FormFieldModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "FormDataApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
-    url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/formData")
+@FeignClient(contextId = "FormDataApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/formData")
 public interface FormDataApiClient extends FormDataApi {
 
     /**
@@ -31,9 +31,7 @@ public interface FormDataApiClient extends FormDataApi {
      */
     @Override
     @PostMapping("/delChildTableRow")
-    public Map<String, Object> delChildTableRow(@RequestParam("tenantId") String tenantId,
-        @RequestParam("formId") String formId, @RequestParam("tableId") String tableId,
-        @RequestParam("guid") String guid);
+    public Map<String, Object> delChildTableRow(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestParam("tableId") String tableId, @RequestParam("guid") String guid);
 
     /**
      * 获取表单所有字段权限
@@ -47,9 +45,7 @@ public interface FormDataApiClient extends FormDataApi {
      */
     @Override
     @GetMapping("/getAllFieldPerm")
-    List<Map<String, Object>> getAllFieldPerm(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("formId") String formId,
-        @RequestParam("taskDefKey") String taskDefKey, @RequestParam("processDefinitionId") String processDefinitionId);
+    List<Map<String, Object>> getAllFieldPerm(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("formId") String formId, @RequestParam("taskDefKey") String taskDefKey, @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 获取子表数据
@@ -63,9 +59,7 @@ public interface FormDataApiClient extends FormDataApi {
      */
     @Override
     @GetMapping("/getChildTableData")
-    public List<Map<String, Object>> getChildTableData(@RequestParam("tenantId") String tenantId,
-        @RequestParam("formId") String formId, @RequestParam("tableId") String tableId,
-        @RequestParam("processSerialNumber") String processSerialNumber) throws Exception;
+    public List<Map<String, Object>> getChildTableData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestParam("tableId") String tableId, @RequestParam("processSerialNumber") String processSerialNumber) throws Exception;
 
     /**
      * 根据事项id和流程序列号获取数据
@@ -77,8 +71,7 @@ public interface FormDataApiClient extends FormDataApi {
      */
     @Override
     @GetMapping("/getData")
-    public Map<String, Object> getData(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    public Map<String, Object> getData(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 获取字段权限
@@ -93,17 +86,15 @@ public interface FormDataApiClient extends FormDataApi {
      */
     @Override
     @GetMapping("/getFieldPerm")
-    Map<String, Object> getFieldPerm(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("formId") String formId, @RequestParam("fieldName") String fieldName,
-        @RequestParam("taskDefKey") String taskDefKey, @RequestParam("processDefinitionId") String processDefinitionId);
+    Map<String, Object> getFieldPerm(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("formId") String formId, @RequestParam("fieldName") String fieldName, @RequestParam("taskDefKey") String taskDefKey,
+        @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 获取表单字段信息
      */
     @Override
     @GetMapping("/getFormField")
-    List<Y9FormFieldModel> getFormField(@RequestParam("tenantId") String tenantId,
-        @RequestParam("itemId") String itemId);
+    List<Y9FormFieldModel> getFormField(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId);
 
     /**
      * 根据表单id获取绑定字段信息
@@ -114,8 +105,7 @@ public interface FormDataApiClient extends FormDataApi {
      */
     @Override
     @GetMapping("/getFormFieldDefine")
-    List<Map<String, String>> getFormFieldDefine(@RequestParam("tenantId") String tenantId,
-        @RequestParam("formId") String formId);
+    List<Map<String, String>> getFormFieldDefine(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId);
 
     /**
      * 获取表单json数据
@@ -138,8 +128,7 @@ public interface FormDataApiClient extends FormDataApi {
      */
     @Override
     @GetMapping("/getFromData")
-    public Map<String, Object> getFromData(@RequestParam("tenantId") String tenantId,
-        @RequestParam("formId") String formId, @RequestParam("processSerialNumber") String processSerialNumber);
+    public Map<String, Object> getFromData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存子表数据 Description:
@@ -153,9 +142,7 @@ public interface FormDataApiClient extends FormDataApi {
      */
     @Override
     @PostMapping("/saveChildTableData")
-    public void saveChildTableData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId,
-        @RequestParam("tableId") String tableId, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("jsonData") String jsonData) throws Exception;
+    public void saveChildTableData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestParam("tableId") String tableId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestPart("jsonData") String jsonData) throws Exception;
 
     /**
      * 保存表单数据
@@ -167,6 +154,5 @@ public interface FormDataApiClient extends FormDataApi {
      */
     @Override
     @PostMapping(value = "/saveFormData")
-    void saveFormData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId,
-        @RequestParam("formJsonData") String formJsonData) throws Exception;
+    void saveFormData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestPart("formJsonData") String formJsonData) throws Exception;
 }
