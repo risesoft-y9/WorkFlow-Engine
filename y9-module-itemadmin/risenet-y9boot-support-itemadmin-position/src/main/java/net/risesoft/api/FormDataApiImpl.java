@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.FormDataApi;
@@ -190,7 +190,7 @@ public class FormDataApiImpl implements FormDataApi {
      */
     @Override
     @PostMapping(value = "/saveChildTableData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void saveChildTableData(String tenantId, String formId, String tableId, String processSerialNumber, @RequestPart String jsonData) throws Exception {
+    public void saveChildTableData(String tenantId, String formId, String tableId, String processSerialNumber, @RequestBody String jsonData) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         formDataService.saveChildTableData(formId, tableId, processSerialNumber, jsonData);
 
@@ -206,7 +206,7 @@ public class FormDataApiImpl implements FormDataApi {
      */
     @Override
     @PostMapping(value = "/saveFormData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void saveFormData(String tenantId, String formId, @RequestPart String formJsonData) throws Exception {
+    public void saveFormData(String tenantId, String formId, @RequestBody String formJsonData) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         formDataService.saveFormData(formJsonData, formId);
     }
