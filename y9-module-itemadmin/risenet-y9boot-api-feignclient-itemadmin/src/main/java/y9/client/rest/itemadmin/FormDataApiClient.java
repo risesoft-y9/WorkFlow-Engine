@@ -6,8 +6,8 @@ import java.util.Map;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
@@ -142,7 +142,7 @@ public interface FormDataApiClient extends FormDataApi {
      */
     @Override
     @PostMapping("/saveChildTableData")
-    public void saveChildTableData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestParam("tableId") String tableId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestPart("jsonData") String jsonData) throws Exception;
+    public void saveChildTableData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestParam("tableId") String tableId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestBody String jsonData) throws Exception;
 
     /**
      * 保存表单数据
@@ -154,5 +154,5 @@ public interface FormDataApiClient extends FormDataApi {
      */
     @Override
     @PostMapping(value = "/saveFormData")
-    void saveFormData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestPart("formJsonData") String formJsonData) throws Exception;
+    void saveFormData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestBody String formJsonData) throws Exception;
 }
