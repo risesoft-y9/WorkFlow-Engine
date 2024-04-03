@@ -88,7 +88,7 @@ public class MobileV1SystemDockingController {
      * @param mappingId    对接系统标识
      * @param userId       人员id
      * @param positionId   岗位id
-     * @param userChoice   接收岗位id，多人,隔开
+     * @param positionChoice   接收岗位id，多人,隔开
      * @param formJsonData 表单数据
      * @param files        附件列表
      * @param response
@@ -96,10 +96,10 @@ public class MobileV1SystemDockingController {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/forwarding")
-    public Y9Result<Map<String, Object>> forwarding(@RequestParam String tenantId, @RequestParam String itemId,
+    @RequestMapping(value = "/startProcess")
+    public Y9Result<Map<String, Object>> startProcess(@RequestParam String tenantId, @RequestParam String itemId,
                                                     @RequestParam String mappingId, @RequestParam String userId, @RequestParam String positionId,
-                                                    @RequestParam String userChoice, @RequestParam String formJsonData,
+                                                    @RequestParam String positionChoice, @RequestParam String formJsonData,
                                                     @RequestParam(required = false) MultipartFile[] files, HttpServletResponse response) throws Exception {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -107,35 +107,37 @@ public class MobileV1SystemDockingController {
             Y9LoginUserHolder.setPosition(position);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            Map<String, Object> mapForm = Y9JsonUtil.readValue(formJsonData, Map.class);
+            Map<String, Object> mapFormData = Y9JsonUtil.readValue(formJsonData, Map.class);
             List<ItemMappingConfModel> list = item4PositionApi.getItemMappingConf(tenantId, itemId, mappingId);
-            Map<String, Object> formMap = new HashMap<String, Object>(16);
+            Map<String, Object> bindFormDataMap = new CaseInsensitiveMap();
             for (ItemMappingConfModel mapping : list) {
-                String text = mapForm.get(mapping.getMappingName()).toString();
-                formMap.put(mapping.getColumnName(), text);
+                if (null != mapFormData.get(mapping.getMappingName())) {
+                    String text = mapFormData.get(mapping.getMappingName()).toString();
+                    bindFormDataMap.put(mapping.getColumnName(), text);
+                }
             }
-            String title = formMap.get("title").toString();
-            String number = formMap.get("number").toString();
-            String level = formMap.get("level").toString();
+            String title = null != bindFormDataMap.get("title") ? bindFormDataMap.get("title").toString() : "无标题";
+            String number = null != bindFormDataMap.get("number") ? bindFormDataMap.get("number").toString() : "";
+            String level = null != bindFormDataMap.get("level") ? bindFormDataMap.get("level").toString() : "";
             String guid = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-            if (formMap.get("guid") == null || StringUtils.isBlank(formMap.get("guid").toString())) {
-                formMap.put("guid", guid);
-                formMap.put("processInstanceId", guid);
+            if (bindFormDataMap.get("guid") == null || StringUtils.isBlank(bindFormDataMap.get("guid").toString())) {
+                bindFormDataMap.put("guid", guid);
+                bindFormDataMap.put("processInstanceId", guid);
             } else {
-                guid = formMap.get("guid").toString();
+                guid = bindFormDataMap.get("guid").toString();
             }
             Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, guid, "", title, number, level, false);
             if (!map1.isSuccess()) {
                 return Y9Result.failure("发生异常");
             }
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
-            formJsonData = Y9JsonUtil.writeValueAsString(formMap);
+            String bindFormJsonData  = Y9JsonUtil.writeValueAsString(bindFormDataMap);
             String tempIds = item4PositionApi.getFormIdByItemId(tenantId, itemId, item.getWorkflowGuid());
             if (StringUtils.isNotBlank(tempIds)) {
                 List<String> tempIdList = Y9Util.stringToList(tempIds, SysVariables.COMMA);
-                LOGGER.debug("****************表单数据：{}*******************", formJsonData);
+                LOGGER.debug("****************表单数据：{}*******************", bindFormJsonData);
                 for (String formId : tempIdList) {
-                    formDataApi.saveFormData(tenantId, formId, formJsonData);
+                    formDataApi.saveFormData(tenantId, formId, bindFormJsonData);
                 }
             }
             if (null != files) {
@@ -169,7 +171,7 @@ public class MobileV1SystemDockingController {
                 }
             }
             Map<String, Object> map = document4PositionApi.startProcess(tenantId, positionId, itemId, guid,
-                    item.getWorkflowGuid(), userChoice);
+                    item.getWorkflowGuid(), positionChoice);
             if ((boolean) map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.success(map, "提交成功");
             }
