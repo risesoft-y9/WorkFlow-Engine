@@ -137,7 +137,7 @@ public class ProcessInstanceVueController {
                     String[] userIdAndDeptId = processInstance.getStartUserId().split(":");
                     if (userIdAndDeptId.length == 1) {
                         position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
-                        orgUnit = orgUnitManager.getParent(tenantId, position.getId()).getData();
+                        orgUnit = orgUnitApi.getParent(tenantId, position.getId()).getData();
                         if (null != position) {
                             map.put("startUserName", position.getName() + "(" + orgUnit.getName() + ")");
                         }
