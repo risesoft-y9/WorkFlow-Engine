@@ -17,15 +17,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
+import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.util.SysVariables;
+import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -37,8 +40,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/vue/processInstance")
 public class ProcessInstanceVueController {
 
-    private static String TYPE_DELETE = "1";
-    private static String TYPE_REJECT = "2";
+    // private static String TYPE_DELETE = "1";
+    // private static String TYPE_REJECT = "2";
 
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -49,46 +52,77 @@ public class ProcessInstanceVueController {
     protected HistoryService historyService;
 
     @Autowired
-    private OrgUnitApi orgUnitManager;
+    private OrgUnitApi orgUnitApi;
 
     @Autowired
     private PositionApi positionApi;
 
+    @Autowired
+    private TransactionWordApi transactionWordApi;
+
+    @Autowired
+    private Attachment4PositionApi attachment4PositionApi;
+
+    @Autowired
+    private ProcessParamApi processParamApi;
+
+    @Autowired
+    private CustomHistoricProcessService customHistoricProcessService;
+
     /**
-     * 删除流程实例 现在有两种情况要删除流程实例： 1.用户直接删除：此时只需有processInstanceId即可，不需要reason 2.用户拒收：此时不止需有processInstanceId，还需填写拒收原因
+     * 彻底删除流程实例
      *
-     * @param processInstanceId 要删除的流程实例Id
-     * @param type 删除类型，1：用户直接删除，2：用户拒收
-     * @param reason 删除原因，这里除了保存删除原因外，当用于删除的时候删除人也暂时保存在这里
+     * @param processInstanceId
+     * @param type
+     * @param reason
      * @return
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> delete(@RequestParam(required = true) String processInstanceId,
-        @RequestParam(required = true) String type, @RequestParam(required = false) String reason) {
-        UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        // 删除人不一定是当前正在处理流程的人员
-        String assignee = userInfo.getPersonId();
-        // 用户直接删除时，设置用户删除原因
-        if (TYPE_DELETE.equals(type)) {
-            if (StringUtils.isBlank(reason)) {
-                reason = "delete:删除流程实例";
-            } else {
-                // 为防止reason中出现英文顿号，这里将它们替换成中文顿号
-                reason.replace(SysVariables.COLON, "：");
-                // 为防止reason中出现英文逗号，这里将它们替换成中文逗号
-                reason.replace(SysVariables.COMMA, "，");
-                reason = "delete:" + reason;
+    public Y9Result<String> delete(@RequestParam(required = true) String processInstanceId, @RequestParam(required = false) String type, @RequestParam(required = false) String reason) {
+        // UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
+        // // 删除人不一定是当前正在处理流程的人员
+        // String assignee = userInfo.getPersonId();
+        // // 用户直接删除时，设置用户删除原因
+        // if (TYPE_DELETE.equals(type)) {
+        // if (StringUtils.isBlank(reason)) {
+        // reason = "delete:删除流程实例";
+        // } else {
+        // // 为防止reason中出现英文顿号，这里将它们替换成中文顿号
+        // reason.replace(SysVariables.COLON, "：");
+        // // 为防止reason中出现英文逗号，这里将它们替换成中文逗号
+        // reason.replace(SysVariables.COMMA, "，");
+        // reason = "delete:" + reason;
+        // }
+        // // 当删除流程实例的时候，保存删除人的guid
+        // reason = reason + SysVariables.COMMA + "operator" + SysVariables.COLON + assignee;
+        // }
+        // // 用户拒收时，设置用户拒收原因
+        // if (TYPE_REJECT.equals(type)) {
+        // reason = "reject:" + reason;
+        // }
+        // runtimeService.deleteProcessInstance(processInstanceId, reason);
+        // return Y9Result.successMsg("删除成功");
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        ProcessParamModel processParamModel = null;
+        List<String> list = new ArrayList<String>();
+        try {
+            processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+            if (processParamModel != null) {
+                list.add(processParamModel.getProcessSerialNumber());
             }
-            // 当删除流程实例的时候，保存删除人的guid
-            reason = reason + SysVariables.COMMA + "operator" + SysVariables.COLON + assignee;
+            boolean b = customHistoricProcessService.removeProcess4Position(processInstanceId);
+            if (b) {
+                // 批量删除附件表
+                attachment4PositionApi.delBatchByProcessSerialNumbers(tenantId, list);
+                // 批量删除正文表
+                transactionWordApi.delBatchByProcessSerialNumbers(tenantId, list);
+                return Y9Result.successMsg("删除成功");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        // 用户拒收时，设置用户拒收原因
-        if (TYPE_REJECT.equals(type)) {
-            reason = "reject:" + reason;
-        }
-        runtimeService.deleteProcessInstance(processInstanceId, reason);
-        return Y9Result.successMsg("删除成功");
+        return Y9Result.failure("删除失败");
     }
 
     /**
@@ -101,20 +135,17 @@ public class ProcessInstanceVueController {
      */
     @RequestMapping(value = "/runningList", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Y9Page<Map<String, Object>> runningList(@RequestParam(required = false) String processInstanceId,
-        @RequestParam int page, @RequestParam int rows) {
+    public Y9Page<Map<String, Object>> runningList(@RequestParam(required = false) String processInstanceId, @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<>();
         long totalCount = 0;
         List<ProcessInstance> processInstanceList = null;
         if (StringUtils.isBlank(processInstanceId)) {
             totalCount = runtimeService.createProcessInstanceQuery().count();
-            processInstanceList =
-                runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
+            processInstanceList = runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
         } else {
             totalCount = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).count();
-            processInstanceList = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId)
-                .orderByStartTime().desc().listPage((page - 1) * rows, rows);
+            processInstanceList = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).orderByStartTime().desc().listPage((page - 1) * rows, rows);
         }
         Position position = null;
         OrgUnit orgUnit = null;
@@ -125,27 +156,23 @@ public class ProcessInstanceVueController {
             map.put("processInstanceId", processInstanceId);
             map.put("processDefinitionId", processInstance.getProcessDefinitionId());
             map.put("processDefinitionName", processInstance.getProcessDefinitionName());
-            map.put("startTime",
-                processInstance.getStartTime() == null ? "" : sdf.format(processInstance.getStartTime()));
+            map.put("startTime", processInstance.getStartTime() == null ? "" : sdf.format(processInstance.getStartTime()));
             try {
-                map.put("activityName",
-                    runtimeService.createActivityInstanceQuery().processInstanceId(processInstanceId)
-                        .orderByActivityInstanceStartTime().desc().list().get(0).getActivityName());
+                map.put("activityName", runtimeService.createActivityInstanceQuery().processInstanceId(processInstanceId).orderByActivityInstanceStartTime().desc().list().get(0).getActivityName());
                 map.put("suspended", processInstance.isSuspended());
                 map.put("startUserName", "无");
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
                     String[] userIdAndDeptId = processInstance.getStartUserId().split(":");
                     if (userIdAndDeptId.length == 1) {
                         position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
-                        orgUnit = orgUnitManager.getParent(tenantId, position.getId()).getData();
+                        orgUnit = orgUnitApi.getParent(tenantId, position.getId()).getData();
                         if (null != position) {
                             map.put("startUserName", position.getName() + "(" + orgUnit.getName() + ")");
                         }
                     } else {
                         position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
                         if (null != position) {
-                            orgUnit = orgUnitManager
-                                .getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1]).getData();
+                            orgUnit = orgUnitApi.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1]).getData();
                             if (null == orgUnit) {
                                 map.put("startUserName", position.getName());
                             } else {
