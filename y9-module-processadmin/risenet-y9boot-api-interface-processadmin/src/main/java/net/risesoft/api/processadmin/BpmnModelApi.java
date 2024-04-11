@@ -13,11 +13,11 @@ public interface BpmnModelApi {
      * 生成流程图
      * 
      * @param tenantId 租户id
-     * @param processId 流程实例id
+     * @param processInstanceId 流程实例id
      * @return byte[]
      * @throws Exception Exception
      */
-    byte[] genProcessDiagram(String tenantId, String processId) throws Exception;
+    byte[] genProcessDiagram(String tenantId, String processInstanceId) throws Exception;
 
     /**
      * 获取流程图模型

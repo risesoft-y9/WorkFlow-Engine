@@ -102,9 +102,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
 
     @Override
     @PostMapping(value = "/genProcessDiagram", produces = MediaType.APPLICATION_JSON_VALUE)
-    public byte[] genProcessDiagram(String tenantId, String processId) throws Exception {
+    public byte[] genProcessDiagram(String tenantId, String processInstanceId) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        HistoricProcessInstance pi = customHistoricProcessService.getById(processId);
+        HistoricProcessInstance pi = customHistoricProcessService.getById(processInstanceId);
         // 流程走完的不显示图
         if (pi == null) {
             return null;

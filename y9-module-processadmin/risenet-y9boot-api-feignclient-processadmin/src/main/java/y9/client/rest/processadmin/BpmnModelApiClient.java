@@ -23,13 +23,13 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      * 生成流程图
      *
      * @param tenantId 租户id
-     * @param processId processId
+     * @param processInstanceId 流程实例
      * @return byte[]
      * @throws Exception Exception
      */
     @Override
     @PostMapping("/genProcessDiagram")
-    byte[] genProcessDiagram(@RequestParam("tenantId") String tenantId, @RequestParam("processId") String processId)
+    byte[] genProcessDiagram(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId)
         throws Exception;
 
     /**
