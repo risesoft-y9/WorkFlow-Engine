@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.risesoft.model.processadmin.ExecutionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
+import net.risesoft.pojo.Y9Page;
 
 /**
  * @author qinman
@@ -23,8 +24,7 @@ public interface RuntimeApi {
      * @param map 参数
      * @throws Exception 异常
      */
-    void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId,
-        Map<String, Object> map) throws Exception;
+    void addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId, Map<String, Object> map) throws Exception;
 
     /**
      * 加签/岗位
@@ -35,8 +35,7 @@ public interface RuntimeApi {
      * @param taskId 任务id
      * @throws Exception Exception
      */
-    void complete4Position(String tenantId, String positionId, String processInstanceId, String taskId)
-        throws Exception;
+    void complete4Position(String tenantId, String positionId, String processInstanceId, String taskId) throws Exception;
 
     /**
      *
@@ -104,8 +103,7 @@ public interface RuntimeApi {
      * @param rows 行数
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getProcessInstancesByDefId(String tenantId, String processDefinitionId, Integer page,
-        Integer rows);
+    Map<String, Object> getProcessInstancesByDefId(String tenantId, String processDefinitionId, Integer page, Integer rows);
 
     /**
      * 根据流程定义Key获取流程实例列表
@@ -136,6 +134,17 @@ public interface RuntimeApi {
      * @throws Exception Exception
      */
     void recovery4SetUpCompleted(String tenantId, String processInstanceId) throws Exception;
+
+    /**
+     * 获取正在运行流程实例列表
+     *
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @param page 页吗
+     * @param rows条数
+     * @return Y9Page<Map<String, Object>>
+     */
+    Y9Page<Map<String, Object>> runningList(String tenantId, String processInstanceId, int page, int rows);
 
     /**
      * 设置流程实例为办结的状态，其实是先暂停，再设置流程结束时间为当前时间
@@ -176,8 +185,7 @@ public interface RuntimeApi {
      * @param map 变量map
      * @return ProcessInstanceModel
      */
-    ProcessInstanceModel startProcessInstanceByKey(String tenantId, String userId, String processDefinitionKey,
-        String systemName, Map<String, Object> map);
+    ProcessInstanceModel startProcessInstanceByKey(String tenantId, String userId, String processDefinitionKey, String systemName, Map<String, Object> map);
 
     /**
      * 判断是否是挂起实例

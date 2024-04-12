@@ -13,15 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.model.processadmin.ExecutionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
+import net.risesoft.pojo.Y9Page;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "RuntimeApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
-    url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/runtime")
+@FeignClient(contextId = "RuntimeApiClient", name = "${y9.service.processAdmin.name:processAdmin}", url = "${y9.service.processAdmin.directUrl:}", path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/runtime")
 public interface RuntimeApiClient extends RuntimeApi {
 
     /**
@@ -36,9 +35,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping(value = "/addMultiInstanceExecution", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void addMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
-        @RequestParam("activityId") String activityId, @RequestParam("parentExecutionId") String parentExecutionId,
-        @RequestBody Map<String, Object> map) throws Exception;
+    void addMultiInstanceExecution(@RequestParam("tenantId") String tenantId, @RequestParam("activityId") String activityId, @RequestParam("parentExecutionId") String parentExecutionId, @RequestBody Map<String, Object> map) throws Exception;
 
     /**
      *
@@ -52,9 +49,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping("/complete4Position")
-    void complete4Position(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId)
-        throws Exception;
+    void complete4Position(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId) throws Exception;
 
     /**
      *
@@ -68,9 +63,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping("/completed")
-    void completed(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId)
-        throws Exception;
+    void completed(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId) throws Exception;
 
     /**
      *
@@ -82,8 +75,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping("/deleteMultiInstanceExecution")
-    void deleteMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
-        @RequestParam("executionId") String executionId) throws Exception;
+    void deleteMultiInstanceExecution(@RequestParam("tenantId") String tenantId, @RequestParam("executionId") String executionId) throws Exception;
 
     /**
      * 根据执行Id获取当前活跃的节点信息
@@ -94,8 +86,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @GetMapping("/getActiveActivityIds")
-    List<String> getActiveActivityIds(@RequestParam("tenantId") String tenantId,
-        @RequestParam("executionId") String executionId);
+    List<String> getActiveActivityIds(@RequestParam("tenantId") String tenantId, @RequestParam("executionId") String executionId);
 
     /**
      *
@@ -107,8 +98,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @GetMapping("/getExecutionById")
-    ExecutionModel getExecutionById(@RequestParam("tenantId") String tenantId,
-        @RequestParam("executionId") String executionId);
+    ExecutionModel getExecutionById(@RequestParam("tenantId") String tenantId, @RequestParam("executionId") String executionId);
 
     /**
      * 根据父流程实例获取子流程实例
@@ -119,8 +109,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @GetMapping("/getListBySuperProcessInstanceId")
-    List<ProcessInstanceModel> getListBySuperProcessInstanceId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("superProcessInstanceId") String superProcessInstanceId);
+    List<ProcessInstanceModel> getListBySuperProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("superProcessInstanceId") String superProcessInstanceId);
 
     /**
      * 根据流程实例Id获取流程实例
@@ -131,8 +120,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @GetMapping("/getProcessInstance")
-    ProcessInstanceModel getProcessInstance(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId);
+    ProcessInstanceModel getProcessInstance(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程定义id获取流程实例列表
@@ -145,9 +133,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @GetMapping("/getProcessInstancesByDefId")
-    Map<String, Object> getProcessInstancesByDefId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Map<String, Object> getProcessInstancesByDefId(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      * 根据流程定义Key获取流程实例列表
@@ -158,8 +144,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @GetMapping("/getProcessInstancesByKey")
-    List<ProcessInstanceModel> getProcessInstancesByKey(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processDefinitionKey") String processDefinitionKey);
+    List<ProcessInstanceModel> getProcessInstancesByKey(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
      *
@@ -173,9 +158,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping("/recovery4Completed")
-    void recovery4Completed(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("year") String year)
-        throws Exception;
+    void recovery4Completed(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("year") String year) throws Exception;
 
     /**
      *
@@ -187,8 +170,14 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping("/recovery4SetUpCompleted")
-    void recovery4SetUpCompleted(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+    void recovery4SetUpCompleted(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+
+    /**
+     *
+     */
+    @Override
+    @GetMapping(value = "/runningList")
+    Y9Page<Map<String, Object>> runningList(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("page") int page, @RequestParam("rows") int rows);
 
     /**
      *
@@ -200,8 +189,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping("/setUpCompleted")
-    void setUpCompleted(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+    void setUpCompleted(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId) throws Exception;
 
     /**
      *
@@ -215,9 +203,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping(value = "/setVariable", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariable(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("key") String key,
-        @RequestBody Map<String, Object> map) throws Exception;
+    void setVariable(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("key") String key, @RequestBody Map<String, Object> map) throws Exception;
 
     /**
      *
@@ -229,8 +215,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping(value = "/setVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariables(@RequestParam("tenantId") String tenantId, @RequestParam("executionId") String executionId,
-        @RequestBody Map<String, Object> map);
+    void setVariables(@RequestParam("tenantId") String tenantId, @RequestParam("executionId") String executionId, @RequestBody Map<String, Object> map);
 
     /**
      * 根据流程定义Key启动流程实例，设置流程变量,并返回流程实例,流程启动人是人员Id
@@ -244,9 +229,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping(value = "/startProcessInstanceByKey", consumes = MediaType.APPLICATION_JSON_VALUE)
-    ProcessInstanceModel startProcessInstanceByKey(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("systemName") String systemName, @RequestBody Map<String, Object> map);
+    ProcessInstanceModel startProcessInstanceByKey(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("systemName") String systemName, @RequestBody Map<String, Object> map);
 
     /**
      * 判断是否是挂起实例
@@ -257,8 +240,7 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @GetMapping("/suspendedByProcessInstanceId")
-    Boolean suspendedByProcessInstanceId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId);
+    Boolean suspendedByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 挂起或者激活流程实例
@@ -269,7 +251,6 @@ public interface RuntimeApiClient extends RuntimeApi {
      */
     @Override
     @PostMapping("/switchSuspendOrActive")
-    void switchSuspendOrActive(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("state") String state);
+    void switchSuspendOrActive(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("state") String state);
 
 }

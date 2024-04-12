@@ -12,12 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.processadmin.ProcessDataCopyApi;
 import net.risesoft.service.FlowableTenantInfoHolder;
 
 /**
+ * 流程定义数据复制接口
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
@@ -42,7 +45,7 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
      */
     @Override
     @PostMapping(value = "/copyModel", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void copyModel(String sourceTenantId, String targetTenantId, String modelKey) throws Exception {
+    public void copyModel(@RequestParam String sourceTenantId, @RequestParam String targetTenantId, @RequestParam String modelKey) throws Exception {
         try {
             /**
              * 查找原租户中的模型
@@ -86,8 +89,7 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
                 BpmnModel bpmnModel = modelService.getBpmnModel(modelData);
                 byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(bpmnModel);
                 String processName = modelData.getName() + ".bpmn20.xml";
-                repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes)
-                    .deploy();
+                repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes).deploy();
             }
         } catch (Exception e) {
             e.printStackTrace();

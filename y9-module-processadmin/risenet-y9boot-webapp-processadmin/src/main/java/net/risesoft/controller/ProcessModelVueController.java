@@ -49,10 +49,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import net.risesoft.api.platform.permission.PersonResourceApi;
-import net.risesoft.enums.platform.AuthorityEnum;
-import net.risesoft.enums.platform.ManagerLevelEnum;
-import net.risesoft.model.platform.Resource;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -82,9 +78,6 @@ public class ProcessModelVueController {
     private ModelService modelService;
 
     @Autowired
-    private PersonResourceApi personResourceApi;
-
-    @Autowired
     private ModelRepository modelRepository;
 
     @Autowired
@@ -101,9 +94,7 @@ public class ProcessModelVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> create(@RequestParam(required = true) String name,
-        @RequestParam(required = true) String key, @RequestParam(required = false) String description,
-        HttpServletRequest request, HttpServletResponse response) {
+    public Y9Result<String> create(@RequestParam(required = true) String name, @RequestParam(required = true) String key, @RequestParam(required = false) String description, HttpServletRequest request, HttpServletResponse response) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String personName = userInfo.getName();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -197,15 +188,36 @@ public class ProcessModelVueController {
     @ResponseBody
     @RequestMapping(value = "/getModelList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getModelList(@RequestParam(required = false) String resourceId) {
-        UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        String tenantId = userInfo.getTenantId(), personId = userInfo.getPersonId();
-        boolean tenantManager = userInfo.isGlobalManager();
+        // UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
+        // String tenantId = userInfo.getTenantId(), personId = userInfo.getPersonId();
+        // boolean tenantManager = userInfo.isGlobalManager();
         List<Map<String, Object>> items = new ArrayList<>();
         List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
         ProcessDefinition processDefinition = null;
-        if (tenantManager || ManagerLevelEnum.SYSTEM_MANAGER.equals(userInfo.getManagerLevel())) {
+        // if (tenantManager || ManagerLevelEnum.SYSTEM_MANAGER.equals(userInfo.getManagerLevel())) {
+        Map<String, Object> mapTemp = null;
+        for (AbstractModel model : list) {
+            mapTemp = new HashMap<>(16);
+            mapTemp.put("id", model.getId());
+            mapTemp.put("key", model.getKey());
+            mapTemp.put("name", model.getName());
+            mapTemp.put("version", 0);
+            processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey()).latestVersion().singleResult();
+            if (null != processDefinition) {
+                mapTemp.put("version", processDefinition.getVersion());
+            }
+            mapTemp.put("createTime", sdf.format(model.getCreated()));
+            mapTemp.put("lastUpdateTime", sdf.format(model.getLastUpdated()));
+            items.add(mapTemp);
+        }
+        // }
+        /* else {
             Map<String, Object> mapTemp = null;
+            List<Resource> resourceList =
+        personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE, resourceId).getData();
             for (AbstractModel model : list) {
+        for (Resource resource : resourceList) {
+            if (resource.getCustomId().equals(model.getKey())) {
                 mapTemp = new HashMap<>(16);
                 mapTemp.put("id", model.getId());
                 mapTemp.put("key", model.getKey());
@@ -220,30 +232,9 @@ public class ProcessModelVueController {
                 mapTemp.put("lastUpdateTime", sdf.format(model.getLastUpdated()));
                 items.add(mapTemp);
             }
-        } else {
-            Map<String, Object> mapTemp = null;
-            List<Resource> resourceList =
-                personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE, resourceId).getData();
-            for (AbstractModel model : list) {
-                for (Resource resource : resourceList) {
-                    if (resource.getCustomId().equals(model.getKey())) {
-                        mapTemp = new HashMap<>(16);
-                        mapTemp.put("id", model.getId());
-                        mapTemp.put("key", model.getKey());
-                        mapTemp.put("name", model.getName());
-                        mapTemp.put("version", 0);
-                        processDefinition = repositoryService.createProcessDefinitionQuery()
-                            .processDefinitionKey(model.getKey()).latestVersion().singleResult();
-                        if (null != processDefinition) {
-                            mapTemp.put("version", processDefinition.getVersion());
-                        }
-                        mapTemp.put("createTime", sdf.format(model.getCreated()));
-                        mapTemp.put("lastUpdateTime", sdf.format(model.getLastUpdated()));
-                        items.add(mapTemp);
-                    }
-                }
-            }
         }
+            }
+        }*/
         return Y9Result.success(items, "获取成功");
     }
 
@@ -278,8 +269,7 @@ public class ProcessModelVueController {
      * @param response
      */
     @RequestMapping(value = "/editor/{modelId}")
-    public void gotoEditor(@PathVariable("modelId") String modelId, HttpServletRequest request,
-        HttpServletResponse response) {
+    public void gotoEditor(@PathVariable("modelId") String modelId, HttpServletRequest request, HttpServletResponse response) {
         try {
             response.sendRedirect(request.getContextPath() + "/modeler.html#/editor/" + modelId);
         } catch (IOException e) {
