@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.processadmin.DoingApi;
@@ -19,6 +20,8 @@ import net.risesoft.service.CustomDoingService;
 import net.risesoft.service.FlowableTenantInfoHolder;
 
 /**
+ * 在办件列表
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
@@ -42,7 +45,7 @@ public class DoingApiImpl implements DoingApi {
      */
     @Override
     @GetMapping(value = "/getCountByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public long getCountByUserId(String tenantId, String userId) {
+    public long getCountByUserId(@RequestParam String tenantId, @RequestParam String userId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         long doingCount = customDoingService.getCountByUserId(userId);
         return doingCount;
@@ -60,8 +63,7 @@ public class DoingApiImpl implements DoingApi {
      */
     @Override
     @GetMapping(value = "/getListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserId(String tenantId, String userId, Integer page, Integer rows)
-        throws Exception {
+    public Map<String, Object> getListByUserId(@RequestParam String tenantId, @RequestParam String userId, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId is null !");
         }
@@ -82,8 +84,7 @@ public class DoingApiImpl implements DoingApi {
      */
     @Override
     @GetMapping(value = "/getListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
-        String processDefinitionKey, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> getListByUserIdAndProcessDefinitionKey(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processDefinitionKey, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId) || StringUtils.isEmpty(processDefinitionKey)) {
             throw new Exception("tenantId or userId or processDefinitionKey is null !");
         }
@@ -103,10 +104,8 @@ public class DoingApiImpl implements DoingApi {
      * @throws Exception Exception
      */
     @Override
-    @GetMapping(value = "/getListByUserIdAndProcessDefinitionKeyOrderBySendTime",
-        produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(String tenantId, String userId,
-        String processDefinitionKey, Integer page, Integer rows) throws Exception {
+    @GetMapping(value = "/getListByUserIdAndProcessDefinitionKeyOrderBySendTime", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processDefinitionKey, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId) || StringUtils.isEmpty(processDefinitionKey)) {
             throw new Exception("tenantId or userId or processDefinitionKey is null !");
         }
@@ -116,14 +115,9 @@ public class DoingApiImpl implements DoingApi {
         Integer totalCount = 0;
         // 已办件，以办理时间排序，即发送出去的时间
         List<HistoricTaskInstance> htiList = null;
-        String sql = "SELECT p.* from (" + " SELECT" + "	t.*" + " FROM" + "	ACT_HI_TASKINST t"
-            + " LEFT JOIN ACT_HI_PROCINST p ON t.PROC_INST_ID_ = p.PROC_INST_ID_" + " WHERE"
-            + "	t.PROC_DEF_ID_ LIKE '" + processDefinitionKey + "%'" + " AND p.END_TIME_ IS NULL"
-            + " AND t.END_TIME_ IS NOT NULL" + " AND p.DELETE_REASON_ IS NULL" + " AND (" + "	t.ASSIGNEE_ = '"
-            + userId + "'" + "	OR t.OWNER_ = '" + userId + "'" + " )" + " AND NOT EXISTS (" + "	SELECT" + "		ID_"
-            + "	FROM" + "		ACT_HI_VARINST" + "	WHERE" + "		NAME_ = '" + userId + "'"
-            + "	AND t.PROC_INST_ID_ = PROC_INST_ID_" + " )" + " ORDER BY t.END_TIME_ desc LIMIT 1000000" + " ) p"
-            + " GROUP BY p.PROC_INST_ID_ ORDER BY p.END_TIME_ desc";
+        String sql = "SELECT p.* from (" + " SELECT" + "	t.*" + " FROM" + "	ACT_HI_TASKINST t" + " LEFT JOIN ACT_HI_PROCINST p ON t.PROC_INST_ID_ = p.PROC_INST_ID_" + " WHERE" + "	t.PROC_DEF_ID_ LIKE '" + processDefinitionKey + "%'" + " AND p.END_TIME_ IS NULL" + " AND t.END_TIME_ IS NOT NULL"
+            + " AND p.DELETE_REASON_ IS NULL" + " AND (" + "	t.ASSIGNEE_ = '" + userId + "'" + "	OR t.OWNER_ = '" + userId + "'" + " )" + " AND NOT EXISTS (" + "	SELECT" + "		ID_" + "	FROM" + "		ACT_HI_VARINST" + "	WHERE" + "		NAME_ = '" + userId + "'"
+            + "	AND t.PROC_INST_ID_ = PROC_INST_ID_" + " )" + " ORDER BY t.END_TIME_ desc LIMIT 1000000" + " ) p" + " GROUP BY p.PROC_INST_ID_ ORDER BY p.END_TIME_ desc";
         htiList = historyService.createNativeHistoricTaskInstanceQuery().sql(sql).listPage((page - 1) * rows, rows);
         for (HistoricTaskInstance hpi : htiList) {
             Map<String, Object> map = new HashMap<String, Object>(16);
@@ -132,12 +126,10 @@ public class DoingApiImpl implements DoingApi {
             map.put("endTime", hpi.getEndTime());
             resList.add(map);
         }
-        String countSql =
-            "select COUNT(RES.ID_) from ACT_HI_PROCINST RES WHERE RES.PROC_DEF_ID_ like #{processDefinitionKey} and RES.END_TIME_ IS NULL and RES.DELETE_REASON_ IS NULL "
-                + "and (exists(select LINK.USER_ID_ from ACT_HI_IDENTITYLINK LINK where USER_ID_ = #{USER_ID_} and LINK.PROC_INST_ID_ = RES.ID_) ) and NOT EXISTS (select ID_ from ACT_HI_VARINST where NAME_ = #{USER_ID_} and RES.PROC_INST_ID_ = PROC_INST_ID_)";
+        String countSql = "select COUNT(RES.ID_) from ACT_HI_PROCINST RES WHERE RES.PROC_DEF_ID_ like #{processDefinitionKey} and RES.END_TIME_ IS NULL and RES.DELETE_REASON_ IS NULL "
+            + "and (exists(select LINK.USER_ID_ from ACT_HI_IDENTITYLINK LINK where USER_ID_ = #{USER_ID_} and LINK.PROC_INST_ID_ = RES.ID_) ) and NOT EXISTS (select ID_ from ACT_HI_VARINST where NAME_ = #{USER_ID_} and RES.PROC_INST_ID_ = PROC_INST_ID_)";
 
-        totalCount = (int)historyService.createNativeHistoricProcessInstanceQuery().sql(countSql)
-            .parameter("processDefinitionKey", processDefinitionKey + "%").parameter("USER_ID_", userId).count();
+        totalCount = (int)historyService.createNativeHistoricProcessInstanceQuery().sql(countSql).parameter("processDefinitionKey", processDefinitionKey + "%").parameter("USER_ID_", userId).count();
         returnMap.put("totalpages", (totalCount + rows - 1) / rows);
         returnMap.put("total", totalCount);
         returnMap.put("currpage", page);
@@ -158,8 +150,7 @@ public class DoingApiImpl implements DoingApi {
      */
     @Override
     @GetMapping(value = "/getListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName,
-        Integer page, Integer rows) throws Exception {
+    public Map<String, Object> getListByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId) || StringUtils.isEmpty(systemName)) {
             throw new Exception("tenantId or userId or systemName is null !");
         }
@@ -180,8 +171,7 @@ public class DoingApiImpl implements DoingApi {
      */
     @Override
     @GetMapping(value = "/searchListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page,
-        Integer rows) throws Exception {
+    public Map<String, Object> searchListByUserId(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId is null !");
         }
@@ -203,14 +193,12 @@ public class DoingApiImpl implements DoingApi {
      */
     @Override
     @GetMapping(value = "/searchListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
-        String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processDefinitionKey, @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId) || StringUtils.isEmpty(processDefinitionKey)) {
             throw new Exception("tenantId or userId or processDefinitionKey is null !");
         }
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customDoingService.searchListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, searchTerm,
-            page, rows);
+        return customDoingService.searchListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, searchTerm, page, rows);
     }
 
     /**
@@ -227,8 +215,7 @@ public class DoingApiImpl implements DoingApi {
      */
     @Override
     @GetMapping(value = "/searchListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName,
-        String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchListByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String systemName, @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId) || StringUtils.isEmpty(systemName)) {
             throw new Exception("tenantId or userId or systemName is null !");
         }

@@ -82,7 +82,7 @@ public class VariableVueController {
     }
 
     /**
-     * 获取流程实例
+     * 获取流程实例变量
      *
      * @param processInstanceId 流程实例id
      * @param page 页码
@@ -91,20 +91,17 @@ public class VariableVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/getAllVariable", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getAllVariable(@RequestParam(required = false) String processInstanceId,
-        @RequestParam int page, @RequestParam int rows) {
+    public Y9Page<Map<String, Object>> getAllVariable(@RequestParam(required = false) String processInstanceId, @RequestParam int page, @RequestParam int rows) {
         List<Map<String, Object>> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         long totalCount = 0;
         List<ProcessInstance> list = null;
         if (StringUtils.isBlank(processInstanceId)) {
             totalCount = runtimeService.createProcessInstanceQuery().count();
-            list =
-                runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
+            list = runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
         } else {
             totalCount = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).count();
-            list = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).orderByStartTime()
-                .desc().listPage((page - 1) * rows, rows);
+            list = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).orderByStartTime().desc().listPage((page - 1) * rows, rows);
         }
         Position position = null;
         OrgUnit orgUnit = null;
@@ -128,8 +125,7 @@ public class VariableVueController {
                 } else {
                     position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
                     if (null != position) {
-                        orgUnit = orgUnitManager.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1])
-                            .getData();
+                        orgUnit = orgUnitManager.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1]).getData();
                         if (null == orgUnit) {
                             mapTemp.put("startUserName", position.getName());
                         } else {
@@ -262,8 +258,7 @@ public class VariableVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveProcessVariable", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveProcessVariable(@RequestParam String type, @RequestParam String processInstanceId,
-        @RequestParam String key, @RequestParam(required = false) String value) {
+    public Y9Result<String> saveProcessVariable(@RequestParam String type, @RequestParam String processInstanceId, @RequestParam String key, @RequestParam(required = false) String value) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (ItemBoxTypeEnum.ADD.getValue().equals(type)) {
             Object obj = runtimeService.getVariable(processInstanceId, key);
@@ -316,8 +311,7 @@ public class VariableVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveTaskVariable", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveTaskVariable(@RequestParam String type, @RequestParam String taskId,
-        @RequestParam String key, @RequestParam(required = false) String value) {
+    public Y9Result<String> saveTaskVariable(@RequestParam String type, @RequestParam String taskId, @RequestParam String key, @RequestParam(required = false) String value) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (ItemBoxTypeEnum.ADD.getValue().equals(type)) {
             Object obj = customVariableService.getVariableLocal(taskId, key);

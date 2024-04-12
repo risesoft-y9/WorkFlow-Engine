@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.platform.org.PersonApi;
@@ -28,6 +29,8 @@ import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
+ * 正在运行任务相关接口
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
@@ -55,7 +58,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @PostMapping(value = "/claim", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void claim(String tenantId, String userId, String taskId) {
+    public void claim(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
             customTaskService.claim(taskId, userId);
@@ -73,7 +76,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @PostMapping(value = "/complete", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void complete(String tenantId, String taskId) throws Exception {
+    public void complete(@RequestParam String tenantId, @RequestParam String taskId) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         customTaskService.complete(taskId);
@@ -88,7 +91,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @PostMapping(value = "/completeTask", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void completeTask(String tenantId, String taskId) {
+    public void completeTask(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Task task = customTaskService.findById(taskId);
         if (DelegationState.PENDING == task.getDelegationState()) {
@@ -107,7 +110,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @PostMapping(value = "/completeTaskWithoutAssignee", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void completeTaskWithoutAssignee(String tenantId, String positionId, String processInstanceId) {
+    public void completeTaskWithoutAssignee(@RequestParam String tenantId, @RequestParam String positionId, @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -124,10 +127,8 @@ public class TaskApiImpl implements TaskApi {
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/completeWithVariables", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void completeWithVariables(String tenantId, String taskId, @RequestBody Map<String, Object> map)
-        throws Exception {
+    @PostMapping(value = "/completeWithVariables", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void completeWithVariables(@RequestParam String tenantId, @RequestParam String taskId, @RequestBody Map<String, Object> map) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         customTaskService.completeWithVariables(taskId, map);
@@ -143,10 +144,8 @@ public class TaskApiImpl implements TaskApi {
      * @param vars 变量map
      */
     @Override
-    @PostMapping(value = "/completeWithVariables4Position", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void completeWithVariables4Position(String tenantId, String userId, String positionId, String taskId,
-        @RequestBody Map<String, Object> vars) {
+    @PostMapping(value = "/completeWithVariables4Position", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void completeWithVariables4Position(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String positionId, @RequestParam String taskId, @RequestBody Map<String, Object> vars) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -167,10 +166,8 @@ public class TaskApiImpl implements TaskApi {
      * @return TaskModel
      */
     @Override
-    @PostMapping(value = "/createWithVariables", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
-    public TaskModel createWithVariables(String tenantId, String personId, String routeToTaskId,
-        Map<String, Object> vars, @RequestBody List<String> positionIdList) {
+    @PostMapping(value = "/createWithVariables", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public TaskModel createWithVariables(@RequestParam String tenantId, @RequestParam String personId, @RequestParam String routeToTaskId, @RequestBody Map<String, Object> vars, @RequestBody List<String> positionIdList) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(personManager.get(tenantId, personId).getData());
@@ -189,10 +186,8 @@ public class TaskApiImpl implements TaskApi {
      * @return TaskModel
      */
     @Override
-    @PostMapping(value = "/createWithVariables1", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
-    public TaskModel createWithVariables(String tenantId, String positionId, String personId, String routeToTaskId,
-        Map<String, Object> vars, @RequestBody List<String> positionIdList) {
+    @PostMapping(value = "/createWithVariables1", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public TaskModel createWithVariables(@RequestParam String tenantId, @RequestParam String positionId, @RequestParam String personId, @RequestParam String routeToTaskId, @RequestBody Map<String, Object> vars, @RequestBody List<String> positionIdList) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -211,7 +206,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @PostMapping(value = "/delegateTask", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void delegateTask(String tenantId, String taskId, String assignee) {
+    public void delegateTask(@RequestParam String tenantId, @RequestParam String taskId, @RequestParam String assignee) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
             customTaskService.delegateTask(taskId, assignee);
@@ -230,7 +225,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @PostMapping(value = "/deleteCandidateUser", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteCandidateUser(String tenantId, String taskId, String assignee) {
+    public void deleteCandidateUser(@RequestParam String tenantId, @RequestParam String taskId, @RequestParam String assignee) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
             customTaskService.deleteCandidateUser(taskId, URLDecoder.decode(assignee, "utf-8"));
@@ -247,7 +242,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @GetMapping(value = "/findAll", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<TaskModel> findAll(String tenantId) {
+    public List<TaskModel> findAll(@RequestParam String tenantId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<Task> taskList = customTaskService.findAll();
         List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
@@ -263,7 +258,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @GetMapping(value = "/findById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public TaskModel findById(String tenantId, String taskId) {
+    public TaskModel findById(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Task task = customTaskService.findById(taskId);
         TaskModel taskModel = FlowableModelConvertUtil.task2TaskModel(task);
@@ -279,7 +274,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @GetMapping(value = "/findByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<TaskModel> findByProcessInstanceId(String tenantId, String processInstanceId) {
+    public List<TaskModel> findByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
         List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
@@ -296,7 +291,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @GetMapping(value = "/findByProcessInstanceId1", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<TaskModel> findByProcessInstanceId(String tenantId, String processInstanceId, boolean active) {
+    public List<TaskModel> findByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam boolean active) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId, active);
         List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
@@ -315,8 +310,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @GetMapping(value = "/findListByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> findListByProcessInstanceId(String tenantId, String processInstanceId, Integer page,
-        Integer rows) throws Exception {
+    public Map<String, Object> findListByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(processInstanceId)) {
             throw new Exception("tenantId or processInstanceId is null !");
         }
@@ -331,9 +325,8 @@ public class TaskApiImpl implements TaskApi {
      * @param taskModel 任务实体
      */
     @Override
-    @PostMapping(value = "/saveTask", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void saveTask(String tenantId, @RequestBody TaskModel taskModel) {
+    @PostMapping(value = "/saveTask", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void saveTask(@RequestParam String tenantId, @RequestBody TaskModel taskModel) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Task task = customTaskService.findById(taskModel.getId());
         task = FlowableModelConvertUtil.taskModel2Task(taskModel, task);
@@ -349,7 +342,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @PostMapping(value = "/setAssignee", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void setAssignee(String tenantId, String taskId, String assignee) {
+    public void setAssignee(@RequestParam String tenantId, @RequestParam String taskId, @RequestParam String assignee) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
             customTaskService.setAssignee(taskId, URLDecoder.decode(assignee, "utf-8"));
@@ -367,7 +360,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @PostMapping(value = "/setDueDate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void setDueDate(String tenantId, String taskId, Date date) {
+    public void setDueDate(@RequestParam String tenantId, @RequestParam String taskId, @RequestParam Date date) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customTaskService.setDueDate(taskId, date);
     }
@@ -381,7 +374,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @PostMapping(value = "/setPriority", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void setPriority(String tenantId, String taskId, Integer priority) {
+    public void setPriority(@RequestParam String tenantId, @RequestParam String taskId, @RequestParam Integer priority) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customTaskService.setPriority(taskId, priority);
     }
@@ -394,7 +387,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @PostMapping(value = "/unclaim", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void unclaim(String tenantId, String taskId) {
+    public void unclaim(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customTaskService.unclaim(taskId);
     }

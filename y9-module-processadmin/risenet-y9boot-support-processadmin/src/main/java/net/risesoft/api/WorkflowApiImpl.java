@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.processadmin.WorkflowApi;
@@ -14,6 +15,8 @@ import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.service.WorkflowProcessInstanceService;
 
 /**
+ * 获取当前任务节点的目标节点
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
@@ -35,11 +38,9 @@ public class WorkflowApiImpl implements WorkflowApi {
      */
     @Override
     @GetMapping(value = "/getCurrentTaskTargets", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getCurrentTaskTargets(String tenantId, String processDefinitionId,
-        String taskDefKey) {
+    public List<Map<String, String>> getCurrentTaskTargets(@RequestParam String tenantId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<Map<String, String>> listMap =
-            workflowProcessInstanceService.getCurrentTaskTargets(processDefinitionId, taskDefKey);
+        List<Map<String, String>> listMap = workflowProcessInstanceService.getCurrentTaskTargets(processDefinitionId, taskDefKey);
         return listMap;
     }
 }

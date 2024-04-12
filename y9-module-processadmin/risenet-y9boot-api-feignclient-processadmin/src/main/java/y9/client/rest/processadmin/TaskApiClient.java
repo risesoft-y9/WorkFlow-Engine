@@ -19,15 +19,13 @@ import net.risesoft.model.processadmin.TaskModel;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "TaskApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
-    url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/task")
+@FeignClient(contextId = "TaskApiClient", name = "${y9.service.processAdmin.name:processAdmin}", url = "${y9.service.processAdmin.directUrl:}", path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/task")
 public interface TaskApiClient extends TaskApi {
 
     /**
-     * 
+     *
      * Description: 签收任务
-     * 
+     *
      * @param tenantId
      * @param userId
      * @param taskId
@@ -35,8 +33,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping("/claim")
-    void claim(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("taskId") String taskId) throws Exception;
+    void claim(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("taskId") String taskId) throws Exception;
 
     /**
      * 完成任务（不设置流程变量）
@@ -50,17 +47,16 @@ public interface TaskApiClient extends TaskApi {
     void complete(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId) throws Exception;
 
     /**
-     * 
+     *
      * Description: 完成按钮的任务完结
-     * 
+     *
      * @param tenantId
      * @param taskId
      * @throws Exception
      */
     @Override
     @PostMapping("/completeTask")
-    void completeTask(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId)
-        throws Exception;
+    void completeTask(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId) throws Exception;
 
     /**
      * 完成按钮的任务完结
@@ -71,8 +67,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping("/completeTaskWithoutAssignee")
-    void completeTaskWithoutAssignee(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
+    void completeTaskWithoutAssignee(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 完成任务（设置流程变量）
@@ -84,13 +79,12 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping(value = "/completeWithVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void completeWithVariables(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
-        @RequestBody Map<String, Object> map) throws Exception;
+    void completeWithVariables(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestBody Map<String, Object> map) throws Exception;
 
     /**
-     * 
+     *
      * Description: 完成任务（设置流程变量）岗位
-     * 
+     *
      * @param tenantId
      * @param userId
      * @param positionId
@@ -99,9 +93,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping(value = "/completeWithVariables4Position", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void completeWithVariables4Position(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
-        @RequestParam("taskId") String taskId, @RequestBody Map<String, Object> vars);
+    void completeWithVariables4Position(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId, @RequestBody Map<String, Object> vars);
 
     /**
      * 创建变量
@@ -115,9 +107,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping(value = "/createWithVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    TaskModel createWithVariables(@RequestParam("tenantId") String tenantId, @RequestParam("personId") String personId,
-        @RequestParam("routeToTaskId") String routeToTaskId, @RequestParam("vars") Map<String, Object> vars,
-        @RequestBody List<String> userIdList);
+    TaskModel createWithVariables(@RequestParam("tenantId") String tenantId, @RequestParam("personId") String personId, @RequestParam("routeToTaskId") String routeToTaskId, @RequestBody Map<String, Object> vars, @RequestBody List<String> userIdList);
 
     /**
      * 创建变量/岗位
@@ -132,15 +122,13 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping(value = "/createWithVariables1", consumes = MediaType.APPLICATION_JSON_VALUE)
-    TaskModel createWithVariables(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("personId") String personId,
-        @RequestParam("routeToTaskId") String routeToTaskId, @RequestParam("vars") Map<String, Object> vars,
+    TaskModel createWithVariables(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("personId") String personId, @RequestParam("routeToTaskId") String routeToTaskId, @RequestBody Map<String, Object> vars,
         @RequestBody List<String> positionIdList);
 
     /**
-     * 
+     *
      * Description: 设置任务代理
-     * 
+     *
      * @param tenantId
      * @param taskId
      * @param assignee
@@ -148,13 +136,12 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping("/delegateTask")
-    void delegateTask(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
-        @RequestParam("assignee") String assignee) throws Exception;
+    void delegateTask(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("assignee") String assignee) throws Exception;
 
     /**
-     * 
+     *
      * Description: 删除任务的候选人
-     * 
+     *
      * @param tenantId
      * @param taskId
      * @param assignee
@@ -162,8 +149,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping("/deleteCandidateUser")
-    void deleteCandidateUser(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
-        @RequestParam("assignee") String assignee) throws Exception;
+    void deleteCandidateUser(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("assignee") String assignee) throws Exception;
 
     /**
      * 查找所有的任务实例
@@ -195,8 +181,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @GetMapping("/findByProcessInstanceId")
-    List<TaskModel> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId);
+    List<TaskModel> findByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程实例Id和是否激活状态查找任务
@@ -208,8 +193,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @GetMapping("/findByProcessInstanceId1")
-    List<TaskModel> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("active") boolean active);
+    List<TaskModel> findByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("active") boolean active);
 
     /**
      * 根据人员Id，事项id获取用户的待办任务(分页)
@@ -223,9 +207,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @GetMapping("/findListByProcessInstanceId")
-    Map<String, Object> findListByProcessInstanceId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows) throws Exception;
+    Map<String, Object> findListByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
     /**
      * 保存任务
@@ -246,8 +228,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping("/setAssignee")
-    void setAssignee(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
-        @RequestParam("assignee") String assignee);
+    void setAssignee(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("assignee") String assignee);
 
     /**
      * 设置任务的过期时间
@@ -258,8 +239,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping("/setDueDate")
-    void setDueDate(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
-        @RequestParam("date") Date date);
+    void setDueDate(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("date") Date date);
 
     /**
      * 设置任务的优先级
@@ -270,8 +250,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping("/setPriority")
-    void setPriority(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
-        @RequestParam("priority") Integer priority);
+    void setPriority(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("priority") Integer priority);
 
     /**
      * 撤销签收任务

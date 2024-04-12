@@ -3,7 +3,12 @@ package net.risesoft.api.processadmin;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -20,6 +25,15 @@ public interface RepositoryApi {
      * @return Map&lt;String, Object&gt;
      */
     Map<String, Object> delete(String tenantId, String deploymentId);
+
+    /**
+     * 部署流程
+     *
+     * @param tenantId 租户id
+     * @param file 流程文件
+     * @return Y9Result<String>
+     */
+    Y9Result<String> deploy(String tenantId, MultipartFile file);
 
     /**
      * 根据流程定义key获取最新部署的流程定义
@@ -64,6 +78,27 @@ public interface RepositoryApi {
      * @return List&lt;ProcessDefinitionModel&gt;
      */
     List<ProcessDefinitionModel> getProcessDefinitionListByKey(String tenantId, String processDefinitionKey);
+
+    /**
+     * 获取流程定义xml
+     *
+     * @param tenantId 租户id
+     * @param resourceType xml
+     * @param processInstanceId 流程实例id
+     * @param processDefinitionId 流程定义id
+     * @param response
+     * @return Y9Result<String>
+     * @throws Exception
+     */
+    Y9Result<String> getXmlByProcessInstance(String tenantId, String resourceType, String processInstanceId, String processDefinitionId, HttpServletResponse response) throws Exception;
+
+    /**
+     * 获取已部署流程定义列表
+     *
+     * @param tenantId 租户id
+     * @return Y9Result<List<Map<String, Object>>>
+     */
+    Y9Result<List<Map<String, Object>>> list(String tenantId);
 
     /**
      * 激活/挂起流程的状态
