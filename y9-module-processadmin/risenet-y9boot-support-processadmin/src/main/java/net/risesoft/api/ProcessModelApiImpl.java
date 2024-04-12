@@ -51,7 +51,7 @@ import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
- * 部署流程相关接口
+ * 流程设计相关接口
  *
  * @author qinman
  * @author zhangchongjie
