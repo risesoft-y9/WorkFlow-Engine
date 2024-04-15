@@ -33,13 +33,14 @@ public interface BpmnModelApiClient extends BpmnModelApi {
     /**
      * 导入流程模板
      *
-     * @param modelId
-     * @param file
+     * @param tenantId 租户id
+     * @param userId   用户id
+     * @param file     导入的xml文件
      * @return
      */
     @Override
     @PostMapping(value = "/import")
-    Map<String, Object> importProcessModel(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,@RequestParam("modelId") String modelId,@RequestParam("file") MultipartFile file);
+    Map<String, Object> importProcessModel(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("file") MultipartFile file);
 
     /**
      * 保存设计模型xml
@@ -50,7 +51,7 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @PostMapping(value = "/saveModelXml")
-    public Y9Result<String> saveModelXml(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("modelId") String modelId,@RequestParam("file") MultipartFile file);
+    public Y9Result<String> saveModelXml(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("modelId") String modelId, @RequestParam("file") MultipartFile file);
 
     /**
      * 获取流程设计模型xml

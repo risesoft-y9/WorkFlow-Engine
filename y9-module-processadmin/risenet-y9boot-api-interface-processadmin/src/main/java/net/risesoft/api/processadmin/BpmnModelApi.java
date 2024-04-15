@@ -30,11 +30,10 @@ public interface BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param userId   用户id
-     * @param modelId  模板id
      * @param file     导入的xml文件
      * @return
      */
-    public Map<String, Object> importProcessModel(String tenantId, String userId, String modelId, MultipartFile file);
+    public Map<String, Object> importProcessModel(String tenantId, String userId, MultipartFile file);
 
     /**
      * 保存模型xml
