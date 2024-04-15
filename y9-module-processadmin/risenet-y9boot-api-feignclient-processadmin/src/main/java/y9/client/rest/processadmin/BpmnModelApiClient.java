@@ -1,13 +1,24 @@
 package y9.client.rest.processadmin;
 
-import java.util.Map;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import net.risesoft.api.processadmin.BpmnModelApi;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 
 /**
  * @author qinman
@@ -15,14 +26,76 @@ import net.risesoft.api.processadmin.BpmnModelApi;
  * @date 2022/12/19
  */
 @FeignClient(contextId = "BpmnModelApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
-    url = "${y9.service.processAdmin.directUrl:}",
-    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/bpmnModel")
+        url = "${y9.service.processAdmin.directUrl:}",
+        path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/bpmnModel")
 public interface BpmnModelApiClient extends BpmnModelApi {
+
+    /**
+     * 导入流程模板
+     *
+     * @param modelId
+     * @param file
+     * @return
+     */
+    @Override
+    @PostMapping(value = "/import")
+    Map<String, Object> importProcessModel(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,@RequestParam("modelId") String modelId,@RequestParam("file") MultipartFile file);
+
+    /**
+     * 保存设计模型xml
+     *
+     * @param modelId
+     * @param file
+     * @return
+     */
+    @Override
+    @PostMapping(value = "/saveModelXml")
+    public Y9Result<String> saveModelXml(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("modelId") String modelId,@RequestParam("file") MultipartFile file);
+
+    /**
+     * 获取流程设计模型xml
+     *
+     * @param modelId
+     * @return
+     */
+    @Override
+    @GetMapping(value = "/getModelXml")
+    public Y9Result<Map<String, Object>> getModelXml(@RequestParam("tenantId") String tenantId, @RequestParam("modelId") String modelId);
+
+    /**
+     * 获取模型列表
+     *
+     * @return
+     */
+    @Override
+    @GetMapping(value = "/getModelList")
+    public Y9Result<List<Map<String, Object>>> getModelList(@RequestParam("tenantId") String tenantId);
+
+
+    /**
+     * 根据Model部署流程
+     *
+     * @param modelId 模型id
+     * @return
+     */
+    @Override
+    @PostMapping(value = "/deployModel")
+    public Y9Result<String> deployModel(@RequestParam("tenantId") String tenantId, @RequestParam("modelId") String modelId);
+
+    /**
+     * 删除模型
+     *
+     * @param modelId 模型id
+     * @return
+     */
+    @Override
+    @PostMapping(value = "/deleteModel")
+    public Y9Result<String> deleteModel(@RequestParam("tenantId") String tenantId, @RequestParam("modelId") String modelId);
 
     /**
      * 生成流程图
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 流程实例
      * @return byte[]
      * @throws Exception Exception
@@ -30,12 +103,12 @@ public interface BpmnModelApiClient extends BpmnModelApi {
     @Override
     @PostMapping("/genProcessDiagram")
     byte[] genProcessDiagram(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId)
-        throws Exception;
+            throws Exception;
 
     /**
      * 获取流程图模型
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId processInstanceId
      * @return Map
      * @throws Exception Exception
@@ -43,7 +116,7 @@ public interface BpmnModelApiClient extends BpmnModelApi {
     @Override
     @GetMapping("/getBpmnModel")
     Map<String, Object> getBpmnModel(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+                                     @RequestParam("processInstanceId") String processInstanceId) throws Exception;
 
     /**
      * 获取流程图数据
@@ -56,6 +129,6 @@ public interface BpmnModelApiClient extends BpmnModelApi {
     @Override
     @GetMapping("/getFlowChart")
     Map<String, Object> getFlowChart(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+                                     @RequestParam("processInstanceId") String processInstanceId) throws Exception;
 
 }
