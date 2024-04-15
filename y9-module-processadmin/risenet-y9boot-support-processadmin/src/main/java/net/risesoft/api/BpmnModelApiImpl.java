@@ -132,13 +132,12 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param userId   用户id
-     * @param modelId  模型id
      * @param file     模型文件
      * @return
      */
     @Override
     @RequestMapping(value = "/import")
-    public Map<String, Object> importProcessModel(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String modelId, @RequestParam MultipartFile file) {
+    public Map<String, Object> importProcessModel(@RequestParam String tenantId, @RequestParam String userId,@RequestParam MultipartFile file) {
         Map<String, Object> map = new HashMap<>(16);
         map.put("success", false);
         map.put("msg", "导入失败");
@@ -177,31 +176,29 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 name = process.getName();
             }
             String description = process.getDocumentation();
-            ModelRepresentation model = modelService.getModelRepresentation(modelId);
-
-            model.setKey(process.getId());
-            model.setName(name);
-            model.setDescription(description);
-            model.setModelType(AbstractModel.MODEL_TYPE_BPMN);
+            //ModelRepresentation model = modelService.getModelRepresentation(modelId);
+            //model.setKey(process.getId());
+            //model.setName(name);
+            //model.setDescription(description);
+            //model.setModelType(AbstractModel.MODEL_TYPE_BPMN);
             // 查询是否已经存在流程模板
             Model newModel = new Model();
-            List<Model> models = modelRepository.findByKeyAndType(model.getKey(), model.getModelType());
+            List<Model> models = modelRepository.findByKeyAndType(process.getId(), AbstractModel.MODEL_TYPE_BPMN);
             if (!models.isEmpty()) {
                 Model updateModel = models.get(0);
                 newModel.setId(updateModel.getId());
             }
-            newModel.setName(model.getName());
-            newModel.setKey(model.getKey());
-            newModel.setModelType(model.getModelType());
+            newModel.setName(name);
+            newModel.setKey(process.getId());
+            newModel.setModelType(AbstractModel.MODEL_TYPE_BPMN);
             newModel.setCreated(Calendar.getInstance().getTime());
             newModel.setCreatedBy(person.getName());
-            newModel.setDescription(model.getDescription());
+            newModel.setDescription(description);
             newModel.setModelEditorJson(modelNode.toString());
             newModel.setLastUpdated(Calendar.getInstance().getTime());
             newModel.setLastUpdatedBy(person.getName());
             newModel.setTenantId(tenantId);
-            String createdBy = SecurityUtils.getCurrentUserId();
-            newModel = modelService.createModel(newModel, createdBy);
+            newModel = modelService.createModel(newModel, userId);
             map.put("success", true);
             map.put("msg", "导入成功");
             return map;
@@ -278,8 +275,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             newModel.setLastUpdated(Calendar.getInstance().getTime());
             newModel.setLastUpdatedBy(person.getName());
             newModel.setTenantId(tenantId);
-            String createdBy = SecurityUtils.getCurrentUserId();
-            newModel = modelService.createModel(newModel, createdBy);
+            newModel = modelService.createModel(newModel, userId);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();
