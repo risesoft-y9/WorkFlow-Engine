@@ -38,7 +38,6 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
      * 删除常用语
      *
      * @param tenantId 租户id
-     * @param userId 人员id
      * @param id 常用语id
      */
     @Override
