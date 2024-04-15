@@ -293,8 +293,7 @@ public class ReminderApiImpl implements ReminderApi {
     /**
      * 更新催办信息
      *
-     * @param tenantId 租户滴
-     * @param userId 人员id
+     * @param tenantId 租户id
      * @param id 催办id
      * @param msgContent 催办信息
      * @return Map&lt;String, Object&gt;

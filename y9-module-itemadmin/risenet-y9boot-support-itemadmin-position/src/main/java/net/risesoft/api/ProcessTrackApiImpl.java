@@ -166,9 +166,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * 保存或更新历程
      *
      * @param tenantId 租户id
-     * @param userId 人员id
-     * @param processTrack 实体类对象（ProcessTrackModel）
-     * @return ProcessTrackModel
+     * @return processTrackModel 实体类对象
      * @throws Exception Exception
      */
     @Override
