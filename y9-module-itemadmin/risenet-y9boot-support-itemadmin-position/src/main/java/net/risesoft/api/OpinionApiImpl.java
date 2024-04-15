@@ -84,7 +84,6 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      * 删除意见
      *
      * @param tenantId 租户id
-     * @param userId 人员id
      * @param id 唯一标识
      * @throws Exception Exception
      */
@@ -176,7 +175,7 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      * 保存意见
      *
      * @param tenantId 租户id
-     * @param opinion 意见信息
+     * @param opinionModel 意见信息
      * @throws Exception Exception
      */
     @Override
@@ -194,7 +193,7 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param positionId 岗位id
-     * @param opinion 意见信息
+     * @param opinionModel 意见信息
      * @return OpinionModel
      * @throws Exception Exception
      */

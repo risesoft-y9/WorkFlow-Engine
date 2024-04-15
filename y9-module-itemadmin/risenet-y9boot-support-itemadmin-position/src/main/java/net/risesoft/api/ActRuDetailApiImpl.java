@@ -205,7 +205,8 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      * 删除某个参与人的办件详情
      *
      * @param tenantId 租户id
-     * @param processInstanceId 流程实例id
+     * @param processSerialNumber 流程编号
+     * @param assignee 办理人id
      * @return boolean
      */
     @Override
@@ -220,7 +221,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      * 保存或者更新
      *
      * @param tenantId 租户id
-     * @param ActRuDetailModel 详情对象
+     * @param actRuDetailModel 详情对象
      * @return boolean
      */
     @Override
