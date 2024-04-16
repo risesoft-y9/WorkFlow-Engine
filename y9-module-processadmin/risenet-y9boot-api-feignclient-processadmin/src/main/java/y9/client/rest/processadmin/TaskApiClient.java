@@ -107,7 +107,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping(value = "/createWithVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    TaskModel createWithVariables(@RequestParam("tenantId") String tenantId, @RequestParam("personId") String personId, @RequestParam("routeToTaskId") String routeToTaskId, @RequestBody Map<String, Object> vars, @RequestBody List<String> userIdList);
+    TaskModel createWithVariables(@RequestParam("tenantId") String tenantId, @RequestParam("personId") String personId, @RequestParam("routeToTaskId") String routeToTaskId, @RequestBody Map<String, Object> vars, List<String> userIdList);
 
     /**
      * 创建变量/岗位
@@ -122,8 +122,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping(value = "/createWithVariables1", consumes = MediaType.APPLICATION_JSON_VALUE)
-    TaskModel createWithVariables(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("personId") String personId, @RequestParam("routeToTaskId") String routeToTaskId, @RequestBody Map<String, Object> vars,
-        @RequestBody List<String> positionIdList);
+    TaskModel createWithVariables(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("personId") String personId, @RequestParam("routeToTaskId") String routeToTaskId, @RequestBody Map<String, Object> vars, List<String> positionIdList);
 
     /**
      *
