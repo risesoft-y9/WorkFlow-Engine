@@ -167,7 +167,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @PostMapping(value = "/createWithVariables", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public TaskModel createWithVariables(@RequestParam String tenantId, @RequestParam String personId, @RequestParam String routeToTaskId, @RequestBody Map<String, Object> vars, List<String> positionIdList) {
+    public TaskModel createWithVariables(@RequestParam String tenantId, @RequestParam String personId, @RequestParam String routeToTaskId, @RequestParam Map<String, Object> vars, @RequestBody List<String> positionIdList) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(personManager.get(tenantId, personId).getData());
@@ -187,7 +187,7 @@ public class TaskApiImpl implements TaskApi {
      */
     @Override
     @PostMapping(value = "/createWithVariables1", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public TaskModel createWithVariables(@RequestParam String tenantId, @RequestParam String positionId, @RequestParam String personId, @RequestParam String routeToTaskId, @RequestBody Map<String, Object> vars, List<String> positionIdList) {
+    public TaskModel createWithVariables(@RequestParam String tenantId, @RequestParam String positionId, @RequestParam String personId, @RequestParam String routeToTaskId, @RequestParam Map<String, Object> vars, @RequestBody List<String> positionIdList) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
