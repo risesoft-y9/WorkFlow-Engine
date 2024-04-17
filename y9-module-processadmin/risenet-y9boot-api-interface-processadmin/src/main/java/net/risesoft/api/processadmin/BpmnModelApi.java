@@ -1,22 +1,11 @@
 package net.risesoft.api.processadmin;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.pojo.Y9Result;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
