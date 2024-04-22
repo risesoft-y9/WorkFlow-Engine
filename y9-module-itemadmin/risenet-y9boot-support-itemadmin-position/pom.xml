@@ -124,12 +124,6 @@
         </dependency>
 
         <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-elasticsearch</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
@@ -226,7 +220,7 @@
                             <execution>
                                 <goals>
                                     <goal>html</goal>
-                                    <!-- <goal>markdown</goal> -->
+                                    <goal>markdown</goal>
                                     <!--应在接口部署后再推送到 torna -->
                                     <!--<goal>torna-rest</goal> -->
                                 </goals>
