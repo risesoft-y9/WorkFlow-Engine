@@ -154,7 +154,7 @@ public class MobileAttachmentController {
             String fileName = FilenameUtils.getName(originalFilename);
             fileName = URLDecoder.decode(fileName, "UTF-8");
             String fullPath =
-                Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
+                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             map = attachmentManager.upload(tenantId, userId, fileName, y9FileStore.getDisplayFileSize(),
                 processInstanceId, taskId, describes, processSerialNumber, fileSource, y9FileStore.getId());
@@ -257,7 +257,7 @@ public class MobileAttachmentController {
         String result = "";
         try {
             String fullPath =
-                Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
+                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, "正文.doc");
             result = transactionWordManager.uploadWord(tenantId, userId, documentTitle, fileType, processSerialNumber,
                 "0", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());

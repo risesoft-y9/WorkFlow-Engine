@@ -285,7 +285,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             String fileType = FilenameUtils.getExtension(fileName);
 
             Date nowDate = new Date();
-            String fullPath = Y9FileStore.buildFullPath(Y9Context.getSystemName(), "transaction", sdfymd.format(nowDate), sdfhms.format(nowDate), processSerialNumber);
+            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), "transaction", sdfymd.format(nowDate), sdfhms.format(nowDate), processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, fileName);
 
             UserInfo person = Y9LoginUserHolder.getUserInfo();
