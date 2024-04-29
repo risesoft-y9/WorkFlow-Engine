@@ -706,7 +706,7 @@ public class FormNTKOController {
             }
             title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath =
-                Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
+                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
             result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong,
                 taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
@@ -841,7 +841,7 @@ public class FormNTKOController {
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath =
-                Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
+                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
             String result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
                 isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
@@ -894,7 +894,7 @@ public class FormNTKOController {
 
             title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath =
-                Y9FileStore.buildFullPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
+                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
             result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong,
                 taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
