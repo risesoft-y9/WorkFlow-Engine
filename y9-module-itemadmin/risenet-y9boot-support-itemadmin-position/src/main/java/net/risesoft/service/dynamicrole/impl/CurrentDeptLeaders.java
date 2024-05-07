@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
@@ -33,7 +34,9 @@ public class CurrentDeptLeaders extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         Position position = positionApi.get(tenantId, positionId).getData();
-        return departmentManager.listLeaders(tenantId, position.getParentId()).getData();
+        return departmentManager
+            .listDepartmentPropOrgUnits(tenantId, position.getParentId(), DepartmentPropCategoryEnum.LEADER.getValue())
+            .getData();
     }
 
 }

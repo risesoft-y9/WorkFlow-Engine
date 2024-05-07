@@ -10,6 +10,7 @@ import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -603,7 +604,7 @@ public class MobileDocumentController {
             if (personExt != null && personExt.getSign() != null) {
                 map.put("sign", personExt.getSign());// 签名
             }
-            List<OrgUnit> leaders = departmentApi.listLeaders(tenantId, parent.getId()).getData();
+            List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, parent.getId(), DepartmentPropCategoryEnum.LEADER.getValue()).getData();
             map.put("deptLeader", "未配置");// 岗位所在部门领导
             if (!leaders.isEmpty()) {
                 List<Person> personLeaders =
