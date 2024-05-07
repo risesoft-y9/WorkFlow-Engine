@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
@@ -45,7 +46,8 @@ public class StarterDeptManagers extends AbstractDynamicRoleMember {
             if (StringUtils.isNotEmpty(userIdAndDeptId)) {
                 String userId = userIdAndDeptId.split(":")[0];
                 OrgUnit orgUnit = personManager.get(tenantId, userId).getData();
-                List<OrgUnit> leaders = departmentApi.listManagers(tenantId, orgUnit.getParentId()).getData();
+                List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(),
+                    DepartmentPropCategoryEnum.MANAGER.getValue()).getData();
                 orgUnitList.addAll(leaders);
             }
         }

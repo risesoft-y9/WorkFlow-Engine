@@ -2,6 +2,7 @@ package net.risesoft.service.dynamicrole.impl;
 
 import java.util.List;
 
+import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class CurrentDeptManagers extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         Position position = positionApi.get(tenantId, positionId).getData();
-        return departmentManager.listManagers(tenantId, position.getParentId()).getData();
+        return departmentManager.listDepartmentPropOrgUnits(tenantId, position.getParentId(), DepartmentPropCategoryEnum.MANAGER.getValue()).getData();
     }
 
 }

@@ -41,6 +41,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -581,7 +582,9 @@ public class MobileV1DocumentController {
             if (personExt != null && personExt.getSign() != null) {
                 map.put("sign", personExt.getSign());// 签名
             }
-            List<OrgUnit> leaders = departmentApi.listLeaders(tenantId, parent.getId()).getData();
+            List<OrgUnit> leaders = departmentApi
+                .listDepartmentPropOrgUnits(tenantId, parent.getId(), DepartmentPropCategoryEnum.LEADER.getValue())
+                .getData();
             map.put("deptLeader", "未配置");// 岗位所在部门领导
             if (!leaders.isEmpty()) {
                 List<Person> personLeaders =
