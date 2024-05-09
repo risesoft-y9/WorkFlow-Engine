@@ -15,8 +15,8 @@ import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
- * 当前组织架构(人员不包括用户组、岗位里面的人员)
- * 
+ * 当前流程启动人
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
