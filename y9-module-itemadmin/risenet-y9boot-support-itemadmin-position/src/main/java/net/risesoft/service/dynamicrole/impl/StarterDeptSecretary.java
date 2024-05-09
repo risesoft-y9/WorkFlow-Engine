@@ -19,14 +19,14 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import y9.client.rest.processadmin.RuntimeApiClient;
 
 /**
- * 当前流程的启动人员所在部门领导
+ * 当前流程的启动人员所在部门秘书
  *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/22
  */
 @Service
-public class StarterDeptLeaders extends AbstractDynamicRoleMember {
+public class StarterDeptSecretary extends AbstractDynamicRoleMember {
 
     @Autowired
     private PositionApi positionManager;
@@ -47,13 +47,13 @@ public class StarterDeptLeaders extends AbstractDynamicRoleMember {
             if (StringUtils.isNotEmpty(userIdAndDeptId)) {
                 String userId = userIdAndDeptId.split(":")[0];
                 OrgUnit orgUnit = positionManager.get(tenantId, userId).getData();
-                List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(), DepartmentPropCategoryEnum.LEADER.getValue()).getData();
+                List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(), DepartmentPropCategoryEnum.SECRETARY.getValue()).getData();
                 orgUnitList.addAll(leaders);
             }
         } else {
             String positionId = Y9LoginUserHolder.getPositionId();
             Position position = positionManager.get(tenantId, positionId).getData();
-            List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, position.getParentId(), DepartmentPropCategoryEnum.LEADER.getValue()).getData();
+            List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, position.getParentId(), DepartmentPropCategoryEnum.SECRETARY.getValue()).getData();
             orgUnitList.addAll(leaders);
         }
         return orgUnitList;
