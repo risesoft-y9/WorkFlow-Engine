@@ -8,7 +8,7 @@
     <parent>
         <groupId>net.risesoft</groupId>
         <artifactId>y9-flowable</artifactId>
-        <version>v9.6.5</version>
+        <version>v9.6.6-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
