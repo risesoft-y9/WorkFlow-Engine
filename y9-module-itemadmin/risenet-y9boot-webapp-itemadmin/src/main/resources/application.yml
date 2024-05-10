@@ -219,6 +219,8 @@ y9:
         smsBaseUrl: http://localhost:7056/sms
         todoBaseUrl: https://dev.youshengyun.com/todo
         flowableBaseUrl: https://dev.youshengyun.com/flowableUI/index
+        logBaseUrl: http://localhost:7056/log
+        userOnlineBaseUrl: http://localhost:7056/userOnline
     feature:
         file:
             base64FileName: false
@@ -272,6 +274,8 @@ y9:
             tenant-enabled: true
         log:
             enabled: true
+            # kafka, api
+            logSaveTarget: kafka
         session:
             redis:
                 enabled: true

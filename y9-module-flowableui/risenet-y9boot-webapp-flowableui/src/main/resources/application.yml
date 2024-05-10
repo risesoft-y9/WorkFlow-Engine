@@ -241,6 +241,8 @@ y9:
                 enabled: true
         log:
             enabled: true
+            # kafka, api
+            logSaveTarget: kafka
         publish:
             kafka:
                 enabled: false
