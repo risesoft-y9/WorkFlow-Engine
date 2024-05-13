@@ -40,6 +40,15 @@ public interface Y9FormService {
     boolean deleteByGuid(String y9TableId, String guid);
 
     /**
+     * 删除表单数据
+     *
+     * @param formId
+     * @param guid
+     * @return
+     */
+    public Map<String, Object> delPreFormData(String formId, String guid);
+
+    /**
      * 获取所有表单信息
      *
      * @param id
@@ -92,6 +101,14 @@ public interface Y9FormService {
      * @return
      */
     public Map<String, Object> getFormData4Var(String formId, String guid);
+
+    /**
+     * 获取表单数据列表
+     *
+     * @param formId
+     * @return
+     */
+    public List<Map<String, Object>> getFormDataList(String formId);
 
     /**
      * 获取表单绑定字段信息

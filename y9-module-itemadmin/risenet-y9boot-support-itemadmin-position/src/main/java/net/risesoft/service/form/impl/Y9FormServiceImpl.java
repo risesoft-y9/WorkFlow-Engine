@@ -137,6 +137,45 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
+    @Transactional(readOnly = false)
+    public Map<String, Object> delPreFormData(String formId, String guid) {
+        Connection connection = null;
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        map.put(UtilConsts.SUCCESS, true);
+        try {
+            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
+            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            List<String> list = y9FormRepository.findBindTableName(formId);
+            for (String tableName : list) {
+                StringBuffer sqlStr = new StringBuffer();
+                if (DialectEnum.ORACLE.getValue().equals(dialect)) {
+                    sqlStr = new StringBuffer("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
+                } else if (DialectEnum.DM.getValue().equals(dialect)) {
+                    sqlStr = new StringBuffer("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
+                } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
+                    sqlStr = new StringBuffer("delete FROM \"" + tableName + "\" where guid = '" + guid + "'");
+                } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
+                    sqlStr = new StringBuffer("delete FROM " + tableName + " where guid = '" + guid + "'");
+                }
+                jdbcTemplate4Tenant.execute(sqlStr.toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put(UtilConsts.SUCCESS, false);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
     public List<Y9Form> findAll() {
         Sort sort = Sort.by(Sort.Direction.DESC, "updateTime");
         return y9FormRepository.findAll(sort);
@@ -325,6 +364,54 @@ public class Y9FormServiceImpl implements Y9FormService {
             }
         }
         return map;
+    }
+
+    @Override
+    public List<Map<String, Object>> getFormDataList(String formId) {
+        List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
+        Connection connection = null;
+        try {
+            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
+            DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
+            String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
+            List<String> tableNameList = y9FormRepository.findBindTableName(formId);
+            for (String tableName : tableNameList) {
+                Y9Table y9Table = y9TableService.findByTableName(tableName);
+                if (y9Table.getTableType() == 1) {
+                    StringBuffer sqlStr = new StringBuffer();
+                    if ("oracle".equals(dialect)) {
+                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\"");
+                    } else if ("dm".equals(dialect)) {
+                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\"");
+                    } else if ("kingbase".equals(dialect)) {
+                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\"");
+                    } else if ("mysql".equals(dialect)) {
+                        sqlStr = new StringBuffer("SELECT * FROM " + tableName);
+                    }
+                    List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString());
+                    for (Map<String, Object> data : datamap) {
+                        List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
+                        Map<String, Object> map = new HashMap<String, Object>(16);
+                        for (Y9FormField element : elementList) {
+                            String fieldName = element.getFieldName();
+                            map.put(fieldName, data.get(fieldName) != null ? data.get(fieldName).toString() : "");
+                        }
+                        resList.add(map);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return resList;
     }
 
     @Override

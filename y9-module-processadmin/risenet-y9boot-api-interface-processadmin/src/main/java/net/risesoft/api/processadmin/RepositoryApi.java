@@ -3,8 +3,6 @@ package net.risesoft.api.processadmin;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.web.multipart.MultipartFile;
 
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
@@ -86,11 +84,10 @@ public interface RepositoryApi {
      * @param resourceType xml
      * @param processInstanceId 流程实例id
      * @param processDefinitionId 流程定义id
-     * @param response
      * @return Y9Result<String>
      * @throws Exception
      */
-    Y9Result<String> getXmlByProcessInstance(String tenantId, String resourceType, String processInstanceId, String processDefinitionId, HttpServletResponse response) throws Exception;
+    Y9Result<String> getXmlByProcessInstance(String tenantId, String resourceType, String processInstanceId, String processDefinitionId) throws Exception;
 
     /**
      * 获取已部署流程定义列表

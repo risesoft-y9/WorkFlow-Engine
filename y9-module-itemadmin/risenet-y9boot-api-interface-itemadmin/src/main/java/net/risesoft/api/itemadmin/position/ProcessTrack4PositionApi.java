@@ -3,7 +3,9 @@ package net.risesoft.api.itemadmin.position;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -38,6 +40,15 @@ public interface ProcessTrack4PositionApi {
      * @return List&lt;ProcessTrackModel&gt;
      */
     List<ProcessTrackModel> findByTaskIdAsc(String tenantId, String taskId);
+
+    /**
+     * 获取流程图任务节点信息
+     *
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @return
+     */
+    Y9Result<List<HistoricActivityInstanceModel>> getTaskList(String tenantId, String processInstanceId);
 
     /**
      * 分页生成历程列表(包含每个任务节点的特殊操作的历程)

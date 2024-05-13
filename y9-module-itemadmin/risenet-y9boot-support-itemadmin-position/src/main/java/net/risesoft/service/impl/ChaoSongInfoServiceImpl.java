@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -193,8 +194,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     @Transactional(readOnly = false)
     public boolean deleteByProcessInstanceId(String processInstanceId) {
         try {
-            chaoSongInfoRepository.deleteByProcessInstanceIdAndTenantId(processInstanceId,
-                Y9LoginUserHolder.getTenantId());
+            chaoSongInfoRepository.deleteByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -216,8 +216,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             TaskModel task = taskManager.findById(tenantId, taskId);
             processInstanceId = task.getProcessInstanceId();
         }
-        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
-            activitiUser = "";
+        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "", activitiUser = "";
         String itemboxStr = itembox;
         String startor = "";
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
@@ -260,8 +259,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         returnMap.put("taskId", taskId);
         returnMap.put(SysVariables.ACTIVITIUSER, activitiUser);
         returnMap = spmApproveitemService.findById(processParam.getItemId(), returnMap);
-        returnMap = documentService.genDocumentModel(processParam.getItemId(), processDefinitionKey,
-            processDefinitionId, taskDefinitionKey, mobile, returnMap);
+        returnMap = documentService.genDocumentModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, returnMap);
         String menuName = "打印,抄送,关注,返回";
         String menuKey = "17,18,follow,03";
         if (status == 1) {
@@ -293,18 +291,19 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
 
+
         Criteria criteria = new Criteria();
         criteria.and("userId").is(positionId);
         criteria.and("tenantId").is(Y9LoginUserHolder.getTenantId());
-        if (StringUtils.isNotBlank(documentTitle)) {
             criteria.and("title").contains(documentTitle);
-        }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
 
         IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+
         SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, index);
         List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<ChaoSongInfo>(list, pageable, searchHits.getTotalHits());
+
 
         // Page<ChaoSongInfo> pageList = chaoSongInfoRepository.search(builder,
         // pageable);
@@ -334,8 +333,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 map.put("processSerialNumber", processParam.getProcessSerialNumber());
                 map.put("number", processParam.getCustomNumber());
                 map.put("level", processParam.getCustomLevel());
-                int chaosongNum =
-                    chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
+                int chaosongNum = chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
                 map.put("chaosongNum", chaosongNum);
                 hpi = historicProcessManager.getById(tenantId, processInstanceId);
                 boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
@@ -358,8 +356,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     @Override
     public int getDone4OpinionCountByUserId(String userId) {
-        return chaoSongInfoRepository.countByUserIdAndOpinionStateAndTenantId(userId, "1",
-            Y9LoginUserHolder.getTenantId());
+        return chaoSongInfoRepository.countByUserIdAndOpinionStateAndTenantId(userId, "1", Y9LoginUserHolder.getTenantId());
     }
 
     @Override
@@ -417,16 +414,17 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 map.put("processSerialNumber", processParam.getProcessSerialNumber());
                 map.put("number", processParam.getCustomNumber());
                 map.put("level", processParam.getCustomLevel());
-                int chaosongNum =
-                    chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
+                int chaosongNum = chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
                 map.put("chaosongNum", chaosongNum);
                 hpi = historicProcessManager.getById(tenantId, processInstanceId);
                 boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
                 if (banjie) {
                     map.put("banjie", true);
                 }
+                OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                map.put("processDefinitionId", officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
                 int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
-                map.put("follow", countFollow > 0);
+                map.put("follow", countFollow > 0 ? true : false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -442,8 +440,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    public Map<String, Object> getListByProcessInstanceId(String processInstanceId, String userName, int rows,
-        int page) {
+    public Map<String, Object> getListByProcessInstanceId(String processInstanceId, String userName, int rows, int page) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         String senderId = Y9LoginUserHolder.getPositionId();
@@ -460,7 +457,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             Criteria criteria = new Criteria();
             criteria.and("processInstanceId").is(processInstanceId);
             criteria.and("tenantId").is(tenantId);
-            criteria.and("senderId").is(senderId);
+            criteria.and("senderId").notIn(senderId);
             if (StringUtils.isNotBlank(userName)) {
                 criteria.and("userName").contains(userName);
             }
@@ -514,8 +511,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    public Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId,
-        String userName, int rows, int page) {
+    public Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId, String userName, int rows, int page) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         try {
@@ -640,8 +636,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     map.put("processSerialNumber", processParam.getProcessSerialNumber());
                     map.put("number", processParam.getCustomNumber());
                     map.put("level", processParam.getCustomLevel());
-                    int chaosongNum =
-                        chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(userId, processInstanceId);
+                    int chaosongNum = chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(userId, processInstanceId);
                     map.put("chaosongNum", chaosongNum);
                     hpi = historicProcessManager.getById(tenantId, processInstanceId);
                     boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
@@ -649,7 +644,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                         map.put("banjie", true);
                     }
                     int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
-                    map.put("follow", countFollow > 0);
+                    map.put("follow", countFollow > 0 ? true : false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -731,14 +726,15 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 map.put("processSerialNumber", processParam.getProcessSerialNumber());
                 map.put("number", processParam.getCustomNumber());
                 map.put("level", processParam.getCustomLevel());
-                int chaosongNum =
-                    chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
+                int chaosongNum = chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
                 map.put("chaosongNum", chaosongNum);
                 hpi = historicProcessManager.getById(tenantId, processInstanceId);
                 boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
                 if (banjie) {
                     map.put("banjie", true);
                 }
+                OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                map.put("processDefinitionId", officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
                 int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
                 map.put("follow", countFollow > 0);
             } catch (Exception e) {
@@ -756,8 +752,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> myChaoSongList(String searchName, String itemId, String userName, String state,
-        String year, int rows, int page) {
+    public Y9Page<Map<String, Object>> myChaoSongList(String searchName, String itemId, String userName, String state, String year, int rows, int page) {
         String userId = Y9LoginUserHolder.getPositionId();
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         try {
@@ -810,8 +805,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     map.put("userName", cs.getUserName());
                     map.put("userDeptId", cs.getUserDeptId());
                     map.put("userDeptName", cs.getUserDeptName());
-                    map.put("readTime",
-                        StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
+                    map.put("readTime", StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
                     map.put("title", hpi.getTitle());
                     map.put("status", cs.getStatus());
                     map.put("banjie", false);
@@ -824,7 +818,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     map.put("number", hpi.getDocNumber());
                     map.put("level", hpi.getUrgency());
                     boolean banjie = hpi != null && hpi.getEndTime() != null;
-                    map.put("meeting", hpi.getMeeting() != null && hpi.getMeeting().equals("1"));
+                    map.put("meeting", (hpi.getMeeting() != null && hpi.getMeeting().equals("1")) ? true : false);
                     if (banjie) {
                         map.put("banjie", true);
                     }
@@ -854,8 +848,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     @Override
     @Transactional(readOnly = false)
-    public Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
-        String smsContent, String smsPersonId) {
+    public Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "抄送失败");
@@ -863,9 +856,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-            String title = processParam.getTitle(), itemId = processParam.getItemId(),
-                itemName = processParam.getItemName(), systemName = processParam.getSystemName();
-            String[] orgUnitList = users.split(";");
+            String title = processParam.getTitle(), itemId = processParam.getItemId(), itemName = processParam.getItemName(), systemName = processParam.getSystemName();
+            List<String> orgUnitList = Arrays.asList(users.split(";"));
             List<ChaoSongInfo> csList = new ArrayList<ChaoSongInfo>();
             List<String> userIdListAdd = new ArrayList<String>();
             // 添加的人员
@@ -882,8 +874,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 } else if (ItemPermissionEnum.POSITION.getValue() == type) {
                     userIdListAdd.add(orgUnitId);
                 } else if (type == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
-                    List<CustomGroupMember> list0 = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                        Y9LoginUserHolder.getPersonId(), orgUnitId, OrgTypeEnum.POSITION).getData();
+                    List<CustomGroupMember> list0 = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId, Y9LoginUserHolder.getPersonId(), orgUnitId, OrgTypeEnum.POSITION).getData();
                     for (CustomGroupMember pTemp : list0) {
                         Position position = positionManager.get(tenantId, pTemp.getMemberId()).getData();
                         if (position != null && StringUtils.isNotBlank(position.getId())) {
@@ -927,15 +918,12 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 smsContent += "--" + Y9LoginUserHolder.getUserInfo().getName();
                 Boolean smsSwitch = y9Conf.getApp().getItemAdmin().getSmsSwitch();
                 if (smsSwitch) {
-                    smsHttpManager.sendSmsHttpList(tenantId, Y9LoginUserHolder.getPersonId(), mobile, smsContent,
-                        systemName + "抄送");
+                    smsHttpManager.sendSmsHttpList(tenantId, Y9LoginUserHolder.getPersonId(), mobile, smsContent, systemName + "抄送");
                 } else {
-                    LOGGER
-                        .info("*********************y9.app.itemAdmin.smsSwitch开关未打开**********************************");
+                    LOGGER.info("*********************y9.app.itemAdmin.smsSwitch开关未打开**********************************");
                 }
             }
-            asyncHandleService.weiXinRemind4ChaoSongInfo(tenantId, Y9LoginUserHolder.getPersonId(),
-                processParam.getProcessSerialNumber(), csList);
+            asyncHandleService.weiXinRemind4ChaoSongInfo(tenantId, Y9LoginUserHolder.getPersonId(), processParam.getProcessSerialNumber(), csList);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "抄送成功");
         } catch (Exception e) {
@@ -965,8 +953,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    public Map<String, Object> searchAllByUserId(String searchName, String itemId, String userName, String state,
-        String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllByUserId(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> retMap = new HashMap<String, Object>(16);
@@ -980,7 +967,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
             IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
             Criteria criteria = new Criteria();
-            criteria.and("senderId").is(userId);
+            criteria.and("userId").is(userId);
             criteria.and("tenantId").is(Y9LoginUserHolder.getTenantId());
             if (StringUtils.isNotBlank(searchName)) {
                 criteria.and("title").contains(searchName);
@@ -1022,8 +1009,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     map.put("senderName", cs.getSenderName());
                     map.put("sendDeptId", cs.getSendDeptId());
                     map.put("sendDeptName", cs.getSendDeptName());
-                    map.put("readTime",
-                        StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
+                    map.put("readTime", StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
                     map.put("title", processParam.getTitle());
                     map.put("status", cs.getStatus());
                     map.put("banjie", false);
@@ -1037,6 +1023,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     if (banjie) {
                         map.put("banjie", true);
                     }
+                    OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                    map.put("processDefinitionId", officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
                     int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
                     map.put("follow", countFollow > 0);
                 } catch (Exception e) {
@@ -1062,8 +1050,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    public Map<String, Object> searchAllList(String searchName, String itemId, String senderName, String userName,
-        String state, String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllList(String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
@@ -1117,8 +1104,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     map.put("senderName", cs.getSenderName());
                     map.put("sendDeptId", cs.getSendDeptId());
                     map.put("sendDeptName", cs.getSendDeptName());
-                    map.put("readTime",
-                        StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
+                    map.put("readTime", StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
                     map.put("title", processParam.getTitle());
                     map.put("status", cs.getStatus());
                     map.put("banjie", false);
@@ -1134,6 +1120,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     if (banjie) {
                         map.put("banjie", true);
                     }
+                    OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                    map.put("processDefinitionId", officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

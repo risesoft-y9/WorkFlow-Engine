@@ -33,6 +33,10 @@ public interface FormDataApiClient extends FormDataApi {
     @PostMapping("/delChildTableRow")
     public Map<String, Object> delChildTableRow(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestParam("tableId") String tableId, @RequestParam("guid") String guid);
 
+    @Override
+    @PostMapping("/delPreFormData")
+    public Map<String, Object> delPreFormData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestParam("guid") String guid);
+
     /**
      * 获取表单所有字段权限
      *
@@ -46,6 +50,10 @@ public interface FormDataApiClient extends FormDataApi {
     @Override
     @GetMapping("/getAllFieldPerm")
     List<Map<String, Object>> getAllFieldPerm(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("formId") String formId, @RequestParam("taskDefKey") String taskDefKey, @RequestParam("processDefinitionId") String processDefinitionId);
+
+    @Override
+    @GetMapping("/getBindPreFormByItemId")
+    Map<String, Object> getBindPreFormByItemId(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId);
 
     /**
      * 获取子表数据
@@ -130,6 +138,10 @@ public interface FormDataApiClient extends FormDataApi {
     @GetMapping("/getFromData")
     public Map<String, Object> getFromData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestParam("processSerialNumber") String processSerialNumber);
 
+    @Override
+    @GetMapping("/getPreFormDataByFormId")
+    List<Map<String, Object>> getPreFormDataByFormId(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId);
+
     /**
      * 保存子表数据 Description:
      *
@@ -155,4 +167,17 @@ public interface FormDataApiClient extends FormDataApi {
     @Override
     @PostMapping(value = "/saveFormData")
     void saveFormData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestBody String formJsonData) throws Exception;
+
+    /**
+     * 保存前置表单数据
+     *
+     * @param tenantId
+     * @param itemId
+     * @param formId
+     * @param formJsonData
+     * @throws Exception
+     */
+    @Override
+    @PostMapping(value = "/savePreFormData")
+    String savePreFormData(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId, @RequestParam("formId") String formId, @RequestBody String formJsonData) throws Exception;
 }

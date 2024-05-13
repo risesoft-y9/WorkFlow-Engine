@@ -23,6 +23,15 @@ public interface FormDataService {
     public Map<String, Object> delChildTableRow(String formId, String tableId, String guid);
 
     /**
+     * 删除前置表单数据
+     *
+     * @param formId
+     * @param guid
+     * @return
+     */
+    public Map<String, Object> delPreFormData(String formId, String guid);
+
+    /**
      * 获取表单所有字段权限
      *
      * @param formId
@@ -33,6 +42,14 @@ public interface FormDataService {
     public List<Map<String, Object>> getAllFieldPerm(String formId, String taskDefKey, String processDefinitionId);
 
     /**
+     * 根据事项id获取绑定前置表单
+     *
+     * @param itemId
+     * @return
+     */
+    public Map<String, Object> getBindPreFormByItemId(String itemId);
+
+    /**
      * Description: 获取子表数据
      *
      * @param formId
@@ -41,8 +58,7 @@ public interface FormDataService {
      * @return
      * @throws Exception
      */
-    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber)
-        throws Exception;
+    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber) throws Exception;
 
     /**
      * 根据事项id和流程序列号获取数据
@@ -63,8 +79,7 @@ public interface FormDataService {
      * @param processDefinitionId
      * @return
      */
-    public Map<String, Object> getFieldPerm(String formId, String fieldName, String taskDefKey,
-        String processDefinitionId);
+    public Map<String, Object> getFieldPerm(String formId, String fieldName, String taskDefKey, String processDefinitionId);
 
     /**
      * 获取表单绑定字段信息
@@ -100,6 +115,23 @@ public interface FormDataService {
     public Map<String, Object> getFromData(String formId, String processSerialNumber);
 
     /**
+     * 根据表单id获取前置表单数据
+     *
+     * @param formId
+     * @return
+     */
+    public List<Map<String, Object>> getPreFormDataByFormId(String formId);
+
+    /**
+     * 保存前置表单数据
+     *
+     * @param itemId
+     * @param formJsonData
+     * @param formId
+     */
+    public String saveAFormData(String itemId, String formdata, String formId) throws Exception;
+
+    /**
      * Description: 保存子表数据
      *
      * @param formId
@@ -108,8 +140,7 @@ public interface FormDataService {
      * @param jsonData
      * @throws Exception
      */
-    public void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData)
-        throws Exception;
+    public void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData) throws Exception;
 
     /**
      * 保存表单数据
