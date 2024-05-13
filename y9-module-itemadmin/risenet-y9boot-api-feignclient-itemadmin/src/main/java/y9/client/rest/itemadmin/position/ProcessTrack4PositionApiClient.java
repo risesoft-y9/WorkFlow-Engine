@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
+import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ProcessTrack4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
-    url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/processTrack4Position")
+@FeignClient(contextId = "ProcessTrack4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/processTrack4Position")
 public interface ProcessTrack4PositionApiClient extends ProcessTrack4PositionApi {
 
     /**
@@ -43,8 +43,7 @@ public interface ProcessTrack4PositionApiClient extends ProcessTrack4PositionApi
      */
     @Override
     @GetMapping("/findByTaskId")
-    public List<ProcessTrackModel> findByTaskId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("taskId") String taskId);
+    public List<ProcessTrackModel> findByTaskId(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
 
     /**
      * 根据任务id获取自定义历程
@@ -55,8 +54,11 @@ public interface ProcessTrack4PositionApiClient extends ProcessTrack4PositionApi
      */
     @Override
     @GetMapping("/findByTaskIdAsc")
-    public List<ProcessTrackModel> findByTaskIdAsc(@RequestParam("tenantId") String tenantId,
-        @RequestParam("taskId") String taskId);
+    public List<ProcessTrackModel> findByTaskIdAsc(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+
+    @Override
+    @GetMapping("/getTaskList")
+    public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 分页生成历程列表(包含每个任务节点的特殊操作的历程)
@@ -68,8 +70,7 @@ public interface ProcessTrack4PositionApiClient extends ProcessTrack4PositionApi
      */
     @Override
     @GetMapping("/processTrackList")
-    public Map<String, Object> processTrackList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
+    public Map<String, Object> processTrackList(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 分页生成历程列表(包含每个任务节点的特殊操作的历程)
@@ -81,8 +82,7 @@ public interface ProcessTrack4PositionApiClient extends ProcessTrack4PositionApi
      */
     @Override
     @GetMapping("/processTrackList4Simple")
-    public Map<String, Object> processTrackList4Simple(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
+    public Map<String, Object> processTrackList4Simple(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 保存或更新历程
@@ -95,6 +95,5 @@ public interface ProcessTrack4PositionApiClient extends ProcessTrack4PositionApi
      */
     @Override
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ProcessTrackModel saveOrUpdate(@RequestParam("tenantId") String tenantId,
-        @RequestBody ProcessTrackModel processTrack) throws Exception;
+    public ProcessTrackModel saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestBody ProcessTrackModel processTrack) throws Exception;
 }

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.risesoft.entity.ProcessTrack;
+import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -68,8 +70,16 @@ public interface ProcessTrackService {
     List<Map<String, Object>> getListMap4Simple(String processInstanceId);
 
     /**
+     * 获取流程图任务节点信息
+     *
+     * @param processInstanceId
+     * @return
+     */
+    Y9Result<List<HistoricActivityInstanceModel>> getTaskList(String processInstanceId);
+
+    /**
      * Description: 保存或者更新历程数据
-     * 
+     *
      * @param processTrack
      * @return
      */

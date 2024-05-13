@@ -52,6 +52,21 @@ public class FormDataApiImpl implements FormDataApi {
     }
 
     /**
+     * 删除前置表单数据
+     *
+     * @param tenantId 租户id
+     * @param formId 表单id
+     * @param guid 主键id
+     * @return
+     */
+    @Override
+    @PostMapping(value = "/delPreFormData", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> delPreFormData(String tenantId, String formId, String guid) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return formDataService.delPreFormData(formId, guid);
+    }
+
+    /**
      * 获取表单所有字段权限
      *
      * @param tenantId 租户id
@@ -68,6 +83,20 @@ public class FormDataApiImpl implements FormDataApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         return formDataService.getAllFieldPerm(formId, taskDefKey, processDefinitionId);
+    }
+
+    /**
+     * 根据事项id获取绑定前置表单
+     *
+     * @param tenantId 租户id
+     * @param itemId 事项id
+     * @return
+     */
+    @Override
+    @GetMapping(value = "/getBindPreFormByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getBindPreFormByItemId(String tenantId, String itemId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return formDataService.getBindPreFormByItemId(itemId);
     }
 
     /**
@@ -180,6 +209,20 @@ public class FormDataApiImpl implements FormDataApi {
     }
 
     /**
+     * 根据表单id获取前置表单数据
+     *
+     * @param tenantId 租户id
+     * @param formId 表单id
+     * @return
+     */
+    @Override
+    @GetMapping(value = "/getPreFormDataByFormId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Map<String, Object>> getPreFormDataByFormId(String tenantId, String formId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return formDataService.getPreFormDataByFormId(formId);
+    }
+
+    /**
      * 保存子表数据
      *
      * @param tenantId 租户id
@@ -209,5 +252,22 @@ public class FormDataApiImpl implements FormDataApi {
     public void saveFormData(String tenantId, String formId, @RequestBody String formJsonData) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         formDataService.saveFormData(formJsonData, formId);
+    }
+
+    /**
+     * 保存前置表单数据
+     *
+     * @param tenantId 租户id
+     * @param itemId 事项id
+     * @param formId 表单id
+     * @param formJsonData json表数据
+     * @throws Exception
+     */
+    @Override
+    @PostMapping(value = "/savePreFormData", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String savePreFormData(String tenantId, String itemId, String formId, @RequestBody String formJsonData) throws Exception {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        System.out.println("***********************savePreFormData   formJsonData****************" + formJsonData);
+        return formDataService.saveAFormData(itemId, formJsonData, formId);
     }
 }

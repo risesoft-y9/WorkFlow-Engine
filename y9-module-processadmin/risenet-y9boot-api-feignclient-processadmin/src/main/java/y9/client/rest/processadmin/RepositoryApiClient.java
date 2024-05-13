@@ -3,8 +3,6 @@ package y9.client.rest.processadmin;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -100,7 +98,7 @@ public interface RepositoryApiClient extends RepositoryApi {
     */
     @Override
     @GetMapping("/getXmlByProcessInstance")
-    Y9Result<String> getXmlByProcessInstance(@RequestParam("tenantId") String tenantId, @RequestParam("resourceType") String resourceType, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("processDefinitionId") String processDefinitionId, HttpServletResponse response);
+    Y9Result<String> getXmlByProcessInstance(@RequestParam("tenantId") String tenantId, @RequestParam("resourceType") String resourceType, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
     *

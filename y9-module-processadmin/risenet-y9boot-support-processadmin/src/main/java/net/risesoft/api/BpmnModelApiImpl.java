@@ -1,18 +1,22 @@
 package net.risesoft.api;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.pojo.Y9Result;
-import org.apache.commons.io.IOUtils;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.BpmnAutoLayout;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
@@ -38,7 +42,6 @@ import org.flowable.engine.runtime.Execution;
 import org.flowable.image.ProcessDiagramGenerator;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.history.HistoricTaskInstance;
-import org.flowable.ui.common.security.SecurityUtils;
 import org.flowable.ui.common.util.XmlUtil;
 import org.flowable.ui.modeler.domain.AbstractModel;
 import org.flowable.ui.modeler.domain.Model;
@@ -51,7 +54,15 @@ import org.flowable.validation.ValidationError;
 import org.flowable.variable.api.history.HistoricVariableInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
@@ -62,6 +73,7 @@ import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricActivityService;
 import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.CustomHistoricTaskService;
@@ -71,11 +83,6 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
 
 /**
  * 流程图接口
@@ -128,224 +135,25 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     private ModelRepository modelRepository;
 
     /**
-     * 导入流程模型
+     * 删除模型
      *
      * @param tenantId 租户id
-     * @param userId   用户id
-     * @param file     模型文件
+     * @param modelId 模型id
      * @return
      */
     @Override
-    @RequestMapping(value = "/import")
-    public Map<String, Object> importProcessModel(@RequestParam String tenantId, @RequestParam String userId,@RequestParam MultipartFile file) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("success", false);
-        map.put("msg", "导入失败");
-
+    @RequestMapping(value = "/deleteModel", method = RequestMethod.POST, produces = "application/json")
+    public Y9Result<String> deleteModel(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        try {
-            Person person = personManager.get(tenantId, userId).getData();
-            XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
-            InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
-            XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
-
-            BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
-            BpmnModel bpmnModel = bpmnXmlConverter.convertToBpmnModel(xtr);
-            // 模板验证
-            ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
-            List<ValidationError> errors = validator.validate(bpmnModel);
-            if (!errors.isEmpty()) {
-                StringBuffer es = new StringBuffer();
-                errors.forEach(ve -> es.append(ve.toString()).append("/n"));
-                map.put("msg", "导入失败：模板验证失败，原因: " + es.toString());
-                return map;
-            }
-            if (bpmnModel.getProcesses().isEmpty()) {
-                map.put("msg", "导入失败： 上传的文件中不存在流程的信息");
-                return map;
-            }
-            if (bpmnModel.getLocationMap().isEmpty()) {
-                BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
-                bpmnLayout.execute();
-            }
-            BpmnJsonConverter bpmnJsonConverter = new BpmnJsonConverter();
-            ObjectNode modelNode = bpmnJsonConverter.convertToJson(bpmnModel);
-            org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
-            String name = process.getId();
-            if (StringUtils.isNotEmpty(process.getName())) {
-                name = process.getName();
-            }
-            String description = process.getDocumentation();
-            //ModelRepresentation model = modelService.getModelRepresentation(modelId);
-            //model.setKey(process.getId());
-            //model.setName(name);
-            //model.setDescription(description);
-            //model.setModelType(AbstractModel.MODEL_TYPE_BPMN);
-            // 查询是否已经存在流程模板
-            Model newModel = new Model();
-            List<Model> models = modelRepository.findByKeyAndType(process.getId(), AbstractModel.MODEL_TYPE_BPMN);
-            if (!models.isEmpty()) {
-                Model updateModel = models.get(0);
-                newModel.setId(updateModel.getId());
-            }
-            newModel.setName(name);
-            newModel.setKey(process.getId());
-            newModel.setModelType(AbstractModel.MODEL_TYPE_BPMN);
-            newModel.setCreated(Calendar.getInstance().getTime());
-            newModel.setCreatedBy(person.getName());
-            newModel.setDescription(description);
-            newModel.setModelEditorJson(modelNode.toString());
-            newModel.setLastUpdated(Calendar.getInstance().getTime());
-            newModel.setLastUpdatedBy(person.getName());
-            newModel.setTenantId(tenantId);
-            newModel = modelService.createModel(newModel, userId);
-            map.put("success", true);
-            map.put("msg", "导入成功");
-            return map;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return map;
+        modelService.deleteModel(modelId);
+        return Y9Result.successMsg("删除成功");
     }
-
-    /**
-     * 保存模型xml
-     *
-     * @param tenantId 租户id
-     * @param userId   用户id
-     * @param modelId  模型id
-     * @param file     模型文件
-     * @return
-     */
-    @Override
-    @RequestMapping(value = "/saveModelXml")
-    public Y9Result<String> saveModelXml(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String modelId, @RequestParam MultipartFile file) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        try {
-            Person person = personManager.get(tenantId, userId).getData();
-            XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
-            InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
-            XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
-
-            BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
-            BpmnModel bpmnModel = bpmnXmlConverter.convertToBpmnModel(xtr);
-            // 模板验证
-            ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
-            List<ValidationError> errors = validator.validate(bpmnModel);
-            if (!errors.isEmpty()) {
-                StringBuffer es = new StringBuffer();
-                errors.forEach(ve -> es.append(ve.toString()).append("/n"));
-                return Y9Result.failure("保存失败：模板验证失败，原因: " + es.toString());
-            }
-            if (bpmnModel.getProcesses().isEmpty()) {
-                return Y9Result.failure("保存失败： 文件中不存在流程的信息");
-            }
-            if (bpmnModel.getLocationMap().isEmpty()) {
-                BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
-                bpmnLayout.execute();
-            }
-            BpmnJsonConverter bpmnJsonConverter = new BpmnJsonConverter();
-            ObjectNode modelNode = bpmnJsonConverter.convertToJson(bpmnModel);
-            org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
-            String name = process.getId();
-            if (StringUtils.isNotEmpty(process.getName())) {
-                name = process.getName();
-            }
-            String description = process.getDocumentation();
-
-            ModelRepresentation model = modelService.getModelRepresentation(modelId);
-            model.setKey(process.getId());
-            model.setName(name);
-            model.setDescription(description);
-            model.setModelType(AbstractModel.MODEL_TYPE_BPMN);
-            // 查询是否已经存在流程模板
-            Model newModel = new Model();
-            List<Model> models = modelRepository.findByKeyAndType(model.getKey(), model.getModelType());
-            if (!models.isEmpty()) {
-                Model updateModel = models.get(0);
-                newModel.setId(updateModel.getId());
-            }
-            newModel.setName(model.getName());
-            newModel.setKey(model.getKey());
-            newModel.setModelType(model.getModelType());
-            newModel.setCreated(Calendar.getInstance().getTime());
-            newModel.setCreatedBy(person.getName());
-            newModel.setDescription(model.getDescription());
-            newModel.setModelEditorJson(modelNode.toString());
-            newModel.setLastUpdated(Calendar.getInstance().getTime());
-            newModel.setLastUpdatedBy(person.getName());
-            newModel.setTenantId(tenantId);
-            newModel = modelService.createModel(newModel, userId);
-            return Y9Result.successMsg("保存成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Y9Result.failure("保存失败");
-    }
-
-    /**
-     * 获取流程设计模型xml
-     *
-     * @param tenantId 租户id
-     * @param modelId  模型id
-     * @return
-     */
-    @Override
-    @RequestMapping(value = "/getModelXml")
-    public Y9Result<Map<String, Object>> getModelXml(@RequestParam String tenantId, @RequestParam String modelId) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        byte[] bpmnBytes = null;
-        Map<String, Object> map = new HashMap<>();
-        try {
-            Model model = modelService.getModel(modelId);
-            map.put("key", model.getKey());
-            map.put("name", model.getName());
-            bpmnBytes = modelService.getBpmnXML(model);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes, Charset.forName("UTF-8")));
-        return Y9Result.success(map, "获取成功");
-    }
-
-    /**
-     * 获取模型列表
-     *
-     * @param tenantId 租户id
-     * @return
-     */
-    @Override
-    @RequestMapping(value = "/getModelList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getModelList(@RequestParam String tenantId) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<Map<String, Object>> items = new ArrayList<>();
-        List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
-        ProcessDefinition processDefinition = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Map<String, Object> mapTemp = null;
-        for (AbstractModel model : list) {
-            mapTemp = new HashMap<>(16);
-            mapTemp.put("id", model.getId());
-            mapTemp.put("key", model.getKey());
-            mapTemp.put("name", model.getName());
-            mapTemp.put("version", 0);
-            processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey()).latestVersion().singleResult();
-            if (null != processDefinition) {
-                mapTemp.put("version", processDefinition.getVersion());
-            }
-            mapTemp.put("createTime", sdf.format(model.getCreated()));
-            mapTemp.put("lastUpdateTime", sdf.format(model.getLastUpdated()));
-            items.add(mapTemp);
-        }
-        return Y9Result.success(items, "获取成功");
-    }
-
 
     /**
      * 根据Model部署流程
      *
      * @param tenantId 租户id
-     * @param modelId  模型id
+     * @param modelId 模型id
      * @return
      */
     @Override
@@ -364,24 +172,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     }
 
     /**
-     * 删除模型
-     *
-     * @param tenantId 租户id
-     * @param modelId  模型id
-     * @return
-     */
-    @Override
-    @RequestMapping(value = "/deleteModel", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteModel(@RequestParam String tenantId, @RequestParam String modelId) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        modelService.deleteModel(modelId);
-        return Y9Result.successMsg("删除成功");
-    }
-
-    /**
      * 生成流程图
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return byte[]
      * @throws Exception Exception
@@ -439,7 +232,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     /**
      * 获取流程图模型
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return Map<String, Object>
      * @throws Exception Exception
@@ -461,11 +254,11 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         BpmnModel bpmnModel = repositoryService.getBpmnModel(pi.getProcessDefinitionId());
         Map<String, GraphicInfo> infoMap = bpmnModel.getLocationMap();
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-        List<FlowElement> flowElements = (List<FlowElement>) process.getFlowElements();
+        List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
         for (FlowElement flowElement : flowElements) {
             Map<String, Object> nodeMap = new HashMap<String, Object>(16);
             if (flowElement instanceof StartEvent) {
-                StartEvent startEvent = (StartEvent) flowElement;
+                StartEvent startEvent = (StartEvent)flowElement;
                 GraphicInfo graphicInfo = infoMap.get(startEvent.getId());
                 txtFlowPath = startEvent.getId();
                 nodeMap.put("key", startEvent.getId());
@@ -483,7 +276,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 for (SequenceFlow tr : list) {
                     FlowElement fe = tr.getTargetFlowElement();
                     if ((fe instanceof UserTask)) {
-                        UserTask u = (UserTask) fe;
+                        UserTask u = (UserTask)fe;
                         Map<String, Object> linkMap = new HashMap<String, Object>(16);
                         linkMap.put("from", startEvent.getId());
                         linkMap.put("to", u.getId());
@@ -491,7 +284,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     }
                 }
             } else if (flowElement instanceof UserTask) {
-                UserTask userTask = (UserTask) flowElement;
+                UserTask userTask = (UserTask)flowElement;
                 GraphicInfo graphicInfo = infoMap.get(userTask.getId());
                 nodeMap.put("key", userTask.getId());
                 nodeMap.put("text", userTask.getName());
@@ -506,30 +299,30 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     if (fe instanceof ExclusiveGateway) {
                         // 目标节点时排他网关时，需要再次获取输出路线
                         List<SequenceFlow> outgoingFlows = new ArrayList<SequenceFlow>();
-                        ExclusiveGateway gateway = (ExclusiveGateway) fe;
+                        ExclusiveGateway gateway = (ExclusiveGateway)fe;
                         outgoingFlows = gateway.getOutgoingFlows();
                         for (SequenceFlow sf : outgoingFlows) {
                             FlowElement element = sf.getTargetFlowElement();
                             if (element instanceof UserTask) {
-                                UserTask task = (UserTask) element;
+                                UserTask task = (UserTask)element;
                                 Map<String, Object> linkMap = new HashMap<String, Object>(16);
                                 linkMap.put("from", userTask.getId());
                                 linkMap.put("to", task.getId());
                                 linkDataArray.add(linkMap);
                             } else if (element instanceof EndEvent) {
-                                EndEvent endEvent = (EndEvent) element;
+                                EndEvent endEvent = (EndEvent)element;
                                 Map<String, Object> linkMap = new HashMap<String, Object>(16);
                                 linkMap.put("from", userTask.getId());
                                 linkMap.put("to", endEvent.getId());
                                 linkDataArray.add(linkMap);
                             } else if (element instanceof ParallelGateway) {
-                                ParallelGateway parallelgateway = (ParallelGateway) element;
+                                ParallelGateway parallelgateway = (ParallelGateway)element;
                                 List<SequenceFlow> outgoingFlows1 = new ArrayList<SequenceFlow>();
                                 outgoingFlows1 = parallelgateway.getOutgoingFlows();
                                 for (SequenceFlow sf1 : outgoingFlows1) {
                                     FlowElement element1 = sf1.getTargetFlowElement();
                                     if (element1 instanceof UserTask) {
-                                        UserTask task1 = (UserTask) element1;
+                                        UserTask task1 = (UserTask)element1;
                                         Map<String, Object> linkMap = new HashMap<String, Object>(16);
                                         linkMap.put("from", userTask.getId());
                                         linkMap.put("to", task1.getId());
@@ -539,25 +332,25 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                             }
                         }
                     } else if ((fe instanceof UserTask)) {
-                        UserTask u = (UserTask) fe;
+                        UserTask u = (UserTask)fe;
                         Map<String, Object> linkMap = new HashMap<String, Object>(16);
                         linkMap.put("from", userTask.getId());
                         linkMap.put("to", u.getId());
                         linkDataArray.add(linkMap);
                     } else if (fe instanceof EndEvent) {
-                        EndEvent endEvent = (EndEvent) fe;
+                        EndEvent endEvent = (EndEvent)fe;
                         Map<String, Object> linkMap = new HashMap<String, Object>(16);
                         linkMap.put("from", userTask.getId());
                         linkMap.put("to", endEvent.getId());
                         linkDataArray.add(linkMap);
                     } else if (fe instanceof ParallelGateway) {
-                        ParallelGateway gateway = (ParallelGateway) fe;
+                        ParallelGateway gateway = (ParallelGateway)fe;
                         List<SequenceFlow> outgoingFlows = new ArrayList<SequenceFlow>();
                         outgoingFlows = gateway.getOutgoingFlows();
                         for (SequenceFlow sf : outgoingFlows) {
                             FlowElement element = sf.getTargetFlowElement();
                             if (element instanceof UserTask) {
-                                UserTask task = (UserTask) element;
+                                UserTask task = (UserTask)element;
                                 Map<String, Object> linkMap = new HashMap<String, Object>(16);
                                 linkMap.put("from", userTask.getId());
                                 linkMap.put("to", task.getId());
@@ -567,7 +360,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     }
                 }
             } else if (flowElement instanceof EndEvent) {
-                EndEvent endEvent = (EndEvent) flowElement;
+                EndEvent endEvent = (EndEvent)flowElement;
                 GraphicInfo graphicInfo = infoMap.get(endEvent.getId());
                 nodeMap.put("key", endEvent.getId());
                 nodeMap.put("category", "End");
@@ -595,7 +388,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     /**
      * 获取流程图数据
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return Map<String, Object>
      * @throws Exception
@@ -656,7 +449,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 }
                 if (type.contains(SysVariables.ENDEVENT)) {
                     num += 1;
-                    String completer = (String) listMap.get(listMap.size() - 1).get("title");
+                    String completer = (String)listMap.get(listMap.size() - 1).get("title");
                     if (completer.contains("主办")) {
                         completer = completer.substring(0, completer.length() - 4);
                     }
@@ -737,9 +530,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             int newnum = 0;
             for (int i = 0; i < listMap.size(); i++) {
                 Map<String, Object> map = listMap.get(i);
-                int currnum = (int) map.get("num");
+                int currnum = (int)map.get("num");
                 if (currnum == 0) {
-                    parentId = (String) map.get("id");
+                    parentId = (String)map.get("id");
                     map.put("parentId", "");
                 }
                 if (currnum != oldnum) {
@@ -750,7 +543,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     if (newnum != currnum) {
                         oldnum = newnum;
                         newnum = currnum;
-                        parentId = (String) listMap.get(i - 1).get("id");
+                        parentId = (String)listMap.get(i - 1).get("id");
                         map.put("parentId", parentId);
                     }
                 }
@@ -759,14 +552,14 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             List<Map<String, Object>> childrenMap = new ArrayList<Map<String, Object>>();
             for (int i = listMap.size() - 1; i >= 0; i--) {
                 Map<String, Object> map = listMap.get(i);
-                String id = (String) map.get("id");
+                String id = (String)map.get("id");
                 if (StringUtils.isNotBlank(parentId) && !parentId.equals(id)) {
-                    parentId = (String) map.get("parentId");
+                    parentId = (String)map.get("parentId");
                     childrenMap.add(map);
                 } else {
                     map.put("children", childrenMap);
                     map.put("collapsed", false);
-                    parentId = (String) map.get("parentId");
+                    parentId = (String)map.get("parentId");
                     childrenMap = new ArrayList<Map<String, Object>>();
                     childrenMap.add(map);
                     if ("".equals(parentId)) {
@@ -778,5 +571,218 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             e.printStackTrace();
         }
         return resMap;
+    }
+
+    /**
+     * 获取模型列表
+     *
+     * @param tenantId 租户id
+     * @return
+     */
+    @Override
+    @RequestMapping(value = "/getModelList", method = RequestMethod.GET, produces = "application/json")
+    public Y9Result<List<Map<String, Object>>> getModelList(@RequestParam String tenantId) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        List<Map<String, Object>> items = new ArrayList<>();
+        List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
+        ProcessDefinition processDefinition = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Map<String, Object> mapTemp = null;
+        for (AbstractModel model : list) {
+            mapTemp = new HashMap<>(16);
+            mapTemp.put("id", model.getId());
+            mapTemp.put("key", model.getKey());
+            mapTemp.put("name", model.getName());
+            mapTemp.put("version", 0);
+            processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey()).latestVersion().singleResult();
+            if (null != processDefinition) {
+                mapTemp.put("version", processDefinition.getVersion());
+            }
+            mapTemp.put("createTime", sdf.format(model.getCreated()));
+            mapTemp.put("lastUpdateTime", sdf.format(model.getLastUpdated()));
+            items.add(mapTemp);
+        }
+        return Y9Result.success(items, "获取成功");
+    }
+
+    /**
+     * 获取流程设计模型xml
+     *
+     * @param tenantId 租户id
+     * @param modelId 模型id
+     * @return
+     */
+    @Override
+    @RequestMapping(value = "/getModelXml")
+    public Y9Result<Map<String, Object>> getModelXml(@RequestParam String tenantId, @RequestParam String modelId) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        byte[] bpmnBytes = null;
+        Map<String, Object> map = new HashMap<>();
+        try {
+            Model model = modelService.getModel(modelId);
+            map.put("key", model.getKey());
+            map.put("name", model.getName());
+            bpmnBytes = modelService.getBpmnXML(model);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes, Charset.forName("UTF-8")));
+        return Y9Result.success(map, "获取成功");
+    }
+
+    /**
+     * 导入流程模型
+     *
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param file 模型文件
+     * @return
+     */
+    @Override
+    @RequestMapping(value = "/import")
+    public Map<String, Object> importProcessModel(@RequestParam String tenantId, @RequestParam String userId, @RequestParam MultipartFile file) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("success", false);
+        map.put("msg", "导入失败");
+
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        try {
+            Person person = personManager.get(tenantId, userId).getData();
+            XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
+            InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
+            XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
+
+            BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
+            BpmnModel bpmnModel = bpmnXmlConverter.convertToBpmnModel(xtr);
+            // 模板验证
+            ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
+            List<ValidationError> errors = validator.validate(bpmnModel);
+            if (!errors.isEmpty()) {
+                StringBuffer es = new StringBuffer();
+                errors.forEach(ve -> es.append(ve.toString()).append("/n"));
+                map.put("msg", "导入失败：模板验证失败，原因: " + es.toString());
+                return map;
+            }
+            if (bpmnModel.getProcesses().isEmpty()) {
+                map.put("msg", "导入失败： 上传的文件中不存在流程的信息");
+                return map;
+            }
+            if (bpmnModel.getLocationMap().isEmpty()) {
+                BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
+                bpmnLayout.execute();
+            }
+            BpmnJsonConverter bpmnJsonConverter = new BpmnJsonConverter();
+            ObjectNode modelNode = bpmnJsonConverter.convertToJson(bpmnModel);
+            org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
+            String name = process.getId();
+            if (StringUtils.isNotEmpty(process.getName())) {
+                name = process.getName();
+            }
+            String description = process.getDocumentation();
+            // ModelRepresentation model = modelService.getModelRepresentation(modelId);
+            // model.setKey(process.getId());
+            // model.setName(name);
+            // model.setDescription(description);
+            // model.setModelType(AbstractModel.MODEL_TYPE_BPMN);
+            // 查询是否已经存在流程模板
+            Model newModel = new Model();
+            List<Model> models = modelRepository.findByKeyAndType(process.getId(), AbstractModel.MODEL_TYPE_BPMN);
+            if (!models.isEmpty()) {
+                Model updateModel = models.get(0);
+                newModel.setId(updateModel.getId());
+            }
+            newModel.setName(name);
+            newModel.setKey(process.getId());
+            newModel.setModelType(AbstractModel.MODEL_TYPE_BPMN);
+            newModel.setCreated(Calendar.getInstance().getTime());
+            newModel.setCreatedBy(person.getName());
+            newModel.setDescription(description);
+            newModel.setModelEditorJson(modelNode.toString());
+            newModel.setLastUpdated(Calendar.getInstance().getTime());
+            newModel.setLastUpdatedBy(person.getName());
+            newModel.setTenantId(tenantId);
+            newModel = modelService.createModel(newModel, userId);
+            map.put("success", true);
+            map.put("msg", "导入成功");
+            return map;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    /**
+     * 保存模型xml
+     *
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param modelId 模型id
+     * @param file 模型文件
+     * @return
+     */
+    @Override
+    @RequestMapping(value = "/saveModelXml")
+    public Y9Result<String> saveModelXml(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String modelId, @RequestParam MultipartFile file) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        try {
+            Person person = personManager.get(tenantId, userId).getData();
+            XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
+            InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
+            XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
+
+            BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
+            BpmnModel bpmnModel = bpmnXmlConverter.convertToBpmnModel(xtr);
+            // 模板验证
+            ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
+            List<ValidationError> errors = validator.validate(bpmnModel);
+            if (!errors.isEmpty()) {
+                StringBuffer es = new StringBuffer();
+                errors.forEach(ve -> es.append(ve.toString()).append("/n"));
+                return Y9Result.failure("保存失败：模板验证失败，原因: " + es.toString());
+            }
+            if (bpmnModel.getProcesses().isEmpty()) {
+                return Y9Result.failure("保存失败： 文件中不存在流程的信息");
+            }
+            if (bpmnModel.getLocationMap().isEmpty()) {
+                BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
+                bpmnLayout.execute();
+            }
+            BpmnJsonConverter bpmnJsonConverter = new BpmnJsonConverter();
+            ObjectNode modelNode = bpmnJsonConverter.convertToJson(bpmnModel);
+            org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
+            String name = process.getId();
+            if (StringUtils.isNotEmpty(process.getName())) {
+                name = process.getName();
+            }
+            String description = process.getDocumentation();
+
+            ModelRepresentation model = modelService.getModelRepresentation(modelId);
+            model.setKey(process.getId());
+            model.setName(name);
+            model.setDescription(description);
+            model.setModelType(AbstractModel.MODEL_TYPE_BPMN);
+            // 查询是否已经存在流程模板
+            Model newModel = new Model();
+            List<Model> models = modelRepository.findByKeyAndType(model.getKey(), model.getModelType());
+            if (!models.isEmpty()) {
+                Model updateModel = models.get(0);
+                newModel.setId(updateModel.getId());
+            }
+            newModel.setName(model.getName());
+            newModel.setKey(model.getKey());
+            newModel.setModelType(model.getModelType());
+            newModel.setCreated(Calendar.getInstance().getTime());
+            newModel.setCreatedBy(person.getName());
+            newModel.setDescription(model.getDescription());
+            newModel.setModelEditorJson(modelNode.toString());
+            newModel.setLastUpdated(Calendar.getInstance().getTime());
+            newModel.setLastUpdatedBy(person.getName());
+            newModel.setTenantId(tenantId);
+            newModel = modelService.createModel(newModel, userId);
+            return Y9Result.successMsg("保存成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Y9Result.failure("保存失败");
     }
 }

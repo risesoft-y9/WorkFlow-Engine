@@ -5,25 +5,17 @@ import lombok.Getter;
 
 /**
  * 事项表单类型
- * 
+ *
  * @author qinman
  * @date 2022/12/20
  */
 @Getter
 @AllArgsConstructor
 public enum ItemFormTypeEnum {
-    /** jeasyui */
-    JEASYUI(1, "jeasyui"),
-    /** layui */
-    LAYUI(2, "layui"),
-    /** jsp */
-    JSP(3, "jsp"),
-    /** quikui */
-    QUIKUI(4, "quikui"),
-    /** freemarker */
-    FREEMARKER(5, "freemarker"),
-    /** thymeleaf */
-    THYMELEAF(6, "thymeleaf");
+    /** 主表单 */
+    MAINFORM(1, "mainForm"),
+    /** 前置表单 */
+    PREFORM(2, "preForm");
 
     private final Integer value;
     private final String name;

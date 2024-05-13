@@ -20,6 +20,7 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ProcessTrack;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.platform.Position;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessTrackService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -103,6 +104,20 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
     }
 
     /**
+     * 获取流程图任务节点信息
+     *
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @return
+     */
+    @Override
+    @GetMapping(value = "/getTaskList", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Y9Result<List<net.risesoft.model.itemadmin.HistoricActivityInstanceModel>> getTaskList(String tenantId, String processInstanceId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        return processTrackService.getTaskList(processInstanceId);
+    }
+
+    /**
      * 获取历程列表(包含每个任务节点的特殊操作的历程)
      *
      * @param tenantId 租户id
@@ -170,10 +185,8 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ProcessTrackModel saveOrUpdate(String tenantId, @RequestBody ProcessTrackModel processTrackModel)
-        throws Exception {
+    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ProcessTrackModel saveOrUpdate(String tenantId, @RequestBody ProcessTrackModel processTrackModel) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         ProcessTrack processTrack = ItemAdminModelConvertUtil.processTrackModel2ProcessTrack(processTrackModel);
         ProcessTrack ptTemp = processTrackService.saveOrUpdate(processTrack);

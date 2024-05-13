@@ -21,10 +21,13 @@ import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.Y9FormItemBind;
+import net.risesoft.entity.Y9PreFormItemBind;
 import net.risesoft.entity.form.Y9FieldPerm;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.entity.form.Y9Table;
+import net.risesoft.id.IdType;
+import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.user.UserInfo;
@@ -33,6 +36,7 @@ import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.service.FormDataService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.Y9FormItemBindService;
+import net.risesoft.service.Y9PreFormItemBindService;
 import net.risesoft.service.form.Y9FormFieldService;
 import net.risesoft.service.form.Y9FormService;
 import net.risesoft.service.form.Y9TableService;
@@ -54,6 +58,9 @@ public class FormDataServiceImpl implements FormDataService {
 
     @Autowired
     private Y9FormItemBindService y9FormItemBindService;
+
+    @Autowired
+    private Y9PreFormItemBindService y9PreFormItemBindService;
 
     @Autowired
     private Y9FormFieldService y9FormFieldService;
@@ -86,6 +93,12 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
+    @Transactional(readOnly = false)
+    public Map<String, Object> delPreFormData(String formId, String guid) {
+        return y9FormService.delPreFormData(formId, guid);
+    }
+
+    @Override
     public List<Map<String, Object>> getAllFieldPerm(String formId, String taskDefKey, String processDefinitionId) {
         List<String> list = y9FieldPermRepository.findByFormId(formId);
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
@@ -99,8 +112,26 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
-    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber)
-        throws Exception {
+    public Map<String, Object> getBindPreFormByItemId(String itemId) {
+        Map<String, Object> map = new HashMap<String, Object>(16);
+        map.put(UtilConsts.SUCCESS, true);
+        map.put("formId", "");
+        map.put("formName", "");
+        try {
+            Y9PreFormItemBind item = y9PreFormItemBindService.findByItemId(itemId);
+            if (map != null) {
+                map.put("formId", item.getFormId());
+                map.put("formName", item.getFormName());
+            }
+        } catch (Exception e) {
+            map.put(UtilConsts.SUCCESS, false);
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    @Override
+    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber) throws Exception {
         return y9FormService.getChildTableData(formId, tableId, processSerialNumber);
     }
 
@@ -110,10 +141,8 @@ public class FormDataServiceImpl implements FormDataService {
         try {
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
-            ProcessDefinitionModel processDefinition =
-                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey);
-            List<Y9FormItemBind> formList =
-                y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+            ProcessDefinitionModel processDefinition = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey);
+            List<Y9FormItemBind> formList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             List<Map<String, Object>> list = null;
             for (Y9FormItemBind bind : formList) {
                 String formId = bind.getFormId();
@@ -123,8 +152,7 @@ public class FormDataServiceImpl implements FormDataService {
                     Y9Table y9Table = y9TableService.findByTableName(tableName);
                     // 只获取主表
                     if (y9Table.getTableType() == 1) {
-                        list = jdbcTemplate.queryForList("SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?",
-                            processSerialNumber);
+                        list = jdbcTemplate.queryForList("SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?", processSerialNumber);
                         if (list.size() > 0) {
                             retMap.putAll(list.get(0));
                         }
@@ -139,8 +167,7 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
-    public Map<String, Object> getFieldPerm(String formId, String fieldName, String taskDefKey,
-        String processDefinitionId) {
+    public Map<String, Object> getFieldPerm(String formId, String fieldName, String taskDefKey, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> resMap = new HashMap<String, Object>(16);
@@ -148,8 +175,7 @@ public class FormDataServiceImpl implements FormDataService {
         resMap.put("writePerm", false);
         resMap.put("fieldName", fieldName);
         try {
-            Y9FieldPerm y9FieldPerm =
-                y9FieldPermRepository.findByFormIdAndFieldNameAndTaskDefKey(formId, fieldName, taskDefKey);
+            Y9FieldPerm y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndTaskDefKey(formId, fieldName, taskDefKey);
             if (y9FieldPerm != null) {
                 resMap.putAll(getFieldPerm(y9FieldPerm));
             } else {
@@ -199,10 +225,8 @@ public class FormDataServiceImpl implements FormDataService {
         try {
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
-            ProcessDefinitionModel processDefinition =
-                repositoryManager.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey);
-            List<Y9FormItemBind> formList =
-                y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+            ProcessDefinitionModel processDefinition = repositoryManager.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey);
+            List<Y9FormItemBind> formList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             for (Y9FormItemBind form : formList) {
                 List<Y9FormField> formElementList = y9FormFieldService.findByFormId(form.getFormId());
                 for (Y9FormField formElement : formElementList) {
@@ -270,9 +294,78 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
+    public List<Map<String, Object>> getPreFormDataByFormId(String formId) {
+        return y9FormService.getFormDataList(formId);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     @Transactional(readOnly = false)
-    public void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData)
-        throws Exception {
+    public String saveAFormData(String itemId, String formdata, String formId) throws Exception {
+        try {
+            Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formdata, Map.class);
+            List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+            Map<String, Object> map = new HashMap<String, Object>(16);
+            map.put("name", "form_Id");
+            map.put("value", formId);
+            listMap.add(map);
+            for (String columnName : mapFormJsonData.keySet()) {
+                // 根据数据库表名获取列名
+                String value = mapFormJsonData.get(columnName).toString();
+                map = new HashMap<String, Object>(16);
+                map.put("name", columnName);
+                map.put("value", value);
+                listMap.add(map);
+            }
+            formdata = Y9JsonUtil.writeValueAsString(listMap);
+            map = y9FormService.saveFormData(formdata);// 保存前置表单数据
+            if (!(boolean)map.get(UtilConsts.SUCCESS)) {
+                throw new Exception("FormDataService savePreFormData前置表单 error0");
+            }
+
+            // 获取事项绑定主表信息
+            SpmApproveItem item = spmApproveItemService.findById(itemId);
+            String processDefineKey = item.getWorkflowGuid();
+            ProcessDefinitionModel processDefinition = repositoryManager.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey);
+            List<Y9FormItemBind> list = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+            String bindFormId = "";
+            for (Y9FormItemBind form : list) {
+                bindFormId = form.getFormId();
+            }
+            String processSerialNumber = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+            if (!bindFormId.equals("")) {
+                List<Map<String, Object>> list1 = Y9JsonUtil.readValue(formdata, List.class);
+                for (Map<String, Object> map1 : list1) {
+                    if (map1.get("name").equals("form_Id")) {// 重设表单id
+                        map1.put("value", bindFormId);
+                    } else if (map1.get("name").equals("guid")) {// 重设主键id
+                        map1.put("value", processSerialNumber);
+                    } else if (map1.get("name").equals("GUID")) {// 重设主键id
+                        map1.put("value", processSerialNumber);
+                    }
+                }
+                formdata = Y9JsonUtil.writeValueAsString(list1);
+                map = y9FormService.saveFormData(formdata);// 保存主表信息
+                if (!(boolean)map.get(UtilConsts.SUCCESS)) {
+                    throw new Exception("FormDataService savePreFormData主表 error0");
+                }
+                return processSerialNumber;// 返回主表主键id
+            }
+        } catch (Exception e) {
+            System.out.println("****************************formdata:" + formdata);
+            final Writer result = new StringWriter();
+            final PrintWriter print = new PrintWriter(result);
+            e.printStackTrace(print);
+            String msg = result.toString();
+            System.out.println(msg);
+            throw new Exception("FormDataService savePreFormData error1");
+        }
+        return "";
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData) throws Exception {
         try {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map = y9FormService.saveChildTableData(formId, tableId, processSerialNumber, jsonData);

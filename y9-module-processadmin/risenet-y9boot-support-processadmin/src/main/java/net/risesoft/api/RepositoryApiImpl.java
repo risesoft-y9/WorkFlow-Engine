@@ -5,8 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,7 +162,7 @@ public class RepositoryApiImpl implements RepositoryApi {
      */
     @Override
     @GetMapping(value = "/getXmlByProcessInstance", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<String> getXmlByProcessInstance(@RequestParam String tenantId, @RequestParam String resourceType, @RequestParam String processInstanceId, @RequestParam String processDefinitionId, HttpServletResponse response) throws Exception {
+    public Y9Result<String> getXmlByProcessInstance(@RequestParam String tenantId, @RequestParam String resourceType, @RequestParam String processInstanceId, @RequestParam String processDefinitionId) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         InputStream resourceAsStream = customRepositoryService.getProcessInstance(resourceType, processInstanceId, processDefinitionId);
         return Y9Result.success(IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8));
