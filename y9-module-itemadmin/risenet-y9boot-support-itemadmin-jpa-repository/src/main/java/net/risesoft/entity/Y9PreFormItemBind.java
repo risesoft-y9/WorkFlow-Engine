@@ -29,7 +29,10 @@ import lombok.NoArgsConstructor;
 @org.hibernate.annotations.Table(comment = "Y9前置表单与事项流程任务绑定表", appliesTo = "FF_ITEM_Y9PREFORMBIND")
 public class Y9PreFormItemBind implements Serializable {
 
-    private static final long serialVersionUID = 7852048678955381044L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 6523220184234477595L;
 
     @Id
     @Comment("主键")

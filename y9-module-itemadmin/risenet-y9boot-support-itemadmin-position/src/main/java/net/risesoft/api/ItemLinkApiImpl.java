@@ -1,0 +1,71 @@
+package net.risesoft.api;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import net.risesoft.api.itemadmin.position.ItemLink4PositionApi;
+import net.risesoft.api.platform.permission.PositionRoleApi;
+import net.risesoft.entity.ItemLinkBind;
+import net.risesoft.entity.ItemLinkRole;
+import net.risesoft.entity.LinkInfo;
+import net.risesoft.model.itemadmin.LinkInfoModel;
+import net.risesoft.repository.jpa.ItemLinkBindRepository;
+import net.risesoft.repository.jpa.ItemLinkRoleRepository;
+import net.risesoft.repository.jpa.LinkInfoRepository;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
+
+/**
+ * 事项链接接口
+ *
+ * @author zhangchongjie
+ * @date 2024/05/14
+ */
+@RestController
+@RequestMapping(value = "/services/rest/itemLink4Position", produces = MediaType.APPLICATION_JSON_VALUE)
+public class ItemLinkApiImpl implements ItemLink4PositionApi {
+
+    @Autowired
+    private PositionRoleApi positionRoleApi;
+
+    @Autowired
+    private ItemLinkBindRepository itemLinkBindRepository;
+
+    @Autowired
+    private LinkInfoRepository linkInfoRepository;
+
+    @Autowired
+    private ItemLinkRoleRepository itemLinkRoleRepository;
+
+    @Override
+    public List<LinkInfoModel> getItemLinkList(@NotBlank String tenantId, @NotBlank String positionId, @NotBlank String itemId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<LinkInfoModel> res_list = new ArrayList<LinkInfoModel>();
+        List<ItemLinkBind> list = itemLinkBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
+        for (ItemLinkBind bind : list) {
+            List<ItemLinkRole> roleList = itemLinkRoleRepository.findByItemLinkId(bind.getId());
+            if (roleList.size() == 0) {// 未配置角色，没权限
+                continue;
+            }
+            for (ItemLinkRole linkRole : roleList) {
+                boolean b = positionRoleApi.hasRole(tenantId, linkRole.getRoleId(), positionId).getData();
+                if (b) {
+                    LinkInfo linkInfo = linkInfoRepository.findById(bind.getLinkId()).orElse(null);
+                    LinkInfoModel model = new LinkInfoModel();
+                    Y9BeanUtil.copyProperties(linkInfo, model);
+                    res_list.add(model);
+                    break;
+                }
+            }
+        }
+        return res_list;
+    }
+
+}
