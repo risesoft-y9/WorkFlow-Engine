@@ -117,7 +117,7 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
                             + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', '" + tenant.getId() + "', '"
                             + tenant.getName() + "', '" + smap.get("ID").toString() + "', '" + amap.get("ID").toString()
                             + "','" + amap.get("NAME").toString() + "','" + sdf.format(new Date()) + "','"
-                            + ManagerLevelEnum.SYSTEM_MANAGER.getName() + "','','微内核默认租用',1,1)";
+                            + ManagerLevelEnum.SYSTEM_MANAGER.getName() + "','','系统默认租用',1,1)";
                     jdbcTemplate.execute(sql1);
                 }
             }
