@@ -61,8 +61,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
     @Override
     public Y9Result<String> dataTransfer(String processDefinitionId, String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        ProcessDefinitionModel processDefinition =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionId.split(":")[0]);
+        ProcessDefinitionModel processDefinition = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionId.split(":")[0]);
         String latestProcessDefinitionId = processDefinition.getId();
         // 迁移所有
         if (StringUtils.isEmpty(processInstanceId)) {
@@ -74,54 +73,42 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
     }
 
     private void executeSql(String latestProcessDefinitionId, String processInstanceId) {
-        String sql1 = "UPDATE ACT_HI_ACTINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
+        String sql1 = "UPDATE ACT_HI_ACTINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
         jdbcTemplate4Tenant.execute(sql1);
 
-        String sql2 = "UPDATE ACT_HI_PROCINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
+        String sql2 = "UPDATE ACT_HI_PROCINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
         jdbcTemplate4Tenant.execute(sql2);
 
-        String sql3 = "UPDATE ACT_HI_TASKINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
+        String sql3 = "UPDATE ACT_HI_TASKINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
         jdbcTemplate4Tenant.execute(sql3);
 
-        String sql4 = "UPDATE ACT_RU_ACTINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
+        String sql4 = "UPDATE ACT_RU_ACTINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
         jdbcTemplate4Tenant.execute(sql4);
 
-        String sql5 = "UPDATE ACT_RU_EXECUTION SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
+        String sql5 = "UPDATE ACT_RU_EXECUTION SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
         jdbcTemplate4Tenant.execute(sql5);
 
-        String sql6 = "UPDATE ACT_RU_TASK SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
+        String sql6 = "UPDATE ACT_RU_TASK SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
         jdbcTemplate4Tenant.execute(sql6);
     }
 
     private void executeSql0(String latestProcessDefinitionId, String processDefinitionId) {
-        String sql1 = "UPDATE ACT_HI_ACTINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
+        String sql1 = "UPDATE ACT_HI_ACTINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
         jdbcTemplate4Tenant.execute(sql1);
 
-        String sql2 = "UPDATE ACT_HI_PROCINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
+        String sql2 = "UPDATE ACT_HI_PROCINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
         jdbcTemplate4Tenant.execute(sql2);
 
-        String sql3 = "UPDATE ACT_HI_TASKINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
+        String sql3 = "UPDATE ACT_HI_TASKINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
         jdbcTemplate4Tenant.execute(sql3);
 
-        String sql4 = "UPDATE ACT_RU_ACTINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
+        String sql4 = "UPDATE ACT_RU_ACTINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
         jdbcTemplate4Tenant.execute(sql4);
 
-        String sql5 = "UPDATE ACT_RU_EXECUTION SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
+        String sql5 = "UPDATE ACT_RU_EXECUTION SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
         jdbcTemplate4Tenant.execute(sql5);
 
-        String sql6 = "UPDATE ACT_RU_TASK SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_DEF_ID_ = '"
-            + processDefinitionId + "';";
+        String sql6 = "UPDATE ACT_RU_TASK SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
         jdbcTemplate4Tenant.execute(sql6);
 
     }
@@ -154,15 +141,13 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Y9Page<Map<String, Object>> getProcessInstanceList(String itemId, String processDefinitionId, Integer page,
-        Integer rows) {
+    public Y9Page<Map<String, Object>> getProcessInstanceList(String itemId, String processDefinitionId, Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = runtimeManager.getProcessInstancesByDefId(tenantId, processDefinitionId, page, rows);
         List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)map.get("rows");
         ObjectMapper objectMapper = new ObjectMapper();
-        List<ProcessInstanceModel> pList =
-            objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {});
+        List<ProcessInstanceModel> pList = objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {});
 
         ProcessParam processParam = null;
         Map<String, Object> mapTemp = null;
@@ -175,7 +160,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
                 mapTemp.put("startTime", sdf.format(processInstance.getStartTime()));
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 mapTemp.put("title", StringUtils.isBlank(processParam.getTitle()) ? "未定义标题" : processParam.getTitle());
-                mapTemp.put("number", processParam.getCustomNumber());
+                mapTemp.put("number", StringUtils.isBlank(processParam.getCustomNumber()) ? "" : processParam.getCustomNumber());
                 mapTemp.put("startorName", processParam.getStartorName());
                 List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
                 String assigneeNames = getAssigneeIdsAndAssigneeNames(taskList);
@@ -185,8 +170,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
             }
             items.add(mapTemp);
         }
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
-            Integer.parseInt(map.get("total").toString()), items, "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), items, "获取列表成功");
     }
 
 }
