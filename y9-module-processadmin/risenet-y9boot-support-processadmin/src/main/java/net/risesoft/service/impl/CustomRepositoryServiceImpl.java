@@ -2,6 +2,8 @@ package net.risesoft.service.impl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,8 +174,26 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
                 mapTemp.put("diagramResourceName", processDefinition.getDiagramResourceName());
                 mapTemp.put("suspended", processDefinition.isSuspended());
                 mapTemp.put("deploymentTime", DateFormatUtils.format(deployment.getDeploymentTime(), "yyyy-MM-dd HH:mm:ss"));
+                mapTemp.put("sortTime", deployment.getDeploymentTime().getTime());
                 items.add(mapTemp);
             }
+            Collections.sort(items, new Comparator<Map<String, Object>>() {
+                @Override
+                public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+                    try {
+                        long startTime1 = (long)o1.get("sortTime");
+                        long startTime2 = (long)o2.get("sortTime");
+                        if (startTime2 > startTime1) {
+                            return 1;
+                        } else {
+                            return -1;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return -1;
+                }
+            });
             // }
             /* else {
                 List<Resource> resourceList =

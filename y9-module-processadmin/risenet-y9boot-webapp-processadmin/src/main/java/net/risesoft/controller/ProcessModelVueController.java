@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -207,9 +209,28 @@ public class ProcessModelVueController {
                 mapTemp.put("version", processDefinition.getVersion());
             }
             mapTemp.put("createTime", sdf.format(model.getCreated()));
+            mapTemp.put("sortTime", model.getCreated().getTime());
             mapTemp.put("lastUpdateTime", sdf.format(model.getLastUpdated()));
             items.add(mapTemp);
         }
+        Collections.sort(items, new Comparator<Map<String, Object>>() {
+            @Override
+            public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+                try {
+                    long startTime1 = (long)o1.get("sortTime");
+                    long startTime2 = (long)o2.get("sortTime");
+                    if (startTime2 > startTime1) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return -1;
+            }
+        });
+
         // }
         /* else {
             Map<String, Object> mapTemp = null;
