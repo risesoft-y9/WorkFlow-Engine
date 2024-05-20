@@ -37,6 +37,10 @@ public interface FormDataApiClient extends FormDataApi {
     @PostMapping("/delPreFormData")
     public Map<String, Object> delPreFormData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId, @RequestParam("guid") String guid);
 
+    @Override
+    @GetMapping("/findFormItemBind")
+    List<Map<String, Object>> findFormItemBind(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefinitionKey") String taskDefinitionKey);
+
     /**
      * 获取表单所有字段权限
      *

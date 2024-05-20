@@ -34,6 +34,17 @@ public interface FormDataApi {
     Map<String, Object> delPreFormData(String tenantId, String formId, String guid);
 
     /**
+     * 获取事项绑定表单
+     *
+     * @param tenantId 租户id
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefinitionKey 任务key
+     * @return
+     */
+    List<Map<String, Object>> findFormItemBind(String tenantId, String itemId, String processDefinitionId, String taskDefinitionKey);
+
+    /**
      * 获取表单所有字段权限
      *
      * @param tenantId 租户id

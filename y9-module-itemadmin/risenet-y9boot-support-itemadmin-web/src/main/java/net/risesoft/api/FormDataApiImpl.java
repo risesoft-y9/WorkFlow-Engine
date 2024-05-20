@@ -46,6 +46,12 @@ public class FormDataApiImpl implements FormDataApi {
     }
 
     @Override
+    public List<Map<String, Object>> findFormItemBind(String tenantId, String itemId, String processDefinitionId, String taskDefinitionKey) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     @GetMapping(value = "/getAllFieldPerm", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getAllFieldPerm(String tenantId, String userId, String formId, String taskDefKey, String processDefinitionId) {
         Person person = personManager.get(tenantId, userId).getData();
