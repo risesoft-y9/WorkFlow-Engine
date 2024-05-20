@@ -1,5 +1,7 @@
 package net.risesoft.api;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,9 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.service.FormDataService;
+import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -34,6 +38,9 @@ public class FormDataApiImpl implements FormDataApi {
 
     @Autowired
     private PersonApi personManager;
+
+    @Autowired
+    private Y9FormItemBindService y9FormItemBindService;
 
     /**
      * 删除子表数据
@@ -64,6 +71,24 @@ public class FormDataApiImpl implements FormDataApi {
     public Map<String, Object> delPreFormData(String tenantId, String formId, String guid) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return formDataService.delPreFormData(formId, guid);
+    }
+
+    /**
+     *
+     */
+    @Override
+    @GetMapping(value = "/findFormItemBind", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Map<String, Object>> findFormItemBind(String tenantId, String itemId, String processDefinitionId, String taskDefinitionKey) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<Map<String, Object>> res_list = new ArrayList<Map<String, Object>>();
+        List<Y9FormItemBind> list = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
+        for (Y9FormItemBind item : list) {
+            Map<String, Object> map = new HashMap<String, Object>(16);
+            map.put("formId", item.getFormId());
+            map.put("formName", item.getFormName());
+            res_list.add(map);
+        }
+        return res_list;
     }
 
     /**
