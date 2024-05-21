@@ -32,6 +32,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.repository.form.Y9TableFieldRepository;
+import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.form.Y9FormService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.util.form.DbMetaDataUtil;
@@ -62,6 +63,9 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @Autowired
     private Y9TableFieldRepository y9TableFieldRepository;
+
+    @Autowired
+    private SpmApproveItemRepository approveItemRepository;
 
     @Override
     @Transactional(readOnly = false)
@@ -437,6 +441,13 @@ public class Y9FormServiceImpl implements Y9FormService {
         List<Y9Form> list = pageList.getContent();
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<Map<String, Object>> slist = approveItemRepository.getItemSystem();
+        String systemCnName = "";
+        for (Map<String, Object> m : slist) {
+            if (m.get("systemName").equals(systemName)) {
+                systemCnName = m.get("sysLevel").toString();
+            }
+        }
         for (Y9Form y9Form : list) {
             Map<String, Object> map = new HashMap<String, Object>(16);
             map.put("id", y9Form.getId());
@@ -444,7 +455,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             map.put("formType", y9Form.getFormType());
             map.put("templateType", y9Form.getTemplateType());
             map.put("fileName", y9Form.getFileName() == null ? "" : y9Form.getFileName());
-            map.put("systemCnName", y9Form.getSystemCnName());
+            map.put("systemCnName", systemCnName.equals("") ? y9Form.getSystemCnName() : systemCnName);
             map.put("systemName", y9Form.getSystemName());
             map.put("updateTime", sdf.format(y9Form.getUpdateTime()));
             listMap.add(map);
