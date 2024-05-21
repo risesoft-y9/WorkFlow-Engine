@@ -21,7 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemPrintTemplateBind;
 import net.risesoft.entity.PrintTemplate;
+import net.risesoft.entity.form.Y9Form;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.repository.jpa.PrintTemplateRepository;
 import net.risesoft.service.PrintTemplateService;
 
@@ -39,6 +41,9 @@ public class PrintRestController {
 
     @Autowired
     private PrintTemplateService printTemplateService;
+
+    @Autowired
+    private Y9FormRepository y9FormRepository;
 
     /**
      * 删除绑定打印模板
@@ -80,8 +85,7 @@ public class PrintRestController {
      * @param request
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam(required = true) String id, HttpServletResponse response,
-        HttpServletRequest request) {
+    public void download(@RequestParam(required = true) String id, HttpServletResponse response, HttpServletRequest request) {
         printTemplateService.download(id, response, request);
     }
 
@@ -125,6 +129,12 @@ public class PrintRestController {
     @RequestMapping(value = "/getBindTemplateList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemPrintTemplateBind>> getTemplateList(@RequestParam(required = true) String itemId) {
         List<ItemPrintTemplateBind> list = printTemplateService.getTemplateBindList(itemId);
+        for (ItemPrintTemplateBind bind : list) {
+            if (bind.getTemplateType().equals("2")) {
+                Y9Form form = y9FormRepository.findById(bind.getTemplateId()).orElse(null);
+                bind.setTemplateName(form != null ? form.getFormName() : "表单不存在");
+            }
+        }
         return Y9Result.success(list, "获取成功");
     }
 
@@ -140,11 +150,8 @@ public class PrintRestController {
      */
     @RequestMapping(value = "/saveBindTemplate", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Y9Result<String> saveBindTemplate(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String templateId, @RequestParam(required = true) String templateName,
-        @RequestParam(required = false) String templateUrl, @RequestParam(required = true) String templateType) {
-        Map<String, Object> map =
-            printTemplateService.saveBindTemplate(itemId, templateId, templateName, templateUrl, templateType);
+    public Y9Result<String> saveBindTemplate(@RequestParam(required = true) String itemId, @RequestParam(required = true) String templateId, @RequestParam(required = true) String templateName, @RequestParam(required = false) String templateUrl, @RequestParam(required = true) String templateType) {
+        Map<String, Object> map = printTemplateService.saveBindTemplate(itemId, templateId, templateName, templateUrl, templateType);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
         }
