@@ -60,8 +60,10 @@ public class Y9PreFormItemBindRestController {
     @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Y9PreFormItemBind> getBindList(@RequestParam(required = true) String itemId) {
         Y9PreFormItemBind bind = y9PreFormItemBindService.findByItemId(itemId);
-        Y9Form form = y9FormRepository.findById(bind.getFormId()).orElse(null);
-        bind.setFormName(form != null ? form.getFormName() : "表单不存在");
+        if (bind != null) {
+            Y9Form form = y9FormRepository.findById(bind.getFormId()).orElse(null);
+            bind.setFormName(form != null ? form.getFormName() : "表单不存在");
+        }
         return Y9Result.success(bind, "获取成功");
     }
 
