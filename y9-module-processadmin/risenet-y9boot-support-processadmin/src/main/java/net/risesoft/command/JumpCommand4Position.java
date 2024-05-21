@@ -91,7 +91,7 @@ public class JumpCommand4Position implements Command<Void> {
             variableService.deleteVariablesByExecutionId(executionId);
             taskService.deleteTask(taskEntity, true);
             org.flowable.engine.impl.util.CommandContextUtil.getHistoryManager().recordTaskEnd(taskEntity,
-                executionEntity, reason, new Date());
+                executionEntity, Y9LoginUserHolder.getPersonId(), reason, new Date());
             org.flowable.engine.impl.util.CommandContextUtil.getActivityInstanceEntityManager()
                 .recordActivityEnd(executionEntity, reason);
         }

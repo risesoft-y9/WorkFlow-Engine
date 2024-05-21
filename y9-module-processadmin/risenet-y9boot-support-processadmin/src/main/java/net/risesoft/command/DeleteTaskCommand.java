@@ -16,6 +16,8 @@ import org.flowable.task.service.TaskService;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.flowable.variable.service.VariableService;
 
+import net.risesoft.y9.Y9LoginUserHolder;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -68,7 +70,8 @@ public class DeleteTaskCommand implements Command<Void> {
             identityLinkService.deleteIdentityLinksByTaskId(taskId);
             variableService.deleteVariablesByExecutionId(executionId);
             taskService.deleteTask(taskEntity, true);
-            CommandContextUtil.getHistoryManager().recordTaskEnd(taskEntity, executionEntity, reason, new Date());
+            CommandContextUtil.getHistoryManager().recordTaskEnd(taskEntity, executionEntity,
+                Y9LoginUserHolder.getPersonId(), reason, new Date());
             CommandContextUtil.getActivityInstanceEntityManager().recordActivityEnd(executionEntity, reason);
         }
         return null;

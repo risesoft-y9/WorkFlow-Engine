@@ -90,7 +90,8 @@ public class JumpCommand implements Command<Void> {
             identityLinkService.deleteIdentityLinksByTaskId(taskId);
             variableService.deleteVariablesByExecutionId(executionId);
             taskService.deleteTask(taskEntity, true);
-            CommandContextUtil.getHistoryManager().recordTaskEnd(taskEntity, executionEntity, reason, new Date());
+            CommandContextUtil.getHistoryManager().recordTaskEnd(taskEntity, executionEntity,
+                Y9LoginUserHolder.getPersonId(), reason, new Date());
             CommandContextUtil.getActivityInstanceEntityManager().recordActivityEnd(executionEntity, reason);
         }
 
