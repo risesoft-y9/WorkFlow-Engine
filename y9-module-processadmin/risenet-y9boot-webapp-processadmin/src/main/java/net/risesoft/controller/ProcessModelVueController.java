@@ -1,34 +1,16 @@
 package net.risesoft.controller;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.bpmn.BpmnAutoLayout;
-import org.flowable.bpmn.converter.BpmnXMLConverter;
-import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.engine.RepositoryService;
-import org.flowable.validation.ProcessValidator;
-import org.flowable.validation.ProcessValidatorFactory;
-import org.flowable.validation.ValidationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +64,9 @@ public class ProcessModelVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> create(@RequestParam(required = true) String name, @RequestParam(required = true) String key, @RequestParam(required = false) String description, HttpServletRequest request, HttpServletResponse response) {
+    public Y9Result<String> create(@RequestParam(required = true) String name,
+        @RequestParam(required = true) String key, @RequestParam(required = false) String description,
+        HttpServletRequest request, HttpServletResponse response) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String personName = userInfo.getName();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -92,6 +76,7 @@ public class ProcessModelVueController {
         ObjectNode stencilSetNode = objectMapper.createObjectNode();
         stencilSetNode.put("namespace", "http://b3mn.org/stencilset/bpmn2.0#");
         editorNode.set("stencilset", stencilSetNode);
+        String modelId = "";
         /**
          * 跳转画图页面
          */
@@ -121,7 +106,7 @@ public class ProcessModelVueController {
     @ResponseBody
     @RequestMapping(value = "/deployModel", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> deployModel(@RequestParam(required = true) String modelId) {
-          return Y9Result.successMsg("部署成功");
+        return Y9Result.successMsg("部署成功");
     }
 
     /**
@@ -169,7 +154,7 @@ public class ProcessModelVueController {
     public Y9Result<Map<String, Object>> getModelXml(@RequestParam String modelId, HttpServletResponse response) {
         byte[] bpmnBytes = null;
         Map<String, Object> map = new HashMap<>();
-         return Y9Result.success(map, "获取成功");
+        return Y9Result.success(map, "获取成功");
     }
 
     /**
@@ -180,7 +165,8 @@ public class ProcessModelVueController {
      * @param response
      */
     @RequestMapping(value = "/editor/{modelId}")
-    public void gotoEditor(@PathVariable("modelId") String modelId, HttpServletRequest request, HttpServletResponse response) {
+    public void gotoEditor(@PathVariable("modelId") String modelId, HttpServletRequest request,
+        HttpServletResponse response) {
         try {
             response.sendRedirect(request.getContextPath() + "/modeler.html#/editor/" + modelId);
         } catch (IOException e) {
@@ -196,7 +182,7 @@ public class ProcessModelVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/import")
-    public Map<String, Object> importProcessModel(MultipartFile file ) {
+    public Map<String, Object> importProcessModel(MultipartFile file) {
         Map<String, Object> map = new HashMap<>(16);
         map.put("success", false);
         map.put("msg", "导入失败");
@@ -212,7 +198,7 @@ public class ProcessModelVueController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveModelXml")
-    public Y9Result<String> saveModelXml(MultipartFile file ) {
+    public Y9Result<String> saveModelXml(MultipartFile file) {
         try {
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
