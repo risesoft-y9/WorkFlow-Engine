@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
 @Entity
 @Table(name = "FF_ITEM_Y9PREFORMBIND")
-@org.hibernate.annotations.Table(comment = "Y9前置表单与事项流程任务绑定表", appliesTo = "FF_ITEM_Y9PREFORMBIND")
+@Comment("Y9前置表单与事项流程任务绑定表")
 public class Y9PreFormItemBind implements Serializable {
 
     /**
