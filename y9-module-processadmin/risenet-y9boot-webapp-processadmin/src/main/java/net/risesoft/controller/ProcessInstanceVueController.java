@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,19 +19,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
+import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
+import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricProcessService;
+import net.risesoft.service.CustomIdentityService;
+import net.risesoft.service.CustomTaskService;
+import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9Util;
 
 /**
  * @author qinman
@@ -68,6 +80,15 @@ public class ProcessInstanceVueController {
 
     @Autowired
     private CustomHistoricProcessService customHistoricProcessService;
+
+    @Autowired
+    private OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+
+    @Autowired
+    private CustomIdentityService customIdentityService;
+
+    @Autowired
+    private CustomTaskService customTaskService;
 
     /**
      * 彻底删除流程实例
@@ -123,6 +144,158 @@ public class ProcessInstanceVueController {
             e.printStackTrace();
         }
         return Y9Result.failure("删除失败");
+    }
+
+    /**
+     * 获取流程实例列表（包括办结，未办结）
+     *
+     * @param searchName 标题，编号
+     * @param itemId 事项id
+     * @param userName 发起人
+     * @param state 状态
+     * @param year 年度
+     * @param page 页面
+     * @param rows条数
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    @RequestMapping(value = "/getAllProcessList", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public Y9Page<Map<String, Object>> getAllProcessList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+        @RequestParam int page, @RequestParam int rows) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        try {
+            retMap = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page, rows);
+            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {});
+            int serialNumber = (page - 1) * rows;
+            Map<String, Object> mapTemp = null;
+            for (OfficeDoneInfoModel hpim : hpiList) {
+                mapTemp = new HashMap<String, Object>(16);
+                String processInstanceId = hpim.getProcessInstanceId();
+                try {
+                    String processDefinitionId = hpim.getProcessDefinitionId();
+                    String startTime = hpim.getStartTime().substring(0, 16);
+                    String processSerialNumber = hpim.getProcessSerialNumber();
+                    String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
+                    String level = hpim.getUrgency();
+                    String number = hpim.getDocNumber();
+                    String completer = hpim.getUserComplete();
+                    mapTemp.put("itemName", hpim.getItemName());
+                    mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
+                    mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
+                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put("processDefinitionId", processDefinitionId);
+                    mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
+                    mapTemp.put("startTime", startTime);
+                    mapTemp.put("endTime", StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
+                    mapTemp.put("taskDefinitionKey", "");
+                    mapTemp.put("taskAssignee", completer);
+                    mapTemp.put("creatUserName", hpim.getCreatUserName());
+                    mapTemp.put("itemId", hpim.getItemId());
+                    mapTemp.put("level", level == null ? "" : level);
+                    mapTemp.put("number", number == null ? "" : number);
+                    mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
+                    if (StringUtils.isBlank(hpim.getEndTime())) {
+                        List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
+                        List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
+                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
+                        mapTemp.put("taskId", listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                        mapTemp.put("taskAssigneeId", assigneeIds);
+                        mapTemp.put("taskAssignee", assigneeNames);
+                        mapTemp.put("itembox", listTemp.get(3));
+                    }
+                    mapTemp.put("suspended", "--");
+                    ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+                    if (processInstance != null) {
+                        mapTemp.put("suspended", processInstance.isSuspended());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                mapTemp.put("serialNumber", serialNumber + 1);
+                serialNumber += 1;
+                items.add(mapTemp);
+            }
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+    }
+
+    private List<String> getAssigneeIdsAndAssigneeNames1(List<Task> taskList) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9LoginUserHolder.getPersonId();
+        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
+        List<String> list = new ArrayList<String>();
+        int i = 0;
+        if (taskList.size() > 0) {
+            for (Task task : taskList) {
+                if (StringUtils.isEmpty(taskIds)) {
+                    taskIds = task.getId();
+                    String assignee = task.getAssignee();
+                    if (StringUtils.isNotBlank(assignee)) {
+                        assigneeIds = assignee;
+                        Position personTemp = positionApi.get(tenantId, assignee).getData();
+                        if (personTemp != null) {
+                            assigneeNames = personTemp.getName();
+                        }
+                        i += 1;
+                        if (assignee.contains(userId)) {
+                            itembox = ItemBoxTypeEnum.TODO.getValue();
+                            taskId = task.getId();
+                        }
+                    } else {// 处理单实例未签收的当前办理人显示
+                        List<IdentityLink> iList = customIdentityService.getIdentityLinksForTask(taskId);
+                        if (!iList.isEmpty()) {
+                            int j = 0;
+                            for (IdentityLink identityLink : iList) {
+                                String assigneeId = identityLink.getUserId();
+                                Position ownerUser = positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                if (j < 5) {
+                                    assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
+                                    assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
+                                } else {
+                                    assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
+                                    break;
+                                }
+                                j++;
+                            }
+                        }
+                    }
+                } else {
+                    String assignee = task.getAssignee();
+                    if (StringUtils.isNotBlank(assignee)) {
+                        if (i < 5) {
+                            assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
+                            Position personTemp = positionApi.get(tenantId, assignee).getData();
+                            if (personTemp != null) {
+                                assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
+                            }
+                            i += 1;
+                        }
+                        if (assignee.contains(userId)) {
+                            itembox = ItemBoxTypeEnum.TODO.getValue();
+                            taskId = task.getId();
+                        }
+                    }
+                }
+            }
+            if (taskList.size() > 5) {
+                assigneeNames += "等，共" + taskList.size() + "人";
+            }
+        }
+        list.add(taskIds);
+        list.add(assigneeIds);
+        list.add(assigneeNames);
+        list.add(itembox);
+        list.add(taskId);
+        return list;
     }
 
     /**
@@ -200,12 +373,16 @@ public class ProcessInstanceVueController {
     @RequestMapping(value = "/switchSuspendOrActive", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public Y9Result<String> switchSuspendOrActive(@RequestParam String state, @RequestParam String processInstanceId) {
-        if (ItemProcessStateTypeEnum.ACTIVE.equals(state)) {
-            runtimeService.activateProcessInstanceById(processInstanceId);
-            return Y9Result.successMsg("已激活ID为[" + processInstanceId + "]的流程实例。");
-        } else if (ItemProcessStateTypeEnum.SUSPEND.equals(state)) {
-            runtimeService.suspendProcessInstanceById(processInstanceId);
-            return Y9Result.successMsg("已挂起ID为[" + processInstanceId + "]的流程实例。");
+        try {
+            if (ItemProcessStateTypeEnum.ACTIVE.getValue().equals(state)) {
+                runtimeService.activateProcessInstanceById(processInstanceId);
+                return Y9Result.successMsg("已激活ID为[" + processInstanceId + "]的流程实例。");
+            } else if (ItemProcessStateTypeEnum.SUSPEND.getValue().equals(state)) {
+                runtimeService.suspendProcessInstanceById(processInstanceId);
+                return Y9Result.successMsg("已挂起ID为[" + processInstanceId + "]的流程实例。");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return Y9Result.failure("操作失败");
     }
