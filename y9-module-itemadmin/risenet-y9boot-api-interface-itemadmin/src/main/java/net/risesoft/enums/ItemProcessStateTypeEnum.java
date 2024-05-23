@@ -5,7 +5,7 @@ import lombok.Getter;
 
 /**
  * 流程状态
- * 
+ *
  * @author qinman
  * @date 2022/12/20
  */
@@ -13,7 +13,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ItemProcessStateTypeEnum {
     /** 激活状态 */
-    ACTIVE("ative", "激活状态"),
+    ACTIVE("active", "激活状态"),
     /** 文本 */
     SUSPEND("suspend", "挂起状态");
 
