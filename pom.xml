@@ -16,6 +16,8 @@
     </parent>
 
     <modules>
+        <module>../y9-digitalbase</module>
+
         <module>y9-module-processadmin</module>
         <module>y9-module-itemadmin</module>
         <module>y9-module-jodconverter</module>
