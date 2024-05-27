@@ -11,14 +11,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.consts.UtilConsts;
@@ -32,6 +37,7 @@ import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.nosql.elastic.repository.OfficeDoneInfoRepository;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
+import net.risesoft.util.Y9EsIndexConst;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -42,35 +48,30 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Service(value = "officeDoneInfoService")
 @Transactional(readOnly = true)
 @Slf4j
+@RequiredArgsConstructor
 public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
-    @Autowired
-    private ErrorLogService errorLogService;
+    private static final IndexCoordinates INDEX = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
 
-    @Autowired
-    private OfficeDoneInfoRepository officeDoneInfoRepository;
+    private final ErrorLogService errorLogService;
 
-    @Autowired
-    private ElasticsearchOperations elasticsearchOperations;
+    private final OfficeDoneInfoRepository officeDoneInfoRepository;
+
+    private final ElasticsearchOperations elasticsearchOperations;
+
+    private final ElasticsearchTemplate elasticsearchTemplate;
 
     @Override
     public int countByItemId(String itemId) {
         try {
-            // FIXME elasticsearch
-            // BoolQueryBuilder builder =
-            // QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
-            // builder.must(QueryBuilders.existsQuery("endTime"));
-            // if (StringUtils.isNotBlank(itemId)) {
-            // builder.must(QueryBuilders.termsQuery("itemId", itemId));
-            // }
-            // SearchRequest searchRequest = new SearchRequest(Y9EsIndexConst.OFFICE_DONEINFO);
-            // searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
-            // SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-            // searchSourceBuilder.query(builder);
-            // searchRequest.source(searchSourceBuilder);
-            // long count = elasticsearchClient.search(searchRequest,
-            // RequestOptions.DEFAULT).getHits().getHits().length;
-            // return (int)count;
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists();
+            if (StringUtils.isNotBlank(itemId)) {
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
+            }
+            Query query = new CriteriaQuery(criteria);
+
+            long count = elasticsearchTemplate.count(query, INDEX);
+            return (int)count;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -88,13 +89,14 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // if (StringUtils.isNotBlank(itemId)) {
             // builder.must(QueryBuilders.termsQuery("itemId", itemId));
             // }
-            // SearchRequest searchRequest = new SearchRequest(Y9EsIndexConst.OFFICE_DONEINFO);
-            // searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
-            // SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-            // searchSourceBuilder.query(builder);
-            // searchRequest.source(searchSourceBuilder);
-            // long count = elasticsearchClient.search(searchRequest,
-            // RequestOptions.DEFAULT).getHits().getHits().length;
+            //
+            // Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
+            // .contains(userId).and("endTime").exists();
+            // if (StringUtils.isNotBlank(itemId)) {
+            // criteria.subCriteria(new Criteria("itemId").is(itemId));
+            // }
+            // Query query = new CriteriaQuery(criteria);
+            // long count = elasticsearchTemplate.count(query, INDEX);
             // return (int)count;
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,13 +114,13 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             // if (StringUtils.isNotBlank(itemId)) {
             // builder.must(QueryBuilders.termsQuery("itemId", itemId));
             // }
-            // SearchRequest searchRequest = new SearchRequest(Y9EsIndexConst.OFFICE_DONEINFO);
-            // searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
-            // SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-            // searchSourceBuilder.query(builder);
-            // searchRequest.source(searchSourceBuilder);
-            // long count = elasticsearchClient.search(searchRequest,
-            // RequestOptions.DEFAULT).getHits().getHits().length;
+            //
+            // Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").empty();
+            // if (StringUtils.isNotBlank(itemId)) {
+            // criteria.subCriteria(new Criteria("itemId").is(itemId));
+            // }
+            // Query query = new CriteriaQuery(criteria);
+            // long count = elasticsearchTemplate.count(query, INDEX);
             // return (int)count;
         } catch (Exception e) {
             e.printStackTrace();
