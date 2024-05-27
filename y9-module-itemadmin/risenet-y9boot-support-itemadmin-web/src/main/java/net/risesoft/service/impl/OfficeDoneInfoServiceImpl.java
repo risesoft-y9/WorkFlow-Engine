@@ -12,28 +12,27 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.consts.UtilConsts;
@@ -59,35 +58,29 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @Service(value = "officeDoneInfoService")
 @Transactional(readOnly = true)
 @Slf4j
+@RequiredArgsConstructor
 public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
-    @Autowired
-    private ErrorLogService errorLogService;
+    private static final IndexCoordinates INDEX = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
 
-    @Autowired
-    private OfficeDoneInfoRepository officeDoneInfoRepository;
+    private final ErrorLogService errorLogService;
 
-    @Autowired
-    private ElasticsearchOperations elasticsearchOperations;
+    private final OfficeDoneInfoRepository officeDoneInfoRepository;
 
-    @Autowired
-    private RestHighLevelClient elasticsearchClient;
+    private final ElasticsearchOperations elasticsearchOperations;
+
+    private final ElasticsearchTemplate elasticsearchTemplate;
 
     @Override
     public int countByItemId(String itemId) {
         try {
-            BoolQueryBuilder builder =
-                QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
-            builder.must(QueryBuilders.existsQuery("endTime"));
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists();
             if (StringUtils.isNotBlank(itemId)) {
-                builder.must(QueryBuilders.termsQuery("itemId", itemId));
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
-            SearchRequest searchRequest = new SearchRequest(Y9EsIndexConst.OFFICE_DONEINFO);
-            searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
-            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-            searchSourceBuilder.query(builder);
-            searchRequest.source(searchSourceBuilder);
-            long count = elasticsearchClient.search(searchRequest, RequestOptions.DEFAULT).getHits().getHits().length;
+            Query query = new CriteriaQuery(criteria);
+
+            long count = elasticsearchTemplate.count(query, INDEX);
             return (int)count;
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,12 +98,14 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             if (StringUtils.isNotBlank(itemId)) {
                 builder.must(QueryBuilders.termsQuery("itemId", itemId));
             }
-            SearchRequest searchRequest = new SearchRequest(Y9EsIndexConst.OFFICE_DONEINFO);
-            searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
-            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-            searchSourceBuilder.query(builder);
-            searchRequest.source(searchSourceBuilder);
-            long count = elasticsearchClient.search(searchRequest, RequestOptions.DEFAULT).getHits().getHits().length;
+
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
+                .contains(userId).and("endTime").exists();
+            if (StringUtils.isNotBlank(itemId)) {
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
+            }
+            Query query = new CriteriaQuery(criteria);
+            long count = elasticsearchTemplate.count(query, INDEX);
             return (int)count;
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,12 +122,13 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             if (StringUtils.isNotBlank(itemId)) {
                 builder.must(QueryBuilders.termsQuery("itemId", itemId));
             }
-            SearchRequest searchRequest = new SearchRequest(Y9EsIndexConst.OFFICE_DONEINFO);
-            searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
-            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-            searchSourceBuilder.query(builder);
-            searchRequest.source(searchSourceBuilder);
-            long count = elasticsearchClient.search(searchRequest, RequestOptions.DEFAULT).getHits().getHits().length;
+
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").empty();
+            if (StringUtils.isNotBlank(itemId)) {
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
+            }
+            Query query = new CriteriaQuery(criteria);
+            long count = elasticsearchTemplate.count(query, INDEX);
             return (int)count;
         } catch (Exception e) {
             e.printStackTrace();
