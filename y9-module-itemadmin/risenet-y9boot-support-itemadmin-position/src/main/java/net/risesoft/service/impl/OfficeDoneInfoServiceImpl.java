@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -71,8 +69,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
     @Override
     public void cancelMeeting(String processInstanceId) {
-        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId,
-            Y9LoginUserHolder.getTenantId());
+        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
         if (info != null) {
             info.setMeeting("0");
             info.setMeetingType("");
@@ -99,8 +96,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     @Override
     public int countByPositionIdAndSystemName(String positionId, String systemName) {
         try {
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists()
-                .and("allUserId").contains(positionId);
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists().and("allUserId").contains(positionId);
             if (StringUtils.isNotBlank(systemName)) {
                 criteria.subCriteria(new Criteria("systemName").is(systemName));
             }
@@ -116,8 +112,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     @Override
     public int countByUserId(String userId, String itemId) {
         try {
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists()
-                .and("allUserId").contains(userId);
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists().and("allUserId").contains(userId);
             if (StringUtils.isNotBlank(itemId)) {
                 criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
@@ -150,8 +145,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     public boolean deleteOfficeDoneInfo(String processInstanceId) {
         boolean b = false;
         try {
-            OfficeDoneInfo officeDoneInfo = officeDoneInfoRepository
-                .findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
+            OfficeDoneInfo officeDoneInfo = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
             if (officeDoneInfo != null) {
                 officeDoneInfoRepository.delete(officeDoneInfo);
             }
@@ -165,13 +159,11 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
     @Override
     public OfficeDoneInfo findByProcessInstanceId(String processInstanceId) {
-        return officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId,
-            Y9LoginUserHolder.getTenantId());
+        return officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
     }
 
     @Override
-    public Map<String, Object> getMeetingList(String userName, String deptName, String title, String meetingType,
-        Integer page, Integer rows) {
+    public Map<String, Object> getMeetingList(String userName, String deptName, String title, String meetingType, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -230,8 +222,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             processInstanceId = info.getProcessInstanceId();
             OfficeDoneInfo doneInfo = null;
             try {
-                doneInfo = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId,
-                    Y9LoginUserHolder.getTenantId());
+                doneInfo = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
             } catch (Exception e) {
                 LOGGER.warn("异常", e);
             }
@@ -267,8 +258,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchAllByDeptId(String deptId, String title, String itemId, String userName,
-        String state, String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllByDeptId(String deptId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -279,39 +269,12 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
                 page = 1;
             }
             Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
-            BoolQueryBuilder builder =
-                QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("deptId", "*" + deptId + "*"));
-            builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
-            if (StringUtils.isNotBlank(title)) {
-                BoolQueryBuilder builder2 =
-                    QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
-                builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
-                builder.must(builder2);
-            }
-            if (StringUtils.isNotBlank(itemId)) {
-                builder.must(QueryBuilders.termsQuery("itemId", itemId));
-            }
-            if (StringUtils.isNotBlank(userName)) {
-                builder.must(QueryBuilders.wildcardQuery("creatUserName", "*" + userName + "*"));
-            }
-            if (StringUtils.isNotBlank(year)) {
-                builder.must(QueryBuilders.wildcardQuery("startTime", year + "*"));
-            }
-            if (StringUtils.isNotBlank(state)) {
-                if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    builder.mustNot(QueryBuilders.existsQuery("endTime"));
-                } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    builder.must(QueryBuilders.existsQuery("endTime"));
-                }
-            }
-
-            Criteria criteria =
-                new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("deptId").contains(deptId);
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("deptId").contains(deptId);
             if (StringUtils.isNotBlank(title)) {
                 criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
             }
             if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").contains(itemId));
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
             if (StringUtils.isNotBlank(userName)) {
                 criteria.subCriteria(new Criteria("creatUserName").contains(userName));
@@ -321,9 +284,9 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             if (StringUtils.isNotBlank(state)) {
                 if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    criteria.subCriteria(new Criteria("endTime").empty());
+                    criteria.subCriteria(new Criteria("endTime").not().exists());
                 } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    criteria.subCriteria(new Criteria("endTime").notEmpty());
+                    criteria.subCriteria(new Criteria("endTime").exists());
                 }
             }
 
@@ -354,8 +317,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchAllByUserId(String userId, String title, String itemId, String userName,
-        String state, String year, String startDate, String endDate, Integer page, Integer rows) {
+    public Map<String, Object> searchAllByUserId(String userId, String title, String itemId, String userName, String state, String year, String startDate, String endDate, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -366,45 +328,13 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
                 page = 1;
             }
             Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
-            BoolQueryBuilder builder =
-                QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("allUserId", "*" + userId + "*"));
-            builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
-            if (StringUtils.isNotBlank(title)) {
-                BoolQueryBuilder builder2 =
-                    QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
-                builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
-                builder.must(builder2);
-            }
-            if (StringUtils.isNotBlank(itemId)) {
-                builder.must(QueryBuilders.termsQuery("itemId", itemId));
-            }
-            if (StringUtils.isNotBlank(userName)) {
-                builder.must(QueryBuilders.wildcardQuery("creatUserName", "*" + userName + "*"));
-            }
-            if (StringUtils.isNotBlank(year)) {
-                builder.must(QueryBuilders.wildcardQuery("startTime", year + "*"));
-            }
-            if (StringUtils.isNotBlank(startDate)) {
-                builder.must(QueryBuilders.rangeQuery("startTime").gte(startDate + " 00:00:00"));
-            }
-            if (StringUtils.isNotBlank(endDate)) {
-                builder.must(QueryBuilders.rangeQuery("startTime").lte(endDate + " 23:59:59"));
-            }
-            if (StringUtils.isNotBlank(state)) {
-                if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    builder.mustNot(QueryBuilders.existsQuery("endTime"));
-                } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    builder.must(QueryBuilders.existsQuery("endTime"));
-                }
-            }
 
-            Criteria criteria =
-                new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(userId);
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(userId);
             if (StringUtils.isNotBlank(title)) {
                 criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
             }
             if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").contains(itemId));
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
             if (StringUtils.isNotBlank(userName)) {
                 criteria.subCriteria(new Criteria("creatUserName").contains(userName));
@@ -420,9 +350,9 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             if (StringUtils.isNotBlank(state)) {
                 if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    criteria.subCriteria(new Criteria("endTime").empty());
+                    criteria.subCriteria(new Criteria("endTime").not().exists());
                 } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    criteria.subCriteria(new Criteria("endTime").notEmpty());
+                    criteria.subCriteria(new Criteria("endTime").exists());
                 }
             }
             Query query = new CriteriaQuery(criteria).setPageable(pageable);
@@ -452,8 +382,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchAllList(String searchName, String itemId, String userName, String state,
-        String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -464,34 +393,13 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
                 page = 1;
             }
             Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
-            BoolQueryBuilder builder =
-                QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
-            if (StringUtils.isNotBlank(searchName)) {
-                BoolQueryBuilder builder2 =
-                    QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + searchName + "*"));
-                builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + searchName + "*"));
-                builder.must(builder2);
-            }
-            if (StringUtils.isNotBlank(itemId)) {
-                builder.must(QueryBuilders.termsQuery("itemId", itemId));
-            }
-            if (StringUtils.isNotBlank(userName)) {
-                builder.must(QueryBuilders.wildcardQuery("creatUserName", "*" + userName + "*"));
-            }
-            if (StringUtils.isNotBlank(year)) {
-                builder.must(QueryBuilders.wildcardQuery("startTime", year + "*"));
-            }
-            if (StringUtils.isNotBlank(state)) {
-                if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    builder.mustNot(QueryBuilders.existsQuery("endTime"));
-                } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    builder.must(QueryBuilders.existsQuery("endTime"));
-                }
-            }
 
             Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
+            if (StringUtils.isNotBlank(searchName)) {
+                criteria.subCriteria(new Criteria("title").contains(searchName).or("docNumber").contains(searchName));
+            }
             if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").contains(itemId));
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
             if (StringUtils.isNotBlank(userName)) {
                 criteria.subCriteria(new Criteria("creatUserName").contains(userName));
@@ -501,9 +409,9 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             if (StringUtils.isNotBlank(state)) {
                 if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    criteria.subCriteria(new Criteria("endTime").empty());
+                    criteria.subCriteria(new Criteria("endTime").not().exists());
                 } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    criteria.subCriteria(new Criteria("endTime").notEmpty());
+                    criteria.subCriteria(new Criteria("endTime").exists());
                 }
             }
             Query query = new CriteriaQuery(criteria).setPageable(pageable);
@@ -533,8 +441,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchByItemId(String title, String itemId, String state, String startdate,
-        String enddate, Integer page, Integer rows) {
+    public Map<String, Object> searchByItemId(String title, String itemId, String state, String startdate, String enddate, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -545,44 +452,13 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
                 page = 1;
             }
             Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
-            if (StringUtils.isNotBlank(state) && state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
-            }
-            BoolQueryBuilder builder = QueryBuilders.boolQuery()
-                .must(QueryBuilders.wildcardQuery("tenantId", Y9LoginUserHolder.getTenantId()));
-            if (StringUtils.isNotBlank(state)) {
-                if (state.equals(ItemBoxTypeEnum.DOING.getValue())) {
-                    builder.mustNot(QueryBuilders.existsQuery("endTime"));
-                } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    builder.must(QueryBuilders.existsQuery("endTime"));
-                }
-            }
-            if (StringUtils.isNotBlank(title)) {
-                BoolQueryBuilder builder2 =
-                    QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
-                builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
-                builder2.should(QueryBuilders.wildcardQuery("creatUserName", "*" + title + "*"));
-                builder.must(builder2);
-            }
-            if (StringUtils.isNotBlank(itemId)) {
-                builder.must(QueryBuilders.termsQuery("itemId", itemId));
-            }
-            if (StringUtils.isNotBlank(startdate)) {
-                startdate = startdate + " 00:00:00";
-                builder.must(QueryBuilders.rangeQuery("startTime").gte(startdate));
-            }
-            if (StringUtils.isNotBlank(enddate)) {
-                enddate = enddate + " 23:59:59";
-                builder.must(QueryBuilders.rangeQuery("startTime").lte(enddate));
-            }
 
             Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
             if (StringUtils.isNotBlank(title)) {
-                criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title)
-                    .or("creatUserName").contains(title));
+                criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title).or("creatUserName").contains(title));
             }
             if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").contains(itemId));
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
             if (StringUtils.isNotBlank(startdate)) {
                 criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
@@ -592,9 +468,9 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             if (StringUtils.isNotBlank(state)) {
                 if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    criteria.subCriteria(new Criteria("endTime").empty());
+                    criteria.subCriteria(new Criteria("endTime").not().exists());
                 } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    criteria.subCriteria(new Criteria("endTime").notEmpty());
+                    criteria.subCriteria(new Criteria("endTime").exists());
                 }
             }
             Query query = new CriteriaQuery(criteria).setPageable(pageable);
@@ -624,8 +500,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchByPositionIdAndSystemName(String positionId, String title, String systemName,
-        String startdate, String enddate, Integer page, Integer rows) {
+    public Map<String, Object> searchByPositionIdAndSystemName(String positionId, String title, String systemName, String startdate, String enddate, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -636,30 +511,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
                 page = 1;
             }
             Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
-            BoolQueryBuilder builder =
-                QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("allUserId", "*" + positionId + "*"));
-            builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
-            builder.must(QueryBuilders.existsQuery("endTime"));
-            if (StringUtils.isNotBlank(title)) {
-                BoolQueryBuilder builder2 =
-                    QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
-                builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
-                builder.must(builder2);
-            }
-            if (StringUtils.isNotBlank(systemName)) {
-                builder.must(QueryBuilders.termsQuery("systemName", systemName));
-            }
-            if (StringUtils.isNotBlank(startdate)) {
-                startdate = startdate + " 00:00:00";
-                builder.must(QueryBuilders.rangeQuery("startTime").gte(startdate));
-            }
-            if (StringUtils.isNotBlank(enddate)) {
-                enddate = enddate + " 23:59:59";
-                builder.must(QueryBuilders.rangeQuery("startTime").lte(enddate));
-            }
 
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
-                .contains(positionId).and("endTime").exists();
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(positionId).and("endTime").exists();
             if (StringUtils.isNotBlank(title)) {
                 criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
             }
@@ -700,8 +553,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchByUserId(String userId, String title, String itemId, String startdate,
-        String enddate, Integer page, Integer rows) {
+    public Map<String, Object> searchByUserId(String userId, String title, String itemId, String startdate, String enddate, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -712,35 +564,13 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
                 page = 1;
             }
             Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
-            BoolQueryBuilder builder =
-                QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("allUserId", "*" + userId + "*"));
-            builder.must(QueryBuilders.termsQuery("tenantId", Y9LoginUserHolder.getTenantId()));
-            builder.must(QueryBuilders.existsQuery("endTime"));
-            if (StringUtils.isNotBlank(title)) {
-                BoolQueryBuilder builder2 =
-                    QueryBuilders.boolQuery().should(QueryBuilders.wildcardQuery("title", "*" + title + "*"));
-                builder2.should(QueryBuilders.wildcardQuery("docNumber", "*" + title + "*"));
-                builder.must(builder2);
-            }
-            if (StringUtils.isNotBlank(itemId)) {
-                builder.must(QueryBuilders.termsQuery("itemId", itemId));
-            }
-            if (StringUtils.isNotBlank(startdate)) {
-                startdate = startdate + " 00:00:00";
-                builder.must(QueryBuilders.rangeQuery("startTime").gte(startdate));
-            }
-            if (StringUtils.isNotBlank(enddate)) {
-                enddate = enddate + " 23:59:59";
-                builder.must(QueryBuilders.rangeQuery("startTime").lte(enddate));
-            }
 
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
-                .contains(userId).and("endTime").exists();
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(userId).and("endTime").exists();
             if (StringUtils.isNotBlank(title)) {
                 criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
             }
             if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").contains(itemId));
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
             if (StringUtils.isNotBlank(startdate)) {
                 criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
@@ -776,8 +606,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
     @Override
     public void setMeeting(String processInstanceId, String meetingType) {
-        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId,
-            Y9LoginUserHolder.getTenantId());
+        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
         if (info != null) {
             info.setMeeting("1");
             info.setMeetingType(meetingType);
