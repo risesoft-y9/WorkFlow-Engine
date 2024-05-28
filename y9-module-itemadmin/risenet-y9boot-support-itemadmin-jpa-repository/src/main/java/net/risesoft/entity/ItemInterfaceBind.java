@@ -1,7 +1,6 @@
 package net.risesoft.entity;
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,21 +16,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @author qinman
+ *
  * @author zhangchongjie
- * @date 2022/12/20
+ * @date 2024/05/24
  */
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_ITEM_LINKBIND")
-@org.hibernate.annotations.Table(comment = "事项链接绑定表", appliesTo = "FF_ITEM_LINKBIND")
-public class ItemLinkBind implements Serializable {
+@Table(name = "FF_ITEM_INTERFACE_BIND")
+@org.hibernate.annotations.Table(comment = "事项接口绑定表", appliesTo = "FF_ITEM_INTERFACE_BIND")
+public class ItemInterfaceBind implements Serializable {
 
     /**
      *
      */
-    private static final long serialVersionUID = 7561318776920064470L;
+    private static final long serialVersionUID = -7459152125523867706L;
 
     @Comment("主键")
     @Id
@@ -41,12 +40,12 @@ public class ItemLinkBind implements Serializable {
     private String id;
 
     @Comment("事项Id")
-    @Column(name = "ITEMID", length = 200, nullable = false)
+    @Column(name = "ITEMID", length = 50, nullable = false)
     private String itemId;
 
-    @Comment("链接id")
-    @Column(name = "LINKID", length = 100)
-    private String linkId;
+    @Comment("接口id")
+    @Column(name = "INTERFACEID", length = 50)
+    private String interfaceId;
 
     /**
      * 生成时间
@@ -56,33 +55,21 @@ public class ItemLinkBind implements Serializable {
     private String createTime;
 
     /**
-     * 链接名称
+     * 接口名称
      */
     @Transient
-    private String linkName;
+    private String interfaceName;
 
     /**
-     * 链接地址
+     * 接口地址
      */
     @Transient
-    private String linkUrl;
+    private String interfaceAddress;
 
     /**
      * 事项名称
      */
     @Transient
     private String itemName;
-
-    /**
-     * 角色名称
-     */
-    @Transient
-    private String roleNames;
-
-    /**
-     * 角色Id集合
-     */
-    @Transient
-    private List<String> roleIds;
 
 }

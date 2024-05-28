@@ -27,6 +27,15 @@ public interface CustomProcessDefinitionService {
     String getEndNodeKeyByTaskId(String taskId);
 
     /**
+     * 根据流程定义Id获取节点,路由信息 isContainStartNode为true时，不包含开始节点
+     *
+     * @param processDefinitionId
+     * @param isContainStartNode
+     * @return
+     */
+    List<Map<String, Object>> getFlowElement(String processDefinitionId, Boolean isContainStartNode);
+
+    /**
      * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
      *
      * @param processDefinitionId
@@ -63,7 +72,7 @@ public interface CustomProcessDefinitionService {
 
     /**
      * Description:
-     * 
+     *
      * @param processDefinitionId
      * @return
      */
@@ -106,14 +115,13 @@ public interface CustomProcessDefinitionService {
 
     /**
      * Description: 根据流程定义Id和流程节点Key获取目标任务节点集合
-     * 
+     *
      * @param processDefinitionId
      * @param taskDefKey
      * @param isContainEndNode
      * @return
      */
-    List<Map<String, String>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey,
-        Boolean isContainEndNode);
+    List<Map<String, String>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey, Boolean isContainEndNode);
 
     /**
      * 根据任务Id获取流程的结束节点信息

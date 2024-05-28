@@ -166,6 +166,64 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
+    public List<Map<String, Object>> getFlowElement(String processDefinitionId, Boolean isContainStartNode) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        List<FlowElement> activitieList = new ArrayList<>();
+        if (!isContainStartNode) {
+            List<FlowElement> list1 = new ArrayList<>();
+            BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+            org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
+            list1 = (List<FlowElement>)process.getFlowElements();
+            if (list1.size() > 0) {
+                // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
+                activitieList.addAll(list1);
+            }
+            Iterator<FlowElement> sListIterator = activitieList.iterator();
+            while (sListIterator.hasNext()) {
+                FlowElement e = sListIterator.next();
+                if (e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent) {
+                    sListIterator.remove();
+                }
+            }
+        } else {
+            activitieList = getFilteredActivityImpls(processDefinitionId);
+        }
+        for (FlowElement activity : activitieList) {
+            Map<String, Object> tempMap = new LinkedHashMap<>();
+            tempMap.put("elementKey", activity.getId());
+            tempMap.put("elementName", activity.getName());
+            if (activity instanceof UserTask) {
+                tempMap.put("type", "UserTask");
+            } else if (activity instanceof SequenceFlow) {
+                tempMap.put("type", "SequenceFlow");
+            }
+            try {
+                if (activity instanceof UserTask) {
+                    UserTask userTask = (UserTask)activity;
+                    if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
+                        tempMap.put(SysVariables.MULTIINSTANCE, SysVariables.SEQUENTIAL);
+                    } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                        tempMap.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
+                    } else {
+                        tempMap.put(SysVariables.MULTIINSTANCE, SysVariables.COMMON);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (activity.getName() != null && !activity.getName().equals("") && activity.getId() != null && !activity.getId().equals("")) {
+                list.add(tempMap);
+            }
+        }
+        Map<String, Object> tempMap = new LinkedHashMap<>();
+        tempMap.put("elementKey", "");
+        tempMap.put("elementName", "流程");
+        tempMap.put("type", "Process");
+        list.add(0, tempMap);
+        return list;
+    }
+
+    @Override
     public List<Map<String, Object>> getNodes(String processDefinitionId, Boolean isContainStartNode) {
         List<Map<String, Object>> list = new ArrayList<>();
         List<FlowElement> activitieList = new ArrayList<>();
@@ -181,8 +239,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
             Iterator<FlowElement> sListIterator = activitieList.iterator();
             while (sListIterator.hasNext()) {
                 FlowElement e = sListIterator.next();
-                if (e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent
-                    || e instanceof SequenceFlow) {
+                if (e instanceof Gateway || e instanceof StartEvent || e instanceof EndEvent || e instanceof SequenceFlow) {
                     sListIterator.remove();
                 }
             }
@@ -399,8 +456,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
 
     @Override
     public String getStartNodeKeyByProcessDefinitionKey(String processDefinitionKey) {
-        String processDefinitionId = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey).latestVersion().singleResult().getId();
+        String processDefinitionId = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).latestVersion().singleResult().getId();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         Collection<FlowElement> flowElements = process.getFlowElements();
@@ -476,8 +532,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                         Map<String, String> map = new HashMap<>(16);
                         String conditionText = tr.getConditionExpression();
                         FlowElement fe = tr.getTargetFlowElement();
-                        if (StringUtils.isNotBlank(conditionText) && !(fe instanceof EndEvent)
-                            && !(fe instanceof ParallelGateway)) {
+                        if (StringUtils.isNotBlank(conditionText) && !(fe instanceof EndEvent) && !(fe instanceof ParallelGateway)) {
                             String name = tr.getName();
                             if (StringUtils.isNotBlank(name) && "skip".equals(name)) {
                                 // 忽略
@@ -594,8 +649,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                                             UserTask userTask = (UserTask)fe;
                                             if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
                                                 map.put(SysVariables.MULTIINSTANCE, SysVariables.SEQUENTIAL);
-                                            } else if (userTask
-                                                .getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                                            } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
                                                 map.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
                                             }
                                         }
@@ -604,8 +658,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                                     nameListTemp.add(name);
                                 } else {
                                     UserTask userTask = (UserTask)fe;
-                                    if (!(fe instanceof EndEvent)
-                                        && userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
+                                    if (!(fe instanceof EndEvent) && userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
                                         for (int j = 0; j < targetNodes.size(); j++) {
                                             // 当节点名称相同时，默认选择并行节点
                                             if (targetNodes.get(j).get("taskDefName").equals(name)) {
@@ -657,8 +710,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     @Override
-    public List<Map<String, String>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey,
-        Boolean isContainEndNode) {
+    public List<Map<String, String>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey, Boolean isContainEndNode) {
         List<Map<String, String>> targetNodes = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);

@@ -1,7 +1,6 @@
 package net.risesoft.entity;
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,21 +16,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @author qinman
+ *
  * @author zhangchongjie
- * @date 2022/12/20
+ * @date 2024/05/24
  */
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FF_ITEM_LINKBIND")
-@org.hibernate.annotations.Table(comment = "事项链接绑定表", appliesTo = "FF_ITEM_LINKBIND")
-public class ItemLinkBind implements Serializable {
+@Table(name = "FF_ITEM_INTERFACE_TASK_BIND")
+@org.hibernate.annotations.Table(comment = "事项接口任务绑定表", appliesTo = "FF_ITEM_INTERFACE_TASK_BIND")
+public class ItemInterfaceTaskBind implements Serializable {
 
     /**
      *
      */
-    private static final long serialVersionUID = 7561318776920064470L;
+    private static final long serialVersionUID = 5824973042664138544L;
 
     @Comment("主键")
     @Id
@@ -41,12 +40,24 @@ public class ItemLinkBind implements Serializable {
     private String id;
 
     @Comment("事项Id")
-    @Column(name = "ITEMID", length = 200, nullable = false)
+    @Column(name = "ITEMID", length = 50, nullable = false)
     private String itemId;
 
-    @Comment("链接id")
-    @Column(name = "LINKID", length = 100)
-    private String linkId;
+    @Comment("接口id")
+    @Column(name = "INTERFACEID", length = 50)
+    private String interfaceId;
+
+    @Comment("流程定义Id")
+    @Column(name = "PROCESSDEFINITIONID", length = 255)
+    private String processDefinitionId;
+
+    @Comment("任务key")
+    @Column(name = "TASKDEFKEY", length = 100)
+    private String taskDefKey;
+
+    @Comment("执行条件")
+    @Column(name = "EXECUTECONDITION", length = 100)
+    private String executeCondition;
 
     /**
      * 生成时间
@@ -56,16 +67,16 @@ public class ItemLinkBind implements Serializable {
     private String createTime;
 
     /**
-     * 链接名称
+     * 接口名称
      */
     @Transient
-    private String linkName;
+    private String interfaceName;
 
     /**
-     * 链接地址
+     * 接口地址
      */
     @Transient
-    private String linkUrl;
+    private String interfaceAddress;
 
     /**
      * 事项名称
@@ -74,15 +85,15 @@ public class ItemLinkBind implements Serializable {
     private String itemName;
 
     /**
-     * 角色名称
+     * 流程定义名称
      */
     @Transient
-    private String roleNames;
+    private String procDefName;
 
     /**
-     * 角色Id集合
+     * 任务名称
      */
     @Transient
-    private List<String> roleIds;
+    private String taskDefName;
 
 }

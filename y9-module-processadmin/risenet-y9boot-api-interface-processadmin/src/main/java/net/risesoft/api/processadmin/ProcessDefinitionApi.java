@@ -29,6 +29,16 @@ public interface ProcessDefinitionApi {
     String getEndNodeKeyByTaskId(String tenantId, String taskId);
 
     /**
+     * 根据流程定义Id获取节点,路由信息 isContainStartNode为true时，不包含开始节点
+     *
+     * @param tenantId 租户Id
+     * @param processDefinitionId 流程定义id
+     * @param isContainStartNode 是否包含开始节点
+     * @return
+     */
+    List<Map<String, Object>> getFlowElement(String tenantId, String processDefinitionId, Boolean isContainStartNode);
+
+    /**
      * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
      *
      * @param tenantId 租户Id
@@ -113,8 +123,7 @@ public interface ProcessDefinitionApi {
      * @param taskDefKey 任务key
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, String>> getTargetNodes4ParallelGateway(String tenantId, String processDefinitionId,
-        String taskDefKey);
+    List<Map<String, String>> getTargetNodes4ParallelGateway(String tenantId, String processDefinitionId, String taskDefKey);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
@@ -125,8 +134,7 @@ public interface ProcessDefinitionApi {
      * @param isContainEndNode 是否包含结束节点
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, String>> getTargetNodes4UserTask(String tenantId, String processDefinitionId, String taskDefKey,
-        Boolean isContainEndNode);
+    List<Map<String, String>> getTargetNodes4UserTask(String tenantId, String processDefinitionId, String taskDefKey, Boolean isContainEndNode);
 
     /**
      * 判断流程定义的节点是否是callActivity节点
