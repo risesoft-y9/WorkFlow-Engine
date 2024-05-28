@@ -21,11 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.InterfaceRequestParams;
 import net.risesoft.entity.InterfaceResponseParams;
+import net.risesoft.entity.ItemInterfaceBind;
+import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.InterfaceInfoRepository;
 import net.risesoft.repository.jpa.InterfaceRequestParamsRepository;
 import net.risesoft.repository.jpa.InterfaceResponseParamsRepository;
+import net.risesoft.repository.jpa.ItemInterfaceBindRepository;
+import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.InterfaceService;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -43,10 +47,37 @@ public class InterfaceServiceImpl implements InterfaceService {
     private InterfaceInfoRepository interfaceInfoRepository;
 
     @Autowired
+    private SpmApproveItemRepository spmApproveItemRepository;
+
+    @Autowired
+    private ItemInterfaceBindRepository itemInterfaceBindRepository;
+
+    @Autowired
     private InterfaceRequestParamsRepository interfaceRequestParamsRepository;
 
     @Autowired
     private InterfaceResponseParamsRepository interfaceResponseParamsRepository;
+
+    @SuppressWarnings("serial")
+    @Override
+    public List<ItemInterfaceBind> findByInterfaceId(String id) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        List<ItemInterfaceBind> list = itemInterfaceBindRepository.findAll(new Specification<ItemInterfaceBind>() {
+            @Override
+            public Predicate toPredicate(Root<ItemInterfaceBind> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+                List<Predicate> list = new ArrayList<Predicate>();
+                list.add(builder.equal(root.get("interfaceId"), id));
+                Predicate[] predicates = new Predicate[list.size()];
+                list.toArray(predicates);
+                return builder.and(predicates);
+            }
+        }, sort);
+        for (ItemInterfaceBind bind : list) {
+            SpmApproveItem item = spmApproveItemRepository.findById(bind.getItemId()).orElse(null);
+            bind.setItemName(item != null ? item.getName() : "事项不存在");
+        }
+        return list;
+    }
 
     @SuppressWarnings("serial")
     @Override

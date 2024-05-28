@@ -88,8 +88,6 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
         for (ItemLinkBind bind : list) {
             SpmApproveItem item = spmApproveItemService.findById(bind.getItemId());
             bind.setItemName(item != null ? item.getName() : "事项不存在");
-            bind.setLinkName(linkId);
-            bind.setRoleNames(linkId);
             List<String> roleIds = new ArrayList<>();
             List<ItemLinkRole> roleList = itemLinkRoleRepository.findByItemLinkId(bind.getId());
             String roleNames = "";

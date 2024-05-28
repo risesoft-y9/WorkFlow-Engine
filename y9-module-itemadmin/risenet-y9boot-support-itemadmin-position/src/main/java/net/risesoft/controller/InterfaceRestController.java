@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.InterfaceRequestParams;
 import net.risesoft.entity.InterfaceResponseParams;
+import net.risesoft.entity.ItemInterfaceBind;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.InterfaceService;
 
@@ -27,6 +28,19 @@ public class InterfaceRestController {
 
     @Autowired
     private InterfaceService interfaceService;
+
+    /**
+     * 获取接口绑定事项列表
+     *
+     * @param id 接口id
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/findByInterfaceId", method = RequestMethod.GET, produces = "application/json")
+    public Y9Result<List<ItemInterfaceBind>> findByInterfaceId(@RequestParam(required = true) String id) {
+        List<ItemInterfaceBind> list = interfaceService.findByInterfaceId(id);
+        return Y9Result.success(list, "获取成功");
+    }
 
     /**
      * 获取接口列表
@@ -107,7 +121,6 @@ public class InterfaceRestController {
     @RequestMapping(value = "/removeResponseParams", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public Y9Result<String> removeResponseParams(@RequestParam(required = true) String[] ids) {
-        System.out.println("8888888888888888" + ids[0]);
         interfaceService.removeResParams(ids);
         return Y9Result.successMsg("删除成功");
     }

@@ -33,9 +33,6 @@ public class ItemLinkBind implements Serializable {
      */
     private static final long serialVersionUID = 7561318776920064470L;
 
-    /**
-     * 意见框和流程定义节点绑定唯一标示
-     */
     @Comment("主键")
     @Id
     @Column(name = "ID", length = 38, nullable = false)

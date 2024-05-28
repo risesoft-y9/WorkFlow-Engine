@@ -5,6 +5,7 @@ import java.util.List;
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.InterfaceRequestParams;
 import net.risesoft.entity.InterfaceResponseParams;
+import net.risesoft.entity.ItemInterfaceBind;
 
 /**
  * @author qinman
@@ -12,6 +13,14 @@ import net.risesoft.entity.InterfaceResponseParams;
  * @date 2022/12/20
  */
 public interface InterfaceService {
+
+    /**
+     * 获取接口绑定事项列表
+     *
+     * @param id
+     * @return
+     */
+    List<ItemInterfaceBind> findByInterfaceId(String id);
 
     /**
      * 获取接口列表

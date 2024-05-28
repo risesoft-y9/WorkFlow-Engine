@@ -59,6 +59,22 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
     }
 
     /**
+     * 根据流程定义Id获取节点,路由信息 isContainStartNode为true时，不包含开始节点
+     *
+     * @param tenantId 租户Id
+     * @param processDefinitionId 流程定义id
+     * @param isContainStartNode 是否包含开始节点
+     * @return
+     */
+    @Override
+    @GetMapping(value = "/getFlowElement", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Map<String, Object>> getFlowElement(@RequestParam String tenantId, @RequestParam String processDefinitionId, @RequestParam Boolean isContainStartNode) {
+        FlowableTenantInfoHolder.setTenantId(tenantId);
+        List<Map<String, Object>> listMap = customProcessDefinitionService.getFlowElement(processDefinitionId, isContainStartNode);
+        return listMap;
+    }
+
+    /**
      * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
      *
      * @param tenantId 租户Id
