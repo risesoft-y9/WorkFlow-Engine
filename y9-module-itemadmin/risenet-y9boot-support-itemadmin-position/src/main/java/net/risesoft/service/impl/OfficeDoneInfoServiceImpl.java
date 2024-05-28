@@ -70,8 +70,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
     @Override
     public void cancelMeeting(String processInstanceId) {
-        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId,
-            Y9LoginUserHolder.getTenantId());
+        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
         if (info != null) {
             info.setMeeting("0");
             info.setMeetingType("");
@@ -98,8 +97,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     @Override
     public int countByPositionIdAndSystemName(String positionId, String systemName) {
         try {
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists()
-                .and("allUserId").contains(positionId);
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists().and("allUserId").contains(positionId);
             if (StringUtils.isNotBlank(systemName)) {
                 criteria.subCriteria(new Criteria("systemName").is(systemName));
             }
@@ -115,8 +113,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     @Override
     public int countByUserId(String userId, String itemId) {
         try {
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists()
-                .and("allUserId").contains(userId);
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists().and("allUserId").contains(userId);
             if (StringUtils.isNotBlank(itemId)) {
                 criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
@@ -149,8 +146,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     public boolean deleteOfficeDoneInfo(String processInstanceId) {
         boolean b = false;
         try {
-            OfficeDoneInfo officeDoneInfo = officeDoneInfoRepository
-                .findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
+            OfficeDoneInfo officeDoneInfo = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
             if (officeDoneInfo != null) {
                 officeDoneInfoRepository.delete(officeDoneInfo);
             }
@@ -164,13 +160,11 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
     @Override
     public OfficeDoneInfo findByProcessInstanceId(String processInstanceId) {
-        return officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId,
-            Y9LoginUserHolder.getTenantId());
+        return officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
     }
 
     @Override
-    public Map<String, Object> getMeetingList(String userName, String deptName, String title, String meetingType,
-        Integer page, Integer rows) {
+    public Map<String, Object> getMeetingList(String userName, String deptName, String title, String meetingType, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -267,8 +261,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             processInstanceId = info.getProcessInstanceId();
             OfficeDoneInfo doneInfo = null;
             try {
-                doneInfo = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId,
-                    Y9LoginUserHolder.getTenantId());
+                doneInfo = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
             } catch (Exception e) {
                 LOGGER.warn("异常", e);
             }
@@ -304,8 +297,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchAllByDeptId(String deptId, String title, String itemId, String userName,
-        String state, String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllByDeptId(String deptId, String title, String itemId, String userName, String state, String year, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -324,7 +316,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
                 criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
             }
             if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").contains(itemId));
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
             if (StringUtils.isNotBlank(userName)) {
                 criteria.subCriteria(new Criteria("creatUserName").contains(userName));
@@ -334,9 +326,9 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             if (StringUtils.isNotBlank(state)) {
                 if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    criteria.subCriteria(new Criteria("endTime").empty());
+                    criteria.subCriteria(new Criteria("endTime").not().exists());
                 } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    criteria.subCriteria(new Criteria("endTime").notEmpty());
+                    criteria.subCriteria(new Criteria("endTime").exists());
                 }
             }
 
@@ -366,8 +358,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchAllByUserId(String userId, String title, String itemId, String userName,
-        String state, String year, String startDate, String endDate, Integer page, Integer rows) {
+    public Map<String, Object> searchAllByUserId(String userId, String title, String itemId, String userName, String state, String year, String startDate, String endDate, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -379,13 +370,12 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
 
-            Criteria criteria =
-                new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(userId);
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(userId);
             if (StringUtils.isNotBlank(title)) {
                 criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
             }
             if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").contains(itemId));
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
             if (StringUtils.isNotBlank(userName)) {
                 criteria.subCriteria(new Criteria("creatUserName").contains(userName));
@@ -401,9 +391,9 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             if (StringUtils.isNotBlank(state)) {
                 if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    criteria.subCriteria(new Criteria("endTime").empty());
+                    criteria.subCriteria(new Criteria("endTime").not().exists());
                 } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    criteria.subCriteria(new Criteria("endTime").notEmpty());
+                    criteria.subCriteria(new Criteria("endTime").exists());
                 }
             }
             Query query = new CriteriaQuery(criteria).setPageable(pageable);
@@ -432,8 +422,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchAllList(String searchName, String itemId, String userName, String state,
-        String year, Integer page, Integer rows) {
+    public Map<String, Object> searchAllList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -443,11 +432,14 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             if (page < 1) {
                 page = 1;
             }
-            Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
+            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
 
             Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
+            if (StringUtils.isNotBlank(searchName)) {
+                criteria.subCriteria(new Criteria("title").contains(searchName).or("docNumber").contains(searchName));
+            }
             if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").contains(itemId));
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
             if (StringUtils.isNotBlank(userName)) {
                 criteria.subCriteria(new Criteria("creatUserName").contains(userName));
@@ -457,9 +449,9 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             if (StringUtils.isNotBlank(state)) {
                 if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    criteria.subCriteria(new Criteria("endTime").empty());
+                    criteria.subCriteria(new Criteria("endTime").not().exists());
                 } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    criteria.subCriteria(new Criteria("endTime").notEmpty());
+                    criteria.subCriteria(new Criteria("endTime").exists());
                 }
             }
             Query query = new CriteriaQuery(criteria).setPageable(pageable);
@@ -488,8 +480,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchByItemId(String title, String itemId, String state, String startdate,
-        String enddate, Integer page, Integer rows) {
+    public Map<String, Object> searchByItemId(String title, String itemId, String state, String startdate, String enddate, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -499,15 +490,14 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             if (page < 1) {
                 page = 1;
             }
-            Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
+            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
 
             Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
             if (StringUtils.isNotBlank(title)) {
-                criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title)
-                    .or("creatUserName").contains(title));
+                criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title).or("creatUserName").contains(title));
             }
             if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").contains(itemId));
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
             if (StringUtils.isNotBlank(startdate)) {
                 criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
@@ -517,9 +507,9 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             if (StringUtils.isNotBlank(state)) {
                 if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    criteria.subCriteria(new Criteria("endTime").empty());
+                    criteria.subCriteria(new Criteria("endTime").not().exists());
                 } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    criteria.subCriteria(new Criteria("endTime").notEmpty());
+                    criteria.subCriteria(new Criteria("endTime").exists());
                 }
             }
             Query query = new CriteriaQuery(criteria).setPageable(pageable);
@@ -548,8 +538,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchByPositionIdAndSystemName(String positionId, String title, String systemName,
-        String startdate, String enddate, Integer page, Integer rows) {
+    public Map<String, Object> searchByPositionIdAndSystemName(String positionId, String title, String systemName, String startdate, String enddate, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -561,8 +550,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             Pageable pageable = PageRequest.of(page - 1, rows, Sort.Direction.DESC, "endTime");
 
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
-                .contains(positionId).and("endTime").exists();
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(positionId).and("endTime").exists();
             if (StringUtils.isNotBlank(title)) {
                 criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
             }
@@ -642,8 +630,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchByUserId(String userId, String title, String itemId, String startdate,
-        String enddate, Integer page, Integer rows) {
+    public Map<String, Object> searchByUserId(String userId, String title, String itemId, String startdate, String enddate, Integer page, Integer rows) {
         Map<String, Object> dataMap = new HashMap<>(16);
         dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
@@ -655,13 +642,12 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "endTime"));
 
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
-                .contains(userId).and("endTime").exists();
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(userId).and("endTime").exists();
             if (StringUtils.isNotBlank(title)) {
                 criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
             }
             if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").contains(itemId));
+                criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
             if (StringUtils.isNotBlank(startdate)) {
                 criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
@@ -696,8 +682,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
     @Override
     public void setMeeting(String processInstanceId, String meetingType) {
-        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId,
-            Y9LoginUserHolder.getTenantId());
+        OfficeDoneInfo info = officeDoneInfoRepository.findByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
         if (info != null) {
             info.setMeeting("1");
             info.setMeetingType(meetingType);
