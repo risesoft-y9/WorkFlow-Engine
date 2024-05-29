@@ -119,7 +119,7 @@ public class FormDataServiceImpl implements FormDataService {
         map.put("formName", "");
         try {
             Y9PreFormItemBind item = y9PreFormItemBindService.findByItemId(itemId);
-            if (map != null) {
+            if (item != null) {
                 map.put("formId", item.getFormId());
                 map.put("formName", item.getFormName());
             }
