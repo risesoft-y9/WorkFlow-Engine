@@ -1,8 +1,11 @@
 package net.risesoft.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.entity.ChaoSong;
+import net.risesoft.model.platform.Person;
+import net.risesoft.service.ChaoSongService;
+import net.risesoft.y9.Y9LoginUserHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,14 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.itemadmin.ChaoSongApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.entity.ChaoSong;
-import net.risesoft.model.platform.Person;
-import net.risesoft.service.ChaoSongService;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
+ * 抄送接口
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -34,6 +34,12 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     @Autowired
     private PersonApi personManager;
 
+    /**
+     * 改变抄送状态
+     * @param tenantId 租户id
+     * @param id 唯一标示
+     * @param type 类型
+     */
     @Override
     @PostMapping(value = "/changeChaoSongState", produces = MediaType.APPLICATION_JSON_VALUE)
     public void changeChaoSongState(String tenantId, String id, String type) {
@@ -41,6 +47,12 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         chaoSongService.changeChaoSongState(id, type);
     }
 
+    /**
+     * 改变抄送状态（批量）
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param ids 唯一标示数组
+     */
     @Override
     @PostMapping(value = "/changeStatus", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -49,6 +61,11 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         chaoSongService.changeStatus(ids, 1);
     }
 
+    /**
+     * 设置抄送为已阅
+     * @param tenantId 租户id
+     * @param chaoSongId 抄送id
+     */
     @Override
     @PostMapping(value = "/changeStatus2read", produces = MediaType.APPLICATION_JSON_VALUE)
     public void changeStatus2read(String tenantId, String chaoSongId) {
@@ -56,6 +73,13 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         chaoSongService.changeStatus(chaoSongId, 1);
     }
 
+    /**
+     * 获取抄送数量（根据流程实例id）
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param processInstanceId 流程实例id
+     * @return
+     */
     @Override
     @GetMapping(value = "/countByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public int countByProcessInstanceId(String tenantId, String userId, String processInstanceId) {
@@ -63,6 +87,13 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return chaoSongService.countByProcessInstanceId(userId, processInstanceId);
     }
 
+    /**
+     * 获取抄送数量（根据用户id和流程实例id）
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param processInstanceId 流程实例id
+     * @return
+     */
     @Override
     @GetMapping(value = "/countByUserIdAndProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public int countByUserIdAndProcessInstanceId(String tenantId, String userId, String processInstanceId) {
@@ -70,6 +101,13 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return chaoSongService.countByUserIdAndProcessInstanceId(userId, processInstanceId);
     }
 
+    /**
+     * 删除抄送记录（根据流程实例id）
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @param year 年份
+     * @return
+     */
     @Override
     @PostMapping(value = "/deleteByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean deleteByProcessInstanceId(String tenantId, String processInstanceId, String year) {
@@ -77,6 +115,12 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return chaoSongService.deleteByProcessInstanceId(processInstanceId, year);
     }
 
+    /**
+     * 删除抄送记录
+     * @param tenantId 租户id
+     * @param ids ids
+     * @param processInstanceId 流程实例id
+     */
     @Override
     @PostMapping(value = "/deleteList", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -85,6 +129,16 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         chaoSongService.deleteList(ids, processInstanceId);
     }
 
+    /**
+     * 获取抄送详情
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param id id
+     * @param processInstanceId 流程实例id
+     * @param status 状态
+     * @param mobile 是否发送手机
+     * @return
+     */
     @Override
     @GetMapping(value = "/detail", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> detail(String tenantId, String userId, String id, String processInstanceId,
@@ -106,6 +160,12 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return map;
     }
 
+    /**
+     *  获取批阅件计数
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @return
+     */
     @Override
     @GetMapping(value = "/getDone4OpinionCountByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
     public int getDone4OpinionCountByUserId(String tenantId, String userId) {
@@ -113,6 +173,12 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return chaoSongService.getDone4OpinionCountByUserId(userId);
     }
 
+    /**
+     * 根据人员唯一标示查找已阅数量
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @return
+     */
     @Override
     @GetMapping(value = "/getDoneCountByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
     public int getDoneCountByUserId(String tenantId, String userId) {
@@ -121,6 +187,13 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return count;
     }
 
+    /**
+     * 根据人员唯一标示查找已阅数量
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param itemId 事项id
+     * @return
+     */
     @Override
     @GetMapping(value = "/getDoneCountByUserIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
     public int getDoneCountByUserIdAndItemId(String tenantId, String userId, String itemId) {
@@ -129,6 +202,13 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return count;
     }
 
+    /**
+     * 根据人员唯一标示和系统名称查找已阅数量
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param systemName 系统名称
+     * @return
+     */
     @Override
     @GetMapping(value = "/getDoneCountByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public int getDoneCountByUserIdAndSystemName(String tenantId, String userId, String systemName) {
@@ -137,6 +217,16 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return count;
     }
 
+    /**
+     * 获取已阅列表
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param year 年份
+     * @param documentTitle 文档标题
+     * @param rows rows
+     * @param page page
+     * @return
+     */
     @Override
     @GetMapping(value = "/getDoneListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getDoneListByUserId(String tenantId, String userId, String year, String documentTitle,
@@ -146,6 +236,15 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return map;
     }
 
+    /**
+     * 查找抄送目标所有的抄送已阅件
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param itemId 事项id
+     * @param rows 条数
+     * @param page 页数
+     * @return
+     */
     @Override
     @GetMapping(value = "/getDoneListByUserIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getDoneListByUserIdAndItemId(String tenantId, String userId, String itemId, int rows,
@@ -155,6 +254,15 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return map;
     }
 
+    /**
+     * 根据人员唯一标示和系统名称查找已阅数量
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param systemName 系统名称
+     * @param rows rows
+     * @param page page
+     * @return
+     */
     @Override
     @GetMapping(value = "/getDoneListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getDoneListByUserIdAndSystemName(String tenantId, String userId, String systemName,
@@ -164,6 +272,15 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return map;
     }
 
+    /**
+     * 根据流程实例id获取抄送列表
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @param userName 用户名称
+     * @param rows rows
+     * @param page page
+     * @return
+     */
     @Override
     @GetMapping(value = "/getListByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getListByProcessInstanceId(String tenantId, String processInstanceId, String userName,
@@ -173,6 +290,16 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return map;
     }
 
+    /**
+     * 根据发送人id和流程实例id获取抄送列表
+     * @param tenantId 租户id
+     * @param senderId 发送人id
+     * @param processInstanceId 流程实例id
+     * @param userName 用户名称
+     * @param rows rows
+     * @param page page
+     * @return
+     */
     @Override
     @GetMapping(value = "/getListBySenderIdAndProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId,
@@ -183,6 +310,16 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return map;
     }
 
+    /**
+     * 批阅件列表
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param year 年份
+     * @param documentTitle 文档标题
+     * @param rows rows
+     * @param page page
+     * @return
+     */
     @Override
     @GetMapping(value = "/getOpinionChaosongByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getOpinionChaosongByUserId(String tenantId, String userId, String year,
@@ -192,6 +329,12 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return map;
     }
 
+    /**
+     * 根据人员唯一标示查找待阅数量
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @return
+     */
     @Override
     @GetMapping(value = "/getTodoCountByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
     public int getTodoCountByUserId(String tenantId, String userId) {
@@ -200,6 +343,13 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return count;
     }
 
+    /**
+     * 根据人员唯一标示查找待阅数量
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param itemId 事项id
+     * @return
+     */
     @Override
     @GetMapping(value = "/getTodoCountByUserIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
     public int getTodoCountByUserIdAndItemId(String tenantId, String userId, String itemId) {
@@ -208,6 +358,13 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return count;
     }
 
+    /**
+     * 根据人员唯一标示查找待阅数量
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param systemName 系统名称
+     * @return
+     */
     @Override
     @GetMapping(value = "/getTodoCountByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public int getTodoCountByUserIdAndSystemName(String tenantId, String userId, String systemName) {
@@ -215,6 +372,15 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return chaoSongService.getTodoCountByUserIdAndSystemName(userId, systemName);
     }
 
+    /**
+     * 查找抄送目标所有的抄送待阅件
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param documentTitle 文档标题
+     * @param rows rows
+     * @param page page
+     * @return
+     */
     @Override
     @GetMapping(value = "/getTodoListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getTodoListByUserId(String tenantId, String userId, String documentTitle, int rows,
@@ -224,6 +390,15 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return map;
     }
 
+    /**
+     * 根据人员唯一标示和事项id查找待阅列表
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param itemId 事项id
+     * @param rows rows
+     * @param page page
+     * @return
+     */
     @Override
     @GetMapping(value = "/getTodoListByUserIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getTodoListByUserIdAndItemId(String tenantId, String userId, String itemId, int rows,
@@ -233,6 +408,16 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return map;
     }
 
+    /**
+     * 根据人员唯一标示和系统名称查找待阅
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param systemName 系统名称
+     * @param title 标题
+     * @param rows rows
+     * @param page page
+     * @return
+     */
     @Override
     @GetMapping(value = "/getTodoListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getTodoListByUserIdAndSystemName(String tenantId, String userId, String systemName,
@@ -247,6 +432,18 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return map;
     }
 
+    /**
+     * 保存抄送
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param processInstanceId 流程实例id
+     * @param users users
+     * @param isSendSms 是否发生短信
+     * @param isShuMing isShuMing
+     * @param smsContent 短信内容
+     * @param smsPersonId 发送人
+     * @return
+     */
     @Override
     @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> save(String tenantId, String userId, String processInstanceId, String users,
@@ -259,6 +456,12 @@ public class ChaoSongApiImpl implements ChaoSongApi {
         return map;
     }
 
+    /**
+     * 更新抄送标题
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @param documentTitle 文档标题
+     */
     @Override
     @PostMapping(value = "/updateTitle", produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateTitle(String tenantId, String processInstanceId, String documentTitle) {

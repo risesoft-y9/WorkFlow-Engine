@@ -16,6 +16,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
+ * WPS正文接口
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -27,6 +28,12 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
     @Autowired
     private DocumentWpsService documentWpsService;
 
+    /**
+     * 根据id查询WPS正文
+     * @param tenantId 租户id
+     * @param id id
+     * @return
+     */
     @Override
     @GetMapping(value = "/findById", produces = MediaType.APPLICATION_JSON_VALUE)
     public DocumentWpsModel findById(String tenantId, String id) {
@@ -40,6 +47,12 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
         return documentWpsModel;
     }
 
+    /**
+     * 根据流程编号查询WPS正文
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程序列号
+     * @return
+     */
     @Override
     @GetMapping(value = "/findByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
     public DocumentWpsModel findByProcessSerialNumber(String tenantId, String processSerialNumber) {
@@ -53,6 +66,11 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
         return documentWpsModel;
     }
 
+    /**
+     * 保存WPS正文
+     * @param tenantId 租户id
+     * @param documentWpsModel wps文档对象
+     */
     @Override
     @PostMapping(value = "/saveDocumentWps", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -63,6 +81,12 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
         documentWpsService.saveDocumentWps(documentWps);
     }
 
+    /**
+     * 保存WPS正文内容
+     * @param tenantId 租户id
+     * @param processSerialNumber 流程序列号
+     * @param hasContent 是否有内容
+     */
     @Override
     @PostMapping(value = "/saveWpsContent", produces = MediaType.APPLICATION_JSON_VALUE)
     public void saveWpsContent(String tenantId, String processSerialNumber, String hasContent) {

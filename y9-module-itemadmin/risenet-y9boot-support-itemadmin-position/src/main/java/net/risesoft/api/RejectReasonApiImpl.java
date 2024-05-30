@@ -13,6 +13,7 @@ import net.risesoft.service.RejectReasonService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
+ * 驳回原因接口
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -27,6 +28,14 @@ public class RejectReasonApiImpl implements RejectReasonApi {
     @Autowired
     private PersonApi personManager;
 
+    /**
+     * 保存驳回原因
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param action action
+     * @param taskId 任务id
+     * @param reason 理由
+     */
     @Override
     @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
     public void save(String tenantId, String userId, Integer action, String taskId, String reason) {

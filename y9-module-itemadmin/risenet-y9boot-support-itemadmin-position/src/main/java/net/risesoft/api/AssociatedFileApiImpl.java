@@ -82,9 +82,10 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     }
 
     /**
-     * 获取关联文件列表,包括未办结件
+     * 获取关联文件列表(包括未办结件)
      *
      * @param tenantId 租户id
+     * @param positionId 岗位id
      * @param processSerialNumber 流程编号
      * @return Map<String, Object>
      */

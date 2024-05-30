@@ -1,18 +1,5 @@
 package net.risesoft.api;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.Y9FormItemBind;
@@ -21,6 +8,18 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.service.FormDataService;
 import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 表单接口
@@ -74,7 +73,12 @@ public class FormDataApiImpl implements FormDataApi {
     }
 
     /**
-     *
+     * 获取事项绑定的表单
+     * @param tenantId 租户id
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefinitionKey 任务key
+     * @return
      */
     @Override
     @GetMapping(value = "/findFormItemBind", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -180,7 +184,7 @@ public class FormDataApiImpl implements FormDataApi {
      * 根据表单id获取绑定字段信息
      *
      * @param tenantId 租户id
-     * @param formId 表单id
+     * @param itemId 事项id
      * @return List<Y9FormFieldModel>
      */
     @Override

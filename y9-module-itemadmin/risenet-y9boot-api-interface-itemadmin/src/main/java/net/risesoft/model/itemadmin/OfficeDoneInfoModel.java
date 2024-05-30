@@ -1,14 +1,14 @@
 package net.risesoft.model.itemadmin;
 
-import java.io.Serializable;
-
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
- * 办结信息
- *
- * @author Think
- *
+ * 办结信息模型类
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/20
  */
 @Data
 public class OfficeDoneInfoModel implements Serializable {

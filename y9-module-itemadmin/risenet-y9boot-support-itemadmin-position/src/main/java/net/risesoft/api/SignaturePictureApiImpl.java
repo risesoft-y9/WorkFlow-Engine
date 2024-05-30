@@ -22,6 +22,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
+ * 签名图片接口
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -36,6 +37,11 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
     @Autowired
     private PersonApi personManager;
 
+    /**
+     * 删除签名图片
+     * @param tenantId 租户id
+     * @param id id
+     */
     @Override
     @PostMapping(value = "/deleteById", produces = MediaType.APPLICATION_JSON_VALUE)
     public void deleteById(String tenantId, String id) {
@@ -43,6 +49,12 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
         signaturePictureService.deleteById(id);
     }
 
+    /**
+     * 根据id获取签名图片
+     * @param tenantId 租户id
+     * @param id id
+     * @return
+     */
     @Override
     @GetMapping(value = "/findById", produces = MediaType.APPLICATION_JSON_VALUE)
     public SignaturePictureModel findById(String tenantId, String id) {
@@ -55,6 +67,12 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
         return spModel;
     }
 
+    /**
+     * 根据人员id获取签名图片
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @return
+     */
     @Override
     @GetMapping(value = "/findByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
     public SignaturePictureModel findByUserId(String tenantId, String userId) {
@@ -68,6 +86,13 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
         return spModel;
     }
 
+    /**
+     * 保存或更新签名图片
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param spJson spJson
+     * @return
+     */
     @Override
     @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE)
     public SignaturePictureModel saveOrUpdate(String tenantId, String userId, String spJson) {

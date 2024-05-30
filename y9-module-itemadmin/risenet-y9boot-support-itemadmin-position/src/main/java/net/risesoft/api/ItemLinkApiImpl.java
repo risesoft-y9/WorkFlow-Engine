@@ -44,6 +44,13 @@ public class ItemLinkApiImpl implements ItemLink4PositionApi {
     @Autowired
     private ItemLinkRoleRepository itemLinkRoleRepository;
 
+    /**
+     * 获取事项链接列表
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param itemId 事项id
+     * @return
+     */
     @Override
     public List<LinkInfoModel> getItemLinkList(@NotBlank String tenantId, @NotBlank String positionId, @NotBlank String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);

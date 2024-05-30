@@ -1,14 +1,5 @@
 package net.risesoft.api;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.validation.constraints.NotBlank;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import net.risesoft.api.itemadmin.ItemInterfaceApi;
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.ItemInterfaceParamsBind;
@@ -20,6 +11,13 @@ import net.risesoft.repository.jpa.InterfaceInfoRepository;
 import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
 import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 事项接口绑定信息
@@ -40,6 +38,15 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
     @Autowired
     private ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
 
+    /**
+     * 获取事项接口信息
+     * @param tenantId 租户id
+     * @param itemId 事项id
+     * @param taskKey 任务key
+     * @param processDefinitionId 流程定义id
+     * @param condition 执行条件
+     * @return
+     */
     @Override
     public Y9Result<List<InterfaceModel>> getInterface(@NotBlank String tenantId, @NotBlank String itemId, String taskKey, String processDefinitionId, String condition) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -60,6 +67,13 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
         return Y9Result.success(res_list, "获取成功");
     }
 
+    /**
+     * 获取事项接口参数信息
+     * @param tenantId 租户id
+     * @param itemId 事项id
+     * @param interfaceId 接口id
+     * @return
+     */
     @Override
     public Y9Result<List<InterfaceParamsModel>> getInterfaceParams(@NotBlank String tenantId, @NotBlank String itemId, @NotBlank String interfaceId) {
         Y9LoginUserHolder.setTenantId(tenantId);

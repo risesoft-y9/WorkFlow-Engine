@@ -1,40 +1,59 @@
 package net.risesoft.model.itemadmin;
 
-import java.io.Serializable;
-
 import lombok.Data;
 
+import java.io.Serializable;
+
+/**
+ * 自定义流程信息模型
+ *
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/20
+ */
 @Data
 public class CustomProcessInfoModel implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 2620414732616268131L;
 
+    /**
+     * 主键
+     */
     private String id;
 
-    // @FieldCommit(value="任务key")
+    /**
+     * 任务key
+     */
     private String taskKey;
 
-    // @FieldCommit(value="任务名称")
+    /**
+     * 任务名称
+     */
     private String taskName;
 
-    // @FieldCommit(value="节点类型")
+    /**
+     * 任务类型
+     */
     private String taskType;
 
-    // @FieldCommit(value="当前运行节点")
+    /**
+     * 当前运行节点
+     */
     private Boolean currentTask;
-
-    // @FieldCommit(value="事项id")
+    /**
+     * 事项id
+     */
     private String itemId;
-
-    // @FieldCommit(value="流程编号")
+    /**
+     * 流程编号
+     */
     private String processSerialNumber;
-
-    // @FieldCommit(value="办理人id")
+    /**
+     * 办理人id
+     */
     private String orgId;
-
-    // @FieldCommit(value="排序号")
+    /**
+     * 排序号
+     */
     private Integer tabIndex;
 }

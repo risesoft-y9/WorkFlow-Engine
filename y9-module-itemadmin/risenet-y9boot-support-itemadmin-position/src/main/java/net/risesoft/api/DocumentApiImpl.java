@@ -1,17 +1,5 @@
 package net.risesoft.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -21,6 +9,17 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.service.DocumentService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 办件操作接口
@@ -173,6 +172,15 @@ public class DocumentApiImpl implements Document4PositionApi {
         return map;
     }
 
+    /**
+     * 带自定义变量发送
+     * @param tenantId 租户id
+     * @param positionId 岗位 id
+     * @param taskId 任务id
+     * @param itemId 事项id
+     * @param processSerialNumber 流程编号
+     * @return
+     */
     @Override
     @PostMapping(value = "/saveAndSubmitTo", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)

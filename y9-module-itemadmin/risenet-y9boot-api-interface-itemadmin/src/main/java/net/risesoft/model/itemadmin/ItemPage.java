@@ -1,13 +1,19 @@
 package net.risesoft.model.itemadmin;
 
-import java.io.Serializable;
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * 事项分页查询结果对象
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/20
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
