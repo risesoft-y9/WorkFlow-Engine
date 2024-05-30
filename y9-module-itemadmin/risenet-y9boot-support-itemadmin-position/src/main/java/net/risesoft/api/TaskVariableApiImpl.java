@@ -14,6 +14,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
+ * 任务变量接口
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -25,6 +26,13 @@ public class TaskVariableApiImpl implements TaskVariableApi {
     @Autowired
     private TaskVariableRepository taskVariableRepository;
 
+    /**
+     * 根据任务id和keyName获取任务变量
+     * @param tenantId 租户id
+     * @param taskId 任务id
+     * @param keyName keyName
+     * @return
+     */
     @Override
     @GetMapping(value = "/findByTaskIdAndKeyName", produces = MediaType.APPLICATION_JSON_VALUE)
     public TaskVariableModel findByTaskIdAndKeyName(String tenantId, String taskId, String keyName) {

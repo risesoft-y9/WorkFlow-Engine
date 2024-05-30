@@ -1,20 +1,5 @@
 package net.risesoft.api;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -30,6 +15,20 @@ import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 附件接口
@@ -174,7 +173,10 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
     }
 
     /**
-     *
+     * 获取附件信息
+     * @param tenantId 租户id
+     * @param fileId 附件id
+     * @return
      */
     @Override
     @GetMapping(value = "/getFile", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -236,7 +238,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * 保存附件信息
      *
      * @param tenantId 租户id
-     * @param userId 用户id
+     * @param positionId 岗位id
      * @param fileName 文件名称
      * @param fileType 文件类型
      * @param fileSizeString 文件大小
@@ -293,6 +295,17 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
         return msg;
     }
 
+    /**
+     * 更新附件信息
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param positionId 岗位id
+     * @param fileId 文件id
+     * @param fileSizeString 文件大小
+     * @param taskId 任务id
+     * @param y9FileStoreId 附件上传id
+     * @return
+     */
     @Override
     @PostMapping(value = "/updateFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public String updateFile(String tenantId, String userId, String positionId, String fileId, String fileSizeString,
@@ -324,7 +337,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * 上传附件
      *
      * @param tenantId 租户id
-     * @param positionId 人员id
+     * @param userId 人员id
      * @param positionId 岗位id
      * @param fileName 文件名
      * @param fileSize 文件大小

@@ -1,8 +1,11 @@
 package net.risesoft.api;
 
-import java.util.List;
-import java.util.Map;
-
+import net.risesoft.api.itemadmin.QueryListApi;
+import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.ItemPage;
+import net.risesoft.service.ItemPageService;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -10,13 +13,15 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.itemadmin.QueryListApi;
-import net.risesoft.model.itemadmin.ActRuDetailModel;
-import net.risesoft.model.itemadmin.ItemPage;
-import net.risesoft.service.ItemPageService;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * 综合查询接口
+ *
+ * @author zhangchongjie
+ * @date 2023/02/06
+ */
 @RestController
 @RequestMapping(value = "/services/rest/queryList", produces = MediaType.APPLICATION_JSON_VALUE)
 public class QueryListApiImpl implements QueryListApi {
@@ -24,6 +29,19 @@ public class QueryListApiImpl implements QueryListApi {
     @Autowired
     private ItemPageService itemPageService;
 
+    /**
+     * 综合搜索
+     * @param tenantId 租户id
+     * @param userId 岗位id
+     * @param systemName 系统名称
+     * @param state 状态
+     * @param createDate 开始日期
+     * @param tableName 表名称
+     * @param searchMapStr 搜索条件
+     * @param page 页面
+     * @param rows 条数
+     * @return
+     */
     @Override
     public ItemPage<ActRuDetailModel> getQueryList(String tenantId, String userId, String systemName, String state,
         String createDate, String tableName, String searchMapStr, Integer page, Integer rows) {

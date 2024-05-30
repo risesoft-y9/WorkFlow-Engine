@@ -1,15 +1,5 @@
 package net.risesoft.api;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.validation.constraints.NotBlank;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import net.risesoft.api.itemadmin.position.ItemLink4PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.entity.ItemLinkBind;
@@ -21,6 +11,14 @@ import net.risesoft.repository.jpa.ItemLinkRoleRepository;
 import net.risesoft.repository.jpa.LinkInfoRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 事项链接接口
@@ -44,6 +42,13 @@ public class ItemLinkApiImpl implements ItemLink4PositionApi {
     @Autowired
     private ItemLinkRoleRepository itemLinkRoleRepository;
 
+    /**
+     * 获取事项链接列表
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param itemId 事项id
+     * @return
+     */
     @Override
     public List<LinkInfoModel> getItemLinkList(@NotBlank String tenantId, @NotBlank String positionId, @NotBlank String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);

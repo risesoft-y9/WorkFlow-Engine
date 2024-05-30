@@ -1,8 +1,11 @@
 package net.risesoft.api;
 
-import java.util.List;
-import java.util.Map;
-
+import net.risesoft.api.itemadmin.CommonSentencesApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.model.platform.Person;
+import net.risesoft.service.CommonSentencesService;
+import net.risesoft.util.CommentUtil;
+import net.risesoft.y9.Y9LoginUserHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,12 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.itemadmin.CommonSentencesApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.model.platform.Person;
-import net.risesoft.service.CommonSentencesService;
-import net.risesoft.util.CommentUtil;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 常用语接口
@@ -99,6 +98,12 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
         commonSentencesService.removeCommonSentences(tabIndex);
     }
 
+
+    /**
+     * 清空常用语使用次数
+     * @param tenantId 租户id
+     * @param userId 人员id
+     */
     @Override
     @PostMapping(value = "/removeUseNumber", produces = MediaType.APPLICATION_JSON_VALUE)
     public void removeUseNumber(String tenantId, String userId) {
@@ -141,6 +146,11 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
         commonSentencesService.saveCommonSentences(userId, content, tabIndex);
     }
 
+    /**
+     * 更新常用语使用次数
+     * @param tenantId 租户id
+     * @param id 常用语id
+     */
     @Override
     @PostMapping(value = "/updateUseNumber", produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateUseNumber(String tenantId, String id) {

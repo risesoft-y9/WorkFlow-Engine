@@ -1,10 +1,16 @@
 package net.risesoft.model.itemadmin;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 
-import lombok.Data;
-
+/**
+ * 搜索模型
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/20
+ */
 @Data
 public class SearchModel implements Serializable {
 

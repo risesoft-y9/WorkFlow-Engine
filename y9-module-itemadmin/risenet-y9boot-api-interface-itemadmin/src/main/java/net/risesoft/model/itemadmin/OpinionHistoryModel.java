@@ -1,9 +1,15 @@
 package net.risesoft.model.itemadmin;
 
-import java.io.Serializable;
-
 import lombok.Data;
 
+import java.io.Serializable;
+
+/**
+ * 历史意见模型
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/20
+ */
 @Data
 public class OpinionHistoryModel implements Serializable {
 
@@ -64,15 +70,26 @@ public class OpinionHistoryModel implements Serializable {
      */
     private String deptName;
 
-    private String agentUserId; // 意见代录人Guid
-
-    private String agentUserName;// 意见代录人姓名
-
-    private String agentUserDeptId;// 代录人的部门Id
-
-    private String agentUserDeptName;// 代录人的部门Name
-
-    private Integer isAgent = 0; // 是否是代录意见， 0=不是；1=是
+    /**
+     * 意见代录人Guid
+     */
+    private String agentUserId;
+    /**
+     *意见代录人姓名
+     */
+    private String agentUserName;
+    /**
+     *代录人的部门Id
+     */
+    private String agentUserDeptId;
+    /**
+     *代录人的部门Name
+     */
+    private String agentUserDeptName;
+    /**
+     *是否是代录意见， 0=不是；1=是
+     */
+    private Integer isAgent = 0;
 
     /**
      * 意见生成时间

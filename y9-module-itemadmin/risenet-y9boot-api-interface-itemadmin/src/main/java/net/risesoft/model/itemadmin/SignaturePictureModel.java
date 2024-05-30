@@ -1,12 +1,14 @@
 package net.risesoft.model.itemadmin;
 
-import java.io.Serializable;
-
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
- * 签名照片
- *
+ * 签名图片模型类
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/20
  */
 @Data
 public class SignaturePictureModel implements Serializable {

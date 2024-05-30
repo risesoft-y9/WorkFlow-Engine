@@ -1,11 +1,14 @@
 package net.risesoft.api;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
+import net.risesoft.api.itemadmin.ItemDoingApi;
+import net.risesoft.entity.ActRuDetail;
+import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.ItemPage;
+import net.risesoft.service.ActRuDetailService;
+import net.risesoft.service.ItemPageService;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
+import net.risesoft.y9.util.Y9BeanUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,16 +20,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.itemadmin.ItemDoingApi;
-import net.risesoft.entity.ActRuDetail;
-import net.risesoft.model.itemadmin.ActRuDetailModel;
-import net.risesoft.model.itemadmin.ItemPage;
-import net.risesoft.service.ActRuDetailService;
-import net.risesoft.service.ItemPageService;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
-import net.risesoft.y9.util.Y9BeanUtil;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
+
+/**
+ * 在办接口
+ *
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/20
+ */
 @RestController
 @RequestMapping(value = "/services/rest/itemDoing")
 public class ItemDoingApiImpl implements ItemDoingApi {
@@ -40,6 +46,14 @@ public class ItemDoingApiImpl implements ItemDoingApi {
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
+    /**
+     * 根据系统名称查询在办数量
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param systemName 系统名称
+     * @return
+     * @throws Exception
+     */
     @Override
     @GetMapping(value = "/countByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public int countByUserIdAndSystemName(String tenantId, String userId, String systemName) throws Exception {
@@ -50,6 +64,15 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         return actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName, userId, 1);
     }
 
+    /**
+     * 根据系统名称查询在办列表
+     * @param tenantId 租户id
+     * @param systemName 系统名称
+     * @param page page
+     * @param rows rows
+     * @return
+     * @throws Exception
+     */
     @Override
     @GetMapping(value = "/findBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public ItemPage<ActRuDetailModel> findBySystemName(String tenantId, String systemName, Integer page, Integer rows)
@@ -69,6 +92,16 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         return pageList;
     }
 
+    /**
+     * 根据用户id和系统名称查询在办列表
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param systemName 系统名称
+     * @param page page
+     * @param rows rows
+     * @return
+     * @throws Exception
+     */
     @Override
     @GetMapping(value = "/findByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public ItemPage<ActRuDetailModel> findByUserIdAndSystemName(String tenantId, String userId, String systemName,
@@ -93,6 +126,17 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         return pageList;
     }
 
+    /**
+     * 根据系统名称、表名称、搜索内容查询在办列表
+     * @param tenantId 租户id
+     * @param systemName 系统名称
+     * @param tableName 表名称
+     * @param searchMapStr 搜索内容
+     * @param page page
+     * @param rows rows
+     * @return
+     * @throws Exception
+     */
     @Override
     @GetMapping(value = "/searchBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public ItemPage<ActRuDetailModel> searchBySystemName(String tenantId, String systemName, String tableName,
@@ -123,6 +167,18 @@ public class ItemDoingApiImpl implements ItemDoingApi {
         return pageList;
     }
 
+    /**
+     * 根据用户id、系统名称、表名称、搜索内容查询在办列表
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param systemName 系统名称
+     * @param tableName 表名称
+     * @param searchMapStr 搜索内容
+     * @param page page
+     * @param rows rows
+     * @return
+     * @throws Exception
+     */
     @Override
     @GetMapping(value = "/searchByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(String tenantId, String userId, String systemName,

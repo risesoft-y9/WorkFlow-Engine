@@ -14,6 +14,7 @@ import net.risesoft.repository.jpa.PrintTemplateItemBindRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
+ * 打印模板接口
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -28,6 +29,13 @@ public class PrintApiImpl implements PrintApi {
     @Autowired
     private PersonApi personManager;
 
+    /**
+     * 打开打印模板
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param itemId 事项id
+     * @return
+     */
     @Override
     @GetMapping(value = "/openDocument", produces = MediaType.APPLICATION_JSON_VALUE)
     public String openDocument(String tenantId, String userId, String itemId) {

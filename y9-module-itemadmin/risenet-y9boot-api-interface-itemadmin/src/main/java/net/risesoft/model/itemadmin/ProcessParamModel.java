@@ -1,9 +1,15 @@
 package net.risesoft.model.itemadmin;
 
-import java.io.Serializable;
-
 import lombok.Data;
 
+import java.io.Serializable;
+
+/**
+ * 流程参数模型
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/20
+ */
 @Data
 public class ProcessParamModel implements Serializable {
 
@@ -72,25 +78,34 @@ public class ProcessParamModel implements Serializable {
      */
     private String searchTerm;
 
-    // @FieldCommit(value="是否发送短信")
+    /**
+     * 是否发送短信
+     */
     private String isSendSms;
-
-    // @FieldCommit(value="是否署名")
+    /**
+     *是否署名
+     */
     private String isShuMing;
-
-    // @FieldCommit(value="发送短信内容")
+    /**
+     *发送短信内容
+     */
     private String smsContent;
-
-    // @FieldCommit(value="接收短信人员id")
+    /**
+     *接收短信人员id
+     */
     private String smsPersonId;
-
-    // @FieldCommit(value="主办人id")
+    /**
+     *主办人id
+     */
     private String sponsorGuid;
-
-    // @FieldCommit(value="流程的启动人员id")
+    /**
+     *流程的启动人员id
+     */
+    // @FieldCommit(value="")
     private String startor;
-
-    // @FieldCommit(value="流程的启动人员姓名")
+    /**
+     *流程的启动人员姓名
+     */
     private String startorName;
 
     /**
@@ -102,6 +117,8 @@ public class ProcessParamModel implements Serializable {
      * 创建时间
      */
     private String createTime;
-
-    private Boolean customItem; // 是否定制流程
+    /**
+     *是否定制流程
+     */
+    private Boolean customItem;
 }

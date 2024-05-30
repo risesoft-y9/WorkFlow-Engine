@@ -1,7 +1,11 @@
 package net.risesoft.api;
 
-import java.util.Map;
-
+import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
+import net.risesoft.entity.OfficeFollow;
+import net.risesoft.model.itemadmin.OfficeFollowModel;
+import net.risesoft.service.OfficeFollowService;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,12 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
-import net.risesoft.entity.OfficeFollow;
-import net.risesoft.model.itemadmin.OfficeFollowModel;
-import net.risesoft.service.OfficeFollowService;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9BeanUtil;
+import java.util.Map;
 
 /**
  * 我的关注接口
@@ -65,7 +64,7 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param processInstanceId 流程实例id
+     * @param processInstanceIds 流程实例id列表
      * @return Map<String, Object>
      */
     @Override
@@ -134,7 +133,7 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
      * 保存办件关注信息
      *
      * @param tenantId 租户id
-     * @param officeFollow 关注信息
+     * @param officeFollowModel 关注信息
      * @return Map<String, Object>
      */
     @Override

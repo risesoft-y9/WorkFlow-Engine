@@ -1,14 +1,5 @@
 package net.risesoft.api;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.Entrust;
@@ -17,6 +8,14 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.service.EntrustService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 出差委托接口
@@ -35,24 +34,50 @@ public class EntrustApiImpl implements Entrust4PositionApi {
     @Autowired
     private PositionApi positionApi;
 
+    /**
+     * 删除委托
+     * @param tenantId 租户id
+     * @param id 委托id
+     * @throws Exception
+     */
     @Override
     public void deleteEntrust(String tenantId, String id) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         entrustService.destroyEntrust(id);
     }
 
+    /**
+     * 获取委托列表
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @return
+     * @throws Exception
+     */
     @Override
     public List<EntrustModel> getEntrustList(String tenantId, String positionId) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         return entrustService.getEntrustList(positionId);
     }
 
+    /**
+     * 获取我的委托列表
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @return
+     */
     @Override
     public List<EntrustModel> getMyEntrustList(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return entrustService.getMyEntrustList(positionId);
     }
 
+    /**
+     * 保存或更新委托
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param entrustModel 实体类（EntrustModel）
+     * @throws Exception
+     */
     @Override
     @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)

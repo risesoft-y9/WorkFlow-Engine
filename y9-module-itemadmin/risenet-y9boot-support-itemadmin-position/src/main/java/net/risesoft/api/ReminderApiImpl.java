@@ -62,7 +62,7 @@ public class ReminderApiImpl implements ReminderApi {
      * 根据id获取催办
      *
      * @param tenantId 租户id
-     * @param ids 催办id
+     * @param id 催办id
      * @return Map<String, Object>
      */
     @Override

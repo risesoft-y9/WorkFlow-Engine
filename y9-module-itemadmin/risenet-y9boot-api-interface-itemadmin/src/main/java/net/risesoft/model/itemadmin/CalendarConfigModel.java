@@ -1,13 +1,14 @@
 package net.risesoft.model.itemadmin;
 
-import java.io.Serializable;
-
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
- *
- * @author zhongchongjie
- *
+ * 日历配置模型
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/20
  */
 @Data
 public class CalendarConfigModel implements Serializable {
@@ -22,6 +23,9 @@ public class CalendarConfigModel implements Serializable {
      */
     private String id;
 
+    /**
+     * 工作日休假日期
+     */
     private String workingDay2Holiday;
 
     /**

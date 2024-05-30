@@ -1,19 +1,5 @@
 package net.risesoft.api;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
@@ -32,6 +18,18 @@ import net.risesoft.service.MultiInstanceService;
 import net.risesoft.util.CommonOpt;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 按钮操作接口
@@ -200,6 +198,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param repositionToTaskId 重定位任务key
      * @param userChoice 选择人id
      * @param reason 原因
+     * @param sponsorGuid 主办人id
      * @throws Exception exception
      */
     @Override
@@ -249,7 +248,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param taskId 任务id
-     * @param resson 原因
+     * @param reason 原因
      * @throws Exception exception
      */
     @Override

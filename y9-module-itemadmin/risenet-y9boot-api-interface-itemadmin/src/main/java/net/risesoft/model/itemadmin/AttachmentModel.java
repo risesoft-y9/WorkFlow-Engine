@@ -1,14 +1,18 @@
 package net.risesoft.model.itemadmin;
 
-import java.io.Serializable;
-
 import lombok.Data;
 
+import java.io.Serializable;
+
+/**
+ * 附件模型类
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/20
+ */
 @Data
 public class AttachmentModel implements Serializable {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 3241197746615642199L;
 
     /**
@@ -27,7 +31,7 @@ public class AttachmentModel implements Serializable {
     private String taskId;
 
     /**
-     * 流程实例编号，草稿编号
+     * 流程序列号
      */
     private String processSerialNumber;
 
@@ -92,5 +96,8 @@ public class AttachmentModel implements Serializable {
      */
     private String describes;
 
+    /**
+     * 序号
+     */
     private Integer serialNumber;
 }

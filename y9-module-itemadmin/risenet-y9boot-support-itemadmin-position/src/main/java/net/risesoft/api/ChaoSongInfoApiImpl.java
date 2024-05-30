@@ -1,16 +1,5 @@
 package net.risesoft.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -20,6 +9,16 @@ import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.ChaoSongInfoService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 抄送件接口
@@ -86,6 +85,7 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * 根据流程实例id统计除当前人外是否有抄送件
      *
      * @param tenantId 租户id
+     * @param positionId 岗位id
      * @param processInstanceId 流程实例id
      * @return int
      */
@@ -147,6 +147,7 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param id 抄送id
      * @param processInstanceId 抄送的流程实例ID
      * @param status 传阅的状态,0未阅,1已阅,2新件
+     * @param mobile 是否为移动端
      * @return Map
      */
     @Override
@@ -314,7 +315,17 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
     }
 
     /**
-     *
+     * 我的抄送列表
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param searchName 搜索词
+     * @param itemId 事项id
+     * @param userName 接收人名称
+     * @param state 状态
+     * @param year 年度
+     * @param page 页码
+     * @param rows 条数
+     * @return
      */
     @Override
     @GetMapping(value = "/myChaoSongList", produces = MediaType.APPLICATION_JSON_VALUE)

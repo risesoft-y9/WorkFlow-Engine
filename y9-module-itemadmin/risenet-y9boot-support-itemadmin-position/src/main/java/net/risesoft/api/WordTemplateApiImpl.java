@@ -11,6 +11,7 @@ import net.risesoft.entity.WordTemplate;
 import net.risesoft.service.WordTemplateService;
 
 /**
+ * 正文模板接口
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -22,6 +23,12 @@ public class WordTemplateApiImpl implements WordTemplateApi {
     @Autowired
     private WordTemplateService wordTemplateService;
 
+    /**
+     * 根据id获取正文模板文件路径
+     *
+     * @param id 正文模板id
+     * @return
+     */
     @Override
     @GetMapping(value = "/getFilePathById", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getFilePathById(String id) {
