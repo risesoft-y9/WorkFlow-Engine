@@ -159,7 +159,6 @@ public class InterfaceServiceImpl implements InterfaceService {
     @Override
     @Transactional(readOnly = false)
     public void removeReqParams(String[] ids) {
-        System.out.println("77777777777777777777777" + ids[0]);
         for (String id : ids) {
             interfaceRequestParamsRepository.deleteById(id);
         }
@@ -168,14 +167,8 @@ public class InterfaceServiceImpl implements InterfaceService {
     @Override
     @Transactional(readOnly = false)
     public void removeResParams(String[] ids) {
-        System.out.println("222222222222222222222222");
-        System.out.println("###########" + ids[0]);
-        try {
-            for (String id : ids) {
-                interfaceResponseParamsRepository.deleteById(id);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (String id : ids) {
+            interfaceResponseParamsRepository.deleteById(id);
         }
     }
 
@@ -208,6 +201,8 @@ public class InterfaceServiceImpl implements InterfaceService {
                 item.setInterfaceName(info.getInterfaceName());
                 item.setRequestType(info.getRequestType());
                 item.setInterfaceAddress(info.getInterfaceAddress());
+                item.setAbnormalStop(info.getAbnormalStop());
+                item.setAsyn(info.getAsyn());
                 return;
             }
         }
@@ -216,6 +211,8 @@ public class InterfaceServiceImpl implements InterfaceService {
         item.setInterfaceName(info.getInterfaceName());
         item.setRequestType(info.getRequestType());
         item.setInterfaceAddress(info.getInterfaceAddress());
+        item.setAbnormalStop(info.getAbnormalStop());
+        item.setAsyn(info.getAsyn());
         item.setCreateTime(sdf.format(new Date()));
         interfaceInfoRepository.saveAndFlush(item);
     }
