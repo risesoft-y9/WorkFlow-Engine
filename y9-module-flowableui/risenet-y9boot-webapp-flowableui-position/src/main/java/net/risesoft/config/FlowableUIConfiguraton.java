@@ -1,5 +1,9 @@
 package net.risesoft.config;
 
+import net.risesoft.filter.CheckUserLoginFilter4Flowable;
+import net.risesoft.filter.MobileV1Filter;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.configuration.Y9Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -11,10 +15,6 @@ import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import net.risesoft.filter.CheckUserLoginFilter4Flowable;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.configuration.Y9Properties;
 
 @Configuration
 @EnableConfigurationProperties(Y9Properties.class)
@@ -39,7 +39,7 @@ public class FlowableUIConfiguraton implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean checkUserLoginFilter4FlowableUI() {
         log.debug(
-            "****************************************************************************init CheckUserLoginFilter4Flowable ...");
+                "****************************************************************************init CheckUserLoginFilter4Flowable ...");
         FilterRegistrationBean filterBean = new FilterRegistrationBean<>();
         filterBean.setFilter(new CheckUserLoginFilter4Flowable());
         filterBean.setAsyncSupported(false);
@@ -47,16 +47,15 @@ public class FlowableUIConfiguraton implements WebMvcConfigurer {
         return filterBean;
     }
 
-    // @SuppressWarnings({ "rawtypes", "unchecked" })
-    // @Bean
-    // public FilterRegistrationBean checkEventHandleUserLoginFilter() {
-    // FilterRegistrationBean filterBean = new FilterRegistrationBean();
-    // filterBean.setFilter(new FlowableUICheckUserLoginFilter());
-    // filterBean.setAsyncSupported(false);
-    // filterBean.setOrder(50);
-    // filterBean.addUrlPatterns("/*");
-    // return filterBean;
-    // }
+    @Bean
+    public FilterRegistrationBean<MobileV1Filter> mobileV1Filter() {
+        FilterRegistrationBean<MobileV1Filter> filterBean = new FilterRegistrationBean<>();
+        filterBean.setFilter(new MobileV1Filter());
+        filterBean.setAsyncSupported(false);
+        filterBean.setOrder(50);
+        filterBean.addUrlPatterns("/mobile/v1/*");
+        return filterBean;
+    }
 
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
