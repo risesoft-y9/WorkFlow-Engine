@@ -6,18 +6,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.CalendarConfigApi;
@@ -31,13 +26,13 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2024/01/17
  */
-@RestController
-@RequestMapping("/mobile/v1/sign")
 @Slf4j
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/mobile/v1/sign")
 public class MobileV1SignController {
 
-    @Autowired
-    private CalendarConfigApi calendarConfigApi;
+    private final CalendarConfigApi calendarConfigApi;
 
     // 两个日期时间相隔天数
     public String daysBetween(String startTime, String endTime) {
@@ -80,16 +75,12 @@ public class MobileV1SignController {
     /**
      * 获取两个日期之间的天数，除去节假日
      *
-     * @param tenantId 租户id
+     * @param tenantId  租户id
      * @param startDate 开始日期
-     * @param endDate 结束日期
-     * @param request
-     * @param response
-     * @param session
+     * @param endDate   结束日期
      */
     @RequestMapping(value = "/getDay")
-    @ResponseBody
-    public Y9Result<String> getDay(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public Y9Result<String> getDay(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
@@ -114,22 +105,21 @@ public class MobileV1SignController {
     /**
      * 有生云请假办件，计算请假天数和小时
      *
-     * @param tenantId 租户id
-     * @param type 计算类型，小时，天，半天
-     * @param leaveType 请假类型
+     * @param tenantId       租户id
+     * @param type           计算类型，小时，天，半天
+     * @param leaveType      请假类型
      * @param leaveStartTime 请假开始时间
-     * @param leaveEndTime 请假结束时间
-     * @param startSel 上午下午选择
-     * @param endSel 上午下午选择
-     * @param selStartTime 开始时间点选择
-     * @param selEndTime 结束时间点选择
+     * @param leaveEndTime   请假结束时间
+     * @param startSel       上午下午选择
+     * @param endSel         上午下午选择
+     * @param selStartTime   开始时间点选择
+     * @param selEndTime     结束时间点选择
      * @return
      */
     @SuppressWarnings("deprecation")
-    @ResponseBody
     @RequestMapping("/getDayOrHour")
     public Y9Result<String> getDayOrHour(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String type, @RequestParam(required = false) String leaveStartTime, @RequestParam(required = false) String leaveEndTime, @RequestParam(required = false) String startSel,
-        @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime, @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType, HttpServletRequest request, HttpServletResponse response) {
+                                         @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime, @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -203,7 +193,7 @@ public class MobileV1SignController {
                             selEndTime = "17:30";
                         }
                         long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
-                        double hours = (double)time / (60 * 60 * 1000);
+                        double hours = (double) time / (60 * 60 * 1000);
                         BigDecimal a = BigDecimal.valueOf(hours);
                         double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                         // 减去中间包含的1.5个小时
@@ -233,7 +223,7 @@ public class MobileV1SignController {
                         selEndTime = "17:30";
                     }
                     long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
-                    double hours = (double)time / (60 * 60 * 1000);
+                    double hours = (double) time / (60 * 60 * 1000);
                     BigDecimal a = BigDecimal.valueOf(hours);
                     double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                     // 减去中间包含的1.5个小时
@@ -250,7 +240,7 @@ public class MobileV1SignController {
                     if (!dayStr.contains(tmp)) {
                         if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(selStartTime)) {// 开始日期选择时间
                             long time = sdf.parse("17:30").getTime() - sdf.parse(selStartTime).getTime();
-                            double hours = (double)time / (60 * 60 * 1000);
+                            double hours = (double) time / (60 * 60 * 1000);
                             BigDecimal a = BigDecimal.valueOf(hours);
                             double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                             if (Integer.valueOf(selStartTime.split(":")[0]) < 12) {
@@ -262,7 +252,7 @@ public class MobileV1SignController {
                         }
                         if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(selEndTime)) {// 结束日期选择时间
                             long time = sdf.parse(selEndTime).getTime() - sdf.parse("09:00").getTime();
-                            double hours = (double)time / (60 * 60 * 1000);
+                            double hours = (double) time / (60 * 60 * 1000);
                             BigDecimal a = BigDecimal.valueOf(hours);
                             double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                             if (Integer.valueOf(selEndTime.split(":")[0]) > 12) {
@@ -287,18 +277,14 @@ public class MobileV1SignController {
     /**
      * 获取两个日期之间的天数
      *
-     * @param tenantId 租户id
+     * @param tenantId  租户id
      * @param startDate 开始日期
-     * @param endDate 结束日期
-     * @param dateType 是否排除节假日和周末
-     * @param request
-     * @param response
-     * @param session
+     * @param endDate   结束日期
+     * @param dateType  是否排除节假日和周末
      */
     @RequestMapping(value = "/getDays")
-    @ResponseBody
     public Y9Result<String> getDays(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String startSel, @RequestParam(required = false) String endDate, @RequestParam(required = false) String endSel,
-        @RequestParam(required = false) String dateType, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+                                    @RequestParam(required = false) String dateType) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr = "";
@@ -371,7 +357,7 @@ public class MobileV1SignController {
                 if (start > 0) {
                     String day = String.valueOf(num + start);
                     LOGGER.debug("day={}", day);
-                    return Y9Result.success(day.contains(".0") ? String.valueOf((int)(num + start)) : day, "获取成功");
+                    return Y9Result.success(day.contains(".0") ? String.valueOf((int) (num + start)) : day, "获取成功");
                 }
                 return Y9Result.success(String.valueOf(num), "获取成功");
             }

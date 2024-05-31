@@ -6,17 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.collections.map.CaseInsensitiveMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.FormDataApi;
@@ -51,59 +49,58 @@ import net.risesoft.y9public.service.Y9FileStoreService;
  * @author zhangchongjie
  * @date 2023/01/03
  */
-@RestController
-@RequestMapping("/mobile/v1/sysDocking")
 @Slf4j
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/mobile/v1/sysDocking")
 public class MobileV1SystemDockingController {
 
-    @Autowired
-    private PositionApi positionApi;
 
-    @Autowired
-    private PersonApi personApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private FormDataApi formDataApi;
 
-    @Autowired
-    private Item4PositionApi item4PositionApi;
+    private final PersonApi personApi;
 
-    @Autowired
-    private Document4PositionApi document4PositionApi;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final FormDataApi formDataApi;
 
-    @Autowired
-    private Y9FileStoreService y9FileStoreService;
 
-    @Autowired
-    private Attachment4PositionApi attachment4PositionApi;
+    private final Item4PositionApi item4PositionApi;
 
-    @Autowired
-    private TaskApi taskApi;
+
+    private final Document4PositionApi document4PositionApi;
+
+
+    private final ProcessParamService processParamService;
+
+
+    private final Y9FileStoreService y9FileStoreService;
+
+
+    private final Attachment4PositionApi attachment4PositionApi;
+
+
+    private final TaskApi taskApi;
 
     /**
      * 对接系统提交接口
      *
-     * @param tenantId     租户id
-     * @param itemId       事项id
-     * @param mappingId    对接系统标识
-     * @param userId       人员id
-     * @param positionId   岗位id
-     * @param positionChoice   接收岗位id，多人,隔开
-     * @param formJsonData 表单数据
-     * @param files        附件列表
-     * @param response
+     * @param tenantId       租户id
+     * @param itemId         事项id
+     * @param mappingId      对接系统标识
+     * @param userId         人员id
+     * @param positionId     岗位id
+     * @param positionChoice 接收岗位id，多人,隔开
+     * @param formJsonData   表单数据
+     * @param files          附件列表
      * @return
-     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/startProcess")
     public Y9Result<Map<String, Object>> startProcess(@RequestParam String tenantId, @RequestParam String itemId,
-                                                    @RequestParam String mappingId, @RequestParam String userId, @RequestParam String positionId,
-                                                    @RequestParam String positionChoice, @RequestParam String formJsonData,
-                                                    @RequestParam(required = false) MultipartFile[] files, HttpServletResponse response) throws Exception {
+                                                      @RequestParam String mappingId, @RequestParam String userId, @RequestParam String positionId,
+                                                      @RequestParam String positionChoice, @RequestParam String formJsonData,
+                                                      @RequestParam(required = false) MultipartFile[] files) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Position position = positionApi.get(tenantId, positionId).getData();
@@ -134,7 +131,7 @@ public class MobileV1SystemDockingController {
                 return Y9Result.failure("发生异常");
             }
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
-            String bindFormJsonData  = Y9JsonUtil.writeValueAsString(bindFormDataMap);
+            String bindFormJsonData = Y9JsonUtil.writeValueAsString(bindFormDataMap);
             String tempIds = item4PositionApi.getFormIdByItemId(tenantId, itemId, item.getWorkflowGuid());
             if (StringUtils.isNotBlank(tempIds)) {
                 List<String> tempIdList = Y9Util.stringToList(tempIds, SysVariables.COMMA);
@@ -196,16 +193,14 @@ public class MobileV1SystemDockingController {
      * @param positionChoice 接收岗位id，多岗位,隔开
      * @param formJsonData   表单数据
      * @param files          附件列表
-     * @param response
      * @return
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/startAndForwarding")
     public Y9Result<Map<String, Object>> startAndForwarding(@RequestParam String tenantId, @RequestParam String itemId,
                                                             @RequestParam String mappingId, @RequestParam String userId, @RequestParam String positionId,
                                                             @RequestParam String routeToTaskId, @RequestParam String positionChoice, @RequestParam String formJsonData,
-                                                            @RequestParam(required = false) String taskId, @RequestParam(required = false) MultipartFile[] files, HttpServletResponse response) throws Exception {
+                                                            @RequestParam(required = false) String taskId, @RequestParam(required = false) MultipartFile[] files) throws Exception {
         try {
             /**
              * 1设置当前用户基本信息

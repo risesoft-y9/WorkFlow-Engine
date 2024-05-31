@@ -9,11 +9,14 @@
     //指定文档的输出路径
     "coverOld": true,
     //是否覆盖旧的文件，主要用于mardown文件覆盖
-    "packageFilters": "net.risesoft.controller.mobile",
+    "packageFilters": "net.risesoft.controller.mobile.v1",
     //controller包过滤，多个包用英文逗号隔开
     "md5EncryptedHtmlName": false,
     //只有每个controller生成一个html文件是才使用
     "projectName": "办件",
+    "allInOneDocFileName": "index.html",
+    "requestExample": "true",
+    "responseExample": "true",
     //配置自己的项目名称
     "skipTransientField": true,
     //目前未实现
