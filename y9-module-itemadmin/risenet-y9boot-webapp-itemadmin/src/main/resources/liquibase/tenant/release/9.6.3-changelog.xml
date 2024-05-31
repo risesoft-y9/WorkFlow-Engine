@@ -3,6 +3,158 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
- 
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.26.xsd" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1717137489499-1" author="zhangchongjie (generated)">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_interface_info"/>
+            </not>
+        </preConditions>
+        <createTable remarks="接口信息表" tableName="ff_interface_info">
+            <column name="id" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="interfaceName" remarks="接口名称" type="VARCHAR(50)"/>
+            <column name="interfaceAddress" remarks="接口地址" type="VARCHAR(200)"/>
+            <column name="requestType" remarks="请求类型" type="VARCHAR(20)"/>
+            <column defaultValue="0" name="asyn" remarks="是否异步调用接口" type="VARCHAR(10)"/>
+            <column defaultValue="0" name="abnormalStop" remarks="是否异常停止" type="VARCHAR(10)"/>
+            <column name="createTime" remarks="创建时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1717137489499-2" author="zhangchongjie (generated)">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_interface_request_params"/>
+            </not>
+        </preConditions>
+        <createTable remarks="接口请求参数信息表" tableName="ff_interface_request_params">
+            <column name="id" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="interfaceId" remarks="接口id" type="VARCHAR(50)"/>
+            <column name="parameterType" remarks="参数类型" type="VARCHAR(20)"/>
+            <column name="parameterName" remarks="参数名称" type="VARCHAR(50)"/>
+            <column name="createTime" remarks="创建时间" type="VARCHAR(50)"/>
+            <column name="remark" remarks="参数备注" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1717137489499-3" author="zhangchongjie (generated)">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_interface_response_params"/>
+            </not>
+        </preConditions>
+        <createTable remarks="接口响应参数信息表" tableName="ff_interface_response_params">
+            <column name="id" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="interfaceId" remarks="接口id" type="VARCHAR(50)"/>
+            <column name="parameterName" remarks="参数名称" type="VARCHAR(50)"/>
+            <column name="createTime" remarks="创建时间" type="VARCHAR(50)"/>
+            <column name="remark" remarks="参数备注" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1717137489499-4" author="zhangchongjie (generated)">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_interface_bind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项接口绑定表" tableName="ff_item_interface_bind">
+            <column name="id" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="itemId" remarks="事项Id" type="VARCHAR(50)"/>
+            <column name="interfaceId" remarks="接口id" type="VARCHAR(50)"/>
+            <column name="createTime" remarks="生成时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1717137489499-5" author="zhangchongjie (generated)">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_interface_params_bind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项接口参数绑定表" tableName="ff_item_interface_params_bind">
+            <column name="id" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="itemId" remarks="事项Id" type="VARCHAR(50)"/>
+            <column name="interfaceId" remarks="接口id" type="VARCHAR(50)"/>
+            <column name="parameterName" remarks="参数名称" type="VARCHAR(100)"/>
+            <column name="parameterType" remarks="参数类型" type="VARCHAR(100)"/>
+            <column name="bindType" remarks="绑定类型" type="VARCHAR(50)"/>
+            <column name="tableName" remarks="表名称" type="VARCHAR(50)"/>
+            <column name="columnName" remarks="列名称" type="VARCHAR(100)"/>
+            <column name="createTime" remarks="生成时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1717137489499-6" author="zhangchongjie (generated)">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_interface_task_bind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项接口任务绑定表" tableName="ff_item_interface_task_bind">
+            <column name="id" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="itemId" remarks="事项Id" type="VARCHAR(50)"/>
+            <column name="interfaceId" remarks="接口id" type="VARCHAR(50)"/>
+            <column name="processDefinitionId" remarks="流程定义Id" type="VARCHAR(255)"/>
+            <column name="taskDefKey" remarks="任务key" type="VARCHAR(100)"/>
+            <column name="executeCondition" remarks="执行条件" type="VARCHAR(100)"/>
+            <column name="createTime" remarks="生成时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1717137489499-7" author="zhangchongjie (generated)">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_link_role"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项和链接绑定关系对应的角色" tableName="ff_item_link_role">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMLINKID" remarks="事项和链接绑定关系id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROLEID" remarks="角色Id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1717137489499-8" author="zhangchongjie (generated)">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_item_linkbind"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项链接绑定表" tableName="ff_item_linkbind">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(200)"/>
+            <column name="LINKID" remarks="链接id" type="VARCHAR(100)"/>
+            <column name="createTime" remarks="生成时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1717137489499-9" author="zhangchongjie (generated)">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_link_info"/>
+            </not>
+        </preConditions>
+        <createTable remarks="链接信息表" tableName="ff_link_info">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="linkName" remarks="链接名称" type="VARCHAR(50)"/>
+            <column name="linkUrl" remarks="链接url" type="VARCHAR(200)"/>
+            <column name="createTime" remarks="创建时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
