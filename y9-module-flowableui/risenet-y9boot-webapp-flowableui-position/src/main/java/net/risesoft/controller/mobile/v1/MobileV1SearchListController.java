@@ -7,7 +7,7 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SearchService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +21,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2024/01/17
  */
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/mobile/v1/searchList")
@@ -36,20 +37,17 @@ public class MobileV1SearchListController {
     /**
      * 获取个人办件统计
      *
-     * @param tenantId   租户id
-     * @param userId     人员id
-     * @param positionId 岗位id
      * @return
      */
     @RequestMapping(value = "/getMyCount")
-    public Y9Result<Map<String, Object>> getMyCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId) {
+    public Y9Result<Map<String, Object>> getMyCount() {
         Map<String, Object> map = new HashMap<String, Object>(16);
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
         int todoCount = 0;
         long doingCount = 0;
         int doneCount = 0;
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
             // 统计统一待办
             todoCount = todotaskApi.countByReceiverId(tenantId, positionId);
             // 统计流程在办件
@@ -70,9 +68,6 @@ public class MobileV1SearchListController {
     /**
      * 获取在办列表，办结列表
      *
-     * @param tenantId   租户id
-     * @param userId     人员id
-     * @param positionId 岗位id
      * @param searchName 文件编号，标题
      * @param itemId     事项id
      * @param userName   发起人
@@ -85,9 +80,7 @@ public class MobileV1SearchListController {
      * @return
      */
     @RequestMapping(value = "/getSearchList")
-    public Y9Page<Map<String, Object>> getSearchList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, @RequestParam Integer page, @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPositionId(positionId);
+    public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, @RequestParam Integer page, @RequestParam Integer rows) {
         return searchService.getSearchList(searchName, itemId, userName, state, year, startDate, endDate, page, rows);
     }
 
