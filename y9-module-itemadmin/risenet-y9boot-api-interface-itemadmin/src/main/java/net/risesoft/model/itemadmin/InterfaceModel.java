@@ -35,4 +35,10 @@ public class InterfaceModel implements Serializable {
      */
     private String requestType;
 
+    // 是否异步调用
+    private String asyn;
+
+    // 是否异常停止
+    private String abnormalStop;
+
 }

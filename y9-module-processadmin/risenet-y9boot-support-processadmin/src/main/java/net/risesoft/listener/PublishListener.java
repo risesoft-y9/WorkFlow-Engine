@@ -1,19 +1,19 @@
 package net.risesoft.listener;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.httpclient.NameValuePair;
+import org.flowable.engine.delegate.DelegateExecution;
+import org.flowable.engine.delegate.ExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.util.RemoteCallUtil;
-import org.apache.commons.httpclient.NameValuePair;
-import org.flowable.engine.TaskService;
-import org.flowable.engine.delegate.DelegateExecution;
-import org.flowable.engine.delegate.ExecutionListener;
-import org.flowable.task.api.Task;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 提取
@@ -24,6 +24,7 @@ import java.util.List;
 @Slf4j
 public class PublishListener implements ExecutionListener {
 
+    @SuppressWarnings("unchecked")
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void notify(DelegateExecution execution) {

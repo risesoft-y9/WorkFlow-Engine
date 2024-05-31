@@ -21,11 +21,17 @@ public enum ItemInterfaceTypeEnum {
     /** Body */
     BODY("Body"),
 
-    // 接口类型
+    // 绑定类型
     /** Response */
     INTERFACE_RESPONSE("Response"),
     /** Request */
-    INTERFACE_REQUEST("Request");
+    INTERFACE_REQUEST("Request"),
+
+    // 方法类型
+    /** GET */
+    METHOD_GET("GET"),
+    /** POST */
+    METHOD_POST("POST");
 
     private final String value;
 }

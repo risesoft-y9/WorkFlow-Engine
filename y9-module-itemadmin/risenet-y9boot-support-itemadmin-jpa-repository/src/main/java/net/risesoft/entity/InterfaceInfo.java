@@ -50,6 +50,14 @@ public class InterfaceInfo implements Serializable {
     @Column(name = "requestType", length = 20)
     private String requestType;
 
+    @Comment("是否异步调用接口")
+    @Column(name = "asyn", length = 10)
+    private String asyn = "0";
+
+    @Comment("是否异常停止")
+    @Column(name = "abnormalStop", length = 10)
+    private String abnormalStop = "0";
+
     @Comment("创建时间")
     @Column(name = "CREATETIME", length = 50)
     private String createTime;

@@ -6,7 +6,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.FlowableListener;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
+import org.springframework.transaction.annotation.Transactional;
 
+import net.risesoft.service.InterfaceUtilService;
 import net.risesoft.service.Task4ActRuDetaillService;
 import net.risesoft.service.Task4ListenerService;
 import net.risesoft.service.TodoTaskService;
@@ -22,6 +24,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
     private static final long serialVersionUID = 7977766892823478492L;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void notify(DelegateTask task) {
         String eventName = task.getEventName();
         if (TaskListener.EVENTNAME_ASSIGNMENT.equals(eventName)) {
@@ -53,6 +56,15 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
         } else if (TaskListener.EVENTNAME_CREATE.equals(eventName)) {
             Map<String, Object> variables = task.getVariables();
             Map<String, Object> localvariables = task.getVariablesLocal();
+
+            // 接口调用
+            InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
+            try {
+                interfaceUtilService.interfaceCallByTask(task, variables, "创建");
+            } catch (Exception e) {
+                throw new RuntimeException("调用接口失败 TaskListener4AllEvents_EVENTNAME_CREATE");
+            }
+
             /**
              * 出差委托
              */
@@ -72,8 +84,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             /**
              * 统一待办-新建这一步不使用异步方式保存
              */
-            boolean b = "xinjian".equals(task.getTaskDefinitionKey()) || "faqiren".equals(task.getTaskDefinitionKey())
-                || "qicao".equals(task.getTaskDefinitionKey()) || "fenpei".equals(task.getTaskDefinitionKey());
+            boolean b = "xinjian".equals(task.getTaskDefinitionKey()) || "faqiren".equals(task.getTaskDefinitionKey()) || "qicao".equals(task.getTaskDefinitionKey()) || "fenpei".equals(task.getTaskDefinitionKey());
             if (b) {
                 TodoTaskService todoTaskService = Y9Context.getBean(TodoTaskService.class);
                 todoTaskService.saveTodoTask(task, variables);
@@ -87,6 +98,14 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
 
         } else if (TaskListener.EVENTNAME_DELETE.equals(eventName)) {
             Map<String, Object> variables = task.getVariables();
+
+            // 接口调用
+            InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
+            try {
+                interfaceUtilService.interfaceCallByTask(task, variables, "完成");
+            } catch (Exception e) {
+                throw new RuntimeException("调用接口失败 TaskListener4AllEvents_EVENTNAME_DELETE");
+            }
 
             ///////////////// 异步处理,删除统一待办,更新协作状态,消息提醒
             Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);

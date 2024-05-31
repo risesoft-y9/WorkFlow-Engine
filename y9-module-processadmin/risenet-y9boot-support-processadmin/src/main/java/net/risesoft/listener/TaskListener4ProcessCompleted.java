@@ -9,6 +9,7 @@ import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
+import net.risesoft.service.InterfaceUtilService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9Context;
 
@@ -34,8 +35,26 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 FlowableEntityEventImpl entityEvent = (FlowableEntityEventImpl)event;
                 ExecutionEntityImpl executionEntity = (ExecutionEntityImpl)entityEvent.getEntity();
                 String tenantId = (String)executionEntity.getVariable(SysVariables.TENANTID);
-                Y9Context.getBean(ActRuDetailApi.class).endByProcessInstanceId(tenantId,
-                    executionEntity.getProcessInstanceId());
+                // 接口调用
+                InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
+                try {
+                    interfaceUtilService.interfaceCallByProcess(executionEntity, executionEntity.getVariables(), "办结");
+                } catch (Exception e) {
+                    throw new RuntimeException("调用接口失败 TaskListener4ProcessCompleted_PROCESS_COMPLETED");
+                }
+
+                Y9Context.getBean(ActRuDetailApi.class).endByProcessInstanceId(tenantId, executionEntity.getProcessInstanceId());
+                break;
+            case PROCESS_STARTED:
+                FlowableEntityEventImpl entityEvent1 = (FlowableEntityEventImpl)event;
+                ExecutionEntityImpl executionEntity1 = (ExecutionEntityImpl)entityEvent1.getEntity();
+                // 接口调用
+                InterfaceUtilService interfaceUtilService1 = Y9Context.getBean(InterfaceUtilService.class);
+                try {
+                    interfaceUtilService1.interfaceCallByProcess(executionEntity1, executionEntity1.getVariables(), "启动");
+                } catch (Exception e) {
+                    throw new RuntimeException("调用接口失败 TaskListener4ProcessCompleted_PROCESS_STARTED");
+                }
                 break;
             case HISTORIC_PROCESS_INSTANCE_ENDED:
                 try {

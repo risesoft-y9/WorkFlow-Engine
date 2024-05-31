@@ -60,6 +60,8 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
                 model.setInterfaceAddress(info.getInterfaceAddress());
                 model.setInterfaceName(info.getInterfaceName());
                 model.setRequestType(info.getRequestType());
+                model.setAsyn(info.getAsyn());
+                model.setAbnormalStop(info.getAbnormalStop());
                 res_list.add(model);
             }
 

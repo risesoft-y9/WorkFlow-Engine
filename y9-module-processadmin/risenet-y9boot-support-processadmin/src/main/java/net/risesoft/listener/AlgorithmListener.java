@@ -1,24 +1,21 @@
 package net.risesoft.listener;
 
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
-import net.risesoft.y9.util.RemoteCallUtil;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.httpclient.NameValuePair;
 import org.flowable.engine.TaskService;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.ExecutionListener;
 import org.flowable.task.api.Task;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.util.RemoteCallUtil;
 
 /**
  * 提取
@@ -37,7 +34,7 @@ public class AlgorithmListener implements ExecutionListener {
             String tenantId = FlowableTenantInfoHolder.getTenantId();
             String processSerialNumber = execution.getVariable("processSerialNumber").toString();
             String processInstanceId = execution.getProcessInstanceId();
-            TaskService taskService=Y9Context.getBean(TaskService.class);
+            TaskService taskService = Y9Context.getBean(TaskService.class);
             List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstanceId).list();
             String positionId = tasks.get(0).getAssignee();
             List<NameValuePair> params = new ArrayList<>();
