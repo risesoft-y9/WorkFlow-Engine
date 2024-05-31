@@ -44,27 +44,27 @@ public class MobileV1Filter implements Filter {
             String userId = request.getHeader("auth-userId");
             String positionId = request.getHeader("auth-positionId");
             if (StringUtils.isBlank(tenantId)) {
-                setResponse(response, HttpStatus.UNAUTHORIZED, FlowableUIErrorCodeEnum.AUTH_TENANTID_NOT_FOUND);
+                setResponse(response, FlowableUIErrorCodeEnum.AUTH_TENANTID_NOT_FOUND);
                 return;
             }
             if (StringUtils.isBlank(userId)) {
-                setResponse(response, HttpStatus.UNAUTHORIZED, FlowableUIErrorCodeEnum.AUTH_USERID_NOT_FOUND);
+                setResponse(response, FlowableUIErrorCodeEnum.AUTH_USERID_NOT_FOUND);
                 return;
             }
             if (StringUtils.isBlank(positionId)) {
-                setResponse(response, HttpStatus.UNAUTHORIZED, FlowableUIErrorCodeEnum.AUTH_POSITIONID_NOT_FOUND);
+                setResponse(response, FlowableUIErrorCodeEnum.AUTH_POSITIONID_NOT_FOUND);
                 return;
             }
             PersonApi personApi = Y9Context.getBean(PersonApi.class);
             Person person = personApi.get(tenantId, userId).getData();
             if (person == null) {
-                setResponse(response, HttpStatus.UNAUTHORIZED, FlowableUIErrorCodeEnum.PERSON_NOT_FOUND);
+                setResponse(response, FlowableUIErrorCodeEnum.PERSON_NOT_FOUND);
                 return;
             }
             PositionApi positionApi = Y9Context.getBean(PositionApi.class);
             Position position = positionApi.get(tenantId, positionId).getData();
             if (position == null) {
-                setResponse(response, HttpStatus.UNAUTHORIZED, FlowableUIErrorCodeEnum.POSITION_NOT_FOUND);
+                setResponse(response, FlowableUIErrorCodeEnum.POSITION_NOT_FOUND);
                 return;
             }
             Y9LoginUserHolder.setPerson(person);
@@ -75,8 +75,8 @@ public class MobileV1Filter implements Filter {
         }
     }
 
-    private void setResponse(HttpServletResponse response, HttpStatus httpStatus, ErrorCode errorCode) {
-        response.setStatus(httpStatus.value());
+    private void setResponse(HttpServletResponse response, ErrorCode errorCode) {
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         try {
             response.getWriter().write(Y9JsonUtil.writeValueAsString(Y9Result.failure(errorCode)));
