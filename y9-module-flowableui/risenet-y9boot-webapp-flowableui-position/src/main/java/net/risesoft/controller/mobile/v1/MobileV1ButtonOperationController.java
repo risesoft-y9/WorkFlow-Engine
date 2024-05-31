@@ -1,24 +1,7 @@
 package net.risesoft.controller.mobile.v1;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
@@ -46,6 +29,19 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.constraints.NotBlank;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 菜单按钮方法接口
@@ -53,70 +49,53 @@ import net.risesoft.y9.util.Y9Util;
  * @author zhangchongjie
  * @date 2024/01/17
  */
+@Slf4j
+@Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/mobile/v1/buttonOperation")
 public class MobileV1ButtonOperationController {
 
-    protected Logger log = LoggerFactory.getLogger(MobileV1ButtonOperationController.class);
 
-    @Autowired
-    private PersonApi personApi;
+    private final PersonApi personApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private TaskApi taskApi;
+    private final TaskApi taskApi;
 
-    @Autowired
-    private ButtonOperation4PositionApi buttonOperation4PositionApi;
+    private final ButtonOperation4PositionApi buttonOperation4PositionApi;
 
-    @Autowired
-    private HistoricProcessApi historicProcessApi;
+    private final HistoricProcessApi historicProcessApi;
 
-    @Autowired
-    private Document4PositionApi document4PositionApi;
+    private final Document4PositionApi document4PositionApi;
 
-    @Autowired
-    private SpecialOperationApi specialOperationApi;
+    private final SpecialOperationApi specialOperationApi;
 
-    @Autowired
-    private VariableApi variableApi;
+    private final VariableApi variableApi;
 
-    @Autowired
-    private ButtonOperationService buttonOperationService;
+    private final ButtonOperationService buttonOperationService;
 
-    @Autowired
-    private Process4SearchService process4SearchService;
+    private final Process4SearchService process4SearchService;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionApi;
+    private final ProcessDefinitionApi processDefinitionApi;
 
-    @Autowired
-    private MultiInstanceService multiInstanceService;
+    private final MultiInstanceService multiInstanceService;
 
-    @Autowired
-    private ProcessTrack4PositionApi processTrack4PositionApi;
+    private final ProcessTrack4PositionApi processTrack4PositionApi;
 
     /**
      * 签收：抢占式办理时，签收后，其他人不可再签收办理
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param taskId 任务id
-     * @param response
      */
     @RequestMapping(value = "/claim")
-    public Y9Result<String> claim(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
+    public Y9Result<String> claim(@RequestParam @NotBlank String taskId) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
-            TaskModel task = taskApi.findById(tenantId, taskId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
+            TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId);
             if (task != null) {
                 String assigneeId = task.getAssignee();
                 if (StringUtils.isBlank(assigneeId)) {
@@ -136,19 +115,14 @@ public class MobileV1ButtonOperationController {
     /**
      * 流程办结
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param taskId 任务id
-     * @param request
-     * @param response
      */
     @RequestMapping(value = "/complete")
-    public Y9Result<String> complete(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletRequest request, HttpServletResponse response) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<String> complete(@RequestParam String taskId) {
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
+            String userId = Y9LoginUserHolder.getPersonId();
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
 
@@ -167,23 +141,15 @@ public class MobileV1ButtonOperationController {
     /**
      * 获取办件状态
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
-     * @param taskId 任务id
+     * @param taskId            任务id
      * @param processInstanceId 流程实例id
-     * @param request
-     * @param response
      */
     @RequestMapping(value = "/getItemBox")
-    public Y9Result<String> getItemBox(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, @RequestParam String processInstanceId, HttpServletRequest request,
-        HttpServletResponse response) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<String> getItemBox(@RequestParam String taskId, @RequestParam String processInstanceId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         String itembox = ItemBoxTypeEnum.TODO.getValue();
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
             HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId);
             if (taskModel != null && taskModel.getId() != null) {
@@ -208,19 +174,13 @@ public class MobileV1ButtonOperationController {
     /**
      * 办理完成，并行处理时使用
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param taskId 任务id
-     * @param response
      */
     @SuppressWarnings("unchecked")
     @RequestMapping("/handleParallel")
-    public Y9Result<String> handleParallel(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
+    public Y9Result<String> handleParallel(@RequestParam String taskId) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel task = taskApi.findById(tenantId, taskId);
             if (task == null) {
                 return Y9Result.failure("该件已被办理！");
@@ -234,8 +194,7 @@ public class MobileV1ButtonOperationController {
                      */
                     try {
                         String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS);
-                        List<String> users =
-                            userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
+                        List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
                         if (users.size() == 0) {
                             List<String> usersTemp = new ArrayList<String>();
                             for (TaskModel t : list) {
@@ -261,18 +220,13 @@ public class MobileV1ButtonOperationController {
     /**
      * 处理完成，串行时使用
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param taskId 任务id
-     * @param response
      */
     @RequestMapping(value = "/handleSerial")
-    public Y9Result<String> handleSerial(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
+    public Y9Result<String> handleSerial(@RequestParam String taskId) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
             Position position = positionApi.get(tenantId, positionId).getData();
             Y9LoginUserHolder.setPosition(position);
             TaskModel task = taskApi.findById(tenantId, taskId);
@@ -299,27 +253,16 @@ public class MobileV1ButtonOperationController {
     /**
      * 恢复待办
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
-     * @param taskId 任务id
      * @param processInstanceId 流程实例id
-     * @param desc 描述
-     * @param response
+     * @param desc              描述
      */
     @RequestMapping(value = "/multipleResumeToDo")
-    public Y9Result<String> multipleResumeToDo(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String desc,
-        HttpServletResponse response) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, positionId).getData();
-        Y9LoginUserHolder.setPosition(position);
+    public Y9Result<String> multipleResumeToDo(@RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String desc) {
         try {
             buttonOperationService.multipleResumeToDo(processInstanceId, desc);
             return Y9Result.successMsg("恢复待办成功");
         } catch (Exception e) {
-            log.error("手机端恢复待办异常");
+            LOGGER.error("手机端恢复待办异常");
             e.printStackTrace();
         }
         return Y9Result.failure("恢复待办失败");
@@ -328,21 +271,17 @@ public class MobileV1ButtonOperationController {
     /**
      * 拒签：抢占式办理时，拒签就把自己从多个抢占办理的人中排除掉
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
-     * @param taskId 任务id
+     * @param taskId                   任务id
      * @param isLastPerson4RefuseClaim 是否最后一人拒签
-     * @param response
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/refuseClaim")
-    public Y9Result<String> refuseClaim(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, @RequestParam Boolean isLastPerson4RefuseClaim, HttpServletResponse response) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<String> refuseClaim(@RequestParam String taskId, @RequestParam Boolean isLastPerson4RefuseClaim) {
         String activitiUser = "";
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
+            String userId = Y9LoginUserHolder.getPersonId();
             TaskModel task = taskApi.findById(tenantId, taskId);
             if (isLastPerson4RefuseClaim) {// 最后一人拒签，退回
                 try {
@@ -357,7 +296,7 @@ public class MobileV1ButtonOperationController {
                     String assigneeId = task.getAssignee();
                     if (StringUtils.isBlank(assigneeId)) {
                         Map<String, Object> vars = variableApi.getVariables(tenantId, taskId);
-                        ArrayList<String> users = (ArrayList<String>)vars.get(SysVariables.USERS);
+                        ArrayList<String> users = (ArrayList<String>) vars.get(SysVariables.USERS);
                         for (Object obj : users) {
                             String user = obj.toString();
                             if (user.contains(positionId)) {
@@ -382,26 +321,19 @@ public class MobileV1ButtonOperationController {
     /**
      * 重定位
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
-     * @param taskId 任务id
+     * @param taskId             任务id
      * @param repositionToTaskId 定位路由key
-     * @param userChoice 人员id
-     * @param response
+     * @param userChoice         人员id
      */
     @RequestMapping(value = "/reposition")
-    public Y9Result<String> reposition(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, @RequestParam String repositionToTaskId, @RequestParam String userChoice,
-        HttpServletResponse response) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<String> reposition(@RequestParam String taskId, @RequestParam String repositionToTaskId, @RequestParam String userChoice) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
             map.put(UtilConsts.SUCCESS, true);
             if (StringUtils.isNotBlank(taskId)) {
-                specialOperationApi.reposition4Position(tenantId, positionId, taskId, repositionToTaskId,
-                    Y9Util.stringToList(userChoice, ","), "重定向", "");
+                specialOperationApi.reposition4Position(tenantId, positionId, taskId, repositionToTaskId, Y9Util.stringToList(userChoice, ","), "重定向", "");
             }
             return Y9Result.successMsg("重定向成功");
         } catch (Exception e) {
@@ -413,25 +345,17 @@ public class MobileV1ButtonOperationController {
     /**
      * 重定位
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
-     * @param taskId 任务id
+     * @param taskId     任务id
      * @param userChoice 人员id
-     * @param request
-     * @param response
      */
     @RequestMapping(value = "/reposition1")
-    public Y9Result<String> reposition1(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, @RequestParam String userChoice, HttpServletRequest request,
-        HttpServletResponse response) {
+    public Y9Result<String> reposition1(@RequestParam String taskId, @RequestParam String userChoice) {
         Map<String, Object> map = new HashMap<String, Object>(16);
-        Y9LoginUserHolder.setTenantId(tenantId);
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
             TaskModel task = taskApi.findById(tenantId, taskId);
-            buttonOperation4PositionApi.reposition(tenantId, positionId, taskId, "",
-                Y9Util.stringToList(userChoice, ","), "重定向", "");
+            buttonOperation4PositionApi.reposition(tenantId, positionId, taskId, "", Y9Util.stringToList(userChoice, ","), "重定向", "");
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             return Y9Result.successMsg("重定位成功");
         } catch (Exception e) {
@@ -445,24 +369,17 @@ public class MobileV1ButtonOperationController {
     /**
      * 退回
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param taskId 任务id
-     * @param response
      */
     @RequestMapping(value = "/rollback")
-    public Y9Result<String> rollback(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
+    public Y9Result<String> rollback(@RequestParam String taskId) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
-            Position position = positionApi.get(tenantId, positionId).getData();
-            Y9LoginUserHolder.setPosition(position);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
+            Position position = Y9LoginUserHolder.getPosition();
             TaskModel task = taskApi.findById(tenantId, taskId);
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId());
-            String type =
-                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+            String type = processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey());
             String reason = "";
             if (SysVariables.PARALLEL.equals(type) && taskList.size() > 1) {// 并行退回，并行多于2人时，退回使用减签方式
                 if (StringUtils.isEmpty(reason)) {
@@ -486,18 +403,13 @@ public class MobileV1ButtonOperationController {
     /**
      * 返回发起人
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param taskId 任务id
-     * @param response
      */
     @RequestMapping(value = "/rollbackToStartor")
-    public Y9Result<String> rollbackToStartor(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
+    public Y9Result<String> rollbackToStartor(@RequestParam String taskId) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
             buttonOperation4PositionApi.rollbackToStartor(tenantId, positionId, taskId, "");
             return Y9Result.successMsg("返回发起人成功");
         } catch (Exception e) {
@@ -509,18 +421,13 @@ public class MobileV1ButtonOperationController {
     /**
      * 返回发送人
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param taskId 任务id
-     * @param response
      */
     @RequestMapping(value = "/sendToSender")
-    public Y9Result<String> sendToSender(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
+    public Y9Result<String> sendToSender(@RequestParam String taskId) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
             buttonOperation4PositionApi.rollbackToSender(tenantId, positionId, taskId);
             return Y9Result.successMsg("返回发送人成功");
         } catch (Exception e) {
@@ -532,18 +439,13 @@ public class MobileV1ButtonOperationController {
     /**
      * 发送拟稿人
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param taskId 任务id
-     * @param response
      */
     @RequestMapping(value = "/sendToStartor")
-    public Y9Result<String> sendToStartor(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
+    public Y9Result<String> sendToStartor(@RequestParam String taskId) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
             String routeToTaskId = taskModel.getTaskDefinitionKey();
             String processInstanceId = taskModel.getProcessInstanceId();
@@ -556,14 +458,12 @@ public class MobileV1ButtonOperationController {
             String user = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TASKSENDERID);
             String userChoice = "3:" + user;
 
-            String multiInstance =
-                processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(), routeToTaskId);
+            String multiInstance = processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(), routeToTaskId);
             String sponsorHandle = "";
             if (multiInstance.equals(SysVariables.PARALLEL)) {
                 sponsorHandle = "true";
             }
-            document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle,
-                itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
+            document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
             return Y9Result.successMsg("发送拟稿人成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -574,27 +474,15 @@ public class MobileV1ButtonOperationController {
     /**
      * 特殊办结
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 办结原因
-     * @param request
-     * @param response
      */
     @RequestMapping(value = "/specialComplete")
-    public Y9Result<String> specialComplete(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, @RequestParam(required = false) String reason, HttpServletRequest request,
-        HttpServletResponse response) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<String> specialComplete(@RequestParam String taskId, @RequestParam(required = false) String reason) {
         try {
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
-
-            Position position = positionApi.get(tenantId, positionId).getData();
-            Y9LoginUserHolder.setPosition(position);
-
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
+            Position position = Y9LoginUserHolder.getPosition();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
             buttonOperation4PositionApi.specialComplete(tenantId, positionId, taskId, reason);
@@ -633,18 +521,13 @@ public class MobileV1ButtonOperationController {
     /**
      * 收回
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param taskId 任务id
-     * @param response
      */
     @RequestMapping(value = "/takeback")
-    public Y9Result<String> takeback(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<String> takeback(@RequestParam String taskId) {
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
             buttonOperation4PositionApi.takeback(tenantId, positionId, taskId, "收回");
             return Y9Result.successMsg("收回成功");
         } catch (Exception e) {
@@ -656,21 +539,12 @@ public class MobileV1ButtonOperationController {
     /**
      * 撤销签收：抢占式办理时，签收后，撤销签收可以让此公文重新抢占式办理
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param taskId 任务id
-     * @param response
      */
     @RequestMapping(value = "/unclaim")
-    public Y9Result<String> unclaim(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, HttpServletResponse response) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<String> unclaim(@RequestParam @NotBlank String taskId) {
         try {
-            if (StringUtils.isNotBlank(taskId)) {
-                taskApi.unclaim(tenantId, taskId);
-            }
+            taskApi.unclaim(Y9LoginUserHolder.getTenantId(), taskId);
             return Y9Result.successMsg("撤销签收成功");
         } catch (Exception e) {
             e.printStackTrace();

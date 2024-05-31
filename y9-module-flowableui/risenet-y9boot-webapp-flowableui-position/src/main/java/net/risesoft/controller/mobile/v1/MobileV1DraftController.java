@@ -1,25 +1,21 @@
 package net.risesoft.controller.mobile.v1;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.exception.GlobalErrorCodeEnum;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 草稿相关接口
@@ -27,33 +23,27 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2024/01/17
  */
+@Slf4j
+@Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/mobile/v1/draft")
 public class MobileV1DraftController {
 
-    protected Logger log = LoggerFactory.getLogger(MobileV1DraftController.class);
-
-    @Autowired
-    private Draft4PositionApi draft4PositionApi;
+    private final Draft4PositionApi draft4PositionApi;
 
     /**
      * 彻底删除草稿
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param ids 草稿ids,“,”分隔
-     * @param response
      */
     @RequestMapping(value = "/delDraft")
-    public Y9Result<String> delDraft(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String ids, HttpServletResponse response) {
+    public Y9Result<String> delDraft(@RequestParam String ids) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
             map = draft4PositionApi.deleteDraft(tenantId, ids);
-            if ((boolean)map.get("success")) {
+            if ((boolean) map.get("success")) {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
@@ -65,18 +55,13 @@ public class MobileV1DraftController {
     /**
      * 回收站计数
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param itemId 事项id
-     * @param response
      */
     @RequestMapping(value = "/getDeleteDraftCount")
-    public Y9Result<Integer> getDeleteDraftCount(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, HttpServletResponse response) {
+    public Y9Result<Integer> getDeleteDraftCount(@RequestParam String itemId) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
             Integer count = draft4PositionApi.getDeleteDraftCount(tenantId, positionId, itemId);
             return Y9Result.success(count, "获取数据成功");
         } catch (Exception e) {
@@ -88,54 +73,41 @@ public class MobileV1DraftController {
     /**
      * 草稿列表
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
-     * @param itemId 事项id
-     * @param title 搜索标题
+     * @param itemId  事项id
+     * @param title   搜索标题
      * @param delFlag 是否删除 true为回收站列表，false为草稿列表
-     * @param page 页码
-     * @param rows 行数
-     * @param response
+     * @param page    页码
+     * @param rows    行数
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getDraft")
-    public Y9Page<Map<String, Object>> getDraft(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, @RequestParam(required = false) String title, boolean delFlag,
-        @RequestParam Integer page, @RequestParam Integer rows, HttpServletResponse response) {
+    public Y9Page<Map<String, Object>> getDraft(@RequestParam String itemId, @RequestParam(required = false) String title, boolean delFlag, @RequestParam Integer page, @RequestParam Integer rows) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
             map = draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, delFlag);
-            if ((boolean)map.get("success")) {
-                List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
-                return Y9Page.success(page, Integer.valueOf(map.get("totalpage").toString()),
-                    Long.valueOf(map.get("total").toString()), list, "获取成功");
+            if ((boolean) map.get("success")) {
+                List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("rows");
+                return Y9Page.success(page, Integer.valueOf(map.get("totalpage").toString()), Long.valueOf(map.get("total").toString()), list, "获取成功");
             }
         } catch (Exception e) {
-            log.error("草稿箱列表异常：");
+            LOGGER.error("草稿箱列表异常：");
             e.printStackTrace();
         }
-        return Y9Page.failure(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取失败",
-            GlobalErrorCodeEnum.FAILURE.getCode());
+        return Y9Page.failure(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取失败", GlobalErrorCodeEnum.FAILURE.getCode());
     }
 
     /**
      * 草稿箱计数
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param itemId 事项id
-     * @param response
      */
     @RequestMapping(value = "/getDraftCount")
-    public Y9Result<Integer> getDraftCount(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, HttpServletResponse response) {
+    public Y9Result<Integer> getDraftCount(@RequestParam String itemId) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
             Integer count = draft4PositionApi.getDraftCount(tenantId, positionId, itemId);
             return Y9Result.success(count, "获取数据成功");
         } catch (Exception e) {
@@ -147,21 +119,15 @@ public class MobileV1DraftController {
     /**
      * 还原草稿
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
-     * @param ids 草稿ids,“,”分隔
-     * @param response
+     * @param id 草稿id
      */
     @RequestMapping(value = "/reduction")
-    public Y9Result<String> reduction(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String id, HttpServletResponse response) {
+    public Y9Result<String> reduction(@RequestParam String id) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
             map = draft4PositionApi.reduction(tenantId, id);
-            if ((boolean)map.get("success")) {
+            if ((boolean) map.get("success")) {
                 return Y9Result.successMsg("还原成功");
             }
         } catch (Exception e) {
@@ -173,21 +139,15 @@ public class MobileV1DraftController {
     /**
      * 删除草稿
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
      * @param ids 草稿ids,“,”分隔
-     * @param response
      */
     @RequestMapping(value = "/removeDraft")
-    public Y9Result<String> removeDraft(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String ids, HttpServletResponse response) {
+    public Y9Result<String> removeDraft(@RequestParam String ids) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
             map = draft4PositionApi.removeDraft(tenantId, ids);
-            if ((boolean)map.get("success")) {
+            if ((boolean) map.get("success")) {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {

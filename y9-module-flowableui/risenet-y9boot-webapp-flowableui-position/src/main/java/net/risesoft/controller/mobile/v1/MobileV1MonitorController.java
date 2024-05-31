@@ -1,17 +1,6 @@
 package net.risesoft.controller.mobile.v1;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
@@ -24,6 +13,14 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.MonitorService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 监控列表相关接口
@@ -32,65 +29,43 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2024/01/17
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/mobile/v1/monitor")
 public class MobileV1MonitorController {
 
-    @Autowired
-    private HistoricProcessApi historicProcessApi;
 
-    @Autowired
-    private MonitorApi monitorApi;
+    private final HistoricProcessApi historicProcessApi;
 
-    @Autowired
-    private Item4PositionApi item4PositionApi;
 
-    @Autowired
-    private MonitorService monitorService;
+    private final MonitorApi monitorApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
 
-    @Autowired
-    private TransactionWordApi transactionWordApi;
+    private final Item4PositionApi item4PositionApi;
 
-    @Autowired
-    private Attachment4PositionApi attachment4PositionApi;
 
-    /**
-     * 删除流程实例
-     *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
-     * @param processInstanceId 流程实例id
-     * @param response
-     */
-    /* @RequestMapping(value = "/deleteProcessInstance")
-    public Y9Result<String> deleteProcessInstance(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processInstanceId, HttpServletResponse response) {
-        try {
-            boolean b = historicProcessApi.deleteProcessInstance(tenantId, processInstanceId);
-            if (b) {
-                return Y9Result.successMsg("删除成功");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Y9Result.failure("发生异常");
-    }*/
+    private final MonitorService monitorService;
+
+
+    private final ProcessParamApi processParamApi;
+
+
+    private final TransactionWordApi transactionWordApi;
+
+
+    private final Attachment4PositionApi attachment4PositionApi;
 
     /**
      * 监控在办件统计
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
+     * @param tenantId   租户id
+     * @param userId     人员id
      * @param positionId 岗位id
-     * @param itemId 事项id
-     * @param response
+     * @param itemId     事项id
      */
     @RequestMapping(value = "/monitorDoingCount")
     public Y9Result<Long> monitorDoingCount(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, HttpServletResponse response) {
+                                            @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+                                            @RequestParam String itemId) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
@@ -106,21 +81,19 @@ public class MobileV1MonitorController {
     /**
      * 监控在办件
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
+     * @param tenantId   租户id
+     * @param userId     人员id
      * @param positionId 岗位id
-     * @param itemId 事项id
-     * @param title 标题
-     * @param page 页码
-     * @param rows 条数
-     * @param response
+     * @param itemId     事项id
+     * @param title      标题
+     * @param page       页码
+     * @param rows       条数
      * @return
      */
     @RequestMapping(value = "/monitorDoingList")
     public Y9Page<Map<String, Object>> monitorDoingList(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
-        HttpServletResponse response) {
+                                                        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+                                                        @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return monitorService.monitorDoingList(itemId, title, page, rows);
     }
@@ -128,16 +101,15 @@ public class MobileV1MonitorController {
     /**
      * 监控办结件统计
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
+     * @param tenantId   租户id
+     * @param userId     人员id
      * @param positionId 岗位id
-     * @param itemId 事项id
-     * @param response
+     * @param itemId     事项id
      */
     @RequestMapping(value = "/monitorDoneCount")
     public Y9Result<Long> monitorDoneCount(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, HttpServletResponse response) {
+                                           @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+                                           @RequestParam String itemId) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
@@ -153,20 +125,18 @@ public class MobileV1MonitorController {
     /**
      * 监控办结件
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
+     * @param tenantId   租户id
+     * @param userId     人员id
      * @param positionId 岗位id
-     * @param itemId 事项id
-     * @param title 标题
-     * @param page 页码
-     * @param rows 条数
-     * @param response
+     * @param itemId     事项id
+     * @param title      标题
+     * @param page       页码
+     * @param rows       条数
      */
     @RequestMapping(value = "/monitorDoneList")
     public Y9Page<Map<String, Object>> monitorDoneList(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows,
-        HttpServletResponse response) {
+                                                       @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+                                                       @RequestParam String itemId, @RequestParam(required = false) String title, int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return monitorService.monitorDoneList(itemId, title, page, rows);
     }
@@ -174,16 +144,15 @@ public class MobileV1MonitorController {
     /**
      * 彻底删除流程实例
      *
-     * @param tenantId 租户id
-     * @param positionId 岗位id
-     * @param userId 人员id
+     * @param tenantId          租户id
+     * @param positionId        岗位id
+     * @param userId            人员id
      * @param processInstanceId 流程实例id
-     * @param response
      */
     @RequestMapping(value = "/removeProcess")
     public Y9Result<String> removeProcess(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String processInstanceId, HttpServletResponse response) {
+                                          @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+                                          @RequestParam String processInstanceId) {
         try {
             ProcessParamModel processParamModel = null;
             List<String> list = new ArrayList<String>();
