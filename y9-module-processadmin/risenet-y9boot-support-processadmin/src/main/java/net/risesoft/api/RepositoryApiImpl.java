@@ -1,10 +1,12 @@
 package net.risesoft.api;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-
+import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.processadmin.ProcessDefinitionModel;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.CustomRepositoryService;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.util.FlowableModelConvertUtil;
 import org.apache.commons.io.IOUtils;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +18,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.processadmin.ProcessDefinitionModel;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.CustomRepositoryService;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.util.FlowableModelConvertUtil;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 部署流程相关接口
@@ -152,11 +151,10 @@ public class RepositoryApiImpl implements RepositoryApi {
 
     /**
      * 获取流程定义xml
-     *
+     * @param tenantId 租户id
      * @param resourceType xml
      * @param processInstanceId 流程实例id
      * @param processDefinitionId 流程定义id
-     * @param response
      * @return Y9Result<String>
      * @throws Exception
      */
