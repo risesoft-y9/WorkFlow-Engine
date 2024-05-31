@@ -17,7 +17,6 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
-import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -118,20 +117,10 @@ public class MobileV1ButtonOperationController {
      * @param taskId 任务id
      */
     @RequestMapping(value = "/complete")
-    public Y9Result<String> complete(@RequestParam String taskId) {
+    public Y9Result<String> complete(@RequestParam @NotBlank String taskId) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9LoginUserHolder.getPositionId();
-            String userId = Y9LoginUserHolder.getPersonId();
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
-
-            Position position = positionApi.get(tenantId, positionId).getData();
-            Y9LoginUserHolder.setPosition(position);
-            if (StringUtils.isNotBlank(taskId)) {
-                buttonOperationService.complete(taskId, "办结", "已办结", "");
-                return Y9Result.successMsg("办结成功");
-            }
+            buttonOperationService.complete(taskId, "办结", "已办结", "");
+            return Y9Result.successMsg("办结成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -226,9 +215,6 @@ public class MobileV1ButtonOperationController {
     public Y9Result<String> handleSerial(@RequestParam String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9LoginUserHolder.getPositionId();
-            Position position = positionApi.get(tenantId, positionId).getData();
-            Y9LoginUserHolder.setPosition(position);
             TaskModel task = taskApi.findById(tenantId, taskId);
             Map<String, Object> vars = task.getVariables();// 获取流程中当前任务的所有变量
             // vars.put(SysVariables.TASKSENDER, position.getName());

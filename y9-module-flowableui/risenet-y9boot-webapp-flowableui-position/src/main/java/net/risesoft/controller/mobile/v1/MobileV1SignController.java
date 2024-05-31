@@ -7,7 +7,7 @@ import net.risesoft.model.itemadmin.CalendarConfigModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +25,7 @@ import java.util.Date;
  * @date 2024/01/17
  */
 @Slf4j
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/mobile/v1/sign")
@@ -73,14 +74,13 @@ public class MobileV1SignController {
     /**
      * 获取两个日期之间的天数，除去节假日
      *
-     * @param tenantId  租户id
      * @param startDate 开始日期
      * @param endDate   结束日期
      */
     @RequestMapping(value = "/getDay")
-    public Y9Result<String> getDay(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
+    public Y9Result<String> getDay(@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
             if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
                 String year = startDate.substring(0, 4);
                 CalendarConfigModel calendarConfigModel = calendarConfigApi.findByYear(tenantId, year);
@@ -103,7 +103,6 @@ public class MobileV1SignController {
     /**
      * 有生云请假办件，计算请假天数和小时
      *
-     * @param tenantId       租户id
      * @param type           计算类型，小时，天，半天
      * @param leaveType      请假类型
      * @param leaveStartTime 请假开始时间
@@ -116,10 +115,8 @@ public class MobileV1SignController {
      */
     @SuppressWarnings("deprecation")
     @RequestMapping("/getDayOrHour")
-    public Y9Result<String> getDayOrHour(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String type, @RequestParam(required = false) String leaveStartTime, @RequestParam(required = false) String leaveEndTime, @RequestParam(required = false) String startSel,
-                                         @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime, @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType) {
+    public Y9Result<String> getDayOrHour(@RequestParam(required = false) String type, @RequestParam(required = false) String leaveStartTime, @RequestParam(required = false) String leaveEndTime, @RequestParam(required = false) String startSel, @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime, @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr = "";
             CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
@@ -275,15 +272,14 @@ public class MobileV1SignController {
     /**
      * 获取两个日期之间的天数
      *
-     * @param tenantId  租户id
      * @param startDate 开始日期
      * @param endDate   结束日期
      * @param dateType  是否排除节假日和周末
      */
     @RequestMapping(value = "/getDays")
-    public Y9Result<String> getDays(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String startSel, @RequestParam(required = false) String endDate, @RequestParam(required = false) String endSel,
-                                    @RequestParam(required = false) String dateType) {
+    public Y9Result<String> getDays(@RequestParam(required = false) String startDate, @RequestParam(required = false) String startSel, @RequestParam(required = false) String endDate, @RequestParam(required = false) String endSel, @RequestParam(required = false) String dateType) {
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr = "";
             CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(tenantId, endDate.split("-")[0]);

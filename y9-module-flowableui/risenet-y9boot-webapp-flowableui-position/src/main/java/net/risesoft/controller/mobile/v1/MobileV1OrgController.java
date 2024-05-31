@@ -17,10 +17,11 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2024/01/17
  */
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/mobile/v1/org")
@@ -65,15 +67,13 @@ public class MobileV1OrgController {
     /**
      * 获取组织架构
      *
-     * @param tenantId   租户id
-     * @param userId     人员id
-     * @param positionId 岗位id
-     * @param id         父节点id
+     * @param id 父节点id
      */
     @RequestMapping(value = "/getOrg")
-    public Y9Result<List<Map<String, Object>>> getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, String id) {
+    public Y9Result<List<Map<String, Object>>> getOrg(String id) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String userId = Y9LoginUserHolder.getPersonId();
             List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
             if (StringUtils.isBlank(id)) {// 只获取当前组织架构
                 Organization org = orgUnitApi.getOrganization(tenantId, userId).getData();
@@ -151,15 +151,13 @@ public class MobileV1OrgController {
 
     /**
      * 获取人员岗位列表信息
-     *
-     * @param tenantId 租户id
-     * @param userId   人员id
      */
     @RequestMapping(value = "/getPositionList")
-    public Y9Result<List<Map<String, Object>>> getPositionList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId) {
+    public Y9Result<List<Map<String, Object>>> getPositionList() {
         try {
             List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String userId = Y9LoginUserHolder.getPersonId();
             List<Position> list = positionApi.listByPersonId(tenantId, userId).getData();
             for (Position p : list) {
                 Map<String, Object> map0 = new HashMap<String, Object>(16);
@@ -202,31 +200,27 @@ public class MobileV1OrgController {
     /**
      * 获取发送人数
      *
-     * @param tenantId   租户id
      * @param userChoice 选择人员id
      */
     @RequestMapping(value = "/getUserCount")
-    public Y9Result<Integer> getUserCount(@RequestHeader("auth-tenantId") String tenantId, String userChoice) {
+    public Y9Result<Integer> getUserCount(@NotBlank String userChoice) {
         List<String> userIds = new ArrayList<String>();
-        Y9LoginUserHolder.setTenantId(tenantId);
-        if (StringUtils.isNotBlank(userChoice)) {
-            String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
-            for (String s : userChoices) {
-                if (userIds.size() > 100) {
-                    break;
-                }
-                String[] s2 = s.split(SysVariables.COLON);
-                Integer principalType = Integer.parseInt(s2[0]);
-                if (principalType == 3) {
-                    userIds = this.addUserIds(userIds, s2[1]);
-                } else if (principalType == 2) {// 选取的是部门，获取部门下的所有人员
-                    List<Position> personList = this.getAllPersonsByDeptId(s2[1]);
-                    for (Position pTemp : personList) {
-                        if (userIds.size() > 100) {
-                            break;
-                        }
-                        userIds = this.addUserIds(userIds, pTemp.getId());
+        String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
+        for (String s : userChoices) {
+            if (userIds.size() > 100) {
+                break;
+            }
+            String[] s2 = s.split(SysVariables.COLON);
+            Integer principalType = Integer.parseInt(s2[0]);
+            if (principalType == 3) {
+                userIds = this.addUserIds(userIds, s2[1]);
+            } else if (principalType == 2) {// 选取的是部门，获取部门下的所有人员
+                List<Position> personList = this.getAllPersonsByDeptId(s2[1]);
+                for (Position pTemp : personList) {
+                    if (userIds.size() > 100) {
+                        break;
                     }
+                    userIds = this.addUserIds(userIds, pTemp.getId());
                 }
             }
         }
@@ -236,20 +230,18 @@ public class MobileV1OrgController {
     /**
      * 获取人员信息
      *
-     * @param tenantId   租户id
-     * @param userId     人员id
-     * @param positionId 岗位id
      */
     @RequestMapping(value = "/getUserInfo")
-    public Y9Result<Map<String, Object>> getUserInfo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId) {
+    public Y9Result<Map<String, Object>> getUserInfo() {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
+            String userId = Y9LoginUserHolder.getPersonId();
             Position position = positionApi.get(tenantId, positionId).getData();
             Person person = personApi.get(tenantId, userId).getData();
             OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, positionId).getData();
             OrgUnit orgUnit1 = orgUnitApi.getParent(tenantId, positionId).getData();
-            Y9LoginUserHolder.setPerson(person);
             map.put("bureauName", orgUnit != null ? orgUnit.getName() : "");
             map.put("deptName", orgUnit1 != null ? orgUnit1.getName() : "");
             map.put("person", person);
