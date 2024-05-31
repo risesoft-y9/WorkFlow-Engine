@@ -1,25 +1,5 @@
 package net.risesoft.api;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.impl.HistoricProcessInstanceQueryProperty;
-import org.flowable.engine.runtime.Execution;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -35,6 +15,25 @@ import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.impl.HistoricProcessInstanceQueryProperty;
+import org.flowable.engine.runtime.Execution;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 正在运行流程实例操作接口
@@ -108,6 +107,7 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processInstanceId 流程实例id
+     * @param taskId 任务id
      * @throws Exception Exception
      */
     @Override
@@ -246,7 +246,9 @@ public class RuntimeApiImpl implements RuntimeApi {
      * 真办结后恢复流程实例为待办状态
      *
      * @param tenantId 租户id
+     * @param userId 用户id
      * @param processInstanceId 流程实例id
+     * @param year 年份
      * @throws Exception Exception
      */
     @Override
@@ -285,7 +287,7 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param page 页吗
-     * @param rows条数
+     * @param rows 条数
      * @return Y9Page<Map<String, Object>>
      */
     @GetMapping(value = "/runningList", produces = MediaType.APPLICATION_JSON_VALUE)
