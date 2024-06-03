@@ -10,7 +10,6 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -33,15 +32,12 @@ import net.risesoft.y9.json.Y9JsonUtil;
 public class MobileV1Filter implements Filter {
 
     @Override
-    public void destroy() {
-    }
+    public void destroy() {}
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
-            throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
-        HttpSession session = request.getSession();
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest)servletRequest;
+        HttpServletResponse response = (HttpServletResponse)servletResponse;
         try {
             String tenantId = request.getHeader("auth-tenantId");
             String userId = request.getHeader("auth-userId");
@@ -78,6 +74,13 @@ public class MobileV1Filter implements Filter {
         }
     }
 
+    @Override
+    public void init(final FilterConfig filterConfig) throws ServletException {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("......................................init MobileV1Filter ...");
+        }
+    }
+
     private void setResponse(HttpServletResponse response, ErrorCode errorCode) {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -85,13 +88,6 @@ public class MobileV1Filter implements Filter {
             response.getWriter().write(Y9JsonUtil.writeValueAsString(Y9Result.failure(errorCode)));
         } catch (IOException e) {
             LOGGER.warn(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public void init(final FilterConfig filterConfig) throws ServletException {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("......................................init MobileV1Filter ...");
         }
     }
 }

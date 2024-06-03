@@ -60,7 +60,7 @@ public class MobileV1OpintionController {
     /**
      * 是否已填写意见
      *
-     * @param taskId              任务id
+     * @param taskId 任务id
      * @param processSerialNumber 流程编号
      */
     @RequestMapping(value = "/comment/checkSignOpinion")
@@ -85,8 +85,6 @@ public class MobileV1OpintionController {
     public Y9Result<String> deleteComment(@RequestParam @NotBlank String id) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9LoginUserHolder.getPositionId();
-            String userId = Y9LoginUserHolder.getPersonId();
             opinion4PositionApi.delete(tenantId, id);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
@@ -110,18 +108,18 @@ public class MobileV1OpintionController {
      * 获取意见
      *
      * @param processSerialNumber 流程编号
-     * @param taskId              任务id
-     * @param itembox             办件状态，待办：todo,在办：doing,办结：done
-     * @param opinionFrameMark    意见框标识
-     * @param itemId              事项id
-     * @param taskDefinitionKey   任务key
-     * @param activitiUser        当前任务受让人
+     * @param taskId 任务id
+     * @param itembox 办件状态，待办：todo,在办：doing,办结：done
+     * @param opinionFrameMark 意见框标识
+     * @param itemId 事项id
+     * @param taskDefinitionKey 任务key
+     * @param activitiUser 当前任务受让人
      */
     @RequestMapping(value = "/personCommentList")
-    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox, @RequestParam String opinionFrameMark, @RequestParam String itemId, @RequestParam String taskDefinitionKey, @RequestParam String activitiUser) {
+    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox, @RequestParam String opinionFrameMark, @RequestParam String itemId, @RequestParam String taskDefinitionKey,
+        @RequestParam String activitiUser) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
         String userId = Y9LoginUserHolder.getPersonId();
         listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
         return Y9Result.success(listMap, "获取成功");
@@ -148,7 +146,7 @@ public class MobileV1OpintionController {
      * 保存常用语
      *
      * @param content 内容
-     * @param id      常用语id,新增id为空
+     * @param id 常用语id,新增id为空
      */
     @RequestMapping(value = "/saveCommonSentences")
     public Y9Result<String> saveCommonSentences(@RequestParam String content, @RequestParam String id) {

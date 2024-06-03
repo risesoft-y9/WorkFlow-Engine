@@ -22,7 +22,6 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
-import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -57,9 +56,6 @@ import net.risesoft.y9.util.Y9Util;
 @RequiredArgsConstructor
 @RequestMapping(value = "/mobile/v1/buttonOperation")
 public class MobileV1ButtonOperationController {
-
-
-    private final PersonApi personApi;
 
     private final PositionApi positionApi;
 
@@ -133,7 +129,7 @@ public class MobileV1ButtonOperationController {
     /**
      * 获取办件状态
      *
-     * @param taskId            任务id
+     * @param taskId 任务id
      * @param processInstanceId 流程实例id
      */
     @RequestMapping(value = "/getItemBox")
@@ -243,7 +239,7 @@ public class MobileV1ButtonOperationController {
      * 恢复待办
      *
      * @param processInstanceId 流程实例id
-     * @param desc              描述
+     * @param desc 描述
      */
     @RequestMapping(value = "/multipleResumeToDo")
     public Y9Result<String> multipleResumeToDo(@RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String desc) {
@@ -260,7 +256,7 @@ public class MobileV1ButtonOperationController {
     /**
      * 拒签：抢占式办理时，拒签就把自己从多个抢占办理的人中排除掉
      *
-     * @param taskId                   任务id
+     * @param taskId 任务id
      * @param isLastPerson4RefuseClaim 是否最后一人拒签
      */
     @SuppressWarnings("unchecked")
@@ -285,7 +281,7 @@ public class MobileV1ButtonOperationController {
                     String assigneeId = task.getAssignee();
                     if (StringUtils.isBlank(assigneeId)) {
                         Map<String, Object> vars = variableApi.getVariables(tenantId, taskId);
-                        ArrayList<String> users = (ArrayList<String>) vars.get(SysVariables.USERS);
+                        ArrayList<String> users = (ArrayList<String>)vars.get(SysVariables.USERS);
                         for (Object obj : users) {
                             String user = obj.toString();
                             if (user.contains(positionId)) {
@@ -310,9 +306,9 @@ public class MobileV1ButtonOperationController {
     /**
      * 重定位
      *
-     * @param taskId             任务id
+     * @param taskId 任务id
      * @param repositionToTaskId 定位路由key
-     * @param userChoice         人员id
+     * @param userChoice 人员id
      */
     @RequestMapping(value = "/reposition")
     public Y9Result<String> reposition(@RequestParam String taskId, @RequestParam String repositionToTaskId, @RequestParam String userChoice) {
@@ -334,7 +330,7 @@ public class MobileV1ButtonOperationController {
     /**
      * 重定位
      *
-     * @param taskId     任务id
+     * @param taskId 任务id
      * @param userChoice 人员id
      */
     @RequestMapping(value = "/reposition1")
