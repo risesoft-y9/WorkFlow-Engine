@@ -92,9 +92,10 @@ public class InterfaceUtilService {
      * @return
      */
     @Async
-    public Future<Boolean> asynInterface(final String tenantId, final String processSerialNumber, final String itemId, final InterfaceModel info, final String processInstanceId, final String taskId, final String taskKey) {
+    public Future<Boolean> asynInterface(final String tenantId, final String positionId, final String processSerialNumber, final String itemId, final InterfaceModel info, final String processInstanceId, final String taskId, final String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPositionId(positionId);
         try {
             if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_GET.getValue())) {
                 getMethod(processSerialNumber, itemId, info, processInstanceId, taskId, taskKey);
@@ -202,6 +203,9 @@ public class InterfaceUtilService {
             HttpClient client = new HttpClient();
             GetMethod method = new GetMethod();
             method.setPath(info.getInterfaceAddress());
+            // 默认添加请求头
+            method.addRequestHeader("auth-positionId", Y9LoginUserHolder.getPositionId());
+            method.addRequestHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
             Y9Result<List<InterfaceParamsModel>> y9Result = itemInterfaceApi.getInterfaceParams(Y9LoginUserHolder.getTenantId(), itemId, info.getId());
             List<NameValuePair> nameValuePairs = new ArrayList<>();
             if (y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
@@ -344,6 +348,7 @@ public class InterfaceUtilService {
         String processSerialNumber = "";
         String processInstanceId = executionEntity.getProcessInstanceId();
         String itemId = "";
+        String positionId = Y9LoginUserHolder.getPositionId();
         Y9Result<List<InterfaceModel>> y9Result = null;
         try {
             tenantId = (String)variables.get("tenantId");
@@ -361,7 +366,7 @@ public class InterfaceUtilService {
         if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
-                    asynInterface(tenantId, processSerialNumber, itemId, info, processInstanceId, "", "");
+                    asynInterface(tenantId, positionId, processSerialNumber, itemId, info, processInstanceId, "", "");
 
                 } else if (info.getAsyn().equals("0")) {
                     syncInterface(processSerialNumber, itemId, info, processInstanceId, "", "");
@@ -386,6 +391,7 @@ public class InterfaceUtilService {
         String processSerialNumber = "";
         String itemId = "";
         Y9Result<List<InterfaceModel>> y9Result = null;
+        String positionId = Y9LoginUserHolder.getPositionId();
         try {
             tenantId = FlowableTenantInfoHolder.getTenantId();
             processInstanceId = flow.getProcessInstanceId();
@@ -403,7 +409,7 @@ public class InterfaceUtilService {
         if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
-                    asynInterface(tenantId, processSerialNumber, itemId, info, processInstanceId, flow.getId(), taskDefinitionKey);
+                    asynInterface(tenantId, positionId, processSerialNumber, itemId, info, processInstanceId, flow.getId(), taskDefinitionKey);
 
                 } else if (info.getAsyn().equals("0")) {
                     syncInterface(processSerialNumber, itemId, info, processInstanceId, flow.getId(), taskDefinitionKey);
@@ -428,6 +434,7 @@ public class InterfaceUtilService {
         String tenantId = "";
         String processSerialNumber = "";
         String itemId = "";
+        String positionId = task.getAssignee();
         Y9Result<List<InterfaceModel>> y9Result = null;
         try {
             tenantId = (String)variables.get("tenantId");
@@ -445,7 +452,7 @@ public class InterfaceUtilService {
         if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
-                    asynInterface(tenantId, processSerialNumber, itemId, info, task.getProcessInstanceId(), task.getId(), task.getTaskDefinitionKey());
+                    asynInterface(tenantId, positionId, processSerialNumber, itemId, info, task.getProcessInstanceId(), task.getId(), task.getTaskDefinitionKey());
 
                 } else if (info.getAsyn().equals("0")) {
                     syncInterface(processSerialNumber, itemId, info, task.getProcessInstanceId(), task.getId(), task.getTaskDefinitionKey());
@@ -471,6 +478,9 @@ public class InterfaceUtilService {
             httpclient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(info.getInterfaceAddress());
             httpPost.addHeader("Content-Type", "application/json;charset=utf-8");
+            // 默认添加请求头
+            httpPost.addHeader("auth-positionId", Y9LoginUserHolder.getPositionId());
+            httpPost.addHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
             Y9Result<List<InterfaceParamsModel>> y9Result = itemInterfaceApi.getInterfaceParams(Y9LoginUserHolder.getTenantId(), itemId, info.getId());
             if (y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
                 List<Map<String, Object>> list = getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info);

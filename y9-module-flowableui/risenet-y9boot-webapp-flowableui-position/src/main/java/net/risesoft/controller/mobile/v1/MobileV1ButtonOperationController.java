@@ -1,12 +1,27 @@
 package net.risesoft.controller.mobile.v1;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.constraints.NotBlank;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
-import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -28,19 +43,6 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.constraints.NotBlank;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 菜单按钮方法接口
@@ -54,9 +56,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping(value = "/mobile/v1/buttonOperation")
 public class MobileV1ButtonOperationController {
-
-
-    private final PersonApi personApi;
 
     private final PositionApi positionApi;
 
@@ -130,7 +129,7 @@ public class MobileV1ButtonOperationController {
     /**
      * 获取办件状态
      *
-     * @param taskId            任务id
+     * @param taskId 任务id
      * @param processInstanceId 流程实例id
      */
     @RequestMapping(value = "/getItemBox")
@@ -240,7 +239,7 @@ public class MobileV1ButtonOperationController {
      * 恢复待办
      *
      * @param processInstanceId 流程实例id
-     * @param desc              描述
+     * @param desc 描述
      */
     @RequestMapping(value = "/multipleResumeToDo")
     public Y9Result<String> multipleResumeToDo(@RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String desc) {
@@ -257,7 +256,7 @@ public class MobileV1ButtonOperationController {
     /**
      * 拒签：抢占式办理时，拒签就把自己从多个抢占办理的人中排除掉
      *
-     * @param taskId                   任务id
+     * @param taskId 任务id
      * @param isLastPerson4RefuseClaim 是否最后一人拒签
      */
     @SuppressWarnings("unchecked")
@@ -282,7 +281,7 @@ public class MobileV1ButtonOperationController {
                     String assigneeId = task.getAssignee();
                     if (StringUtils.isBlank(assigneeId)) {
                         Map<String, Object> vars = variableApi.getVariables(tenantId, taskId);
-                        ArrayList<String> users = (ArrayList<String>) vars.get(SysVariables.USERS);
+                        ArrayList<String> users = (ArrayList<String>)vars.get(SysVariables.USERS);
                         for (Object obj : users) {
                             String user = obj.toString();
                             if (user.contains(positionId)) {
@@ -307,9 +306,9 @@ public class MobileV1ButtonOperationController {
     /**
      * 重定位
      *
-     * @param taskId             任务id
+     * @param taskId 任务id
      * @param repositionToTaskId 定位路由key
-     * @param userChoice         人员id
+     * @param userChoice 人员id
      */
     @RequestMapping(value = "/reposition")
     public Y9Result<String> reposition(@RequestParam String taskId, @RequestParam String repositionToTaskId, @RequestParam String userChoice) {
@@ -331,7 +330,7 @@ public class MobileV1ButtonOperationController {
     /**
      * 重定位
      *
-     * @param taskId     任务id
+     * @param taskId 任务id
      * @param userChoice 人员id
      */
     @RequestMapping(value = "/reposition1")
