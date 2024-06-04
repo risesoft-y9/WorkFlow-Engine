@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
@@ -135,8 +136,7 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     @Transactional(readOnly = false)
-    public void copy(String oldProcessSerialNumber, String oldOpinionFrameMark, String newProcessSerialNumber,
-        String newOpinionFrameMark, String newProcessInstanceId, String newTaskId) throws Exception {
+    public void copy(String oldProcessSerialNumber, String oldOpinionFrameMark, String newProcessSerialNumber, String newOpinionFrameMark, String newProcessInstanceId, String newTaskId) throws Exception {
         try {
             List<Opinion> oldOpinionList = this.findByProcessSerialNumber(oldProcessSerialNumber);
             for (Opinion oldOpinion : oldOpinionList) {
@@ -153,8 +153,7 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     public int countOpinionHistory(String processSerialNumber, String opinionFrameMark) {
-        return opinionHistoryRepository.countByProcessSerialNumberAndOpinionFrameMark(processSerialNumber,
-            opinionFrameMark);
+        return opinionHistoryRepository.countByProcessSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
     }
 
     @Override
@@ -176,10 +175,8 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public Opinion findByPsnsAndTaskIdAndOfidAndUserId(String processSerialNumber, String taskId, String opinionFrameId,
-        String userId) {
-        return opinionRepository.findByPsnsAndTaskIdAndOfidAndUserId(processSerialNumber, taskId, opinionFrameId,
-            userId);
+    public Opinion findByPsnsAndTaskIdAndOfidAndUserId(String processSerialNumber, String taskId, String opinionFrameId, String userId) {
+        return opinionRepository.findByPsnsAndTaskIdAndOfidAndUserId(processSerialNumber, taskId, opinionFrameId, userId);
     }
 
     @Override
@@ -226,10 +223,8 @@ public class OpinionServiceImpl implements OpinionService {
     public List<OpinionHistoryModel> opinionHistoryList(String processSerialNumber, String opinionFrameMark) {
         List<OpinionHistoryModel> resList = new ArrayList<OpinionHistoryModel>();
         try {
-            List<OpinionHistory> list = opinionHistoryRepository
-                .findByProcessSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
-            List<Opinion> list1 =
-                opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
+            List<OpinionHistory> list = opinionHistoryRepository.findByProcessSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
+            List<Opinion> list1 = opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
             for (OpinionHistory his : list) {
                 OpinionHistoryModel historyModel = new OpinionHistoryModel();
                 Y9BeanUtil.copyProperties(his, historyModel);
@@ -297,8 +292,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public List<Map<String, Object>> personCommentList(String processSerialNumber, String taskId, String itembox,
-        String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser) {
+    public List<Map<String, Object>> personCommentList(String processSerialNumber, String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser, String orderByUser) {
         List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -311,10 +305,16 @@ public class OpinionServiceImpl implements OpinionService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            List<Opinion> list =
-                opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
-            if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue())
-                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.ADD.getValue())) {
+            List<Opinion> list = opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
+            if (StringUtils.isNotBlank(orderByUser) && orderByUser.equals("1") && list.size() > 1) {// 按岗位排序号排序
+                for (Opinion Opinion : list) {
+                    String PositionId = Opinion.getPositionId();
+                    Position Position = positionManager.get(tenantId, PositionId).getData();
+                    Opinion.setOrderStr((Position != null && Position.getOrderedPath() != null) ? Position.getOrderedPath() : "");
+                }
+                list = list.stream().sorted().collect(Collectors.toList());
+            }
+            if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.ADD.getValue())) {
                 if (list.size() >= 1) {
                     addableMap.put("addable", true);
                     for (Opinion opinion : list) {
@@ -329,13 +329,11 @@ public class OpinionServiceImpl implements OpinionService {
                         }
                         OpinionModel opinionModel = new OpinionModel();
                         Y9BeanUtil.copyProperties(opinion, opinionModel);
-                        if (StringUtils.isNotBlank(opinion.getPositionId())
-                            && StringUtils.isBlank(opinion.getPositionName())) {
+                        if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
                             Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
                             opinionModel.setPositionName(position != null ? position.getName() : "");
                         }
-                        PersonExt personExt =
-                            personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
+                        PersonExt personExt = personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
                         opinionModel.setSign(personExt != null ? personExt.getSign() : null);
                         map.put("opinion", opinionModel);
                         resList.add(map);
@@ -358,12 +356,9 @@ public class OpinionServiceImpl implements OpinionService {
                 addableMap.put("addable", false);
                 SpmApproveItem item = spmApproveItemService.findById(itemId);
                 String proDefKey = item.getWorkflowGuid();
-                ProcessDefinitionModel latestpd =
-                    repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey);
+                ProcessDefinitionModel latestpd = repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey);
                 String processDefinitionId = latestpd.getId();
-                ItemOpinionFrameBind bind =
-                    itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
-                        itemId, processDefinitionId, taskDefinitionKey, opinionFrameMark);
+                ItemOpinionFrameBind bind = itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId, processDefinitionId, taskDefinitionKey, opinionFrameMark);
                 if (null != bind) {
                     // 是否必填意见，与addable一起判定，都为true时提示必填。
                     addableMap.put("signOpinion", bind.isSignOpinion());
@@ -407,13 +402,11 @@ public class OpinionServiceImpl implements OpinionService {
                         map.put("editable", false);
                         OpinionModel opinionModel = new OpinionModel();
                         Y9BeanUtil.copyProperties(opinion, opinionModel);
-                        if (StringUtils.isNotBlank(opinion.getPositionId())
-                            && StringUtils.isBlank(opinion.getPositionName())) {
+                        if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
                             Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
                             opinionModel.setPositionName(position != null ? position.getName() : "");
                         }
-                        PersonExt personExt =
-                            personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
+                        PersonExt personExt = personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
                         opinionModel.setSign(personExt != null ? personExt.getSign() : null);
                         map.put("opinion", opinionModel);
                         resList.add(map);
@@ -434,13 +427,11 @@ public class OpinionServiceImpl implements OpinionService {
                     opinion.setCreateDate(sdf1.format(sdf.parse(opinion.getCreateDate())));
                     OpinionModel opinionModel = new OpinionModel();
                     Y9BeanUtil.copyProperties(opinion, opinionModel);
-                    if (StringUtils.isNotBlank(opinion.getPositionId())
-                        && StringUtils.isBlank(opinion.getPositionName())) {
+                    if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
                         Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
                         opinionModel.setPositionName(position != null ? position.getName() : "");
                     }
-                    PersonExt personExt =
-                        personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
+                    PersonExt personExt = personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
                     opinionModel.setSign(personExt != null ? personExt.getSign() : null);
                     map.put("opinion", opinionModel);
                     map.put("editable", false);
@@ -451,10 +442,8 @@ public class OpinionServiceImpl implements OpinionService {
                             addableMap.put("addable", false);
                         }
                     } else {// 收回件可编辑意见
-                        if (takeBack != null && Boolean.valueOf(takeBack)
-                            && Y9LoginUserHolder.getPersonId().equals(opinion.getUserId())) {// 收回件
-                            List<HistoricTaskInstanceModel> tlist = historicTaskApi
-                                .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "");
+                        if (takeBack != null && Boolean.valueOf(takeBack) && Y9LoginUserHolder.getPersonId().equals(opinion.getUserId())) {// 收回件
+                            List<HistoricTaskInstanceModel> tlist = historicTaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "");
                             for (int i = tlist.size() - 1; i >= 0; i--) {
                                 HistoricTaskInstanceModel model = tlist.get(i);
                                 if (model.getEndTime() != null && model.getId().equals(opinion.getTaskId())) {// 找到收回前的上一个任务
@@ -473,9 +462,7 @@ public class OpinionServiceImpl implements OpinionService {
                 Boolean addableTemp = (Boolean)addableMap.get("addable");
                 if (addableTemp) {
                     addableMap.put("addable", false);
-                    ItemOpinionFrameBind bind =
-                        itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
-                            itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
+                    ItemOpinionFrameBind bind = itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
                     if (null != bind) {
                         // 是否必填意见，与addable一起判定，都为true时提示必填。
                         addableMap.put("signOpinion", bind.isSignOpinion());
@@ -521,9 +508,7 @@ public class OpinionServiceImpl implements OpinionService {
                 }
                 // 代录权限控制
                 if (StringUtils.isNotBlank(taskId)) {
-                    boolean hasRole = personRoleApi
-                        .hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", person.getPersonId())
-                        .getData();
+                    boolean hasRole = personRoleApi.hasRole(Y9LoginUserHolder.getTenantId(), "itemAdmin", "", "代录意见角色", person.getPersonId()).getData();
                     if (hasRole) {
                         // 没有意见框编辑权限时，增加代录权限
                         Boolean addable = (Boolean)addableMap.get("addable");
@@ -532,8 +517,7 @@ public class OpinionServiceImpl implements OpinionService {
                         }
                     }
                 }
-            } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())
-                || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())) {
+            } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())) {
                 addableMap.put("addable", false);
                 for (Opinion opinion : list) {
                     Map<String, Object> map = new HashMap<String, Object>(16);
@@ -546,13 +530,11 @@ public class OpinionServiceImpl implements OpinionService {
                     opinion.setCreateDate(sdf1.format(sdf.parse(opinion.getCreateDate())));
                     OpinionModel opinionModel = new OpinionModel();
                     Y9BeanUtil.copyProperties(opinion, opinionModel);
-                    if (StringUtils.isNotBlank(opinion.getPositionId())
-                        && StringUtils.isBlank(opinion.getPositionName())) {
+                    if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
                         Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
                         opinionModel.setPositionName(position != null ? position.getName() : "");
                     }
-                    PersonExt personExt =
-                        personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
+                    PersonExt personExt = personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
                     opinionModel.setSign(personExt != null ? personExt.getSign() : null);
                     map.put("opinion", opinionModel);
                     map.put("editable", false);
@@ -565,10 +547,8 @@ public class OpinionServiceImpl implements OpinionService {
                     ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
                     // 办结件，阅件不可填写意见
                     if (processParam != null) {
-                        HistoricProcessInstanceModel historicProcessInstanceModel =
-                            historicProcessManager.getById(tenantId, processParam.getProcessInstanceId());
-                        boolean b = historicProcessInstanceModel == null || (historicProcessInstanceModel != null
-                            && historicProcessInstanceModel.getEndTime() != null);
+                        HistoricProcessInstanceModel historicProcessInstanceModel = historicProcessManager.getById(tenantId, processParam.getProcessInstanceId());
+                        boolean b = historicProcessInstanceModel == null || (historicProcessInstanceModel != null && historicProcessInstanceModel.getEndTime() != null);
                         if (b) {
                             addableMap.put("addable", false);
                             isEnd = true;
@@ -588,13 +568,11 @@ public class OpinionServiceImpl implements OpinionService {
                     opinion.setCreateDate(sdf1.format(sdf.parse(opinion.getCreateDate())));
                     OpinionModel opinionModel = new OpinionModel();
                     Y9BeanUtil.copyProperties(opinion, opinionModel);
-                    if (StringUtils.isNotBlank(opinion.getPositionId())
-                        && StringUtils.isBlank(opinion.getPositionName())) {
+                    if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
                         Position position = positionManager.get(tenantId, opinion.getPositionId()).getData();
                         opinionModel.setPositionName(position != null ? position.getName() : "");
                     }
-                    PersonExt personExt =
-                        personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
+                    PersonExt personExt = personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
                     opinionModel.setSign(personExt != null ? personExt.getSign() : null);
                     map.put("opinion", opinionModel);
                     map.put("editable", false);
@@ -611,9 +589,7 @@ public class OpinionServiceImpl implements OpinionService {
                 if (addableTemp) {
                     addableMap.put("addable", false);
                     TaskModel task = taskManager.findById(tenantId, taskId);
-                    ItemOpinionFrameBind bind =
-                        itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
-                            itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
+                    ItemOpinionFrameBind bind = itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId, task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
                     if (null != bind) {
                         List<String> roleIds = bind.getRoleIds();
                         if (roleIds.isEmpty()) {
@@ -709,8 +685,7 @@ public class OpinionServiceImpl implements OpinionService {
                 }*/
             }
             opinionRepository.save(o);
-            asyncHandleService.sendMsgRemind(tenantId, positionId, entity.getProcessSerialNumber(),
-                entity.getContent());
+            asyncHandleService.sendMsgRemind(tenantId, positionId, entity.getProcessSerialNumber(), entity.getContent());
             return o;
         }
         Opinion opinion = opinionRepository.findById(id).orElse(null);

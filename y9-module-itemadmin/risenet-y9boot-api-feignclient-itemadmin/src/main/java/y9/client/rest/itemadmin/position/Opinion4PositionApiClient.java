@@ -110,7 +110,7 @@ public interface Opinion4PositionApiClient extends Opinion4PositionApi {
     @Override
     @GetMapping("/personCommentList")
     public List<Map<String, Object>> personCommentList(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("taskId") String taskId, @RequestParam("itembox") String itembox,
-        @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId, @RequestParam("taskDefinitionKey") String taskDefinitionKey, @RequestParam("activitiUser") String activitiUser);
+        @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId, @RequestParam("taskDefinitionKey") String taskDefinitionKey, @RequestParam("activitiUser") String activitiUser, @RequestParam("orderByUser") String orderByUser);
 
     /**
      * 保存意见

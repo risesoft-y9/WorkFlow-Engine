@@ -84,11 +84,10 @@ public interface Opinion4PositionApi {
      * @param itemId 事项id
      * @param taskDefinitionKey 任务定义key
      * @param activitiUser activitiUser
+     * @param orderByUser 是否按人员排序，1为是
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber,
-        String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey,
-        String activitiUser);
+    List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber, String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser, String orderByUser);
 
     /**
      * 保存意见

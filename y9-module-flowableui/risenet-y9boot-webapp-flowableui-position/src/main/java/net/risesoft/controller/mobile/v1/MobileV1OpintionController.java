@@ -117,11 +117,11 @@ public class MobileV1OpintionController {
      */
     @RequestMapping(value = "/personCommentList")
     public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox, @RequestParam String opinionFrameMark, @RequestParam String itemId, @RequestParam String taskDefinitionKey,
-        @RequestParam String activitiUser) {
+        @RequestParam String activitiUser, @RequestParam(required = false) String orderByUser) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
+        listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
         return Y9Result.success(listMap, "获取成功");
     }
 
