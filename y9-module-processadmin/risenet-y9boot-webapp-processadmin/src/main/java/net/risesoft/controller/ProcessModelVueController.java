@@ -1,24 +1,13 @@
 package net.risesoft.controller;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.Y9Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.BpmnAutoLayout;
@@ -37,24 +26,32 @@ import org.flowable.ui.modeler.serviceapi.ModelService;
 import org.flowable.validation.ProcessValidator;
 import org.flowable.validation.ProcessValidatorFactory;
 import org.flowable.validation.ValidationError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 流程模型控制器
@@ -65,25 +62,20 @@ import net.risesoft.y9.configuration.Y9Properties;
  * @author zhangchongjie
  * @date 2023/01/03
  */
+@Slf4j
+@Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/processModel")
 public class ProcessModelVueController {
 
-    public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final RepositoryService repositoryService;
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private final ModelService modelService;
 
-    @Autowired
-    private RepositoryService repositoryService;
+    private final ModelRepository modelRepository;
 
-    @Autowired
-    private ModelService modelService;
-
-    @Autowired
-    private ModelRepository modelRepository;
-
-    @Autowired
-    private Y9Properties y9Config;
+    private final Y9Properties y9Config;
 
     /**
      * 创建模型
@@ -91,12 +83,9 @@ public class ProcessModelVueController {
      * @param name 流程名称
      * @param key 流程定义key
      * @param description 描述
-     * @param request
-     * @param response
      */
-    @ResponseBody
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> create(@RequestParam(required = true) String name, @RequestParam(required = true) String key, @RequestParam(required = false) String description, HttpServletRequest request, HttpServletResponse response) {
+    public Y9Result<String> create(@RequestParam @NotBlank String name, @RequestParam @NotBlank String key, @RequestParam(required = false) String description) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String personName = userInfo.getName();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -131,9 +120,8 @@ public class ProcessModelVueController {
      * @param modelId 模型id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/deleteModel", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteModel(@RequestParam(required = true) String modelId) {
+    public Y9Result<String> deleteModel(@RequestParam @NotBlank String modelId) {
         modelService.deleteModel(modelId);
         return Y9Result.successMsg("删除成功");
     }
@@ -144,12 +132,11 @@ public class ProcessModelVueController {
      * @param modelId 模型id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/deployModel", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deployModel(@RequestParam(required = true) String modelId) {
+    public Y9Result<String> deployModel(@RequestParam @NotBlank String modelId) {
         Model modelData = modelService.getModel(modelId);
         BpmnModel model = modelService.getBpmnModel(modelData);
-        if (model.getProcesses().size() == 0) {
+        if (model.getProcesses().isEmpty()) {
             return Y9Result.failure("数据模型不符要求，请至少设计一条主线流程。");
         }
         byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(model);
@@ -166,7 +153,7 @@ public class ProcessModelVueController {
      * @return
      */
     @RequestMapping(value = "/exportModel")
-    public void exportModel(@RequestParam String modelId, HttpServletResponse response) {
+    public void exportModel(@RequestParam @NotBlank String modelId, HttpServletResponse response) {
         try {
             Model model = modelService.getModel(modelId);
             byte[] bpmnBytes = modelService.getBpmnXML(model);
@@ -178,7 +165,7 @@ public class ProcessModelVueController {
             response.flushBuffer();
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("导出模型失败，modelId=" + modelId);
+            LOGGER.error("导出模型失败，modelId=" + modelId);
         }
     }
 
@@ -187,15 +174,12 @@ public class ProcessModelVueController {
      *
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getModelList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getModelList(@RequestParam(required = false) String resourceId) {
-        // UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        // String tenantId = userInfo.getTenantId(), personId = userInfo.getPersonId();
-        // boolean tenantManager = userInfo.isGlobalManager();
         List<Map<String, Object>> items = new ArrayList<>();
         List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
         ProcessDefinition processDefinition = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         // if (tenantManager || ManagerLevelEnum.SYSTEM_MANAGER.equals(userInfo.getManagerLevel())) {
         Map<String, Object> mapTemp = null;
         for (AbstractModel model : list) {
@@ -263,11 +247,10 @@ public class ProcessModelVueController {
      * 获取流程设计模型xml
      *
      * @param modelId
-     * @param response
      * @return
      */
     @RequestMapping(value = "/getModelXml")
-    public Y9Result<Map<String, Object>> getModelXml(@RequestParam String modelId, HttpServletResponse response) {
+    public Y9Result<Map<String, Object>> getModelXml(@RequestParam @NotBlank String modelId) {
         byte[] bpmnBytes = null;
         Map<String, Object> map = new HashMap<>();
         try {
@@ -305,7 +288,6 @@ public class ProcessModelVueController {
      * @param model
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/import")
     public Map<String, Object> importProcessModel(MultipartFile file, ModelRepresentation model) {
         Map<String, Object> map = new HashMap<>(16);
@@ -384,7 +366,6 @@ public class ProcessModelVueController {
      * @param model
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveModelXml")
     public Y9Result<String> saveModelXml(MultipartFile file, ModelRepresentation model) {
         try {

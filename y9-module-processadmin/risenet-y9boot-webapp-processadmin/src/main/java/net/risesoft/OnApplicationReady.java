@@ -1,25 +1,23 @@
 package net.risesoft;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.List;
-
-import org.flowable.engine.RepositoryService;
-import org.flowable.engine.repository.ProcessDefinition;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Component;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.enums.platform.TenantTypeEnum;
 import net.risesoft.model.platform.Tenant;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.flowable.engine.RepositoryService;
+import org.flowable.engine.repository.ProcessDefinition;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * @author dingzhaojun
@@ -29,13 +27,12 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class OnApplicationReady implements ApplicationListener<ApplicationReadyEvent> {
 
-    @Autowired
-    private TenantApi tenantApi;
+    private final TenantApi tenantApi;
 
-    @Autowired
-    private RepositoryService repositoryService;
+    private final RepositoryService repositoryService;
 
     private void createDeployment(String processDefinitionKey) {
         try {

@@ -1,27 +1,8 @@
 package net.risesoft.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.engine.HistoryService;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.identitylink.api.IdentityLink;
-import org.flowable.task.api.Task;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
@@ -42,6 +23,22 @@ import net.risesoft.service.CustomTaskService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.engine.HistoryService;
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.task.api.Task;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -49,46 +46,31 @@ import net.risesoft.y9.util.Y9Util;
  * @date 2023/01/03
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/processInstance")
 public class ProcessInstanceVueController {
 
-    // private static String TYPE_DELETE = "1";
-    // private static String TYPE_REJECT = "2";
+    private final RuntimeService runtimeService;
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    protected final HistoryService historyService;
 
-    @Autowired
-    private RuntimeService runtimeService;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    protected HistoryService historyService;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final TransactionWordApi transactionWordApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final Attachment4PositionApi attachment4PositionApi;
 
-    @Autowired
-    private TransactionWordApi transactionWordApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private Attachment4PositionApi attachment4PositionApi;
+    private final CustomHistoricProcessService customHistoricProcessService;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
-    @Autowired
-    private CustomHistoricProcessService customHistoricProcessService;
+    private final CustomIdentityService customIdentityService;
 
-    @Autowired
-    private OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
-
-    @Autowired
-    private CustomIdentityService customIdentityService;
-
-    @Autowired
-    private CustomTaskService customTaskService;
+    private final CustomTaskService customTaskService;
 
     /**
      * 彻底删除流程实例
@@ -99,7 +81,6 @@ public class ProcessInstanceVueController {
      * @return
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> delete(@RequestParam(required = true) String processInstanceId, @RequestParam(required = false) String type, @RequestParam(required = false) String reason) {
         // UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         // // 删除人不一定是当前正在处理流程的人员
@@ -155,12 +136,11 @@ public class ProcessInstanceVueController {
      * @param state 状态
      * @param year 年度
      * @param page 页面
-     * @param rows条数
+     * @param rows 条数
      * @return
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getAllProcessList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Page<Map<String, Object>> getAllProcessList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -307,7 +287,6 @@ public class ProcessInstanceVueController {
      * @return
      */
     @RequestMapping(value = "/runningList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Page<Map<String, Object>> runningList(@RequestParam(required = false) String processInstanceId, @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<>();
@@ -323,6 +302,7 @@ public class ProcessInstanceVueController {
         Position position = null;
         OrgUnit orgUnit = null;
         Map<String, Object> map = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (ProcessInstance processInstance : processInstanceList) {
             processInstanceId = processInstance.getId();
             map = new HashMap<>(16);
@@ -371,7 +351,6 @@ public class ProcessInstanceVueController {
      * @return
      */
     @RequestMapping(value = "/switchSuspendOrActive", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> switchSuspendOrActive(@RequestParam String state, @RequestParam String processInstanceId) {
         try {
             if (ItemProcessStateTypeEnum.ACTIVE.getValue().equals(state)) {

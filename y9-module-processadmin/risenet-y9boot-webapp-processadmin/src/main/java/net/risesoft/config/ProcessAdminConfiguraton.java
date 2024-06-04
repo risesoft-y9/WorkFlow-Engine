@@ -1,8 +1,16 @@
 package net.risesoft.config;
 
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-
+import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
+import lombok.RequiredArgsConstructor;
+import net.risesoft.filter.ProcessAdminCheckUserLoginFilter;
+import net.risesoft.filter.RemoveUrlJsessionIdFilter;
+import net.risesoft.listener.FlowableMultiTenantListener;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.configuration.Y9Properties;
+import net.risesoft.y9.configuration.feature.sso.Y9SsoClientProperties;
+import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
+import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.flowable.ui.modeler.properties.FlowableModelerAppProperties;
 import org.flowable.ui.modeler.service.FlowableModelQueryService;
@@ -10,7 +18,6 @@ import org.flowable.ui.modeler.service.ModelImageService;
 import org.flowable.ui.modeler.service.ModelServiceImpl;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -32,17 +39,8 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
-
-import net.risesoft.filter.ProcessAdminCheckUserLoginFilter;
-import net.risesoft.filter.RemoveUrlJsessionIdFilter;
-import net.risesoft.listener.FlowableMultiTenantListener;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.configuration.Y9Properties;
-import net.risesoft.y9.configuration.feature.sso.Y9SsoClientProperties;
-import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
-import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 
 /**
  * @author qinman
@@ -50,28 +48,20 @@ import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
  * @date 2023/01/03
  */
 @Configuration
+@RequiredArgsConstructor
 @EnableConfigurationProperties(Y9Properties.class)
 @ImportResource({"classpath:/springconfigs/flowable.cfg.xml"})
 @ComponentScan(basePackages = {"net.risesoft", "org.flowable.ui"})
 public class ProcessAdminConfiguraton implements WebMvcConfigurer {
 
-    /**
-     * 
-     * Description: starter-log工程用到了RequestContextHolder https://github.com/spring-projects/spring-boot/issues/2637
-     * https://github.com/spring-projects/spring-boot/issues/4331
-     * 
-     * @return
-     */
     @Bean
     public static RequestContextFilter requestContextFilter() {
         return new OrderedRequestContextFilter();
     }
 
-    @Autowired
-    private Environment environment;
+    private final Environment environment;
 
-    @Autowired
-    Y9Properties y9config;
+    private final Y9Properties y9config;
 
     Y9SsoClientProperties configProps;
 
@@ -129,7 +119,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> processAdminCheckUserLoginFilter() {
         final FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> filterBean =
-            new FilterRegistrationBean<ProcessAdminCheckUserLoginFilter>();
+                new FilterRegistrationBean<ProcessAdminCheckUserLoginFilter>();
         filterBean.setFilter(new ProcessAdminCheckUserLoginFilter());
         filterBean.setAsyncSupported(false);
         filterBean.setOrder(50);
@@ -140,7 +130,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean<RemoveUrlJsessionIdFilter> removeUrlJsessionIdFilter() {
         final FilterRegistrationBean<RemoveUrlJsessionIdFilter> filterBean =
-            new FilterRegistrationBean<RemoveUrlJsessionIdFilter>();
+                new FilterRegistrationBean<RemoveUrlJsessionIdFilter>();
         filterBean.setFilter(new RemoveUrlJsessionIdFilter());
         filterBean.setAsyncSupported(false);
         filterBean.addUrlPatterns("/*");
@@ -158,7 +148,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
         bean.setDataSource(dataSource);
 
         Resource resource =
-            new PathMatchingResourcePatternResolver().getResource("classpath:mybatis/mybatis-config.xml");
+                new PathMatchingResourcePatternResolver().getResource("classpath:mybatis/mybatis-config.xml");
         bean.setConfigLocation(resource);
         return bean.getObject();
     }
@@ -177,21 +167,19 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     @ConfigurationProperties("spring.datasource.druid.flowable")
     @Bean(name = {"y9FlowableDS"})
     public DruidDataSource y9FlowableDs() {
-        DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
-        return dataSource;
+        return DruidDataSourceBuilder.create().build();
     }
 
     @ConfigurationProperties("spring.datasource.druid.y9-public")
     @Bean(name = {"y9PublicDS"})
     @ConditionalOnMissingBean(name = "y9PublicDS")
     public DruidDataSource y9PublicDs() {
-        DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
-        return dataSource;
+        return DruidDataSourceBuilder.create().build();
     }
 
     @Bean("y9TenantDataSource")
     public DataSource y9TenantDataSource(@Qualifier("y9FlowableDS") DruidDataSource y9FlowableDs,
-        @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
+                                         @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
         return new Y9TenantDataSource(y9FlowableDs, y9TenantDataSourceLookup);
     }
 
