@@ -1,33 +1,31 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.engine.HistoryService;
-import org.flowable.task.api.history.HistoricTaskInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.service.WorkflowProcessDefinitionService;
 import net.risesoft.util.SysVariables;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.engine.HistoryService;
+import org.flowable.task.api.history.HistoricTaskInstance;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service(value = "customHistoricTaskService")
 public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService {
 
-    @Autowired
-    private HistoryService historyService;
+    private final  HistoryService historyService;
 
-    @Autowired
-    private WorkflowProcessDefinitionService workflowProcessDefinitionService;
+    private final  WorkflowProcessDefinitionService workflowProcessDefinitionService;
 
     @Override
     public HistoricTaskInstance getById(String taskId) {

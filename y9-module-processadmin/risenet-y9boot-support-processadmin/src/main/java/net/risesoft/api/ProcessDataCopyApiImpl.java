@@ -1,22 +1,21 @@
 package net.risesoft.api;
 
-import java.util.List;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.api.processadmin.ProcessDataCopyApi;
+import net.risesoft.service.FlowableTenantInfoHolder;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.engine.RepositoryService;
 import org.flowable.ui.modeler.domain.AbstractModel;
 import org.flowable.ui.modeler.domain.Model;
 import org.flowable.ui.modeler.serviceapi.ModelService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.processadmin.ProcessDataCopyApi;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import java.util.List;
 
 /**
  * 流程定义数据复制接口
@@ -26,14 +25,13 @@ import net.risesoft.service.FlowableTenantInfoHolder;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/processDataCopy")
 public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
 
-    @Autowired
-    ModelService modelService;
+    private final ModelService modelService;
 
-    @Autowired
-    RepositoryService repositoryService;
+    private final RepositoryService repositoryService;
 
     /**
      * 复制拷贝流程定义数据

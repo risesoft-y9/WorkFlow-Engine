@@ -1,27 +1,26 @@
 package net.risesoft.service.impl;
 
-import java.util.List;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.service.CustomHistoricActivityService;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.history.HistoricActivityInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.service.CustomHistoricActivityService;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service(value = "customHistoricActivityService")
 public class CustomHistoricActivityServiceImpl implements CustomHistoricActivityService {
 
-    @Autowired
-    private HistoryService historyService;
+    private final HistoryService historyService;
 
     @Override
     public List<HistoricActivityInstance> getByProcessInstanceId(String processInstanceId) {

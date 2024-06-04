@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
@@ -9,7 +10,6 @@ import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
 import org.apache.commons.io.IOUtils;
 import org.flowable.engine.repository.ProcessDefinition;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,11 +31,11 @@ import java.util.Map;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/repository")
 public class RepositoryApiImpl implements RepositoryApi {
 
-    @Autowired
-    private CustomRepositoryService customRepositoryService;
+    private final  CustomRepositoryService customRepositoryService;
 
     /**
      * 删除部署的流程

@@ -1,28 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.engine.HistoryService;
-import org.flowable.engine.ManagementService;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.TaskService;
-import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.runtime.Execution;
-import org.flowable.task.api.Task;
-import org.flowable.task.api.history.HistoricTaskInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.command.JumpSubProcessCommand;
 import net.risesoft.id.IdType;
@@ -38,6 +16,27 @@ import net.risesoft.service.Process4CompleteUtilService;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.engine.HistoryService;
+import org.flowable.engine.ManagementService;
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.TaskService;
+import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.runtime.Execution;
+import org.flowable.task.api.Task;
+import org.flowable.task.api.history.HistoricTaskInstance;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -45,32 +44,25 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/30
  */
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 @Service(value = "customTaskService")
 public class CustomTaskServiceImpl implements CustomTaskService {
 
-    @Autowired
-    private TaskService taskService;
+    private final  TaskService taskService;
 
-    @Autowired
-    private HistoryService historyService;
+    private final  HistoryService historyService;
 
-    @Autowired
-    private CustomProcessDefinitionService customProcessDefinitionService;
+    private final  CustomProcessDefinitionService customProcessDefinitionService;
 
-    @Autowired
-    private CustomHistoricTaskService customHistoricTaskService;
+    private final  CustomHistoricTaskService customHistoricTaskService;
 
-    @Autowired
-    protected ManagementService managementService;
+    private ManagementService managementService;
 
-    @Autowired
-    protected RuntimeService runtimeService;
+    private RuntimeService runtimeService;
 
-    @Autowired
-    private Process4CompleteUtilService process4CompleteUtilService;
+    private final  Process4CompleteUtilService process4CompleteUtilService;
 
-    @Autowired
-    private ErrorLogApi errorLogManager;
+    private final  ErrorLogApi errorLogManager;
 
     @Override
     @Transactional(readOnly = false)

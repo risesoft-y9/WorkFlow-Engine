@@ -1,19 +1,18 @@
 package net.risesoft.api;
 
-import java.util.Map;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.api.processadmin.MonitorApi;
+import net.risesoft.service.CustomMonitorService;
+import net.risesoft.service.CustomRecycleService;
+import net.risesoft.service.FlowableTenantInfoHolder;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.processadmin.MonitorApi;
-import net.risesoft.service.CustomMonitorService;
-import net.risesoft.service.CustomRecycleService;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import java.util.Map;
 
 /**
  * 监控流程实例接口
@@ -23,14 +22,13 @@ import net.risesoft.service.FlowableTenantInfoHolder;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/monitor")
 public class MonitorApiImpl implements MonitorApi {
 
-    @Autowired
-    private CustomMonitorService customMonitorService;
+    private final CustomMonitorService customMonitorService;
 
-    @Autowired
-    private CustomRecycleService customRecycleService;
+    private final CustomRecycleService customRecycleService;
 
     /**
      * 根据流程定义Key获取监控在办件统计

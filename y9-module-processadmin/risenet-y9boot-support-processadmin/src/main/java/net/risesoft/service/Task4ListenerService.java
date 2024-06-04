@@ -1,12 +1,12 @@
 package net.risesoft.service;
 
-import java.util.Map;
-
+import lombok.RequiredArgsConstructor;
 import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * @author qinman
@@ -14,29 +14,23 @@ import org.springframework.stereotype.Service;
  * @date 2022/12/30
  */
 @EnableAsync
+@RequiredArgsConstructor
 @Service(value = "task4ListenerService")
 public class Task4ListenerService {
 
-    @Autowired
-    private TodoTaskService todoTaskService;
+    private final  TodoTaskService todoTaskService;
 
-    @Autowired
-    private ProcessInstanceDetailsService processInstanceDetailsService;
+    private final  ProcessInstanceDetailsService processInstanceDetailsService;
 
-    @Autowired
-    private PushNormalToAndroidService pushNormalToAndroidService;
+    private final  PushNormalToAndroidService pushNormalToAndroidService;
 
-    @Autowired
-    private WeiXinRemindService weiXinRemindService;
+    private final  WeiXinRemindService weiXinRemindService;
 
-    @Autowired
-    private SmsRemindService smsRemindService;
+    private final  SmsRemindService smsRemindService;
 
-    @Autowired
-    private SetDeptIdUtilService setDeptIdUtilService;
+    private final  SetDeptIdUtilService setDeptIdUtilService;
 
-    @Autowired
-    private Process4MsgRemindService process4MsgRemindService;
+    private final  Process4MsgRemindService process4MsgRemindService;
 
     /**
      * 异步处理,自定义变量科室id保存

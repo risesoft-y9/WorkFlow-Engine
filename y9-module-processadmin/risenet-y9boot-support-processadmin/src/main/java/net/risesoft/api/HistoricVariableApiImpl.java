@@ -1,11 +1,12 @@
 package net.risesoft.api;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.api.processadmin.HistoricVariableApi;
+import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
+import net.risesoft.service.CustomHistoricVariableService;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.util.FlowableModelConvertUtil;
 import org.flowable.variable.api.history.HistoricVariableInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.processadmin.HistoricVariableApi;
-import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
-import net.risesoft.service.CustomHistoricVariableService;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.util.FlowableModelConvertUtil;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 历史变量相关接口
@@ -27,11 +26,11 @@ import net.risesoft.util.FlowableModelConvertUtil;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/historicVariable")
 public class HistoricVariableApiImpl implements HistoricVariableApi {
 
-    @Autowired
-    private CustomHistoricVariableService customHistoricVariableService;
+    private final CustomHistoricVariableService customHistoricVariableService;
 
     /**
      * 根据流程实例Id,获取历史流程变量集合

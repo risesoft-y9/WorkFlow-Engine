@@ -1,5 +1,35 @@
 package net.risesoft.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.util.SysVariables;
+import net.risesoft.util.WorkflowUtils;
+import net.risesoft.y9.Y9Context;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.bpmn.model.EndEvent;
+import org.flowable.bpmn.model.FlowElement;
+import org.flowable.bpmn.model.Gateway;
+import org.flowable.bpmn.model.SequenceFlow;
+import org.flowable.bpmn.model.StartEvent;
+import org.flowable.bpmn.model.UserTask;
+import org.flowable.engine.RepositoryService;
+import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.impl.RepositoryServiceImpl;
+import org.flowable.engine.impl.bpmn.behavior.ParallelMultiInstanceBehavior;
+import org.flowable.engine.impl.bpmn.behavior.SequentialMultiInstanceBehavior;
+import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.flowable.engine.repository.Deployment;
+import org.flowable.engine.repository.ProcessDefinition;
+import org.flowable.engine.repository.ProcessDefinitionQuery;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,58 +42,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.bpmn.model.BpmnModel;
-import org.flowable.bpmn.model.EndEvent;
-import org.flowable.bpmn.model.FlowElement;
-import org.flowable.bpmn.model.Gateway;
-import org.flowable.bpmn.model.SequenceFlow;
-import org.flowable.bpmn.model.StartEvent;
-import org.flowable.bpmn.model.UserTask;
-import org.flowable.engine.RepositoryService;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.impl.RepositoryServiceImpl;
-import org.flowable.engine.impl.bpmn.behavior.ParallelMultiInstanceBehavior;
-import org.flowable.engine.impl.bpmn.behavior.SequentialMultiInstanceBehavior;
-import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.flowable.engine.repository.Deployment;
-import org.flowable.engine.repository.ProcessDefinition;
-import org.flowable.engine.repository.ProcessDefinitionQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Service;
-
-import net.risesoft.util.SysVariables;
-import net.risesoft.util.WorkflowUtils;
-import net.risesoft.y9.Y9Context;
-
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 @Service
-@DependsOn({"runtimeService", "repositoryService"})
+@RequiredArgsConstructor
+@DependsOn({"repositoryService"})
 public class WorkflowProcessDefinitionService {
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private final  RepositoryService repositoryService;
 
-    @Autowired
-    protected RuntimeService runtimeService;
-
-    @Autowired
-    protected RepositoryService repositoryService;
-
-    @Autowired
-    protected WorkflowHistoryProcessInstanceService workflowHistoryProcessInstanceService;
+    private final  WorkflowHistoryProcessInstanceService workflowHistoryProcessInstanceService;
 
     /**
      * 重新部署所有流程定义
@@ -81,7 +73,7 @@ public class WorkflowProcessDefinitionService {
             file = file.getParentFile();
             file = new File(file, "deployments");
         } else {
-            logger.error("类路径下不存在application.yaml，不应该啊！");
+            LOGGER.error("类路径下不存在application.yaml，不应该啊！");
 
             String root = Y9Context.getWebRootRealPath();
             file = new File(root);
@@ -103,20 +95,19 @@ public class WorkflowProcessDefinitionService {
     /**
      * 部署单个流程定义
      *
-     * @param processKey 模块名称
-     * @param subModule 流程定义名称
+     * @param processKey 流程定义Key
      * @throws IOException 找不到zip文件时
      */
     private void deploySingleProcess(String processKey) throws IOException {
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         String classpathResourceUrl = "classpath:/deployments/" + processKey + ".bar";
-        logger.debug("read workflow from: {}", classpathResourceUrl);
+        LOGGER.debug("read workflow from: {}", classpathResourceUrl);
         Resource resource = resourceLoader.getResource(classpathResourceUrl);
         InputStream inputStream = resource.getInputStream();
         if (inputStream == null) {
-            logger.warn("ignore deploy workflow module: {}", classpathResourceUrl);
+            LOGGER.warn("ignore deploy workflow module: {}", classpathResourceUrl);
         } else {
-            logger.debug("finded workflow module: {}, deploy it!", classpathResourceUrl);
+            LOGGER.debug("finded workflow module: {}, deploy it!", classpathResourceUrl);
             ZipInputStream zis = new ZipInputStream(inputStream);
             Deployment deployment = repositoryService.createDeployment().addZipInputStream(zis).deploy();
 
@@ -174,8 +165,7 @@ public class WorkflowProcessDefinitionService {
 
     /**
      * 获取ActivityImpl的list
-     *
-     * @param procDefKey
+     * @param bpmnModel
      * @return
      */
     public List<FlowElement> getActivityImpls(BpmnModel bpmnModel) {
@@ -191,8 +181,7 @@ public class WorkflowProcessDefinitionService {
 
     /**
      * 获取ActivityImpl的list
-     *
-     * @param procDefKey
+     * @param processDefinitionId 流程定义Id
      * @return
      */
     public List<FlowElement> getActivityImpls(String processDefinitionId) {
@@ -241,7 +230,7 @@ public class WorkflowProcessDefinitionService {
     /**
      * 获取某一节点的指定属性
      *
-     * @param processDefinition 流程定义
+     * @param processDefinitionId 流程定义ID
      * @param activityId 任务节点Id（例如 outerflow）
      * @param propertiesNameList 指定要获取的属性的列表
      * @return
@@ -263,7 +252,7 @@ public class WorkflowProcessDefinitionService {
     /**
      * 根据processDefinition获取某一节点的属性
      *
-     * @param processDefinition 流程定义
+     * @param processDefinitionId 流程定义ID
      * @param activityId 任务节点Id（例如 outerflow）
      * @param propertyName 指定要获取的属性的列表
      * @return
@@ -362,8 +351,7 @@ public class WorkflowProcessDefinitionService {
 
     /**
      * 获取过滤过的ActivityImpl的list，过滤掉GateWay类型节点
-     *
-     * @param processDefinitionId
+     * @param bpmnModel
      * @return
      */
     public List<FlowElement> getFilteredActivityImpls(BpmnModel bpmnModel) {
@@ -464,7 +452,7 @@ public class WorkflowProcessDefinitionService {
     /**
      * 判断当前节点是并行还是串行,得到当前节点的multiInstance
      *
-     * @param processDefinition 流程定义
+     * @param processDefinitionId 流程定义ID
      * @param activityId 任务节点Id（例如 outerflow）
      * @throws Exception
      * @return PARALLEL表示并行，SEQUENTIAL表示串行
@@ -486,7 +474,7 @@ public class WorkflowProcessDefinitionService {
      * 根据processDefinitionId获取节点类型nodeType对应的节点名称
      *
      * @param processDefinitionId 流程定义Id
-     * @param activitiId 当前节点Id
+     * @param nodeType 节点类型，例如userTask、startEvent、endEvent等
      * @return
      */
     public List<String> getNodeName(String processDefinitionId, String nodeType) {

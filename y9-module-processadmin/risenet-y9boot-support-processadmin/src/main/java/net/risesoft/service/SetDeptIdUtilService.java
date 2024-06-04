@@ -1,14 +1,7 @@
 package net.risesoft.service;
 
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -20,27 +13,29 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.task.service.delegate.DelegateTask;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
-@Service(value = "setDeptIdUtilService")
 @Slf4j
+@RequiredArgsConstructor
+@Service(value = "setDeptIdUtilService")
 public class SetDeptIdUtilService {
 
-    @Autowired
-    private ProcessParamApi processParamManager;
+    private final  ProcessParamApi processParamManager;
 
-    @Autowired
-    private PersonApi personManager;
+    private final  PersonApi personManager;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final  PositionApi positionApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitManager;
+    private final  OrgUnitApi orgUnitManager;
 
     /**
      * 保存委办局id,科室id

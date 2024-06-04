@@ -1,38 +1,39 @@
 package net.risesoft.service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.identitylink.api.IdentityLink;
-import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.task.service.delegate.DelegateTask;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
 
-@Service(value = "task4ActRuDetaillService")
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 @Slf4j
+@Service(value = "task4ActRuDetaillService")
 public class Task4ActRuDetaillService {
 
-    @Autowired
-    ActRuDetailApi actRuDetailApi;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    PositionApi positionApi;
+    private final ActRuDetailApi actRuDetailApi;
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    private final PositionApi positionApi;
+
+    public Task4ActRuDetaillService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate, ActRuDetailApi actRuDetailApi, PositionApi positionApi) {
+        this.actRuDetailApi = actRuDetailApi;
+        this.positionApi = positionApi;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public void saveOrUpdate(DelegateTask taskEntity, int status) {
         try {

@@ -1,18 +1,17 @@
 package net.risesoft.api;
 
-import java.util.Map;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.api.processadmin.DoneApi;
+import net.risesoft.service.CustomDoneService;
+import net.risesoft.service.FlowableTenantInfoHolder;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.processadmin.DoneApi;
-import net.risesoft.service.CustomDoneService;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import java.util.Map;
 
 /**
  * 办结件列表
@@ -22,11 +21,11 @@ import net.risesoft.service.FlowableTenantInfoHolder;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/done")
 public class DoneApiImpl implements DoneApi {
 
-    @Autowired
-    private CustomDoneService customDoneService;
+    private final CustomDoneService customDoneService;
 
     /**
      * 根据人员Id获取用户的办结流程列表(分页,包含流程变量)

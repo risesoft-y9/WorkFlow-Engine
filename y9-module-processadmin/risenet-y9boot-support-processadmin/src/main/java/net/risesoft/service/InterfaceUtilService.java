@@ -1,21 +1,22 @@
 package net.risesoft.service;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
-
+import cn.hutool.json.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.api.itemadmin.ErrorLogApi;
+import net.risesoft.api.itemadmin.ItemInterfaceApi;
+import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.enums.ItemInterfaceTypeEnum;
+import net.risesoft.id.IdType;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.ErrorLogModel;
+import net.risesoft.model.itemadmin.InterfaceModel;
+import net.risesoft.model.itemadmin.InterfaceParamsModel;
+import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.util.DbMetaDataUtil;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -32,55 +33,52 @@ import org.apache.http.util.EntityUtils;
 import org.flowable.engine.delegate.event.impl.FlowableSequenceFlowTakenEventImpl;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
 import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.extern.slf4j.Slf4j;
-
-import net.risesoft.api.itemadmin.ErrorLogApi;
-import net.risesoft.api.itemadmin.ItemInterfaceApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.enums.ItemInterfaceTypeEnum;
-import net.risesoft.id.IdType;
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.itemadmin.ErrorLogModel;
-import net.risesoft.model.itemadmin.InterfaceModel;
-import net.risesoft.model.itemadmin.InterfaceParamsModel;
-import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.util.DbMetaDataUtil;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
-
-import cn.hutool.json.JSONObject;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
- *
  * @author zhangchongjie
  * @date 2024/05/29
  */
+@Slf4j
 @EnableAsync
 @Service(value = "interfaceUtilService")
-@Slf4j
 public class InterfaceUtilService {
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private ErrorLogApi errorLogApi;
+    private final ErrorLogApi errorLogApi;
 
-    @Autowired
-    private ItemInterfaceApi itemInterfaceApi;
+    private final ItemInterfaceApi itemInterfaceApi;
+
+    public InterfaceUtilService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate, ProcessParamApi processParamApi, ErrorLogApi errorLogApi, ItemInterfaceApi itemInterfaceApi) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.processParamApi = processParamApi;
+        this.errorLogApi = errorLogApi;
+        this.itemInterfaceApi = itemInterfaceApi;
+    }
 
     /**
      * 异步调用接口
@@ -156,7 +154,7 @@ public class InterfaceUtilService {
                         String fieldName = model.getColumnName();
                         String parameterName = model.getParameterName();
                         sqlStr.append(fieldName + "=");
-                        sqlStr.append(StringUtils.isNotBlank((String)map.get(parameterName)) ? "'" + map.get(parameterName) + "'" : "''");
+                        sqlStr.append(StringUtils.isNotBlank((String) map.get(parameterName)) ? "'" + map.get(parameterName) + "'" : "''");
                         isHaveField = true;
                     }
                 }
@@ -217,7 +215,7 @@ public class InterfaceUtilService {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
                                 if (map.containsKey(model.getColumnName())) {
-                                    parameterValue = (String)map.get(model.getColumnName());
+                                    parameterValue = (String) map.get(model.getColumnName());
                                     break;
                                 }
                             }
@@ -228,7 +226,7 @@ public class InterfaceUtilService {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
                                 if (map.containsKey(model.getColumnName())) {
-                                    parameterValue = (String)map.get(model.getColumnName());
+                                    parameterValue = (String) map.get(model.getColumnName());
                                     break;
                                 }
                             }
@@ -351,8 +349,8 @@ public class InterfaceUtilService {
         String positionId = Y9LoginUserHolder.getPositionId();
         Y9Result<List<InterfaceModel>> y9Result = null;
         try {
-            tenantId = (String)variables.get("tenantId");
-            processSerialNumber = (String)variables.get("processSerialNumber");
+            tenantId = (String) variables.get("tenantId");
+            processSerialNumber = (String) variables.get("processSerialNumber");
             ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             itemId = processParamModel.getItemId();
             y9Result = itemInterfaceApi.getInterface(tenantId, itemId, taskDefinitionKey, processDefinitionId, condition);
@@ -437,8 +435,8 @@ public class InterfaceUtilService {
         String positionId = task.getAssignee();
         Y9Result<List<InterfaceModel>> y9Result = null;
         try {
-            tenantId = (String)variables.get("tenantId");
-            processSerialNumber = (String)variables.get("processSerialNumber");
+            tenantId = (String) variables.get("tenantId");
+            processSerialNumber = (String) variables.get("processSerialNumber");
             ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             itemId = processParamModel.getItemId();
             y9Result = itemInterfaceApi.getInterface(tenantId, itemId, taskDefinitionKey, processDefinitionId, condition);
@@ -492,7 +490,7 @@ public class InterfaceUtilService {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
                                 if (map.containsKey(model.getColumnName())) {
-                                    parameterValue = (String)map.get(model.getColumnName());
+                                    parameterValue = (String) map.get(model.getColumnName());
                                     break;
                                 }
                             }
@@ -503,7 +501,7 @@ public class InterfaceUtilService {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
                                 if (map.containsKey(model.getColumnName())) {
-                                    parameterValue = (String)map.get(model.getColumnName());
+                                    parameterValue = (String) map.get(model.getColumnName());
                                     break;
                                 }
                             }

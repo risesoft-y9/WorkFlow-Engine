@@ -1,6 +1,7 @@
 package net.risesoft.api;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.ProcessModelApi;
 import net.risesoft.model.platform.Person;
@@ -24,7 +25,6 @@ import org.flowable.ui.modeler.serviceapi.ModelService;
 import org.flowable.validation.ProcessValidator;
 import org.flowable.validation.ProcessValidatorFactory;
 import org.flowable.validation.ValidationError;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,20 +55,17 @@ import java.util.Map;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/processModel")
 public class ProcessModelApiImpl implements ProcessModelApi {
 
-    @Autowired
-    private ModelService modelService;
+    private final ModelService modelService;
 
-    @Autowired
-    private RepositoryService repositoryService;
+    private final RepositoryService repositoryService;
 
-    @Autowired
-    private ModelRepository modelRepository;
+    private final ModelRepository modelRepository;
 
-    @Autowired
-    private PersonApi personApi;
+    private final PersonApi personApi;
 
     /**
      * 删除模型

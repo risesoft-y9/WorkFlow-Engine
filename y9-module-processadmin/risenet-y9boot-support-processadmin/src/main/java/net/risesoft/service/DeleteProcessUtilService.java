@@ -1,21 +1,6 @@
 package net.risesoft.service;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.Future;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.stereotype.Service;
-
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.datacenter.OfficeInfoApi;
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ChaoSongInfoApi;
@@ -31,6 +16,18 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Service;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.Future;
 
 /**
  * @author qinman
@@ -38,45 +35,48 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/30
  */
 @EnableAsync
-@Service(value = "deleteProcessUtilService")
 @Slf4j
+@Service(value = "deleteProcessUtilService")
 public class DeleteProcessUtilService {
 
-    @Autowired
-    private TodoTaskApi rpcTodoTaskManager;
+    private final  JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private ProcessInstanceApi processInstanceApi;
+    private final  TodoTaskApi rpcTodoTaskManager;
 
-    @Autowired
-    private ChaoSongInfoApi chaoSongInfoApi;
+    private final  ProcessInstanceApi processInstanceApi;
 
-    @Autowired
-    private ChaoSong4PositionApi chaoSong4PositionApi;
+    private final  ChaoSongInfoApi chaoSongInfoApi;
 
-    @Autowired
-    private OfficeInfoApi officeInfoApi;
+    private final  ChaoSong4PositionApi chaoSong4PositionApi;
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    private final  OfficeInfoApi officeInfoApi;
 
-    @Autowired
-    private ProcessParamApi processParamManager;
+    private final  ProcessParamApi processParamManager;
 
-    @Autowired
-    private OfficeFollowApi officeFollowApi;
+    private final  OfficeFollowApi officeFollowApi;
 
-    @Autowired
-    private OfficeFollow4PositionApi officeFollow4PositionApi;
+    private final  OfficeFollow4PositionApi officeFollow4PositionApi;
 
-    @Autowired
-    private ErrorLogApi errorLogManager;
+    private final  ErrorLogApi errorLogManager;
 
-    @Autowired
-    private MsgRemindInfoApi msgRemindInfoManager;
+    private final  MsgRemindInfoApi msgRemindInfoManager;
 
-    @Autowired
-    private ActRuDetailApi actRuDetailApi;
+    private final  ActRuDetailApi actRuDetailApi;
+
+    public DeleteProcessUtilService(JdbcTemplate jdbcTemplate, TodoTaskApi rpcTodoTaskManager, ProcessInstanceApi processInstanceApi, ChaoSongInfoApi chaoSongInfoApi, ChaoSong4PositionApi chaoSong4PositionApi, OfficeInfoApi officeInfoApi, ProcessParamApi processParamManager, OfficeFollowApi officeFollowApi, OfficeFollow4PositionApi officeFollow4PositionApi, ErrorLogApi errorLogManager, MsgRemindInfoApi msgRemindInfoManager, ActRuDetailApi actRuDetailApi) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.rpcTodoTaskManager = rpcTodoTaskManager;
+        this.processInstanceApi = processInstanceApi;
+        this.chaoSongInfoApi = chaoSongInfoApi;
+        this.chaoSong4PositionApi = chaoSong4PositionApi;
+        this.officeInfoApi = officeInfoApi;
+        this.processParamManager = processParamManager;
+        this.officeFollowApi = officeFollowApi;
+        this.officeFollow4PositionApi = officeFollow4PositionApi;
+        this.errorLogManager = errorLogManager;
+        this.msgRemindInfoManager = msgRemindInfoManager;
+        this.actRuDetailApi = actRuDetailApi;
+    }
 
     /**
      * 彻底删除流程实例相关数据，包括，流程自定义变量，统一待办，协作状态，抄送件，关注件，数据中心全文检索数据
@@ -231,9 +231,9 @@ public class DeleteProcessUtilService {
     /**
      * 删除年度数据
      *
-     * @param tenantId
-     * @param year
-     * @param processInstanceId
+     * @param tenantId   租户ID
+     * @param year       年度
+     * @param processInstanceId      流程实例ID
      * @return
      */
     @Async

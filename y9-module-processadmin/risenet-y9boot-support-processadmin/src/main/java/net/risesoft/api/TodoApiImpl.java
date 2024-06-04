@@ -1,21 +1,20 @@
 package net.risesoft.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.api.processadmin.ProcessTodoApi;
+import net.risesoft.service.CustomDoingService;
+import net.risesoft.service.CustomDoneService;
+import net.risesoft.service.CustomTodoService;
+import net.risesoft.service.FlowableTenantInfoHolder;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.processadmin.ProcessTodoApi;
-import net.risesoft.service.CustomDoingService;
-import net.risesoft.service.CustomDoneService;
-import net.risesoft.service.CustomTodoService;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 待办件列表
@@ -25,17 +24,15 @@ import net.risesoft.service.FlowableTenantInfoHolder;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/processTodo")
 public class TodoApiImpl implements ProcessTodoApi {
 
-    @Autowired
-    private CustomTodoService customTodoService;
+    private final CustomTodoService customTodoService;
 
-    @Autowired
-    private CustomDoingService customDoingService;
+    private final CustomDoingService customDoingService;
 
-    @Autowired
-    private CustomDoneService customDoneService;
+    private final CustomDoneService customDoneService;
 
     /**
      * 根据人员idd获取对应事项的办件统计（包括待办件，在办件，办结件）

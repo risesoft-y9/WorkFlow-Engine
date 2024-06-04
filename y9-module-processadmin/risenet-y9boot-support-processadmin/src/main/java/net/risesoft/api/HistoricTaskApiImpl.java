@@ -1,11 +1,14 @@
 package net.risesoft.api;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.api.processadmin.HistoricTaskApi;
+import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
+import net.risesoft.service.CustomHistoricTaskService;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.util.FlowableModelConvertUtil;
+import net.risesoft.y9.Y9LoginUserHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.task.api.history.HistoricTaskInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,12 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.processadmin.HistoricTaskApi;
-import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
-import net.risesoft.service.CustomHistoricTaskService;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.util.FlowableModelConvertUtil;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 历史任务相关接口
@@ -28,11 +27,11 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/historicTask")
 public class HistoricTaskApiImpl implements HistoricTaskApi {
 
-    @Autowired
-    private CustomHistoricTaskService customHistoricTaskService;
+    private final CustomHistoricTaskService customHistoricTaskService;
 
     /**
      * 根据流程实例id,获取任务

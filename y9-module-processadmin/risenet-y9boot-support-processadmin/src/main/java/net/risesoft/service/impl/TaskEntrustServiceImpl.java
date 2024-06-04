@@ -1,19 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.engine.TaskService;
-import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.itemadmin.EntrustApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.consts.UtilConsts;
@@ -22,27 +10,34 @@ import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.service.TaskEntrustService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.configuration.Y9Properties;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.engine.TaskService;
+import org.flowable.task.service.delegate.DelegateTask;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
-@Service(value = "taskEntrustService")
 @Slf4j
+@RequiredArgsConstructor
+@Service(value = "taskEntrustService")
 public class TaskEntrustServiceImpl implements TaskEntrustService {
 
-    @Autowired
-    private EntrustApi entrustManager;
+    private final  EntrustApi entrustManager;
 
-    @Autowired
-    private TaskService taskService;
+    private final  TaskService taskService;
 
-    @Autowired
-    private ProcessParamApi processParamManager;
+    private final  ProcessParamApi processParamManager;
 
-    @Autowired
-    private Y9Properties y9Conf;
+    private final  Y9Properties y9Conf;
 
     /**
      * 出差委托

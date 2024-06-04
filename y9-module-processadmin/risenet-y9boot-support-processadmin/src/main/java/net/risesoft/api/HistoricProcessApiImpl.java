@@ -1,18 +1,7 @@
 package net.risesoft.api;
 
-import java.util.List;
-
-import org.flowable.engine.history.HistoricProcessInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.itemadmin.ChaoSongInfoApi;
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
@@ -23,6 +12,15 @@ import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.flowable.engine.history.HistoricProcessInstance;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 流程实例相关接口
@@ -31,25 +29,21 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2022/12/30
  */
-@RestController
-@RequestMapping(value = "/services/rest/historicProcess")
 @Slf4j
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(value = "/services/rest/historicProcess")
 public class HistoricProcessApiImpl implements HistoricProcessApi {
 
-    @Autowired
-    private CustomHistoricProcessService customHistoricProcessService;
+    private final CustomHistoricProcessService customHistoricProcessService;
 
-    @Autowired
-    private CustomTaskService customTaskService;
+    private final CustomTaskService customTaskService;
 
-    @Autowired
-    private TodoTaskApi rpcTodoTaskManager;
+    private final TodoTaskApi rpcTodoTaskManager;
 
-    @Autowired
-    private ProcessInstanceApi processInstance4PositionApi;
+    private final ProcessInstanceApi processInstance4PositionApi;
 
-    @Autowired
-    private ChaoSongInfoApi chaoSongInfoManager;
+    private final ChaoSongInfoApi chaoSongInfoManager;
 
     /**
      * 删除流程实例，在办件设为暂停，办结件加删除标识

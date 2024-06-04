@@ -1,29 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.engine.HistoryService;
-import org.flowable.engine.ManagementService;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.runtime.Execution;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.task.api.Task;
-import org.flowable.task.api.history.HistoricTaskInstance;
-import org.flowable.variable.api.history.HistoricVariableInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
@@ -46,62 +23,71 @@ import net.risesoft.service.OperationService;
 import net.risesoft.service.Process4CompleteUtilService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.engine.HistoryService;
+import org.flowable.engine.ManagementService;
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.runtime.Execution;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.api.Task;
+import org.flowable.task.api.history.HistoricTaskInstance;
+import org.flowable.variable.api.history.HistoricVariableInstance;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service(value = "operationService")
 public class OperationServiceImpl implements OperationService {
 
-    @Autowired
-    protected ManagementService managementService;
+    private final ManagementService managementService;
 
-    @Autowired
-    private CustomHistoricTaskService customHistoricTaskService;
+    private final CustomHistoricTaskService customHistoricTaskService;
 
-    @Autowired
-    private CustomTaskService customTaskService;
+    private final CustomTaskService customTaskService;
 
-    @Autowired
-    private CustomVariableService customVariableService;
+    private final CustomVariableService customVariableService;
 
-    @Autowired
-    private CustomHistoricVariableService customHistoricVariableService;
+    private final CustomHistoricVariableService customHistoricVariableService;
 
-    @Autowired
-    private CustomProcessDefinitionService customProcessDefinitionService;
+    private final CustomProcessDefinitionService customProcessDefinitionService;
 
-    @Autowired
-    private CustomRuntimeService customRuntimeService;
+    private final CustomRuntimeService customRuntimeService;
 
-    @Autowired
-    protected RuntimeService runtimeService;
+    private final RuntimeService runtimeService;
 
-    @Autowired
-    private HistoryService historyService;
+    private final HistoryService historyService;
 
-    @Autowired
-    private Process4CompleteUtilService process4CompleteUtilService;
+    private final Process4CompleteUtilService process4CompleteUtilService;
 
-    @Autowired
-    private ErrorLogApi errorLogManager;
+    private final ErrorLogApi errorLogManager;
 
-    @Autowired
-    private ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamManager;
 
-    @Autowired
-    private ProcessTrackApi processTrackManager;
+    private final ProcessTrackApi processTrackManager;
 
-    @Autowired
-    private ProcessTrack4PositionApi processTrack4PositionApi;
+    private final ProcessTrack4PositionApi processTrack4PositionApi;
 
     @Override
     @Transactional(readOnly = false)
     public void reposition(String taskId, String targetTaskDefineKey, List<String> users, String reason,
-        String sponsorGuid) {
+                           String sponsorGuid) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userName = userInfo.getName();
         Task currentTask = customTaskService.findById(taskId);
@@ -111,7 +97,7 @@ public class OperationServiceImpl implements OperationService {
 
         List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
         String multiInstance =
-            customProcessDefinitionService.getNodeType(currentTask.getProcessDefinitionId(), targetTaskDefineKey);
+                customProcessDefinitionService.getNodeType(currentTask.getProcessDefinitionId(), targetTaskDefineKey);
         // 更新自定义历程结束时间
         List<ProcessTrackModel> ptModelList = processTrackManager.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId);
         for (ProcessTrackModel ptModel : ptModelList) {
@@ -133,7 +119,7 @@ public class OperationServiceImpl implements OperationService {
                 if (task.getAssignee().equals(sponsorGuid)) {
                     vars.put(SysVariables.PARALLELSPONSOR, sponsorGuid);
                     ProcessParamModel processParam =
-                        processParamManager.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
+                            processParamManager.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
                     processParam.setSponsorGuid(sponsorGuid);
                     processParamManager.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParam);
                 }
@@ -156,7 +142,7 @@ public class OperationServiceImpl implements OperationService {
     @Override
     @Transactional(readOnly = false)
     public void reposition4Position(String taskId, String targetTaskDefineKey, List<String> users, String reason,
-        String sponsorGuid) {
+                                    String sponsorGuid) {
         String userName = Y9LoginUserHolder.getPosition().getName();
         Task currentTask = customTaskService.findById(taskId);
         String processInstanceId = currentTask.getProcessInstanceId();
@@ -165,10 +151,10 @@ public class OperationServiceImpl implements OperationService {
 
         List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
         String multiInstance =
-            customProcessDefinitionService.getNodeType(currentTask.getProcessDefinitionId(), targetTaskDefineKey);
+                customProcessDefinitionService.getNodeType(currentTask.getProcessDefinitionId(), targetTaskDefineKey);
         // 更新自定义历程结束时间
         List<ProcessTrackModel> ptModelList =
-            processTrack4PositionApi.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId);
+                processTrack4PositionApi.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId);
         for (ProcessTrackModel ptModel : ptModelList) {
             if (StringUtils.isBlank(ptModel.getEndTime())) {
                 try {
@@ -189,7 +175,7 @@ public class OperationServiceImpl implements OperationService {
                 if (task.getAssignee().equals(sponsorGuid)) {
                     vars.put(SysVariables.PARALLELSPONSOR, sponsorGuid);
                     ProcessParamModel processParam =
-                        processParamManager.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
+                            processParamManager.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
                     processParam.setSponsorGuid(sponsorGuid);
                     processParamManager.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParam);
                 }
@@ -215,19 +201,19 @@ public class OperationServiceImpl implements OperationService {
         String userName = userInfo.getName();
         HistoricTaskInstance thePreviousTask = customHistoricTaskService.getThePreviousTask(taskId);
         String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey(),
-            processInstanceId = thePreviousTask.getProcessInstanceId();
+                processInstanceId = thePreviousTask.getProcessInstanceId();
 
         // Object taskSenderIdObject = customVariableService.getVariableLocal(taskId,
         // SysVariables.TASKSENDERID);
         // String user = (String) taskSenderIdObject;
         HistoricVariableInstance taskSenderIdObject =
-            customHistoricVariableService.getByTaskIdAndVariableName(taskId, SysVariables.TASKSENDERID, "");
+                customHistoricVariableService.getByTaskIdAndVariableName(taskId, SysVariables.TASKSENDERID, "");
         String user = taskSenderIdObject != null ? taskSenderIdObject.getValue().toString() : "";
         List<String> users = new ArrayList<>();
         users.add(user);
 
         managementService
-            .executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, "该任务由" + userName + "退回:" + reason));
+                .executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, "该任务由" + userName + "退回:" + reason));
 
         List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
         for (Task task : taskList) {
@@ -241,7 +227,7 @@ public class OperationServiceImpl implements OperationService {
         String userName = Y9LoginUserHolder.getPosition().getName();
         HistoricTaskInstance thePreviousTask = customHistoricTaskService.getThePreviousTask(taskId);
         String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey(),
-            processInstanceId = thePreviousTask.getProcessInstanceId();
+                processInstanceId = thePreviousTask.getProcessInstanceId();
         /**
          * 设置任务的完成动作
          */
@@ -250,12 +236,12 @@ public class OperationServiceImpl implements OperationService {
          * 把taskId对应的任务的发送岗位作为接受的岗位
          */
         HistoricVariableInstance taskSenderIdObject =
-            customHistoricVariableService.getByTaskIdAndVariableName(taskId, SysVariables.TASKSENDERID, "");
+                customHistoricVariableService.getByTaskIdAndVariableName(taskId, SysVariables.TASKSENDERID, "");
         String user = taskSenderIdObject != null ? taskSenderIdObject.getValue().toString() : "";
         List<String> users = new ArrayList<>();
         users.add(user);
         managementService.executeCommand(
-            new JumpCommand4Position(taskId, targetTaskDefineKey, users, "该任务由" + userName + "驳回：" + reason));
+                new JumpCommand4Position(taskId, targetTaskDefineKey, users, "该任务由" + userName + "驳回：" + reason));
         List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
         for (Task task : taskList) {
             customVariableService.setVariableLocal(task.getId(), SysVariables.ROLLBACK, true);
@@ -268,7 +254,7 @@ public class OperationServiceImpl implements OperationService {
         String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey();
 
         Object taskSenderIdObject = customVariableService.getVariableLocal(taskId, SysVariables.TASKSENDERID);
-        String user = (String)taskSenderIdObject;
+        String user = (String) taskSenderIdObject;
         List<String> users = new ArrayList<>();
         users.add(user);
 
@@ -281,7 +267,7 @@ public class OperationServiceImpl implements OperationService {
         String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey();
 
         Object taskSenderIdObject = customVariableService.getVariableLocal(taskId, SysVariables.TASKSENDERID);
-        String user = (String)taskSenderIdObject;
+        String user = (String) taskSenderIdObject;
         List<String> users = new ArrayList<>();
         users.add(user);
 
@@ -298,7 +284,7 @@ public class OperationServiceImpl implements OperationService {
          * 获取第一个任务
          */
         List<HistoricTaskInstance> hisTaskList =
-            customHistoricTaskService.getByProcessInstanceId(processInstanceId, "");
+                customHistoricTaskService.getByProcessInstanceId(processInstanceId, "");
         String startActivityId = hisTaskList.get(0).getTaskDefinitionKey();
         /**
          * 获取流程的启东人
@@ -307,7 +293,7 @@ public class OperationServiceImpl implements OperationService {
         List<String> users = new ArrayList<>();
         users.add(processInstance.getStartUserId().split(":")[0]);
         managementService
-            .executeCommand(new JumpCommand(taskId, startActivityId, users, "该任务已由" + userName + "返回至起草节点"));
+                .executeCommand(new JumpCommand(taskId, startActivityId, users, "该任务已由" + userName + "返回至起草节点"));
     }
 
     @Override
@@ -319,7 +305,7 @@ public class OperationServiceImpl implements OperationService {
          * 获取第一个任务
          */
         List<HistoricTaskInstance> hisTaskList =
-            customHistoricTaskService.getByProcessInstanceId(processInstanceId, "");
+                customHistoricTaskService.getByProcessInstanceId(processInstanceId, "");
         String startActivityId = hisTaskList.get(0).getTaskDefinitionKey();
         /**
          * 获取流程的启东人
@@ -328,7 +314,7 @@ public class OperationServiceImpl implements OperationService {
         List<String> users = new ArrayList<>();
         users.add(processInstance.getStartUserId().split(":")[0]);
         managementService
-            .executeCommand(new JumpCommand4Position(taskId, startActivityId, users, "该任务已由" + userName + "返回至起草节点"));
+                .executeCommand(new JumpCommand4Position(taskId, startActivityId, users, "该任务已由" + userName + "返回至起草节点"));
     }
 
     @Override
@@ -343,22 +329,22 @@ public class OperationServiceImpl implements OperationService {
             Task task = customTaskService.findById(taskId);
             processInstanceId = task.getProcessInstanceId();
             HistoricProcessInstance historicProcessInstance =
-                historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+                    historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             String year = sdf.format(historicProcessInstance.getStartTime());
             /**
              * 1-备份正在运行的执行实例数据，回复待办的时候会用到，只记录最后一个任务办结前的数据
              */
             String sql0 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list0 = runtimeService.createNativeExecutionQuery().sql(sql0)
-                .parameter("PROC_INST_ID_", processInstanceId).list();
+                    .parameter("PROC_INST_ID_", processInstanceId).list();
             // 备份数据已有，则先删除再重新插入备份
             if (list0.size() > 0) {
                 String sql2 = "DELETE FROM FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
                 runtimeService.createNativeExecutionQuery().sql(sql2).parameter("PROC_INST_ID_", processInstanceId)
-                    .list();
+                        .list();
             }
             String sql = "INSERT INTO FF_ACT_RU_EXECUTION_" + year
-                + " (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ from ACT_RU_EXECUTION T WHERE T.PROC_INST_ID_ = #{PROC_INST_ID_}";
+                    + " (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ from ACT_RU_EXECUTION T WHERE T.PROC_INST_ID_ = #{PROC_INST_ID_}";
             runtimeService.createNativeExecutionQuery().sql(sql).parameter("PROC_INST_ID_", processInstanceId).list();
 
             /**
@@ -366,14 +352,14 @@ public class OperationServiceImpl implements OperationService {
              */
             String sql3 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list1 = runtimeService.createNativeExecutionQuery().sql(sql3)
-                .parameter("PROC_INST_ID_", processInstanceId).list();
+                    .parameter("PROC_INST_ID_", processInstanceId).list();
             // 成功备份数据才特殊办结
             if (list1.size() > 0) {
                 managementService.executeCommand(
-                    new JumpCommand(taskId, endKey, new ArrayList<>(), "该任务由" + userName + "特殊办结:" + reason));
+                        new JumpCommand(taskId, endKey, new ArrayList<>(), "该任务由" + userName + "特殊办结:" + reason));
                 // 保存到数据中心
                 process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year,
-                    userInfo.getPersonId(), processInstanceId, userName);
+                        userInfo.getPersonId(), processInstanceId, userName);
             }
         } catch (Exception e) {
             final Writer result = new StringWriter();
@@ -413,22 +399,22 @@ public class OperationServiceImpl implements OperationService {
             Task task = customTaskService.findById(taskId);
             processInstanceId = task.getProcessInstanceId();
             HistoricProcessInstance historicProcessInstance =
-                historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+                    historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             String year = sdf.format(historicProcessInstance.getStartTime());
             /**
              * 1-备份正在运行的执行实例数据，回复待办的时候会用到，只记录最后一个任务办结前的数据
              */
             String sql0 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list0 = runtimeService.createNativeExecutionQuery().sql(sql0)
-                .parameter("PROC_INST_ID_", processInstanceId).list();
+                    .parameter("PROC_INST_ID_", processInstanceId).list();
             // 备份数据已有，则先删除再重新插入备份
             if (list0.size() > 0) {
                 String sql2 = "DELETE FROM FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
                 runtimeService.createNativeExecutionQuery().sql(sql2).parameter("PROC_INST_ID_", processInstanceId)
-                    .list();
+                        .list();
             }
             String sql = "INSERT INTO FF_ACT_RU_EXECUTION_" + year
-                + " (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ from ACT_RU_EXECUTION T WHERE T.PROC_INST_ID_ = #{PROC_INST_ID_}";
+                    + " (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ from ACT_RU_EXECUTION T WHERE T.PROC_INST_ID_ = #{PROC_INST_ID_}";
             runtimeService.createNativeExecutionQuery().sql(sql).parameter("PROC_INST_ID_", processInstanceId).list();
 
             /**
@@ -436,14 +422,14 @@ public class OperationServiceImpl implements OperationService {
              */
             String sql3 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list1 = runtimeService.createNativeExecutionQuery().sql(sql3)
-                .parameter("PROC_INST_ID_", processInstanceId).list();
+                    .parameter("PROC_INST_ID_", processInstanceId).list();
             // 成功备份数据才特殊办结
             if (list1.size() > 0) {
                 managementService.executeCommand(
-                    new JumpCommand4Position(taskId, endKey, new ArrayList<>(), "该任务由" + userName + "特殊办结:" + reason));
+                        new JumpCommand4Position(taskId, endKey, new ArrayList<>(), "该任务由" + userName + "特殊办结:" + reason));
                 // 保存到数据中心
                 process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year,
-                    Y9LoginUserHolder.getPositionId(), processInstanceId, userName);
+                        Y9LoginUserHolder.getPositionId(), processInstanceId, userName);
             }
         } catch (Exception e) {
             final Writer result = new StringWriter();
@@ -479,13 +465,13 @@ public class OperationServiceImpl implements OperationService {
         String userName = userInfo.getName(), userId = userInfo.getPersonId();
         HistoricTaskInstance thePreviousTask = customHistoricTaskService.getThePreviousTask(taskId);
         String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey(),
-            processInstanceId = thePreviousTask.getProcessInstanceId();
+                processInstanceId = thePreviousTask.getProcessInstanceId();
 
         List<String> users = new ArrayList<>();
         users.add(userId);
 
         managementService
-            .executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, "该任务由" + userName + "收回:" + reason));
+                .executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, "该任务由" + userName + "收回:" + reason));
 
         List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
         for (Task task : taskList) {
@@ -499,7 +485,7 @@ public class OperationServiceImpl implements OperationService {
         String userName = Y9LoginUserHolder.getPosition().getName();
         HistoricTaskInstance thePreviousTask = customHistoricTaskService.getThePreviousTask(taskId);
         String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey(),
-            processInstanceId = thePreviousTask.getProcessInstanceId();
+                processInstanceId = thePreviousTask.getProcessInstanceId();
         /**
          * 设置任务的完成动作
          */
@@ -508,7 +494,7 @@ public class OperationServiceImpl implements OperationService {
         List<String> users = new ArrayList<>();
         users.add(user);
         managementService.executeCommand(
-            new JumpCommand4Position(taskId, targetTaskDefineKey, users, "该任务由" + userName + "撤回：" + reason));
+                new JumpCommand4Position(taskId, targetTaskDefineKey, users, "该任务由" + userName + "撤回：" + reason));
         List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
         for (Task task : taskList) {
             customVariableService.setVariableLocal(task.getId(), SysVariables.TAKEBACK, true);

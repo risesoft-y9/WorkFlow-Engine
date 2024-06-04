@@ -1,11 +1,8 @@
 package net.risesoft.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.util.MapUtil;
+import net.risesoft.util.SysVariables;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.EndEvent;
@@ -26,13 +23,13 @@ import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.risesoft.util.MapUtil;
-import net.risesoft.util.SysVariables;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -40,29 +37,24 @@ import net.risesoft.util.SysVariables;
  * @date 2022/12/30
  */
 @Service
+@RequiredArgsConstructor
 public class WorkflowProcessInstanceService {
 
     @SuppressWarnings("unused")
     private static final String ENDEVENT = "endEvent";
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private final RuntimeService runtimeService;
 
-    @Autowired
-    protected RuntimeService runtimeService;
+    private final RepositoryService repositoryService;
 
-    @Autowired
-    protected RepositoryService repositoryService;
+    private final TaskService taskService;
 
-    @Autowired
-    protected TaskService taskService;
-
-    @Autowired
-    protected WorkflowTaskService workflowTaskService;
+    private final WorkflowTaskService workflowTaskService;
 
     /**
      * 根据流程实例ID获取对应的流程实例
      *
-     * @param taskId 任务ID
+     * @param processInstanceId 流程实例ID
      * @return
      * @throws Exception
      */
