@@ -8,7 +8,7 @@
  * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\views\item\config\mappingConfig\mappingConfig.vue
 -->
 <template>
-  <y9Card :title="`系统对接映射${currInfo.name ? ' - ' + currInfo.name : ''}`">
+  <y9Card :title="`表单字段映射${currInfo.name ? ' - ' + currInfo.name : ''}`">
     <el-tabs v-model="activeName" style="height:40px" @tab-click="tabclick" v-if="dockingItemId || dockingSystem">
       <el-tab-pane label="系统字段映射" name="system" v-if="dockingSystem"></el-tab-pane>
       <el-tab-pane label="事项字段映射" name="item" v-if="dockingItemId"></el-tab-pane>

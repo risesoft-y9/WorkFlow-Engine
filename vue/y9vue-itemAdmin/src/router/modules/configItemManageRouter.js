@@ -4,8 +4,8 @@
  * @Author: zhangchongjie
  * @Date: 2022-05-07 16:44:57
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2022-07-12 09:24:40
- * @FilePath: \workspace-y9boot-9.5-vuee:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\router\modules\calendarRouter.js
+ * @LastEditTime: 2024-06-04 16:56:35
+ * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-flowable\vue\y9vue-itemAdmin\src\router\modules\configItemManageRouter.js
  */
 
 const configItemManageRouter = {
@@ -50,52 +50,12 @@ const configItemManageRouter = {
             }
         },
         {
-            path: '/wordTemplate',
-            component: () => import('@/views/wordTemplate/index.vue'),
-            name: 'wordTemplateIndex',
-            meta: {
-                title: '正文模板',
-                icon: 'ri-file-word-line',
-                roles: ['systemAdmin'],
-            }
-        },
-        {
-            path: '/taoHongTemplate',
-            component: () => import('@/views/taoHongTemplate/index.vue'),
-            name: 'taoHongTemplateIndex',
-            meta: {
-                title: '套红模板',
-                icon: 'ri-file-word-2-line',
-                roles: ['systemAdmin'],
-            }
-        },
-        {
             path: '/organWord',
             component: () => import('@/views/organWord/index.vue'),
             name: 'organWordIndex',
             meta: {
                 title: '编号管理',
                 icon: 'ri-numbers-line',
-                roles: ['systemAdmin'],
-            }
-        },
-        {
-            path: '/interface',
-            component: () => import('@/views/interface/index.vue'),
-            name: 'interfaceIndex',
-            meta: {
-                title: '接口管理',
-                icon: 'ri-git-pull-request-line',
-                roles: ['systemAdmin'],
-            }
-        },
-        {
-            path: '/linkInfo',
-            component: () => import('@/views/linkInfo/index.vue'),
-            name: 'linkInfoIndex',
-            meta: {
-                title: '链接管理',
-                icon: 'ri-link',
                 roles: ['systemAdmin'],
             }
         },

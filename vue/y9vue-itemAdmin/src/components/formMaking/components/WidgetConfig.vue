@@ -232,7 +232,7 @@
               </el-select>
               <code-editor :key="data.options.remoteDataSource" v-if="data.options.remoteType == 'datasource' && data.options.remoteArgs" :mode="'json'" v-model="data.options.remoteArgs" :height="'120px'" style="width: 100%;margin-bottom: 5px;"></code-editor>
               <!-- Y9绑定数据字典 -->
-              <el-input v-if="data.options.remoteType == 'func'" v-model="data.options.optionData" :readonly="true" placeholder="点击绑定" size="mini" @focus="selectOption">
+              <el-input v-if="data.options.remoteType == 'func'" v-model="data.options.optionData" :readonly="true" placeholder="点击绑定" size="mini">
                 <template #prepend>
                   <div slot="prepend" style="width: 48px;">数据字典</div>
                 </template>
@@ -1219,7 +1219,6 @@
     <selectTableAndField ref="selectTableAndField" :bindField="saveBindField"/>
     <selectChildTable ref="selectChildTable" :bindTable="saveBindTable"/>
     <selectField ref="selectField" :bindField="saveBindField"/>
-    <selectOption ref="selectOption" :bindOption="saveBindOption"/>
     <selectOpinionFrame ref="selectOpinionFrame" :bindOpinionFrame="saveBindOpinionFrame"/>
     <selectNumber ref="selectNumber" :bindNumber="saveBindNumber"/>
     <!-- Y9 -->
@@ -1257,7 +1256,6 @@ import { ElMessage } from 'element-plus'
 import selectTableAndField from './SecondDev/selectTableAndField.vue'
 import selectChildTable from './SecondDev/selectChildTable.vue'
 import selectField from './SecondDev/selectField.vue'
-import selectOption from './SecondDev/selectOption.vue'
 import selectOpinionFrame from './SecondDev/selectOpinionFrame.vue'
 import selectNumber from './SecondDev/selectNumber.vue'
 export default {
@@ -1272,7 +1270,6 @@ export default {
     selectTableAndField,
     selectChildTable,
     selectField,
-    selectOption,
     selectOpinionFrame,
     selectNumber
   },
@@ -1767,9 +1764,6 @@ export default {
     saveBindTable(table) {//子表绑定
       this.data.model = "childTable@" + table.tableName;
       this.data.childTableInfo = table.tableName + "@" + table.id;
-    },
-    selectOption() {//绑定数据字典
-      this.$refs.selectOption.show();
     },
     saveBindOption(option) {//绑定数据字典
       this.data.options.optionData = option.name + "(" + option.type + ")";

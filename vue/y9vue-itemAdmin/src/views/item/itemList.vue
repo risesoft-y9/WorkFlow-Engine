@@ -4,8 +4,8 @@
  * @Author: zhangchongjie
  * @Date: 2022-05-05 11:38:27
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-06-03 17:26:00
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\views\item\itemList.vue
+ * @LastEditTime: 2024-06-04 16:46:31
+ * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-flowable\vue\y9vue-itemAdmin\src\views\item\itemList.vue
 -->
 <template>
     <itemTree ref="itemTreeRef" :treeApiObj="treeApiObj" @onTreeClick="onTreeClick" @onDeleteTree="onDeleteTree">
@@ -41,15 +41,6 @@
                 </div>
                 <div id="organBox" class="boxDiv">
                     <organWordConfig :currTreeNodeInfo="currTreeNodeInfo" :processDefinitionId="processDefinitionId" :selectVersion="selectVersion" :maxVersion="maxVersion" />
-                </div>
-                <div id="linkBox" class="boxDiv">
-                    <linkInfoConfig :currTreeNodeInfo="currTreeNodeInfo" />
-                </div>
-                <div id="interfaceBox" class="boxDiv">
-                    <interfaceConfig :currTreeNodeInfo="currTreeNodeInfo" />
-                </div>
-                <div id="wordBox" class="boxDiv">
-                    <wordConfig :currTreeNodeInfo="currTreeNodeInfo" :processDefinitionId="processDefinitionId"></wordConfig>
                 </div>
                 <div id="printBox" class="boxDiv">
                     <printConfig :currTreeNodeInfo="currTreeNodeInfo"></printConfig>
@@ -88,11 +79,8 @@ import formConfig from './config/formConfig/formConfig.vue';
 import permConfig from './config/permConfig/permConfig.vue';
 import opinionFrameConfig from './config/opinionFrameConfig/opinionFrameConfig.vue';
 import organWordConfig from './config/organWordConfig/organWordConfig.vue';
-import wordConfig from './config/wordConfig/wordConfig.vue';
 import printConfig from './config/printConfig/printConfig.vue';
 import signConfig from './config/signConfig/signConfig.vue'; 
-import linkInfoConfig from './config/linkInfoConfig/linkInfoConfig.vue'; 
-import interfaceConfig from './config/interfaceConfig/interfaceConfig.vue'; 
 import startNodeConfig from './config/startNodeConfig/startNodeConfig.vue'; 
 import buttonConfig from './config/buttonConfig/buttonConfig.vue';
 import viewConfig from './config/viewConfig/viewConfig.vue';
@@ -116,16 +104,13 @@ const data = reactive({
         {type:'#opinionBox',name:'意见框配置'},
         {type:'#preFormBox',name:'前置表单配置'},
         {type:'#organBox',name:'编号配置'},
-        {type:'#linkBox',name:'链接配置'},
-        {type:'#interfaceBox',name:'接口配置'},
-        {type:'#wordBox',name:'正文配置'},
         {type:'#printBox',name:'打印配置'},
         {type:'#signBox',name:'签收配置'},
         {type:'#routerBox',name:'路由配置'},
         {type:'#buttonBox',name:'按钮配置'},
         {type:'#viewBox',name:'视图配置'},
-        {type:'#mappingBindBox',name:'系统对接'},
-        {type:'#dataMoveBox',name:'数据迁移'},
+        {type:'#mappingBindBox',name:'表单字段映射'},
+        {type:'#dataMoveBox',name:'实例迁移'},
     ],
     //弹窗配置
     listDialogConfig: {

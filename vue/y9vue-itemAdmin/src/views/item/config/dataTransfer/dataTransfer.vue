@@ -1,5 +1,5 @@
 <template>
-  <y9Card :title="`流程数据迁移${currInfo.name ? ' - ' + currInfo.name : ''}`">
+  <y9Card :title="`实例迁移${currInfo.name ? ' - ' + currInfo.name : ''}`">
 		<y9Table :config="dataTableConfig" @on-curr-page-change="onCurrPageChange"
             @on-page-size-change="onPageSizeChange">
 			<template #opt_button="{row, column, index}" v-if="maxVersion != selectVersion">
