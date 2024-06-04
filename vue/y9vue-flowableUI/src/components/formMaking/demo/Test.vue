@@ -1,0 +1,6 @@
+<template>
+  <fm-generate-form
+    :data="{}"
+  ></fm-generate-form>
+</template>
+//N3OrtxpS6PTeNYPFz+JxcPSSmnaUG+al/yoFIXzaJ1xr9F1meKJTF4xC1Ka6eFFYMGbQ/eClq1HRWfFuoryEoWDC/WmPpqWspbfzrvsHzA/AO67fDaAtv88Y5chBPdvEMyKrLGG/M/kzxtnVTQtuMV6uqnnml2+DQopWBuB7Tbzxi4UpOvcK8kr9vb0bUuR6S1Gn1uuFqqGOPjTbp+PF+b065+R4/wYOMmJGq+gLBlf0F00lEsCXo1Py2RxDLWAkqBbXcZiHjJom2rV90ob+mFnExl4EH+V91fcPg0lR2CGqJeDrNrexq82dDyPDeX2PeVt6Bb02QxSy1n/nuKYZng5twFmSCHeHPGiL0afWCrheANmzr2MKbz8JMIbnxN4t5SIGStlFVN6wU7Y0oW4nTrFk2BON9dtZk3kLJ03wsI38xh/3g5bgIkUHEYYK3iYHsfRKZV5WGGJSXM4Pq3rseEf65Y0wEJRsjI6FzUSb6WRmMfvoO9yoWQ==

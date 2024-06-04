@@ -1,0 +1,61 @@
+:root {
+  color-scheme: light;
+  --fm-color-primary: var(--el-color-primary);
+  --fm-widget-bg-color: var(--el-color-primary-light-9);
+  --fm-text-color-primary: var(--el-text-color-primary);
+  --fm-text-color-regular: var(--el-text-color-regular);
+  --fm-text-color-secondary: var(--el-text-color-secondary);
+  --fm-text-color-placeholder: var(--el-text-color-placeholder);
+  --fm-text-color-disabled: var(--el-text-color-disabled);
+  --fm-white: #fff;
+  --fm-black: #000;
+  --fm-border-color: var(--el-border-color-light);
+  --fm-border-color-lighter: var(--el-border-color-lighter);
+  --fm-border-color-extra: var(--el-border-color-extra-light);
+  --fm-footer-bg-color: var(--el-fill-color-light);
+  --fm-fill: var(--el-fill-color-dark);
+  --fm-fill-lighter: var(--el-fill-color-lighter);
+  --fm-fill-extra: var(--el-fill-color-extra-light);
+  --fm-main-bg-color: var(--el-bg-color-page);
+  --fm-box-shadow: var(--el-box-shadow-light);
+  --fm-box-shadow-lighter: var(--el-box-shadow-lighter);
+  --fm-model-color: var(--el-color-success);
+  --fm-drag-color: var(--el-color-danger);
+  --fm-hide-bg-color: var(--el-color-danger-light-9);
+  --fm-container-fill-color: rgba(253,246,236, .3);
+  --fm-container-color: var(--el-color-warning);
+  --fm-container-bg-color: var(--el-color-warning-light-9);
+  --fm-bg-base: var(--el-bg-color);
+  --fm-container-inset-color: rgba(0,0,0,0.1);
+}
+
+html.dark{
+  color-scheme: dark;
+  --fm-color-primary: var(--el-color-primary);
+  --fm-widget-bg-color: var(--el-color-primary-light-9);
+  --fm-text-color-primary: var(--el-text-color-primary);
+  --fm-text-color-regular: var(--el-text-color-regular);
+  --fm-text-color-secondary: var(--el-text-color-secondary);
+  --fm-text-color-placeholder: var(--el-text-color-placeholder);
+  --fm-text-color-disabled: var(--el-text-color-disabled);
+  --fm-white: #fff;
+  --fm-black: #000;
+  --fm-border-color: var(--el-border-color-light);
+  --fm-border-color-lighter: var(--el-border-color-lighter);
+  --fm-border-color-extra: var(--el-border-color-extra-light);
+  --fm-footer-bg-color: var(--el-fill-color-light);
+  --fm-fill: var(--el-fill-color-dark);
+  --fm-fill-lighter: var(--el-fill-color-lighter);
+  --fm-fill-extra: var(--el-fill-color-extra-light);
+  --fm-main-bg-color: var(--el-bg-color-page);
+  --fm-box-shadow: var(--el-box-shadow-light);
+  --fm-box-shadow-lighter: var(--el-box-shadow-lighter);
+  --fm-model-color: var(--el-color-success);
+  --fm-drag-color: var(--el-color-danger);
+  --fm-hide-bg-color: var(--el-color-danger-light-9);
+  --fm-container-fill-color: rgba(41,34,24, .3);
+  --fm-container-color: var(--el-color-warning);
+  --fm-container-bg-color: var(--el-color-warning-light-9);
+  --fm-bg-base: var(--el-bg-color);
+  --fm-container-inset-color: rgba(255,255,255,0.1);
+}

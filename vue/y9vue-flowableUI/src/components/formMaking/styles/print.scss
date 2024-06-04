@@ -1,0 +1,28 @@
+.fm-form{
+  &.is-print{
+    background: #fff;
+
+    .print-read-label {
+      color: #000 !important;
+    }
+
+    .el-form-item__label,
+    .el-collapse-item__header,
+    .el-card__header,
+    .ant-form-item-label label,
+    .ant-collapse-header,
+    .ant-card-head{
+      color: #000 !important;
+    }
+
+    .el-collapse-item__header{
+      font-weight: bold;
+    }
+
+    .el-card,
+    .ant-card,
+    .ant-collapse-content{
+      background: #fff;
+    }
+  }
+}

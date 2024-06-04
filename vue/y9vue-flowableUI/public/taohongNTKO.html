@@ -1,0 +1,91 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2024-01-04 09:14:59
+ * @LastEditors: zhangchongjie
+ * @LastEditTime: 2024-01-04 09:56:20
+ * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6.3-ddyjs\y9-vue\y9vue-flowableUI\public\taohongNTKO.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>套红模版选择</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv=X-UA-Compatible content="IE=edge">
+<script src="./js/jquery-1.8.1.min.js" type="text/javascript"></script>
+<link type="text/css" rel="stylesheet" href="./css/listyle.css" />
+</head>
+<body style="background-color: #eee;" onload="initDocument();">
+	<div class="ui-layout-center"  style="padding-left: 0.5%; width: 99.2%;">
+		<div>
+			<table width="100%" border="0" cellpadding="0" cellspacing="0" class="er_title">
+				<tr>
+				<td width="1%" style="padding: 0px;"></td>
+				<td class="er_title_font" id="title1">可选套红模板</td>
+				<td></td>
+				</tr>
+			</table>
+		</div>
+		<div style="overflow: auto; width: 100%" class="ui-layout-content" id="ui-layout-content">
+		<table class="simple" width="430px" border="0" align="center">
+		</table>
+		</div>  
+  </div>
+</body>
+<script language="JavaScript" type="text/javascript">
+	var currentBureauGuid = "";
+	var userId = "";
+	var tenantId = "";
+	var apiCtx = "";
+	var positionId = "";
+	function getQueryString(name) {
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+		var r = window.location.search.substr(1).match(reg);
+		if (r != null) return unescape(r[2]);
+		return null;
+	}
+	function initDocument(){
+		currentBureauGuid = getQueryString('currentBureauGuid');
+		tenantId = getQueryString('tenantId');
+        userId = getQueryString('userId');
+		positionId = getQueryString('positionId');
+		apiCtx = getQueryString('apiCtx');
+		buildTaohongTemplate();
+	}
+	function buildTaohongTemplate(){
+		var url = apiCtx + "services/ntkoForm/list";
+		$.ajax({
+			 data : {
+				 currentBureauGuid:currentBureauGuid,
+				 tenantId : tenantId,
+				 userId : userId,
+				 positionId : positionId
+			 },
+		     type: 'POST',
+		     dataType:"json",
+		     async: false,
+		     url:  url,
+		     success:function(data){
+		    	 var divtemp="<div align=\"center\"><label>没有找到可用的套红模板</label></div>";
+				 var trtemp="";
+				 $.each(data,function(i,item){
+						if(item.hasTaoHongTemplate==0){
+							$(".ui-layout-content").prepend(divtemp);
+						}else{
+							trtemp=trtemp+"<tr><td class=\"li2_td_left\" style=\"width: 140px;\"><input type=\"radio\" name=\"taohong\" onclick=\"setValue(this)\" value=\""+item.templateGuid+"|"+item.template_fileName+"|"+item.templateType+" \"> "+item.template_fileName+"  </td></tr>"
+						}
+				 });
+				 $(".simple").prepend(trtemp);
+		     }
+		 });
+	}
+	
+	function setValue(obj){
+		var v = obj.value.split("|");
+		parent.DoTaoHong(v[0]);
+		parent.layer.closeAll();
+	}
+
+</script>
+</html>

@@ -1,0 +1,293 @@
+@mixin mobileRender {
+  .fm-form{
+    width: 100% !important;
+  }
+
+  .el-form{
+    width: 100% !important;
+  }
+
+  .widget-inline-list{
+    >div{
+      width: 100% !important;
+      margin-right: 0 !important;
+    }
+  }
+
+  .fm-inline-container{
+    .fm-form-item{
+      margin-right: 0 !important;
+    }
+  }
+
+  .widget-view{
+
+    .el-form-item{
+
+      .el-button:not(.is-circle,.el-button--text,.is-link){
+        width: 100% !important;
+      }
+
+      .el-select{
+        width: 100% !important;
+      }
+
+      .el-date-editor{
+        width: 100% !important;
+      }
+
+      .el-cascader{
+        width: 100% !important;
+      }
+
+      .el-pagination .el-pagination__total{
+        display: none;
+      }
+
+      .el-transfer{
+        display: flex;
+        align-items: center;
+
+        .el-transfer-panel .el-transfer-panel__header{
+          padding-left: 5px;
+          position: relative;
+
+          .el-checkbox{
+            margin-right: 0;
+          }
+
+          .el-checkbox__label{
+            font-size: 14px;
+
+            >span{
+              right: 5px;
+              display: inline-block;
+              position: absolute;
+            }
+          }
+        }
+
+        .el-transfer-panel__body{
+          .el-checkbox{
+            margin-right: 0;
+          }
+
+          .el-transfer-panel__item{
+            padding-left: 5px;
+          }
+        }
+
+        .el-transfer__buttons{
+          padding: 5px;
+
+          .el-button{
+            padding: 0px;
+            margin: 0;
+
+            +.el-button{
+              margin-top: 5px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .fm-form-item{
+    width: 100% !important;
+
+    .el-button:not(.is-circle,.el-button--text,.is-link){
+      width: 100% !important;
+    }
+
+    .el-select{
+      width: 100% !important;
+    }
+
+    .el-date-editor{
+      width: 100% !important;
+    }
+
+    .el-cascader{
+      width: 100% !important;
+    }
+
+    .el-pagination .el-pagination__total{
+      display: none;
+    }
+
+    .el-transfer{
+      display: flex;
+      align-items: center;
+
+      .el-transfer-panel .el-transfer-panel__header{
+        padding-left: 5px;
+        position: relative;
+
+        .el-checkbox{
+          margin-right: 0;
+        }
+
+        .el-checkbox__label{
+          font-size: 14px;
+
+          >span{
+            right: 5px;
+            display: inline-block;
+            position: absolute;
+          }
+        }
+      }
+
+      .el-transfer-panel__body{
+        .el-checkbox{
+          margin-right: 0;
+        }
+
+        .el-transfer-panel__item{
+          padding-left: 5px;
+        }
+      }
+
+      .el-transfer__buttons{
+        padding: 5px;
+
+        .el-button{
+          padding: 0px;
+          margin: 0;
+
+          +.el-button{
+            margin-top: 5px;
+          }
+        }
+      }
+    }
+
+    .ant-form-item{
+      .ant-form-item-control-wrapper{
+        width: 100% !important;
+      }
+
+      .ant-picker{
+        width: 100% !important;
+      }
+
+      .ant-time-picker{
+        width: 100% !important;
+      }
+
+      .ant-calendar-picker{
+        width: 100% !important;
+      }
+
+      .ant-btn:not(.ant-btn-circle,.ant-btn-link){
+        width: 100% !important;
+      }
+
+      .ant-transfer{
+        display: flex;
+        align-items: center;
+      }
+
+      .ant-pagination{
+        .ant-pagination-total-text{
+          display: none;
+        }
+      }
+    }
+  }
+
+  .el-picker-panel{
+    width: 100% !important;
+    margin: 0;
+    left: 0 !important;
+    right: 0 !important;
+
+    .el-time-range-picker__cell{
+      min-width: 150px;
+    }
+
+    .el-picker-panel__content{
+      padding: 2px;
+
+      .el-date-table th{
+        padding: 0;
+      }
+    }
+
+    .el-picker-panel__body{
+      min-width: 100%;
+    }
+
+    .el-date-range-picker__header div{
+      font-size: 12px;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    .el-date-range-picker__time-header .is-right .el-time-panel{
+      right: 0;
+      left: auto;
+    }
+  }
+
+  .el-cascader__dropdown{
+    max-width: 100%;
+    // left: 0 !important;
+
+    .el-cascader-menu{
+      min-width: 0;
+    }
+  }
+
+  .el-scrollbar {
+    > .el-scrollbar__bar {
+        opacity: 1 !important;
+    }
+  }
+
+  .fm-generate-ant-dialog{
+    width: 100% !important;
+  }
+
+  .ant-calendar-picker-container{
+    .ant-calendar-range{
+      width: 100%;
+    }
+
+    .ant-calendar-range-middle{
+      padding-left: 50%;
+    }
+
+    .ant-calendar-range-right .ant-calendar-date-input-wrap{
+      margin-left: 0;
+    }
+  }
+
+  .ant-cascader-menus{
+    max-width: 100% !important;
+
+    .ant-cascader-menus-content{
+      display: flex;
+    }
+
+    .ant-cascader-menu{
+      min-width: 0;
+    }
+  }
+
+  .ant-picker-range-wrapper{
+    .ant-picker-date-panel{
+      width: auto;
+    }
+    .ant-picker-content{
+      width: auto !important;
+    }
+  }
+
+  .widget-table-content{
+    .widget-table-col{
+      min-height: 50px !important
+    }
+  }
+}
