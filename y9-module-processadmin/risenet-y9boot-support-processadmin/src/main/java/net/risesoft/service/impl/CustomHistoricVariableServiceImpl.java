@@ -1,30 +1,29 @@
 package net.risesoft.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import net.risesoft.service.CustomHistoricVariableService;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.engine.HistoryService;
+import org.flowable.variable.api.history.HistoricVariableInstance;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.engine.HistoryService;
-import org.flowable.variable.api.history.HistoricVariableInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import net.risesoft.service.CustomHistoricVariableService;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service(value = "customHistoricVariableService")
 public class CustomHistoricVariableServiceImpl implements CustomHistoricVariableService {
 
-    @Autowired
-    private HistoryService historyService;
+    private final HistoryService historyService;
 
     @Override
     public List<HistoricVariableInstance> getByProcessInstanceId(String processInstanceId) {

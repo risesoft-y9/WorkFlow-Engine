@@ -1,14 +1,11 @@
 package net.risesoft.service.impl;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipInputStream;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.enums.DialectEnum;
+import net.risesoft.enums.ItemProcessStateTypeEnum;
+import net.risesoft.service.CustomRepositoryService;
+import net.risesoft.util.Y9SqlPaginationUtil;
+import net.risesoft.y9.Y9LoginUserHolder;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -18,34 +15,34 @@ import org.flowable.engine.RuntimeService;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ProcessInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import net.risesoft.enums.DialectEnum;
-import net.risesoft.enums.ItemProcessStateTypeEnum;
-import net.risesoft.service.CustomRepositoryService;
-import net.risesoft.util.Y9SqlPaginationUtil;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipInputStream;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service(value = "customRepositoryService")
 public class CustomRepositoryServiceImpl implements CustomRepositoryService {
 
-    @Autowired
-    private RepositoryService repositoryService;
+    private final RepositoryService repositoryService;
 
-    @Autowired
-    private RuntimeService runtimeService;
+    private final RuntimeService runtimeService;
 
-    @Autowired
-    protected ProcessEngineConfiguration processEngineConfiguration;
+    private final ProcessEngineConfiguration processEngineConfiguration;
 
     @Override
     public Map<String, Object> delete(String deploymentId) {

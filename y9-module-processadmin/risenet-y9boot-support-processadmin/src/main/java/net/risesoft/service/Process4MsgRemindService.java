@@ -1,15 +1,6 @@
 package net.risesoft.service;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
@@ -27,6 +18,14 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.task.service.delegate.DelegateTask;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 消息提醒
@@ -39,29 +38,23 @@ import net.risesoft.y9.util.Y9Util;
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@RequiredArgsConstructor
 @Service(value = "process4MsgRemindService")
 public class Process4MsgRemindService {
 
-    @Autowired
-    private MsgRemindInfoApi msgRemindInfoManager;
+    private final  MsgRemindInfoApi msgRemindInfoManager;
 
-    @Autowired
-    private ProcessParamApi processParamManager;
+    private final  ProcessParamApi processParamManager;
 
-    @Autowired
-    private PersonApi personManager;
+    private final  PersonApi personManager;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final  PositionApi positionApi;
 
-    @Autowired
-    private RemindInstanceApi remindInstanceManager;
+    private final  RemindInstanceApi remindInstanceManager;
 
-    @Autowired
-    private OfficeDoneInfoApi officeDoneInfoManager;
+    private final  OfficeDoneInfoApi officeDoneInfoManager;
 
-    @Autowired
-    private Y9Properties y9Conf;
+    private final  Y9Properties y9Conf;
 
     /**
      * 流程办结消息提醒

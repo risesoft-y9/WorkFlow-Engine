@@ -1,15 +1,26 @@
 package net.risesoft.api;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.RequiredArgsConstructor;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
+import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.ProcessTrackApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.processadmin.BpmnModelApi;
+import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
+import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.ProcessTrackModel;
+import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.CustomHistoricActivityService;
+import net.risesoft.service.CustomHistoricProcessService;
+import net.risesoft.service.CustomHistoricTaskService;
+import net.risesoft.service.CustomHistoricVariableService;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.util.SysVariables;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9Util;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.EndEvent;
@@ -32,7 +43,6 @@ import org.flowable.image.ProcessDiagramGenerator;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.variable.api.history.HistoricVariableInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,25 +52,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.ProcessTrackApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.processadmin.BpmnModelApi;
-import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
-import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.model.itemadmin.ProcessTrackModel;
-import net.risesoft.model.platform.Person;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.CustomHistoricActivityService;
-import net.risesoft.service.CustomHistoricProcessService;
-import net.risesoft.service.CustomHistoricTaskService;
-import net.risesoft.service.CustomHistoricVariableService;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.util.SysVariables;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9Util;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 流程图接口
@@ -70,48 +76,38 @@ import net.risesoft.y9.util.Y9Util;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/bpmnModel")
 public class BpmnModelApiImpl implements BpmnModelApi {
 
-    @Autowired
-    private CustomHistoricProcessService customHistoricProcessService;
+    private final CustomHistoricProcessService customHistoricProcessService;
 
-    @Autowired
-    private CustomHistoricTaskService customHistoricTaskService;
+    private final CustomHistoricTaskService customHistoricTaskService;
 
-    @Autowired
-    private CustomHistoricVariableService customHistoricVariableService;
+    private final CustomHistoricVariableService customHistoricVariableService;
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
-    @Autowired
-    private RuntimeService runtimeService;
+    private final RuntimeService runtimeService;
 
-    @Autowired
-    private CustomHistoricActivityService customHistoricActivityService;
+    private final CustomHistoricActivityService customHistoricActivityService;
 
-    @Autowired
-    private RepositoryService repositoryService;
+    private final RepositoryService repositoryService;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
-    @Autowired
-    private OfficeDoneInfoApi officeDoneInfoManager;
+    private final OfficeDoneInfoApi officeDoneInfoManager;
 
-    @Autowired
-    private ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamManager;
 
-    @Autowired
-    private ProcessTrackApi processTrackManager;
+    private final ProcessTrackApi processTrackManager;
 
     /**
      * 删除模型
      *
      * @param tenantId 租户id
-     * @param modelId 模型id
-     * @return
+     * @param modelId  模型id
+     * @return Y9Result<String>
      */
     @Override
     @RequestMapping(value = "/deleteModel", method = RequestMethod.POST, produces = "application/json")
@@ -124,7 +120,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * 根据Model部署流程
      *
      * @param tenantId 租户id
-     * @param modelId 模型id
+     * @param modelId  模型id
      * @return
      */
     @Override
@@ -137,7 +133,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     /**
      * 生成流程图
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 流程实例id
      * @return byte[]
      * @throws Exception Exception
@@ -198,7 +194,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     /**
      * 获取流程图模型
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 流程实例id
      * @return Map<String, Object>
      * @throws Exception Exception
@@ -221,7 +217,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         BpmnModel bpmnModel = repositoryService.getBpmnModel(pi.getProcessDefinitionId());
         Map<String, GraphicInfo> infoMap = bpmnModel.getLocationMap();
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
-        List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
+        List<FlowElement> flowElements = (List<FlowElement>) process.getFlowElements();
         for (FlowElement flowElement : flowElements) {
             Map<String, Object> nodeMap = new HashMap<String, Object>(16);
             if (flowElement instanceof StartEvent startEvent) {
@@ -260,9 +256,10 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 list = userTask.getOutgoingFlows();
                 for (SequenceFlow tr : list) {
                     FlowElement fe = tr.getTargetFlowElement();
-                    if (fe instanceof ExclusiveGateway gateway) {
+                    if (fe instanceof ExclusiveGateway) {
                         // 目标节点时排他网关时，需要再次获取输出路线
                         List<SequenceFlow> outgoingFlows = new ArrayList<SequenceFlow>();
+                        ExclusiveGateway gateway = (ExclusiveGateway) fe;
                         outgoingFlows = gateway.getOutgoingFlows();
                         for (SequenceFlow sf : outgoingFlows) {
                             FlowElement element = sf.getTargetFlowElement();
@@ -342,7 +339,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     /**
      * 获取流程图数据
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 流程实例id
      * @return Map<String, Object>
      * @throws Exception
@@ -408,7 +405,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 }
                 if (type.contains(SysVariables.ENDEVENT)) {
                     num += 1;
-                    String completer = (String)listMap.get(listMap.size() - 1).get("title");
+                    String completer = (String) listMap.get(listMap.size() - 1).get("title");
                     if (completer.contains("主办")) {
                         completer = completer.substring(0, completer.length() - 4);
                     }
@@ -492,9 +489,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             int newnum = 0;
             for (int i = 0; i < listMap.size(); i++) {
                 Map<String, Object> map = listMap.get(i);
-                int currnum = (int)map.get("num");
+                int currnum = (int) map.get("num");
                 if (currnum == 0) {
-                    parentId = (String)map.get("id");
+                    parentId = (String) map.get("id");
                     map.put("parentId", "");
                 }
                 if (currnum != oldnum) {
@@ -505,7 +502,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     if (newnum != currnum) {
                         oldnum = newnum;
                         newnum = currnum;
-                        parentId = (String)listMap.get(i - 1).get("id");
+                        parentId = (String) listMap.get(i - 1).get("id");
                         map.put("parentId", parentId);
                     }
                 }
@@ -514,14 +511,14 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             List<Map<String, Object>> childrenMap = new ArrayList<Map<String, Object>>();
             for (int i = listMap.size() - 1; i >= 0; i--) {
                 Map<String, Object> map = listMap.get(i);
-                String id = (String)map.get("id");
+                String id = (String) map.get("id");
                 if (StringUtils.isNotBlank(parentId) && !parentId.equals(id)) {
-                    parentId = (String)map.get("parentId");
+                    parentId = (String) map.get("parentId");
                     childrenMap.add(map);
                 } else {
                     map.put("children", childrenMap);
                     map.put("collapsed", false);
-                    parentId = (String)map.get("parentId");
+                    parentId = (String) map.get("parentId");
                     childrenMap = new ArrayList<Map<String, Object>>();
                     childrenMap.add(map);
                     if ("".equals(parentId)) {
@@ -553,7 +550,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * 获取流程设计模型xml
      *
      * @param tenantId 租户id
-     * @param modelId 模型id
+     * @param modelId  模型id
      * @return
      */
     @Override
@@ -568,8 +565,8 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * 导入流程模型
      *
      * @param tenantId 租户id
-     * @param userId 用户id
-     * @param file 模型文件
+     * @param userId   用户id
+     * @param file     模型文件
      * @return
      */
     @Override
@@ -586,9 +583,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * 保存模型xml
      *
      * @param tenantId 租户id
-     * @param userId 用户id
-     * @param modelId 模型id
-     * @param file 模型文件
+     * @param userId   用户id
+     * @param modelId  模型id
+     * @param file     模型文件
      * @return
      */
     @Override

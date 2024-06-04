@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import jakarta.annotation.Resource;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -34,7 +32,7 @@ import org.apache.http.util.EntityUtils;
 import org.flowable.engine.delegate.event.impl.FlowableSequenceFlowTakenEventImpl;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
 import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -63,26 +61,29 @@ import net.risesoft.y9.json.Y9JsonUtil;
 import cn.hutool.json.JSONObject;
 
 /**
- *
  * @author zhangchongjie
  * @date 2024/05/29
  */
+@Slf4j
 @EnableAsync
 @Service(value = "interfaceUtilService")
-@Slf4j
 public class InterfaceUtilService {
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private ErrorLogApi errorLogApi;
+    private final ErrorLogApi errorLogApi;
 
-    @Autowired
-    private ItemInterfaceApi itemInterfaceApi;
+    private final ItemInterfaceApi itemInterfaceApi;
+
+    public InterfaceUtilService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
+        ProcessParamApi processParamApi, ErrorLogApi errorLogApi, ItemInterfaceApi itemInterfaceApi) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.processParamApi = processParamApi;
+        this.errorLogApi = errorLogApi;
+        this.itemInterfaceApi = itemInterfaceApi;
+    }
 
     /**
      * 异步调用接口
@@ -94,7 +95,9 @@ public class InterfaceUtilService {
      * @return
      */
     @Async
-    public Future<Boolean> asynInterface(final String tenantId, final String positionId, final String processSerialNumber, final String itemId, final InterfaceModel info, final String processInstanceId, final String taskId, final String taskKey) {
+    public Future<Boolean> asynInterface(final String tenantId, final String positionId,
+        final String processSerialNumber, final String itemId, final InterfaceModel info,
+        final String processInstanceId, final String taskId, final String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
@@ -122,7 +125,8 @@ public class InterfaceUtilService {
      * @param info
      * @throws Exception
      */
-    public void dataHandling(String processSerialNumber, String processInstanceId, Map<String, Object> map, List<InterfaceParamsModel> paramsList, InterfaceModel info) throws Exception {
+    public void dataHandling(String processSerialNumber, String processInstanceId, Map<String, Object> map,
+        List<InterfaceParamsModel> paramsList, InterfaceModel info) throws Exception {
         if (map != null && paramsList != null && paramsList.size() > 0) {
             Connection connection = null;
             try {
@@ -158,7 +162,8 @@ public class InterfaceUtilService {
                         String fieldName = model.getColumnName();
                         String parameterName = model.getParameterName();
                         sqlStr.append(fieldName + "=");
-                        sqlStr.append(StringUtils.isNotBlank((String)map.get(parameterName)) ? "'" + map.get(parameterName) + "'" : "''");
+                        sqlStr.append(StringUtils.isNotBlank((String)map.get(parameterName))
+                            ? "'" + map.get(parameterName) + "'" : "''");
                         isHaveField = true;
                     }
                 }
@@ -173,7 +178,8 @@ public class InterfaceUtilService {
                 final PrintWriter print = new PrintWriter(msgResult);
                 e.printStackTrace(print);
                 String msg = msgResult.toString();
-                saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, "dataHandling", "", info.getInterfaceAddress(), msg);
+                saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, "dataHandling", "",
+                    info.getInterfaceAddress(), msg);
                 if (info.getAbnormalStop().equals("1")) {
                     throw new Exception("调用接口失败_dataHandling：" + info.getInterfaceAddress());
                 }
@@ -200,7 +206,8 @@ public class InterfaceUtilService {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public void getMethod(final String processSerialNumber, final String itemId, final InterfaceModel info, final String processInstanceId, final String taskId, final String taskKey) throws Exception {
+    public void getMethod(final String processSerialNumber, final String itemId, final InterfaceModel info,
+        final String processInstanceId, final String taskId, final String taskKey) throws Exception {
         try {
             HttpClient client = new HttpClient();
             GetMethod method = new GetMethod();
@@ -208,14 +215,17 @@ public class InterfaceUtilService {
             // 默认添加请求头
             method.addRequestHeader("auth-positionId", Y9LoginUserHolder.getPositionId());
             method.addRequestHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
-            Y9Result<List<InterfaceParamsModel>> y9Result = itemInterfaceApi.getInterfaceParams(Y9LoginUserHolder.getTenantId(), itemId, info.getId());
+            Y9Result<List<InterfaceParamsModel>> y9Result =
+                itemInterfaceApi.getInterfaceParams(Y9LoginUserHolder.getTenantId(), itemId, info.getId());
             List<NameValuePair> nameValuePairs = new ArrayList<>();
             if (y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
-                List<Map<String, Object>> list = getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info);
+                List<Map<String, Object>> list =
+                    getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info);
                 for (InterfaceParamsModel model : y9Result.getData()) {
                     if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST.getValue())) {
                         // 请求参数
-                        if (model.getParameterType().equals(ItemInterfaceTypeEnum.PARAMS.getValue()) || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY.getValue())) {
+                        if (model.getParameterType().equals(ItemInterfaceTypeEnum.PARAMS.getValue())
+                            || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY.getValue())) {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
                                 if (map.containsKey(model.getColumnName())) {
@@ -248,13 +258,15 @@ public class InterfaceUtilService {
             client.getHttpConnectionManager().getParams().setSoTimeout(10000);
             int httpCode = client.executeMethod(method);
             if (httpCode == HttpStatus.SC_OK) {
-                String response = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+                String response = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8),
+                    StandardCharsets.UTF_8);
                 ObjectMapper objectMapper = new ObjectMapper();
                 // 将JSON字符串转换为Java对象
                 Y9Result<Map<String, Object>> result = objectMapper.readValue(response, Y9Result.class);
                 if (!result.isSuccess()) {
                     if (info.getAbnormalStop().equals("1")) {// 接口异常中断发送
-                        saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey, info.getInterfaceAddress(), response);
+                        saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey,
+                            info.getInterfaceAddress(), response);
                         throw new Exception("调用接口失败_返回结果：" + response + "|" + info.getInterfaceAddress());
                     }
                 } else {
@@ -262,7 +274,8 @@ public class InterfaceUtilService {
                 }
                 LOGGER.info("*********************接口返回结果:response={}", response);
             } else {
-                saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey, info.getInterfaceAddress(), "httpCode:" + httpCode);
+                saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey,
+                    info.getInterfaceAddress(), "httpCode:" + httpCode);
                 if (info.getAbnormalStop().equals("1")) {
                     throw new Exception("调用接口失败_返回状态：" + httpCode + "|" + info.getInterfaceAddress());
                 }
@@ -272,7 +285,8 @@ public class InterfaceUtilService {
             final PrintWriter print = new PrintWriter(msgResult);
             e.printStackTrace(print);
             String msg = msgResult.toString();
-            saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey, info.getInterfaceAddress(), msg);
+            saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey,
+                info.getInterfaceAddress(), msg);
             if (info.getAbnormalStop().equals("1")) {
                 throw new Exception("调用接口失败_getMethod：" + info.getInterfaceAddress());
             }
@@ -289,7 +303,8 @@ public class InterfaceUtilService {
      * @return
      * @throws Exception
      */
-    public List<Map<String, Object>> getRequestParams(List<InterfaceParamsModel> list, String processSerialNumber, String processInstanceId, InterfaceModel info) throws Exception {
+    public List<Map<String, Object>> getRequestParams(List<InterfaceParamsModel> list, String processSerialNumber,
+        String processInstanceId, InterfaceModel info) throws Exception {
         Connection connection = null;
         try {
             String tableName = "";
@@ -320,7 +335,8 @@ public class InterfaceUtilService {
             final PrintWriter print = new PrintWriter(msgResult);
             e.printStackTrace(print);
             String msg = msgResult.toString();
-            saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, "getRequestParams", "", info.getInterfaceAddress(), msg);
+            saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, "getRequestParams", "",
+                info.getInterfaceAddress(), msg);
             if (info.getAbnormalStop().equals("1")) {
                 throw new Exception("调用接口失败_getRequestParams：" + info.getInterfaceAddress());
             }
@@ -343,7 +359,8 @@ public class InterfaceUtilService {
      * @param variables
      * @param string
      */
-    public void interfaceCallByProcess(ExecutionEntityImpl executionEntity, Map<String, Object> variables, String condition) throws Exception {
+    public void interfaceCallByProcess(ExecutionEntityImpl executionEntity, Map<String, Object> variables,
+        String condition) throws Exception {
         String processDefinitionId = executionEntity.getProcessDefinitionId();
         String taskDefinitionKey = "";
         String tenantId = "";
@@ -355,9 +372,11 @@ public class InterfaceUtilService {
         try {
             tenantId = (String)variables.get("tenantId");
             processSerialNumber = (String)variables.get("processSerialNumber");
-            ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             itemId = processParamModel.getItemId();
-            y9Result = itemInterfaceApi.getInterface(tenantId, itemId, taskDefinitionKey, processDefinitionId, condition);
+            y9Result =
+                itemInterfaceApi.getInterface(tenantId, itemId, taskDefinitionKey, processDefinitionId, condition);
         } catch (Exception e) {
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
@@ -385,7 +404,8 @@ public class InterfaceUtilService {
      * @param entity0
      * @param condition
      */
-    public void interfaceCallBySequenceFlow(FlowableSequenceFlowTakenEventImpl flow, String condition) throws Exception {
+    public void interfaceCallBySequenceFlow(FlowableSequenceFlowTakenEventImpl flow, String condition)
+        throws Exception {
         String processDefinitionId = flow.getProcessDefinitionId();
         String taskDefinitionKey = flow.getId();
         String tenantId = "";
@@ -400,7 +420,8 @@ public class InterfaceUtilService {
             ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
             itemId = processParamModel.getItemId();
             processSerialNumber = processParamModel.getProcessSerialNumber();
-            y9Result = itemInterfaceApi.getInterface(tenantId, itemId, taskDefinitionKey, processDefinitionId, condition);
+            y9Result =
+                itemInterfaceApi.getInterface(tenantId, itemId, taskDefinitionKey, processDefinitionId, condition);
         } catch (Exception e) {
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
@@ -411,10 +432,12 @@ public class InterfaceUtilService {
         if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
-                    asynInterface(tenantId, positionId, processSerialNumber, itemId, info, processInstanceId, flow.getId(), taskDefinitionKey);
+                    asynInterface(tenantId, positionId, processSerialNumber, itemId, info, processInstanceId,
+                        flow.getId(), taskDefinitionKey);
 
                 } else if (info.getAsyn().equals("0")) {
-                    syncInterface(processSerialNumber, itemId, info, processInstanceId, flow.getId(), taskDefinitionKey);
+                    syncInterface(processSerialNumber, itemId, info, processInstanceId, flow.getId(),
+                        taskDefinitionKey);
 
                 }
             }
@@ -430,7 +453,8 @@ public class InterfaceUtilService {
      * @param condition
      * @throws Exception
      */
-    public void interfaceCallByTask(DelegateTask task, Map<String, Object> variables, String condition) throws Exception {
+    public void interfaceCallByTask(DelegateTask task, Map<String, Object> variables, String condition)
+        throws Exception {
         String processDefinitionId = task.getProcessDefinitionId();
         String taskDefinitionKey = task.getTaskDefinitionKey();
         String tenantId = "";
@@ -441,23 +465,28 @@ public class InterfaceUtilService {
         try {
             tenantId = (String)variables.get("tenantId");
             processSerialNumber = (String)variables.get("processSerialNumber");
-            ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             itemId = processParamModel.getItemId();
-            y9Result = itemInterfaceApi.getInterface(tenantId, itemId, taskDefinitionKey, processDefinitionId, condition);
+            y9Result =
+                itemInterfaceApi.getInterface(tenantId, itemId, taskDefinitionKey, processDefinitionId, condition);
         } catch (Exception e) {
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
             String msg = result.toString();
-            saveErrorLog(tenantId, task.getProcessInstanceId(), task.getId(), task.getTaskDefinitionKey(), "interfaceCallByTask", msg);
+            saveErrorLog(tenantId, task.getProcessInstanceId(), task.getId(), task.getTaskDefinitionKey(),
+                "interfaceCallByTask", msg);
         }
         if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
-                    asynInterface(tenantId, positionId, processSerialNumber, itemId, info, task.getProcessInstanceId(), task.getId(), task.getTaskDefinitionKey());
+                    asynInterface(tenantId, positionId, processSerialNumber, itemId, info, task.getProcessInstanceId(),
+                        task.getId(), task.getTaskDefinitionKey());
 
                 } else if (info.getAsyn().equals("0")) {
-                    syncInterface(processSerialNumber, itemId, info, task.getProcessInstanceId(), task.getId(), task.getTaskDefinitionKey());
+                    syncInterface(processSerialNumber, itemId, info, task.getProcessInstanceId(), task.getId(),
+                        task.getTaskDefinitionKey());
 
                 }
             }
@@ -474,7 +503,8 @@ public class InterfaceUtilService {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public void postMethod(final String processSerialNumber, final String itemId, final InterfaceModel info, final String processInstanceId, final String taskId, final String taskKey) throws Exception {
+    public void postMethod(final String processSerialNumber, final String itemId, final InterfaceModel info,
+        final String processInstanceId, final String taskId, final String taskKey) throws Exception {
         CloseableHttpClient httpclient = null;
         try {
             httpclient = HttpClients.createDefault();
@@ -483,14 +513,17 @@ public class InterfaceUtilService {
             // 默认添加请求头
             httpPost.addHeader("auth-positionId", Y9LoginUserHolder.getPositionId());
             httpPost.addHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
-            Y9Result<List<InterfaceParamsModel>> y9Result = itemInterfaceApi.getInterfaceParams(Y9LoginUserHolder.getTenantId(), itemId, info.getId());
+            Y9Result<List<InterfaceParamsModel>> y9Result =
+                itemInterfaceApi.getInterfaceParams(Y9LoginUserHolder.getTenantId(), itemId, info.getId());
             if (y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
-                List<Map<String, Object>> list = getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info);
+                List<Map<String, Object>> list =
+                    getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info);
                 Map<String, Object> paramsMap = new HashMap<String, Object>();
                 for (InterfaceParamsModel model : y9Result.getData()) {
                     if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST.getValue())) {
                         // 请求参数
-                        if (model.getParameterType().equals(ItemInterfaceTypeEnum.PARAMS.getValue()) || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY.getValue())) {
+                        if (model.getParameterType().equals(ItemInterfaceTypeEnum.PARAMS.getValue())
+                            || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY.getValue())) {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
                                 if (map.containsKey(model.getColumnName())) {
@@ -520,7 +553,8 @@ public class InterfaceUtilService {
             }
             String urlStr = httpPost.getURI().toString();
             httpPost.setURI(new URI(urlStr));
-            RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(10000).setConnectionRequestTimeout(10000).setSocketTimeout(10000).build();
+            RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(10000)
+                .setConnectionRequestTimeout(10000).setSocketTimeout(10000).build();
             httpPost.setConfig(requestConfig);
             CloseableHttpResponse response = httpclient.execute(httpPost);
             int httpCode = response.getStatusLine().getStatusCode();
@@ -530,7 +564,8 @@ public class InterfaceUtilService {
                 // 将JSON字符串转换为Java对象
                 Y9Result<Map<String, Object>> result = objectMapper.readValue(resp, Y9Result.class);
                 if (!result.isSuccess()) {
-                    saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey, info.getInterfaceAddress(), resp);
+                    saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey,
+                        info.getInterfaceAddress(), resp);
                     if (info.getAbnormalStop().equals("1")) {// 接口异常中断发送
                         throw new Exception("调用接口失败_返回结果：" + resp + "|" + info.getInterfaceAddress());
                     }
@@ -539,7 +574,8 @@ public class InterfaceUtilService {
                 }
                 LOGGER.info("*********************接口返回结果:response={}", resp);
             } else {
-                saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey, info.getInterfaceAddress(), "httpCode:" + httpCode);
+                saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey,
+                    info.getInterfaceAddress(), "httpCode:" + httpCode);
                 if (info.getAbnormalStop().equals("1")) {
                     throw new Exception("调用接口失败_返回状态：" + httpCode + "|" + info.getInterfaceAddress());
                 }
@@ -549,7 +585,8 @@ public class InterfaceUtilService {
             final PrintWriter print = new PrintWriter(msgResult);
             e.printStackTrace(print);
             String msg = msgResult.toString();
-            saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey, info.getInterfaceAddress(), msg);
+            saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey,
+                info.getInterfaceAddress(), msg);
             if (info.getAbnormalStop().equals("1")) {
                 throw new Exception("调用接口失败_postMethod：" + info.getInterfaceAddress());
             }
@@ -576,7 +613,8 @@ public class InterfaceUtilService {
      * @return
      */
     @Async
-    public Future<Boolean> saveErrorLog(final String tenantId, final String processInstanceId, final String taskId, final String taskKey, final String interfaceAddress, final String msg) {
+    public Future<Boolean> saveErrorLog(final String tenantId, final String processInstanceId, final String taskId,
+        final String taskKey, final String interfaceAddress, final String msg) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String time = sdf.format(new Date());
@@ -607,7 +645,8 @@ public class InterfaceUtilService {
      * @param info
      * @return
      */
-    public void syncInterface(final String processSerialNumber, final String itemId, final InterfaceModel info, final String processInstanceId, final String taskId, final String taskKey) throws Exception {
+    public void syncInterface(final String processSerialNumber, final String itemId, final InterfaceModel info,
+        final String processInstanceId, final String taskId, final String taskKey) throws Exception {
         if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_GET.getValue())) {
             getMethod(processSerialNumber, itemId, info, processInstanceId, taskId, taskKey);
 

@@ -1,31 +1,30 @@
 package net.risesoft.service.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.impl.HistoricProcessInstanceQueryProperty;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.service.CustomDoingService;
 import net.risesoft.util.FlowableModelConvertUtil;
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.impl.HistoricProcessInstanceQueryProperty;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service(value = "customDoingService")
 public class CustomDoingServiceImpl implements CustomDoingService {
 
-    @Autowired
-    private RuntimeService runtimeService;
+    private final RuntimeService runtimeService;
 
     @Override
     public long getCountByUserId(String userId) {

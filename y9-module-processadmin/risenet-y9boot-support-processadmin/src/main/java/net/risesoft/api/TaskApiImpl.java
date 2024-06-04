@@ -1,24 +1,6 @@
 package net.risesoft.api;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.task.api.DelegationState;
-import org.flowable.task.api.Task;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.openfeign.SpringQueryMap;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -28,6 +10,23 @@ import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.task.api.DelegationState;
+import org.flowable.task.api.Task;
+import org.springframework.cloud.openfeign.SpringQueryMap;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 正在运行任务相关接口
@@ -37,17 +36,15 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/task")
 public class TaskApiImpl implements TaskApi {
 
-    @Autowired
-    private CustomTaskService customTaskService;
+    private final CustomTaskService customTaskService;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
-    @Autowired
-    private PositionApi positionManager;
+    private final PositionApi positionManager;
 
     /**
      * 签收任务

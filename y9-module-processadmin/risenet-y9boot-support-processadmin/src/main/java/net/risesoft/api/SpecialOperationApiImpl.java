@@ -1,15 +1,6 @@
 package net.risesoft.api;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.SpecialOperationApi;
@@ -18,6 +9,14 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.service.OperationService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 退回，收回，重定向，特殊办结接口
@@ -27,17 +26,15 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/specialOperation")
 public class SpecialOperationApiImpl implements SpecialOperationApi {
 
-    @Autowired
-    private OperationService operationService;
+    private final OperationService operationService;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
-    @Autowired
-    private PositionApi positionManager;
+    private final PositionApi positionManager;
 
     /**
      * 重定向

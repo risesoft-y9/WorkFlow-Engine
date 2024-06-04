@@ -1,18 +1,17 @@
 package net.risesoft.api;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.service.CustomProcessDefinitionService;
+import net.risesoft.service.FlowableTenantInfoHolder;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.service.CustomProcessDefinitionService;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 流程定义相关接口
@@ -22,11 +21,11 @@ import net.risesoft.service.FlowableTenantInfoHolder;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/processDefinition")
 public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
 
-    @Autowired
-    private CustomProcessDefinitionService customProcessDefinitionService;
+    private final CustomProcessDefinitionService customProcessDefinitionService;
 
     /**
      * 获取有办结权限的UserTask

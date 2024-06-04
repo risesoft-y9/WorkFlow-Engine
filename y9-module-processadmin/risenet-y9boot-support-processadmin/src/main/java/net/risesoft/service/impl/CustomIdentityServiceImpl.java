@@ -1,18 +1,17 @@
 package net.risesoft.service.impl;
 
-import java.util.List;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.service.CustomIdentityService;
+import net.risesoft.service.FlowableTenantInfoHolder;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.flowable.identitylink.api.IdentityLink;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.service.CustomIdentityService;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import java.util.List;
 
 /**
  * @author qinman
@@ -20,15 +19,14 @@ import net.risesoft.service.FlowableTenantInfoHolder;
  * @date 2022/12/30
  */
 @EnableAsync
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service(value = "customIdentityService")
 public class CustomIdentityServiceImpl implements CustomIdentityService {
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
-    @Autowired
-    private RuntimeService runtimeService;
+    private final RuntimeService runtimeService;
 
     @Override
     @Transactional(readOnly = false)

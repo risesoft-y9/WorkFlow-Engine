@@ -1,16 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.util.Date;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -23,30 +14,33 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.service.ProcessInstanceDetailsService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.configuration.Y9Properties;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.task.service.delegate.DelegateTask;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
-@Service(value = "processInstanceDetailsService")
 @Slf4j
+@RequiredArgsConstructor
+@Service(value = "processInstanceDetailsService")
 public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetailsService {
 
-    @Autowired
-    private PersonApi personManager;
+    private final  PersonApi personManager;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final  PositionApi positionApi;
 
-    @Autowired
-    private ProcessParamApi processParamManager;
+    private final  ProcessParamApi processParamManager;
 
-    @Autowired
-    private ProcessInstanceApi processInstanceApi;
+    private final  ProcessInstanceApi processInstanceApi;
 
-    @Autowired
-    private Y9Properties y9Conf;
+    private final  Y9Properties y9Conf;
 
     @Override
     public void saveProcessInstanceDetails(final DelegateTask task, final Map<String, Object> map) {

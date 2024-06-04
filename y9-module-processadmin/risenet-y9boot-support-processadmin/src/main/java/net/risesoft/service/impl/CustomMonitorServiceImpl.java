@@ -1,30 +1,29 @@
 package net.risesoft.service.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.flowable.engine.HistoryService;
-import org.flowable.engine.history.HistoricProcessInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.service.CustomMonitorService;
 import net.risesoft.util.FlowableModelConvertUtil;
+import org.flowable.engine.HistoryService;
+import org.flowable.engine.history.HistoricProcessInstance;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service(value = "customMonitorService")
 public class CustomMonitorServiceImpl implements CustomMonitorService {
 
-    @Autowired
-    private HistoryService historyService;
+    private final HistoryService historyService;
 
     @Override
     public long getDoingCountByProcessDefinitionKey(String processDefinitionKey) {

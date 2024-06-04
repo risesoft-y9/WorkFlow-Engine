@@ -1,17 +1,15 @@
 package net.risesoft.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.repository.ProcessDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author qinman
@@ -19,13 +17,12 @@ import org.springframework.stereotype.Service;
  * @date 2022/12/30
  */
 @Service
+@RequiredArgsConstructor
 @DependsOn({"runtimeService", "repositoryService", "historyService", "taskService"})
 public class WorkflowHistoryProcessInstanceService {
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    protected HistoryService historyService;
+    private final HistoryService historyService;
 
     /**
      * 根据流程实例ID查询历史流程定义对象{@link ProcessDefinition}

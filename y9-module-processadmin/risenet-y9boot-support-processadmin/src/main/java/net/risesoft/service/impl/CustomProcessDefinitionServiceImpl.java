@@ -1,13 +1,9 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.service.CustomHistoricTaskService;
+import net.risesoft.service.CustomProcessDefinitionService;
+import net.risesoft.util.SysVariables;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.CallActivity;
@@ -28,42 +24,41 @@ import org.flowable.engine.impl.bpmn.behavior.SequentialMultiInstanceBehavior;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.history.HistoricTaskInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.service.CustomHistoricTaskService;
-import net.risesoft.service.CustomProcessDefinitionService;
-import net.risesoft.util.SysVariables;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service(value = "customProcessDefinitionService")
 public class CustomProcessDefinitionServiceImpl implements CustomProcessDefinitionService {
 
-    @Autowired
-    private RepositoryService repositoryService;
+    private final  RepositoryService repositoryService;
 
-    @Autowired
-    private TaskService taskService;
+    private final  TaskService taskService;
 
-    @Autowired
-    private RuntimeService runtimeService;
+    private final  RuntimeService runtimeService;
 
-    @Autowired
-    private CustomHistoricTaskService customHistoricTaskService;
+    private final  CustomHistoricTaskService customHistoricTaskService;
 
     /**
      * 获取ActivityImpl的list
-     *
-     * @param procDefKey
+     * @param bpmnModel
      * @return
      */
-    private List<FlowElement> getActivityImpls(BpmnModel bpmnModel) {
+    private final  List<FlowElement> getActivityImpls(BpmnModel bpmnModel) {
         List<FlowElement> list = new ArrayList<>();
         try {
             org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
@@ -127,14 +122,13 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
 
     /**
      * 获取过滤过的ActivityImpl的list，过滤掉GateWay类型节点
-     *
-     * @param processDefinitionId
+     * @param bpmnModel
      * @return
      */
-    private List<FlowElement> getFilteredActivityImpls(BpmnModel bpmnModel) {
+    private final  List<FlowElement> getFilteredActivityImpls(BpmnModel bpmnModel) {
         List<FlowElement> list = getActivityImpls(bpmnModel);
         List<FlowElement> resultList = new ArrayList<>();
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
             resultList.addAll(list);
         }
@@ -151,7 +145,7 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     /**
      * 获取过滤过的ActivityImpl的list，过滤掉GateWay类型节点
      *
-     * @param processDefinitionId
+     * @param processDefinitionId 流程定义ID
      * @return
      */
     public List<FlowElement> getFilteredActivityImpls(String processDefinitionId) {

@@ -1,18 +1,17 @@
 package net.risesoft.service.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.flowable.engine.TaskService;
-import org.flowable.task.api.Task;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.CustomTodoService;
 import net.risesoft.util.FlowableModelConvertUtil;
+import org.flowable.engine.TaskService;
+import org.flowable.task.api.Task;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -20,11 +19,11 @@ import net.risesoft.util.FlowableModelConvertUtil;
  * @date 2022/12/30
  */
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 @Service(value = "customTodoService")
 public class CustomTodoServiceImpl implements CustomTodoService {
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
     @Override
     public long getCountByUserId(String userId) {

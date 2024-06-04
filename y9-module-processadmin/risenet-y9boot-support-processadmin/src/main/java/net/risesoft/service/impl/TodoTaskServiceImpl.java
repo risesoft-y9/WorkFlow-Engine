@@ -1,23 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.common.engine.api.delegate.event.FlowableEvent;
-import org.flowable.engine.delegate.event.impl.FlowableEntityEventImpl;
-import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
-import org.flowable.task.service.delegate.DelegateTask;
-import org.flowable.variable.api.persistence.entity.VariableInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -33,30 +17,40 @@ import net.risesoft.service.TodoTaskService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.common.engine.api.delegate.event.FlowableEvent;
+import org.flowable.engine.delegate.event.impl.FlowableEntityEventImpl;
+import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
+import org.flowable.task.service.delegate.DelegateTask;
+import org.flowable.variable.api.persistence.entity.VariableInstance;
+import org.springframework.stereotype.Service;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
-@Service(value = "todoTaskService")
 @Slf4j
+@RequiredArgsConstructor
+@Service(value = "todoTaskService")
 public class TodoTaskServiceImpl implements TodoTaskService {
 
-    @Autowired
-    private OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitManager;
 
-    @Autowired
-    private TodoTaskApi todoTaskManager;
+    private final TodoTaskApi todoTaskManager;
 
-    @Autowired
-    private ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamManager;
 
-    @Autowired
-    private ErrorLogApi errorLogManager;
+    private final ErrorLogApi errorLogManager;
 
-    @Autowired
-    private Y9Properties y9Conf;
+    private final Y9Properties y9Conf;
 
     @Override
     public void deleteTodo(final DelegateTask task, final Map<String, Object> map) {

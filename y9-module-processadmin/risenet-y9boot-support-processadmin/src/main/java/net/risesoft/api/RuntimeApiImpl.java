@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -20,7 +21,6 @@ import org.flowable.engine.RuntimeService;
 import org.flowable.engine.impl.HistoricProcessInstanceQueryProperty;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,29 +43,23 @@ import java.util.Map;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/runtime")
 public class RuntimeApiImpl implements RuntimeApi {
 
-    @Autowired
-    private CustomRuntimeService customRuntimeService;
+    private final CustomRuntimeService customRuntimeService;
 
-    @Autowired
-    private RuntimeService runtimeService;
+    private final RuntimeService runtimeService;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
-    @Autowired
-    private PositionApi positionManager;
+    private final PositionApi positionManager;
 
-    @Autowired
-    private CustomTaskService customTaskService;
+    private final CustomTaskService customTaskService;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
     /**
      * 加签

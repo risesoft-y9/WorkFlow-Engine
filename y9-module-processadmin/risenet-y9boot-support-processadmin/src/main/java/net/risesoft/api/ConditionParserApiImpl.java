@@ -1,8 +1,9 @@
 package net.risesoft.api;
 
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import net.risesoft.api.processadmin.ConditionParserApi;
+import net.risesoft.service.CustomConditionParser;
+import net.risesoft.service.FlowableTenantInfoHolder;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.processadmin.ConditionParserApi;
-import net.risesoft.service.CustomConditionParser;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import java.util.Map;
 
 /**
  * 解析表达式条件接口
@@ -21,11 +20,11 @@ import net.risesoft.service.FlowableTenantInfoHolder;
  * @date 2023/11/01
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/conditionParser")
 public class ConditionParserApiImpl implements ConditionParserApi {
 
-    @Autowired
-    private CustomConditionParser customConditionParser;
+    private final CustomConditionParser customConditionParser;
 
     /**
      * 解析表达式条件是否满足

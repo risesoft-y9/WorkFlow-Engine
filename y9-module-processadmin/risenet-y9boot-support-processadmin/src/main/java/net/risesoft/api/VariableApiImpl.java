@@ -1,11 +1,13 @@
 package net.risesoft.api;
 
-import java.util.Collection;
-import java.util.Map;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.service.CustomVariableService;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,11 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.api.processadmin.VariableApi;
-import net.risesoft.service.CustomVariableService;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * 正在运行变量相关接口
@@ -28,17 +27,15 @@ import net.risesoft.y9.json.Y9JsonUtil;
  * @date 2022/12/30
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/variable")
 public class VariableApiImpl implements VariableApi {
 
-    @Autowired
-    private CustomVariableService customVariableService;
+    private final CustomVariableService customVariableService;
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
-    @Autowired
-    private RuntimeService runtimeService;
+    private final RuntimeService runtimeService;
 
     /**
      * 删除流程变量

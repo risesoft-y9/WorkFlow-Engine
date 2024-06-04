@@ -1,19 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.engine.HistoryService;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -21,31 +9,37 @@ import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.DeleteProcessUtilService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.engine.HistoryService;
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service(value = "customHistoricProcessService")
-@Slf4j
 public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessService {
 
-    @Autowired
-    private RuntimeService runtimeService;
+    private final  RuntimeService runtimeService;
 
-    @Autowired
-    private HistoryService historyService;
+    private final  HistoryService historyService;
 
-    @Autowired
-    private OfficeDoneInfoApi officeDoneInfoApi;
+    private final  OfficeDoneInfoApi officeDoneInfoApi;
 
-    @Autowired
-    private OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final  OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
-    @Autowired
-    private DeleteProcessUtilService deleteProcessUtilService;
+    private final  DeleteProcessUtilService deleteProcessUtilService;
 
     @Override
     public boolean deleteProcessInstance(String processInstanceId) {
@@ -141,9 +135,8 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
 
     @Override
     public int getRecycleCountByUserId(String title, String userId) {
-        int count = (int)historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
+        return (int)historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
             .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").or().deleted().count();
-        return count;
     }
 
     @Override
