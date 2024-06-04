@@ -1,21 +1,19 @@
 package net.risesoft.controller;
 
+import lombok.RequiredArgsConstructor;
+import net.risesoft.pojo.Y9Page;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.engine.HistoryService;
+import org.flowable.variable.api.history.HistoricVariableInstance;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.engine.HistoryService;
-import org.flowable.variable.api.history.HistoricVariableInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import net.risesoft.pojo.Y9Page;
 
 /**
  * @author qinman
@@ -23,17 +21,16 @@ import net.risesoft.pojo.Y9Page;
  * @date 2023/01/03
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/historicVariable")
 public class HistoricVariableVueController {
 
-    @Autowired
-    private HistoryService historyService;
+    private final HistoryService historyService;
 
     /**
      * 获取所有历史流程变量集合
      *
      */
-    @ResponseBody
     @RequestMapping(value = "/getAllHistoricVariable")
     public Y9Page<Map<String, Object>> getAllHistoricVariable(@RequestParam int page, @RequestParam int rows) {
         List<Map<String, Object>> items = new ArrayList<>();
@@ -53,8 +50,8 @@ public class HistoricVariableVueController {
             map.put("type", var.getVariableTypeName());
             items.add(map);
         }
-        int totalpages = (int)totalCount / rows + 1;
-        return Y9Page.success(page, totalpages, totalCount, items, "获取列表成功");
+        int totalPages = (int)totalCount / rows + 1;
+        return Y9Page.success(page, totalPages, totalCount, items, "获取列表成功");
     }
 
     /**
@@ -67,7 +64,6 @@ public class HistoricVariableVueController {
      * @param rows 条数
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/searchHistoricVariable", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> searchHistoricVariable(@RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String variableName,
@@ -113,7 +109,7 @@ public class HistoricVariableVueController {
             map.put("type", var.getVariableTypeName());
             items.add(map);
         }
-        int totalpages = (int)totalCount / rows + 1;
-        return Y9Page.success(page, totalpages, totalCount, items, "获取列表成功");
+        int totalPages = (int)totalCount / rows + 1;
+        return Y9Page.success(page, totalPages, totalCount, items, "获取列表成功");
     }
 }

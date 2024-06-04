@@ -4,7 +4,6 @@ import javax.sql.DataSource;
 
 import jakarta.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -25,6 +24,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import lombok.RequiredArgsConstructor;
+
 import net.risesoft.filter.ProcessAdminCheckUserLoginFilter;
 import net.risesoft.listener.FlowableMultiTenantListener;
 import net.risesoft.y9.Y9Context;
@@ -39,28 +40,20 @@ import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
  * @date 2023/01/03
  */
 @Configuration
+@RequiredArgsConstructor
 @EnableConfigurationProperties(Y9Properties.class)
 @ImportResource({"classpath:/springconfigs/flowable.cfg.xml"})
 @ComponentScan(basePackages = {"net.risesoft"})
 public class ProcessAdminConfiguraton implements WebMvcConfigurer {
-
-    /**
-     *
-     * Description: starter-log工程用到了RequestContextHolder https://github.com/spring-projects/spring-boot/issues/2637
-     * https://github.com/spring-projects/spring-boot/issues/4331
-     *
-     * @return
-     */
+    
     @Bean
     public static RequestContextFilter requestContextFilter() {
         return new OrderedRequestContextFilter();
     }
 
-    @Autowired
-    private Environment environment;
+    private final Environment environment;
 
-    @Autowired
-    Y9Properties y9config;
+    private final Y9Properties y9config;
 
     Y9SsoClientProperties configProps;
 
@@ -99,7 +92,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> processAdminCheckUserLoginFilter() {
         final FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> filterBean =
-            new FilterRegistrationBean<ProcessAdminCheckUserLoginFilter>();
+                new FilterRegistrationBean<ProcessAdminCheckUserLoginFilter>();
         filterBean.setFilter(new ProcessAdminCheckUserLoginFilter());
         filterBean.setAsyncSupported(false);
         filterBean.setOrder(50);
@@ -130,7 +123,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
 
     @Bean("y9TenantDataSource")
     public DataSource y9TenantDataSource(@Qualifier("y9FlowableDS") HikariDataSource y9FlowableDs,
-        @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
+                                         @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
         return new Y9TenantDataSource(y9FlowableDs, y9TenantDataSourceLookup);
     }
 

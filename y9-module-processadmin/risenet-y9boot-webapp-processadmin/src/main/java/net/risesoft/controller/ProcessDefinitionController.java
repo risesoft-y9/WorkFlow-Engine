@@ -1,35 +1,33 @@
 package net.risesoft.controller;
 
+import lombok.RequiredArgsConstructor;
+import net.risesoft.service.WorkflowProcessDefinitionService;
+import net.risesoft.util.SysVariables;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.bpmn.model.FlowElement;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.bpmn.model.FlowElement;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import net.risesoft.service.WorkflowProcessDefinitionService;
-import net.risesoft.util.SysVariables;
-
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2023/01/03
  */
-@Controller
+@RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/procDef")
 public class ProcessDefinitionController {
 
-    @Autowired
-    private WorkflowProcessDefinitionService workflowProcessDefinitionService;
+    private final WorkflowProcessDefinitionService workflowProcessDefinitionService;
 
     /**
      * 获取任务节点信息和流程定义信息
@@ -38,7 +36,6 @@ public class ProcessDefinitionController {
      * @param isFilter 是否过滤掉开始节点和结束节点
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getBpmList")
     public List<Map<String, Object>> getBpmList(String processDefinitionId, Boolean isFilter) {
         List<Map<String, Object>> list = new ArrayList<>();
@@ -56,7 +53,6 @@ public class ProcessDefinitionController {
      * @param processDefinitionId
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getBpmListContainStart")
     public List<Map<String, Object>> getBpmListContainStart(String processDefinitionId) {
         List<Map<String, Object>> list = new ArrayList<>();
@@ -75,7 +71,6 @@ public class ProcessDefinitionController {
      * @return
      */
     @RequestMapping(value = "/getProcDefIds", method = RequestMethod.GET)
-    @ResponseBody
     public List<String> getProcDefIds(@RequestParam(required = false) String processDefinitionKey) {
         return workflowProcessDefinitionService.getProcessDefinitionIds(processDefinitionKey);
     }
@@ -87,7 +82,6 @@ public class ProcessDefinitionController {
      * @return
      */
     @RequestMapping(value = "/getProcDefVersions", method = RequestMethod.GET)
-    @ResponseBody
     public List<Integer> getProcDefVersions(@RequestParam(required = false) String processDefinitionKey) {
         return workflowProcessDefinitionService.getProcessDefinitionVersions(processDefinitionKey);
     }
@@ -99,7 +93,6 @@ public class ProcessDefinitionController {
      * @return
      */
     @RequestMapping(value = "/getTaskList")
-    @ResponseBody
     public Map<String, Object> getTaskByProcDef(@RequestParam String processDefinitionId) {
         Map<String, Object> taskMap = new HashMap<>(16);
         List<Map<String, Object>> list = new ArrayList<>();
@@ -125,7 +118,6 @@ public class ProcessDefinitionController {
      * @return
      */
     @RequestMapping(value = "/getTaskMap", method = RequestMethod.GET)
-    @ResponseBody
     public Map<String, Object> getTaskMap(@RequestParam(required = false) String processDefinitionId) {
         Map<String, Object> taskMap = new LinkedHashMap<>();
         taskMap.put("", "--");
@@ -148,7 +140,6 @@ public class ProcessDefinitionController {
      * @return
      */
     @RequestMapping(value = "/map", method = RequestMethod.GET)
-    @ResponseBody
     public Map<String, String> runningShow(Model model) {
         // 获取流程定义对象ID和流程定义对象名称
         return workflowProcessDefinitionService.procDefIdMap();

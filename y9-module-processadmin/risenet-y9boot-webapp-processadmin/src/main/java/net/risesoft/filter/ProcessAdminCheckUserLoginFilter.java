@@ -12,9 +12,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.ManagerApi;
 import net.risesoft.model.platform.Manager;
@@ -28,17 +28,17 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2023/01/03
  */
+@Slf4j
 public class ProcessAdminCheckUserLoginFilter implements Filter {
-    protected final Logger log = LoggerFactory.getLogger(ProcessAdminCheckUserLoginFilter.class);
-
     @Override
-    public void destroy() {}
+    public void destroy() {
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-        throws IOException, ServletException {
+            throws IOException, ServletException {
         try {
-            HttpServletRequest req = (HttpServletRequest)request;
+            HttpServletRequest req = (HttpServletRequest) request;
             StringBuffer path = req.getRequestURL();
             HttpSession session = req.getSession();
             UserInfo loginUser = Y9LoginUserHolder.getUserInfo();
@@ -56,7 +56,7 @@ public class ProcessAdminCheckUserLoginFilter implements Filter {
                 }
             }
             if (loginUser == null) {
-                loginUser = (UserInfo)session.getAttribute("loginUser");
+                loginUser = (UserInfo) session.getAttribute("loginUser");
             }
             if (loginUser != null) {
                 Y9LoginUserHolder.setUserInfo(loginUser);
@@ -73,6 +73,8 @@ public class ProcessAdminCheckUserLoginFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        log.info("ProcessAdminCheckUserLoginFilter init........................");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("ProcessAdminCheckUserLoginFilter init........................");
+        }
     }
 }
