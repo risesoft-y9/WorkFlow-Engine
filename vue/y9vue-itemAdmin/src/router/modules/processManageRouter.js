@@ -23,7 +23,7 @@ const processManageRouter = {
             component: () => import('@/views/processModelNew/index.vue'),
             name: 'processModelNew',
             meta: {
-                title: '流程图设计',
+                title: '流程设计',
                 icon: 'ri-list-settings-fill',
                 roles: ['systemAdmin'] 
             },
