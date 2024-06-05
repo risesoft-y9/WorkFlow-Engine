@@ -1,14 +1,13 @@
 package net.risesoft.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import net.risesoft.api.itemadmin.WordTemplateApi;
+import net.risesoft.entity.WordTemplate;
+import net.risesoft.service.WordTemplateService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import net.risesoft.api.itemadmin.WordTemplateApi;
-import net.risesoft.entity.WordTemplate;
-import net.risesoft.service.WordTemplateService;
 
 /**
  * 正文模板接口
@@ -17,17 +16,17 @@ import net.risesoft.service.WordTemplateService;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/wordTemplate")
 public class WordTemplateApiImpl implements WordTemplateApi {
 
-    @Autowired
-    private WordTemplateService wordTemplateService;
+    private final WordTemplateService wordTemplateService;
 
     /**
      * 根据id获取正文模板文件路径
      *
      * @param id 正文模板id
-     * @return
+     * @return String
      */
     @Override
     @GetMapping(value = "/getFilePathById", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -7,18 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,20 +41,23 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/vue/taoHongTemplate")
 public class TaoHongTemplateRestContronller {
 
-    @Autowired
-    private TaoHongTemplateService taoHongTemplateService;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private TaoHongTemplateTypeService taoHongTemplateTypeService;
+    private final TaoHongTemplateService taoHongTemplateService;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final TaoHongTemplateTypeService taoHongTemplateTypeService;
 
-    @Autowired
-    private ManagerApi managerApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    private final ManagerApi managerApi;
+
+    public TaoHongTemplateRestContronller(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate, TaoHongTemplateService taoHongTemplateService, TaoHongTemplateTypeService taoHongTemplateTypeService, OrgUnitApi orgUnitApi, ManagerApi managerApi) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.taoHongTemplateService = taoHongTemplateService;
+        this.taoHongTemplateTypeService = taoHongTemplateTypeService;
+        this.orgUnitApi = orgUnitApi;
+        this.managerApi = managerApi;
+    }
 
     /**
      * 获取委办局树
@@ -64,7 +65,6 @@ public class TaoHongTemplateRestContronller {
      * @param name 部门名称
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/bureauTree", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> bureauTree(@RequestParam(required = false) String name) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
@@ -119,7 +119,6 @@ public class TaoHongTemplateRestContronller {
      * @param name 委办局名称
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getList(@RequestParam(required = false) String name) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -184,7 +183,6 @@ public class TaoHongTemplateRestContronller {
      * @param ids 套红ids
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/removeTaoHongTemplate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> removeTaoHongTemplate(@RequestParam(required = true) String[] ids) {
         taoHongTemplateService.removeTaoHongTemplate(ids);
@@ -198,7 +196,6 @@ public class TaoHongTemplateRestContronller {
      * @param file 文件
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(@RequestParam(required = false) String templateGuid, @RequestParam(required = true) String bureauGuid, @RequestParam(required = true) String bureauName, @RequestParam(required = true) String templateType, MultipartFile file) {
         try {

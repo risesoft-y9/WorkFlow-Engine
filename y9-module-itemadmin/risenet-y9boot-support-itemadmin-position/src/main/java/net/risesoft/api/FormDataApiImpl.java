@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.Y9FormItemBind;
@@ -8,7 +9,6 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.service.FormDataService;
 import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,17 +29,15 @@ import java.util.Map;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/formData")
 public class FormDataApiImpl implements FormDataApi {
 
-    @Autowired
-    private FormDataService formDataService;
+    private final FormDataService formDataService;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
-    @Autowired
-    private Y9FormItemBindService y9FormItemBindService;
+    private final Y9FormItemBindService y9FormItemBindService;
 
     /**
      * 删除子表数据

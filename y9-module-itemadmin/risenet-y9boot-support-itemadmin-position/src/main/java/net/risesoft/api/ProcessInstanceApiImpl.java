@@ -1,12 +1,12 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.service.ProcessInstanceDetailsService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,14 +24,13 @@ import java.util.Map;
  * @date 2023/02/06
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/processInstance")
 public class ProcessInstanceApiImpl implements ProcessInstanceApi {
 
-    @Autowired
-    private ProcessInstanceDetailsService processInstanceDetailsService;
+    private final ProcessInstanceDetailsService processInstanceDetailsService;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
     /**
      * 删除协作状态

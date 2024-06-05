@@ -1,18 +1,6 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.entity.SpmApproveItem;
@@ -28,6 +16,16 @@ import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.service.form.Y9FormFieldService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -35,29 +33,23 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/vue/itemMappingConf")
 public class ItemMappingConfRestController {
 
-    @Autowired
-    private Y9FormItemBindService y9FormItemBindService;
+    private final Y9FormItemBindService y9FormItemBindService;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private ItemMappingConfService itemMappingConfService;
+    private final ItemMappingConfService itemMappingConfService;
 
-    @Autowired
-    private ItemMappingConfRepository itemMappingConfRepository;
+    private final ItemMappingConfRepository itemMappingConfRepository;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryManager;
 
-    @Autowired
-    private Y9FormFieldService y9FormFieldService;
+    private final Y9FormFieldService y9FormFieldService;
 
-    @Autowired
-    private Y9TableService y9TableService;
+    private final Y9TableService y9TableService;
 
     /**
      * 根据绑定的表名称获取绑定的字段
@@ -65,7 +57,6 @@ public class ItemMappingConfRestController {
      * @param tableName 表名
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Y9FormField>> getColumns(@RequestParam(required = true) String tableName) {
         List<Y9FormField> list = new ArrayList<Y9FormField>();
@@ -88,7 +79,6 @@ public class ItemMappingConfRestController {
      * @param mappingItemId 对接事项id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getConfInfo", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getConfInfo(@RequestParam(required = false) String id,
         @RequestParam(required = true) String itemId, @RequestParam(required = false) String mappingItemId) {
@@ -150,7 +140,6 @@ public class ItemMappingConfRestController {
      * @param mappingId 映射标识
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemMappingConf>> getList(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String mappingId) {
@@ -163,7 +152,6 @@ public class ItemMappingConfRestController {
      *
      * @param ids
      */
-    @ResponseBody
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> remove(@RequestParam(required = true) String[] ids) {
         itemMappingConfService.delItemMappingConf(ids);
@@ -176,7 +164,6 @@ public class ItemMappingConfRestController {
      * @param itemMappingConf 映射信息
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(ItemMappingConf itemMappingConf) {
         itemMappingConfService.saveItemMappingConf(itemMappingConf);

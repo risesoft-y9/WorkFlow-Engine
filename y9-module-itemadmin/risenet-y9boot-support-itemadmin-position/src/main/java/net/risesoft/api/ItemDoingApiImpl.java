@@ -4,18 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ItemDoingApi;
 import net.risesoft.entity.ActRuDetail;
@@ -36,17 +34,14 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/itemDoing")
 public class ItemDoingApiImpl implements ItemDoingApi {
 
-    @Autowired
-    private ItemPageService itemPageService;
+    private final ItemPageService itemPageService;
 
-    @Autowired
-    private ActRuDetailService actRuDetailService;
+    private final ActRuDetailService actRuDetailService;
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
 
     /**
      * 根据系统名称查询在办数量

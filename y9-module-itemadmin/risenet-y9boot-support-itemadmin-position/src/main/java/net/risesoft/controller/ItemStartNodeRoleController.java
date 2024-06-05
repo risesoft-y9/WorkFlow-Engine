@@ -1,24 +1,22 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemStartNodeRole;
 import net.risesoft.model.platform.Role;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemStartNodeRoleService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -26,16 +24,14 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/itemStartNodeRole")
 public class ItemStartNodeRoleController {
 
-    @Autowired
-    private ItemStartNodeRoleService itemStartNodeRoleService;
+    private final ItemStartNodeRoleService itemStartNodeRoleService;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionApi;
+    private final ProcessDefinitionApi processDefinitionApi;
 
-    @ResponseBody
     @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> copyBind(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String processDefinitionId) {
@@ -47,10 +43,9 @@ public class ItemStartNodeRoleController {
      * 获取任务节点信息和流程定义信息
      *
      * @param itemId 事项id
-     * @param processDefinitionKey 流程定义key
+     * @param processDefinitionId 流程定义ID
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String processDefinitionId) {
@@ -99,7 +94,6 @@ public class ItemStartNodeRoleController {
         return Y9Result.success(resMap, "获取成功");
     }
 
-    @ResponseBody
     @RequestMapping(value = "/getNodeList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemStartNodeRole>> getNodeList(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String processDefinitionId) {
@@ -121,11 +115,11 @@ public class ItemStartNodeRoleController {
 
     /**
      * 获取按钮绑定角色列表
-     *
-     * @param itemButtonId 绑定id
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义ID
+     * @param taskDefKey    任务节点key
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Role>> list(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String processDefinitionId, @RequestParam(required = true) String taskDefKey) {
@@ -135,11 +129,12 @@ public class ItemStartNodeRoleController {
 
     /**
      * 移除按钮与角色的绑定
-     *
-     * @param ids 绑定id
+     * @param itemId
+     * @param processDefinitionId
+     * @param taskDefKey
+     * @param roleIds
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> remove(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String processDefinitionId, @RequestParam(required = true) String taskDefKey,
@@ -148,7 +143,6 @@ public class ItemStartNodeRoleController {
         return Y9Result.successMsg("删除成功");
     }
 
-    @ResponseBody
     @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrder(@RequestParam(required = true) String[] idAndTabIndexs) {
         itemStartNodeRoleService.saveOrder(idAndTabIndexs);
@@ -157,12 +151,12 @@ public class ItemStartNodeRoleController {
 
     /**
      * 保存按钮角色
-     *
-     * @param itemButtonId 绑定id
-     * @param roleIds 角色ids
+     * @param itemId
+     * @param processDefinitionId
+     * @param taskDefKey
+     * @param roleIds
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveRole", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveRole(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String processDefinitionId, @RequestParam(required = true) String taskDefKey,

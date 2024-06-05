@@ -1,16 +1,15 @@
 package net.risesoft.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.RejectReasonApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.model.platform.Person;
 import net.risesoft.service.RejectReasonService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 驳回原因接口
@@ -19,14 +18,13 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/rejectReason")
 public class RejectReasonApiImpl implements RejectReasonApi {
 
-    @Autowired
-    private RejectReasonService rejectReasonService;
+    private final RejectReasonService rejectReasonService;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
     /**
      * 保存驳回原因

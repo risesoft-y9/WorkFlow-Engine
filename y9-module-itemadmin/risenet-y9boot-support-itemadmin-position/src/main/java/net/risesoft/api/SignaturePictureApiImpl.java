@@ -1,17 +1,10 @@
 package net.risesoft.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.SignaturePictureApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.SignaturePicture;
@@ -20,6 +13,11 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.service.SignaturePictureService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 签名图片接口
@@ -28,14 +26,13 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/signaturePicture")
 public class SignaturePictureApiImpl implements SignaturePictureApi {
 
-    @Autowired
-    private SignaturePictureService signaturePictureService;
+    private final SignaturePictureService signaturePictureService;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
     /**
      * 删除签名图片

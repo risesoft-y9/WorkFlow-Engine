@@ -1,22 +1,21 @@
 package net.risesoft.api;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
 import net.risesoft.entity.RemindInstance;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.service.RemindInstanceService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 消息提醒接口
@@ -26,11 +25,11 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/remindInstance")
 public class RemindInstanceApiImpl implements RemindInstanceApi {
 
-    @Autowired
-    private RemindInstanceService remindInstanceService;
+    private final RemindInstanceService remindInstanceService;
 
     /**
      * 根据流程实例id获取消息提醒设置

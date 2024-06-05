@@ -5,10 +5,11 @@ import java.util.Map;
 
 import jakarta.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.OrganWordProperty;
@@ -21,11 +22,11 @@ import net.risesoft.service.OrganWordPropertyService;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/organWordProperty")
 public class OrganWordPropertyController {
 
-    @Autowired
-    private OrganWordPropertyService organWordPropertyService;
+    private final OrganWordPropertyService organWordPropertyService;
 
     /**
      * 获取机关代字信息

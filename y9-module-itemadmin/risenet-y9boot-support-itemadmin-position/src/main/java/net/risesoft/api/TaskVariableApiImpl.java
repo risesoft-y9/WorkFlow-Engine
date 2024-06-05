@@ -1,17 +1,16 @@
 package net.risesoft.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.TaskVariableApi;
 import net.risesoft.entity.TaskVariable;
 import net.risesoft.model.itemadmin.TaskVariableModel;
 import net.risesoft.repository.jpa.TaskVariableRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 任务变量接口
@@ -20,11 +19,11 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/taskVariable")
 public class TaskVariableApiImpl implements TaskVariableApi {
 
-    @Autowired
-    private TaskVariableRepository taskVariableRepository;
+    private final TaskVariableRepository taskVariableRepository;
 
     /**
      * 根据任务id和keyName获取任务变量

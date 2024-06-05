@@ -5,10 +5,11 @@ import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.position.ItemLink4PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
@@ -29,20 +30,17 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @date 2024/05/14
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/itemLink4Position", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemLinkApiImpl implements ItemLink4PositionApi {
 
-    @Autowired
-    private PositionRoleApi positionRoleApi;
+    private final PositionRoleApi positionRoleApi;
 
-    @Autowired
-    private ItemLinkBindRepository itemLinkBindRepository;
+    private final ItemLinkBindRepository itemLinkBindRepository;
 
-    @Autowired
-    private LinkInfoRepository linkInfoRepository;
+    private final LinkInfoRepository linkInfoRepository;
 
-    @Autowired
-    private ItemLinkRoleRepository itemLinkRoleRepository;
+    private final ItemLinkRoleRepository itemLinkRoleRepository;
 
     /**
      * 获取事项链接列表

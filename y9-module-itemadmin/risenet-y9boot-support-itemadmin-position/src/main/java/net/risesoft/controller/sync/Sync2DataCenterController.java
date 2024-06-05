@@ -12,15 +12,13 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
@@ -56,42 +54,41 @@ import net.risesoft.y9.util.Y9Util;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @RestController
 @RequestMapping("/services/rest/datacenter")
-@Slf4j
 public class Sync2DataCenterController {
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Resource(name = "jdbcTemplate4Public")
-    private JdbcTemplate jdbcTemplate4Public;
+    private final DataCenterService dataCenterService;
 
-    @Autowired
-    private DataCenterService dataCenterService;
+    private final ErrorLogService errorLogService;
 
-    @Autowired
-    private ErrorLogService errorLogService;
+    private final ActRuDetailService actRuDetailService;
 
-    @Autowired
-    private ActRuDetailService actRuDetailService;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final HistoricTaskApi historicTaskManager;
 
-    @Autowired
-    private HistoricTaskApi historicTaskManager;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OfficeDoneInfoService officeDoneInfoService;
 
-    @Autowired
-    private OfficeDoneInfoService officeDoneInfoService;
+    public Sync2DataCenterController(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate, DataCenterService dataCenterService, ErrorLogService errorLogService, ActRuDetailService actRuDetailService, ProcessParamService processParamService, HistoricTaskApi historicTaskManager, PositionApi positionApi, OrgUnitApi orgUnitApi, OfficeDoneInfoService officeDoneInfoService) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.dataCenterService = dataCenterService;
+        this.errorLogService = errorLogService;
+        this.actRuDetailService = actRuDetailService;
+        this.processParamService = processParamService;
+        this.historicTaskManager = historicTaskManager;
+        this.positionApi = positionApi;
+        this.orgUnitApi = orgUnitApi;
+        this.officeDoneInfoService = officeDoneInfoService;
+    }
 
-    @ResponseBody
     @RequestMapping(value = "/tongbu2DataCenter")
     public void tongbu2DataCenter(String tenantId, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
@@ -170,7 +167,6 @@ public class Sync2DataCenterController {
      * @param request
      * @param response
      */
-    @ResponseBody
     @RequestMapping(value = "/tongbuActRuDetail")
     public void tongbuActRuDetail(String tenantId, String year, HttpServletRequest request,
         HttpServletResponse response) {
@@ -316,7 +312,6 @@ public class Sync2DataCenterController {
      * @param request
      * @param response
      */
-    @ResponseBody
     @RequestMapping(value = "/tongbuActRuDetail1")
     public void tongbuActRuDetail1(String tenantId, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
@@ -459,7 +454,6 @@ public class Sync2DataCenterController {
      * @param request
      * @param response
      */
-    @ResponseBody
     @RequestMapping(value = "/tongbuActRuDetailStartTime")
     public void tongbuActRuDetailStartTime(String tenantId, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);

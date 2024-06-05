@@ -1,19 +1,18 @@
 package net.risesoft.controller.form;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9FormOptionClass;
 import net.risesoft.entity.form.Y9FormOptionValue;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.form.Y9FormOptionClassService;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -21,11 +20,12 @@ import net.risesoft.service.form.Y9FormOptionClassService;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/y9form/optionClass")
 public class OptionClassRestController {
 
-    @Autowired
-    private Y9FormOptionClassService y9FormOptionClassService;
+    
+    private final Y9FormOptionClassService y9FormOptionClassService;
 
     /**
      * 删除数据字典

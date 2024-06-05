@@ -1,16 +1,15 @@
 package net.risesoft.controller;
 
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.ItemDataTransferService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.pojo.Y9Page;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ItemDataTransferService;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -18,11 +17,11 @@ import net.risesoft.service.ItemDataTransferService;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/dataTransfer")
 public class ItemDataTransferRestController {
 
-    @Autowired
-    private ItemDataTransferService itemDataTransferService;
+    private final ItemDataTransferService itemDataTransferService;
 
     /**
      * 数据迁移

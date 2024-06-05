@@ -1,17 +1,6 @@
 package net.risesoft.controller.form;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormField;
@@ -19,6 +8,15 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.form.Y9FormFieldService;
 import net.risesoft.service.form.Y9FormService;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -26,14 +24,15 @@ import net.risesoft.service.form.Y9FormService;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/y9form")
 public class FormRestController {
 
-    @Autowired
-    private Y9FormService y9FormService;
+    
+    private final Y9FormService y9FormService;
 
-    @Autowired
-    private Y9FormFieldService y9FormFieldService;
+    
+    private final Y9FormFieldService y9FormFieldService;
 
     /**
      * 删除表单绑定的字段
@@ -42,7 +41,6 @@ public class FormRestController {
      * @return
      */
     @RequestMapping(value = "/deleteFormFieldBind", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> deleteFormFieldBind(@RequestParam(required = true) String id) {
         Map<String, Object> map = y9FormFieldService.deleteFormFieldBind(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -76,7 +74,6 @@ public class FormRestController {
      * @return
      */
     @RequestMapping(value = "/getFormBindFieldList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Page<Y9FormField> getFormBindFieldList(@RequestParam(required = true) String formId, @RequestParam(required = true) Integer page, @RequestParam(required = true) Integer rows) {
         Page<Y9FormField> pageList = y9FormFieldService.findByFormId(formId, page, rows);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(), "获取表单绑定的业务表字段列表成功");
@@ -92,7 +89,6 @@ public class FormRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getFormList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Page<Map<String, Object>> getFormList(@RequestParam(required = false) String systemName, @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
         Map<String, Object> map = y9FormService.getFormList(systemName, page, rows);
         List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
@@ -106,7 +102,6 @@ public class FormRestController {
      * @return
      */
     @RequestMapping(value = "/newOrModifyForm", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> newOrModifyForm(Y9Form form) {
         Map<String, Object> map = y9FormService.saveOrUpdate(form);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -122,7 +117,6 @@ public class FormRestController {
      * @return
      */
     @RequestMapping(value = "/removeForm", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> removeForm(@RequestParam(required = true) String ids) {
         Map<String, Object> map = y9FormService.delete(ids);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -139,7 +133,6 @@ public class FormRestController {
      * @return
      */
     @RequestMapping(value = "/saveFormField", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> saveFormField(@RequestParam(required = true) String formId, @RequestParam(required = false) String fieldJson) {
         Map<String, Object> map = y9FormService.saveFormField(formId, fieldJson);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -156,7 +149,6 @@ public class FormRestController {
      * @return
      */
     @RequestMapping(value = "/saveFormJson", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> saveFormJson(@RequestParam(required = true) String id, @RequestParam(required = false) String formJson) {
         Map<String, Object> map = y9FormService.saveFormJson(id, formJson);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {

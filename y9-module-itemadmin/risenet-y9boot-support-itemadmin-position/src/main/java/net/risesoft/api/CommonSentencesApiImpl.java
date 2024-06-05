@@ -1,12 +1,12 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.model.platform.Person;
 import net.risesoft.service.CommonSentencesService;
 import net.risesoft.util.CommentUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,14 +24,13 @@ import java.util.Map;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/commonSentences")
 public class CommonSentencesApiImpl implements CommonSentencesApi {
 
-    @Autowired
-    private CommonSentencesService commonSentencesService;
+    private final CommonSentencesService commonSentencesService;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
     /**
      * 删除常用语
@@ -57,12 +56,12 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     @GetMapping(value = "/getCommonSentencesStr", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getCommonSentencesStr(String tenantId, String userId) {
         String[] comment = CommentUtil.getComment();
-        String commentStr = "";
+        StringBuilder commentStr = new StringBuilder();
         int length = comment.length;
         for (int i = 0; i < length - 1; i++) {
-            commentStr += "<option value=\"" + comment[length - 1 - i] + "\">" + comment[length - 1 - i] + "</option>";
+            commentStr.append("<option value=\"").append(comment[length - 1 - i]).append("\">").append(comment[length - 1 - i]).append("</option>");
         }
-        return commentStr;
+        return commentStr.toString();
     }
 
     /**
@@ -78,8 +77,7 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-        List<Map<String, Object>> listMap = commonSentencesService.listSentencesService();
-        return listMap;
+        return commonSentencesService.listSentencesService();
     }
 
     /**

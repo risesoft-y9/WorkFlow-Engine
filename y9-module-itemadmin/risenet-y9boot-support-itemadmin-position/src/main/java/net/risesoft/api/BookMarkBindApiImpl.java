@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,11 +28,13 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/services/rest/bookMarkBind")
 public class BookMarkBindApiImpl implements BookMarkBindApi {
 
-    @Autowired
-    private BookMarkBindService bookMarkBindService;
+    private final JdbcTemplate jdbcTemplate;
+    private final BookMarkBindService bookMarkBindService;
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    public BookMarkBindApiImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,BookMarkBindService bookMarkBindService) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.bookMarkBindService = bookMarkBindService;
+    }
 
     /**
      * 根据模板和流程序列号查询模板的书签对应的值

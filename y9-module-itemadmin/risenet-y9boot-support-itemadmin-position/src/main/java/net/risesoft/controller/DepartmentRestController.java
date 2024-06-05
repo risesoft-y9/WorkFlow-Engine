@@ -1,20 +1,7 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.google.common.collect.Maps;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
@@ -24,6 +11,16 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -31,17 +28,15 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/vue/department")
 public class DepartmentRestController {
 
-    @Autowired
-    private OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitManager;
 
-    @Autowired
-    private DepartmentApi departmentManager;
+    private final DepartmentApi departmentManager;
 
-    @Autowired
-    private OrganizationApi organizationApi;
+    private final OrganizationApi organizationApi;
 
     /**
      * 查找部门及部门下的岗位
@@ -50,7 +45,6 @@ public class DepartmentRestController {
      * @return
      */
     @RequestMapping(value = "/findDeptAndUserById", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<Map<String, Object>>> findDeptAndUserById(@RequestParam(required = false) String id,
         @RequestParam(required = false) String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -90,7 +84,6 @@ public class DepartmentRestController {
      * @return
      */
     @RequestMapping(value = "/findDeptById", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<Map<String, Object>>> findDeptById(@RequestParam(required = false) String id) {
         List<Map<String, Object>> items = findDeptById(id, false);
         return Y9Result.success(items, "获取成功");
@@ -147,11 +140,7 @@ public class DepartmentRestController {
 
     /**
      * 生成部门树
-     *
-     * @param deptGuidList
-     * @param parentId 父节点Guid，由于角色、用户组、动态角色都调用该方法，所以parentId可能会是角色、用户组、动态角色的Id
-     * @param principalType 主体类型，由于角色、用户组、动态角色都调用该方法，所以主体类型可能会是角色、用户组、动态角色的Id，如果不使用该字段，则将其设置为0
-     * @param noCheck 是否显示前面的复选框，true表示不显示，false表示显示
+     * @param deptGuid 部门主键Id
      * @return
      */
     public List<Map<String, Object>> genDeptTree(String deptGuid) {
@@ -177,12 +166,9 @@ public class DepartmentRestController {
 
     /**
      * 查找部门及部门下的人员
-     *
-     * @param id 部门表中的主键Id
      * @return
      */
     @RequestMapping(value = "/getOrgList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<Organization>> getOrgList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Organization> list = organizationApi.list(tenantId).getData();
@@ -190,7 +176,6 @@ public class DepartmentRestController {
     }
 
     @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<OrgUnit>> getOrgTree(String id, OrgTreeTypeEnum treeType) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> list = orgUnitManager.getSubTree(tenantId, id, treeType).getData();
@@ -198,7 +183,6 @@ public class DepartmentRestController {
     }
 
     @RequestMapping(value = "/searchDept", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<Map<String, Object>>> searchDept(@RequestParam(required = false) String name) {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -217,7 +201,6 @@ public class DepartmentRestController {
     }
 
     @RequestMapping(value = "/searchDeptAndPosition", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<Map<String, Object>>> searchDeptAndPosition(@RequestParam(required = false) String name) {
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -237,7 +220,6 @@ public class DepartmentRestController {
     }
 
     @RequestMapping(value = "/treeSearch", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<OrgUnit>> treeSearch(String name, OrgTreeTypeEnum treeType) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> list = orgUnitManager.treeSearch(tenantId, name, treeType).getData();

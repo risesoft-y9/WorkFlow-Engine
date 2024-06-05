@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.QueryListApi;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
@@ -7,7 +8,6 @@ import net.risesoft.service.ItemPageService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,11 +23,11 @@ import java.util.Map;
  * @date 2023/02/06
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/queryList", produces = MediaType.APPLICATION_JSON_VALUE)
 public class QueryListApiImpl implements QueryListApi {
 
-    @Autowired
-    private ItemPageService itemPageService;
+    private final ItemPageService itemPageService;
 
     /**
      * 综合搜索

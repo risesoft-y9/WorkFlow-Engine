@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ItemDoneApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
@@ -10,7 +11,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
@@ -32,14 +32,13 @@ import java.util.Map;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/itemDone")
 public class ItemDoneApiImpl implements ItemDoneApi {
 
-    @Autowired
-    private ItemPageService itemPageService;
+    private final ItemPageService itemPageService;
 
-    @Autowired
-    private ActRuDetailService actRuDetailService;
+    private final ActRuDetailService actRuDetailService;
 
     /**
      * 根据用户id和系统名称查询办结数量
