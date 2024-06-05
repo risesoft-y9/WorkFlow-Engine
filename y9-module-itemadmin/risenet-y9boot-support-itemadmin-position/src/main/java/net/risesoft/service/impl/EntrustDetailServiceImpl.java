@@ -1,26 +1,25 @@
 package net.risesoft.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.EntrustDetail;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.EntrustDetailRepository;
 import net.risesoft.service.EntrustDetailService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "entrustDetailService")
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class EntrustDetailServiceImpl implements EntrustDetailService {
 
-    @Autowired
-    private EntrustDetailRepository entrustDetailRepository;
+    private final EntrustDetailRepository entrustDetailRepository;
 
     @Override
     public EntrustDetail findByTaskId(String taskId) {
@@ -40,7 +39,7 @@ public class EntrustDetailServiceImpl implements EntrustDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(String processInstanceId, String taskId, String ownerId, String assigneeId) {
         EntrustDetail entrustDetail = entrustDetailRepository.findByTaskId(taskId);
         if (null != entrustDetail) {

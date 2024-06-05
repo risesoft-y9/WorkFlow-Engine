@@ -1,21 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.Opinion;
 import net.risesoft.entity.ProcessInstance;
 import net.risesoft.entity.ProcessInstanceDetails;
@@ -31,29 +16,40 @@ import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "processInstanceDetailsService")
+@Service
+@RequiredArgsConstructor
 public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetailsService {
 
-    @Autowired
-    private SpmApproveItemService spmApproveitemService;
+    private final SpmApproveItemService spmApproveitemService;
 
-    @Autowired
-    private ProcessInstanceRepository processInstanceRepository;
+    private final ProcessInstanceRepository processInstanceRepository;
 
-    @Autowired
-    private ProcessInstanceDetailsRepository processInstanceDetailsRepository;
+    private final ProcessInstanceDetailsRepository processInstanceDetailsRepository;
 
-    @Autowired
-    private OpinionService opinionService;
+    private final OpinionService opinionService;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean deleteProcessInstance(String processInstanceId) {
         try {
             processInstanceRepository.deleteByProcessInstanceId(processInstanceId);
@@ -127,7 +123,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean save(ProcessInstanceDetailsModel model) {
         try {
             SpmApproveItem spmApproveItem = spmApproveitemService.findById(model.getItemId());
@@ -180,7 +176,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean updateProcessInstanceDetails(String processInstanceId, String taskId, String itembox, Date endTime) {
         try {
             ProcessInstanceDetails details =

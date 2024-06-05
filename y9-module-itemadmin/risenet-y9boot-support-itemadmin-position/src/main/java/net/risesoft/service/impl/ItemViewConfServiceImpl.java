@@ -1,16 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.ItemViewConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -20,21 +11,28 @@ import net.risesoft.service.ItemViewConfService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "itemViewConfService")
 public class ItemViewConfServiceImpl implements ItemViewConfService {
 
-    @Autowired
-    private ItemViewConfRepository itemViewConfRepository;
+    private final ItemViewConfRepository itemViewConfRepository;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyView(String[] ids, String viewType) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String id : ids) {
@@ -71,7 +69,7 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeByViewType(String viewType) {
         List<ItemViewConf> list = itemViewConfRepository.findByViewTypeOrderByTabIndexAsc(viewType);
         itemViewConfRepository.deleteAll(list);
@@ -79,7 +77,7 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeItemViewConfs(String[] itemViewConfIds) {
         for (String id : itemViewConfIds) {
             itemViewConfRepository.deleteById(id);
@@ -87,7 +85,7 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveOrUpdate(ItemViewConf itemViewConf) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -144,7 +142,7 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void update4Order(String[] idAndTabIndexs) {
         List<String> list = Lists.newArrayList(idAndTabIndexs);
         try {

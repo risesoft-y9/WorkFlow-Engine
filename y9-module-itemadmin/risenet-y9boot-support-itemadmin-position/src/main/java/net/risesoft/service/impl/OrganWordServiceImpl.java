@@ -1,20 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.PersonRoleApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
@@ -41,47 +27,49 @@ import net.risesoft.service.OrganWordService;
 import net.risesoft.service.OrganWordUseHistoryService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "organWordService")
 public class OrganWordServiceImpl implements OrganWordService {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final OrganWordRepository organWordRepository;
 
-    @Autowired
-    private OrganWordRepository organWordRepository;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final OrganWordPropertyService organWordPropertyService;
 
-    @Autowired
-    private OrganWordPropertyService organWordPropertyService;
+    private final OrganWordDetailService organWordDetailService;
 
-    @Autowired
-    private OrganWordDetailService organWordDetailService;
+    private final ItemOrganWordBindService itemOrganWordBindService;
 
-    @Autowired
-    private ItemOrganWordBindService itemOrganWordBindService;
+    private final OrganWordUseHistoryService organWordUseHistoryService;
 
-    @Autowired
-    private OrganWordUseHistoryService organWordUseHistoryService;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final PersonRoleApi personRoleApi;
 
-    @Autowired
-    private PersonRoleApi personRoleApi;
+    private final PositionRoleApi positionRoleApi;
 
-    @Autowired
-    private PositionRoleApi positionRoleApi;
-
-    @Autowired
-    private TaskApi taskManager;
+    private final TaskApi taskManager;
 
     @Override
     public boolean checkCustom(String id, String custom) {
@@ -98,10 +86,11 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Integer checkNumberStr(String characterValue, String custom, Integer year, Integer numberTemp, String itemId, Integer common, String processSerialNumber) {
-        Integer status = 3;
+        int status = 3;
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             OrganWord organWord = this.findByCustom(custom);
             if (null != organWord) {
@@ -163,6 +152,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     @Override
     public Integer checkNumberStr4DeptName(String custom, Integer year, Integer numberTemp, String itemId, Integer common, String processSerialNumber) {
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), person.getParentId()).getData();
             String deptName = bureau.getName();
@@ -226,7 +216,8 @@ public class OrganWordServiceImpl implements OrganWordService {
         }
     }
 
-    private Integer checkOrganWordUseHistory(String characterValue, String custom, Integer year, Integer numberTemp, String itemId, String processSerialNumber) {
+    private  Integer checkOrganWordUseHistory(String characterValue, String custom, Integer year, Integer numberTemp, String itemId, String processSerialNumber) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         /**
          * 1、检查当前的编号有没有被使用
@@ -399,7 +390,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> getNumber(String custom, String characterValue, Integer year, Integer common, String itemId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Integer number = 0;
@@ -479,7 +470,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> getNumber4DeptName(String custom, Integer year, Integer common, String itemId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         String numberStr = "";
@@ -518,7 +509,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Integer getNumberOnly(String custom, String characterValue, Integer year, Integer common, String itemId) {
         Integer number = 0;
         OrganWordDetail owd = null;
@@ -604,7 +595,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeOrganWords(String[] organWordIds) {
         for (String organWordId : organWordIds) {
             organWordRepository.deleteById(organWordId);
@@ -612,7 +603,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> save(OrganWord organWord) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
@@ -632,6 +623,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                 map.put(UtilConsts.SUCCESS, true);
                 return map;
             } else {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 OrganWord newOw = new OrganWord();
                 newOw.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 newOw.setCreateTime(sdf.format(new Date()));

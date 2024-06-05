@@ -1,12 +1,6 @@
 package net.risesoft.service.dynamicrole.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ProcessParam;
@@ -16,6 +10,11 @@ import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 当前人员所在委办局和当前历程参与过的所有的委办局
@@ -25,16 +24,14 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @Service
+@RequiredArgsConstructor
 public class CurrentBureau extends AbstractDynamicRoleMember {
 
-    @Autowired
-    private PositionApi positionManager;
+    private final PositionApi positionManager;
 
-    @Autowired
-    private OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitManager;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final ProcessParamService processParamService;
 
     @Override
     public List<OrgUnit> getOrgUnitList() {

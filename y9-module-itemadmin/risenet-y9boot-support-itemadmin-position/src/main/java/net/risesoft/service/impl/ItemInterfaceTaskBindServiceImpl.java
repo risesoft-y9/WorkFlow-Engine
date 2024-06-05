@@ -1,15 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.ItemInterfaceTaskBind;
@@ -19,30 +10,35 @@ import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
 import net.risesoft.service.ItemInterfaceTaskBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author zhangchongjie
  * @date 2024/05/24
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "itemInterfaceTaskBindService")
 public class ItemInterfaceTaskBindServiceImpl implements ItemInterfaceTaskBindService {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final ItemInterfaceTaskBindRepository itemInterfaceTaskBindRepository;
 
-    @Autowired
-    private ItemInterfaceTaskBindRepository itemInterfaceTaskBindRepository;
+    private final RepositoryApi repositoryApi;
 
-    @Autowired
-    private RepositoryApi repositoryApi;
-
-    @Autowired
-    private ProcessDefinitionApi processDefinitionApi;
+    private final ProcessDefinitionApi processDefinitionApi;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyBind(String itemId, String interfaceId, String processDefinitionId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String tenantId = Y9LoginUserHolder.getTenantId();
         String proDefKey = processDefinitionId.split(":")[0];
         ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey);
@@ -79,7 +75,7 @@ public class ItemInterfaceTaskBindServiceImpl implements ItemInterfaceTaskBindSe
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveBind(String itemId, String interfaceId, String processDefinitionId, String elementKey, String condition) {
         ItemInterfaceTaskBind bind = itemInterfaceTaskBindRepository.findByTaskDefKeyAndItemIdAndProcessDefinitionIdAndInterfaceId(elementKey, itemId, processDefinitionId, interfaceId);
         if (bind != null) {
@@ -90,6 +86,7 @@ public class ItemInterfaceTaskBindServiceImpl implements ItemInterfaceTaskBindSe
                 itemInterfaceTaskBindRepository.save(bind);
             }
         } else {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             bind = new ItemInterfaceTaskBind();
             bind.setItemId(itemId);
             bind.setInterfaceId(interfaceId);

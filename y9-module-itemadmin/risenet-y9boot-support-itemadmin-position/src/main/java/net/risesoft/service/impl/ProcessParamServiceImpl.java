@@ -1,15 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.id.IdType;
@@ -18,30 +9,37 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ProcessParamRepository;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "processParamService")
 public class ProcessParamServiceImpl implements ProcessParamService {
 
-    @Autowired
-    private ProcessParamRepository processParamRepository;
+    private final ProcessParamRepository processParamRepository;
 
-    @Autowired
-    private VariableApi variableManager;
+    private final VariableApi variableManager;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void deleteByPprocessInstanceId(String processInstanceId) {
         processParamRepository.deleteByPprocessInstanceId(processInstanceId);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void deleteByProcessSerialNumber(String processSerialNumber) {
         processParamRepository.deleteByProcessSerialNumber(processSerialNumber);
     }
@@ -57,7 +55,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public ProcessParam saveOrUpdate(ProcessParam processParam) {
         String processSerialNumber = processParam.getProcessSerialNumber();
         ProcessParam oldpp = processParamRepository.findByProcessSerialNumber(processSerialNumber);
@@ -144,7 +142,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void setUpCompleter(String processInstanceId) {
         ProcessParam pp = processParamRepository.findByProcessInstanceId(processInstanceId);
         if (null != pp) {
@@ -155,7 +153,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void updateByProcessSerialNumber(String processSerialNumber, String processInstanceId) {
         ProcessParam pp = processParamRepository.findByProcessSerialNumber(processSerialNumber);
         if (null != pp) {
@@ -169,7 +167,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void updateCustomItem(String processSerialNumber, boolean b) {
         try {
             processParamRepository.updateCustomItem(processSerialNumber, b);

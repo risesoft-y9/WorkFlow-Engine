@@ -1,16 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -27,39 +17,42 @@ import net.risesoft.service.ItemStartNodeRoleService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "itemStartNodeRoleService")
 public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
 
-    @Autowired
-    private ItemStartNodeRoleRepository itemStartNodeRoleRepository;
+    private final ItemStartNodeRoleRepository itemStartNodeRoleRepository;
 
-    @Autowired
-    private RoleApi roleManager;
+    private final RoleApi roleManager;
 
-    @Autowired
-    private PositionRoleApi positionRoleApi;
+    private final PositionRoleApi positionRoleApi;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryManager;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionManager;
 
-    @Autowired
-    private SpmApproveItemService spmApproveitemService;
+    private final SpmApproveItemService spmApproveitemService;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyBind(String itemId, String processDefinitionId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userName = person.getName();
@@ -71,12 +64,12 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         if (processDefinitionId.equals(latestpdId)) {
             if (latestpd.getVersion() > 1) {
                 ProcessDefinitionModel previouspd =
-                    repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
+                        repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
                 previouspdId = previouspd.getId();
             }
         }
         List<ItemStartNodeRole> isnrList =
-            itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
+                itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
 
         String startNodeKey = processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, latestpdId);
         List<Map<String, String>> nodes = processDefinitionManager.getTargetNodes(tenantId, latestpdId, startNodeKey);
@@ -85,7 +78,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             for (ItemStartNodeRole isnr : isnrList) {
                 if (currentTaskDefKey.equals(isnr.getTaskDefKey())) {
                     ItemStartNodeRole oldisnr = itemStartNodeRoleRepository
-                        .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, latestpdId, currentTaskDefKey);
+                            .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, latestpdId, currentTaskDefKey);
                     if (null == oldisnr) {
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         oldisnr = new ItemStartNodeRole();
@@ -136,21 +129,21 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     @Override
     public List<ItemStartNodeRole> findByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
         return itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(itemId,
-            processDefinitionId);
+                processDefinitionId);
     }
 
     @Override
     public ItemStartNodeRole findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
-        String taskDefKey) {
+                                                                             String taskDefKey) {
         return itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
-            taskDefKey);
+                taskDefKey);
     }
 
     @Override
     public List<Role> getRoleList(String itemId, String processDefinitionId, String taskDefKey) {
         List<Role> list = new ArrayList<>();
         ItemStartNodeRole isnr =
-            this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+                this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         if (null != isnr && StringUtils.isNotEmpty(isnr.getRoleIds())) {
             String roleIds = isnr.getRoleIds();
             String[] roleIdArr = roleIds.split(";");
@@ -170,14 +163,14 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     @Override
     public String getStartTaskDefKey(String itemId) {
         String startTaskDefKey = "", tenantId = Y9LoginUserHolder.getTenantId(),
-            positionId = Y9LoginUserHolder.getPositionId();
+                positionId = Y9LoginUserHolder.getPositionId();
         SpmApproveItem item = spmApproveitemService.findById(itemId);
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
         String processDefinitionId = latestpd.getId();
         List<ItemStartNodeRole> list = itemStartNodeRoleRepository
-            .findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(itemId, processDefinitionId);
+                .findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(itemId, processDefinitionId);
         if (list.size() > 1) {
             list:
             for (ItemStartNodeRole isnr : list) {
@@ -202,21 +195,21 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             startTaskDefKey = list.get(0).getTaskDefKey();
         } else {
             String startNodeKey =
-                processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
+                    processDefinitionManager.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
             List<Map<String, String>> nodes =
-                processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, startNodeKey);
+                    processDefinitionManager.getTargetNodes(tenantId, processDefinitionId, startNodeKey);
             startTaskDefKey = nodes.get(0).get(SysVariables.TASKDEFKEY);
         }
         return startTaskDefKey;
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void initRole(String itemId, String processDefinitionId, String taskDefKey, String taskDefName) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userName = person.getName();
         ItemStartNodeRole isnr =
-            this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+                this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         if (null == isnr) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             isnr = new ItemStartNodeRole();
@@ -239,12 +232,12 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeRole(String itemId, String processDefinitionId, String taskDefKey, String roleIds) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userName = person.getName();
         ItemStartNodeRole isnr =
-            this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+                this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         if (null != isnr) {
             String oldRoleIds = isnr.getRoleIds();
             String[] oldRoleIdArr = oldRoleIds.split(";");
@@ -274,7 +267,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveOrder(String[] idAndTabIndexs) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userName = person.getName();
@@ -290,12 +283,12 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveRole(String itemId, String processDefinitionId, String taskDefKey, String roleIds) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userName = person.getName();
         ItemStartNodeRole isnr =
-            this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+                this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         if (null != isnr) {
             String oldRoleIds = isnr.getRoleIds();
             String[] roleIdArr = roleIds.split(";");

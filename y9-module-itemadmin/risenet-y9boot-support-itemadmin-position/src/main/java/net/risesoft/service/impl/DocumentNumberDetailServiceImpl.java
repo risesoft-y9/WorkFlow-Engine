@@ -1,26 +1,25 @@
 package net.risesoft.service.impl;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.DocumentNumberDetail;
 import net.risesoft.repository.jpa.DocumentNumberDetailRepository;
 import net.risesoft.service.DocumentNumberDetailService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "documentNumberDetailService")
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class DocumentNumberDetailServiceImpl implements DocumentNumberDetailService {
 
-    @Autowired
-    private DocumentNumberDetailRepository documentNumberDetailRepository;
+    private final DocumentNumberDetailRepository documentNumberDetailRepository;
 
     @Override
     public List<DocumentNumberDetail> findAll() {
@@ -33,7 +32,7 @@ public class DocumentNumberDetailServiceImpl implements DocumentNumberDetailServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public DocumentNumberDetail saveDocumentNumberDetail(DocumentNumberDetail documentNumberDetail) {
         return documentNumberDetailRepository.save(documentNumberDetail);
     }

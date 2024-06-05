@@ -1,5 +1,17 @@
 package net.risesoft.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.CalendarConfig;
+import net.risesoft.id.IdType;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.repository.jpa.CalendarConfigRepository;
+import net.risesoft.service.CalendarConfigService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,35 +24,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import lombok.extern.slf4j.Slf4j;
-
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.CalendarConfig;
-import net.risesoft.id.IdType;
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.repository.jpa.CalendarConfigRepository;
-import net.risesoft.service.CalendarConfigService;
-
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "calendarConfigService")
-@Transactional(value = "rsTenantTransactionManager", readOnly = true)
 @Slf4j
+@Service
+@RequiredArgsConstructor
+@Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class CalendarConfigServiceImpl implements CalendarConfigService {
 
-    @Autowired
-    private CalendarConfigRepository calendarConfigRepository;
+    private final CalendarConfigRepository calendarConfigRepository;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delCalendar(String startDate) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("message", "删除成功");
@@ -221,7 +219,7 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveCalendar(String startDate, Integer type) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("message", "保存成功");

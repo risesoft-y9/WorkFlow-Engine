@@ -12,9 +12,10 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -62,62 +63,47 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "opinionService")
 public class OpinionServiceImpl implements OpinionService {
 
-    @Autowired
-    private OpinionRepository opinionRepository;
+    private final OpinionRepository opinionRepository;
 
-    @Autowired
-    private ItemOpinionFrameBindService itemOpinionFrameBindService;
+    private final ItemOpinionFrameBindService itemOpinionFrameBindService;
 
-    @Autowired
-    private ProcessTrackService processTrackService;
+    private final ProcessTrackService processTrackService;
 
-    @Autowired
-    private PersonRoleApi personRoleApi;
+    private final PersonRoleApi personRoleApi;
 
-    @Autowired
-    private PersonApi personApi;
+    private final PersonApi personApi;
 
-    @Autowired
-    private TaskApi taskManager;
+    private final TaskApi taskManager;
 
-    @Autowired
-    private HistoricTaskApi historicTaskApi;
+    private final HistoricTaskApi historicTaskApi;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryManager;
 
-    @Autowired
-    private OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitManager;
 
-    @Autowired
-    private HistoricProcessApi historicProcessManager;
+    private final HistoricProcessApi historicProcessManager;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private AsyncHandleService asyncHandleService;
+    private final AsyncHandleService asyncHandleService;
 
-    @Autowired
-    private OpinionHistoryRepository opinionHistoryRepository;
+    private final OpinionHistoryRepository opinionHistoryRepository;
 
-    @Autowired
-    private PositionApi positionManager;
+    private final PositionApi positionManager;
 
-    @Autowired
-    private VariableApi variableApi;
+    private final VariableApi variableApi;
 
     @Override
     public Boolean checkSignOpinion(String processSerialNumber, String taskId) {
-        Boolean isSign = false;
-        Integer count = 0;
+        boolean isSign = false;
+        int count = 0;
         if (StringUtils.isEmpty(taskId)) {
             count = this.findByProcSerialNumber(processSerialNumber);
             if (count > 0) {
@@ -134,7 +120,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copy(String oldProcessSerialNumber, String oldOpinionFrameMark, String newProcessSerialNumber,
         String newOpinionFrameMark, String newProcessInstanceId, String newTaskId) throws Exception {
         try {
@@ -158,7 +144,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void delete(String id) {
         Opinion oldOpinion = opinionRepository.findById(id).orElse(null);
         opinionRepository.delete(oldOpinion);
@@ -640,19 +626,19 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(List<Opinion> entities) {
         opinionRepository.saveAll(entities);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(Opinion entity) {
         opinionRepository.save(entity);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Opinion saveOrUpdate(Opinion entity) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -755,7 +741,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void update(String processSerialNumber, String processInstanceId, String taskId) {
         opinionRepository.update(processInstanceId, taskId, processSerialNumber);
     }

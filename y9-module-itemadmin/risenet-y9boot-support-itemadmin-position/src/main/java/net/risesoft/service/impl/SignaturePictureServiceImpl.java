@@ -1,12 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.SignaturePicture;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -14,23 +8,26 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.SignaturePictureRepository;
 import net.risesoft.service.SignaturePictureService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "signaturePictureService")
 public class SignaturePictureServiceImpl implements SignaturePictureService {
 
-    public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    @Autowired
-    private SignaturePictureRepository signaturePictureRepository;
+    private final SignaturePictureRepository signaturePictureRepository;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void deleteById(String id) {
         signaturePictureRepository.deleteById(id);
     }
@@ -46,8 +43,9 @@ public class SignaturePictureServiceImpl implements SignaturePictureService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public SignaturePicture saveOrUpdate(SignaturePicture sp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
         SignaturePicture oldsp = this.findByUserId(userId);

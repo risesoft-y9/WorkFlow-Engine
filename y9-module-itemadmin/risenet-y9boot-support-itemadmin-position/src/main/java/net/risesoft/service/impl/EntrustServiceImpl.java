@@ -1,17 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.Entrust;
 import net.risesoft.entity.EntrustHistory;
@@ -27,34 +16,41 @@ import net.risesoft.service.EntrustService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "entrustService")
 public class EntrustServiceImpl implements EntrustService {
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+    private final static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
 
-    @Autowired
-    private EntrustRepository entrustRepository;
+    private final EntrustRepository entrustRepository;
 
-    @Autowired
-    private EntrustHistoryRepository entrustHistoryRepository;
+    private final EntrustHistoryRepository entrustHistoryRepository;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void destroyEntrust(String id) {
         Entrust entrust = this.findOne(id);
         if (0 != entrust.getUsed()) {
@@ -77,7 +73,7 @@ public class EntrustServiceImpl implements EntrustService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void destroyEntrust(String ownerId, String itemId) {
         Entrust entrust = this.findOneByOwnerIdAndItemId(ownerId, itemId);
         if (0 != entrust.getUsed()) {
@@ -98,7 +94,7 @@ public class EntrustServiceImpl implements EntrustService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void destroyEntrustById(String id) {
         Entrust entrust = this.findOne(id);
         if (0 != entrust.getUsed()) {
@@ -122,7 +118,7 @@ public class EntrustServiceImpl implements EntrustService {
     public List<Entrust> findAll() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll();
-        Position pTemp = null;
+        Position pTemp;
         SpmApproveItem itemTemp = null;
         for (Entrust entrust : entrustList) {
             pTemp = positionApi.get(tenantId, entrust.getAssigneeId()).getData();
@@ -480,13 +476,13 @@ public class EntrustServiceImpl implements EntrustService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeEntrust(String id) {
         entrustRepository.deleteById(id);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Entrust saveOrUpdate(Entrust entrust) throws ParseException {
         String id = entrust.getId();
         if (StringUtils.isNotEmpty(id)) {

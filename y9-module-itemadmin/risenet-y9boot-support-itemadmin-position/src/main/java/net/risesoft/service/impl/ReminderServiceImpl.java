@@ -1,25 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -35,33 +17,42 @@ import net.risesoft.repository.jpa.ReminderRepository;
 import net.risesoft.service.ReminderService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "reminderService")
 @Slf4j
+@Transactional(value = "rsTenantTransactionManager", readOnly = true)
+@Service
+@RequiredArgsConstructor
 public class ReminderServiceImpl implements ReminderService {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final ReminderRepository reminderRepository;
 
-    @Autowired
-    private ReminderRepository reminderRepository;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final TaskApi taskManager;
 
-    @Autowired
-    private TaskApi taskManager;
-
-    @Autowired
-    private HistoricTaskApi historicTaskManager;
+    private final HistoricTaskApi historicTaskManager;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void deleteList(String[] ids) {
         Reminder r = null;
         for (String id : ids) {
@@ -73,7 +64,7 @@ public class ReminderServiceImpl implements ReminderService {
     @Override
     public List<Reminder> findAllByTaskId(Collection<String> taskIds) {
         List<Reminder> list = new ArrayList<Reminder>();
-        if (taskIds.size() > 0) {
+        if (!taskIds.isEmpty()) {
             list = reminderRepository.findAllByTastId(taskIds);
         }
         return list;
@@ -245,7 +236,7 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType,
         String taskId, String taskAssigneeId, String documentTitle) {
         String smsErr = "";
@@ -278,7 +269,7 @@ public class ReminderServiceImpl implements ReminderService {
             if (remType.contains(ItemUrgeTypeEnum.EMAIL.getValue())) {
                 try {
                 } catch (Exception e) {
-                    logger.error("email error", e.getMessage());
+                    LOGGER.error("email error", e.getMessage());
                     // Person errEmployee = personManager.getPerson(Y9LoginUserHolder.getTenantId(),taskAssigneeIds[i]);
                     // emailErr += errEmployee.getName() + "、";
                 }
@@ -286,7 +277,7 @@ public class ReminderServiceImpl implements ReminderService {
             LOGGER.info("endtime--{}", new Date());
         }
         saveReminder(list);
-        if ("".equals(smsErr) && "".equals(emailErr)) {
+        if ("".equals(smsErr)) {
             return "";
         } else {
             return smsErr + SysVariables.SEMICOLON + emailErr;
@@ -294,7 +285,7 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Reminder saveOrUpdate(Reminder reminder) {
         String id = reminder.getId();
         if (StringUtils.isNotBlank(id)) {
@@ -324,29 +315,30 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveReminder(List<Reminder> list) {
         reminderRepository.saveAll(list);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveReminder(Reminder reminder) {
         reminderRepository.save(reminder);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void setReadTime(Date readTime, String taskId, String type) {
         reminderRepository.updateReadTime(readTime, taskId, type);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void setReadTime(String[] ids) {
         Reminder r = null;
         for (String id : ids) {
             r = reminderRepository.findById(id).orElse(null);
+            assert r != null;
             if (null == r.getReadTime()) {
                 r.setReadTime(new Date());
                 reminderRepository.save(r);

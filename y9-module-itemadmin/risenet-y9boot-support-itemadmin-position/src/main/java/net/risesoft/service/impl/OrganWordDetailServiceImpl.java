@@ -1,24 +1,23 @@
 package net.risesoft.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.OrganWordDetail;
 import net.risesoft.repository.jpa.OrganWordDetailRepository;
 import net.risesoft.service.OrganWordDetailService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "organWordDetailService")
 public class OrganWordDetailServiceImpl implements OrganWordDetailService {
 
-    @Autowired
-    private OrganWordDetailRepository organWordDetailRepository;
+    private final OrganWordDetailRepository organWordDetailRepository;
 
     @Override
     public OrganWordDetail findByCustomAndCharacterValueAndYearAndItemId(String custom, String characterValue,
@@ -28,13 +27,13 @@ public class OrganWordDetailServiceImpl implements OrganWordDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public OrganWordDetail save(OrganWordDetail organWordDetail) {
         return organWordDetailRepository.save(organWordDetail);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public OrganWordDetail saveOrUpdate(OrganWordDetail organWordDetail) {
         // TODO Auto-generated method stub
         return null;

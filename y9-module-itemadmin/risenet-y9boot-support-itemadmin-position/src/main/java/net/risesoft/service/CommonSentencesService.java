@@ -1,16 +1,6 @@
 package net.risesoft.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.CommonSentences;
 import net.risesoft.entity.CommonSentencesInit;
 import net.risesoft.id.IdType;
@@ -19,28 +9,36 @@ import net.risesoft.repository.jpa.CommonSentencesInitRepository;
 import net.risesoft.repository.jpa.CommonSentencesRepository;
 import net.risesoft.util.CommentUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "commonSentencesService")
 public class CommonSentencesService {
 
-    @Autowired
-    private CommonSentencesRepository commonSentencesRepository;
+    private final CommonSentencesRepository commonSentencesRepository;
 
-    @Autowired
-    private CommonSentencesInitRepository commonSentencesInitRepository;
+    private final CommonSentencesInitRepository commonSentencesInitRepository;
 
     /**
      * 根据id删除常用语
      *
      * @param id
      */
-    @Transactional(readOnly = false)
+    @Transactional()
     public void deleteById(String id) {
         commonSentencesRepository.deleteById(id);
     }
@@ -58,7 +56,7 @@ public class CommonSentencesService {
      *
      * @return
      */
-    @Transactional(readOnly = false)
+    @Transactional()
     public List<Map<String, Object>> listSentencesService() {
         List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
         String userId = Y9LoginUserHolder.getPersonId();
@@ -102,14 +100,14 @@ public class CommonSentencesService {
      *
      * @param tabIndex
      */
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeCommonSentences(int tabIndex) {
         String userId = Y9LoginUserHolder.getPersonId();
         CommonSentences commonSentences = commonSentencesRepository.findByUserIdAndTabIndex(userId, tabIndex);
         commonSentencesRepository.delete(commonSentences);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeUseNumber() {
         List<CommonSentences> list = commonSentencesRepository.findByUserId(Y9LoginUserHolder.getPersonId());
         for (CommonSentences info : list) {
@@ -124,7 +122,7 @@ public class CommonSentencesService {
      * @param content
      * @throws Exception
      */
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(String content) {
         int tabIndex = 0;
         String userId = Y9LoginUserHolder.getPersonId();
@@ -143,7 +141,7 @@ public class CommonSentencesService {
      * @param id
      * @param content
      */
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(String id, String content) {
         if (StringUtils.isNotBlank(id)) {
             Optional<CommonSentences> commonSentences = commonSentencesRepository.findById(id);
@@ -157,7 +155,7 @@ public class CommonSentencesService {
 
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     public CommonSentences saveCommonSentences(String userId, String content, int tabIndex) {
         CommonSentences commonSentences = commonSentencesRepository.findByUserIdAndTabIndex(userId, tabIndex);
         if (commonSentences == null || commonSentences.getId() == null) {
@@ -171,7 +169,7 @@ public class CommonSentencesService {
         return commonSentencesRepository.save(commonSentences);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     public void updateUseNumber(String id) {
         CommonSentences info = commonSentencesRepository.findById(id).orElse(null);
         if (info != null) {

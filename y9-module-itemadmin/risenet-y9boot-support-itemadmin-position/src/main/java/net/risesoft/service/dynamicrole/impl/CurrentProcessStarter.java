@@ -1,18 +1,17 @@
 package net.risesoft.service.dynamicrole.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 当前流程启动人
@@ -22,13 +21,12 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @Service
+@RequiredArgsConstructor
 public class CurrentProcessStarter extends AbstractDynamicRoleMember {
 
-    @Autowired
-    private PositionApi positionManager;
+    private final PositionApi positionManager;
 
-    @Autowired
-    private RuntimeApi runtimeManager;
+    private final RuntimeApi runtimeManager;
 
     @Override
     public List<OrgUnit> getOrgUnitList(String processInstanceId) {

@@ -1,34 +1,33 @@
 package net.risesoft.service.form.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.service.form.Y9FormFieldService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "y9FormElementService")
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9FormFieldServiceImpl implements Y9FormFieldService {
 
-    @Autowired
-    private Y9FormFieldRepository y9FormFieldRepository;
+    private final Y9FormFieldRepository y9FormFieldRepository;
 
     @Override
     public List<Y9FormField> findByFormId(String formId) {
@@ -51,7 +50,7 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveOrUpdate(Y9FormField formField) {
         Map<String, Object> map = new HashMap<>(16);
         try {
@@ -95,7 +94,7 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> deleteFormFieldBind(String id) {
         Map<String, Object> map = new HashMap<>(16);
         try {

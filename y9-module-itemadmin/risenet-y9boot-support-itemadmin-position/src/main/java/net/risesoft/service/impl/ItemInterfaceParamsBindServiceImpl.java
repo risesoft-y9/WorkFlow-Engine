@@ -1,33 +1,30 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.ItemInterfaceParamsBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
 import net.risesoft.service.ItemInterfaceParamsBindService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  *
  * @author zhangchongjie
  * @date 2024/05/24
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "itemInterfaceParamsBindService")
 public class ItemInterfaceParamsBindServiceImpl implements ItemInterfaceParamsBindService {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    @Autowired
-    private ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
+    private final ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
 
     @Override
     public List<ItemInterfaceParamsBind> getBindList(String itemId, String interfaceId, String type) {
@@ -36,14 +33,15 @@ public class ItemInterfaceParamsBindServiceImpl implements ItemInterfaceParamsBi
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeBind(String id) {
         itemInterfaceParamsBindRepository.deleteById(id);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveBind(ItemInterfaceParamsBind info) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = info.getId();
         if (StringUtils.isNotBlank(id)) {
             ItemInterfaceParamsBind item = itemInterfaceParamsBindRepository.findById(id).orElse(null);

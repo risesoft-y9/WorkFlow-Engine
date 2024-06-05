@@ -1,25 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.net.URLDecoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
@@ -37,41 +18,47 @@ import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.net.URLDecoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "transactionFileService")
 public class TransactionFileServiceImpl implements TransactionFileService {
 
-    private static SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final TransactionFileRepository transactionFileRepository;
 
-    private static SimpleDateFormat sdfymdhm = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+    private final Y9FileStoreService y9FileStoreService;
 
-    private static SimpleDateFormat sdfymd = new SimpleDateFormat("yyyy-MM-dd");
+    private final DepartmentApi departmentManager;
 
-    private static SimpleDateFormat sdfhms = new SimpleDateFormat("HH-mm-ss");
+    private final PositionApi positionManager;
 
-    @Autowired
-    private TransactionFileRepository transactionFileRepository;
-
-    @Autowired
-    private Y9FileStoreService y9FileStoreService;
-
-    @Autowired
-    private DepartmentApi departmentManager;
-
-    @Autowired
-    private PositionApi positionManager;
-
-    @Autowired
-    private Y9Properties y9Config;
+    private final Y9Properties y9Config;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void delBatchByProcessSerialNumbers(List<String> processSerialNumbers) {
         List<TransactionFile> list = transactionFileRepository.findByProcessSerialNumbers(processSerialNumbers);
         for (TransactionFile file : list) {
@@ -84,7 +71,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         }
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public Map<String, Object> delFile(String ids) {
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -95,6 +82,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 try {
                     TransactionFile file = transactionFileRepository.findById(str).orElse(null);
                     transactionFileRepository.deleteById(str);
+                    assert file != null;
                     y9FileStoreService.deleteFile(file.getFileStoreId());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -108,7 +96,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> download(String id) {
         Optional<TransactionFile> transactionFile = transactionFileRepository.findById(id);
         Map<String, Object> map = new HashMap<>(16);
@@ -124,11 +112,13 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> getAttachmentList(String processSerialNumber, String fileSource, int page, int rows) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         try {
+            SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdfymdhm = new SimpleDateFormat("yyyy/MM/dd HH:mm");
             PageRequest pageable = PageRequest.of(page < 1 ? 0 : page - 1, rows, Sort.by(Sort.Direction.DESC, "uploadTime"));
             Page<TransactionFile> transactionFileList = null;
             if (StringUtils.isBlank(fileSource)) {
@@ -197,14 +187,12 @@ public class TransactionFileServiceImpl implements TransactionFileService {
 
     @Override
     public List<TransactionFile> getListByProcessSerialNumber(String processSerialNumber) {
-        List<TransactionFile> list = transactionFileRepository.findByProcessSerialNumber(processSerialNumber);
-        return list;
+        return transactionFileRepository.findByProcessSerialNumber(processSerialNumber);
     }
 
     @Override
     public List<TransactionFile> getListByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource) {
-        List<TransactionFile> list = transactionFileRepository.findByProcessSerialNumberAndFileSource(processSerialNumber, fileSource);
-        return list;
+        return transactionFileRepository.findByProcessSerialNumberAndFileSource(processSerialNumber, fileSource);
     }
 
     @Override
@@ -222,19 +210,20 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(TransactionFile file) {
         transactionFileRepository.save(file);
     }
 
     @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public Boolean saveAttachment(String attachjson, String processSerialNumber) {
-        Boolean checkSave = false;
+        boolean checkSave = false;
         try {
+            SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Map<String, Object> attachmentjson = Y9JsonUtil.readValue(attachjson, Map.class);
-            List<Map<String, Object>> attachmentList = (List<Map<String, Object>>)attachmentjson.get("attachment");
+            List<Map<String, Object>> attachmentList = (List<Map<String, Object>>) attachmentjson.get("attachment");
             for (Map<String, Object> map : attachmentList) {
                 TransactionFile file = new TransactionFile();
                 file.setDescribes(map.get("describes") == null ? "" : map.get("describes").toString());
@@ -261,7 +250,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         return checkSave;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public void update(String processSerialNumber, String processInstanceId, String taskId) {
         try {
@@ -271,12 +260,15 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         }
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public Map<String, Object> upload(MultipartFile multipartFile, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         TransactionFile transactionFile = new TransactionFile();
         try {
+            SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdfymd = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdfhms = new SimpleDateFormat("HH-mm-ss");
             if (StringUtils.isNotEmpty(describes)) {
                 describes = URLDecoder.decode(describes, "UTF-8");
             }
@@ -319,7 +311,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         return map;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public Map<String, Object> uploadRest(String fileName, String fileSize, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource, String y9FileStoreId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -328,6 +320,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         String[] types = fileName.split("\\.");
         String type = types[types.length - 1].toLowerCase();
         try {
+            SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             TransactionFile transactionFile = new TransactionFile();
             transactionFile.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             transactionFile.setName(fileName);
@@ -355,9 +348,10 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         return map;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public TransactionFile uploadRestModel(TransactionFile transactionFile) throws ParseException {
+        SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         transactionFile.setUploadTime(sdfymdhms.format(new Date()));
         transactionFileRepository.save(transactionFile);
         return transactionFile;

@@ -1,20 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import jodd.util.StringUtil;
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
@@ -38,49 +25,51 @@ import net.risesoft.service.TransactionWordService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import jodd.util.StringUtil;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "draftEntityService")
 public class DraftEntityServiceImpl implements DraftEntityService {
 
-    @Autowired
-    private DraftEntityRepository draftEntityRepository;
+    private final DraftEntityRepository draftEntityRepository;
 
-    @Autowired
-    private SpmApproveItemService spmApproveitemService;
+    private final SpmApproveItemService spmApproveitemService;
 
-    @Autowired
-    private DocumentService documentService;
+    private final DocumentService documentService;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionManager;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryManager;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private TransactionFileService transactionFileService;
+    private final TransactionFileService transactionFileService;
 
-    @Autowired
-    private TransactionWordService transactionWordService;
+    private final TransactionWordService transactionWordService;
 
-    @Autowired
-    private ItemStartNodeRoleService itemStartNodeRoleService;
+    private final ItemStartNodeRoleService itemStartNodeRoleService;
 
-    @Autowired
-    private PositionApi positionManager;
+    private final PositionApi positionManager;
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public void deleteByProcessSerialNumber(String processSerialNumber) {
         DraftEntity draftEntity = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
@@ -89,7 +78,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         }
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public Map<String, Object> deleteDraft(String ids) {
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -164,7 +153,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> openDraft(String processSerialNumber, String itemId, boolean mobile) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> returnMap = new HashMap<>(16);
@@ -201,7 +190,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         return returnMap;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public Map<String, Object> reduction(String ids) {
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -226,7 +215,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         return map;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public Map<String, Object> removeDraft(String ids) {
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -251,7 +240,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         return map;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
         String number, String level, String title, String type) {
@@ -309,7 +298,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         return map;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
         String number, String level, String title, String jijian, String type) {

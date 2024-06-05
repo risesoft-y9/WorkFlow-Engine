@@ -11,10 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -61,55 +59,58 @@ import net.risesoft.y9.configuration.Y9Properties;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "chaoSongService")
 @Slf4j
+@Transactional(value = "rsTenantTransactionManager", readOnly = true)
+@Service
 public class ChaoSongServiceImpl implements ChaoSongService {
 
-    @Autowired
-    private ChaoSongRepository chaoSongRepository;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private DocumentService documentService;
+    private final ChaoSongRepository chaoSongRepository;
 
-    @Autowired
-    private SpmApproveItemService spmApproveitemService;
+    private final DocumentService documentService;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final SpmApproveItemService spmApproveitemService;
 
-    @Autowired
-    private TaskApi taskManager;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private HistoricProcessApi historicProcessManager;
+    private final TaskApi taskManager;
 
-    @Autowired
-    private DepartmentApi departmentManager;
+    private final HistoricProcessApi historicProcessManager;
 
-    @Autowired
-    private OrganizationApi organizationManager;
+    private final DepartmentApi departmentManager;
 
-    @Autowired
-    private PersonApi personManager;
+    private final OrganizationApi organizationManager;
 
-    @Autowired
-    private SmsHttpApi smsHttpManager;
+    private final PersonApi personManager;
 
-    @Autowired
-    private OfficeDoneInfoService officeDoneInfoService;
+    private final SmsHttpApi smsHttpManager;
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    private final OfficeDoneInfoService officeDoneInfoService;
 
-    @Autowired
-    private Y9Properties y9Conf;
+    private final Y9Properties y9Conf;
 
-    @Autowired
-    private AsyncHandleService asyncHandleService;
+    private final AsyncHandleService asyncHandleService;
+
+    public ChaoSongServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate, ChaoSongRepository chaoSongRepository, DocumentService documentService, SpmApproveItemService spmApproveitemService, ProcessParamService processParamService, TaskApi taskManager, HistoricProcessApi historicProcessManager, DepartmentApi departmentManager, OrganizationApi organizationManager, PersonApi personManager, SmsHttpApi smsHttpManager, OfficeDoneInfoService officeDoneInfoService, Y9Properties y9Conf, AsyncHandleService asyncHandleService) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.chaoSongRepository = chaoSongRepository;
+        this.documentService = documentService;
+        this.spmApproveitemService = spmApproveitemService;
+        this.processParamService = processParamService;
+        this.taskManager = taskManager;
+        this.historicProcessManager = historicProcessManager;
+        this.departmentManager = departmentManager;
+        this.organizationManager = organizationManager;
+        this.personManager = personManager;
+        this.smsHttpManager = smsHttpManager;
+        this.officeDoneInfoService = officeDoneInfoService;
+        this.y9Conf = y9Conf;
+        this.asyncHandleService = asyncHandleService;
+    }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void changeChaoSongState(String id, String type) {
         String opinionState = "";
         if (ItemBoxTypeEnum.ADD.getValue().equals(type)) {
@@ -143,7 +144,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void changeStatus(String id, Integer status) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ChaoSong chaoSong = chaoSongRepository.findById(id).orElse(null);
@@ -174,7 +175,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void changeStatus(String[] ids, Integer status) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String id : ids) {
@@ -295,7 +296,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean deleteByProcessInstanceId(String processInstanceId, String year) {
         try {
             List<ChaoSong> list = chaoSongRepository.findByProcessInstanceId(processInstanceId);
@@ -337,7 +338,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void deleteList(String[] ids, String processInstanceId) {
         for (String id : ids) {
             ChaoSong cs = this.findOne(id);
@@ -1282,19 +1283,19 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public ChaoSong save(ChaoSong chaoSong) {
         return chaoSongRepository.save(chaoSong);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(List<ChaoSong> chaoSongList) {
         chaoSongRepository.saveAll(chaoSongList);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
         String smsContent, String smsPersonId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -1388,7 +1389,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void updateTitle(String processInstanceId, String documentTitle) {
         try {
             chaoSongRepository.updateTitle(processInstanceId, documentTitle);

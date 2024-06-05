@@ -1,15 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -30,44 +21,44 @@ import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.ItemPermissionService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "itemPermissionService")
 public class ItemPermissionServiceImpl implements ItemPermissionService {
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final ItemPermissionRepository itemPermissionRepository;
 
-    @Autowired
-    private ItemPermissionRepository itemPermissionRepository;
+    private final DynamicRoleMemberService dynamicRoleMemberService;
 
-    @Autowired
-    private DynamicRoleMemberService dynamicRoleMemberService;
+    private final RoleApi roleManager;
 
-    @Autowired
-    private RoleApi roleManager;
+    private final DynamicRoleService dynamicRoleService;
 
-    @Autowired
-    private DynamicRoleService dynamicRoleService;
+    private final RepositoryApi repositoryManager;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final ProcessDefinitionApi processDefinitionManager;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionManager;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
-
-    @Autowired
-    private OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitManager;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyPerm(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
@@ -86,7 +77,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
 
         List<Map<String, Object>> nodes = processDefinitionManager.getNodes(tenantId, latestpdId, false);
-        /**
+        /*
          * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的角色，没有就保存
          */
         for (Map<String, Object> map : nodes) {
@@ -107,7 +98,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void delete(String id) {
         itemPermissionRepository.deleteById(id);
     }
@@ -187,7 +178,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         map.put("existPosition", false);
         map.put("existDepartment", false);
         for (ItemPermission o : objectPermList) {
-            if (o.getRoleType() == ItemPermissionEnum.DEPARTMENT.getValue()) {
+            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT.getValue())) {
                 OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData();
                 if (null != orgUnit) {
                     map.put("existDepartment", true);
@@ -195,19 +186,19 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                 }
             }
 
-            if (o.getRoleType() == ItemPermissionEnum.POSITION.getValue()) {
+            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.POSITION.getValue())) {
                 OrgUnit orgUnit = orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData();
                 if (null != orgUnit) {
                     map.put("existPosition", true);
                     continue;
                 }
             }
-            if (o.getRoleType() == ItemPermissionEnum.ROLE.getValue()) {
-                Integer positionSize =
+            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE.getValue())) {
+                int positionSize =
                     roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData().size();
-                Integer departmentSize =
+                int departmentSize =
                     roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData().size();
-                Integer organizationSize =
+                int organizationSize =
                     roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.ORGANIZATION).getData().size();
                 if (positionSize > 0) {
                     map.put("existPosition", true);
@@ -216,7 +207,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                     map.put("existDepartment", true);
                 }
             }
-            if (o.getRoleType() == ItemPermissionEnum.DYNAMICROLE.getValue()) {
+            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
                 List<OrgUnit> orgUnitList = dynamicRoleMemberService.getOrgUnitList(o.getRoleId(), processInstanceId);
                 for (OrgUnit orgUnit : orgUnitList) {
                     if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
@@ -245,20 +236,20 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             if (existPosition && existDepartment) {
                 break;
             }
-            if (o.getRoleType() == ItemPermissionEnum.ROLE.getValue()) {
-                Integer positionSize =
+            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE.getValue())) {
+                int positionSize =
                     roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData().size();
                 if (positionSize > 0) {
                     existPosition = true;
                 }
-                Integer departmentSize =
+                int departmentSize =
                     roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.DEPARTMENT).getData().size();
                 if (departmentSize > 0) {
                     existDepartment = true;
                 }
                 continue;
             }
-            if (o.getRoleType() == ItemPermissionEnum.DYNAMICROLE.getValue()) {
+            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DYNAMICROLE.getValue())) {
                 List<OrgUnit> orgUnitList = dynamicRoleMemberService.getOrgUnitList(o.getRoleId(), processInstanceId);
                 for (OrgUnit orgUnit : orgUnitList) {
                     if (existPosition && existDepartment) {
@@ -282,7 +273,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removePerm(String itemId, String processDefinitionId) {
         List<ItemPermission> ipList =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
@@ -290,9 +281,10 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public ItemPermission save(String itemId, String processDefinitionId, String taskDefKey, String roleId,
         Integer roleType) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ItemPermission oldip = this.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId,
             processDefinitionId, taskDefKey, roleId);
         if (null == oldip) {

@@ -1,14 +1,6 @@
 package net.risesoft.service.form.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.form.Y9TableField;
@@ -19,27 +11,32 @@ import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.form.Y9TableRepository;
 import net.risesoft.service.form.TableManagerService;
 import net.risesoft.service.form.Y9TableFieldService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "y9TableFieldService")
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9TableFieldServiceImpl implements Y9TableFieldService {
 
-    @Autowired
-    private Y9TableFieldRepository y9TableFieldRepository;
+    private final Y9TableFieldRepository y9TableFieldRepository;
 
-    @Autowired
-    private Y9TableRepository y9TableRepository;
+    private final Y9TableRepository y9TableRepository;
 
-    @Autowired
-    private TableManagerService tableManagerService;
+    private final TableManagerService tableManagerService;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delete(String id) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -100,7 +97,7 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveOrUpdate(Y9TableField field) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -141,7 +138,7 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void updateState(String tableId) {
         y9TableFieldRepository.updateState(tableId);
     }

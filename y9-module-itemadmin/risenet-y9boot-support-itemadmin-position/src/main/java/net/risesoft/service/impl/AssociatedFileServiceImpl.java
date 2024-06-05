@@ -1,19 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.IdentityApi;
@@ -36,36 +23,42 @@ import net.risesoft.service.ProcessParamService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "associatedFileService")
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class AssociatedFileServiceImpl implements AssociatedFileService {
 
-    @Autowired
-    private AssociatedFileRepository associatedFileRepository;
+    private final AssociatedFileRepository associatedFileRepository;
 
-    @Autowired
-    private HistoricProcessApi historicProcessManager;
+    private final HistoricProcessApi historicProcessManager;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private OfficeDoneInfoService officeDoneInfoService;
+    private final OfficeDoneInfoService officeDoneInfoService;
 
-    @Autowired
-    private TaskApi taskApi;
+    private final TaskApi taskApi;
 
-    @Autowired
-    private PositionApi positionManager;
+    private final PositionApi positionManager;
 
-    @Autowired
-    private IdentityApi identityManager;
+    private final IdentityApi identityManager;
 
     @Override
     public int countAssociatedFile(String processSerialNumber) {
@@ -82,7 +75,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
         return 0;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public boolean deleteAllAssociatedFile(String processSerialNumber, String delIds) {
         try {
@@ -114,7 +107,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
         return false;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public boolean deleteAssociatedFile(String processSerialNumber, String delId) {
         try {
@@ -139,7 +132,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
         return false;
     }
 
-    private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
+    private final List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
         String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
@@ -399,7 +392,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
         return map;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public boolean saveAssociatedFile(String processSerialNumber, String processInstanceIds) {
         try {

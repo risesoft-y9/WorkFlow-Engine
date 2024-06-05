@@ -13,10 +13,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemPrintTemplateBind;
@@ -37,21 +38,19 @@ import net.risesoft.y9public.service.Y9FileStoreService;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "printTemplateService")
 public class PrintTemplateServiceImpl implements PrintTemplateService {
 
-    @Autowired
-    private Y9FileStoreService y9FileStoreService;
+    private final Y9FileStoreService y9FileStoreService;
 
-    @Autowired
-    private PrintTemplateRepository printTemplateRepository;
+    private final PrintTemplateRepository printTemplateRepository;
 
-    @Autowired
-    private PrintTemplateItemBindRepository printTemplateItemBindRepository;
+    private final PrintTemplateItemBindRepository printTemplateItemBindRepository;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> deleteBindPrintTemplate(String id) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -70,7 +69,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> deletePrintTemplate(String id) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -136,7 +135,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
         return list;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public Map<String, Object> saveBindTemplate(String itemId, String templateId, String templateName,
         String templateUrl, String templateType) {
@@ -172,7 +171,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveOrUpdate(PrintTemplate printTemplate) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String personId = person.getPersonId(), personName = person.getName(),
@@ -210,7 +209,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> uploadTemplate(MultipartFile file) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         String[] fileNames = file.getOriginalFilename().split("\\\\");

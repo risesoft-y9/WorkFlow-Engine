@@ -76,8 +76,8 @@ import net.risesoft.y9.configuration.Y9Properties;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "chaoSongInfoService")
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
@@ -111,14 +111,14 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     private final ErrorLogService errorLogService;
 
-    private final ElasticsearchTemplate elasticsearchTemplate;
+    private  final ElasticsearchTemplate elasticsearchTemplate;
 
     private final TodoTaskApi todoTaskManager;
 
     private final CustomGroupApi customGroupApi;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void changeChaoSongState(String id, String type) {
         String opinionState = "";
         if (ItemBoxTypeEnum.ADD.getValue().equals(type)) {
@@ -191,7 +191,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean deleteByProcessInstanceId(String processInstanceId) {
         try {
             chaoSongInfoRepository.deleteByProcessInstanceIdAndTenantId(processInstanceId,
@@ -836,7 +836,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
         String smsContent, String smsPersonId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -1139,7 +1139,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void updateTitle(String processInstanceId, String documentTitle) {
         try {
             List<ChaoSongInfo> list = chaoSongInfoRepository.findByProcessInstanceId(processInstanceId);

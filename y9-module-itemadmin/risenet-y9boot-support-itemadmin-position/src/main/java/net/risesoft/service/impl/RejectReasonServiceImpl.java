@@ -1,9 +1,6 @@
 package net.risesoft.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.RejectReason;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -11,18 +8,20 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.RejectReasonRepository;
 import net.risesoft.service.RejectReasonService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "rejectReasonService")
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class RejectReasonServiceImpl implements RejectReasonService {
 
-    @Autowired
-    private RejectReasonRepository rejectReasonRepository;
+    private final RejectReasonRepository rejectReasonRepository;
 
     @Override
     public RejectReason findByTaskIdAndAction(String taskId, Integer action) {
@@ -30,7 +29,7 @@ public class RejectReasonServiceImpl implements RejectReasonService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(String reason, String taskId, Integer action) {
         RejectReason r = this.findByTaskIdAndAction(taskId, action);
         if (null != r) {

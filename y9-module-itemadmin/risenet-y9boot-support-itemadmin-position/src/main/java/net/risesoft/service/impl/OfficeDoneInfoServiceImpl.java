@@ -52,10 +52,10 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "officeDoneInfoService")
-@Transactional(readOnly = true)
 @Slf4j
+@Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
     private static final IndexCoordinates INDEX = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
@@ -87,7 +87,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             Query query = new CriteriaQuery(criteria);
 
-            return (int)elasticsearchTemplate.count(query, INDEX);
+            return (int) elasticsearchTemplate.count(query, INDEX);
         } catch (Exception e) {
             LOGGER.warn("异常", e);
         }
@@ -103,7 +103,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             Query query = new CriteriaQuery(criteria);
             long count = elasticsearchTemplate.count(query, INDEX);
-            return (int)count;
+            return (int) count;
         } catch (Exception e) {
             LOGGER.warn("异常", e);
         }
@@ -119,7 +119,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             Query query = new CriteriaQuery(criteria);
             long count = elasticsearchTemplate.count(query, INDEX);
-            return (int)count;
+            return (int) count;
         } catch (Exception e) {
             LOGGER.warn("异常", e);
         }
@@ -135,7 +135,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             Query query = new CriteriaQuery(criteria);
             long count = elasticsearchTemplate.count(query, INDEX);
-            return (int)count;
+            return (int) count;
         } catch (Exception e) {
             LOGGER.warn("异常", e);
         }
@@ -196,13 +196,14 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
             List<OfficeDoneInfo> list = pageList.getContent();
+            OfficeDoneInfoModel officeDoneInfoModel;
             for (OfficeDoneInfo officeDoneInfo : list) {
-                OfficeDoneInfoModel officeDoneInfoModel = new OfficeDoneInfoModel();
+                officeDoneInfoModel = new OfficeDoneInfoModel();
                 Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
                 list1.add(officeDoneInfoModel);
             }
-            totalPages = pageList != null ? pageList.getTotalPages() : 1;
-            total = pageList != null ? pageList.getTotalElements() : 0;
+            totalPages = pageList.getTotalPages();
+            total = pageList.getTotalElements();
 
             // TODO 下面注释为旧的写法，确认新的逻辑与下面注释的逻辑一致后可删除下面注释的代码
             // Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
@@ -339,13 +340,14 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
             List<OfficeDoneInfo> list = pageList.getContent();
-            OfficeDoneInfoModel officeDoneInfoModel = null;
+            OfficeDoneInfoModel officeDoneInfoModel;
             for (OfficeDoneInfo officeDoneInfo : list) {
                 officeDoneInfoModel = new OfficeDoneInfoModel();
                 Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
                 list1.add(officeDoneInfoModel);
             }
-            total = searchHits.getTotalHits();
+            totalPages = pageList.getTotalPages();
+            total = pageList.getTotalElements();
         } catch (Exception e) {
             dataMap.put(UtilConsts.SUCCESS, false);
             LOGGER.warn("异常", e);
@@ -403,13 +405,14 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
             List<OfficeDoneInfo> list = pageList.getContent();
-            OfficeDoneInfoModel officeDoneInfoModel = null;
+            OfficeDoneInfoModel officeDoneInfoModel;
             for (OfficeDoneInfo officeDoneInfo : list) {
                 officeDoneInfoModel = new OfficeDoneInfoModel();
                 Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
                 list1.add(officeDoneInfoModel);
             }
-            total = searchHits.getTotalHits();
+            totalPages = pageList.getTotalPages();
+            total = pageList.getTotalElements();
         } catch (Exception e) {
             dataMap.put(UtilConsts.SUCCESS, false);
             LOGGER.warn("异常", e);
@@ -461,13 +464,14 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
             List<OfficeDoneInfo> list = pageList.getContent();
-            OfficeDoneInfoModel officeDoneInfoModel = null;
+            OfficeDoneInfoModel officeDoneInfoModel;
             for (OfficeDoneInfo officeDoneInfo : list) {
                 officeDoneInfoModel = new OfficeDoneInfoModel();
                 Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
                 list1.add(officeDoneInfoModel);
             }
-            total = searchHits.getTotalHits();
+            totalPages = pageList.getTotalPages();
+            total = pageList.getTotalElements();
         } catch (Exception e) {
             dataMap.put(UtilConsts.SUCCESS, false);
             LOGGER.warn("异常", e);
@@ -519,13 +523,14 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
             List<OfficeDoneInfo> list = pageList.getContent();
-            OfficeDoneInfoModel officeDoneInfoModel = null;
+            OfficeDoneInfoModel officeDoneInfoModel;
             for (OfficeDoneInfo officeDoneInfo : list) {
                 officeDoneInfoModel = new OfficeDoneInfoModel();
                 Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
                 list1.add(officeDoneInfoModel);
             }
-            total = searchHits.getTotalHits();
+            totalPages = pageList.getTotalPages();
+            total = pageList.getTotalElements();
         } catch (Exception e) {
             dataMap.put(UtilConsts.SUCCESS, false);
             LOGGER.warn("异常", e);
@@ -571,13 +576,14 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
             List<OfficeDoneInfo> list = pageList.getContent();
+            OfficeDoneInfoModel officeDoneInfoModel;
             for (OfficeDoneInfo officeDoneInfo : list) {
-                OfficeDoneInfoModel officeDoneInfoModel = new OfficeDoneInfoModel();
+                officeDoneInfoModel = new OfficeDoneInfoModel();
                 Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
                 list1.add(officeDoneInfoModel);
             }
-            totalPages = pageList != null ? pageList.getTotalPages() : 1;
-            total = pageList != null ? pageList.getTotalElements() : 0;
+            totalPages = pageList.getTotalPages();
+            total = pageList.getTotalElements();
 
             // TODO 下面注释为旧的写法，确认新的逻辑与下面注释的逻辑一致后可删除下面注释的代码
             // BoolQueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("allUserId", "*" +
@@ -662,13 +668,14 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
             Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
             List<OfficeDoneInfo> list = pageList.getContent();
-            OfficeDoneInfoModel officeDoneInfoModel = null;
+            OfficeDoneInfoModel officeDoneInfoModel;
             for (OfficeDoneInfo officeDoneInfo : list) {
                 officeDoneInfoModel = new OfficeDoneInfoModel();
                 Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
                 list1.add(officeDoneInfoModel);
             }
-            total = searchHits.getTotalHits();
+            totalPages = pageList.getTotalPages();
+            total = pageList.getTotalElements();
         } catch (Exception e) {
             dataMap.put(UtilConsts.SUCCESS, false);
             LOGGER.warn("异常", e);

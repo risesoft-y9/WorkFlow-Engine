@@ -1,18 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
 import net.risesoft.consts.UtilConsts;
@@ -29,30 +17,38 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "spmApproveItemService")
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
-    @Autowired
-    private SpmApproveItemRepository spmApproveItemRepository;
+    private final SpmApproveItemRepository spmApproveItemRepository;
 
-    @Autowired
-    private SystemApi systemEntityManager;
+    private final SystemApi systemEntityManager;
 
-    @Autowired
-    private AppApi appManager;
+    private final AppApi appManager;
 
-    @Autowired
-    private ItemMappingConfRepository itemMappingConfRepository;
+    private final ItemMappingConfRepository itemMappingConfRepository;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delete(String ids) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -60,8 +56,8 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
         try {
             if (StringUtils.isNotBlank(ids)) {
                 String[] id = ids.split(SysVariables.COMMA);
-                for (int i = 0; i < id.length; i++) {
-                    spmApproveItemRepository.deleteById(id[i]);
+                for (String s : id) {
+                    spmApproveItemRepository.deleteById(s);
                 }
             }
         } catch (Exception e) {
@@ -106,7 +102,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
     @Override
     public Boolean hasProcessDefinitionByKey(String processDefinitionKey) {
-        Boolean hasKey = false;
+        boolean hasKey = false;
         try {
             SpmApproveItem sa = spmApproveItemRepository.findItemByKey(processDefinitionKey);
             if (null != sa) {
@@ -114,7 +110,6 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            hasKey = false;
         }
         return hasKey;
     }
@@ -148,7 +143,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> publishToSystemApp(String itemId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
@@ -164,13 +159,13 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
             /**
              * 1、判断应用是否存在，不存在则创建应用，存在则修改应用
              */
-            String systemId = system.getId(), customId = itemId;
-            App app = appManager.findBySystemIdAndCustomId(systemId, customId).getData();
+            String systemId = system.getId();
+            App app = appManager.findBySystemIdAndCustomId(systemId, itemId).getData();
             if (null == app) {
                 app = new App();
                 app.setName(item.getName());
                 app.setUrl(item.getAppUrl());
-                app.setCustomId(customId);
+                app.setCustomId(itemId);
                 app.setEnabled(Boolean.TRUE);
                 app.setSystemId(systemId);
                 // FIXME
@@ -194,7 +189,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> save(SpmApproveItem item) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);

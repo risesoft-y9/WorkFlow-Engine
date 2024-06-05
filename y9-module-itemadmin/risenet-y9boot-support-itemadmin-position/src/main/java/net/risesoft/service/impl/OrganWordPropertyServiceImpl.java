@@ -1,16 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.OrganWordProperty;
 import net.risesoft.id.IdType;
@@ -18,18 +9,25 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.OrganWordPropertyRepository;
 import net.risesoft.service.OrganWordPropertyService;
 import net.risesoft.util.SysVariables;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "organWordPropertyService")
 public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
 
-    @Autowired
-    private OrganWordPropertyRepository organWordPropertyRepository;
+    private final OrganWordPropertyRepository organWordPropertyRepository;
 
     @Override
     public List<OrganWordProperty> findAll() {
@@ -52,7 +50,7 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeOrganWordPropertys(String[] organWordPropertyIds) {
         for (String id : organWordPropertyIds) {
             organWordPropertyRepository.deleteById(id);
@@ -60,7 +58,7 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> save(OrganWordProperty organWordProperty) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
@@ -101,7 +99,7 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void update4Order(String[] idAndTabIndexs) {
         List<String> list = Lists.newArrayList(idAndTabIndexs);
         try {

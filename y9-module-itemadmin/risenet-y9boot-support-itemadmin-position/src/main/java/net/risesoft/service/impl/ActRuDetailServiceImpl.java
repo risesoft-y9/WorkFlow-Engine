@@ -1,17 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.IdentityApi;
@@ -31,39 +20,43 @@ import net.risesoft.service.ProcessParamService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Service(value = "actRuDetailService")
 public class ActRuDetailServiceImpl implements ActRuDetailService {
 
-    @Autowired
-    private ActRuDetailRepository actRuDetailRepository;
+    private final ActRuDetailRepository actRuDetailRepository;
 
-    @Autowired
-    private HistoricTaskApi historicTaskManager;
+    private final HistoricTaskApi historicTaskManager;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private SpmApproveItemService itemService;
+    private final SpmApproveItemService itemService;
 
-    @Autowired
-    private TaskApi taskManager;
+    private final TaskApi taskManager;
 
-    @Autowired
-    private IdentityApi identityManager;
+    private final IdentityApi identityManager;
 
-    @Autowired
-    private DepartmentApi departmentManager;
+    private final DepartmentApi departmentManager;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copy(String oldProcessSerialNumber, String newProcessSerialNumber, String newProcessInstanceId) {
         try {
             ProcessParam processParam = processParamService.findByProcessSerialNumber(newProcessSerialNumber);
@@ -111,7 +104,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean deletedByProcessSerialNumber(String processSerialNumber) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
@@ -129,7 +122,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean endByProcessInstanceId(String processInstanceId) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(processInstanceId);
@@ -147,7 +140,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean endByProcessSerialNumber(String processSerialNumber) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
@@ -226,7 +219,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean placeOnFileByProcessSerialNumber(String processSerialNumber) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
@@ -245,7 +238,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean recoveryByProcessInstanceId(String processInstanceId) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(processInstanceId);
@@ -263,7 +256,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean recoveryTodoByProcessSerialNumber(String processSerialNumber, String todoPersonId) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
@@ -289,7 +282,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean removeByProcessInstanceId(String processInstanceId) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(processInstanceId);
@@ -302,7 +295,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean removeByProcessSerialNumber(String processSerialNumber) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
@@ -315,7 +308,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean removeByProcessSerialNumberAndAssignee(String processSerialNumber, String assignee) {
         try {
             ActRuDetail actRuDetail =
@@ -331,7 +324,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean revokePlaceOnFileByProcessSerialNumber(String processSerialNumber, String todoPersonId) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
@@ -358,7 +351,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean saveOrUpdate(ActRuDetail actRuDetail) {
         String processSerialNumber = actRuDetail.getProcessSerialNumber();
         String assignee = actRuDetail.getAssignee();
@@ -409,7 +402,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean syncByProcessInstanceId(String processInstanceId) {
         try {
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);

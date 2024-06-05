@@ -1,24 +1,23 @@
 package net.risesoft.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.OrganWordUseHistory;
 import net.risesoft.repository.jpa.OrganWordUseHistoryRepository;
 import net.risesoft.service.OrganWordUseHistoryService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "organWordUseHistoryService")
 public class OrganWordUseHistoryServiceImpl implements OrganWordUseHistoryService {
 
-    @Autowired
-    private OrganWordUseHistoryRepository organWordUseHistoryRepository;
+    private final OrganWordUseHistoryRepository organWordUseHistoryRepository;
 
     @Override
     public OrganWordUseHistory findByItemIdAndNumberString(String itemId, String numberString) {
@@ -31,7 +30,7 @@ public class OrganWordUseHistoryServiceImpl implements OrganWordUseHistoryServic
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public OrganWordUseHistory save(OrganWordUseHistory organWordUseHistory) {
         return organWordUseHistoryRepository.save(organWordUseHistory);
     }

@@ -1,26 +1,5 @@
 package net.risesoft.service.form.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormField;
@@ -38,37 +17,57 @@ import net.risesoft.service.form.Y9TableService;
 import net.risesoft.util.form.DbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "y9FormService")
+@Service
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9FormServiceImpl implements Y9FormService {
 
-    @Autowired
-    private Y9FormRepository y9FormRepository;
+    private final JdbcTemplate jdbcTemplate4Tenant;
+    private final Y9FormRepository y9FormRepository;
 
-    @Autowired
-    private Y9TableService y9TableService;
+    private final Y9TableService y9TableService;
 
-    @Autowired
-    private Y9FormFieldRepository y9FormFieldRepository;
+    private final Y9FormFieldRepository y9FormFieldRepository;
 
-    @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate4Tenant;
+    private final Y9TableFieldRepository y9TableFieldRepository;
 
-    @Autowired
-    private Y9TableFieldRepository y9TableFieldRepository;
+    private final SpmApproveItemRepository approveItemRepository;
 
-    @Autowired
-    private SpmApproveItemRepository approveItemRepository;
+    public Y9FormServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant, Y9FormRepository y9FormRepository, Y9TableService y9TableService, Y9FormFieldRepository y9FormFieldRepository, Y9TableFieldRepository y9TableFieldRepository, SpmApproveItemRepository approveItemRepository) {
+        this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
+        this.y9FormRepository = y9FormRepository;
+        this.y9TableService = y9TableService;
+        this.y9FormFieldRepository = y9FormFieldRepository;
+        this.y9TableFieldRepository = y9TableFieldRepository;
+        this.approveItemRepository = approveItemRepository;
+    }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delChildTableRow(String formId, String tableId, String guid) {
         Connection connection = null;
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -106,7 +105,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delete(String ids) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -126,7 +125,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean deleteByGuid(String y9TableId, String guid) {
         try {
             Y9Table y9Table = y9TableService.findById(y9TableId);
@@ -141,7 +140,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delPreFormData(String formId, String guid) {
         Connection connection = null;
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -474,7 +473,7 @@ public class Y9FormServiceImpl implements Y9FormService {
      * @param listMap
      * @return
      */
-    private Map<String, Object> listMapToKeyValue(List<Map<String, Object>> listMap) {
+    private final Map<String, Object> listMapToKeyValue(List<Map<String, Object>> listMap) {
         Map<String, Object> map = new CaseInsensitiveMap<>(16);
         for (Map<String, Object> m : listMap) {
             map.put((String)m.get("name"), (String)m.get("value"));
@@ -484,7 +483,7 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @SuppressWarnings("unchecked")
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Connection connection = null;
@@ -691,7 +690,7 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @SuppressWarnings({"unchecked"})
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveFormData(String formdata) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Connection connection = null;
@@ -895,7 +894,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveFormField(String formId, String fieldJson) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         try {
@@ -927,7 +926,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveFormJson(String id, String formJson) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -946,7 +945,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveOrUpdate(Y9Form form) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {

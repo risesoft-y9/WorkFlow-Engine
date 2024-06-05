@@ -1,24 +1,23 @@
 package net.risesoft.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.DocumentWps;
 import net.risesoft.repository.jpa.DocumentWpsRepository;
 import net.risesoft.service.DocumentWpsService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "documentWpsService")
 public class DocumentWpsServiceImpl implements DocumentWpsService {
 
-    @Autowired
-    private DocumentWpsRepository documentWpsRepository;
+    private final DocumentWpsRepository documentWpsRepository;
 
     @Override
     public DocumentWps findById(String id) {
@@ -31,7 +30,7 @@ public class DocumentWpsServiceImpl implements DocumentWpsService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveDocumentWps(DocumentWps documentWps) {
         DocumentWps wps = documentWpsRepository.findByProcessSerialNumber(documentWps.getProcessSerialNumber());
         if (wps != null) {
@@ -52,13 +51,13 @@ public class DocumentWpsServiceImpl implements DocumentWpsService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveWpsContent(String processSerialNumber, String hasContent) {
         documentWpsRepository.updateHasContent(processSerialNumber, hasContent);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void updateProcessInstanceId(String processSerialNumber, String processInstanceId) {
         try {
             documentWpsRepository.updateProcessInstanceId(processSerialNumber, processInstanceId);

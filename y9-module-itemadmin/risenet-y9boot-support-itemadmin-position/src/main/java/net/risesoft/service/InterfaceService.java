@@ -1,11 +1,11 @@
 package net.risesoft.service;
 
-import java.util.List;
-
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.InterfaceRequestParams;
 import net.risesoft.entity.InterfaceResponseParams;
 import net.risesoft.entity.ItemInterfaceBind;
+
+import java.util.List;
 
 /**
  * @author qinman
@@ -46,7 +46,6 @@ public interface InterfaceService {
      * 获取接口响应参数列表
      *
      * @param name
-     * @param type
      * @param id
      * @return
      */
@@ -69,7 +68,7 @@ public interface InterfaceService {
     /**
      * 移除接口响应参数
      *
-     * @param id
+     * @param ids
      */
     void removeResParams(String[] ids);
 

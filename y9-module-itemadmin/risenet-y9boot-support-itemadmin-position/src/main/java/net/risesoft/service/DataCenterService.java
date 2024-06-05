@@ -1,22 +1,6 @@
 package net.risesoft.service;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.datacenter.OfficeInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -45,61 +29,76 @@ import net.risesoft.repository.jpa.AssociatedFileRepository;
 import net.risesoft.util.form.DbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service
 @Slf4j
+@Service
 public class DataCenterService {
 
-    @Autowired
-    private SpmApproveItemService spmApproveitemService;
+    private final JdbcTemplate jdbcTemplate4Tenant;
 
-    @Autowired
-    private TransactionWordService transactionWordService;
+    private final SpmApproveItemService spmApproveitemService;
 
-    @Autowired
-    private TransactionFileService transactionFileService;
+    private final TransactionWordService transactionWordService;
 
-    @Autowired
-    private ProcessTrackService processTrackService;
+    private final TransactionFileService transactionFileService;
 
-    @Autowired
-    private Y9FormItemBindService y9FormItemBindService;
+    private final ProcessTrackService processTrackService;
 
-    @Autowired
-    private AssociatedFileRepository associatedFileRepository;
+    private final Y9FormItemBindService y9FormItemBindService;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final AssociatedFileRepository associatedFileRepository;
 
-    @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate4Tenant;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private Y9FormRepository y9FormRepository;
+    private final Y9FormRepository y9FormRepository;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private Y9FormFieldRepository y9FormFieldRepository;
+    private final Y9FormFieldRepository y9FormFieldRepository;
 
-    @Autowired
-    private OfficeInfoApi officeInfoManager;
+    private final OfficeInfoApi officeInfoManager;
 
-    @Autowired
-    private HistoricProcessApi historicProcessManager;
+    private final HistoricProcessApi historicProcessManager;
 
-    @Autowired
-    private HistoricVariableApi historicVariableManager;
+    private final HistoricVariableApi historicVariableManager;
+
+    public DataCenterService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant, SpmApproveItemService spmApproveitemService, TransactionWordService transactionWordService, TransactionFileService transactionFileService, ProcessTrackService processTrackService, Y9FormItemBindService y9FormItemBindService, AssociatedFileRepository associatedFileRepository, ProcessParamService processParamService, Y9FormRepository y9FormRepository, PositionApi positionApi, OrgUnitApi orgUnitApi, Y9FormFieldRepository y9FormFieldRepository, OfficeInfoApi officeInfoManager, HistoricProcessApi historicProcessManager, HistoricVariableApi historicVariableManager) {
+        this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
+        this.spmApproveitemService = spmApproveitemService;
+        this.transactionWordService = transactionWordService;
+        this.transactionFileService = transactionFileService;
+        this.processTrackService = processTrackService;
+        this.y9FormItemBindService = y9FormItemBindService;
+        this.associatedFileRepository = associatedFileRepository;
+        this.processParamService = processParamService;
+        this.y9FormRepository = y9FormRepository;
+        this.positionApi = positionApi;
+        this.orgUnitApi = orgUnitApi;
+        this.y9FormFieldRepository = y9FormFieldRepository;
+        this.officeInfoManager = officeInfoManager;
+        this.historicProcessManager = historicProcessManager;
+        this.historicVariableManager = historicVariableManager;
+    }
 
     /**
      * 获取表单数据

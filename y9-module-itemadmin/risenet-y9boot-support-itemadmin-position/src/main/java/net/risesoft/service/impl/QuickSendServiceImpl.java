@@ -1,27 +1,26 @@
 package net.risesoft.service.impl;
 
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.QuickSend;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.QuickSendRepository;
 import net.risesoft.service.QuickSendService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  *
  * @author zhangchongjie
  * @date 2023/09/07
  */
-@Service(value = "quickSendService")
+@Service
+@RequiredArgsConstructor
 public class QuickSendServiceImpl implements QuickSendService {
 
-    @Autowired
-    private QuickSendRepository quickSendRepository;
+    private final QuickSendRepository quickSendRepository;
 
     @Override
     public String getAssignee(String itemId, String taskKey) {

@@ -1,14 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.BookMarkBind;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -16,21 +8,28 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.BookMarkBindRepository;
 import net.risesoft.service.BookMarkBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "bookMarkBindService")
 public class BookMarkBindServiceImpl implements BookMarkBindService {
 
-    @Autowired
-    private BookMarkBindRepository bookMarkBindRepository;
+    private final BookMarkBindRepository bookMarkBindRepository;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void deleteBind(String wordTemplateId, String bookMarkName) {
         bookMarkBindRepository.deleteByWordTemplateIdAndBookMarkName(wordTemplateId, bookMarkName);
 
@@ -52,7 +51,7 @@ public class BookMarkBindServiceImpl implements BookMarkBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveOrUpdate(BookMarkBind bookMarkBind) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

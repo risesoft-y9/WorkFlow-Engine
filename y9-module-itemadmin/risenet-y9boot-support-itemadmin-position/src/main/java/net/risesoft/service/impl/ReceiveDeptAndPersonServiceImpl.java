@@ -1,16 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -27,30 +17,35 @@ import net.risesoft.repository.jpa.ReceivePersonRepository;
 import net.risesoft.service.ReceiveDeptAndPersonService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "receiveDeptAndPersonService")
 public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonService {
 
-    @Autowired
-    private ReceiveDepartmentRepository receiveDepartmentRepository;
+    private final ReceiveDepartmentRepository receiveDepartmentRepository;
 
-    @Autowired
-    private ReceivePersonRepository receivePersonRepository;
+    private final ReceivePersonRepository receivePersonRepository;
 
-    @Autowired
-    private DepartmentApi departmentManager;
+    private final DepartmentApi departmentManager;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
     @Override
     public Integer countByDeptId(String deptId) {
@@ -58,7 +53,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delDepartment(String id) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -68,9 +63,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
             setParentId(id, receiveDeptAndPerson.getParentId());
             receiveDepartmentRepository.delete(receiveDeptAndPerson);
             List<ReceivePerson> personList = receivePersonRepository.findByDeptId(id);
-            for (ReceivePerson receivePerson : personList) {
-                receivePersonRepository.delete(receivePerson);
-            }
+            receivePersonRepository.deleteAll(personList);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "取消失败");
@@ -80,9 +73,9 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delPerson(String id) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "删除成功");
         try {
@@ -158,13 +151,13 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public ReceiveDepartment save(ReceiveDepartment receiveDepartment) {
         return receiveDepartmentRepository.save(receiveDepartment);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveDepartment(String id) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -195,7 +188,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveOrder(String ids) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -351,7 +344,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> setReceive(boolean receive, String ids) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -374,7 +367,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> setSend(boolean send, String ids) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);

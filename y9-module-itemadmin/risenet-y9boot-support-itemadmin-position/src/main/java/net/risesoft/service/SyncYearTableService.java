@@ -16,10 +16,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import jakarta.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -40,15 +38,18 @@ import net.risesoft.y9.util.Y9FileUtil;
  * @date 2022/12/20
  */
 @Service
-@Transactional(value = "rsTenantTransactionManager", readOnly = true)
 @Slf4j
+@Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class SyncYearTableService {
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate4Public;
+    private final JdbcTemplate jdbcTemplate4Public;
+
+    public SyncYearTableService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,@Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.jdbcTemplate4Public = jdbcTemplate4Public;
+    }
 
     private String convertStreamToString(InputStream inputStream) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -56,7 +57,7 @@ public class SyncYearTableService {
         String line = null;
         try {
             while ((line = reader.readLine()) != null) {
-                sb.append(line + "/n");
+                sb.append(line).append("/n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,7 +103,7 @@ public class SyncYearTableService {
      *
      * @return
      */
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> syncYearTable(String year) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
