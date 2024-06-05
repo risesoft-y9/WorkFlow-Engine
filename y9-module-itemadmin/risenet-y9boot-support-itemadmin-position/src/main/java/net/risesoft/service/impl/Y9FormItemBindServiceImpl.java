@@ -1,17 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.UtilConsts;
@@ -27,33 +16,37 @@ import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "y9FormItemBindService")
 public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
 
-    @Autowired
-    private Y9FormItemBindRepository y9FormItemBindRepository;
+    private final Y9FormItemBindRepository y9FormItemBindRepository;
 
-    @Autowired
-    private Y9FormItemMobileBindRepository y9FormItemMobileBindRepository;
+    private final Y9FormItemMobileBindRepository y9FormItemMobileBindRepository;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionManager;
 
-    @Resource(name = "spmApproveItemService")
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryManager;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyEform(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
@@ -97,7 +90,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delete(String id) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -142,7 +135,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                 }
                 eformTaskBinds =
                     y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
-                if (eformTaskBinds.size() == 0) {
+                if (eformTaskBinds.isEmpty()) {
                     // 再查找缺省的form。任务上没有设置表单，就用缺省表单。
                     eformTaskBinds =
                         y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
@@ -170,7 +163,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                 }
                 eformTaskBinds =
                     y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKey(itemId, procDefId, taskDefKey);
-                if (eformTaskBinds.size() == 0) {
+                if (eformTaskBinds.isEmpty()) {
                     // 再查找缺省的form。任务上没有设置表单，就用缺省表单。
                     eformTaskBinds =
                         y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, procDefId);
@@ -243,7 +236,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         boolean showDocumentFlag = false;
         boolean showFileFlag = false;
         boolean showHistoryFlag = false;
-        if (eformTaskBinds.size() > 0) {
+        if (!eformTaskBinds.isEmpty()) {
             for (Y9FormItemBind eftb : eformTaskBinds) {
                 if (eftb.isShowDocumentTab()) {
                     showDocumentFlag = true;
@@ -269,7 +262,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> save(Y9FormItemBind eformItem) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
@@ -286,7 +279,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         return map;
     }
 
-    private void save(Y9FormItemBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
+    private final void save(Y9FormItemBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
         String tenantId) {
         Y9FormItemBind eibTemp = new Y9FormItemBind();
         eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -304,7 +297,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> save(Y9FormItemMobileBind eformItem) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);

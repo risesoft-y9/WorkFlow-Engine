@@ -1,22 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.ItemLinkBind;
 import net.risesoft.entity.LinkInfo;
 import net.risesoft.id.IdType;
@@ -25,26 +9,36 @@ import net.risesoft.repository.jpa.ItemLinkBindRepository;
 import net.risesoft.repository.jpa.ItemLinkRoleRepository;
 import net.risesoft.repository.jpa.LinkInfoRepository;
 import net.risesoft.service.LinkInfoService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "linkInfoService")
 public class LinkInfoServiceImpl implements LinkInfoService {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final LinkInfoRepository linkInfoRepository;
 
-    @Autowired
-    private LinkInfoRepository linkInfoRepository;
+    private final ItemLinkBindRepository itemLinkBindRepository;
 
-    @Autowired
-    private ItemLinkBindRepository itemLinkBindRepository;
-
-    @Autowired
-    private ItemLinkRoleRepository itemLinkRoleRepository;
+    private final ItemLinkRoleRepository itemLinkRoleRepository;
 
     @SuppressWarnings("serial")
     @Override
@@ -73,7 +67,7 @@ public class LinkInfoServiceImpl implements LinkInfoService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void remove(String id) {
         linkInfoRepository.deleteById(id);
         List<ItemLinkBind> list = itemLinkBindRepository.findByLinkIdOrderByCreateTimeDesc(id);
@@ -84,8 +78,9 @@ public class LinkInfoServiceImpl implements LinkInfoService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveOrUpdate(LinkInfo linkInfo) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = linkInfo.getId();
         if (StringUtils.isNotBlank(id)) {
             LinkInfo item = this.findById(id);

@@ -1,25 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.ItemOpinionFrameBind;
 import net.risesoft.entity.OpinionFrame;
 import net.risesoft.id.IdType;
@@ -29,23 +10,37 @@ import net.risesoft.repository.jpa.OpinionFrameRepository;
 import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.OpinionFrameService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "opinionFrameService")
 public class OpinionFrameServiceImpl implements OpinionFrameService {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final OpinionFrameRepository opinionFrameRepository;
 
-    @Autowired
-    private OpinionFrameRepository opinionFrameRepository;
-
-    @Autowired
-    private ItemOpinionFrameBindService itemOpinionFrameBindService;
+    private final ItemOpinionFrameBindService itemOpinionFrameBindService;
 
     @Override
     public List<OpinionFrame> findAll() {
@@ -99,7 +94,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void remove(String id) {
         OpinionFrame opinionFrame = this.findOne(id);
         if (opinionFrame != null) {
@@ -111,7 +106,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void remove(String[] ids) {
         for (String id : ids) {
             this.remove(id);
@@ -120,15 +115,16 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public OpinionFrame save(OpinionFrame opinionFrame) {
         return opinionFrameRepository.save(opinionFrame);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public OpinionFrame saveOrUpdate(OpinionFrame opinionFrame) {
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String id = opinionFrame.getId();
             if (StringUtils.isNotEmpty(id)) {

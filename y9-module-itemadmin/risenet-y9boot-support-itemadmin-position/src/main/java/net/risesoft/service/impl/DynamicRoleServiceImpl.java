@@ -1,30 +1,29 @@
 package net.risesoft.service.impl;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.DynamicRoleRepository;
 import net.risesoft.service.DynamicRoleService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "dynamicRoleService")
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class DynamicRoleServiceImpl implements DynamicRoleService {
 
-    @Autowired
-    private DynamicRoleRepository dynamicRoleRepository;
+    private final DynamicRoleRepository dynamicRoleRepository;
 
     @Override
     public List<DynamicRole> findAll() {
@@ -37,7 +36,7 @@ public class DynamicRoleServiceImpl implements DynamicRoleService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeDynamicRoles(String[] dynamicRoleIds) {
         for (String id : dynamicRoleIds) {
             dynamicRoleRepository.deleteById(id);
@@ -45,7 +44,7 @@ public class DynamicRoleServiceImpl implements DynamicRoleService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public DynamicRole saveOrUpdate(DynamicRole dynamicRole) {
         String id = dynamicRole.getId();
         if (StringUtils.isNotEmpty(id)) {

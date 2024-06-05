@@ -1,10 +1,6 @@
 package net.risesoft.service.dynamicrole.impl;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
@@ -12,6 +8,9 @@ import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 当前部门秘书
@@ -21,13 +20,12 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @Service
+@RequiredArgsConstructor
 public class CurrentDeptSecretary extends AbstractDynamicRoleMember {
 
-    @Autowired
-    private DepartmentApi departmentManager;
+    private final DepartmentApi departmentManager;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
     @Override
     public List<OrgUnit> getOrgUnitList() {

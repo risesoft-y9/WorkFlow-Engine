@@ -1,12 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemWordTemplateBind;
 import net.risesoft.id.IdType;
@@ -14,21 +8,26 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.ItemWordTemplateBindRepository;
 import net.risesoft.service.ItemWordTemplateBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "itemWordTemplateBindService")
 public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindService {
 
-    @Autowired
-    private ItemWordTemplateBindRepository wordTemplateBindRepository;
+    private final ItemWordTemplateBindRepository wordTemplateBindRepository;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> deleteBind(String id) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
@@ -49,7 +48,7 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> save(String itemId, String processDefinitionId, String templateId) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);

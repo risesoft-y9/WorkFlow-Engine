@@ -1,25 +1,5 @@
 package net.risesoft.service.form.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.form.Y9Table;
@@ -35,37 +15,58 @@ import net.risesoft.service.form.TableManagerService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.util.form.DbMetaDataUtil;
 import net.risesoft.y9.sqlddl.DbColumn;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "y9TableService")
+@Service
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9TableServiceImpl implements Y9TableService {
 
-    @Autowired
-    private Y9TableRepository y9TableRepository;
 
-    @Autowired
-    private Y9TableFieldRepository y9TableFieldRepository;
+    private final JdbcTemplate jdbcTemplate4Tenant;
 
-    @Autowired
-    private Y9FormFieldRepository y9FormFieldRepository;
+    private final Y9TableRepository y9TableRepository;
 
-    @Autowired
-    @Qualifier("jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate4Tenant;
+    private final Y9TableFieldRepository y9TableFieldRepository;
 
-    @Autowired
-    private TableManagerService tableManagerService;
+    private final Y9FormFieldRepository y9FormFieldRepository;
 
-    @Autowired
-    private SpmApproveItemRepository approveItemRepository;
+    private final TableManagerService tableManagerService;
+
+    private final SpmApproveItemRepository approveItemRepository;
+
+    public Y9TableServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant, Y9TableRepository y9TableRepository, Y9TableFieldRepository y9TableFieldRepository, Y9FormFieldRepository y9FormFieldRepository, TableManagerService tableManagerService, SpmApproveItemRepository approveItemRepository) {
+        this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
+        this.y9TableRepository = y9TableRepository;
+        this.y9TableFieldRepository = y9TableFieldRepository;
+        this.y9FormFieldRepository = y9FormFieldRepository;
+        this.tableManagerService = tableManagerService;
+        this.approveItemRepository = approveItemRepository;
+    }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> addDataBaseTable(String tableName, String systemName, String systemCnName) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("msg", "操作成功");
@@ -119,7 +120,7 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> buildTable(Y9Table table, List<Map<String, Object>> listMap) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("msg", "创建失败");
@@ -164,7 +165,7 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delete(String ids) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -295,7 +296,7 @@ public class Y9TableServiceImpl implements Y9TableService {
      * @param type
      * @return
      */
-    private String getFieldType(String type) {
+    private final String getFieldType(String type) {
         type = type.substring(0, type.lastIndexOf("("));
         return type;
     }
@@ -348,7 +349,7 @@ public class Y9TableServiceImpl implements Y9TableService {
      * @param ids
      * @return
      */
-    @Transactional(readOnly = false)
+    @Transactional()
     public List<DbColumn> saveField(String tableId, String tableName, List<Map<String, Object>> listMap, List<String> ids) {
         List<DbColumn> dbcs = new ArrayList<DbColumn>();
         int order = 1;
@@ -406,7 +407,7 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Y9Table saveOrUpdate(Y9Table table) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Connection connection = null;
@@ -437,7 +438,7 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> updateTable(Y9Table table, List<Map<String, Object>> listMap, String type) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("msg", "操作成功");

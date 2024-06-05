@@ -1,11 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.entity.ItemOpinionFrameRole;
 import net.risesoft.id.IdType;
@@ -13,24 +8,27 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Role;
 import net.risesoft.repository.jpa.ItemOpinionFrameRoleRepository;
 import net.risesoft.service.ItemOpinionFrameRoleService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "itemOpinionFrameRoleService")
 public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleService {
 
-    @Autowired
-    private ItemOpinionFrameRoleRepository itemOpinionFrameRoleRepository;
+    private final ItemOpinionFrameRoleRepository itemOpinionFrameRoleRepository;
 
-    @Autowired
-    private RoleApi roleManager;
+    private final RoleApi roleManager;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void deleteById(String id) {
         itemOpinionFrameRoleRepository.deleteById(id);
     }
@@ -52,7 +50,7 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void remove(String[] ids) {
         for (String id : ids) {
             itemOpinionFrameRoleRepository.deleteById(id);
@@ -60,7 +58,7 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeByItemOpinionFrameId(String itemOpinionFrameId) {
         List<ItemOpinionFrameRole> roleList =
             itemOpinionFrameRoleRepository.findByItemOpinionFrameId(itemOpinionFrameId);
@@ -68,7 +66,7 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public ItemOpinionFrameRole saveOrUpdate(String itemOpinionFrameId, String roleId) {
         ItemOpinionFrameRole iofr =
             itemOpinionFrameRoleRepository.findByItemOpinionFrameIdAndRoleId(itemOpinionFrameId, roleId);

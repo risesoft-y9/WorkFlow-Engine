@@ -1,27 +1,6 @@
 package net.risesoft.service.form;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.form.Y9TableField;
@@ -36,26 +15,46 @@ import net.risesoft.util.form.DdlMysql;
 import net.risesoft.util.form.DdlOracle;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.sqlddl.DbColumn;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "tableManagerService")
+@Service
 @Slf4j
 public class TableManagerService {
 
-    @Autowired
-    private Y9TableRepository y9TableRepository;
+    private final JdbcTemplate jdbcTemplate4Tenant;
 
-    @Autowired
-    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
+    private final Y9TableRepository y9TableRepository;
 
-    @Autowired
-    private Y9TableFieldRepository y9TableFieldRepository;
+    private final Y9TableFieldRepository y9TableFieldRepository;
 
     private String[] allFieldName = null;
+
+    public TableManagerService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant, Y9TableRepository y9TableRepository, Y9TableFieldRepository y9TableFieldRepository) {
+        this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
+        this.y9TableRepository = y9TableRepository;
+        this.y9TableFieldRepository = y9TableFieldRepository;
+    }
 
     /**
      * 修改表结构
@@ -134,8 +133,8 @@ public class TableManagerService {
 
     /**
      * 创建表结构
-     *
-     * @param tableId
+     * @param td
+     * @param dbcs
      * @return
      */
     public Map<String, Object> buildTable(Y9Table td, List<DbColumn> dbcs) {

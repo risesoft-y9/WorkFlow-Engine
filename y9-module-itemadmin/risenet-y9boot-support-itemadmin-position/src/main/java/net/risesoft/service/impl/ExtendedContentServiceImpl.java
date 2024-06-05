@@ -1,19 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ExtendedContent;
@@ -25,21 +12,32 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ExtendedContentRepository;
 import net.risesoft.service.ExtendedContentService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "extendedContentService")
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ExtendedContentServiceImpl implements ExtendedContentService {
 
-    @Autowired
-    private ExtendedContentRepository extendedContentRepository;
+    private final ExtendedContentRepository extendedContentRepository;
 
-    @Autowired
-    private OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitManager;
 
     @Override
     public List<Map<String, Object>> contentList(String processSerialNumber, String taskId, String itembox,
@@ -88,7 +86,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delete(String id) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -150,7 +148,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Model newOrModifyContent(String processSerialNumber, String taskId, String category, String id,
         Model model) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -184,7 +182,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveOrUpdate(ExtendedContent content) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -227,7 +225,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void update(String processSerialNumber, String taskId) {
         try {
             extendedContentRepository.update(taskId, processSerialNumber);

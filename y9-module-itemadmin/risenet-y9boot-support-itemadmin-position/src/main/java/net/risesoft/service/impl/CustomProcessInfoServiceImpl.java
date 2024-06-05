@@ -1,13 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.CustomProcessInfo;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -15,18 +8,24 @@ import net.risesoft.repository.jpa.CustomProcessInfoRepository;
 import net.risesoft.service.CustomProcessInfoService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "customProcessInfoService")
 public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
 
-    @Autowired
-    private CustomProcessInfoRepository customProcessInfoRepository;
+    private final CustomProcessInfoRepository customProcessInfoRepository;
 
     @Override
     public CustomProcessInfo getCurrentTaskNextNode(String processSerialNumber) {
@@ -51,7 +50,7 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
 
     @SuppressWarnings("unchecked")
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean saveOrUpdate(String itemId, String processSerialNumber, List<Map<String, Object>> taskList) {
         try {
             int i = 1;
@@ -92,7 +91,7 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean updateCurrentTask(String processSerialNumber) {
         try {
             List<CustomProcessInfo> taskList =

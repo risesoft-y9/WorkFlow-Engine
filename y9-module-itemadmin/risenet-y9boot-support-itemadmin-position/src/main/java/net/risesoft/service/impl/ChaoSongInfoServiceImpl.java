@@ -1,37 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.Criteria;
-import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
-import org.springframework.data.elasticsearch.core.query.Query;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrganizationApi;
@@ -71,72 +41,83 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.util.Y9EsIndexConst;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
+import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "chaoSongInfoService")
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
-    @Autowired
-    private ChaoSongInfoRepository chaoSongInfoRepository;
+    private final ChaoSongInfoRepository chaoSongInfoRepository;
 
-    @Autowired
-    private DocumentService documentService;
+    private final DocumentService documentService;
 
-    @Autowired
-    private SpmApproveItemService spmApproveitemService;
+    private final SpmApproveItemService spmApproveitemService;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private TaskApi taskManager;
+    private final TaskApi taskManager;
 
-    @Autowired
-    private HistoricProcessApi historicProcessManager;
+    private final HistoricProcessApi historicProcessManager;
 
-    @Autowired
-    private DepartmentApi departmentManager;
+    private final DepartmentApi departmentManager;
 
-    @Autowired
-    private OrganizationApi organizationManager;
+    private final OrganizationApi organizationManager;
 
-    @Autowired
-    private PositionApi positionManager;
+    private final PositionApi positionManager;
 
-    @Autowired
-    private SmsHttpApi smsHttpManager;
+    private final SmsHttpApi smsHttpManager;
 
-    @Autowired
-    private OfficeDoneInfoService officeDoneInfoService;
+    private final OfficeDoneInfoService officeDoneInfoService;
 
-    @Autowired
-    private Y9Properties y9Conf;
+    private final Y9Properties y9Conf;
 
-    @Autowired
-    private OfficeFollowService officeFollowService;
+    private final OfficeFollowService officeFollowService;
 
-    @Autowired
-    private AsyncHandleService asyncHandleService;
+    private final AsyncHandleService asyncHandleService;
 
-    @Autowired
-    private ErrorLogService errorLogService;
+    private final ErrorLogService errorLogService;
 
-    private final ElasticsearchTemplate elasticsearchTemplate;
+    private  final ElasticsearchTemplate elasticsearchTemplate;
 
-    @Autowired
-    private TodoTaskApi todoTaskManager;
+    private final TodoTaskApi todoTaskManager;
 
-    @Autowired
-    private CustomGroupApi customGroupApi;
+    private final CustomGroupApi customGroupApi;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void changeChaoSongState(String id, String type) {
         String opinionState = "";
         if (ItemBoxTypeEnum.ADD.getValue().equals(type)) {
@@ -209,7 +190,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public boolean deleteByProcessInstanceId(String processInstanceId) {
         try {
             chaoSongInfoRepository.deleteByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
@@ -836,7 +817,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);
@@ -1127,7 +1108,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void updateTitle(String processInstanceId, String documentTitle) {
         try {
             List<ChaoSongInfo> list = chaoSongInfoRepository.findByProcessInstanceId(processInstanceId);

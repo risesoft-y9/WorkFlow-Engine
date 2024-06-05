@@ -1,25 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.ViewType;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -28,23 +9,37 @@ import net.risesoft.repository.jpa.ViewTypeRepository;
 import net.risesoft.service.ItemViewConfService;
 import net.risesoft.service.ViewTypeService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Service(value = "viewTypeService")
 public class ViewTypeServiceImpl implements ViewTypeService {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final ViewTypeRepository viewTypeRepository;
 
-    @Autowired
-    private ViewTypeRepository viewTypeRepository;
-
-    @Autowired
-    private ItemViewConfService itemViewConfService;
+    private final ItemViewConfService itemViewConfService;
 
     @Override
     public List<ViewType> findAll() {
@@ -79,7 +74,7 @@ public class ViewTypeServiceImpl implements ViewTypeService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void remove(String id) {
         ViewType viewType = this.findById(id);
         if (viewType != null) {
@@ -88,7 +83,7 @@ public class ViewTypeServiceImpl implements ViewTypeService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void remove(String[] ids) {
         for (String id : ids) {
             this.remove(id);
@@ -97,15 +92,16 @@ public class ViewTypeServiceImpl implements ViewTypeService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public ViewType save(ViewType viewType) {
         return viewTypeRepository.save(viewType);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public ViewType saveOrUpdate(ViewType viewType) {
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String id = viewType.getId();
             if (StringUtils.isNotEmpty(id)) {

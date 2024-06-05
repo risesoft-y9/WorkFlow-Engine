@@ -1,16 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
@@ -29,42 +19,44 @@ import net.risesoft.service.ItemOrganWordBindService;
 import net.risesoft.service.ItemOrganWordRoleService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "itemOrganWordBindService")
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final ItemOrganWordBindRepository itemOrganWordBindRepository;
 
-    @Autowired
-    private ItemOrganWordBindRepository itemOrganWordBindRepository;
+    private final ItemOrganWordRoleService itemOrganWordRoleService;
 
-    @Autowired
-    private ItemOrganWordRoleService itemOrganWordRoleService;
+    private final OrganWordRepository organWordRepository;
 
-    @Autowired
-    private OrganWordRepository organWordRepository;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final RepositoryApi repositoryManager;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final ProcessDefinitionApi processDefinitionManager;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionManager;
-
-    @Autowired
-    private RoleApi roleManager;
+    private final RoleApi roleManager;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyBind(String itemId, String processDefinitionId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
@@ -90,7 +82,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
                         itemId, latestpdId, currentTaskDefKey, bind.getOrganWordCustom());
                 if (null == oldBind) {
                     String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE), oldbindId = bind.getId();
-                    /**
+                    /*
                      * 保存意见框绑定
                      */
                     ItemOrganWordBind newbind = new ItemOrganWordBind();
@@ -105,7 +97,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
                     newbind.setUserName(userName);
 
                     itemOrganWordBindRepository.save(newbind);
-                    /**
+                    /*
                      * 保存编号的授权
                      */
                     List<ItemOrganWordRole> roleList = itemOrganWordRoleService.findByItemOrganWordBindId(oldbindId);
@@ -204,14 +196,14 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void remove(String id) {
         itemOrganWordRoleService.removeByItemOrganWordBindId(id);
         itemOrganWordBindRepository.deleteById(id);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void remove(String[] ids) {
         for (String id : ids) {
             this.remove(id);
@@ -219,14 +211,15 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(ItemOrganWordBind taskRoleBind) {
         itemOrganWordBindRepository.save(taskRoleBind);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(String id, String name, String custom) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ItemOrganWordBind taskRoleBind = this.findById(id);
         taskRoleBind.setModifyDate(sdf.format(new Date()));
         taskRoleBind.setOrganWordCustom(custom);
@@ -234,8 +227,9 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(String custom, String itemId, String processDefinitionId, String taskDefKey) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ItemOrganWordBind bind = this.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId,
             processDefinitionId, taskDefKey, custom);
         if (null == bind) {

@@ -1,15 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.TransactionWord;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -19,26 +10,31 @@ import net.risesoft.service.TransactionWordService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9public.service.Y9FileStoreService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "transactionWordService")
 public class TransactionWordServiceImpl implements TransactionWordService {
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final TransactionWordRepository transactionWordRepository;
 
-    @Autowired
-    private TransactionWordRepository transactionWordRepository;
-
-    @Autowired
-    private Y9FileStoreService y9FileStoreService;
+    private final Y9FileStoreService y9FileStoreService;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void delBatchByProcessSerialNumbers(List<String> processSerialNumbers) {
         List<TransactionWord> list = transactionWordRepository.findByProcessSerialNumbers(processSerialNumbers);
         for (TransactionWord file : list) {
@@ -53,8 +49,7 @@ public class TransactionWordServiceImpl implements TransactionWordService {
 
     @Override
     public List<TransactionWord> findByProcessSerialNumber(String processSerialNumber) {
-        List<TransactionWord> list = transactionWordRepository.findByProcessSerialNumber(processSerialNumber);
-        return list;
+        return transactionWordRepository.findByProcessSerialNumber(processSerialNumber);
     }
 
     @Override
@@ -69,7 +64,7 @@ public class TransactionWordServiceImpl implements TransactionWordService {
         TransactionWord fileDocument = new TransactionWord();
         if (StringUtils.isNotBlank(processSerialNumber)) {
             List<TransactionWord> list = transactionWordRepository.findByProcessSerialNumber(processSerialNumber);
-            if (list.size() > 0 && !list.isEmpty()) {
+            if (!list.isEmpty()) {
                 fileDocument = list.get(0);
             }
         }
@@ -77,12 +72,12 @@ public class TransactionWordServiceImpl implements TransactionWordService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(TransactionWord tw) {
         transactionWordRepository.save(tw);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public void saveTransactionWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
         String processSerialNumber, String istaohong) {
@@ -107,11 +102,12 @@ public class TransactionWordServiceImpl implements TransactionWordService {
     }
 
     @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public Boolean saveWord(String docjson, String processSerialNumber) {
-        Boolean checkSave = false;
+        boolean checkSave = false;
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Map<String, Object> documentMap = Y9JsonUtil.readValue(docjson, Map.class);
             List<Map<String, Object>> documentList = (List<Map<String, Object>>)documentMap.get("document");
             for (Map<String, Object> dMap : documentList) {
@@ -135,7 +131,7 @@ public class TransactionWordServiceImpl implements TransactionWordService {
         return checkSave;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public void updateTransactionWordById(String fileStoreId, String fileType, String fileName, String fileSize,
         String isTaoHong, String userId, String id) {

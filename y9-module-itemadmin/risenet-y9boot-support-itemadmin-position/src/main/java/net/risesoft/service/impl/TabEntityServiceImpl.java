@@ -1,14 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.TabEntity;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -16,20 +8,25 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.TabEntityRepository;
 import net.risesoft.service.TabEntityService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "tabEntityService")
 public class TabEntityServiceImpl implements TabEntityService {
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    @Autowired
-    private TabEntityRepository tabEntityRepository;
+    private final TabEntityRepository tabEntityRepository;
 
     @Override
     public List<TabEntity> findAll() {
@@ -42,7 +39,7 @@ public class TabEntityServiceImpl implements TabEntityService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeTabEntitys(String[] tabEntityIds) {
         for (String tabEntityId : tabEntityIds) {
             tabEntityRepository.deleteById(tabEntityId);
@@ -50,11 +47,11 @@ public class TabEntityServiceImpl implements TabEntityService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public TabEntity saveOrUpdate(TabEntity tabEntity) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = tabEntity.getId();
         if (StringUtils.isNotEmpty(id)) {
             TabEntity oldte = this.findOne(id);

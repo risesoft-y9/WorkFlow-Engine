@@ -1,25 +1,9 @@
 package net.risesoft.service.impl;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -98,127 +82,103 @@ import net.risesoft.util.ListUtil;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
-/**
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/*
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "documentService")
+@Slf4j
+@Service
+@RequiredArgsConstructor
 public class DocumentServiceImpl implements DocumentService {
 
-    private static final Logger log = LoggerFactory.getLogger(DocumentServiceImpl.class);
+    private final ActivitiOptServiceImpl activitiOptService;
 
-    @Autowired
-    private ActivitiOptServiceImpl activitiOptService;
+    private final SpmApproveItemService spmApproveitemService;
 
-    @Autowired
-    private SpmApproveItemService spmApproveitemService;
+    private final SpmApproveItemRepository spmApproveitemRepository;
 
-    @Autowired
-    private SpmApproveItemRepository spmApproveitemRepository;
+    private final ItemTaskConfService taskConfService;
 
-    @Autowired
-    private ItemTaskConfService taskConfService;
+    private final ItemPermissionService itemPermissionService;
 
-    @Autowired
-    private ItemPermissionService itemPermissionService;
+    private final Y9FormItemBindService y9FormItemBindService;
 
-    @Autowired
-    private Y9FormItemBindService y9FormItemBindService;
+    private final ItemButtonBindService buttonItemBindService;
 
-    @Autowired
-    private ItemButtonBindService buttonItemBindService;
+    private final TodoTaskApi rpcTodoTaskManager;
 
-    @Autowired
-    private TodoTaskApi rpcTodoTaskManager;
+    private final TaskApi taskManager;
 
-    @Autowired
-    private TaskApi taskManager;
+    private final CustomGroupApi customGroupApi;
 
-    @Autowired
-    private CustomGroupApi customGroupApi;
+    private final ProcessDefinitionApi processDefinitionManager;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionManager;
+    private final VariableApi variableManager;
 
-    @Autowired
-    private VariableApi variableManager;
+    private final OrgUnitApi orgUnitManager;
 
-    @Autowired
-    private OrgUnitApi orgUnitManager;
+    private final RepositoryApi repositoryManager;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final PositionApi positionManager;
 
-    @Autowired
-    private PositionApi positionManager;
+    private final RoleApi roleManager;
 
-    @Autowired
-    private RoleApi roleManager;
+    private final PositionRoleApi positionRoleApi;
 
-    @Autowired
-    private PositionRoleApi positionRoleApi;
+    private final DepartmentApi departmentManager;
 
-    @Autowired
-    private DepartmentApi departmentManager;
+    private final PositionResourceApi positionResourceApi;
 
-    @Autowired
-    private PositionResourceApi positionResourceApi;
+    private final HistoricProcessApi historicProcessManager;
 
-    @Autowired
-    private HistoricProcessApi historicProcessManager;
+    private final HistoricTaskApi historicTaskManager;
 
-    @Autowired
-    private HistoricTaskApi historicTaskManager;
+    private final RuntimeApi runtimeManager;
 
-    @Autowired
-    private RuntimeApi runtimeManager;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final ProcessTodoApi todoManager;
 
-    @Autowired
-    private ProcessTodoApi todoManager;
+    private final PrintTemplateItemBindRepository printTemplateItemBindRepository;
 
-    @Autowired
-    private PrintTemplateItemBindRepository printTemplateItemBindRepository;
+    private final OfficeDoneInfoService officeDoneInfoService;
 
-    @Autowired
-    private OfficeDoneInfoService officeDoneInfoService;
+    private final TaskVariableRepository taskVariableRepository;
 
-    @Autowired
-    private TaskVariableRepository taskVariableRepository;
+    private final AsyncHandleService asyncHandleService;
 
-    @Autowired
-    private AsyncHandleService asyncHandleService;
+    private final Y9FormRepository y9FormRepository;
 
-    @Autowired
-    private Y9FormRepository y9FormRepository;
+    private final Process4SearchService process4SearchService;
 
-    @Autowired
-    private Process4SearchService process4SearchService;
+    private final ErrorLogService errorLogService;
 
-    @Autowired
-    private ErrorLogService errorLogService;
+    private final ItemStartNodeRoleService itemStartNodeRoleService;
 
-    @Autowired
-    private ItemStartNodeRoleService itemStartNodeRoleService;
+    private final ItemTaskConfRepository taskConfRepository;
 
-    @Autowired
-    private ItemTaskConfRepository taskConfRepository;
+    private final DynamicRoleMemberService dynamicRoleMemberService;
 
-    @Autowired
-    private DynamicRoleMemberService dynamicRoleMemberService;
+    private final ConditionParserApi conditionParserApi;
 
-    @Autowired
-    private ConditionParserApi conditionParserApi;
+    private final Y9FormService y9FormService;
 
-    @Autowired
-    private Y9FormService y9FormService;
-
-    @Autowired
-    private RoleService roleService;
+    private final RoleService roleService;
 
     @Override
     public Map<String, Object> add(String itemId, boolean mobile, Map<String, Object> returnMap) {
@@ -256,15 +216,15 @@ public class DocumentServiceImpl implements DocumentService {
         return returnMap;
     }
 
-    /**
+    /*
      * 向userIds中添加内容
      *
      * @param userIds
      * @param userId 人员Guid
      * @return
      */
-    private String addUserId(String userIds, String userId) {
-        /**
+    private final String addUserId(String userIds, String userId) {
+        /*
          * 由于串行、并行的时候人员存在顺序的，所以写在这里，保证人员顺序
          */
         if (StringUtils.isNotBlank(userIds)) {
@@ -283,7 +243,7 @@ public class DocumentServiceImpl implements DocumentService {
         TaskModel task = taskManager.findById(tenantId, taskId);
         String processInstanceId = task.getProcessInstanceId();
 
-        /**
+        /*
          * 1办结流程
          */
         runtimeManager.complete4Position(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId, taskId);
@@ -344,7 +304,7 @@ public class DocumentServiceImpl implements DocumentService {
             if (StringUtils.isBlank(itemId)) {
                 itemId = processParam.getItemId();
             }
-            /**
+            /*
              * 设为已读
              */
             if (StringUtils.isBlank(task.getFormKey())) {
@@ -417,7 +377,7 @@ public class DocumentServiceImpl implements DocumentService {
         return returnMap;
     }
 
-    /**
+    /*
      * Description:
      *
      * @param taskId
@@ -453,7 +413,7 @@ public class DocumentServiceImpl implements DocumentService {
             Map<String, Object> variables =
                 CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            /**
+            /*
              * 并行发送超过20人时，启用异步后台处理。
              */
             tooMuch = num > 20;
@@ -481,7 +441,7 @@ public class DocumentServiceImpl implements DocumentService {
                 // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
                 if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
                     List<TaskModel> taskNextList1 = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
-                    /**
+                    /*
                      * 如果协办人数超过10人，启用异步后台处理。
                      */
                     tooMuch = taskNextList1.size() > 10;
@@ -515,7 +475,7 @@ public class DocumentServiceImpl implements DocumentService {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "发送成功!");
         } catch (Exception e) {
-            log.error("公文发送失败！");
+            LOGGER.error("公文发送失败！");
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "发送失败!");
             try {
@@ -611,7 +571,7 @@ public class DocumentServiceImpl implements DocumentService {
         return returnMap;
     }
 
-    private void getAllPosition(List<Position> list, String deptId) {
+    private final void getAllPosition(List<Position> list, String deptId) {
         List<Department> deptList = departmentManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
         List<Position> list0 = positionManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
         if (!list0.isEmpty()) {
@@ -814,7 +774,7 @@ public class DocumentServiceImpl implements DocumentService {
         // 生成按钮数组
         for (int i = buttonOrders.length - 1; i >= 0; i--) {
             int k = buttonOrders[i] - 1;
-            /**
+            /*
              * 如果显示保存按钮，那么说明是待办，把自定义普通按钮加在保存按钮的前面
              */
             if (k == 0 && isButtonShow[0]) {
@@ -849,12 +809,12 @@ public class DocumentServiceImpl implements DocumentService {
                 }
             }
 
-            /**
+            /*
              * 假如发送按钮显示的话，去获取发送下面的路由
              */
             if (k == 1 && isButtonShow[1] && StringUtils.isNotBlank(taskDefKey)) {
 
-                /**
+                /*
                  * 假如有自定义“发送”按钮的话,就不显示默认的发送按钮
                  */
                 Boolean haveSendButton = false;
@@ -893,7 +853,7 @@ public class DocumentServiceImpl implements DocumentService {
                     }
                 }
                 if (!haveSendButton) {
-                    /**
+                    /*
                      * 没有配置自定义“发送”按钮的话，添加上默认的“发送”按钮
                      */
                     Map<String, Object> map1 = new HashMap<String, Object>(16);
@@ -902,7 +862,7 @@ public class DocumentServiceImpl implements DocumentService {
                     menuName = Y9Util.genCustomStr(menuName, buttonNames[k]);
                     menuKey = Y9Util.genCustomStr(menuKey, buttonIds[k]);
                     menuMap.add(map1);
-                    /**
+                    /*
                      * 添加发送下面的路由
                      */
                     List<Map<String, String>> routeToTasks =
@@ -918,7 +878,7 @@ public class DocumentServiceImpl implements DocumentService {
                             sendMap.add(map2);
                         }
                     }
-                    /**
+                    /*
                      * 添加自定义按钮到发送
                      */
                     bibList = buttonItemBindService.findListContainRoleId(itemId, ItemButtonTypeEnum.SEND.getValue(),
@@ -951,7 +911,7 @@ public class DocumentServiceImpl implements DocumentService {
                 }
             }
 
-            /**
+            /*
              * 假如重定向按钮显示的话，去获取路由
              */
             String taskDefNameJson = "";
@@ -1176,7 +1136,7 @@ public class DocumentServiceImpl implements DocumentService {
         return map;
     }
 
-    /**
+    /*
      * Description:
      *
      * @param itemId
@@ -1361,7 +1321,7 @@ public class DocumentServiceImpl implements DocumentService {
         return map;
     }
 
-    /**
+    /*
      * 启动流程发送
      *
      * @param taskId
@@ -1424,7 +1384,7 @@ public class DocumentServiceImpl implements DocumentService {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "发送成功!");
         } catch (Exception e) {
-            log.error("公文发送失败！");
+            LOGGER.error("公文发送失败！");
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "发送失败!");
             try {
@@ -1464,6 +1424,7 @@ public class DocumentServiceImpl implements DocumentService {
             vars.put("tenantId", tenantId);
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             vars.put("routeToTaskId", startTaskDefKey);
+            assert item != null;
             if (item.isShowSubmitButton()) {
                 ProcessDefinitionModel processDefinitionModel =
                     repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
@@ -1510,7 +1471,7 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Position position = Y9LoginUserHolder.getPosition();
-            Map<String, Object> vars = new HashMap<String, Object>(16);
+            Map<String, Object> vars = new HashMap<>(16);
             SpmApproveItem item = spmApproveitemRepository.findById(itemId).orElse(null);
             vars.put("tenantId", tenantId);
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);

@@ -1,30 +1,29 @@
 package net.risesoft.service.impl;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.ErrorLogRepository;
 import net.risesoft.service.ErrorLogService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "errorLogService")
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ErrorLogServiceImpl implements ErrorLogService {
 
-    @Autowired
-    private ErrorLogRepository errorLogRepository;
+    private final ErrorLogRepository errorLogRepository;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveErrorLog(ErrorLog errorLog) {
         try {
             if (StringUtils.isBlank(errorLog.getId())) {

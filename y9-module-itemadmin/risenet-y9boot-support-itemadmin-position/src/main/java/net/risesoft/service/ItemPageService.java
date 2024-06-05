@@ -1,46 +1,43 @@
 package net.risesoft.service;
 
+import net.risesoft.model.itemadmin.ItemPage;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Component;
-
-import net.risesoft.model.itemadmin.ItemPage;
-
-@Component
+@Service
 public class ItemPageService {
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
+    public ItemPageService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public int count(String countSql, Map<String, Object> map) {
         NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
-        int totalSize = jdbc.queryForObject(countSql, map, Integer.class);
-        return totalSize;
+        return jdbc.queryForObject(countSql, map, Integer.class);
     }
 
     @SuppressWarnings("deprecation")
     public int count(String countSql, Object[] countArgs) {
-        int totalSize = jdbcTemplate.queryForObject(countSql, countArgs, Integer.class);
-        return totalSize;
+        return jdbcTemplate.queryForObject(countSql, countArgs, Integer.class);
     }
 
     public <T> List<T> list(String sql, Map<String, Object> sqlMap, RowMapper<T> rowMapper) {
         NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
-        List<T> content = jdbc.query(sql, sqlMap, rowMapper);
-        return content;
+        return jdbc.query(sql, sqlMap, rowMapper);
     }
 
     @SuppressWarnings("deprecation")
     public <T> List<T> list(String sql, Object[] queryArgs, RowMapper<T> rowMapper) {
-        List<T> content = jdbcTemplate.query(sql, queryArgs, rowMapper);
-        return content;
+        return jdbcTemplate.query(sql, queryArgs, rowMapper);
     }
 
     public <T> ItemPage<T> page(String sql, Map<String, Object> sqlMap, RowMapper<T> rowMapper, String countSql,

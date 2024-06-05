@@ -1,12 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.TaoHongTemplateType;
 import net.risesoft.id.IdType;
@@ -17,21 +11,25 @@ import net.risesoft.repository.jpa.TaoHongTemplateTypeRepository;
 import net.risesoft.service.TaoHongTemplateTypeService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "taoHongTemplateTypeService")
 public class TaoHongTemplateTypeServiceImpl implements TaoHongTemplateTypeService {
 
-    @Autowired
-    private TaoHongTemplateTypeRepository taoHongTemplateTypeRepository;
+    private final TaoHongTemplateTypeRepository taoHongTemplateTypeRepository;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
     @Override
     public List<TaoHongTemplateType> findAll() {
@@ -49,7 +47,7 @@ public class TaoHongTemplateTypeServiceImpl implements TaoHongTemplateTypeServic
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeTaoHongTemplateType(String[] ids) {
         for (String id : ids) {
             taoHongTemplateTypeRepository.deleteById(id);
@@ -57,7 +55,7 @@ public class TaoHongTemplateTypeServiceImpl implements TaoHongTemplateTypeServic
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveOrder(String[] idAndTabIndexs) {
         for (String idAndTabIndex : idAndTabIndexs) {
             String id = idAndTabIndex.split(SysVariables.COLON)[0];
@@ -67,7 +65,7 @@ public class TaoHongTemplateTypeServiceImpl implements TaoHongTemplateTypeServic
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public TaoHongTemplateType saveOrUpdate(TaoHongTemplateType t) {
         String id = t.getId();
         if (StringUtils.isNotEmpty(id)) {

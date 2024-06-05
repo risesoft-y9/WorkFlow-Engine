@@ -1,13 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.ItemTaskConf;
@@ -17,27 +10,31 @@ import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.repository.jpa.ItemTaskConfRepository;
 import net.risesoft.service.ItemTaskConfService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "taskConfService")
 public class ItemTaskConfServiceImpl implements ItemTaskConfService {
 
-    @Autowired
-    private ItemTaskConfRepository taskConfRepository;
+    private final ItemTaskConfRepository taskConfRepository;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryManager;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionManager;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyTaskConf(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String proDefKey = processDefinitionId.split(":")[0];
@@ -94,7 +91,7 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void delete(String id) {
         taskConfRepository.deleteById(id);
     }
@@ -154,11 +151,12 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(ItemTaskConf t) {
         String id = t.getId();
         if (StringUtils.isNotBlank(id)) {
             ItemTaskConf olditc = taskConfRepository.findById(id).orElse(null);
+            assert olditc != null;
             olditc.setSponsor(t.getSponsor());
             olditc.setSignOpinion(t.getSignOpinion());
             olditc.setSignTask(t.getSignTask());

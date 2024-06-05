@@ -1,5 +1,20 @@
 package net.risesoft.service;
 
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.enums.DialectEnum;
+import net.risesoft.util.form.DbMetaDataUtil;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9FileUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -14,39 +29,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import lombok.extern.slf4j.Slf4j;
-
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.enums.DialectEnum;
-import net.risesoft.util.form.DbMetaDataUtil;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9FileUtil;
-
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
 @Service
-@Transactional(value = "rsTenantTransactionManager", readOnly = true)
 @Slf4j
+@Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class SyncYearTableService {
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate4Public;
+    private final JdbcTemplate jdbcTemplate4Public;
+
+    public SyncYearTableService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,@Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.jdbcTemplate4Public = jdbcTemplate4Public;
+    }
 
     private String convertStreamToString(InputStream inputStream) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -54,7 +54,7 @@ public class SyncYearTableService {
         String line = null;
         try {
             while ((line = reader.readLine()) != null) {
-                sb.append(line + "/n");
+                sb.append(line).append("/n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -100,7 +100,7 @@ public class SyncYearTableService {
      *
      * @return
      */
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> syncYearTable(String year) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);

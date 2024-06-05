@@ -1,15 +1,14 @@
 package net.risesoft.service;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.AutoFormSequence;
 import net.risesoft.entity.DocumentNumberDetail;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.AutoFormSequenceRepository;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author qinman
@@ -17,14 +16,13 @@ import net.risesoft.repository.jpa.AutoFormSequenceRepository;
  * @date 2022/12/20
  */
 @Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class AutoFormSequenceService {
 
-    @Autowired
-    private AutoFormSequenceRepository autoFormSequenceRepository;
+    private final AutoFormSequenceRepository autoFormSequenceRepository;
 
-    @Autowired
-    private DocumentNumberDetailService documentNumberDetailService;
+    private final DocumentNumberDetailService documentNumberDetailService;
 
     /**
      *
@@ -76,7 +74,7 @@ public class AutoFormSequenceService {
      * @param labelName
      * @return
      */
-    @Transactional(readOnly = false)
+    @Transactional()
     public Integer getSequence(String tenantId, String labelName, String character) {
         Integer sequence = 1;
         if (StringUtils.isNotBlank(tenantId) && StringUtils.isNotBlank(labelName)
@@ -108,7 +106,7 @@ public class AutoFormSequenceService {
      * @param tenantId
      * @param labelName
      */
-    @Transactional(readOnly = false)
+    @Transactional()
     public void updateSequence(String tenantId, String labelName, String character) {
         if (StringUtils.isNotBlank(tenantId) && StringUtils.isNotBlank(labelName)
             && StringUtils.isNotBlank(character)) {

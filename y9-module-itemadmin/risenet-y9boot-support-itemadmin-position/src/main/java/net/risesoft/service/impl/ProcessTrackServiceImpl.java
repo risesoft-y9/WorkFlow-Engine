@@ -1,20 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricActivityApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
@@ -45,53 +31,54 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/*
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "processTrackService")
 public class ProcessTrackServiceImpl implements ProcessTrackService {
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final ProcessTrackRepository processTrackRepository;
 
-    @Autowired
-    private ProcessTrackRepository processTrackRepository;
+    private final OpinionRepository opinionRepository;
 
-    @Autowired
-    private OpinionRepository opinionRepository;
+    private final TransactionHistoryWordService transactionHistoryWordService;
 
-    @Autowired
-    private TransactionHistoryWordService transactionHistoryWordService;
+    private final HistoricVariableApi historicVariableApi;
 
-    @Autowired
-    private HistoricVariableApi historicVariableApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final HistoricTaskApi historicTaskManager;
 
-    @Autowired
-    private HistoricTaskApi historicTaskManager;
+    private final TaskApi taskManager;
 
-    @Autowired
-    private TaskApi taskManager;
+    private final IdentityApi identityManager;
 
-    @Autowired
-    private IdentityApi identityManager;
+    private final OfficeDoneInfoService officeDoneInfoService;
 
-    @Autowired
-    private OfficeDoneInfoService officeDoneInfoService;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private ProcessParamService processParamService;
-
-    @Autowired
-    private HistoricActivityApi historicActivityApi;
+    private final HistoricActivityApi historicActivityApi;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void deleteById(String id) {
         processTrackRepository.deleteById(id);
     }
@@ -119,6 +106,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     @SuppressWarnings("unchecked")
     @Override
     public List<Map<String, Object>> getListMap(String processInstanceId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         // 由于需要获取call Activity类型的节点，将查询方法改为如下
@@ -252,7 +240,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 e2.printStackTrace();
             }
 
-            /**
+            /*
              * 手动设置流程办结的时候, 流程最后一个任务结束的时间就是第一个手动设置的流程跟踪的时间
              */
             List<ProcessTrack> ptList = new ArrayList<ProcessTrack>();
@@ -377,6 +365,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     @SuppressWarnings("unchecked")
     @Override
     public List<Map<String, Object>> getListMap4Simple(String processInstanceId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricTaskInstanceModel> results = historicTaskManager.getByProcessInstanceId(tenantId, processInstanceId, "");
@@ -445,7 +434,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             map.put("startTime", hai.getStartTime() == null ? "" : sdf.format(hai.getStartTime()));
             // 是否被强制办结任务标识
             map.put("endFlag", StringUtils.isBlank(hai.getTenantId()) ? "" : hai.getTenantId());
-            /**
+            /*
              * 手动设置流程办结的时候, 流程最后一个任务结束的时间就是第一个手动设置的流程跟踪的时间
              */
             List<ProcessTrack> ptList = new ArrayList<ProcessTrack>();
@@ -585,7 +574,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         return Y9Result.success(list, "获取成功");
     }
 
-    private String longTime(Date startTime, Date endTime) {
+    private final String longTime(Date startTime, Date endTime) {
         if (endTime == null) {
             return "";
         } else {
@@ -603,8 +592,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public ProcessTrack saveOrUpdate(ProcessTrack pt) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = pt.getId();
         if (StringUtils.isNotEmpty(id)) {
             ProcessTrack oldpt = processTrackRepository.findById(id).orElse(null);

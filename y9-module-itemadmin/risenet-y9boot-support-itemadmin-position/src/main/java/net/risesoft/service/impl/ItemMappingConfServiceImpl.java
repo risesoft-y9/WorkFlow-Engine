@@ -1,33 +1,32 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
 import net.risesoft.service.ItemMappingConfService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "itemMappingConfService")
+@Service
+@RequiredArgsConstructor
 public class ItemMappingConfServiceImpl implements ItemMappingConfService {
 
-    @Autowired
-    private ItemMappingConfRepository itemMappingConfRepository;
+    private final ItemMappingConfRepository itemMappingConfRepository;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void delItemMappingConf(String[] ids) {
         for (String id : ids) {
             itemMappingConfRepository.deleteById(id);
@@ -40,7 +39,7 @@ public class ItemMappingConfServiceImpl implements ItemMappingConfService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveItemMappingConf(ItemMappingConf itemMappingConf) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = itemMappingConf.getId();

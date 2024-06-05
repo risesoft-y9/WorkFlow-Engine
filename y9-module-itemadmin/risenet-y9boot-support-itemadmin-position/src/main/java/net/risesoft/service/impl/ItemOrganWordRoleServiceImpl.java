@@ -1,11 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.entity.ItemOrganWordRole;
 import net.risesoft.id.IdType;
@@ -13,21 +8,24 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Role;
 import net.risesoft.repository.jpa.ItemOrganWordRoleRepository;
 import net.risesoft.service.ItemOrganWordRoleService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "itemOrganWordRoleService")
 public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
 
-    @Autowired
-    private ItemOrganWordRoleRepository itemOrganWordRoleRepository;
+    private final ItemOrganWordRoleRepository itemOrganWordRoleRepository;
 
-    @Autowired
-    private RoleApi roleManager;
+    private final RoleApi roleManager;
 
     @Override
     public void deleteById(String id) {
@@ -50,7 +48,7 @@ public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void remove(String[] ids) {
         for (String id : ids) {
             itemOrganWordRoleRepository.deleteById(id);
@@ -58,14 +56,14 @@ public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeByItemOrganWordBindId(String itemOrganWordBindId) {
         List<ItemOrganWordRole> roleList = itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
         itemOrganWordRoleRepository.deleteAll(roleList);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public ItemOrganWordRole saveOrUpdate(String itemOrganWordBindId, String roleId) {
         ItemOrganWordRole role =
             itemOrganWordRoleRepository.findByItemOrganWordBindIdAndRoleId(itemOrganWordBindId, roleId);

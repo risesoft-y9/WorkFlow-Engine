@@ -1,10 +1,9 @@
 package net.risesoft.service;
 
-import java.util.Map;
-
+import net.risesoft.entity.DraftEntity;
 import org.springframework.data.domain.Page;
 
-import net.risesoft.entity.DraftEntity;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -18,7 +17,7 @@ public interface DraftEntityService {
      *
      * @param processSerialNumber
      */
-    public void deleteByProcessSerialNumber(String processSerialNumber);
+    void deleteByProcessSerialNumber(String processSerialNumber);
 
     /**
      * 彻底删除草稿
@@ -26,7 +25,7 @@ public interface DraftEntityService {
      * @param ids
      * @return
      */
-    public Map<String, Object> deleteDraft(String ids);
+    Map<String, Object> deleteDraft(String ids);
 
     /**
      * 获取草稿列表
@@ -39,7 +38,7 @@ public interface DraftEntityService {
      * @param delFlag
      * @return
      */
-    public Page<DraftEntity> getDraftList(String itemId, String userid, int page, int rows, String title,
+    Page<DraftEntity> getDraftList(String itemId, String userid, int page, int rows, String title,
         boolean delFlag);
 
     /**
@@ -54,7 +53,7 @@ public interface DraftEntityService {
      * @param delFlag
      * @return
      */
-    public Page<DraftEntity> getDraftListBySystemName(String systemName, String userId, int page, int rows,
+    Page<DraftEntity> getDraftListBySystemName(String systemName, String userId, int page, int rows,
         String title, boolean delFlag);
 
     /**
@@ -66,7 +65,7 @@ public interface DraftEntityService {
      * @param mobile
      * @return
      */
-    public Map<String, Object> openDraft(String processSerialNumber, String itemId, boolean mobile);
+    Map<String, Object> openDraft(String processSerialNumber, String itemId, boolean mobile);
 
     /**
      * 还原草稿
@@ -74,7 +73,7 @@ public interface DraftEntityService {
      * @param ids
      * @return
      */
-    public Map<String, Object> reduction(String ids);
+    Map<String, Object> reduction(String ids);
 
     /**
      * 删除草稿
@@ -82,7 +81,7 @@ public interface DraftEntityService {
      * @param ids
      * @return
      */
-    public Map<String, Object> removeDraft(String ids);
+    Map<String, Object> removeDraft(String ids);
 
     /**
      * 
@@ -97,7 +96,7 @@ public interface DraftEntityService {
      * @param type
      * @return
      */
-    public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
+    Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
         String number, String level, String title, String type);
 
     /**
@@ -114,6 +113,6 @@ public interface DraftEntityService {
      * @param type
      * @return
      */
-    public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
+    Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
         String number, String level, String jijian, String title, String type);
 }

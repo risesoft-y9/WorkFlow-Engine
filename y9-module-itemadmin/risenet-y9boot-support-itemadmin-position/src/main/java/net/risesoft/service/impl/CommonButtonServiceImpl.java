@@ -1,14 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.CommonButton;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -16,20 +8,25 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.CommonButtonRepository;
 import net.risesoft.service.CommonButtonService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "commonButtonService")
 public class CommonButtonServiceImpl implements CommonButtonService {
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    @Autowired
-    private CommonButtonRepository commonButtonRepository;
+    private final CommonButtonRepository commonButtonRepository;
 
     @Override
     public boolean checkCustomId(String customId) {
@@ -52,7 +49,7 @@ public class CommonButtonServiceImpl implements CommonButtonService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeCommonButtons(String[] commonButtonIds) {
         for (String commonButtonId : commonButtonIds) {
             commonButtonRepository.deleteById(commonButtonId);
@@ -60,11 +57,11 @@ public class CommonButtonServiceImpl implements CommonButtonService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public CommonButton saveOrUpdate(CommonButton commonButton) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = commonButton.getId();
         if (StringUtils.isNotEmpty(id)) {
             CommonButton oldcb = this.findOne(id);

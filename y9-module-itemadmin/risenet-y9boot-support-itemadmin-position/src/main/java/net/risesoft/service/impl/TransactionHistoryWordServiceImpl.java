@@ -1,15 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.TransactionHistoryWord;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -18,26 +9,31 @@ import net.risesoft.repository.jpa.TransactionHistoryWordRepository;
 import net.risesoft.service.TransactionHistoryWordService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.service.Y9FileStoreService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "transactionHistoryWordService")
 public class TransactionHistoryWordServiceImpl implements TransactionHistoryWordService {
 
-    private static SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final TransactionHistoryWordRepository transactionHistoryWordRepository;
 
-    @Autowired
-    private TransactionHistoryWordRepository transactionHistoryWordRepository;
-
-    @Autowired
-    private Y9FileStoreService y9FileStoreService;
+    private final Y9FileStoreService y9FileStoreService;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void delBatchByProcessSerialNumbers(List<String> processSerialNumbers) {
         List<TransactionHistoryWord> list =
             transactionHistoryWordRepository.findByProcessSerialNumbers(processSerialNumbers);
@@ -52,7 +48,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
 
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public void deleteHistoryWordByIsTaoHong(String processSerialNumber, String isTaoHong) {
         List<TransactionHistoryWord> list = new ArrayList<TransactionHistoryWord>();
@@ -73,9 +69,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
 
     @Override
     public List<TransactionHistoryWord> findByProcessSerialNumber(String processSerialNumber) {
-        List<TransactionHistoryWord> list =
-            transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
-        return list;
+        return transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
     }
 
     @Override
@@ -84,7 +78,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
         if (StringUtils.isNotBlank(processSerialNumber)) {
             List<TransactionHistoryWord> list =
                 transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
-            if (list.size() > 0 && !list.isEmpty()) {
+            if (!list.isEmpty()) {
                 fileDocument = list.get(0);
             }
         }
@@ -99,16 +93,17 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     @Override
     public TransactionHistoryWord getTransactionHistoryWordByTaskId(String taskId) {
         List<TransactionHistoryWord> list = transactionHistoryWordRepository.getTransactionHistoryWordByTaskId(taskId);
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             return list.get(0);
         }
         return null;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public void saveTransactionHistoryWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
         String processSerialNumber, String isTaoHong, String taskId) {
+        SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -132,14 +127,14 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
         transactionHistoryWordRepository.save(transactionHistoryWord);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public int update(String taskId, String processSerialNumber) {
         try {
             if (StringUtils.isNotBlank(processSerialNumber)) {
                 List<TransactionHistoryWord> list =
                     transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
-                if (list.size() > 0 && !list.isEmpty()) {
+                if (!list.isEmpty()) {
                     if (StringUtils.isNotBlank(taskId)) {
                         transactionHistoryWordRepository.update(taskId, processSerialNumber);
                         return 1;
@@ -153,13 +148,14 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
         return -1;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public void updateTransactionHistoryWordById(String fileStoreId, String fileType, String fileName, String fileSize,
         String isTaoHong, String userId, String id) {
+        SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
             transactionHistoryWordRepository.updateTransactionHistoryWordById(fileStoreId, fileSize, isTaoHong,
-                sdfymdhms.format(new Date()), userId, id);
+                    sdfymdhms.format(new Date()), userId, id);
         }
     }
 

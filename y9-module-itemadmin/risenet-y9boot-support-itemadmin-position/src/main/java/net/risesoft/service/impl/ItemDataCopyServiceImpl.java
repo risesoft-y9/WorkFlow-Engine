@@ -1,15 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.resource.SystemApi;
@@ -91,137 +82,110 @@ import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.sqlddl.DbColumn;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/*
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "itemDataCopyService")
 public class ItemDataCopyServiceImpl implements ItemDataCopyService {
 
-    @Autowired
-    private SpmApproveItemService itemService;
+    private final SpmApproveItemService itemService;
 
-    @Autowired
-    private DynamicRoleService dynamicRoleService;
+    private final DynamicRoleService dynamicRoleService;
 
-    @Autowired
-    private ItemPermissionRepository itemPermissionRepository;
+    private final ItemPermissionRepository itemPermissionRepository;
 
-    @Autowired
-    private Y9FormItemBindService y9FormItemBindService;
+    private final Y9FormItemBindService y9FormItemBindService;
 
-    @Autowired
-    private Y9FormService y9FormService;
+    private final Y9FormService y9FormService;
 
-    @Autowired
-    private Y9FormFieldService y9FormFieldService;
+    private final Y9FormFieldService y9FormFieldService;
 
-    @Autowired
-    private Y9FormOptionClassService y9FormOptionClassService;
+    private final Y9FormOptionClassService y9FormOptionClassService;
 
-    @Autowired
-    private Y9TableService y9TableService;
+    private final Y9TableService y9TableService;
 
-    @Autowired
-    private Y9TableFieldService y9TableFieldService;
+    private final Y9TableFieldService y9TableFieldService;
 
-    @Autowired
-    private TableManagerService tableManagerService;
+    private final TableManagerService tableManagerService;
 
-    @Autowired
-    private OpinionFrameService opinionFrameService;
+    private final OpinionFrameService opinionFrameService;
 
-    @Autowired
-    private ItemOpinionFrameBindService itemOpinionFrameBindService;
+    private final ItemOpinionFrameBindService itemOpinionFrameBindService;
 
-    @Autowired
-    private ItemOpinionFrameRoleService itemOpinionFrameRoleService;
+    private final ItemOpinionFrameRoleService itemOpinionFrameRoleService;
 
-    @Autowired
-    private ItemViewConfService itemViewConfService;
+    private final ItemViewConfService itemViewConfService;
 
-    @Autowired
-    private WordTemplateService wordTemplateService;
+    private final WordTemplateService wordTemplateService;
 
-    @Autowired
-    private ItemWordTemplateBindService itemWordTemplateBindService;
+    private final ItemWordTemplateBindService itemWordTemplateBindService;
 
-    @Autowired
-    private BookMarkBindService bookMarkBindService;
+    private final BookMarkBindService bookMarkBindService;
 
-    @Autowired
-    private PrintTemplateService printTemplateService;
+    private final PrintTemplateService printTemplateService;
 
-    @Autowired
-    private TabEntityService tabEntityService;
+    private final TabEntityService tabEntityService;
 
-    @Autowired
-    private ItemTabBindService itemTabBindService;
+    private final ItemTabBindService itemTabBindService;
 
-    @Autowired
-    private CalendarConfigService calendarConfigService;
+    private final CalendarConfigService calendarConfigService;
 
-    @Autowired
-    private TaoHongTemplateService taoHongTemplateService;
+    private final TaoHongTemplateService taoHongTemplateService;
 
-    @Autowired
-    private TaoHongTemplateTypeService taoHongTemplateTypeService;
+    private final TaoHongTemplateTypeService taoHongTemplateTypeService;
 
-    @Autowired
-    private OrganWordService organWordService;
+    private final OrganWordService organWordService;
 
-    @Autowired
-    private OrganWordPropertyService organWordPropertyService;
+    private final OrganWordPropertyService organWordPropertyService;
 
-    @Autowired
-    private ItemOrganWordBindService itemOrganWordBindService;
+    private final ItemOrganWordBindService itemOrganWordBindService;
 
-    @Autowired
-    private ItemOrganWordRoleService itemOrganWordRoleService;
+    private final ItemOrganWordRoleService itemOrganWordRoleService;
 
-    @Autowired
-    private CommonButtonService commonButtonService;
+    private final CommonButtonService commonButtonService;
 
-    @Autowired
-    private SendButtonService sendButtonService;
+    private final SendButtonService sendButtonService;
 
-    @Autowired
-    private ItemButtonBindService itemButtonBindService;
+    private final ItemButtonBindService itemButtonBindService;
 
-    @Autowired
-    private ItemButtonRoleService itemButtonRoleService;
+    private final ItemButtonRoleService itemButtonRoleService;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryManager;
 
-    @Autowired
-    private SystemApi systemEntityManager;
+    private final SystemApi systemEntityManager;
 
-    @Autowired
-    private RoleApi roleManager;
+    private final RoleApi roleManager;
 
-    @Autowired
-    private OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitManager;
 
-    @Autowired
-    private ProcessDataCopyApi processDataCopyApi;
+    private final ProcessDataCopyApi processDataCopyApi;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyCalendarConfig(String sourceTenantId, String targetTenantId) {
-        /**
-         * 1、查找源租户是否存在日历配置
+        /*
+          1、查找源租户是否存在日历配置
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         CalendarConfig sourcecc = calendarConfigService.findByYear(String.valueOf(Calendar.YEAR));
         if (null == sourcecc) {
             return;
         }
-        /**
-         * 2、复制源租户的日历配置到目标租户
+        /*
+          2、复制源租户的日历配置到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
         CalendarConfig targetcc = calendarConfigService.findByYear(String.valueOf(Calendar.YEAR));
@@ -232,28 +196,28 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyCommonButton(String sourceTenantId, String targetTenantId, String itemId) {
-        /**
-         * 1、查找源租户是否存在普通按钮
+        /*
+          1、查找源租户是否存在普通按钮
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         List<CommonButton> sourcecbList = commonButtonService.findAll();
         if (sourcecbList.isEmpty()) {
             return;
         }
-        /**
-         * 2、复制源租户的普通按钮到目标租户
+        /*
+          2、复制源租户的普通按钮到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
         for (CommonButton cb : sourcecbList) {
             commonButtonService.saveOrUpdate(cb);
         }
-        /**
-         * 3、复制该事项源租户的普通按钮和事项的绑定关系以及权限到目标租户
+        /*
+          3、复制该事项源租户的普通按钮和事项的绑定关系以及权限到目标租户
          */
-        /**
-         * 3.1、先查找绑定关系
+        /*
+          3.1、先查找绑定关系
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
         SpmApproveItem item = itemService.findById(itemId);
@@ -272,29 +236,29 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         if (sourceBindList.isEmpty()) {
             return;
         }
-        /**
-         * 3.2、获取目标租户的事项管理系统的角色
+        /*
+          3.2、获取目标租户的事项管理系统的角色
          */
         System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
         Role tenantRole = roleManager.getRole(targetTenantId).getData();
         Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
 
-        /**
-         * 3.3、先保存绑定关系再更新绑定的角色
-         * 把绑定的角色复制到目标租户中去，父节点为3.2中获取的角色，目标租户创建新角色时，为了避免重复创建的问题，用源角色id作为新角色的customId，每次要创建的时候，查找一下是否存在
-         * 因为所有角色在同一张表，确保id的唯一性，所以复制的角色要更改角色Id,并把新老角色id的对应关系传递给权限复制，用来替换调老的角色id
+        /*
+          3.3、先保存绑定关系再更新绑定的角色
+          把绑定的角色复制到目标租户中去，父节点为3.2中获取的角色，目标租户创建新角色时，为了避免重复创建的问题，用源角色id作为新角色的customId，每次要创建的时候，查找一下是否存在
+          因为所有角色在同一张表，确保id的唯一性，所以复制的角色要更改角色Id,并把新老角色id的对应关系传递给权限复制，用来替换调老的角色id
          */
         List<ItemButtonRole> roleList = null;
         Role oldRole = null, newRoleTemp = null;
         String newRoleId = null, roleId = null;
         Organization organization = orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (ItemButtonBind bind : sourceBindList) {
-            /** 保存绑定关系 */
+            /* 保存绑定关系 */
             bind.setProcessDefinitionId(targetpdId);
             itemButtonBindService.save(bind);
 
-            /** 更新绑定角色 */
+            /* 更新绑定角色 */
             roleList = itemButtonRoleService.findByItemButtonId(bind.getId());
             for (ItemButtonRole role : roleList) {
                 roleId = role.getId();
@@ -303,7 +267,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
                     newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
                     if (null == newRoleTemp || null == newRoleTemp.getId()) {
                         newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                        /** 把申请人所在的租户机构添加到角色 */
+                        /* 把申请人所在的租户机构添加到角色 */
                         roleManager.addPerson(organization.getId(), newRoleId, targetTenantId);
                     } else {
                         newRoleId = newRoleTemp.getId();
@@ -316,14 +280,14 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyDynamicRole(String sourceTenantId, String targetTenantId) {
-        /**
+        /*
          * 1、在源租户查找动态角色
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         List<DynamicRole> roleList = dynamicRoleService.findAll();
-        /**
+        /*
          * 2、复制动态角色到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -334,9 +298,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyForm(String sourceTenantId, String targetTenantId, String itemId) {
-        /**
+        /*
          * 1、源租户的字典类型和字典值，
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -350,7 +314,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             y9FormOptionClassService.saveOptionValue(y9FormOptionValue);
         }
 
-        /**
+        /*
          * 2、源租户的表单元素的验证规则
          */
         // Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -364,7 +328,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         // for (Y9ValidType validType : targetY9ValidTypeList) {
         // y9ValidTypeService.saveOrUpdate(validType);
         // }
-        /**
+        /*
          * 3、 先查目标租户该事项是否有绑定表单，没有再复制授权
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -376,7 +340,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         if (!targetFormItemBindList.isEmpty()) {
             return;
         }
-        /**
+        /*
          * 4、查找源租户该事项最新流程定义的绑定的表单，查找表单对应的所有元素并在第三部保存至目标租户
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -392,38 +356,38 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9Form sourceY9Form = null;
         String sourceFormId = null;
         for (Y9FormItemBind bind : sourceFormItemBindList) {
-            /**
+            /*
              * 4.1、绑定关系
              */
             bind.setProcessDefinitionId(targetpdId);
             bind.setTenantId(targetTenantId);
             targetFormItemBindList.add(bind);
 
-            /**
+            /*
              * 4.2、表单
              */
             sourceFormId = bind.getFormId();
             sourceY9Form = y9FormService.findById(sourceFormId);
             sourceY9Form.setTenantId(targetTenantId);
             targetFormList.add(sourceY9Form);
-            /**
+            /*
              * 4.3、表单元素
              */
             targetY9FormElementList = y9FormFieldService.findByFormId(sourceFormId);
-            /**
+            /*
              * 4.4、表单元素权限先不复制，因为牵扯到读写的角色，后面需要再复制
              */
-            /**
+            /*
              * 4.5、表和表字段
              */
             for (Y9FormField y9FormElement : targetY9FormElementList) {
                 Y9Table y9TableTemp = y9TableService.findById(y9FormElement.getTableId());
                 if (!targetY9TableIdsb.toString().contains(y9TableTemp.getId())) {
-                    /** 表 */
+                    /* 表 */
                     y9TableTemp.setOldTableName(null);
                     targetY9TableList.add(y9TableTemp);
                     targetY9TableIdsb.append(y9TableTemp.getId());
-                    /** 表字段 */
+                    /* 表字段 */
                     List<Y9TableField> y9TableFieldListTemp = y9TableFieldService.searchFieldsByTableId(y9FormElement.getTableId());
                     for (Y9TableField y9TableField : y9TableFieldListTemp) {
                         if (!targetY9TableFieldIdsb.toString().contains(y9TableField.getId())) {
@@ -436,7 +400,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             }
         }
 
-        /**
+        /*
          * 5、保存源租户该事项最新流程定义的权限到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -458,13 +422,13 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         for (Y9Table y9Table : targetY9TableList) {
             Y9Table y9TableTemp = y9TableService.findById(y9Table.getId());
             if (null == y9TableTemp) {
-                /** 保存表元素数据 */
+                /* 保存表元素数据 */
                 try {
                     y9TableService.saveOrUpdate(y9Table);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                /** 保存表字段元素数据并创建列信息 */
+                /* 保存表字段元素数据并创建列信息 */
                 List<DbColumn> dbcs = new ArrayList<>();
                 for (Y9TableField y9TableField : targetY9TableFieldList) {
                     if (y9TableField.getTableId().equals(y9Table.getId())) {
@@ -489,16 +453,16 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
                     dbColumn.setTableName(y9TableField.getTableName());
                     dbcs.add(dbColumn);
                 }
-                /** 创建数据库表 */
+                /* 创建数据库表 */
                 tableManagerService.buildTable(y9Table, dbcs);
             }
         }
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyItem(String sourceTenantId, String targetTenantId, String itemId) {
-        /**
+        /*
          * 1、在目标租户查找事项，不存在才继续复制
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -506,13 +470,13 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         if (null != targetItem) {
             return;
         }
-        /**
+        /*
          * 2、在源租户查找事项
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         SpmApproveItem sourceItem = itemService.findById(itemId);
 
-        /**
+        /*
          * 3、复制
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -521,9 +485,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyItemViewConf(String sourceTenantId, String targetTenantId, String itemId) {
-        /**
+        /*
          * 1、查找目标租户该事项是否存在视图配置
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -531,12 +495,12 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         if (!targetList.isEmpty()) {
             return;
         }
-        /**
+        /*
          * 2、查找源租户该事项的视图配置
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         List<ItemViewConf> sourceList = itemViewConfService.findByItemId(itemId);
-        /**
+        /*
          * 3、复制2中的结果到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -546,9 +510,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyOpinionFrame(String sourceTenantId, String targetTenantId, String itemId) {
-        /**
+        /*
          * 1、先复制意见框
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -560,7 +524,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             opinionFrameService.saveOrUpdate(of);
         }
 
-        /**
+        /*
          * 2、先判断目标租户的事项是否绑定了意见框，绑定了则不再复制
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -572,7 +536,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         if (!targetBindList.isEmpty()) {
             return;
         }
-        /**
+        /*
          * 3、查找源租户该事项最新流程定义绑定的意见框及角色
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -588,7 +552,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             List<ItemOpinionFrameRole> sourceRoleListTemp = itemOpinionFrameRoleService.findByItemOpinionFrameId(bind.getId());
             targetRoleList.addAll(sourceRoleListTemp);
         }
-        /**
+        /*
          * 4、保存源租户该事项最新流程定义的绑定的意见框
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -599,7 +563,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             }
         }
 
-        /**
+        /*
          * 5、保存源租户该事项最新流程定义的绑定的角色并把角色在租户角色中创建
          */
         System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
@@ -616,7 +580,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
                 newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
                 if (null == newRoleTemp || null == newRoleTemp.getId()) {
                     newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                    /** 把申请人所在的租户机构添加到角色 */
+                    /* 把申请人所在的租户机构添加到角色 */
                     roleManager.addPerson(organization.getId(), newRoleId, targetTenantId);
                 } else {
                     newRoleId = newRoleTemp.getId();
@@ -628,9 +592,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyOrganWord(String sourceTenantId, String targetTenantId, String itemId) {
-        /**
+        /*
          * 1、查找源租户是否存在编号
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -639,7 +603,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             return;
         }
         List<OrganWordProperty> sourceowpList = organWordPropertyService.findAll();
-        /**
+        /*
          * 2、复制源租户的编号和编号配置到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -650,7 +614,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             organWordPropertyService.save(owp);
         }
 
-        /**
+        /*
          * 3、复制绑定和授权到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -669,7 +633,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         if (sourceBindList.isEmpty()) {
             return;
         }
-        /**
+        /*
          * 3.2、获取目标租户的事项管理系统的角色
          */
         System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
@@ -677,7 +641,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
 
-        /**
+        /*
          * 3.3、先保存绑定关系再更新绑定的角色
          * 把绑定的角色复制到目标租户中去，父节点为3.2中获取的角色，目标租户创建新角色时，为了避免重复创建的问题，用源角色id作为新角色的customId，每次要创建的时候，查找一下是否存在
          * 因为所有角色在同一张表，确保id的唯一性，所以复制的角色要更改角色Id,并把新老角色id的对应关系传递给权限复制，用来替换调老的角色id
@@ -687,11 +651,11 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         List<String> roleIdList = null;
         Organization organization = orgUnitManager.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (ItemOrganWordBind bind : sourceBindList) {
-            /** 保存绑定关系 */
+            /* 保存绑定关系 */
             bind.setProcessDefinitionId(targetpdId);
             itemOrganWordBindService.save(bind);
 
-            /** 更新绑定角色 */
+            /* 更新绑定角色 */
             roleIdList = bind.getRoleIds();
             for (String roleId : roleIdList) {
                 oldRole = roleManager.getRole(roleId).getData();
@@ -699,7 +663,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
                     newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
                     if (null == newRoleTemp || null == newRoleTemp.getId()) {
                         newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                        /** 把申请人所在的租户机构添加到角色 */
+                        /* 把申请人所在的租户机构添加到角色 */
                         roleManager.addPerson(organization.getId(), newRoleId, targetTenantId);
                     } else {
                         newRoleId = newRoleTemp.getId();
@@ -713,9 +677,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyPerm(String sourceTenantId, String targetTenantId, String itemId, Map<String, String> roleIdMap) {
-        /**
+        /*
          * 1、先查目标租户该事项是否有授权，没有再复制授权
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -728,7 +692,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             return;
         }
 
-        /**
+        /*
          * 2、查找源租户该事项最新流程定义的权限
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -750,19 +714,17 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
                 targetipList.add(itemPermission);
             }
         }
-        /**
+        /*
          * 3、保存源租户该事项最新流程定义的权限到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        for (ItemPermission itemPermission : targetipList) {
-            itemPermissionRepository.save(itemPermission);
-        }
+        itemPermissionRepository.saveAll(targetipList);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyPrintTemplate(String sourceTenantId, String targetTenantId, String itemId) {
-        /**
+        /*
          * 1、查找源租户是否存在打印模板
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -770,14 +732,14 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         if (printList.isEmpty()) {
             return;
         }
-        /**
+        /*
          * 2、复制源租户的打印模板到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
         for (PrintTemplate print : printList) {
             printTemplateService.saveOrUpdate(print);
         }
-        /**
+        /*
          * 3、复制该事项源租户的打印模板和事项的绑定关系到目标租户
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -797,9 +759,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copySendButton(String sourceTenantId, String targetTenantId, String itemId) {
-        /**
+        /*
          * 1、查找源租户是否存在发送按钮
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -807,17 +769,17 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         if (sourcecbList.isEmpty()) {
             return;
         }
-        /**
+        /*
          * 2、复制源租户的发送按钮到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
         for (SendButton sb : sourcecbList) {
             sendButtonService.saveOrUpdate(sb);
         }
-        /**
+        /*
          * 3、复制该事项源租户的发送按钮和事项的绑定关系以及权限到目标租户
          */
-        /**
+        /*
          * 3.1、先查找绑定关系
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -837,7 +799,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         if (sourceBindList.isEmpty()) {
             return;
         }
-        /**
+        /*
          * 3.2、获取目标租户的事项管理系统的角色
          */
         System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
@@ -845,7 +807,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
 
-        /**
+        /*
          * 3.3、先保存绑定关系再更新绑定的角色
          * 把绑定的角色复制到目标租户中去，父节点为3.2中获取的角色，目标租户创建新角色时，为了避免重复创建的问题，用源角色id作为新角色的customId，每次要创建的时候，查找一下是否存在
          * 因为所有角色在同一张表，确保id的唯一性，所以复制的角色要更改角色Id,并把新老角色id的对应关系传递给权限复制，用来替换调老的角色id
@@ -858,7 +820,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             bind.setProcessDefinitionId(targetpdId);
             itemButtonBindService.save(bind);
 
-            /** 更新绑定角色 */
+            /* 更新绑定角色 */
             roleList = itemButtonRoleService.findByItemButtonId(bind.getId());
             for (ItemButtonRole role : roleList) {
                 roleId = role.getId();
@@ -867,7 +829,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
                     newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
                     if (null == newRoleTemp || null == newRoleTemp.getId()) {
                         newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                        /** 把申请人所在的租户机构添加到角色 */
+                        /* 把申请人所在的租户机构添加到角色 */
                         roleManager.addPerson(organization.getId(), newRoleId, targetTenantId);
                     } else {
                         newRoleId = newRoleTemp.getId();
@@ -880,9 +842,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyTabEntity(String sourceTenantId, String targetTenantId, String itemId) {
-        /**
+        /*
          * 1、查找源租户是否存在页签
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -890,14 +852,14 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         if (tabList.isEmpty()) {
             return;
         }
-        /**
+        /*
          * 2、复制源租户的页签到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
         for (TabEntity tab : tabList) {
             tabEntityService.saveOrUpdate(tab);
         }
-        /**
+        /*
          * 3、复制该事项源租户的页签和事项的绑定关系到目标租户
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -932,9 +894,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyTaoHongTemplate(String sourceTenantId, String targetTenantId) {
-        /**
+        /*
          * 1、查找源租户是否存在套红模板
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -943,7 +905,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             return;
         }
         List<TaoHongTemplateType> sourcetttList = taoHongTemplateTypeService.findAll();
-        /**
+        /*
          * 2、复制源租户的套红模板和模板类型到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
@@ -962,9 +924,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, String> copyTenantRole(String sourceTenantId, String targetTenantId, String itemId) {
-        /**
+        /*
          * 1、在源租户查找权限中绑定的租户的角色
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -981,14 +943,14 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
                 roleIdList.add(itemPermission.getRoleId());
             }
         }
-        /**
+        /*
          * 2、获取目标租户的事项管理系统的角色
          */
         System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
         Role tenantRole = roleManager.getRole(targetTenantId).getData();
         Role tenantSystemRole = roleManager.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
         String parentId = tenantSystemRole.getId();
-        /**
+        /*
          * 3、把1中查出的角色复制到目标租户中去，父节点为2中获取的角色，目标租户创建新角色时，为了避免重复创建的问题，用源角色id作为新角色的customId，每次要创建的时候，查找一下是否存在
          * 因为所有角色在同一张表，确保id的唯一性，所以复制的角色要更改角色Id,并把新老角色id的对应关系传递给权限复制，用来替换调老的角色id
          */
@@ -1002,7 +964,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
                 newRoleTemp = roleManager.findByCustomIdAndParentId(roleId, parentId).getData();
                 if (null == newRoleTemp || null == newRoleTemp.getId()) {
                     newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                    /** 把申请人所在的租户机构添加到角色 */
+                    /* 把申请人所在的租户机构添加到角色 */
                     roleManager.addPerson(organization.getId(), newRoleId, targetTenantId);
                 } else {
                     newRoleId = newRoleTemp.getId();
@@ -1015,9 +977,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyWordTemplate(String sourceTenantId, String targetTenantId, String itemId) {
-        /**
+        /*
          * 1、查找源租户是否存在正文模板
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -1025,14 +987,14 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         if (wordList.isEmpty()) {
             return;
         }
-        /**
+        /*
          * 2、复制源租户的模板到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
         for (WordTemplate word : wordList) {
             wordTemplateService.saveOrUpdate(word);
         }
-        /**
+        /*
          * 3、复制该事项源租户的模板事项以及模板和书签的绑定关系到目标租户
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
@@ -1051,9 +1013,9 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         if (null != targetBind) {
             return;
         }
-        /** 3、1事项和模板的绑定关系 */
+        /* 3、1事项和模板的绑定关系 */
         itemWordTemplateBindService.save(itemId, targetpdId, bind.getTemplateId());
-        /** 3、2模板和模板中的书签绑定关系 */
+        /* 3、2模板和模板中的书签绑定关系 */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         List<BookMarkBind> bookMarkBindList = bookMarkBindService.findByWordTemplateId(bind.getTemplateId());
 
@@ -1069,40 +1031,40 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
 
     @Override
     public void dataCopy(String sourceTenantId, String targetTenantId, String itemId) throws Exception {
-        /** 复制流程模型并部署 */
+        /* 复制流程模型并部署 */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         SpmApproveItem item = itemService.findById(itemId);
         processDataCopyApi.copyModel(sourceTenantId, targetTenantId, item.getWorkflowGuid());
 
-        /** 一复制事项 */
+        /* 一复制事项 */
         this.copyItem(sourceTenantId, targetTenantId, itemId);
-        /** 二复制动态角色 */
+        /* 二复制动态角色 */
         this.copyDynamicRole(sourceTenantId, targetTenantId);
-        /** 三复制租户的角色 */
+        /* 三复制租户的角色 */
         Map<String, String> roleIdMap = this.copyTenantRole(sourceTenantId, targetTenantId, itemId);
-        /** 四复制授权 */
+        /* 四复制授权 */
         this.copyPerm(sourceTenantId, targetTenantId, itemId, roleIdMap);
-        /** 五复制表单 */
+        /* 五复制表单 */
         this.copyForm(sourceTenantId, targetTenantId, itemId);
-        /** 六复制意见框及绑定关系和授权关系 */
+        /* 六复制意见框及绑定关系和授权关系 */
         this.copyOpinionFrame(sourceTenantId, targetTenantId, itemId);
-        /** 七复制事项视图配置 */
+        /* 七复制事项视图配置 */
         this.copyItemViewConf(sourceTenantId, targetTenantId, itemId);
-        /** 八复制正文模板及和事项的绑定关系以及模板中书签的绑定关系 */
+        /* 八复制正文模板及和事项的绑定关系以及模板中书签的绑定关系 */
         // this.copyWordTemplate(sourceTenantId, targetTenantId, itemId);
-        /** 九复制打印模板及和事项的绑定关系 */
+        /* 九复制打印模板及和事项的绑定关系 */
         // this.copyPrintTemplate(sourceTenantId, targetTenantId, itemId);
-        /** 十复制页签及和事项的绑定关系 */
+        /* 十复制页签及和事项的绑定关系 */
         // this.copyTabEntity(sourceTenantId, targetTenantId, itemId);
-        /** 十一套红模板 */
+        /* 十一套红模板 */
         // this.copyTaoHongTemplate(sourceTenantId, targetTenantId);
-        /** 十二日历配置 */
+        /* 十二日历配置 */
         this.copyCalendarConfig(sourceTenantId, targetTenantId);
-        /** 十三编号配置 */
+        /* 十三编号配置 */
         // this.copyOrganWord(sourceTenantId, targetTenantId, itemId);
-        /** 十四普通按钮 */
+        /* 十四普通按钮 */
         this.copyCommonButton(sourceTenantId, targetTenantId, itemId);
-        /** 十五发送按钮 */
+        /* 十五发送按钮 */
         this.copySendButton(sourceTenantId, targetTenantId, itemId);
     }
 

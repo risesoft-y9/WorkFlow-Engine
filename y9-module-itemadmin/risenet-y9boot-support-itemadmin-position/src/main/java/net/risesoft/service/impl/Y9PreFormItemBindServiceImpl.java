@@ -1,14 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Y9PreFormItemBind;
 import net.risesoft.id.IdType;
@@ -16,24 +8,28 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.Y9PreFormItemBindRepository;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.Y9PreFormItemBindService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "y9PreFormItemBindService")
 public class Y9PreFormItemBindServiceImpl implements Y9PreFormItemBindService {
 
-    @Autowired
-    private Y9PreFormItemBindRepository y9PreFormItemBindRepository;
+    private final Y9PreFormItemBindRepository y9PreFormItemBindRepository;
 
-    @Resource(name = "spmApproveItemService")
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delete(String id) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -50,12 +46,11 @@ public class Y9PreFormItemBindServiceImpl implements Y9PreFormItemBindService {
 
     @Override
     public Y9PreFormItemBind findByItemId(String itemId) {
-        Y9PreFormItemBind item = y9PreFormItemBindRepository.findByItemId(itemId);
-        return item;
+        return y9PreFormItemBindRepository.findByItemId(itemId);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveBindForm(String itemId, String formId, String formName) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, false);

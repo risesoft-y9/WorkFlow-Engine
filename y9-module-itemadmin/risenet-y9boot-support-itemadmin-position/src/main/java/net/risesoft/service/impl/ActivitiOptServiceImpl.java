@@ -1,11 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
@@ -13,20 +8,23 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.ActivitiOptService;
 import net.risesoft.util.CommonOpt;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "activitiOptService")
+@Service
+@RequiredArgsConstructor
 public class ActivitiOptServiceImpl implements ActivitiOptService {
 
-    @Autowired
-    private RuntimeApi runtimeManager;
+    private final RuntimeApi runtimeManager;
 
-    @Autowired
-    private TaskApi taskManager;
+    private final TaskApi taskManager;
 
     @Override
     public TaskModel startProcess(String processSerialNumber, String processDefinitionKey, String systemName,

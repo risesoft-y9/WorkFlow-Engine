@@ -1,40 +1,38 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
+import org.springframework.stereotype.Service;
 
-/**
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/*
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "multiInstanceService")
+@Service
+@RequiredArgsConstructor
 public class MultiInstanceServiceImpl implements MultiInstanceService {
 
-    @Autowired
-    private VariableApi variableManager;
+    private final VariableApi variableManager;
 
-    @Autowired
-    private RuntimeApi runtimeManager;
+    private final RuntimeApi runtimeManager;
 
     @SuppressWarnings("unchecked")
     @Override
     public void addMultiInstanceExecution(String activityId, String parentExecutionId, String taskId,
         String elementUser) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        /**
+        /*
          * 改变流程变量中users的值
          */
         String userObj = variableManager.getVariable(tenantId, taskId, SysVariables.USERS);
@@ -43,7 +41,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         Map<String, Object> val = new HashMap<String, Object>();
         val.put("val", users);
         variableManager.setVariable(tenantId, taskId, SysVariables.USERS, val);
-        /**
+        /*
          * 新增执行实例
          */
         Map<String, Object> map = new HashMap<>(16);
@@ -63,7 +61,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     @Override
     public void deleteMultiInstanceExecution(String executionId, String taskId, String elementUser) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        /**
+        /*
          * 改变流程变量中users的值
          */
         String userObj = variableManager.getVariable(tenantId, taskId, SysVariables.USERS);
@@ -71,6 +69,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         List<String> usersTemp = new ArrayList<>();
         boolean isDelete = false;
         // 存在相同人员id时，减签只一个人员
+        assert users != null;
         for (Object user : users) {
             String user1 = user.toString();
             if (isDelete) {
@@ -85,7 +84,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         Map<String, Object> vmap = new HashMap<String, Object>(16);
         vmap.put(SysVariables.USERS, usersTemp);
         variableManager.setVariables(tenantId, taskId, vmap);
-        /**
+        /*
          * 新删除执行实例
          */
         runtimeManager.deleteMultiInstanceExecution(tenantId, executionId);

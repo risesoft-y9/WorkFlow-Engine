@@ -1,14 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.ItemTabBind;
 import net.risesoft.entity.TabEntity;
@@ -21,30 +13,34 @@ import net.risesoft.service.ItemTabBindService;
 import net.risesoft.service.TabEntityService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "itemTabBindService")
 public class ItemTabBindServiceImpl implements ItemTabBindService {
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final ItemTabBindRepository tabItemBindRepository;
 
-    @Autowired
-    private ItemTabBindRepository tabItemBindRepository;
+    private final TabEntityService tabEntityService;
 
-    @Autowired
-    private TabEntityService tabEntityService;
-
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryManager;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyTabItemBind(String itemId, String processDefinitionId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(),
             personName = person.getName();
@@ -100,6 +96,7 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
     @Override
     public ItemTabBind findOne(String id) {
         ItemTabBind tabItemBind = tabItemBindRepository.findById(id).orElse(null);
+        assert tabItemBind != null;
         TabEntity tabEntity = tabEntityService.findOne(tabItemBind.getTabId());
         if (null != tabEntity) {
             tabItemBind.setTabName(tabEntity.getName());
@@ -111,7 +108,7 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeTabItemBinds(String[] tabItemBindIds) {
         for (String tabItemBindId : tabItemBindIds) {
             tabItemBindRepository.deleteById(tabItemBindId);
@@ -119,14 +116,15 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void save(ItemTabBind tabItemBind) {
         tabItemBindRepository.save(tabItemBind);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveOrder(String[] idAndTabIndexs) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName();
         List<ItemTabBind> oldtibList = new ArrayList<>();
@@ -144,8 +142,9 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public ItemTabBind saveTabBind(String tabId, String itemId, String processDefinitionId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
 

@@ -1,21 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import net.risesoft.api.platform.permission.PersonRoleApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.UtilConsts;
@@ -43,57 +27,73 @@ import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "formDataService")
 public class FormDataServiceImpl implements FormDataService {
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private Y9FormItemBindService y9FormItemBindService;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private Y9PreFormItemBindService y9PreFormItemBindService;
+    private final Y9FormItemBindService y9FormItemBindService;
 
-    @Autowired
-    private Y9FormFieldService y9FormFieldService;
+    private final Y9PreFormItemBindService y9PreFormItemBindService;
 
-    @Autowired
-    private Y9FormService y9FormService;
+    private final Y9FormFieldService y9FormFieldService;
 
-    @Autowired
-    private Y9FormRepository y9FormRepository;
+    private final Y9FormService y9FormService;
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    private final Y9FormRepository y9FormRepository;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryManager;
 
-    @Autowired
-    private Y9FieldPermRepository y9FieldPermRepository;
+    private final Y9FieldPermRepository y9FieldPermRepository;
 
-    @Autowired
-    private PersonRoleApi personRoleApi;
+    private final PersonRoleApi personRoleApi;
 
-    @Autowired
-    private Y9TableService y9TableService;
+    private final Y9TableService y9TableService;
+
+    public FormDataServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate, SpmApproveItemService spmApproveItemService, Y9FormItemBindService y9FormItemBindService, Y9PreFormItemBindService y9PreFormItemBindService, Y9FormFieldService y9FormFieldService, Y9FormService y9FormService, Y9FormRepository y9FormRepository, RepositoryApi repositoryManager, Y9FieldPermRepository y9FieldPermRepository, PersonRoleApi personRoleApi, Y9TableService y9TableService) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.spmApproveItemService = spmApproveItemService;
+        this.y9FormItemBindService = y9FormItemBindService;
+        this.y9PreFormItemBindService = y9PreFormItemBindService;
+        this.y9FormFieldService = y9FormFieldService;
+        this.y9FormService = y9FormService;
+        this.y9FormRepository = y9FormRepository;
+        this.repositoryManager = repositoryManager;
+        this.y9FieldPermRepository = y9FieldPermRepository;
+        this.personRoleApi = personRoleApi;
+        this.y9TableService = y9TableService;
+    }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delChildTableRow(String formId, String tableId, String guid) {
         return y9FormService.delChildTableRow(formId, tableId, guid);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delPreFormData(String formId, String guid) {
         return y9FormService.delPreFormData(formId, guid);
     }
@@ -300,7 +300,7 @@ public class FormDataServiceImpl implements FormDataService {
 
     @SuppressWarnings("unchecked")
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public String saveAFormData(String itemId, String formdata, String formId) throws Exception {
         try {
             Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formdata, Map.class);
@@ -364,7 +364,7 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData) throws Exception {
         try {
             Map<String, Object> map = new HashMap<String, Object>(16);
@@ -380,7 +380,7 @@ public class FormDataServiceImpl implements FormDataService {
 
     @SuppressWarnings("unchecked")
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveFormData(String formdata, String formId) throws Exception {
         try {
             Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formdata, Map.class);

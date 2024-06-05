@@ -1,21 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.UtilConsts;
@@ -36,33 +21,42 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "officeFollowService")
 public class OfficeFollowServiceImpl implements OfficeFollowService {
 
-    @Autowired
-    private OfficeFollowRepository officeFollowRepository;
+    private final OfficeFollowRepository officeFollowRepository;
 
-    @Autowired
-    private TaskApi taskManager;
+    private final TaskApi taskManager;
 
-    @Autowired
-    private PositionApi positionManager;
+    private final PositionApi positionManager;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private RemindInstanceService remindInstanceService;
+    private final RemindInstanceService remindInstanceService;
 
-    @Autowired
-    private OfficeDoneInfoService officeDoneInfoService;
+    private final OfficeDoneInfoService officeDoneInfoService;
 
     @Override
     public int countByProcessInstanceId(String processInstanceId) {
@@ -71,13 +65,13 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void deleteByProcessInstanceId(String processInstanceId) {
         officeFollowRepository.deleteByProcessInstanceId(processInstanceId);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delOfficeFollow(String processInstanceIds) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -100,7 +94,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
      *
      * @return
      */
-    private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
+    private final List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
@@ -183,8 +177,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                     OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
                     officeFollow.setStartTime(sdf5.format(sdf.parse(officeDoneInfo.getStartTime())));
                     officeFollow
-                        .setMsgremind((officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"))
-                            ? true : false);
+                        .setMsgremind(officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"));
                     ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
                     List<TaskModel> taskList =
                         taskManager.findByProcessInstanceId(tenantId, officeFollow.getProcessInstanceId());
@@ -292,7 +285,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveOfficeFollow(OfficeFollow officeFollow) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -314,7 +307,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void updateTitle(String processInstanceId, String documentTitle) {
         try {
             List<OfficeFollow> list = officeFollowRepository.findByProcessInstanceId(processInstanceId);

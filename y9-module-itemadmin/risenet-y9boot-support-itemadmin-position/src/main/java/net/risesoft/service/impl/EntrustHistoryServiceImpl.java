@@ -1,15 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.ParseException;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.EntrustHistory;
@@ -19,24 +10,30 @@ import net.risesoft.repository.jpa.EntrustHistoryRepository;
 import net.risesoft.service.EntrustHistoryService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.ParseException;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "entrustHistoryService")
 public class EntrustHistoryServiceImpl implements EntrustHistoryService {
 
-    @Autowired
-    private EntrustHistoryRepository entrustHistoryRepository;
+    private final EntrustHistoryRepository entrustHistoryRepository;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
     @Override
     public Page<EntrustHistory> findAll(int page, int rows) {
@@ -109,7 +106,7 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public EntrustHistory save(EntrustHistory entrustHistory) throws ParseException {
         return entrustHistoryRepository.save(entrustHistory);
     }

@@ -1,14 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.SendButton;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -16,20 +8,25 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.SendButtonRepository;
 import net.risesoft.service.SendButtonService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "sendButtonService")
 public class SendButtonServiceImpl implements SendButtonService {
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    @Autowired
-    private SendButtonRepository sendButtonRepository;
+    private final SendButtonRepository sendButtonRepository;
 
     @Override
     public boolean checkCustomId(String customId) {
@@ -52,7 +49,7 @@ public class SendButtonServiceImpl implements SendButtonService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeSendButtons(String[] sendButtonIds) {
         for (String sendButtonId : sendButtonIds) {
             sendButtonRepository.deleteById(sendButtonId);
@@ -60,11 +57,11 @@ public class SendButtonServiceImpl implements SendButtonService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public SendButton saveOrUpdate(SendButton sendButton) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getParentId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = sendButton.getId();
         if (StringUtils.isNotEmpty(id)) {
             SendButton oldsb = this.findOne(id);

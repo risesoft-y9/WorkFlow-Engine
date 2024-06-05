@@ -1,14 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -32,38 +24,38 @@ import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.ItemPermissionService;
 import net.risesoft.service.RoleService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
-/**
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/*
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "roleService")
+@Service
+@RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
 
-    @Autowired
-    private ItemPermissionService itemPermissionService;
+    private final ItemPermissionService itemPermissionService;
 
-    @Autowired
-    private DynamicRoleMemberService dynamicRoleMemberService;
+    private final DynamicRoleMemberService dynamicRoleMemberService;
 
-    @Autowired
-    private RoleApi roleManager;
+    private final RoleApi roleManager;
 
-    @Autowired
-    private PositionApi positionManager;
+    private final PositionApi positionManager;
 
-    @Autowired
-    private DepartmentApi departmentManager;
+    private final DepartmentApi departmentManager;
 
-    @Autowired
-    private OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitManager;
 
-    @Autowired
-    private ReceiveDepartmentRepository receiveDepartmentRepository;
+    private final ReceiveDepartmentRepository receiveDepartmentRepository;
 
-    @Autowired
-    private CustomGroupApi customGroupApi;
+    private final CustomGroupApi customGroupApi;
 
     @Override
     public List<Map<String, Object>> findCsUser(String id, Integer principalType, String processInstanceId) {
@@ -153,7 +145,7 @@ public class RoleServiceImpl implements RoleService {
         return item;
     }
 
-    /**
+    /*
      * Description:
      *
      * @param name
@@ -161,7 +153,7 @@ public class RoleServiceImpl implements RoleService {
      * @param processInstanceId
      * @return
      */
-    /**
+    /*
      * Description:
      *
      * @param name
@@ -421,19 +413,19 @@ public class RoleServiceImpl implements RoleService {
             List<OrgUnit> orgListTemp = new ArrayList<>();
             List<ItemPermission> list = itemPermissionService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
             for (ItemPermission o : list) {
-                /**
+                /*
                  * 1暂时只获取角色中的岗位
                  */
                 if (o.getRoleType() == 1) {
                     orgListTemp.addAll(roleManager.listOrgUnitsById(tenantId, o.getRoleId(), OrgTypeEnum.POSITION).getData());
                 }
-                /**
+                /*
                  * 2暂时只获取角色中的岗位
                  */
                 /*if (o.getRoleType() == 2) {
                     orgListTemp.add(orgUnitManager.getOrgUnit(tenantId, o.getRoleId()).getData());
                 }*/
-                /**
+                /*
                  * 4暂时只解析动态角色里面的岗位
                  */
                 if (o.getRoleType() == 4) {
@@ -444,7 +436,7 @@ public class RoleServiceImpl implements RoleService {
                         }
                     }
                 }
-                /**
+                /*
                  * 6岗位
                  */
                 if (o.getRoleType() == 6) {

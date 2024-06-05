@@ -1,25 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.BookMarkBind;
@@ -36,30 +17,45 @@ import net.risesoft.y9.util.word.Y9WordTool4Doc;
 import net.risesoft.y9.util.word.Y9WordTool4Docx;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "wordTemplateService")
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class WordTemplateServiceImpl implements WordTemplateService {
 
-    @Autowired
-    private WordTemplateRepository wordTemplateRepository;
+    private final WordTemplateRepository wordTemplateRepository;
 
-    @Autowired
-    private Y9FileStoreService y9FileStoreService;
+    private final Y9FileStoreService y9FileStoreService;
 
-    @Autowired
-    private BookMarkBindService bookMarkBindService;
+    private final BookMarkBindService bookMarkBindService;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> deleteWordTemplate(String id) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -86,6 +82,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     public void download(String id, HttpServletResponse response, HttpServletRequest request) {
         try {
             WordTemplate wordTemplate = wordTemplateRepository.findById(id).orElse(null);
+            assert wordTemplate != null;
             byte[] b = y9FileStoreService.downloadFileToBytes(wordTemplate.getFilePath());
             int length = b.length;
             String filename = "", userAgent = "User-Agent", firefox = "firefox", msie = "MSIE";
@@ -161,7 +158,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveOrUpdate(WordTemplate wordTemplate) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(), personName = person.getName();
@@ -202,9 +199,9 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> upload(MultipartFile file) {
-        String[] fileNames = file.getOriginalFilename().split("\\\\");
+        String[] fileNames = Objects.requireNonNull(file.getOriginalFilename()).split("\\\\");
         String fileName = "";
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
@@ -212,27 +209,25 @@ public class WordTemplateServiceImpl implements WordTemplateService {
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "上传成功");
         try {
-            if (file != null) {
-                WordTemplate wordTemplate = new WordTemplate();
-                wordTemplate.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                if (fileNames.length > 1) {
-                    fileName = fileNames[fileNames.length - 1];
-                } else {
-                    fileName = file.getOriginalFilename();
-                }
-                wordTemplate.setFileName(fileName);
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                String fullPath = "/" + Y9Context.getSystemName() + "/wordTemplate/" + sdf.format(new Date());
-                Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
-                wordTemplate.setPersonId(person.getPersonId());
-                wordTemplate.setPersonName(person.getName());
-                wordTemplate.setBureauId(orgUnitApi.getBureau(tenantId, personId).getData().getId());
-                wordTemplate.setUploadTime(new Date());
-                wordTemplate.setDescribes("");
-                wordTemplate.setFilePath(y9FileStore.getId());
-                wordTemplate.setFileSize(y9FileStore.getDisplayFileSize());
-                wordTemplateRepository.save(wordTemplate);
+            WordTemplate wordTemplate = new WordTemplate();
+            wordTemplate.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            if (fileNames.length > 1) {
+                fileName = fileNames[fileNames.length - 1];
+            } else {
+                fileName = file.getOriginalFilename();
             }
+            wordTemplate.setFileName(fileName);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String fullPath = "/" + Y9Context.getSystemName() + "/wordTemplate/" + sdf.format(new Date());
+            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
+            wordTemplate.setPersonId(person.getPersonId());
+            wordTemplate.setPersonName(person.getName());
+            wordTemplate.setBureauId(orgUnitApi.getBureau(tenantId, personId).getData().getId());
+            wordTemplate.setUploadTime(new Date());
+            wordTemplate.setDescribes("");
+            wordTemplate.setFilePath(y9FileStore.getId());
+            wordTemplate.setFileSize(y9FileStore.getDisplayFileSize());
+            wordTemplateRepository.save(wordTemplate);
         } catch (Exception e) {
             e.printStackTrace();
             map.put(UtilConsts.SUCCESS, false);

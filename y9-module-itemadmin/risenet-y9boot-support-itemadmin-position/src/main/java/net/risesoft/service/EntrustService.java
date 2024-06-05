@@ -1,11 +1,11 @@
 package net.risesoft.service;
 
+import net.risesoft.entity.Entrust;
+import net.risesoft.model.itemadmin.EntrustModel;
+
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
-
-import net.risesoft.entity.Entrust;
-import net.risesoft.model.itemadmin.EntrustModel;
 
 /**
  * @author qinman
@@ -39,7 +39,6 @@ public interface EntrustService {
     /**
      * 获取某个用户没有删除的委托对象
      *
-     * @param userId
      * @return
      */
     List<Entrust> findAll();

@@ -1,15 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.entity.ItemLinkBind;
 import net.risesoft.entity.ItemLinkRole;
@@ -23,32 +14,34 @@ import net.risesoft.repository.jpa.ItemLinkRoleRepository;
 import net.risesoft.repository.jpa.LinkInfoRepository;
 import net.risesoft.service.ItemLinkBindService;
 import net.risesoft.service.SpmApproveItemService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "itemLinkBindService")
 public class ItemLinkBindServiceImpl implements ItemLinkBindService {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final ItemLinkBindRepository itemLinkBindRepository;
 
-    @Autowired
-    private ItemLinkBindRepository itemLinkBindRepository;
+    private final ItemLinkRoleRepository itemLinkRoleRepository;
 
-    @Autowired
-    private ItemLinkRoleRepository itemLinkRoleRepository;
+    private final LinkInfoRepository linkInfoRepository;
 
-    @Autowired
-    private LinkInfoRepository linkInfoRepository;
+    private final RoleApi roleManager;
 
-    @Autowired
-    private RoleApi roleManager;
-
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
     @Override
     public List<ItemLinkBind> findByItemId(String itemId) {
@@ -118,7 +111,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeBind(String[] ids) {
         for (String id : ids) {
             itemLinkBindRepository.deleteById(id);
@@ -127,7 +120,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeRole(String[] ids) {
         for (String id : ids) {
             itemLinkRoleRepository.deleteById(id);
@@ -135,7 +128,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveBindRole(String itemLinkId, String roleIds) {
         String[] roleIdarr = roleIds.split(";");
         for (String roleId : roleIdarr) {
@@ -151,8 +144,9 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveItemLinkBind(String itemId, String[] linkIds) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String linkId : linkIds) {
             ItemLinkBind item = itemLinkBindRepository.findByLinkIdAndItemId(linkId, itemId);
             if (item == null) {

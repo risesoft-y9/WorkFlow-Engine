@@ -1,16 +1,6 @@
 package net.risesoft.service.form.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9FormOptionClass;
 import net.risesoft.entity.form.Y9FormOptionValue;
@@ -19,24 +9,32 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.form.Y9FormOptionClassRepository;
 import net.risesoft.repository.form.Y9FormOptionValueRepository;
 import net.risesoft.service.form.Y9FormOptionClassService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Service(value = "y9FormOptionClassService")
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
 
-    @Autowired
-    private Y9FormOptionClassRepository y9FormOptionClassRepository;
+    private final Y9FormOptionClassRepository y9FormOptionClassRepository;
 
-    @Autowired
-    private Y9FormOptionValueRepository y9FormOptionValueRepository;
+    private final Y9FormOptionValueRepository y9FormOptionValueRepository;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delOptionClass(String type) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         retMap.put(UtilConsts.SUCCESS, true);
@@ -55,7 +53,7 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> delOptionValue(String id) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         retMap.put(UtilConsts.SUCCESS, true);
@@ -102,7 +100,7 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
         return y9FormOptionValueRepository.findByTypeOrderByTabIndexAsc(type);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public Map<String, Object> saveOptionClass(Y9FormOptionClass optionClass) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
@@ -124,7 +122,7 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
         return retMap;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional()
     @Override
     public Map<String, Object> saveOptionValue(Y9FormOptionValue optionValue) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
@@ -162,7 +160,7 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> saveOrder(String ids) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         retMap.put(UtilConsts.SUCCESS, true);
@@ -187,7 +185,7 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> updateOptionValue(String id) {
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         retMap.put(UtilConsts.SUCCESS, true);

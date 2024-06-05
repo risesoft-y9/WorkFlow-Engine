@@ -1,17 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.SpeakInfo;
 import net.risesoft.id.IdType;
@@ -21,31 +10,40 @@ import net.risesoft.repository.jpa.SpeakInfoRepository;
 import net.risesoft.service.SpeakInfoService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "speakInfoService")
 public class SpeakInfoServiceImpl implements SpeakInfoService {
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    @Autowired
-    private SpeakInfoRepository speakInfoRepository;
+    private final SpeakInfoRepository speakInfoRepository;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public Map<String, Object> deleteById(String id) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "删除失败");
         SpeakInfo speakInfo = this.findById(id);
-        Date createDate = new Date();
-        Date dateAfterCreateDate5Minute = new Date();
-        Date currentDate = new Date();
+        Date createDate;
+        Date dateAfterCreateDate5Minute;
+        Date currentDate;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             createDate = sdf.parse(speakInfo.getCreateTime());
             dateAfterCreateDate5Minute = new Date(createDate.getTime() + 300000);
@@ -70,8 +68,9 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public List<SpeakInfo> findByProcessInstanceId(String processInstanceId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String currentUserId = person.getPersonId();
         List<SpeakInfo> siList =
@@ -113,8 +112,9 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public String saveOrUpdate(SpeakInfo speakInfo) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = speakInfo.getId();
         if (StringUtils.isNotEmpty(id)) {
             SpeakInfo oldsi = this.findById(id);

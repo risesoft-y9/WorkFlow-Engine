@@ -1,23 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.InterfaceRequestParams;
 import net.risesoft.entity.InterfaceResponseParams;
@@ -32,31 +15,40 @@ import net.risesoft.repository.jpa.ItemInterfaceBindRepository;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.InterfaceService;
 import net.risesoft.y9.json.Y9JsonUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author zhangchongjie
  * @date 2024/05/23
  */
-@Service(value = "interfaceService")
+@Service
+@RequiredArgsConstructor
 public class InterfaceServiceImpl implements InterfaceService {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final InterfaceInfoRepository interfaceInfoRepository;
 
-    @Autowired
-    private InterfaceInfoRepository interfaceInfoRepository;
+    private final SpmApproveItemRepository spmApproveItemRepository;
 
-    @Autowired
-    private SpmApproveItemRepository spmApproveItemRepository;
+    private final ItemInterfaceBindRepository itemInterfaceBindRepository;
 
-    @Autowired
-    private ItemInterfaceBindRepository itemInterfaceBindRepository;
+    private final InterfaceRequestParamsRepository interfaceRequestParamsRepository;
 
-    @Autowired
-    private InterfaceRequestParamsRepository interfaceRequestParamsRepository;
-
-    @Autowired
-    private InterfaceResponseParamsRepository interfaceResponseParamsRepository;
+    private final InterfaceResponseParamsRepository interfaceResponseParamsRepository;
 
     @SuppressWarnings("serial")
     @Override
@@ -149,7 +141,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeInterface(String id) {
         interfaceInfoRepository.deleteById(id);
         interfaceRequestParamsRepository.deleteByInterfaceId(id);
@@ -157,7 +149,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeReqParams(String[] ids) {
         for (String id : ids) {
             interfaceRequestParamsRepository.deleteById(id);
@@ -165,7 +157,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeResParams(String[] ids) {
         for (String id : ids) {
             interfaceResponseParamsRepository.deleteById(id);
@@ -174,12 +166,13 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     @SuppressWarnings("unchecked")
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveAllResponseParams(String interfaceId, String jsonData) {
         Map<String, Object> map = Y9JsonUtil.readValue(jsonData, Map.class);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String columnName : map.keySet()) {
             List<InterfaceResponseParams> list = interfaceResponseParamsRepository.findByParameterName(columnName);
-            if (list.size() == 0) {
+            if (list.isEmpty()) {
                 InterfaceResponseParams item = new InterfaceResponseParams();
                 item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 item.setInterfaceId(interfaceId);
@@ -192,9 +185,10 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveInterfaceInfo(InterfaceInfo info) {
         String id = info.getId();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
             InterfaceInfo item = interfaceInfoRepository.findById(id).orElse(null);
             if (null != item) {
@@ -218,9 +212,10 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveRequestParams(InterfaceRequestParams info) {
         String id = info.getId();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
             InterfaceRequestParams item = interfaceRequestParamsRepository.findById(id).orElse(null);
             if (null != item) {
@@ -242,8 +237,9 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveResponseParams(InterfaceResponseParams info) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = info.getId();
         if (StringUtils.isNotBlank(id)) {
             InterfaceResponseParams item = interfaceResponseParamsRepository.findById(id).orElse(null);

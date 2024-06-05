@@ -1,13 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.ItemInterfaceBind;
 import net.risesoft.entity.SpmApproveItem;
@@ -19,32 +12,32 @@ import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
 import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
 import net.risesoft.service.ItemInterfaceBindService;
 import net.risesoft.service.SpmApproveItemService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  *
  * @author zhangchongjie
  * @date 2024/05/24
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "itemInterfaceBindService")
 public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final ItemInterfaceBindRepository itemInterfaceBindRepository;
 
-    @Autowired
-    private ItemInterfaceBindRepository itemInterfaceBindRepository;
+    private final InterfaceInfoRepository interfaceInfoRepository;
 
-    @Autowired
-    private InterfaceInfoRepository interfaceInfoRepository;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final ItemInterfaceTaskBindRepository itemInterfaceTaskBindRepository;
 
-    @Autowired
-    private ItemInterfaceTaskBindRepository itemInterfaceTaskBindRepository;
-
-    @Autowired
-    private ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
+    private final ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
 
     @Override
     public List<ItemInterfaceBind> findByInterfaceId(String interfaceId) {
@@ -68,7 +61,7 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeBind(String id) {
         ItemInterfaceBind bind = itemInterfaceBindRepository.findById(id).orElse(null);
         if (bind != null) {
@@ -79,8 +72,9 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveBind(String itemId, String[] interfaceIds) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String interfaceId : interfaceIds) {
             ItemInterfaceBind item = itemInterfaceBindRepository.findByInterfaceIdAndItemId(interfaceId, itemId);
             if (item == null) {

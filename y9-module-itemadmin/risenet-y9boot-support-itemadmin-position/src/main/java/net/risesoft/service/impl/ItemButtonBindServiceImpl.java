@@ -1,16 +1,6 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.CommonButton;
@@ -31,43 +21,46 @@ import net.risesoft.service.SendButtonService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Service
+@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-@Service(value = "itemButtonBindService")
 public class ItemButtonBindServiceImpl implements ItemButtonBindService {
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final ItemButtonBindRepository buttonItemBindRepository;
 
-    @Autowired
-    private ItemButtonBindRepository buttonItemBindRepository;
+    private final CommonButtonService commonButtonService;
 
-    @Autowired
-    private CommonButtonService commonButtonService;
+    private final SendButtonService sendButtonService;
 
-    @Autowired
-    private SendButtonService sendButtonService;
+    private final ItemButtonRoleService itemButtonRoleService;
 
-    @Autowired
-    private ItemButtonRoleService itemButtonRoleService;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final RepositoryApi repositoryManager;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
-
-    @Autowired
-    private ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionManager;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public ItemButtonBind bindButton(String itemId, String buttonId, String processDefinitionId, String taskDefKey,
         Integer buttonType) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemButtonBind bib = new ItemButtonBind();
@@ -94,8 +87,9 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void copyBind(String itemId, String processDefinitionId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
@@ -367,7 +361,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void removeButtonItemBinds(String[] buttonItemBindIds) {
         for (String buttonItemBindId : buttonItemBindIds) {
             itemButtonRoleService.deleteByItemButtonId(buttonItemBindId);
@@ -376,11 +370,11 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public ItemButtonBind save(ItemButtonBind buttonItemBind) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = buttonItemBind.getId();
         ItemButtonBind oldbib = this.findOne(id);
         if (null != oldbib) {
@@ -391,7 +385,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
 
             String buttonName = "按钮不存在";
             String buttonCustomId = "";
-            if (ItemButtonTypeEnum.COMMON.getValue() == oldbib.getButtonType()) {
+            if (Objects.equals(ItemButtonTypeEnum.COMMON.getValue(), oldbib.getButtonType())) {
                 CommonButton cb = commonButtonService.findOne(oldbib.getButtonId());
                 if (null != cb) {
                     buttonName = cb.getName();
@@ -415,20 +409,21 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void saveOrder(String[] idAndTabIndexs) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName();
         List<ItemButtonBind> oldtibList = new ArrayList<>();
         for (String idAndTabIndex : idAndTabIndexs) {
             String[] arr = idAndTabIndex.split(SysVariables.COLON);
-            ItemButtonBind oldbib = this.findOne(arr[0]);
-            oldbib.setTabIndex(Integer.valueOf(arr[1]));
-            oldbib.setUpdateTime(sdf.format(new Date()));
-            oldbib.setUserId(userId);
-            oldbib.setUserName(userName);
+            ItemButtonBind oldBib = this.findOne(arr[0]);
+            oldBib.setTabIndex(Integer.valueOf(arr[1]));
+            oldBib.setUpdateTime(sdf.format(new Date()));
+            oldBib.setUserId(userId);
+            oldBib.setUserName(userName);
 
-            oldtibList.add(oldbib);
+            oldtibList.add(oldBib);
         }
         buttonItemBindRepository.saveAll(oldtibList);
     }
