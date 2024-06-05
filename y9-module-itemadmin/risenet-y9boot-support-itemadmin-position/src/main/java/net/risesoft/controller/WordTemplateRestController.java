@@ -1,22 +1,6 @@
 package net.risesoft.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.BookMarkBind;
@@ -30,6 +14,19 @@ import net.risesoft.service.WordTemplateService;
 import net.risesoft.service.form.Y9TableFieldService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -37,23 +34,19 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/wordTemplate")
 public class WordTemplateRestController {
 
-    @Autowired
-    private WordTemplateService wordTemplateService;
+    private final WordTemplateService wordTemplateService;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private BookMarkBindService bookMarkBindService;
+    private final BookMarkBindService bookMarkBindService;
 
-    @Autowired
-    private Y9TableService y9TableService;
+    private final Y9TableService y9TableService;
 
-    @Autowired
-    private Y9TableFieldService y9TableFieldService;
+    private final Y9TableFieldService y9TableFieldService;
 
     /**
      * 获取书签列表
@@ -63,7 +56,6 @@ public class WordTemplateRestController {
      * @return
      */
     @SuppressWarnings("unchecked")
-    @ResponseBody
     @RequestMapping(value = "/bookMarKList")
     public Y9Result<List<Map<String, Object>>> bookMarkList(String wordTemplateId, @RequestParam(required = true) String wordTemplateType) {
         Map<String, Object> map = wordTemplateService.getBookMarkList(wordTemplateId, wordTemplateType);
@@ -79,7 +71,6 @@ public class WordTemplateRestController {
      * @param id 模板id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/deleteWordTemplate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> deleteWordTemplate(@RequestParam(required = true) String id) {
         Map<String, Object> map = wordTemplateService.deleteWordTemplate(id);
@@ -143,7 +134,6 @@ public class WordTemplateRestController {
      * @return
      */
     @SuppressWarnings("unchecked")
-    @ResponseBody
     @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<String>> getColumns(@RequestParam(required = true) String tableId) {
         List<String> columnList = new ArrayList<>();
@@ -161,7 +151,6 @@ public class WordTemplateRestController {
      * @param file 文件
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> upload(MultipartFile file) {
         Map<String, Object> map = wordTemplateService.upload(file);
@@ -176,7 +165,6 @@ public class WordTemplateRestController {
      *
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/wordTemplateList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> wordTemplateList() {
         UserInfo person = Y9LoginUserHolder.getUserInfo();

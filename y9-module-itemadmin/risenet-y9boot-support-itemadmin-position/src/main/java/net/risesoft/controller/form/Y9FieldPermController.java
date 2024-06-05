@@ -1,16 +1,6 @@
 package net.risesoft.controller.form;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.entity.Y9FormItemMobileBind;
@@ -22,6 +12,16 @@ import net.risesoft.repository.form.Y9FieldPermRepository;
 import net.risesoft.repository.jpa.Y9FormItemBindRepository;
 import net.risesoft.repository.jpa.Y9FormItemMobileBindRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -29,20 +29,21 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/y9form/fieldPerm")
 public class Y9FieldPermController {
 
-    @Autowired
-    private Y9FormItemBindRepository y9FormItemBindRepository;
+    
+    private final Y9FormItemBindRepository y9FormItemBindRepository;
 
-    @Autowired
-    private Y9FormItemMobileBindRepository y9FormItemMobileBindRepository;
+    
+    private final Y9FormItemMobileBindRepository y9FormItemMobileBindRepository;
 
-    @Autowired
-    private Y9FieldPermRepository y9FieldPermRepository;
+    
+    private final Y9FieldPermRepository y9FieldPermRepository;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionManager;
+    
+    private final ProcessDefinitionApi processDefinitionManager;
 
     /**
      * 获取该字段是否配置权限

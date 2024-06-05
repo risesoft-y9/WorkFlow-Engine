@@ -1,14 +1,6 @@
 package net.risesoft.api;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.OrganWordApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -16,6 +8,13 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.service.OrganWordService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 编号接口
@@ -25,17 +24,15 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/organWord")
 public class OrganWordApiImpl implements OrganWordApi {
 
-    @Autowired
-    private OrganWordService organWordService;
+    private final OrganWordService organWordService;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private PersonApi personApi;
+    private final PersonApi personApi;
 
     /**
      * 检查编号是否已经被使用了

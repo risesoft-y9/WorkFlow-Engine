@@ -1,12 +1,12 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,11 +24,11 @@ import java.util.Map;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/officeDoneInfo4Position")
 public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
 
-    @Autowired
-    private OfficeDoneInfoService officeDoneInfoService;
+    private final OfficeDoneInfoService officeDoneInfoService;
 
     /**
      * 取消上会(ddyjs)

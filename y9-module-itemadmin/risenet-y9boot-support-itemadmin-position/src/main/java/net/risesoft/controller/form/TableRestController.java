@@ -1,13 +1,14 @@
 package net.risesoft.controller.form;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.form.Y9Table;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.form.Y9TableService;
+import net.risesoft.util.form.DbMetaDataUtil;
+import net.risesoft.y9.json.Y9JsonUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,13 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.form.Y9Table;
-import net.risesoft.pojo.Y9Page;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.form.Y9TableService;
-import net.risesoft.util.form.DbMetaDataUtil;
-import net.risesoft.y9.json.Y9JsonUtil;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -30,25 +29,25 @@ import net.risesoft.y9.json.Y9JsonUtil;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/y9form/table")
 public class TableRestController {
 
-    @Autowired
-    private Y9TableService y9TableService;
+    
+    private final Y9TableService y9TableService;
 
-    @Autowired
-    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
+    
+    @Qualifier("jdbcTemplate4Tenant") private final JdbcTemplate jdbcTemplate4Tenant;
 
     /**
      * 添加数据库表
      *
      * @param tableName 表名称
      * @param systemName 系统名称
-     * @param systemCNName 系统英文名称
+     * @param systemCnName 系统中文名称
      * @return
      */
     @RequestMapping(value = "/addDataBaseTable", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> addDataBaseTable(@RequestParam(required = true) String tableName,
         @RequestParam(required = true) String systemName, @RequestParam(required = true) String systemCnName) {
         Map<String, Object> map = y9TableService.addDataBaseTable(tableName, systemName, systemCnName);
@@ -61,12 +60,11 @@ public class TableRestController {
     /**
      * 新生成表，创建数据库表
      *
-     * @param table 表信息
+     * @param tables 表信息
      * @param fields 字段信息
      * @return
      */
     @RequestMapping(value = "/buildTable", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> buildTable(@RequestParam(required = true) String tables,
         @RequestParam(required = true) String fields) {
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -86,7 +84,6 @@ public class TableRestController {
      * @return
      */
     @RequestMapping(value = "/checkTableExist", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> checkTableExist(@RequestParam(required = true) String tableName) {
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
         Connection connection = null;
@@ -115,7 +112,6 @@ public class TableRestController {
      * @return
      */
     @RequestMapping(value = "/getAllTables", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<Map<String, Object>> getAllTables(@RequestParam(required = false) String name) {
         Map<String, Object> map = y9TableService.getAllTables(name);
         String tableNames = y9TableService.getAlltableName();
@@ -129,7 +125,6 @@ public class TableRestController {
      * @return
      */
     @RequestMapping(value = "/getAppList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<Map<String, Object>>> getAppList() {
         List<Map<String, Object>> list = y9TableService.getAppList();
         return Y9Result.success(list, "获取成功");
@@ -145,7 +140,6 @@ public class TableRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getTables", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Page<Y9Table> getTables(@RequestParam(required = false) String systemName,
         @RequestParam(required = true) int page, @RequestParam(required = true) int rows) {
         Map<String, Object> map = y9TableService.getTables(systemName, page, rows);
@@ -197,7 +191,6 @@ public class TableRestController {
      * @return
      */
     @RequestMapping(value = "/removeTable", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> removeTable(@RequestParam(required = true) String ids) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map = y9TableService.delete(ids);
@@ -215,7 +208,6 @@ public class TableRestController {
      * @return
      */
     @RequestMapping(value = "/saveTable", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> saveTable(@RequestParam(required = false) String tables,
         @RequestParam(required = false) String fields) {
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -236,7 +228,6 @@ public class TableRestController {
      * @return
      */
     @RequestMapping(value = "/updateTable", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> updateTable(@RequestParam(required = true) String tables,
         @RequestParam(required = true) String fields) {
         Map<String, Object> map = new HashMap<String, Object>(16);

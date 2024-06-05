@@ -1,20 +1,6 @@
 package net.risesoft.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemOpinionFrameBind;
 import net.risesoft.entity.ItemOpinionFrameRole;
@@ -24,6 +10,18 @@ import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.ItemOpinionFrameRoleService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -31,22 +29,19 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/itemOpinionFrameBind")
 public class ItemOpinionFrameBindRestController {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    @Autowired
-    private ItemOpinionFrameBindService itemOpinionFrameBindService;
+    private final ItemOpinionFrameBindService itemOpinionFrameBindService;
 
-    @Autowired
-    private ItemOpinionFrameRoleService itemOpinionFrameRoleService;
+    private final ItemOpinionFrameRoleService itemOpinionFrameRoleService;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionManager;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
     /**
      * 绑定意见框
@@ -57,7 +52,6 @@ public class ItemOpinionFrameBindRestController {
      * @param taskDefKey 任务key
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/bindOpinionFrame", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> bindOpinionFrame(@RequestParam(required = true) String opinionFrameNameAndMarks,
         @RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId,
@@ -74,7 +68,6 @@ public class ItemOpinionFrameBindRestController {
      * @return
      */
     @RequestMapping("/changeSignOpinion")
-    @ResponseBody
     public Y9Result<String> changeSignOpinion(String id, boolean signOpinion) {
         itemOpinionFrameBindService.changeSignOpinion(id, signOpinion);
         return Y9Result.successMsg("操作成功");
@@ -86,7 +79,6 @@ public class ItemOpinionFrameBindRestController {
      * @param itemId 事项id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> copyBind(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String processDefinitionId) {
@@ -103,7 +95,6 @@ public class ItemOpinionFrameBindRestController {
      * @return
      */
     @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<ItemOpinionFrameBind>> getBindList(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         List<ItemOpinionFrameBind> oftrbList = itemOpinionFrameBindService
@@ -112,7 +103,6 @@ public class ItemOpinionFrameBindRestController {
     }
 
     @RequestMapping(value = "/getBindListByMark", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<Map<String, Object>>> getBindListByMark(@RequestParam(required = true) String mark) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemOpinionFrameBind> oftrbList = itemOpinionFrameBindService.findByMark(mark);
@@ -157,13 +147,12 @@ public class ItemOpinionFrameBindRestController {
     /**
      * 获取任务节点信息和流程定义信息
      *
-     * @param processDefinitionKey 流程定义key
+     * @param processDefinitionId 流程定义ID
      * @param itemId 事项id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String processDefinitionId,
+    public Y9Result<Map<String, Object>> getBpmList(@RequestParam String processDefinitionId,
         @RequestParam(required = true) String itemId) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Map<String, Object> resMap = new HashMap<String, Object>(16);
@@ -194,7 +183,6 @@ public class ItemOpinionFrameBindRestController {
      * @return
      */
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> remove(@RequestParam(required = true) String[] ids) {
         itemOpinionFrameBindService.delete(ids);
         return Y9Result.successMsg("删除成功");
@@ -208,7 +196,6 @@ public class ItemOpinionFrameBindRestController {
      * @return
      */
     @RequestMapping(value = "/saveModify", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> saveModify(@RequestParam(required = true) String id,
         @RequestParam(required = true) String opinionFrameNameAndMarks) {
         ItemOpinionFrameBind opinionBind = itemOpinionFrameBindService.findOne(id);

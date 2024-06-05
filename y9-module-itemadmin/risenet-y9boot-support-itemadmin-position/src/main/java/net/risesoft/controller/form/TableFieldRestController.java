@@ -1,11 +1,11 @@
 package net.risesoft.controller.form;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.form.Y9TableField;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.form.Y9TableFieldService;
+import net.risesoft.util.form.DbMetaDataUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.form.Y9TableField;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.form.Y9TableFieldService;
-import net.risesoft.util.form.DbMetaDataUtil;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -28,14 +28,15 @@ import net.risesoft.util.form.DbMetaDataUtil;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/y9form/tableField")
 public class TableFieldRestController {
 
-    @Autowired
-    private Y9TableFieldService y9TableFieldService;
+    
+    private final Y9TableFieldService y9TableFieldService;
 
-    @Autowired
-    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
+    
+    @Qualifier("jdbcTemplate4Tenant") private final JdbcTemplate jdbcTemplate4Tenant;
 
     /**
      * 删除表字段定义
@@ -44,7 +45,6 @@ public class TableFieldRestController {
      * @return
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> delete(@RequestParam(required = true) String id) {
         Map<String, Object> map = y9TableFieldService.delete(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -60,7 +60,6 @@ public class TableFieldRestController {
      * @return
      */
     @RequestMapping(value = "/getTableFieldList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<Map<String, Object>> getTableFieldList(@RequestParam(required = true) String tableId) {
         Map<String, Object> map = y9TableFieldService.getFieldList(tableId);
         return Y9Result.success(map, "获取成功");
@@ -118,7 +117,6 @@ public class TableFieldRestController {
      * @return
      */
     @RequestMapping(value = "/saveField", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> saveField(Y9TableField field) {
         Map<String, Object> map = y9TableFieldService.saveOrUpdate(field);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {

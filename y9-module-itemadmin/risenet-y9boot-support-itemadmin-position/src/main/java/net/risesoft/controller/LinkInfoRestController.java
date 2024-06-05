@@ -1,19 +1,17 @@
 package net.risesoft.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.ItemLinkBind;
 import net.risesoft.entity.LinkInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemLinkBindService;
 import net.risesoft.service.LinkInfoService;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author qinman
@@ -21,14 +19,13 @@ import net.risesoft.service.LinkInfoService;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/linkInfo")
 public class LinkInfoRestController {
 
-    @Autowired
-    private LinkInfoService linkInfoService;
+    private final LinkInfoService linkInfoService;
 
-    @Autowired
-    private ItemLinkBindService itemLinkBindService;
+    private final ItemLinkBindService itemLinkBindService;
 
     /**
      * 获取链接列表
@@ -38,7 +35,6 @@ public class LinkInfoRestController {
      * @return
      */
     @RequestMapping(value = "/findAll", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<LinkInfo>> findAll(@RequestParam(required = false) String linkName, @RequestParam(required = false) String linkUrl) {
         List<LinkInfo> list = linkInfoService.findAll(linkName, linkUrl);
         return Y9Result.success(list, "获取列表成功");
@@ -50,7 +46,6 @@ public class LinkInfoRestController {
      * @param id 链接id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/findById", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<LinkInfo> findById(@RequestParam(required = true) String id) {
         LinkInfo info = linkInfoService.findById(id);
@@ -63,7 +58,6 @@ public class LinkInfoRestController {
      * @param id 链接id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/findByLinkId", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemLinkBind>> findByLinkId(@RequestParam(required = true) String id) {
         List<ItemLinkBind> list = itemLinkBindService.findByLinkId(id);
@@ -77,7 +71,6 @@ public class LinkInfoRestController {
      * @return
      */
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> remove(@RequestParam(required = true) String id) {
         linkInfoService.remove(id);
         return Y9Result.successMsg("删除成功");
@@ -89,7 +82,6 @@ public class LinkInfoRestController {
      * @param info 链接信息
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(LinkInfo info) {
         linkInfoService.saveOrUpdate(info);

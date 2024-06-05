@@ -1,19 +1,18 @@
 package net.risesoft.api;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.EntrustHistoryApi;
 import net.risesoft.entity.EntrustHistory;
 import net.risesoft.model.itemadmin.EntrustHistoryModel;
 import net.risesoft.service.EntrustHistoryService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 出差委托历史接口
@@ -23,11 +22,11 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/entrustHistory")
 public class EntrustHistoryApiImpl implements EntrustHistoryApi {
 
-    @Autowired
-    private EntrustHistoryService entrustHistoryService;
+    private final EntrustHistoryService entrustHistoryService;
 
     /**
      * 获取某个用户的某个事项委托历史对象集合

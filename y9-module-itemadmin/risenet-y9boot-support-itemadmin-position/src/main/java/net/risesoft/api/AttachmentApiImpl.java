@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -15,7 +16,6 @@ import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,22 +38,17 @@ import java.util.Map;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/attachment4Position")
 public class AttachmentApiImpl implements Attachment4PositionApi {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final TransactionFileService transactionFileService;
 
-    @Autowired
-    private TransactionFileService transactionFileService;
+    private final TransactionFileRepository transactionFileRepository;
 
-    @Autowired
-    private TransactionFileRepository transactionFileRepository;
+    private final PositionApi positionManager;
 
-    @Autowired
-    private PositionApi positionManager;
-
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
     /**
      * 附件下载
@@ -209,6 +204,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
         Y9LoginUserHolder.setPosition(position);
         Boolean checkSave = false;
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Map<String, Object> attachmentjson = Y9JsonUtil.readValue(attachjson, Map.class);
             List<Map<String, Object>> attachmentList = (List<Map<String, Object>>)attachmentjson.get("attachment");
             for (Map<String, Object> map : attachmentList) {

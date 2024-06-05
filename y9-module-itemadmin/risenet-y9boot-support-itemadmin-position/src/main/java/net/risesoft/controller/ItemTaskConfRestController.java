@@ -1,22 +1,21 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemTaskConfService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -24,14 +23,13 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/itemTaskConfig")
 public class ItemTaskConfRestController {
 
-    @Autowired
-    private ItemTaskConfService taskConfService;
+    private final ItemTaskConfService taskConfService;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionManager;
 
     /**
      * 复制签收配置
@@ -87,7 +85,7 @@ public class ItemTaskConfRestController {
     /**
      * 保存任务基本配置
      *
-     * @param entity
+     * @param itemTaskConf 任务基本配置
      * @return
      */
     @RequestMapping(value = "/saveBind", method = RequestMethod.POST, produces = "application/json")

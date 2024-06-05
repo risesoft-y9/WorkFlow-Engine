@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.ChaoSong;
@@ -7,7 +8,6 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.service.ChaoSongService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,14 +25,13 @@ import java.util.Map;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/chaoSong")
 public class ChaoSongApiImpl implements ChaoSongApi {
 
-    @Autowired
-    private ChaoSongService chaoSongService;
+    private final ChaoSongService chaoSongService;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
     /**
      * 改变抄送状态

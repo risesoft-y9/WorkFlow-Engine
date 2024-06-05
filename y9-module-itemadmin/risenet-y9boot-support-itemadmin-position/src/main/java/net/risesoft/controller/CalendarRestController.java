@@ -1,18 +1,16 @@
 package net.risesoft.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CalendarConfigService;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -20,11 +18,12 @@ import net.risesoft.service.CalendarConfigService;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/calendar")
 public class CalendarRestController {
 
-    @Autowired
-    private CalendarConfigService calendarConfigService;
+    
+    private final CalendarConfigService calendarConfigService;
 
     /**
      * 删除日历配置
@@ -32,7 +31,6 @@ public class CalendarRestController {
      * @param startDate 日期
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/delCalendar", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> delCalendar(@RequestParam(required = true) String startDate) {
         Map<String, Object> map = calendarConfigService.delCalendar(startDate);
@@ -48,7 +46,6 @@ public class CalendarRestController {
      * @param month 月份
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getCalendar", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getCalendar(@RequestParam(required = true) String month) {
         List<Map<String, Object>> list = calendarConfigService.getCalendar(month);
@@ -62,7 +59,6 @@ public class CalendarRestController {
      * @param type 类型
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveCalendar", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveCalendar(@RequestParam(required = true) String startDate,
         @RequestParam(required = true) Integer type) {

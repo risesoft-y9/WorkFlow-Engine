@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
 import net.risesoft.entity.ItemOpinionFrameBind;
 import net.risesoft.entity.OpinionFrame;
@@ -8,7 +9,6 @@ import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.OpinionFrameService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,14 +25,13 @@ import java.util.List;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/itemOpinionFrameBind")
 public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
 
-    @Autowired
-    private ItemOpinionFrameBindService itemOpinionFrameBindService;
+    private final ItemOpinionFrameBindService itemOpinionFrameBindService;
 
-    @Autowired
-    private OpinionFrameService opinionFrameService;
+    private final OpinionFrameService opinionFrameService;
 
     /**
      * 根据事项id获取所有绑定意见框

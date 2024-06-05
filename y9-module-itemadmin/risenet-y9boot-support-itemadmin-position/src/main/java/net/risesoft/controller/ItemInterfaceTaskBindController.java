@@ -1,22 +1,20 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemInterfaceTaskBind;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
 import net.risesoft.service.ItemInterfaceTaskBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -24,17 +22,15 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2024/05/24
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/interfaceTaskBind")
 public class ItemInterfaceTaskBindController {
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionApi;
+    private final ProcessDefinitionApi processDefinitionApi;
 
-    @Autowired
-    private ItemInterfaceTaskBindService itemInterfaceTaskBindService;
+    private final ItemInterfaceTaskBindService itemInterfaceTaskBindService;
 
-    @Autowired
-    private ItemInterfaceTaskBindRepository itemInterfaceTaskBindRepository;
+    private final ItemInterfaceTaskBindRepository itemInterfaceTaskBindRepository;
 
     /**
      * 复制绑定
@@ -44,7 +40,6 @@ public class ItemInterfaceTaskBindController {
      * @param processDefinitionId 流程定义id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> copyBind(@RequestParam(required = true) String interfaceId, @RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId) {
         itemInterfaceTaskBindService.copyBind(itemId, interfaceId, processDefinitionId);
@@ -59,7 +54,6 @@ public class ItemInterfaceTaskBindController {
      * @param processDefinitionId 流程定义id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam(required = true) String itemId, @RequestParam(required = true) String interfaceId, @RequestParam(required = true) String processDefinitionId) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
@@ -87,11 +81,9 @@ public class ItemInterfaceTaskBindController {
      * @param condition 执行条件
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveBind", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveBind(@RequestParam(required = true) String interfaceId, @RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId, String elementKey, @RequestParam String condition) {
         itemInterfaceTaskBindService.saveBind(itemId, interfaceId, processDefinitionId, elementKey, condition);
         return Y9Result.successMsg("保存成功");
     }
-
 }

@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.Entrust;
@@ -8,7 +9,6 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.service.EntrustService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,14 +25,13 @@ import java.util.List;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/entrust4Position", produces = MediaType.APPLICATION_JSON_VALUE)
 public class EntrustApiImpl implements Entrust4PositionApi {
 
-    @Autowired
-    private EntrustService entrustService;
+    private final EntrustService entrustService;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
     /**
      * 删除委托

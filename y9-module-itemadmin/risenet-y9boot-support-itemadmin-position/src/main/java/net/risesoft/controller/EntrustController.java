@@ -1,18 +1,6 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
@@ -29,6 +17,16 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.EntrustService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -36,26 +34,21 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/entrust")
 public class EntrustController {
 
-    @Autowired
-    private EntrustService entrustService;
+    private final EntrustService entrustService;
 
-    @Autowired
-    private SpmApproveItemRepository spmApproveItemRepository;
+    private final SpmApproveItemRepository spmApproveItemRepository;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
-    @Autowired
-    private DepartmentApi departmentManager;
+    private final DepartmentApi departmentManager;
 
-    @Autowired
-    private OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitManager;
 
-    @Autowired
-    private OrganizationApi organizationManager;
+    private final OrganizationApi organizationManager;
 
     /**
      * 委办局树搜索
@@ -64,7 +57,6 @@ public class EntrustController {
      * @return
      */
     @RequestMapping(value = "/deptTreeSearch", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = true) String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();

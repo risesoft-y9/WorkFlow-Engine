@@ -1,19 +1,6 @@
 package net.risesoft.controller;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -32,6 +19,17 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -39,26 +37,21 @@ import net.risesoft.y9.json.Y9JsonUtil;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/item")
 public class ItemRestController {
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryManager;
 
-    @Autowired
-    private OrganizationApi organizationManager;
+    private final OrganizationApi organizationManager;
 
-    @Autowired
-    private DepartmentApi departmentManager;
+    private final DepartmentApi departmentManager;
 
-    @Autowired
-    private AppIconApi appIconManager;
+    private final AppIconApi appIconManager;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
     /**
      * 删除事项
@@ -67,7 +60,6 @@ public class ItemRestController {
      * @return
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> delete(@RequestParam(required = true) String id) {
         Map<String, Object> map = spmApproveItemService.delete(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
@@ -77,7 +69,7 @@ public class ItemRestController {
     }
 
     @SuppressWarnings("unused")
-    private boolean deleteDirectory(String sPath) {
+    private final boolean deleteDirectory(String sPath) {
         if (!sPath.endsWith(File.separator)) {
             sPath = sPath + File.separator;
         }
@@ -110,7 +102,7 @@ public class ItemRestController {
         }
     }
 
-    private boolean deleteFile(String sPath) {
+    private final boolean deleteFile(String sPath) {
         boolean flag = false;
         File file = new File(sPath);
         if (file.isFile() && file.exists()) {
@@ -128,7 +120,6 @@ public class ItemRestController {
      * @return
      */
     @RequestMapping(value = "/getDept")
-    @ResponseBody
     public String getDept(@RequestParam(required = true) String id, @RequestParam(required = false) String name) {
         StringBuffer sb = new StringBuffer();
         getJson(sb, id);
@@ -174,7 +165,6 @@ public class ItemRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<SpmApproveItem>> list() {
         Map<String, Object> map = spmApproveItemService.list();
         List<SpmApproveItem> list = (List<SpmApproveItem>)map.get("rows");
@@ -187,7 +177,6 @@ public class ItemRestController {
      * @param id 事项id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/newOrModify", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id) {
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -227,7 +216,6 @@ public class ItemRestController {
      * @param itemId 事项id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/publishToSystemApp", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> publishToSystemApp(@RequestParam(required = true) String itemId) {
         Map<String, Object> map = spmApproveItemService.publishToSystemApp(itemId);
@@ -242,7 +230,6 @@ public class ItemRestController {
      *
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/readAppIconFile", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> readAppIconFile() {
         List<Map<String, String>> iconList = null;
@@ -269,7 +256,6 @@ public class ItemRestController {
      * @return
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> save(String itemJson) {
         SpmApproveItem item = Y9JsonUtil.readValue(itemJson, SpmApproveItem.class);
         Map<String, Object> map = spmApproveItemService.save(item);
@@ -286,7 +272,6 @@ public class ItemRestController {
      * @return
      */
     @RequestMapping(value = "/searchAppIcon", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<Map<String, Object>> searchAppIcon(@RequestParam(required = false) String name) {
         List<AppIcon> list = appIconManager.searchAppIcon("%" + name + "%").getData();
         List<Map<String, String>> iconList = new ArrayList<Map<String, String>>();
@@ -303,5 +288,4 @@ public class ItemRestController {
         map.put("iconList", iconList);
         return Y9Result.success(map, "获取成功");
     }
-
 }

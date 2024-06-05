@@ -1,18 +1,6 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
@@ -22,6 +10,16 @@ import net.risesoft.model.platform.Role;
 import net.risesoft.model.platform.System;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -29,17 +27,15 @@ import net.risesoft.y9.Y9Context;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/role")
 public class RoleRestController {
 
-    @Autowired
-    private RoleApi roleManager;
+    private final RoleApi roleManager;
 
-    @Autowired
-    private SystemApi systemEntityManager;
+    private final SystemApi systemEntityManager;
 
-    @Autowired
-    private AppApi appApi;
+    private final AppApi appApi;
 
     /**
      * 获取系统角色
@@ -47,7 +43,6 @@ public class RoleRestController {
      * @param id 节点id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/findRole", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> findAll(@RequestParam(required = false) String id) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();

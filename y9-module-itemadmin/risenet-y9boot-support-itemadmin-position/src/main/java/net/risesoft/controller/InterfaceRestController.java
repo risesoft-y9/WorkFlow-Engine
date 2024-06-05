@@ -1,20 +1,18 @@
 package net.risesoft.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.InterfaceRequestParams;
 import net.risesoft.entity.InterfaceResponseParams;
 import net.risesoft.entity.ItemInterfaceBind;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.InterfaceService;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 接口信息
@@ -23,11 +21,11 @@ import net.risesoft.service.InterfaceService;
  * @date 2024/05/23
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/interface")
 public class InterfaceRestController {
 
-    @Autowired
-    private InterfaceService interfaceService;
+    private final InterfaceService interfaceService;
 
     /**
      * 获取接口绑定事项列表
@@ -35,7 +33,6 @@ public class InterfaceRestController {
      * @param id 接口id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/findByInterfaceId", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemInterfaceBind>> findByInterfaceId(@RequestParam(required = true) String id) {
         List<ItemInterfaceBind> list = interfaceService.findByInterfaceId(id);
@@ -51,7 +48,6 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/findInterfaceList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<InterfaceInfo>> findInterfaceList(@RequestParam(required = false) String name, @RequestParam(required = false) String type, @RequestParam(required = false) String address) {
         List<InterfaceInfo> list = interfaceService.findInterfaceList(name, type, address);
         return Y9Result.success(list, "获取列表成功");
@@ -66,7 +62,6 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/findRequestParamsList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<InterfaceRequestParams>> findRequestParamsList(@RequestParam(required = false) String name, @RequestParam(required = false) String type, @RequestParam(required = true) String id) {
         List<InterfaceRequestParams> list = interfaceService.findRequestParamsList(name, type, id);
         return Y9Result.success(list, "获取列表成功");
@@ -80,7 +75,6 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/findResponseParamsList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<InterfaceResponseParams>> findResponseParamsList(@RequestParam(required = false) String name, @RequestParam(required = true) String id) {
         List<InterfaceResponseParams> list = interfaceService.findResponseParamsList(name, id);
         return Y9Result.success(list, "获取列表成功");
@@ -93,7 +87,6 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/removeInterface", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> removeInterface(@RequestParam(required = true) String id) {
         interfaceService.removeInterface(id);
         return Y9Result.successMsg("删除成功");
@@ -106,7 +99,6 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/removeRequestParams", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> removeRequestParams(@RequestParam(required = true) String[] ids) {
         interfaceService.removeReqParams(ids);
         return Y9Result.successMsg("删除成功");
@@ -119,7 +111,6 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/removeResponseParams", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> removeResponseParams(@RequestParam(required = true) String[] ids) {
         interfaceService.removeResParams(ids);
         return Y9Result.successMsg("删除成功");
@@ -131,7 +122,6 @@ public class InterfaceRestController {
      * @param jsonData 参数json
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveAllResponseParams", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveAllResponseParams(String interfaceId, String jsonData) {
         interfaceService.saveAllResponseParams(interfaceId, jsonData);
@@ -144,7 +134,6 @@ public class InterfaceRestController {
      * @param info 接口信息
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveInterface", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveInterface(InterfaceInfo info) {
         interfaceService.saveInterfaceInfo(info);
@@ -157,7 +146,6 @@ public class InterfaceRestController {
      * @param info 参数信息
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveRequestParams", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveRequestParams(InterfaceRequestParams info) {
         interfaceService.saveRequestParams(info);
@@ -170,7 +158,6 @@ public class InterfaceRestController {
      * @param info 参数信息
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveResponseParams", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveResponseParams(InterfaceResponseParams info) {
         interfaceService.saveResponseParams(info);

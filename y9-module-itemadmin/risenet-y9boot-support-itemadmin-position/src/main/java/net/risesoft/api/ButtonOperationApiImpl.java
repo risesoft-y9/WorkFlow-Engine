@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
@@ -18,14 +19,12 @@ import net.risesoft.service.MultiInstanceService;
 import net.risesoft.util.CommonOpt;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,35 +38,27 @@ import java.util.Map;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/buttonOperation4Position")
 public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
 
-    @Resource(name = "documentService")
-    private DocumentService documentService;
+    private final DocumentService documentService;
 
-    @Autowired
-    private MultiInstanceService multiInstanceService;
+    private final MultiInstanceService multiInstanceService;
 
-    @Autowired
-    private PositionApi positionManager;
+    private final PositionApi positionManager;
 
-    @Autowired
-    private TaskApi taskManager;
+    private final TaskApi taskManager;
 
-    @Autowired
-    private VariableApi variableManager;
+    private final VariableApi variableManager;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionManager;
+    private final ProcessDefinitionApi processDefinitionManager;
 
-    @Autowired
-    private HistoricTaskApi historicTaskManager;
+    private final HistoricTaskApi historicTaskManager;
 
-    @Autowired
-    private RuntimeApi runtimeManager;
+    private final RuntimeApi runtimeManager;
 
-    @Autowired
-    private SpecialOperationApi specialOperationManager;
+    private final SpecialOperationApi specialOperationManager;
 
     /**
      * 加签

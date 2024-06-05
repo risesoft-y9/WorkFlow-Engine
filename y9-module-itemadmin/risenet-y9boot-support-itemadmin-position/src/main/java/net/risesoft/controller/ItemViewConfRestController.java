@@ -1,18 +1,6 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.ItemViewConf;
 import net.risesoft.entity.SpmApproveItem;
@@ -27,6 +15,17 @@ import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.service.form.Y9FormFieldService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -34,34 +33,28 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/vue/itemViewConf")
 public class ItemViewConfRestController {
 
-    @Autowired
-    private Y9FormItemBindService y9FormItemBindService;
+    private final Y9FormItemBindService y9FormItemBindService;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private ItemViewConfService itemViewConfService;
+    private final ItemViewConfService itemViewConfService;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryManager;
 
-    @Autowired
-    private Y9FormFieldService y9FormFieldService;
+    private final Y9FormFieldService y9FormFieldService;
 
-    @Autowired
-    private Y9TableService y9TableService;
+    private final Y9TableService y9TableService;
 
     /**
      * 保存或者修改
-     *
-     * @param itemViewConf 视图信息
+     * @param ids
+     * @param viewType
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/copyView", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> copyView(String[] ids, String viewType) {
         itemViewConfService.copyView(ids, viewType);
@@ -75,7 +68,6 @@ public class ItemViewConfRestController {
      * @param viewType 视图类型
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/findByItemId", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam(required = true) String itemId,
         @RequestParam(required = true) String viewType) {
@@ -89,7 +81,6 @@ public class ItemViewConfRestController {
      * @param tableName 表名
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Y9FormField>> getColumns(@RequestParam(required = true) String tableName,
         @RequestParam(required = true) String itemId) {
@@ -124,7 +115,6 @@ public class ItemViewConfRestController {
      * @param viewType 视图类型
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/newOrModify", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id,
         @RequestParam(required = true) String itemId) {
@@ -175,7 +165,6 @@ public class ItemViewConfRestController {
      * @param id 主键id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/newOrModify4Custom", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<ItemViewConf> newOrModify4Custom(@RequestParam(required = false) String id) {
         if (StringUtils.isNotBlank(id)) {
@@ -190,7 +179,6 @@ public class ItemViewConfRestController {
      *
      * @param ids
      */
-    @ResponseBody
     @RequestMapping(value = "/removeView", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> removeView(@RequestParam(required = true) String[] ids) {
         itemViewConfService.removeItemViewConfs(ids);
@@ -202,7 +190,6 @@ public class ItemViewConfRestController {
      *
      * @param idAndTabIndexs
      */
-    @ResponseBody
     @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrder(@RequestParam(required = true) String[] idAndTabIndexs) {
         itemViewConfService.update4Order(idAndTabIndexs);
@@ -215,7 +202,6 @@ public class ItemViewConfRestController {
      * @param itemViewConf 视图信息
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(ItemViewConf itemViewConf) {
         itemViewConfService.saveOrUpdate(itemViewConf);

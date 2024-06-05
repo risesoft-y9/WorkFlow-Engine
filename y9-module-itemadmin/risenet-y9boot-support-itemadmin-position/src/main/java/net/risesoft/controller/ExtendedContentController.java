@@ -1,31 +1,30 @@
 package net.risesoft.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import lombok.RequiredArgsConstructor;
+import net.risesoft.entity.ExtendedContent;
+import net.risesoft.service.ExtendedContentService;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import net.risesoft.entity.ExtendedContent;
-import net.risesoft.service.ExtendedContentService;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Controller
+@RestController
+@RequiredArgsConstructor
 @RequestMapping("/extendedContent")
 public class ExtendedContentController {
 
-    @Autowired
-    private ExtendedContentService extendedContentService;
+    private final ExtendedContentService extendedContentService;
 
     /**
      * 是否填写内容
@@ -34,7 +33,6 @@ public class ExtendedContentController {
      * @param processSerialNumber
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/checkSignContent")
     public Map<String, Object> checkSignContent(@RequestParam(required = false) String taskId,
         @RequestParam(required = false) String category, @RequestParam(required = false) String processSerialNumber) {
@@ -62,7 +60,6 @@ public class ExtendedContentController {
      * @param category
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/contentList")
     public List<Map<String, Object>> contentList(@RequestParam String processSerialNumber, @RequestParam String itembox,
         @RequestParam String taskId, @RequestParam String category) {
@@ -78,7 +75,6 @@ public class ExtendedContentController {
      * @return
      */
     @RequestMapping(value = "/delete")
-    @ResponseBody
     public Map<String, Object> delete(@RequestParam String id) {
         Map<String, Object> map = extendedContentService.delete(id);
         return map;
@@ -108,7 +104,6 @@ public class ExtendedContentController {
      * @param content
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST)
     public Map<String, Object> saveOrUpdate(ExtendedContent content) {
         Map<String, Object> map = extendedContentService.saveOrUpdate(content);

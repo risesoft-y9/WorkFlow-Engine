@@ -1,19 +1,17 @@
 package net.risesoft.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.OrganWord;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OrganWordService;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -21,11 +19,11 @@ import net.risesoft.service.OrganWordService;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/organWord")
 public class OrganWordController {
 
-    @Autowired
-    private OrganWordService organWordService;
+    private final OrganWordService organWordService;
 
     /**
      * 判断标识是否可用，true为可用

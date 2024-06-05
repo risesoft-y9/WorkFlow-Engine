@@ -1,15 +1,6 @@
 package net.risesoft.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemWordTemplateBind;
@@ -21,6 +12,14 @@ import net.risesoft.service.ItemWordTemplateBindService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.WordTemplateService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -28,20 +27,17 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/itemWordBind")
 public class ItemWordTemplateBindController {
 
-    @Autowired
-    private WordTemplateService wordTemplateService;
+    private final WordTemplateService wordTemplateService;
 
-    @Autowired
-    private ItemWordTemplateBindService itemWordTemplateBindService;
+    private final ItemWordTemplateBindService itemWordTemplateBindService;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryManager;
 
     /**
      * 删除正文模板绑定

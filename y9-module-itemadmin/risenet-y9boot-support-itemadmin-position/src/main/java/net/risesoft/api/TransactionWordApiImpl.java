@@ -1,5 +1,7 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -29,9 +31,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9public.service.Y9FileStoreService;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,52 +53,37 @@ import java.util.Optional;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/transactionWord")
 public class TransactionWordApiImpl implements TransactionWordApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(TransactionWordApiImpl.class);
+    private final TransactionWordRepository transactionWordRepository;
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final TransactionWordService transactionWordService;
 
-    @Autowired
-    private TransactionWordRepository transactionWordRepository;
+    private final TransactionHistoryWordService transactionHistoryWordService;
 
-    @Autowired
-    private TransactionWordService transactionWordService;
+    private final TransactionHistoryWordRepository transactionHistoryWordRepository;
 
-    @Autowired
-    private TransactionHistoryWordService transactionHistoryWordService;
+    private final TaoHongTemplateService taoHongTemplateService;
 
-    @Autowired
-    private TransactionHistoryWordRepository transactionHistoryWordRepository;
+    private final WordTemplateRepository wordTemplateRepository;
 
-    @Autowired
-    private TaoHongTemplateService taoHongTemplateService;
+    private final ItemWordTemplateBindRepository wordTemplateBindRepository;
 
-    @Autowired
-    private WordTemplateRepository wordTemplateRepository;
+    private final PersonApi personManager;
 
-    @Autowired
-    private ItemWordTemplateBindRepository wordTemplateBindRepository;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private PersonApi personManager;
+    private final Y9FileStoreService y9FileStoreService;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final TaskApi taskManager;
 
-    @Autowired
-    private Y9FileStoreService y9FileStoreService;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private TaskApi taskManager;
-
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
-
-    @Autowired
-    private RepositoryApi repositoryManager;
+    private final RepositoryApi repositoryManager;
 
     /**
      * 根据流程编号删除正文，同时删除文件系统的文件
@@ -319,7 +303,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 String docBase = transactionWord.getFileStoreId();
                 return docBase;
             } else {
-                logger.error("fileStoreId为空，保存正文的时候出错");
+                LOGGER.error("fileStoreId为空，保存正文的时候出错");
             }
         } else {// 打开事项配置的正文模板
             SpmApproveItem item = spmApproveItemService.findById(itemId);
@@ -335,7 +319,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 String docBase = wordTemplate.getFilePath();
                 return docBase;
             } else {
-                logger.error("数据库没有processSerialNumber=" + processSerialNumber + "的正文，请联系管理员");
+                LOGGER.error("数据库没有processSerialNumber=" + processSerialNumber + "的正文，请联系管理员");
             }
         }
         return null;
@@ -370,7 +354,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 String docBase = transactionWord.getFileStoreId();
                 return docBase;
             } else {
-                logger.error("fileStoreId为空，保存正文的时候出错");
+                LOGGER.error("fileStoreId为空，保存正文的时候出错");
             }
         }
         return null;
@@ -390,7 +374,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        logger.debug("call /ntko/openTaohongTemplate");
+        LOGGER.debug("call /ntko/openTaohongTemplate");
         byte[] buf = null;
         TaoHongTemplate taohongTemplate = taoHongTemplateService.findOne(templateGuid);
         if (null != taohongTemplate) {
@@ -400,13 +384,13 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                     String docBase = jodd.util.Base64.encodeToString(buf);
                     return docBase;
                 } catch (Exception e) {
-                    logger.error("向jsp页面输出word二进制流错误");
+                    LOGGER.error("向jsp页面输出word二进制流错误");
                     e.printStackTrace();
                 } finally {
                 }
             }
         } else {
-            logger.error("数据库没有templateGUID=" + templateGuid + "的模版，请联系管理员");
+            LOGGER.error("数据库没有templateGUID=" + templateGuid + "的模版，请联系管理员");
         }
         return null;
     }
@@ -464,7 +448,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 String docBase = transactionWord.getFileStoreId();
                 return docBase;
             } else {// 从数据库读取正文
-                logger.error("fileStoreId为空，保存正文的时候出错");
+                LOGGER.error("fileStoreId为空，保存正文的时候出错");
             }
         }
         return null;
@@ -497,7 +481,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 String docBase = transactionWord.getFileStoreId();
                 return docBase;
             } else {// 从数据库读取正文
-                logger.error("fileStoreId为空，保存正文的时候出错");
+                LOGGER.error("fileStoreId为空，保存正文的时候出错");
             }
         }
         return null;
@@ -519,7 +503,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        logger.debug("call /ntko/openTaoHong");
+        LOGGER.debug("call /ntko/openTaoHong");
         // 当前人员的委办局GUID
         OrgUnit currentBureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), activitiUser).getData();
         model.put("currentBureauGuid", currentBureau.getId());
@@ -545,6 +529,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setPerson(person);
         Boolean checkSave = false;
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Map<String, Object> documentMap = Y9JsonUtil.readValue(docjson, Map.class);
             List<Map<String, Object>> documentList = (List<Map<String, Object>>)documentMap.get("document");
             for (Map<String, Object> dMap : documentList) {
@@ -676,7 +661,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        logger.debug("call /ntko/list");
+        LOGGER.debug("call /ntko/list");
         List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
 
         List<TaoHongTemplate> list = taoHongTemplateService.findByBureauGuid(currentBureauGuid);

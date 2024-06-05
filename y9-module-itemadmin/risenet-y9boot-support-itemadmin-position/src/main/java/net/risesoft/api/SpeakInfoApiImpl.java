@@ -1,16 +1,6 @@
 package net.risesoft.api;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.SpeakInfo;
@@ -19,6 +9,15 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.service.SpeakInfoService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 沟通交流接口
@@ -28,14 +27,13 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/speakInfo")
 public class SpeakInfoApiImpl implements SpeakInfoApi {
 
-    @Autowired
-    private SpeakInfoService speakInfoService;
+    private final SpeakInfoService speakInfoService;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
     /**
      * 逻辑删除发言信息

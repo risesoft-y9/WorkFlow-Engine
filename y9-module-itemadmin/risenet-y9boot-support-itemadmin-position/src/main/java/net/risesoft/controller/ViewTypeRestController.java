@@ -1,16 +1,6 @@
 package net.risesoft.controller;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.entity.ItemViewConf;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.ViewType;
@@ -19,6 +9,14 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemViewConfService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.ViewTypeService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author qinman
@@ -26,17 +24,15 @@ import net.risesoft.service.ViewTypeService;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/viewType")
 public class ViewTypeRestController {
 
-    @Autowired
-    private ViewTypeService viewTypeService;
+    private final ViewTypeService viewTypeService;
 
-    @Autowired
-    private ItemViewConfService itemViewConfService;
+    private final ItemViewConfService itemViewConfService;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
     /**
      * 获取意见框
@@ -44,7 +40,6 @@ public class ViewTypeRestController {
      * @param id 意见框id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/findById", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<ViewType> getOpinionFrame(@RequestParam(required = true) String id) {
         ViewType viewType = viewTypeService.findById(id);
@@ -59,7 +54,6 @@ public class ViewTypeRestController {
      * @return
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Page<ViewType> list(@RequestParam(required = true) Integer page,
         @RequestParam(required = true) Integer rows) {
         Page<ViewType> pageList = viewTypeService.findAll(page, rows);
@@ -87,7 +81,6 @@ public class ViewTypeRestController {
     }
 
     @RequestMapping(value = "/listAll", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<List<ViewType>> listAll() {
         List<ViewType> list = viewTypeService.findAll();
         return Y9Result.success(list, "获取成功");
@@ -100,7 +93,6 @@ public class ViewTypeRestController {
      * @return
      */
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
     public Y9Result<String> remove(@RequestParam(required = true) String[] ids) {
         viewTypeService.remove(ids);
         return Y9Result.successMsg("删除成功");
@@ -112,7 +104,6 @@ public class ViewTypeRestController {
      * @param viewType
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(ViewType viewType) {
         String id = viewType.getId();
@@ -135,7 +126,6 @@ public class ViewTypeRestController {
      * @return
      */
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Page<ViewType> search(@RequestParam(required = true) Integer page,
         @RequestParam(required = true) Integer rows, @RequestParam(required = false) String keyword) {
         Page<ViewType> pageList = viewTypeService.search(page, rows, keyword);

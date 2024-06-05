@@ -1,17 +1,6 @@
 package net.risesoft.api;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ReceiveDeptAndPersonApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -24,6 +13,16 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.repository.jpa.ReceiveDepartmentRepository;
 import net.risesoft.repository.jpa.ReceivePersonRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 收发单位接口
@@ -33,23 +32,19 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/receiveDeptAndPerson")
 public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
-    @Autowired
-    private DepartmentApi departmentManager;
+    private final DepartmentApi departmentManager;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private ReceivePersonRepository receivePersonRepository;
+    private final ReceivePersonRepository receivePersonRepository;
 
-    @Autowired
-    private ReceiveDepartmentRepository receiveDepartmentRepository;
+    private final ReceiveDepartmentRepository receiveDepartmentRepository;
 
     /**
      * 根据name模糊搜索收发单位

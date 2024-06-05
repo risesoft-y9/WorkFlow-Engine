@@ -1,9 +1,9 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.QuickSendApi;
 import net.risesoft.service.QuickSendService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,11 +18,11 @@ import javax.validation.constraints.NotBlank;
  */
 @Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/quickSend", produces = MediaType.APPLICATION_JSON_VALUE)
 public class QuickSendApiImpl implements QuickSendApi {
 
-    @Autowired
-    private QuickSendService quickSendService;
+    private final QuickSendService quickSendService;
 
     /**
      *  获取快速发送设置

@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ItemInterfaceApi;
 import net.risesoft.entity.InterfaceInfo;
 import net.risesoft.entity.ItemInterfaceParamsBind;
@@ -11,7 +12,6 @@ import net.risesoft.repository.jpa.InterfaceInfoRepository;
 import net.risesoft.repository.jpa.ItemInterfaceParamsBindRepository;
 import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,17 +26,15 @@ import java.util.List;
  * @date 2024/05/27
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/itemInterface")
 public class ItemInterfaceApiImpl implements ItemInterfaceApi {
 
-    @Autowired
-    private ItemInterfaceTaskBindRepository itemInterfaceTaskBindRepository;
+    private final ItemInterfaceTaskBindRepository itemInterfaceTaskBindRepository;
 
-    @Autowired
-    private InterfaceInfoRepository interfaceInfoRepository;
+    private final InterfaceInfoRepository interfaceInfoRepository;
 
-    @Autowired
-    private ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
+    private final ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
 
     /**
      * 获取事项接口信息

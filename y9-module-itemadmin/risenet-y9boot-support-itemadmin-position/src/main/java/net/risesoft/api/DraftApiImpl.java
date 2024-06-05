@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.DraftEntity;
@@ -11,7 +12,6 @@ import net.risesoft.service.DraftEntityService;
 import net.risesoft.service.FormDataService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,20 +34,17 @@ import java.util.Optional;
  * @date 2022/12/20
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/draft4Position")
 public class DraftApiImpl implements Draft4PositionApi {
 
-    @Autowired
-    private DraftEntityService draftEntityService;
+    private final DraftEntityService draftEntityService;
 
-    @Autowired
-    private DraftEntityRepository draftEntityRepository;
+    private final DraftEntityRepository draftEntityRepository;
 
-    @Autowired
-    private SpmApproveItemRepository spmApproveitemRepository;
+    private final SpmApproveItemRepository spmApproveitemRepository;
 
-    @Autowired
-    private FormDataService formDataService;
+    private final FormDataService formDataService;
 
     /**
      * 根据系统名称计数

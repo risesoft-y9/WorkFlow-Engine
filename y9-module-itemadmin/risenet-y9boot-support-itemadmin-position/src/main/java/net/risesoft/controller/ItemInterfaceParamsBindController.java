@@ -1,18 +1,6 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.ItemInterfaceParamsBind;
 import net.risesoft.entity.SpmApproveItem;
@@ -28,48 +16,51 @@ import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.service.form.Y9FormFieldService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- *
  * @author zhangchongjie
  * @date 2024/05/24
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/interfaceParamsBind")
 public class ItemInterfaceParamsBindController {
 
-    @Autowired
-    private ItemInterfaceParamsBindService itemInterfaceParamsBindService;
+    private final ItemInterfaceParamsBindService itemInterfaceParamsBindService;
 
-    @Autowired
-    private SpmApproveItemService spmApproveItemService;
+    private final SpmApproveItemService spmApproveItemService;
 
-    @Autowired
-    private RepositoryApi repositoryApi;
+    private final RepositoryApi repositoryApi;
 
-    @Autowired
-    private Y9FormItemBindService y9FormItemBindService;
+    private final Y9FormItemBindService y9FormItemBindService;
 
-    @Autowired
-    private Y9FormFieldService y9FormFieldService;
+    private final Y9FormFieldService y9FormFieldService;
 
-    @Autowired
-    private Y9TableService y9TableService;
+    private final Y9TableService y9TableService;
 
-    @Autowired
-    private ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
+    private final ItemInterfaceParamsBindRepository itemInterfaceParamsBindRepository;
 
     /**
      * 获取绑定信息
      *
-     * @param id 绑定id
+     * @param id     绑定id
      * @param itemId 事项id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getBindInfo", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getBindInfo(@RequestParam(required = false) String id, @RequestParam(required = true) String itemId) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
@@ -111,12 +102,11 @@ public class ItemInterfaceParamsBindController {
     /**
      * 获取绑定列表
      *
-     * @param itemId 事项id
+     * @param itemId      事项id
      * @param interfaceId 接口id
-     * @param type 参数类型
+     * @param type        参数类型
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemInterfaceParamsBind>> getBindList(@RequestParam(required = true) String itemId, @RequestParam(required = true) String interfaceId, @RequestParam(required = true) String type) {
         List<ItemInterfaceParamsBind> list = itemInterfaceParamsBindService.getBindList(itemId, interfaceId, type);
@@ -126,11 +116,11 @@ public class ItemInterfaceParamsBindController {
     /**
      * 移除绑定
      *
-     * @param ids 绑定ids
+     * @param id 绑定id
      * @return
      */
     @RequestMapping(value = "/removeBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeBind(@RequestParam(required = true) String id) {
+    public Y9Result<String> removeBind(@RequestParam String id) {
         itemInterfaceParamsBindService.removeBind(id);
         return Y9Result.successMsg("删除成功");
     }
@@ -138,14 +128,9 @@ public class ItemInterfaceParamsBindController {
     /**
      * 保存绑定
      *
-     * @param interfaceId 接口id
-     * @param itemId 事项id
-     * @param parameterName 参数名称
-     * @param parameterType 参数类型
-     * @param bindType 绑定类型
+     * @param info 绑定信息
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveBind", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveBind(ItemInterfaceParamsBind info) {
         itemInterfaceParamsBindService.saveBind(info);
