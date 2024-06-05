@@ -1,9 +1,9 @@
 package net.risesoft.service;
 
-import java.util.Map;
-
 import org.flowable.common.engine.api.delegate.event.FlowableEvent;
 import org.flowable.task.service.delegate.DelegateTask;
+
+import java.util.Map;
 
 /**
  * @author qinman
@@ -14,26 +14,25 @@ public interface TodoTaskService {
 
     /**
      * Description:
-     * 
-     * @param taskEntityHti
-     * @param variables
+     *
+     * @param taskEntityHti 历史任务实体
+     * @param variables     变量
      */
-    public void deleteTodo(final DelegateTask taskEntityHti, final Map<String, Object> variables);
+    void deleteTodo(final DelegateTask taskEntityHti, final Map<String, Object> variables);
 
     /**
      * Description:
-     * 
-     * @param event
-     * @param variables
+     *
+     * @param event     事件
+     * @param variables 变量
      */
-    public void deleteTodoByProcessInstanceId(final FlowableEvent event, final Map<String, Object> variables);
+    void deleteTodoByProcessInstanceId(final FlowableEvent event, final Map<String, Object> variables);
 
     /**
      * Description:
-     * 
-     * @param task
-     * @param variables
+     *
+     * @param task      任务
+     * @param variables 变量
      */
-    public void saveTodoTask(final DelegateTask task, final Map<String, Object> variables);
-
+    void saveTodoTask(final DelegateTask task, final Map<String, Object> variables);
 }

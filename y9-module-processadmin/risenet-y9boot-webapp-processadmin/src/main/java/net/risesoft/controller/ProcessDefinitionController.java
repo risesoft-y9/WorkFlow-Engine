@@ -5,7 +5,6 @@ import net.risesoft.service.WorkflowProcessDefinitionService;
 import net.risesoft.util.SysVariables;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.FlowElement;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,36 +31,24 @@ public class ProcessDefinitionController {
     /**
      * 获取任务节点信息和流程定义信息
      *
-     * @param processDefinitionId
+     * @param processDefinitionId 流程定义ID
      * @param isFilter 是否过滤掉开始节点和结束节点
      * @return
      */
     @RequestMapping(value = "/getBpmList")
     public List<Map<String, Object>> getBpmList(String processDefinitionId, Boolean isFilter) {
-        List<Map<String, Object>> list = new ArrayList<>();
-        try {
-            list = workflowProcessDefinitionService.getBpmList(processDefinitionId, isFilter);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
+        return workflowProcessDefinitionService.getBpmList(processDefinitionId, isFilter);
     }
 
     /**
      * 获取任务节点信息和流程定义信息，包含流程启动节点start
      *
-     * @param processDefinitionId
+     * @param processDefinitionId 流程定义ID
      * @return
      */
     @RequestMapping(value = "/getBpmListContainStart")
     public List<Map<String, Object>> getBpmListContainStart(String processDefinitionId) {
-        List<Map<String, Object>> list = new ArrayList<>();
-        try {
-            list = workflowProcessDefinitionService.getBpmListContainStart(processDefinitionId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
+        return workflowProcessDefinitionService.getBpmListContainStart(processDefinitionId);
     }
 
     /**
@@ -89,15 +76,13 @@ public class ProcessDefinitionController {
     /**
      * 获取任务节点信息
      *
-     * @param processDefinitionId
+     * @param processDefinitionId 流程定义ID
      * @return
      */
     @RequestMapping(value = "/getTaskList")
     public Map<String, Object> getTaskByProcDef(@RequestParam String processDefinitionId) {
         Map<String, Object> taskMap = new HashMap<>(16);
         List<Map<String, Object>> list = new ArrayList<>();
-        List<String> filterList = new ArrayList<>();
-        filterList.add(SysVariables.STARTEVENT);
         List<FlowElement> activitieList =
             workflowProcessDefinitionService.getFilteredActivityImpls(processDefinitionId);
         for (FlowElement activity : activitieList) {
@@ -114,7 +99,7 @@ public class ProcessDefinitionController {
     /**
      * 获取
      *
-     * @param processDefinitionId
+     * @param processDefinitionId 流程定义ID
      * @return
      */
     @RequestMapping(value = "/getTaskMap", method = RequestMethod.GET)
@@ -135,12 +120,10 @@ public class ProcessDefinitionController {
 
     /**
      * 查询流程定义，获取map，其key为流程定义对象ID，其value为流程定义对象名称
-     *
-     * @param model
      * @return
      */
     @RequestMapping(value = "/map", method = RequestMethod.GET)
-    public Map<String, String> runningShow(Model model) {
+    public Map<String, String> runningShow() {
         // 获取流程定义对象ID和流程定义对象名称
         return workflowProcessDefinitionService.procDefIdMap();
     }

@@ -75,12 +75,12 @@ public class SmsRemindServiceImpl implements SmsRemindService {
             if (local.get(SysVariables.TAKEBACK) != null) {
                 return;
             }
-            String sended = processParamModel.getSended();
+            String send = processParamModel.getSended();
             // 第一步新建产生的任务，不发送提醒
-            if (StringUtils.isBlank(sended) || UtilConsts.FALSE.equals(sended)) {
+            if (StringUtils.isBlank(send) || UtilConsts.FALSE.equals(send)) {
                 return;
             }
-            List<String> list = new ArrayList<String>();
+            List<String> list = new ArrayList<>();
             String userId = map.get(SysVariables.TASKSENDERID).toString();
             Person user = personManager.get(tenantId, userId).getData();
             if (UtilConsts.TRUE.equals(isShuMing)) {

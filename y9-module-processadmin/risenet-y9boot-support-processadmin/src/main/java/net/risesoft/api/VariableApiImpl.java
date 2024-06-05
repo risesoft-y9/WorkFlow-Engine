@@ -124,8 +124,7 @@ public class VariableApiImpl implements VariableApi {
     @GetMapping(value = "/getVariables", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getVariables(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Map<String, Object> map = customVariableService.getVariables(taskId);
-        return map;
+        return customVariableService.getVariables(taskId);
     }
 
     /**
@@ -155,8 +154,7 @@ public class VariableApiImpl implements VariableApi {
     @GetMapping(value = "/getVariablesLocal", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getVariablesLocal(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Map<String, Object> map = customVariableService.getVariables(taskId);
-        return map;
+        return customVariableService.getVariables(taskId);
     }
 
     /**
@@ -165,7 +163,7 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
-     * @param val 变量值
+     * @param map 变量值
      */
     @Override
     @PostMapping(value = "/setVariable", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -180,7 +178,7 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param key 变量key
-     * @param val 变量值
+     * @param map 变量值
      */
     @Override
     @PostMapping(value = "/setVariableByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -195,7 +193,7 @@ public class VariableApiImpl implements VariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param key 变量key
-     * @param val 变量值
+     * @param map 变量值
      */
     @Override
     @PostMapping(value = "/setVariableLocal", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)

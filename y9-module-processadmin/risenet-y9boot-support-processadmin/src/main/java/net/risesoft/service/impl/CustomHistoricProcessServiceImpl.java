@@ -64,7 +64,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除流程实例失败", e);
         }
         return false;
     }
@@ -121,16 +121,14 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
 
     @Override
     public int getRecycleCount(String title) {
-        int count = (int)historyService.createHistoricProcessInstanceQuery()
+        return (int)historyService.createHistoricProcessInstanceQuery()
             .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").or().deleted().count();
-        return count;
     }
 
     @Override
     public int getRecycleCountByItemId(String itemId, String title) {
-        int count = (int)historyService.createHistoricProcessInstanceQuery().variableValueEquals("itemId", itemId)
+        return (int)historyService.createHistoricProcessInstanceQuery().variableValueEquals("itemId", itemId)
             .variableValueLike(SysVariables.DOCUMENTTITLE, "%" + title + "%").or().deleted().count();
-        return count;
     }
 
     @Override
@@ -165,7 +163,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("恢复流程实例失败", e);
         }
         return false;
     }
@@ -204,10 +202,10 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             } catch (Exception e1) {
                 LOGGER.warn("************************************删除ES办件数据失败", e1);
             }
-            deleteProcessUtilService.deleteProcess(tenantId, processInstanceId, year);
+            deleteProcessUtilService.deleteProcess(tenantId, processInstanceId);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除流程实例失败", e);
         }
         return false;
     }
@@ -245,23 +243,23 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             } catch (Exception e1) {
                 LOGGER.warn("************************************删除数据中心办结件数据失败", e1);
             }
-            deleteProcessUtilService.deleteProcess4Position(tenantId, processInstanceId, year);
+            deleteProcessUtilService.deleteProcess4Position(tenantId, processInstanceId);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除流程实例失败", e);
         }
         return false;
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void setPriority(String processInstanceId, String priority) throws Exception {
         ProcessInstance processInstance =
             runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
         if (null != processInstance) {
-            String executionsql =
+            String executionSql =
                 "UPDATE ACT_RU_EXECUTION T SET T.TENANT_ID_ = #{TENANT_ID_} WHERE T.ID_=#{processInstanceId}";
-            runtimeService.createNativeProcessInstanceQuery().sql(executionsql).parameter("TENANT_ID_", priority)
+            runtimeService.createNativeProcessInstanceQuery().sql(executionSql).parameter("TENANT_ID_", priority)
                 .parameter("processInstanceId", processInstanceId).singleResult();
         }
         String updateSql =

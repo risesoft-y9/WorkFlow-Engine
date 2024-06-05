@@ -32,7 +32,7 @@ public class WorkflowHistoryTaskService {
     }
 
     public List<HistoricTaskInstance> getTaskListByProcessInstanceId(String processInstanceId) {
-        List<HistoricTaskInstance> listTask = new ArrayList<HistoricTaskInstance>();
+        List<HistoricTaskInstance> listTask = new ArrayList<>();
         if (StringUtils.isNotBlank(processInstanceId)) {
             listTask = historyService.createHistoricTaskInstanceQuery().orderByTaskCreateTime().desc()
                 .processInstanceId(processInstanceId).list();

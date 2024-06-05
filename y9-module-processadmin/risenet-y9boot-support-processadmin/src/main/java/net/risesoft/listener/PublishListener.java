@@ -36,6 +36,7 @@ public class PublishListener implements ExecutionListener {
             params.add(new NameValuePair("tenantId", tenantId));
             params.add(new NameValuePair("processSerialNumber", processSerialNumber));
             Y9Result<Boolean> y9Result = RemoteCallUtil.postCallRemoteService(requestUrl, params, Y9Result.class);
+            assert y9Result != null;
             if (!y9Result.isSuccess()) {
                 throw new RuntimeException("调用发布接口失败：" + y9Result.getMsg());
             }

@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import java.util.Map;
-
 import org.flowable.task.service.delegate.DelegateTask;
+
+import java.util.Map;
 
 /**
  * @author qinman
@@ -13,11 +13,11 @@ public interface WeiXinRemindService {
 
     /**
      * Description:
-     * 
-     * @param taskEntity
-     * @param variables
-     * @param local
+     *
+     * @param taskEntity 任务实体
+     * @param variables  流程变量
+     * @param local      任务变量
      */
-    public void weiXinRemind(final DelegateTask taskEntity, final Map<String, Object> variables,
-        final Map<String, Object> local);
+    void weiXinRemind(final DelegateTask taskEntity, final Map<String, Object> variables,
+                      final Map<String, Object> local);
 }

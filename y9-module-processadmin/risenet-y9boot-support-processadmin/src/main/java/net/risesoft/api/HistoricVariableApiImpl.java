@@ -44,8 +44,7 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
     public List<HistoricVariableInstanceModel> getByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricVariableInstance> hviList = customHistoricVariableService.getByProcessInstanceId(processInstanceId);
-        List<HistoricVariableInstanceModel> hviModelList = FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList);
-        return hviModelList;
+        return FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList);
     }
 
     /**
@@ -81,8 +80,7 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
     public List<HistoricVariableInstanceModel> getByTaskId(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricVariableInstance> hviList = customHistoricVariableService.getByTaskId(taskId);
-        List<HistoricVariableInstanceModel> hviModelList = FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList);
-        return hviModelList;
+        return FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList);
     }
 
     /**
@@ -99,7 +97,7 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
     public HistoricVariableInstanceModel getByTaskIdAndVariableName(@RequestParam String tenantId, @RequestParam String taskId, @RequestParam String variableName, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricVariableInstance hvi = customHistoricVariableService.getByTaskIdAndVariableName(taskId, variableName, year);
-        HistoricVariableInstanceModel model = new HistoricVariableInstanceModel();
+        HistoricVariableInstanceModel model;
         if (hvi != null) {
             model = FlowableModelConvertUtil.historicVariableInstance2Model(hvi);
             return model;

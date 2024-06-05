@@ -1,6 +1,7 @@
 package net.risesoft.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
 import net.risesoft.service.CustomRepositoryService;
@@ -21,8 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +32,7 @@ import java.util.zip.ZipInputStream;
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service(value = "customRepositoryService")
@@ -46,7 +46,7 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
 
     @Override
     public Map<String, Object> delete(String deploymentId) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         retMap.put("success", false);
         retMap.put("msg", "流程级联删除失败。");
         try {
@@ -54,7 +54,7 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
             retMap.put("success", true);
             retMap.put("msg", "流程级联删除成功。");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("流程级联删除失败。", e);
         }
         return retMap;
     }
@@ -77,7 +77,7 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
             retMap.put("success", true);
             retMap.put("msg", "流程部署成功。");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("流程部署失败。", e);
         }
         return retMap;
     }
@@ -95,7 +95,7 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
     @Override
     public ProcessDefinition getPreviousProcessDefinitionById(String processDefinitionId) {
         ProcessDefinition pd = repositoryService.createProcessDefinitionQuery().processDefinitionId(processDefinitionId).singleResult();
-        Integer version = pd.getVersion();
+        int version = pd.getVersion();
         String processDefinitionKey = pd.getKey();
         if (version > 1) {
             pd = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey).processDefinitionVersion(--version).singleResult();
@@ -142,8 +142,6 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
     @Override
     public Map<String, Object> list(String resourceId) {
         Map<String, Object> retMap = new HashMap<>(16);
-        // UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        // String tenantId = userInfo.getTenantId(), personId = userInfo.getPersonId();
         List<Map<String, Object>> items = new ArrayList<>();
         try {
             Y9LoginUserHolder.setTenantId(Y9LoginUserHolder.getTenantId());
@@ -151,15 +149,13 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
             String sql = "select RES.* from ACT_RE_PROCDEF RES WHERE 1=1";
             if (DialectEnum.MSSQL.getValue().equals(processEngineConfiguration.getDatabaseType())) {
                 sql = "select top 100 percent RES.* from ACT_RE_PROCDEF RES WHERE 1=1";
-            } else if (DialectEnum.MYSQL.getValue().equals(processEngineConfiguration.getDatabaseType())) {
             }
             sql += " and RES.VERSION_ = (select max(VERSION_) from ACT_RE_PROCDEF where KEY_ = RES.KEY_ ) order by RES.KEY_ asc";
             sql = Y9SqlPaginationUtil.generatePagedSql(processEngineConfiguration.getDataSource(), sql, 0, 1000);
             List<ProcessDefinition> processDefinitionList = repositoryService.createNativeProcessDefinitionQuery().sql(sql).list();
-            Map<String, Object> mapTemp = null;
-            // if (tenantManager) {
+            Map<String, Object> mapTemp;
             for (ProcessDefinition processDefinition : processDefinitionList) {
-                mapTemp = new HashMap<String, Object>(16);
+                mapTemp = new HashMap<>(16);
                 String deploymentId = processDefinition.getDeploymentId();
                 Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
                 mapTemp.put("id", processDefinition.getId());
@@ -174,53 +170,15 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
                 mapTemp.put("sortTime", deployment.getDeploymentTime().getTime());
                 items.add(mapTemp);
             }
-            Collections.sort(items, new Comparator<Map<String, Object>>() {
-                @Override
-                public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-                    try {
-                        long startTime1 = (long)o1.get("sortTime");
-                        long startTime2 = (long)o2.get("sortTime");
-                        if (startTime2 > startTime1) {
-                            return 1;
-                        } else {
-                            return -1;
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return -1;
-                }
+            items.sort((o1, o2) -> {
+                long startTime1 = (long) o1.get("sortTime");
+                long startTime2 = (long) o2.get("sortTime");
+                return Long.compare(startTime2, startTime1);
             });
-            // }
-            /* else {
-                List<Resource> resourceList =
-                    personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE, resourceId).getData();
-                for (ProcessDefinition processDefinition : processDefinitionList) {
-                    for (Resource resource : resourceList) {
-                        if (resource.getCustomId().equals(processDefinition.getKey())) {
-                            mapTemp = new HashMap<>(16);
-                            String deploymentId = processDefinition.getDeploymentId();
-                            Deployment deployment =
-                                repositoryService.createDeploymentQuery().deploymentId(deploymentId).singleResult();
-                            mapTemp.put("id", processDefinition.getId());
-                            mapTemp.put("deploymentId", processDefinition.getDeploymentId());
-                            mapTemp.put("name", processDefinition.getName());
-                            mapTemp.put("key", processDefinition.getKey());
-                            mapTemp.put("version", processDefinition.getVersion());
-                            mapTemp.put("resourceName", processDefinition.getResourceName());
-                            mapTemp.put("diagramResourceName", processDefinition.getDiagramResourceName());
-                            mapTemp.put("suspended", processDefinition.isSuspended());
-                            mapTemp.put("deploymentTime",
-                                DateFormatUtils.format(deployment.getDeploymentTime(), "yyyy-MM-dd HH:mm:ss"));
-                            items.add(mapTemp);
-                        }
-                    }
-                }
-            }*/
             retMap.put("success", true);
         } catch (Exception e) {
             retMap.put("success", false);
-            e.printStackTrace();
+            LOGGER.error("获取流程列表失败。", e);
         }
         retMap.put("rows", items);
         return retMap;
@@ -228,7 +186,7 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
 
     @Override
     public Map<String, Object> switchSuspendOrActive(String state, String processDefinitionId) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         retMap.put("success", false);
         retMap.put("msg", "操作异常。");
         try {
@@ -242,7 +200,7 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
                 retMap.put("msg", "挂起流程实例成功。");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("操作异常。", e);
         }
         return retMap;
     }

@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import java.util.Map;
-
 import org.flowable.task.service.delegate.DelegateTask;
+
+import java.util.Map;
 
 /**
  * @author qinman
@@ -14,9 +14,9 @@ public interface SmsRemindService {
     /**
      * Description:
      *
-     * @param task
-     * @param vars
-     * @param local
+     * @param task  任务
+     * @param vars  流程变量
+     * @param local 任务变量
      */
-    public void smsRemind(final DelegateTask task, final Map<String, Object> vars, final Map<String, Object> local);
+    void smsRemind(final DelegateTask task, final Map<String, Object> vars, final Map<String, Object> local);
 }

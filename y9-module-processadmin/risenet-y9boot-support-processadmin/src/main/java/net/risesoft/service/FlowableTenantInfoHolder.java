@@ -1,11 +1,11 @@
 package net.risesoft.service;
 
+import org.flowable.common.engine.impl.AbstractEngineConfiguration;
+import org.flowable.common.engine.impl.cfg.multitenant.TenantInfoHolder;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.flowable.common.engine.impl.AbstractEngineConfiguration;
-import org.flowable.common.engine.impl.cfg.multitenant.TenantInfoHolder;
 
 /**
  * @author qinman
@@ -14,16 +14,12 @@ import org.flowable.common.engine.impl.cfg.multitenant.TenantInfoHolder;
  */
 public class FlowableTenantInfoHolder implements TenantInfoHolder {
 
-    private static Map<String, String> tenant = new HashMap<String, String>(16);
+    private static final Map<String, String> tenant = new HashMap<>(16);
 
-    private static final ThreadLocal<String> CURRENTTENANTID = new ThreadLocal<String>();
+    private static final ThreadLocal<String> CURRENTTENANTID = new ThreadLocal<>();
 
     public static void clear() {
         CURRENTTENANTID.remove();
-    }
-
-    public static Integer getAllTenantCount() {
-        return tenant.keySet().size();
     }
 
     public static String getTenantId() {
@@ -40,7 +36,7 @@ public class FlowableTenantInfoHolder implements TenantInfoHolder {
 
     @Override
     public void clearCurrentTenantId() {
-        CURRENTTENANTID.set(null);
+        CURRENTTENANTID.remove();
     }
 
     @Override

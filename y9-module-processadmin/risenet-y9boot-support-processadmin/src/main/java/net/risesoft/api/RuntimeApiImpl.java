@@ -1,6 +1,7 @@
 package net.risesoft.api;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -42,6 +43,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/runtime")
@@ -67,11 +69,10 @@ public class RuntimeApiImpl implements RuntimeApi {
      * @param tenantId 租户id
      * @param activityId 活动节点id
      * @param parentExecutionId 父执行实例id
-     * @throws Exception Exception
      */
     @Override
     @PostMapping(value = "/addMultiInstanceExecution", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void addMultiInstanceExecution(@RequestParam String tenantId, @RequestParam String activityId, @RequestParam String parentExecutionId, @RequestBody Map<String, Object> map) throws Exception {
+    public void addMultiInstanceExecution(@RequestParam String tenantId, @RequestParam String activityId, @RequestParam String parentExecutionId, @RequestBody Map<String, Object> map){
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customRuntimeService.addMultiInstanceExecution(activityId, parentExecutionId, map);
     }
@@ -119,11 +120,10 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param executionId 执行实例id
-     * @throws Exception Exception
      */
     @Override
     @PostMapping(value = "/deleteMultiInstanceExecution", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteMultiInstanceExecution(@RequestParam String tenantId, @RequestParam String executionId) throws Exception {
+    public void deleteMultiInstanceExecution(@RequestParam String tenantId, @RequestParam String executionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customRuntimeService.deleteMultiInstanceExecution(executionId);
     }
@@ -139,8 +139,7 @@ public class RuntimeApiImpl implements RuntimeApi {
     @GetMapping(value = "/getActiveActivityIds", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<String> getActiveActivityIds(@RequestParam String tenantId, @RequestParam String executionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        List<String> list = customRuntimeService.getActiveActivityIds(executionId);
-        return list;
+        return customRuntimeService.getActiveActivityIds(executionId);
     }
 
     /**
@@ -173,8 +172,7 @@ public class RuntimeApiImpl implements RuntimeApi {
     public List<ProcessInstanceModel> getListBySuperProcessInstanceId(@RequestParam String tenantId, @RequestParam String superProcessInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<ProcessInstance> list = customRuntimeService.getListBySuperProcessInstanceId(superProcessInstanceId);
-        List<ProcessInstanceModel> piModelList = FlowableModelConvertUtil.processInstanceList2ModelList(list);
-        return piModelList;
+        return FlowableModelConvertUtil.processInstanceList2ModelList(list);
     }
 
     /**
@@ -190,8 +188,7 @@ public class RuntimeApiImpl implements RuntimeApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         ProcessInstance pi = customRuntimeService.getProcessInstance(processInstanceId);
         if (null != pi) {
-            ProcessInstanceModel pim = FlowableModelConvertUtil.processInstance2Model(pi);
-            return pim;
+            return FlowableModelConvertUtil.processInstance2Model(pi);
         }
         return null;
     }
@@ -209,7 +206,7 @@ public class RuntimeApiImpl implements RuntimeApi {
     @GetMapping(value = "/getProcessInstancesByDefId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getProcessInstancesByDefId(@RequestParam String tenantId, @RequestParam String processDefinitionId, @RequestParam Integer page, @RequestParam Integer rows) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinitionId).count();
         List<ProcessInstance> list = runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinitionId).orderBy(HistoricProcessInstanceQueryProperty.START_TIME).desc().listPage((page - 1) * rows, rows);
         List<ProcessInstanceModel> hpiModelList = FlowableModelConvertUtil.processInstanceList2ModelList(list);
@@ -232,8 +229,7 @@ public class RuntimeApiImpl implements RuntimeApi {
     public List<ProcessInstanceModel> getProcessInstancesByKey(@RequestParam String tenantId, @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<ProcessInstance> list = customRuntimeService.getProcessInstancesByKey(processDefinitionKey);
-        List<ProcessInstanceModel> piModelList = FlowableModelConvertUtil.processInstanceList2ModelList(list);
-        return piModelList;
+        return FlowableModelConvertUtil.processInstanceList2ModelList(list);
     }
 
     /**
@@ -266,11 +262,10 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @throws Exception Exception
      */
     @Override
     @PostMapping(value = "/recovery4SetUpCompleted", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void recovery4SetUpCompleted(@RequestParam String tenantId, @RequestParam String processInstanceId) throws Exception {
+    public void recovery4SetUpCompleted(@RequestParam String tenantId, @RequestParam String processInstanceId){
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customRuntimeService.recovery4SetUpCompleted(processInstanceId);
     }
@@ -290,8 +285,8 @@ public class RuntimeApiImpl implements RuntimeApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<Map<String, Object>> items = new ArrayList<>();
-        long totalCount = 0;
-        List<ProcessInstance> processInstanceList = null;
+        long totalCount;
+        List<ProcessInstance> processInstanceList;
         if (StringUtils.isBlank(processInstanceId)) {
             totalCount = runtimeService.createProcessInstanceQuery().count();
             processInstanceList = runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
@@ -299,9 +294,9 @@ public class RuntimeApiImpl implements RuntimeApi {
             totalCount = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).count();
             processInstanceList = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).orderByStartTime().desc().listPage((page - 1) * rows, rows);
         }
-        Position position = null;
-        OrgUnit orgUnit = null;
-        Map<String, Object> map = null;
+        Position position;
+        OrgUnit orgUnit;
+        Map<String, Object> map;
         for (ProcessInstance processInstance : processInstanceList) {
             processInstanceId = processInstance.getId();
             map = new HashMap<>(16);
@@ -318,9 +313,7 @@ public class RuntimeApiImpl implements RuntimeApi {
                     if (userIdAndDeptId.length == 1) {
                         position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
                         orgUnit = orgUnitApi.getParent(tenantId, position.getId()).getData();
-                        if (null != position) {
-                            map.put("startUserName", position.getName() + "(" + orgUnit.getName() + ")");
-                        }
+                        map.put("startUserName", position.getName() + "(" + orgUnit.getName() + ")");
                     } else {
                         position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
                         if (null != position) {
@@ -334,7 +327,7 @@ public class RuntimeApiImpl implements RuntimeApi {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("获取流程实例[" + processInstanceId + "]的活动节点名称失败", e);
             }
             items.add(map);
         }
@@ -347,11 +340,10 @@ public class RuntimeApiImpl implements RuntimeApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @throws Exception Exception
      */
     @Override
     @PostMapping(value = "/setUpCompleted", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void setUpCompleted(@RequestParam String tenantId, @RequestParam String processInstanceId) throws Exception {
+    public void setUpCompleted(@RequestParam String tenantId, @RequestParam String processInstanceId){
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customRuntimeService.setUpCompleted(processInstanceId);
     }
@@ -360,15 +352,13 @@ public class RuntimeApiImpl implements RuntimeApi {
      * 根据流程实例id设置流程变量
      *
      * @param tenantId 租户id
-     * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @param key 变量key
-     * @param val 变量值
-     * @throws Exception Exception
+     * @param map 变量map
      */
     @Override
     @PostMapping(value = "/setVariable", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void setVariable(@RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String key, @RequestBody Map<String, Object> map) throws Exception {
+    public void setVariable(@RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String key, @RequestBody Map<String, Object> map){
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         customRuntimeService.setVariable(processInstanceId, key, map.get("val"));
@@ -408,13 +398,11 @@ public class RuntimeApiImpl implements RuntimeApi {
         if (person != null && StringUtils.isNotBlank(person.getId())) {
             Y9LoginUserHolder.setPerson(person);
             ProcessInstance pi = customRuntimeService.startProcessInstanceByKey(processDefinitionKey, systemName, map);
-            ProcessInstanceModel piModel = FlowableModelConvertUtil.processInstance2Model(pi);
-            return piModel;
+            return FlowableModelConvertUtil.processInstance2Model(pi);
         } else {
             Y9LoginUserHolder.setPositionId(userId);
             ProcessInstance pi = customRuntimeService.startProcessInstanceByKey4Position(processDefinitionKey, systemName, map);
-            ProcessInstanceModel piModel = FlowableModelConvertUtil.processInstance2Model(pi);
-            return piModel;
+            return FlowableModelConvertUtil.processInstance2Model(pi);
         }
     }
 
@@ -429,8 +417,7 @@ public class RuntimeApiImpl implements RuntimeApi {
     @GetMapping(value = "/suspendedByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Boolean suspendedByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Boolean suspended = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult().isSuspended();
-        return suspended;
+        return runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult().isSuspended();
     }
 
     /**

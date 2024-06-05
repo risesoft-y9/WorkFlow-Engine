@@ -60,7 +60,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         List<org.flowable.task.api.Task> list = customTaskService.findByProcessInstanceId(processInstanceId);
         boolean b = customHistoricProcessService.deleteProcessInstance(processInstanceId);
         if (b) {
-            if (list != null && list.size() > 0) {
+            if (list != null && !list.isEmpty()) {
                 for (org.flowable.task.api.Task task : list) {
                     try {
                         boolean msg1 = rpcTodoTaskManager.deleteTodoTaskByTaskId(tenantId, task.getId());
@@ -95,8 +95,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         HistoricProcessInstance hpi = customHistoricProcessService.getById(processInstanceId);
-        HistoricProcessInstanceModel hpiModel = FlowableModelConvertUtil.historicProcessInstance2Model(hpi);
-        return hpiModel;
+        return FlowableModelConvertUtil.historicProcessInstance2Model(hpi);
     }
 
     /**
@@ -133,8 +132,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         List<HistoricProcessInstance> hpiList = customHistoricProcessService.getBySuperProcessInstanceId(superProcessInstanceId);
-        List<HistoricProcessInstanceModel> hpiMoldelList = FlowableModelConvertUtil.historicProcessInstanceList2ModelList(hpiList);
-        return hpiMoldelList;
+        return FlowableModelConvertUtil.historicProcessInstanceList2ModelList(hpiList);
     }
 
     /**
@@ -150,8 +148,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         HistoricProcessInstance hpi = customHistoricProcessService.getSuperProcessInstanceById(processInstanceId);
-        HistoricProcessInstanceModel hpiModel = FlowableModelConvertUtil.historicProcessInstance2Model(hpi);
-        return hpiModel;
+        return FlowableModelConvertUtil.historicProcessInstance2Model(hpi);
     }
 
     /**
@@ -170,7 +167,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         boolean b = customHistoricProcessService.recoveryProcessInstance(processInstanceId);
         List<org.flowable.task.api.Task> list = customTaskService.findByProcessInstanceId(processInstanceId);
         if (b) {
-            if (list != null && list.size() > 0) {
+            if (list != null && !list.isEmpty()) {
                 for (org.flowable.task.api.Task task : list) {
                     try {
                         boolean msg1 = rpcTodoTaskManager.recoveryTodoTaskBytaskId(tenantId, task.getId());
@@ -196,8 +193,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     public boolean removeProcess(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        boolean b = customHistoricProcessService.removeProcess(processInstanceId);
-        return b;
+        return customHistoricProcessService.removeProcess(processInstanceId);
     }
 
     /**
@@ -212,8 +208,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     public boolean removeProcess4Position(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        boolean b = customHistoricProcessService.removeProcess4Position(processInstanceId);
-        return b;
+        return customHistoricProcessService.removeProcess4Position(processInstanceId);
     }
 
     /**

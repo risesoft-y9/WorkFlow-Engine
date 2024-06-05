@@ -85,7 +85,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
                     task.getId());
             }
         } catch (Exception e) {
-            LOGGER.warn("##########################删除超级待办：失败{}##########################", task.getId());
+            LOGGER.warn("##########################删除超级待办：失败{}##########################", e.getMessage());
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
@@ -103,7 +103,6 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             errorLogModel.setText(msg);
             errorLogModel.setUpdateTime(time);
             errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
-            e.printStackTrace();
         }
     }
 
@@ -127,17 +126,15 @@ public class TodoTaskServiceImpl implements TodoTaskService {
                     executionEntity.getProcessInstanceId());
             }
         } catch (Exception e) {
-            LOGGER.warn("##########################删除超级待办：失败##########################");
-
-            e.printStackTrace();
+            LOGGER.error("##########################删除超级待办：失败##########################"+e.getMessage());
         }
     }
 
     /**
      * Description:
      *
-     * @param task
-     * @param map
+     * @param task DelegateTask
+     * @param map Map<String, Object>
      */
     @Override
     public void saveTodoTask(final DelegateTask task, final Map<String, Object> map) {
@@ -160,9 +157,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             String itemId = processParamModel.getItemId();
             String itemName = processParamModel.getItemName();
             if (StringUtils.isNotBlank(tenantId)) {
-                String senderDepartmentId = "";
-                String receiverDepartmentId = "";
-                String assigneeName = "";
+                String senderDepartmentId ,receiverDepartmentId,assigneeName;
                 OrgUnit receiverPerson = orgUnitManager.getOrgUnit(tenantId, assignee).getData();
                 OrgUnit senderPerson = orgUnitManager.getOrgUnit(tenantId, taskSenderId).getData();
                 senderDepartmentId = senderPerson.getParentId();
@@ -175,21 +170,24 @@ public class TodoTaskServiceImpl implements TodoTaskService {
                 String todoTaskUrlPrefix = processParamModel.getTodoTaskUrlPrefix();
                 String level = processParamModel.getCustomLevel() == null ? "" : processParamModel.getCustomLevel();
                 String docNumber = processParamModel.getCustomNumber();
-                String urgency = "0", yiban = "一般", zhongyao = "重要", jinji = "紧急";
-                if (yiban.equals(level)) {
+                String urgency = "0", commonly = "一般", important = "重要", urgent = "紧急";
+                if (commonly.equals(level)) {
                     urgency = "0";
-                } else if (zhongyao.equals(level)) {
+                } else if (important.equals(level)) {
                     urgency = "1";
-                } else if (jinji.equals(level)) {
+                } else if (urgent.equals(level)) {
                     urgency = "2";
                 }
-
-                if ("普通".equals(level)) {
-                    urgency = "0";
-                } else if ("急".equals(level)) {
-                    urgency = "1";
-                } else if ("特急".equals(level)) {
-                    urgency = "2";
+                switch (level) {
+                    case "普通":
+                        urgency = "0";
+                        break;
+                    case "急":
+                        urgency = "1";
+                        break;
+                    case "特急":
+                        urgency = "2";
+                        break;
                 }
 
                 TodoTask todo = new TodoTask();
@@ -245,7 +243,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn("##########################保存超级待办失败-taskId:{}##########################", task.getId());
+            LOGGER.error("##########################保存超级待办失败:{}##########################", e.getMessage());
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
@@ -263,7 +261,6 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             errorLogModel.setText(msg);
             errorLogModel.setUpdateTime(time);
             errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
-            e.printStackTrace();
         }
     }
 

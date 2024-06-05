@@ -1,9 +1,10 @@
 package net.risesoft.listener;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.service.CustomHistoricProcessService;
+import net.risesoft.service.InterfaceUtilService;
+import net.risesoft.util.SysVariables;
+import net.risesoft.y9.Y9Context;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.api.delegate.event.AbstractFlowableEventListener;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEventType;
@@ -11,18 +12,17 @@ import org.flowable.common.engine.api.delegate.event.FlowableEvent;
 import org.flowable.engine.delegate.event.impl.FlowableSequenceFlowTakenEventImpl;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.task.service.impl.persistence.entity.TaskEntityImpl;
-import org.springframework.beans.BeansException;
 
-import net.risesoft.service.CustomHistoricProcessService;
-import net.risesoft.service.InterfaceUtilService;
-import net.risesoft.util.SysVariables;
-import net.risesoft.y9.Y9Context;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListener {
 
     @Override
@@ -43,10 +43,10 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 if (StringUtils.isNotBlank(assignee)) {
                     taskEntity.setVariable(assignee, assignee);
                 }
-                /**
+                /*
                  * 下面是添加其他业务逻辑需要的任务变量String taskSenderId=(String)
                  */
-                Map<String, Object> mapTemp = new HashMap<String, Object>(16);
+                Map<String, Object> mapTemp = new HashMap<>(16);
                 String user = (String)taskEntity.getVariable(SysVariables.USER);
                 List<String> users = (List<String>)taskEntity.getVariable(SysVariables.USERS);
                 String taskSender = (String)taskEntity.getVariable(SysVariables.TASKSENDER);
@@ -56,7 +56,7 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 if (null != user) {
                     mapTemp.put(SysVariables.USER, user);
                 }
-                if (null != users && users.size() > 0) {
+                if (null != users && !users.isEmpty()) {
                     mapTemp.put(SysVariables.USERS, users);
                 }
 
@@ -72,10 +72,8 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                         taskEntity.setPriority(priority);
                         try {
                             Y9Context.getBean(CustomHistoricProcessService.class).setPriority(taskEntity.getProcessInstanceId(), priority.toString());
-                        } catch (BeansException e) {
-                            e.printStackTrace();
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            LOGGER.error("设置优先级失败", e);
                         }
                     }
                 }

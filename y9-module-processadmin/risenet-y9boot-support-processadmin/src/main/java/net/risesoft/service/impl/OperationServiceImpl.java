@@ -1,6 +1,7 @@
 package net.risesoft.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
@@ -51,6 +52,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service(value = "operationService")
@@ -85,7 +87,7 @@ public class OperationServiceImpl implements OperationService {
     private final ProcessTrack4PositionApi processTrack4PositionApi;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void reposition(String taskId, String targetTaskDefineKey, List<String> users, String reason,
                            String sponsorGuid) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
@@ -106,7 +108,7 @@ public class OperationServiceImpl implements OperationService {
                     ptModel.setDescribed(reason0);
                     processTrackManager.saveOrUpdate(Y9LoginUserHolder.getTenantId(), ptModel);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("更新自定义历程结束时间失败", e);
                 }
             }
         }
@@ -123,24 +125,13 @@ public class OperationServiceImpl implements OperationService {
                     processParam.setSponsorGuid(sponsorGuid);
                     processParamManager.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParam);
                 }
-                // }
-                // else {
-                // // 出差委托更换主办人
-                // if (ownerId.contains(sponsorGuid)) {
-                // vars.put(SysVariables.PARALLELSPONSOR, task.getAssignee().split(SysVariables.COLON)[0]);
-                // ProcessParamModel processParam = processParamManager
-                // .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
-                // processParam.setSponsorGuid(task.getAssignee().split(SysVariables.COLON)[0]);
-                // processParamManager.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParam);
-                // }
-                // }
             }
             customVariableService.setVariablesLocal(task.getId(), vars);
         }
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void reposition4Position(String taskId, String targetTaskDefineKey, List<String> users, String reason,
                                     String sponsorGuid) {
         String userName = Y9LoginUserHolder.getPosition().getName();
@@ -161,7 +152,7 @@ public class OperationServiceImpl implements OperationService {
                     ptModel.setDescribed(reason0);
                     processTrack4PositionApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), ptModel);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("更新自定义历程结束时间失败", e);
                 }
             }
         }
@@ -195,23 +186,18 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void rollBack(String taskId, String reason) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userName = userInfo.getName();
         HistoricTaskInstance thePreviousTask = customHistoricTaskService.getThePreviousTask(taskId);
         String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey(),
                 processInstanceId = thePreviousTask.getProcessInstanceId();
-
-        // Object taskSenderIdObject = customVariableService.getVariableLocal(taskId,
-        // SysVariables.TASKSENDERID);
-        // String user = (String) taskSenderIdObject;
         HistoricVariableInstance taskSenderIdObject =
                 customHistoricVariableService.getByTaskIdAndVariableName(taskId, SysVariables.TASKSENDERID, "");
         String user = taskSenderIdObject != null ? taskSenderIdObject.getValue().toString() : "";
         List<String> users = new ArrayList<>();
         users.add(user);
-
         managementService
                 .executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, "该任务由" + userName + "退回:" + reason));
 
@@ -222,17 +208,17 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void rollBack4Position(String taskId, String reason) {
         String userName = Y9LoginUserHolder.getPosition().getName();
         HistoricTaskInstance thePreviousTask = customHistoricTaskService.getThePreviousTask(taskId);
         String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey(),
                 processInstanceId = thePreviousTask.getProcessInstanceId();
-        /**
+        /*
          * 设置任务的完成动作
          */
         customVariableService.setVariableLocal(taskId, SysVariables.ACTIONNAME, SysVariables.ROLLBACK);
-        /**
+        /*
          * 把taskId对应的任务的发送岗位作为接受的岗位
          */
         HistoricVariableInstance taskSenderIdObject =
@@ -280,13 +266,13 @@ public class OperationServiceImpl implements OperationService {
         String userName = userInfo.getName();
         Task currentTask = customTaskService.findById(taskId);
         String processInstanceId = currentTask.getProcessInstanceId();
-        /**
+        /*
          * 获取第一个任务
          */
         List<HistoricTaskInstance> hisTaskList =
                 customHistoricTaskService.getByProcessInstanceId(processInstanceId, "");
         String startActivityId = hisTaskList.get(0).getTaskDefinitionKey();
-        /**
+        /*
          * 获取流程的启东人
          */
         ProcessInstance processInstance = customRuntimeService.getProcessInstance(processInstanceId);
@@ -301,13 +287,13 @@ public class OperationServiceImpl implements OperationService {
         String userName = Y9LoginUserHolder.getPosition().getName();
         Task currentTask = customTaskService.findById(taskId);
         String processInstanceId = currentTask.getProcessInstanceId();
-        /**
+        /*
          * 获取第一个任务
          */
         List<HistoricTaskInstance> hisTaskList =
                 customHistoricTaskService.getByProcessInstanceId(processInstanceId, "");
         String startActivityId = hisTaskList.get(0).getTaskDefinitionKey();
-        /**
+        /*
          * 获取流程的启东人
          */
         ProcessInstance processInstance = customRuntimeService.getProcessInstance(processInstanceId);
@@ -318,7 +304,7 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void specialComplete(String taskId, String reason) throws Exception {
         String processInstanceId = "";
         try {
@@ -331,14 +317,14 @@ public class OperationServiceImpl implements OperationService {
             HistoricProcessInstance historicProcessInstance =
                     historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             String year = sdf.format(historicProcessInstance.getStartTime());
-            /**
+            /*
              * 1-备份正在运行的执行实例数据，回复待办的时候会用到，只记录最后一个任务办结前的数据
              */
             String sql0 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list0 = runtimeService.createNativeExecutionQuery().sql(sql0)
                     .parameter("PROC_INST_ID_", processInstanceId).list();
             // 备份数据已有，则先删除再重新插入备份
-            if (list0.size() > 0) {
+            if (!list0.isEmpty()) {
                 String sql2 = "DELETE FROM FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
                 runtimeService.createNativeExecutionQuery().sql(sql2).parameter("PROC_INST_ID_", processInstanceId)
                         .list();
@@ -346,15 +332,14 @@ public class OperationServiceImpl implements OperationService {
             String sql = "INSERT INTO FF_ACT_RU_EXECUTION_" + year
                     + " (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ from ACT_RU_EXECUTION T WHERE T.PROC_INST_ID_ = #{PROC_INST_ID_}";
             runtimeService.createNativeExecutionQuery().sql(sql).parameter("PROC_INST_ID_", processInstanceId).list();
-
-            /**
+            /*
              * 2-办结流程
              */
             String sql3 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list1 = runtimeService.createNativeExecutionQuery().sql(sql3)
                     .parameter("PROC_INST_ID_", processInstanceId).list();
             // 成功备份数据才特殊办结
-            if (list1.size() > 0) {
+            if (!list1.isEmpty()) {
                 managementService.executeCommand(
                         new JumpCommand(taskId, endKey, new ArrayList<>(), "该任务由" + userName + "特殊办结:" + reason));
                 // 保存到数据中心
@@ -381,15 +366,15 @@ public class OperationServiceImpl implements OperationService {
             try {
                 errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
             } catch (Exception e1) {
-                e1.printStackTrace();
+                LOGGER.error("保存错误日志失败", e1);
             }
-            e.printStackTrace();
+            LOGGER.error("特殊办结失败", e);
             throw new Exception("OperationServiceImpl specialComplete error");
         }
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void specialComplete4Position(String taskId, String reason) throws Exception {
         String processInstanceId = "";
         try {
@@ -401,14 +386,14 @@ public class OperationServiceImpl implements OperationService {
             HistoricProcessInstance historicProcessInstance =
                     historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             String year = sdf.format(historicProcessInstance.getStartTime());
-            /**
+            /*
              * 1-备份正在运行的执行实例数据，回复待办的时候会用到，只记录最后一个任务办结前的数据
              */
             String sql0 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list0 = runtimeService.createNativeExecutionQuery().sql(sql0)
                     .parameter("PROC_INST_ID_", processInstanceId).list();
             // 备份数据已有，则先删除再重新插入备份
-            if (list0.size() > 0) {
+            if (!list0.isEmpty()) {
                 String sql2 = "DELETE FROM FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
                 runtimeService.createNativeExecutionQuery().sql(sql2).parameter("PROC_INST_ID_", processInstanceId)
                         .list();
@@ -416,15 +401,14 @@ public class OperationServiceImpl implements OperationService {
             String sql = "INSERT INTO FF_ACT_RU_EXECUTION_" + year
                     + " (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ from ACT_RU_EXECUTION T WHERE T.PROC_INST_ID_ = #{PROC_INST_ID_}";
             runtimeService.createNativeExecutionQuery().sql(sql).parameter("PROC_INST_ID_", processInstanceId).list();
-
-            /**
+            /*
              * 2-办结流程
              */
             String sql3 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list1 = runtimeService.createNativeExecutionQuery().sql(sql3)
                     .parameter("PROC_INST_ID_", processInstanceId).list();
             // 成功备份数据才特殊办结
-            if (list1.size() > 0) {
+            if (!list1.isEmpty()) {
                 managementService.executeCommand(
                         new JumpCommand4Position(taskId, endKey, new ArrayList<>(), "该任务由" + userName + "特殊办结:" + reason));
                 // 保存到数据中心
@@ -451,15 +435,15 @@ public class OperationServiceImpl implements OperationService {
             try {
                 errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
             } catch (Exception e1) {
-                e1.printStackTrace();
+                LOGGER.error("保存错误日志失败", e1);
             }
-            e.printStackTrace();
+            LOGGER.error("特殊办结失败", e);
             throw new Exception("OperationServiceImpl specialComplete4Position error");
         }
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void takeBack(String taskId, String reason) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userName = userInfo.getName(), userId = userInfo.getPersonId();
@@ -480,13 +464,13 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void takeBack4Position(String taskId, String reason) {
         String userName = Y9LoginUserHolder.getPosition().getName();
         HistoricTaskInstance thePreviousTask = customHistoricTaskService.getThePreviousTask(taskId);
         String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey(),
                 processInstanceId = thePreviousTask.getProcessInstanceId();
-        /**
+        /*
          * 设置任务的完成动作
          */
         customVariableService.setVariableLocal(taskId, SysVariables.ACTIONNAME, SysVariables.TAKEBACK);

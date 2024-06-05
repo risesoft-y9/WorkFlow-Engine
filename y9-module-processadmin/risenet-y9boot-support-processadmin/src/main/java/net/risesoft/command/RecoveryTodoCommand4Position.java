@@ -1,9 +1,7 @@
 package net.risesoft.command;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
+import net.risesoft.model.platform.Position;
+import net.risesoft.y9.Y9LoginUserHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.impl.interceptor.Command;
 import org.flowable.common.engine.impl.interceptor.CommandContext;
@@ -19,8 +17,9 @@ import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.service.TaskService;
 import org.flowable.task.service.impl.persistence.entity.TaskEntityImpl;
 
-import net.risesoft.model.platform.Position;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -63,8 +62,8 @@ public class RecoveryTodoCommand4Position implements Command<Void> {
 
         String processInstanceId = hisTask.getProcessInstanceId(), taskId = hisTask.getId();
         String assignee = hisTask.getAssignee();
-        /**
-         * 1-copytask
+        /*
+         * 1-copyTask
          */
         TaskEntityImpl taskEntity = new TaskEntityImpl();
         taskEntity.setId(taskId);
@@ -99,7 +98,7 @@ public class RecoveryTodoCommand4Position implements Command<Void> {
         taskEntity.setVariablesLocal(tVarMap);
         taskService.updateTask(taskEntity, false);
 
-        /**
+        /*
          * 触发任务产生事件
          */
         ProcessEngineConfigurationImpl processEngineConfiguration =
@@ -107,11 +106,11 @@ public class RecoveryTodoCommand4Position implements Command<Void> {
         processEngineConfiguration.getListenerNotificationHelper().executeTaskListeners(taskEntity,
             TaskListener.EVENTNAME_CREATE);
 
-        /**
+        /*
          * 2-设置历史任务办结时间为null
          */
-        /**
-         * 3-历史act_hi_procinst结束时间改为null
+        /*
+         * 3-历史act_hi_procInst结束时间改为null
          */
         HistoricProcessInstanceEntity historicProcessInstanceEntity =
             historicProcessInstanceEntityManager.findById(processInstanceId);
@@ -122,7 +121,7 @@ public class RecoveryTodoCommand4Position implements Command<Void> {
             historicProcessInstanceEntity.setDeleteReason(null);
             historicProcessInstanceEntityManager.update(historicProcessInstanceEntity);
         }
-        /**
+        /*
          * 4-copy participant(流程实例) candidate(单实例任务节点生成的任务会有)
          */
         List<HistoricIdentityLinkEntity> hilEntityList4P =

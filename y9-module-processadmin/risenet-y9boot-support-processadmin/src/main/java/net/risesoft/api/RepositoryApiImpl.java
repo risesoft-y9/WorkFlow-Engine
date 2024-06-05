@@ -1,6 +1,7 @@
 package net.risesoft.api;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -30,6 +32,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/repository")
@@ -48,8 +51,7 @@ public class RepositoryApiImpl implements RepositoryApi {
     @PostMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> delete(@RequestParam String tenantId, @RequestParam String deploymentId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Map<String, Object> map = customRepositoryService.delete(deploymentId);
-        return map;
+        return customRepositoryService.delete(deploymentId);
     }
 
     /**
@@ -82,8 +84,7 @@ public class RepositoryApiImpl implements RepositoryApi {
     public ProcessDefinitionModel getLatestProcessDefinitionByKey(@RequestParam String tenantId, @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         ProcessDefinition pd = customRepositoryService.getLatestProcessDefinitionByKey(processDefinitionKey);
-        ProcessDefinitionModel pdModel = FlowableModelConvertUtil.processDefinition2Model(pd);
-        return pdModel;
+        return FlowableModelConvertUtil.processDefinition2Model(pd);
     }
 
     /**
@@ -97,8 +98,7 @@ public class RepositoryApiImpl implements RepositoryApi {
     public List<ProcessDefinitionModel> getLatestProcessDefinitionList(@RequestParam String tenantId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<ProcessDefinition> pdList = customRepositoryService.getLatestProcessDefinitionList();
-        List<ProcessDefinitionModel> pdModelList = FlowableModelConvertUtil.processDefinitionList2ModelList(pdList);
-        return pdModelList;
+        return FlowableModelConvertUtil.processDefinitionList2ModelList(pdList);
     }
 
     /**
@@ -113,8 +113,7 @@ public class RepositoryApiImpl implements RepositoryApi {
     public ProcessDefinitionModel getPreviousProcessDefinitionById(@RequestParam String tenantId, @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         ProcessDefinition pd = customRepositoryService.getPreviousProcessDefinitionById(processDefinitionId);
-        ProcessDefinitionModel pdModel = FlowableModelConvertUtil.processDefinition2Model(pd);
-        return pdModel;
+        return FlowableModelConvertUtil.processDefinition2Model(pd);
     }
 
     /**
@@ -129,8 +128,7 @@ public class RepositoryApiImpl implements RepositoryApi {
     public ProcessDefinitionModel getProcessDefinitionById(@RequestParam String tenantId, @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         ProcessDefinition pd = customRepositoryService.getProcessDefinitionById(processDefinitionId);
-        ProcessDefinitionModel pdModel = FlowableModelConvertUtil.processDefinition2Model(pd);
-        return pdModel;
+        return FlowableModelConvertUtil.processDefinition2Model(pd);
     }
 
     /**
@@ -145,8 +143,7 @@ public class RepositoryApiImpl implements RepositoryApi {
     public List<ProcessDefinitionModel> getProcessDefinitionListByKey(@RequestParam String tenantId, @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<ProcessDefinition> pdList = customRepositoryService.getProcessDefinitionListByKey(processDefinitionKey);
-        List<ProcessDefinitionModel> pdModelList = FlowableModelConvertUtil.processDefinitionList2ModelList(pdList);
-        return pdModelList;
+        return FlowableModelConvertUtil.processDefinitionList2ModelList(pdList);
     }
 
     /**
@@ -156,14 +153,19 @@ public class RepositoryApiImpl implements RepositoryApi {
      * @param processInstanceId 流程实例id
      * @param processDefinitionId 流程定义id
      * @return Y9Result<String>
-     * @throws Exception
      */
     @Override
     @GetMapping(value = "/getXmlByProcessInstance", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<String> getXmlByProcessInstance(@RequestParam String tenantId, @RequestParam String resourceType, @RequestParam String processInstanceId, @RequestParam String processDefinitionId) throws Exception {
+    public Y9Result<String> getXmlByProcessInstance(@RequestParam String tenantId, @RequestParam String resourceType, @RequestParam String processInstanceId, @RequestParam String processDefinitionId){
         FlowableTenantInfoHolder.setTenantId(tenantId);
         InputStream resourceAsStream = customRepositoryService.getProcessInstance(resourceType, processInstanceId, processDefinitionId);
-        return Y9Result.success(IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8));
+        try {
+            String xmlStr = IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8);
+            return Y9Result.success(xmlStr);
+        } catch (IOException e) {
+            LOGGER.error("获取流程定义xml失败", e);
+        }
+        return Y9Result.failure("获取流程定义xml失败");
     }
 
     /**
@@ -196,7 +198,6 @@ public class RepositoryApiImpl implements RepositoryApi {
     @PostMapping(value = "/switchSuspendOrActive", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> switchSuspendOrActive(@RequestParam String tenantId, @RequestParam String state, @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Map<String, Object> map = customRepositoryService.switchSuspendOrActive(state, processDefinitionId);
-        return map;
+        return customRepositoryService.switchSuspendOrActive(state, processDefinitionId);
     }
 }

@@ -51,8 +51,7 @@ public interface OperationService {
     /***
      * 返回发送人
      *
-     * @param taskId
-     * @param reason
+     * @param taskId 任务id
      */
     void rollbackToSender(String taskId);
 

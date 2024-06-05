@@ -72,7 +72,7 @@ public class ProcessModelVueController {
         stencilSetNode.put("namespace", "http://b3mn.org/stencilset/bpmn2.0#");
         editorNode.set("stencilset", stencilSetNode);
         String modelId = "";
-        /**
+        /*
          * 跳转画图页面
          */
         String path = y9Config.getCommon().getProcessAdminBaseUrl() + "/modeler.html#/editor/" + modelId;
@@ -104,7 +104,7 @@ public class ProcessModelVueController {
     /**
      * 导出model的xml文件
      *
-     * @param modelId
+     * @param modelId 模型id
      * @param response
      * @return
      */
