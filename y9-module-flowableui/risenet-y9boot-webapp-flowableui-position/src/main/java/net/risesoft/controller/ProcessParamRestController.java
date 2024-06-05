@@ -1,21 +1,31 @@
 package net.risesoft.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessParamService;
 
+/**
+ * 自定义流程变量
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/vue/processParam")
 public class ProcessParamRestController {
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final ProcessParamService processParamService;
 
     /**
      * 保存流程变量
@@ -29,14 +39,9 @@ public class ProcessParamRestController {
      * @param customItem 是否定制流程
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrUpdate(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String documentTitle,
-        @RequestParam(required = false) String number, @RequestParam(required = false) String level,
-        @RequestParam(required = false) Boolean customItem) {
-        return processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, documentTitle, number,
-            level, customItem);
+    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processSerialNumber, @RequestParam String processInstanceId, @RequestParam @NotBlank String documentTitle, @RequestParam String number, @RequestParam String level,
+        @RequestParam Boolean customItem) {
+        return processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, documentTitle, number, level, customItem);
     }
 }

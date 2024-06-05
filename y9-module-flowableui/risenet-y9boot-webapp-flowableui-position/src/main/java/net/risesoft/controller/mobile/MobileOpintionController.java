@@ -6,12 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
@@ -27,15 +30,15 @@ import net.risesoft.y9.util.Y9Util;
  * @author 10858
  *
  */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/mobile/opintion")
 public class MobileOpintionController {
 
-    @Autowired
-    private CommonSentencesApi commonSentencesApi;
+    private final CommonSentencesApi commonSentencesApi;
 
-    @Autowired
-    private Opinion4PositionApi opinion4PositionApi;
+    private final Opinion4PositionApi opinion4PositionApi;
 
     /**
      * 保存意见
@@ -47,7 +50,7 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/comment/save")
-    public void addComment(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String formJsonData, HttpServletResponse response) {
+    public void addComment(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String formJsonData, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -76,7 +79,7 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/comment/checkSignOpinion")
-    public void checkSignOpinion(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String taskId, @RequestParam(required = false) String processSerialNumber,
+    public void checkSignOpinion(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String processSerialNumber,
         HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -103,7 +106,7 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/comment/delete")
-    public void deleteComment(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String id, HttpServletResponse response) {
+    public void deleteComment(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String id, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -155,8 +158,8 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/personCommentList")
-    public void personCommentList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox,
-        @RequestParam String opinionFrameMark, @RequestParam String itemId, @RequestParam String taskDefinitionKey, @RequestParam String activitiUser, @RequestParam(required = false) String orderByUser, HttpServletResponse response) {
+    public void personCommentList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox,
+        @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId, @RequestParam String taskDefinitionKey, @RequestParam String activitiUser, @RequestParam String orderByUser, HttpServletResponse response) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<>(16);
         try {
@@ -184,7 +187,7 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/removeCommonSentences")
-    public void removeCommonSentences(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String id, HttpServletResponse response) {
+    public void removeCommonSentences(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String id, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -212,7 +215,7 @@ public class MobileOpintionController {
      * @param response
      */
     @RequestMapping(value = "/saveCommonSentences")
-    public void saveCommonSentences(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String content, @RequestParam String id, HttpServletResponse response) {
+    public void saveCommonSentences(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String content, @RequestParam String id, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {

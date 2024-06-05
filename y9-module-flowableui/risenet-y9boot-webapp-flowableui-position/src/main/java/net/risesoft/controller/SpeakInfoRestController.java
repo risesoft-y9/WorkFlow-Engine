@@ -4,12 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.consts.UtilConsts;
@@ -18,12 +21,19 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+/**
+ * 沟通交流
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/vue/speakInfo")
 public class SpeakInfoRestController {
 
-    @Autowired
-    private SpeakInfoApi speakInfoApi;
+    private final SpeakInfoApi speakInfoApi;
 
     /**
      * 删除沟通交流信息
@@ -31,9 +41,8 @@ public class SpeakInfoRestController {
      * @param id 信息id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/deleteById", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteById(@RequestParam(required = true) String id) {
+    public Y9Result<String> deleteById(@RequestParam @NotBlank String id) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
         try {
@@ -56,10 +65,8 @@ public class SpeakInfoRestController {
      * @param processInstanceId 流程实例id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrUpdate(@RequestParam(required = true) String content,
-        @RequestParam(required = true) String processInstanceId) {
+    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String content, @RequestParam @NotBlank String processInstanceId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
         SpeakInfoModel speakInfoModel = new SpeakInfoModel();
@@ -75,9 +82,8 @@ public class SpeakInfoRestController {
      * @param processInstanceId
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/speakInfoList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> speakInfoList(@RequestParam(required = true) String processInstanceId) {
+    public Y9Result<Map<String, Object>> speakInfoList(@RequestParam @NotBlank String processInstanceId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = person.getTenantId();
         List<SpeakInfoModel> siModelList = speakInfoApi.findByProcessInstanceId(tenantId, userId, processInstanceId);

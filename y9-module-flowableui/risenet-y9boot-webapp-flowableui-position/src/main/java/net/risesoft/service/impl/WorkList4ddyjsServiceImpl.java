@@ -1,8 +1,24 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+
+import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TaskVariableApi;
@@ -11,7 +27,13 @@ import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.processadmin.*;
+import net.risesoft.api.processadmin.DoingApi;
+import net.risesoft.api.processadmin.HistoricTaskApi;
+import net.risesoft.api.processadmin.IdentityApi;
+import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.api.processadmin.ProcessTodoApi;
+import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -27,67 +49,44 @@ import net.risesoft.service.WorkList4ddyjsService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-
-import java.text.SimpleDateFormat;
-import java.util.*;
-
+@RequiredArgsConstructor
 @Service(value = "workList4ddyjsService")
 @Transactional(readOnly = true)
 public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
-    @Autowired
-    private DoingApi doingApi;
+    private final DoingApi doingApi;
 
-    @Autowired
-    private TaskApi taskApi;
+    private final TaskApi taskApi;
 
-    @Autowired
-    private Item4PositionApi item4PositionApi;
+    private final Item4PositionApi item4PositionApi;
 
-    @Autowired
-    private HistoricTaskApi historicTaskApi;
+    private final HistoricTaskApi historicTaskApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private OfficeFollow4PositionApi officeFollow4PositionApi;
+    private final OfficeFollow4PositionApi officeFollow4PositionApi;
 
-    @Autowired
-    private IdentityApi identityApi;
+    private final IdentityApi identityApi;
 
-    @Autowired
-    private OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
-    @Autowired
-    private ProcessTodoApi processTodoApi;
+    private final ProcessTodoApi processTodoApi;
 
-    @Autowired
-    private VariableApi variableApi;
+    private final VariableApi variableApi;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionApi;
+    private final ProcessDefinitionApi processDefinitionApi;
 
-    @Autowired
-    private TaskVariableApi taskvariableApi;
+    private final TaskVariableApi taskvariableApi;
 
-    @Autowired
-    private FormDataApi formDataApi;
+    private final FormDataApi formDataApi;
 
     @Value("${y9.common.flowableBaseUrl}")
-    private String flowableBaseUrl;
+    private final String flowableBaseUrl;
 
-    @Autowired
-    private ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSong4PositionApi chaoSong4PositionApi;
 
     @SuppressWarnings({"unchecked"})
     @Override
@@ -105,10 +104,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 } else {
                     retMap = doingApi.getListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
                 }
-                List<ProcessInstanceModel> list = (List<ProcessInstanceModel>) retMap.get("rows");
+                List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {
-                });
+                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {});
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp = null;
                 ProcessParamModel processParam = null;
@@ -171,10 +169,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 } else {
                     retMap = doingApi.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), searchTerm, page, rows);
                 }
-                List<ProcessInstanceModel> list = (List<ProcessInstanceModel>) retMap.get("rows");
+                List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {
-                });
+                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {});
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp = null;
                 ProcessParamModel processParam = null;
@@ -245,10 +242,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             retMap = officeDoneInfo4PositionApi.searchByPositionIdAndSystemName(tenantId, userId, searchTerm, item.getSystemName(), "", "", page, rows);
         }
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
-        List<OfficeDoneInfoModel> list = (List<OfficeDoneInfoModel>) retMap.get("rows");
+        List<OfficeDoneInfoModel> list = (List<OfficeDoneInfoModel>)retMap.get("rows");
         ObjectMapper objectMapper = new ObjectMapper();
-        List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<OfficeDoneInfoModel>>() {
-        });
+        List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<OfficeDoneInfoModel>>() {});
         int serialNumber = (page - 1) * rows;
         Map<String, Object> mapTemp = null;
         for (OfficeDoneInfoModel hpim : hpiModelList) {
@@ -300,7 +296,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
         map = officeFollow4PositionApi.getFollowListBySystemName(tenantId, Y9LoginUserHolder.getPositionId(), item.getSystemName(), searchTerm, page, rows);
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>) map.get("rows"), "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
     }
 
     /**
@@ -308,7 +304,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
      *
      * @return
      */
-    private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
+    private final List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String taskIds = "", assigneeIds = "", assigneeNames = "";
         List<String> list = new ArrayList<String>();
@@ -378,7 +374,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         return list;
     }
 
-    private List<String> getAssigneeIdsAndAssigneeNames1(List<TaskModel> taskList) {
+    private final List<String> getAssigneeIdsAndAssigneeNames1(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
         String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
@@ -456,10 +452,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             retMap = officeDoneInfo4PositionApi.getMeetingList(tenantId, userName, deptName, title, meetingType, page, rows);
             List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>) retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {
-            });
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp = null;
             for (OfficeDoneInfoModel hpim : hpiList) {
@@ -530,10 +525,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             retMap = doingApi.getListByUserId(tenantId, positionId, page, rows);
-            List<ProcessInstanceModel> list = (List<ProcessInstanceModel>) retMap.get("rows");
+            List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {
-            });
+            List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp = null;
             ProcessParamModel processParam = null;
@@ -601,10 +595,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             retMap = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, "", "", "", "done", "", "", "", page, rows);
             List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>) retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {
-            });
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp = null;
             for (OfficeDoneInfoModel hpim : hpiList) {
@@ -656,11 +649,11 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         Y9Page<Map<String, Object>> y9page = chaoSong4PositionApi.myChaoSongList(tenantId, positionId, searchName, itemId, userName, state, year, page, rows);
         List<Map<String, Object>> list = y9page.getRows();
         for (Map<String, Object> map : list) {
-            String itemId1 = (String) map.get("itemId");
-            String processSerialNumber = (String) map.get("processSerialNumber");
-            String processInstanceId = (String) map.get("processInstanceId");
-            String systemName = (String) map.get("systemName");
-            boolean banjie = (boolean) map.get("banjie");
+            String itemId1 = (String)map.get("itemId");
+            String processSerialNumber = (String)map.get("processSerialNumber");
+            String processInstanceId = (String)map.get("processInstanceId");
+            String systemName = (String)map.get("systemName");
+            boolean banjie = (boolean)map.get("banjie");
             map.put("itembox", "done");
             String taskId = "";
             String itembox = "done";
@@ -706,10 +699,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     retMap = processTodoApi.searchListByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), searchTerm, page, rows);
                 }
             }
-            List<TaskModel> list = (List<TaskModel>) retMap.get("rows");
+            List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<List<TaskModel>>() {
-            });
+            List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<List<TaskModel>>() {});
             List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
             int serialNumber = (page - 1) * rows;
             Map<String, Object> vars = null;
@@ -731,7 +723,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     keys = new ArrayList<String>();
                     keys.add(SysVariables.TASKSENDER);
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys);
-                    String taskSender = Strings.nullToEmpty((String) vars.get(SysVariables.TASKSENDER));
+                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);

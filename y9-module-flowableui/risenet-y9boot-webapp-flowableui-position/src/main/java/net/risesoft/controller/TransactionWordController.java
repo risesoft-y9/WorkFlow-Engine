@@ -13,19 +13,22 @@ import java.util.Map;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
@@ -41,35 +44,37 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
-@Controller
+/**
+ * 正文
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
+@RestController
 @RequestMapping("/transactionWord")
 public class TransactionWordController {
 
-    @Autowired
-    private Y9FileStoreService y9FileStoreService;
+    private final Y9FileStoreService y9FileStoreService;
 
-    @Autowired
-    private TransactionWordApi transactionWordApi;
+    private final TransactionWordApi transactionWordApi;
 
-    @Autowired
-    private Draft4PositionApi draft4PositionApi;
+    private final Draft4PositionApi draft4PositionApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
     /**
      * 删除指定类型的正文
      *
-     * @param isTaoHong
-     * @param processSerialNumber
+     * @param isTaoHong 是否套红
+     * @param processSerialNumber 流程编号
      * @param response
      */
     @RequestMapping(value = "/deleteWordByIsTaoHong")
-    @ResponseBody
-    public void deleteWordByIsTaoHong(@RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
+    public void deleteWordByIsTaoHong(@RequestParam String isTaoHong, @RequestParam @NotBlank String processSerialNumber, HttpServletResponse response) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, isTaoHong);
@@ -78,12 +83,13 @@ public class TransactionWordController {
     /**
      * 下载正文
      *
-     * @param id
+     * @param id 正文id
      * @param response
      * @param request
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam(required = false) String id, @RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, HttpServletResponse response, HttpServletRequest request) {
+    @ResponseBody
+    public void download(@RequestParam @NotBlank String id, @RequestParam String fileType, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, HttpServletResponse response, HttpServletRequest request) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Object documentTitle = null;
@@ -129,14 +135,15 @@ public class TransactionWordController {
     /**
      * 下载正文（抄送）
      *
-     * @param fileType
-     * @param processSerialNumber
-     * @param processInstanceId
+     * @param fileType 文件类型
+     * @param processSerialNumber 流程编号
+     * @param processInstanceId 流程实例id
      * @param response
      * @param request
      */
     @RequestMapping(value = "/downloadCS")
-    public void downloadCS(@RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, HttpServletResponse response, HttpServletRequest request) {
+    @ResponseBody
+    public void downloadCS(@RequestParam String fileType, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, HttpServletResponse response, HttpServletRequest request) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Map<String, Object> map = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
@@ -181,10 +188,19 @@ public class TransactionWordController {
         }
     }
 
+    /**
+     * 下载历史正文
+     *
+     * @param taskId 任务id
+     * @param processSerialNumber 流程编号
+     * @param processInstanceId 流程实例id
+     * @param fileType 文件类型
+     * @param response
+     * @param request
+     */
     @RequestMapping(value = "/downLoadHistoryDoc")
     @ResponseBody
-    public void downLoadHistoryDoc(@RequestParam(required = false) String taskId, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String fileType, HttpServletResponse response,
-        HttpServletRequest request) {
+    public void downLoadHistoryDoc(@RequestParam String taskId, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String fileType, HttpServletResponse response, HttpServletRequest request) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId);
@@ -233,8 +249,7 @@ public class TransactionWordController {
     }
 
     @RequestMapping(value = "/getUpdateWord")
-    @ResponseBody
-    public Map<String, Object> getUpdateWord(@RequestParam(required = false) String processSerialNumber) {
+    public Map<String, Object> getUpdateWord(@RequestParam String processSerialNumber) {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -296,7 +311,7 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/openDocument")
     @ResponseBody
-    public void openDocument(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String itemId, HttpServletResponse response, HttpServletRequest request) {
+    public void openDocument(@RequestParam String processSerialNumber, @RequestParam String itemId, HttpServletResponse response, HttpServletRequest request) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         String y9FileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId);
@@ -346,8 +361,7 @@ public class TransactionWordController {
      * @param templateGUID
      */
     @RequestMapping(value = "/openTaohongTemplate")
-    @ResponseBody
-    public void openDocumentTemplate(@RequestParam(required = false) String templateGUID, @RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
+    public void openDocumentTemplate(@RequestParam String templateGUID, @RequestParam String processSerialNumber, HttpServletResponse response) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "0");// 删除未套红的正文
@@ -379,7 +393,7 @@ public class TransactionWordController {
 
     @RequestMapping(value = "/openHistoryVersionDoc")
     @ResponseBody
-    public void openHistoryVersionDoc(@RequestParam(required = false) String taskId, @RequestParam(required = false) String itemId, HttpServletResponse response, HttpServletRequest request) {
+    public void openHistoryVersionDoc(@RequestParam String taskId, @RequestParam String itemId, HttpServletResponse response, HttpServletRequest request) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId);
@@ -431,7 +445,7 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/openPdf")
     @ResponseBody
-    public void openPdf(@RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
+    public void openPdf(@RequestParam String processSerialNumber, HttpServletResponse response) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         String y9FileStoreId = transactionWordApi.openPdf(tenantId, userId, processSerialNumber);
@@ -474,7 +488,7 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/openRevokePDFAfterDocument")
     @ResponseBody
-    public void openRevokePDFAfterDocument(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String istaohong, HttpServletResponse response, HttpServletRequest request) {
+    public void openRevokePDFAfterDocument(@RequestParam String processSerialNumber, @RequestParam String istaohong, HttpServletResponse response, HttpServletRequest request) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         // 删除转PDF的文件
@@ -547,8 +561,7 @@ public class TransactionWordController {
     @SuppressWarnings("unused")
     @ResponseBody
     @RequestMapping(value = "/saveAsPDFFile")
-    public void saveAsPDFFile(@RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String taskId,
-        HttpServletRequest request, HttpServletResponse response) {
+    public void saveAsPDFFile(@RequestParam String fileType, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String isTaoHong, @RequestParam String taskId, HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/html; charset=utf-8");
         response.setHeader("Cache-Control", "no-cache");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -581,7 +594,7 @@ public class TransactionWordController {
     }
 
     @RequestMapping(value = "/showHistoryDoc")
-    public String showHistoryDoc(@RequestParam(required = false) String taskId, @RequestParam(required = false) String historyFileType, ModelMap model) {
+    public String showHistoryDoc(@RequestParam String taskId, @RequestParam String historyFileType, ModelMap model) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId);
@@ -597,8 +610,7 @@ public class TransactionWordController {
      * @return
      */
     @RequestMapping("/showWord")
-    public String showWord(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String itemId, @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String browser, Model model) {
+    public String showWord(@RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String itemId, @RequestParam String itembox, @RequestParam String taskId, @RequestParam String browser, Model model) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = transactionWordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId);
@@ -628,7 +640,7 @@ public class TransactionWordController {
      * @return
      */
     @RequestMapping(value = "/list")
-    @ResponseBody
+
     public List<Map<String, Object>> taoHongTemplateList(@RequestParam String currentBureauGuid) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), choiceDeptId = Y9LoginUserHolder.getDeptId(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -652,7 +664,7 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> upload(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId, @RequestParam(required = false) MultipartFile file) {
+    public Map<String, Object> upload(@RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String taskId, @RequestParam MultipartFile file) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "上传成功");
@@ -717,8 +729,7 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/uploadWord", method = RequestMethod.POST)
     @ResponseBody
-    public String uploadWord(@RequestParam(required = false) String fileType, @RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
-        HttpServletRequest request, HttpServletResponse response) {
+    public String uploadWord(@RequestParam String fileType, @RequestParam String isTaoHong, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String taskId, HttpServletRequest request, HttpServletResponse response) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;

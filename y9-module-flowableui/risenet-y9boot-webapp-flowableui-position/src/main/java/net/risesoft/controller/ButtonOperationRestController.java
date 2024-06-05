@@ -7,15 +7,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.CustomProcessInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
@@ -48,56 +51,49 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
 
+/**
+ * 按钮方法
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/vue/buttonOperation")
 public class ButtonOperationRestController {
 
     protected Logger log = LoggerFactory.getLogger(ButtonOperationRestController.class);
 
-    @Autowired
-    private ButtonOperation4PositionApi buttonOperation4PositionApi;
+    private final ButtonOperation4PositionApi buttonOperation4PositionApi;
 
-    @Autowired
-    private TaskApi taskApi;
+    private final TaskApi taskApi;
 
-    @Autowired
-    private IdentityApi identityApi;
+    private final IdentityApi identityApi;
 
-    @Autowired
-    private VariableApi variableApi;
+    private final VariableApi variableApi;
 
-    @Autowired
-    private HistoricVariableApi historicvariableApi;
+    private final HistoricVariableApi historicvariableApi;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionApi;
+    private final ProcessDefinitionApi processDefinitionApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private HistoricTaskApi historictaskApi;
+    private final HistoricTaskApi historictaskApi;
 
-    @Autowired
-    private Document4PositionApi document4PositionApi;
+    private final Document4PositionApi document4PositionApi;
 
-    @Autowired
-    private MultiInstanceService multiInstanceService;
+    private final MultiInstanceService multiInstanceService;
 
-    @Autowired
-    private ProcessTrack4PositionApi processTrack4PositionApi;
+    private final ProcessTrack4PositionApi processTrack4PositionApi;
 
-    @Autowired
-    private Process4SearchService process4SearchService;
+    private final Process4SearchService process4SearchService;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private CustomProcessInfoApi customProcessInfoApi;
+    private final CustomProcessInfoApi customProcessInfoApi;
 
-    @Autowired
-    private ButtonOperationService buttonOperationService;
+    private final ButtonOperationService buttonOperationService;
 
     /**
      * 签收功能
@@ -105,9 +101,8 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/claim", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> claim(@RequestParam(required = true) String taskId) {
+    public Y9Result<String> claim(@RequestParam @NotBlank String taskId) {
         try {
             Position position = Y9LoginUserHolder.getPosition();
             String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -131,9 +126,8 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/completeTask", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> completeTask(@RequestParam(required = true) String taskId) {
+    public Y9Result<String> completeTask(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             taskApi.completeTask(tenantId, taskId);
@@ -151,9 +145,8 @@ public class ButtonOperationRestController {
      * @param userChoice 收件人
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/consult", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> consult(@RequestParam(required = true) String taskId, @RequestParam(required = true) String userChoice) {
+    public Y9Result<String> consult(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             taskApi.delegateTask(tenantId, taskId, userChoice);
@@ -178,8 +171,8 @@ public class ButtonOperationRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/customProcessHandle", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> customProcessHandle(@RequestParam(required = true) String itemId, @RequestParam(required = true) String multiInstance, @RequestParam(required = true) Boolean nextNode, @RequestParam(required = true) String processSerialNumber,
-        @RequestParam(required = true) String processDefinitionKey, @RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String taskId, @RequestParam(required = false) String infoOvert) {
+    public Y9Result<String> customProcessHandle(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String multiInstance, @RequestParam @NotBlank Boolean nextNode, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
+        @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String taskId, @RequestParam String infoOvert) {
         try {
             Position position = Y9LoginUserHolder.getPosition();
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -263,9 +256,8 @@ public class ButtonOperationRestController {
      * @param routeToTask 任务key
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/directSend", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> directSend(@RequestParam(required = true) String processInstanceId, @RequestParam(required = true) String taskId, @RequestParam(required = true) String routeToTask) {
+    public Y9Result<String> directSend(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTask) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         try {
             Boolean b = buttonOperation4PositionApi.directSend(tenantId, positionId, taskId, routeToTask, processInstanceId);
@@ -285,7 +277,7 @@ public class ButtonOperationRestController {
      * @return
      */
     @RequestMapping(value = "/getContainEndEvent4UserTask", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, String>>> getContainEndEvent4UserTask(@RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<List<Map<String, String>>> getContainEndEvent4UserTask(@RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             List<Map<String, String>> routeToTasks = processDefinitionApi.getContainEndEvent4UserTask(tenantId, processDefinitionId);
@@ -303,9 +295,9 @@ public class ButtonOperationRestController {
      * @return
      */
     @SuppressWarnings("unchecked")
-    @ResponseBody
+
     @RequestMapping(value = "/getHandleSerial", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<String> getHandleSerial(@RequestParam(required = true) String taskId) {
+    public Y9Result<String> getHandleSerial(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
@@ -336,7 +328,7 @@ public class ButtonOperationRestController {
      * @return
      */
     @RequestMapping(value = "/getTargetNodes", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, String>>> getTargetNodes(@RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
+    public Y9Result<List<Map<String, String>>> getTargetNodes(@RequestParam @NotBlank String processDefinitionId, @RequestParam String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             List<Map<String, String>> routeToTasks = new ArrayList<Map<String, String>>();
@@ -364,9 +356,8 @@ public class ButtonOperationRestController {
      * @return
      */
     @SuppressWarnings("unchecked")
-    @ResponseBody
     @RequestMapping(value = "/getTaskList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getTaskList(@RequestParam(required = true) String taskId) {
+    public Y9Result<Map<String, Object>> getTaskList(@RequestParam @NotBlank String taskId) {
         Map<String, Object> retMap = null;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -480,9 +471,8 @@ public class ButtonOperationRestController {
      * @return
      */
     @SuppressWarnings("unchecked")
-    @ResponseBody
     @RequestMapping(value = "/handleParallel", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> handleParallel(@RequestParam(required = true) String taskId) {
+    public Y9Result<String> handleParallel(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel task = taskApi.findById(tenantId, taskId);
@@ -525,25 +515,13 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/handleSerial", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> handleSerial(@RequestParam(required = true) String taskId) {
+    public Y9Result<String> handleSerial(@RequestParam @NotBlank String taskId) {
         try {
-            // Position position = Y9LoginUserHolder.getPosition();
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel task = taskApi.findById(tenantId, taskId);
             Map<String, Object> vars = variableApi.getVariables(tenantId, taskId);// 获取流程中当前任务的所有变量
-            // vars.put(SysVariables.TASKSENDER, position.getName());
-            // vars.put(SysVariables.TASKSENDERID, position.getId());
             taskApi.completeWithVariables(tenantId, taskId, vars);
-            // List<TaskModel> taskNextList = taskApi.findByProcessInstanceId(tenantId,
-            // task.getProcessInstanceId());
-            // for (TaskModel taskNext : taskNextList) {
-            // Map<String, Object> mapTemp = new HashMap<String, Object>(16);
-            // mapTemp.put(SysVariables.TASKSENDER, position.getName());
-            // mapTemp.put(SysVariables.TASKSENDERID, position.getId());
-            // variableApi.setVariables(tenantId, taskNext.getId(), mapTemp);
-            // }
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             return Y9Result.successMsg("办理成功");
         } catch (Exception e) {
@@ -559,9 +537,8 @@ public class ButtonOperationRestController {
      * @param userChoice 收件人
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/reAssign", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> reAssign(@RequestParam(required = true) String taskId, @RequestParam(required = true) String userChoice) {
+    public Y9Result<String> reAssign(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             taskApi.setAssignee(tenantId, taskId, userChoice);
@@ -580,8 +557,7 @@ public class ButtonOperationRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/refuseClaim", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
-    public Y9Result<String> refuseClaim(@RequestParam(required = true) String taskId) {
+    public Y9Result<String> refuseClaim(@RequestParam @NotBlank String taskId) {
         String activitiUser = "";
         try {
             Position position = Y9LoginUserHolder.getPosition();
@@ -615,9 +591,8 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/refuseClaimRollback", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> refuseClaimRollback(@RequestParam(required = true) String taskId) {
+    public Y9Result<String> refuseClaimRollback(@RequestParam @NotBlank String taskId) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -648,8 +623,8 @@ public class ButtonOperationRestController {
      * @return
      */
     @RequestMapping(value = "/reposition", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> reposition(@RequestParam(required = true) String taskId, @RequestParam(required = true) String routeToTaskId, @RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String userChoice, @RequestParam(required = false) String sponsorGuid,
-        @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
+    public Y9Result<String> reposition(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTaskId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String userChoice, @RequestParam String sponsorGuid, @RequestParam String isSendSms,
+        @RequestParam String isShuMing, @RequestParam String smsContent) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -683,9 +658,8 @@ public class ButtonOperationRestController {
      * @param reason 退回原因
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/rollback", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> rollback(@RequestParam(required = true) String taskId, @RequestParam(required = false) String reason) {
+    public Y9Result<String> rollback(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -728,9 +702,8 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/rollbackToSender", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> rollbackToSender(@RequestParam(required = true) String taskId) {
+    public Y9Result<String> rollbackToSender(@RequestParam @NotBlank String taskId) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -749,9 +722,8 @@ public class ButtonOperationRestController {
      * @param reason 原因
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/rollbackToStartor", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> rollbackToStartor(@RequestParam(required = true) String taskId, @RequestParam(required = false) String reason) {
+    public Y9Result<String> rollbackToStartor(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -773,7 +745,7 @@ public class ButtonOperationRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/saveCustomProcess", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveCustomProcess(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String processDefinitionKey, @RequestParam(required = true) String jsonData) {
+    public Y9Result<String> saveCustomProcess(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey, @RequestParam @NotBlank String jsonData) {
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             List<Map<String, Object>> list = Y9JsonUtil.readValue(jsonData, List.class);
@@ -808,9 +780,8 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/sendToSender", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> sendToSender(@RequestParam(required = true) String taskId) {
+    public Y9Result<String> sendToSender(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         try {
             buttonOperation4PositionApi.rollbackToSender(tenantId, positionId, taskId);
@@ -827,9 +798,8 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/sendToStartor", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> sendToStartor(@RequestParam(required = true) String taskId) {
+    public Y9Result<String> sendToStartor(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         try {
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
@@ -864,9 +834,8 @@ public class ButtonOperationRestController {
      * @param reason 特殊办结原因
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/specialComplete", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> specialComplete(@RequestParam(required = true) String taskId, @RequestParam(required = false) String reason) {
+    public Y9Result<String> specialComplete(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -912,9 +881,8 @@ public class ButtonOperationRestController {
      * @param reason 收回原因
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/takeback", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> takeback(@RequestParam(required = true) String taskId, @RequestParam(required = false) String reason) {
+    public Y9Result<String> takeback(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -932,9 +900,8 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/unclaim", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> unclaim(@RequestParam(required = true) String taskId) {
+    public Y9Result<String> unclaim(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             taskApi.unclaim(tenantId, taskId);

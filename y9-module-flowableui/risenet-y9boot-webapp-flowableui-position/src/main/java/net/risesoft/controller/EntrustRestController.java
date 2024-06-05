@@ -2,10 +2,14 @@ package net.risesoft.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -18,18 +22,23 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
+/**
+ * 出差委托
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/vue/entrust")
 public class EntrustRestController {
 
-    @Autowired
-    private Entrust4PositionApi entrust4PositionApi;
+    private final Entrust4PositionApi entrust4PositionApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private OrganizationApi organizationApi;
+    private final OrganizationApi organizationApi;
 
     /**
      * 删除委托
@@ -109,7 +118,7 @@ public class EntrustRestController {
      * @return
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrUpdate(String jsonData) {
+    public Y9Result<String> saveOrUpdate(@NotBlank String jsonData) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             EntrustModel model = Y9JsonUtil.readValue(jsonData, EntrustModel.class);

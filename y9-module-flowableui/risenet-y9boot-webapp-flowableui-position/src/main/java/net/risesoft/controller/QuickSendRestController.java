@@ -5,12 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.QuickSendApi;
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
@@ -24,21 +27,25 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+/**
+ * 快捷发送
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/vue/quickSend")
 public class QuickSendRestController {
 
-    @Autowired
-    private QuickSendApi quickSendApi;
+    private final QuickSendApi quickSendApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private DepartmentApi departmentApi;
+    private final DepartmentApi departmentApi;
 
-    @Autowired
-    private CustomGroupApi customGroupApi;
+    private final CustomGroupApi customGroupApi;
 
     /**
      * 获取快捷发送人
@@ -47,9 +54,8 @@ public class QuickSendRestController {
      * @param taskKey 任务key
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getAssignee")
-    public Y9Result<List<Map<String, Object>>> getAssignee(@RequestParam String itemId, @RequestParam String taskKey) {
+    public Y9Result<List<Map<String, Object>>> getAssignee(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey) {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String assignee = quickSendApi.getAssignee(tenantId, Y9LoginUserHolder.getPositionId(), itemId, taskKey);
@@ -73,8 +79,7 @@ public class QuickSendRestController {
                     map.put("orgType", OrgTypeEnum.DEPARTMENT.getEnName());
                     list.add(map);
                 } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
-                    CustomGroup customGroup =
-                        customGroupApi.findCustomGroupById(tenantId, Y9LoginUserHolder.getPersonId(), orgId).getData();
+                    CustomGroup customGroup = customGroupApi.findCustomGroupById(tenantId, Y9LoginUserHolder.getPersonId(), orgId).getData();
                     map.put("id", customGroup.getId());
                     map.put("name", customGroup.getGroupName());
                     map.put("orgType", "customGroup");
@@ -93,12 +98,9 @@ public class QuickSendRestController {
      * @param assignee 发送人
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveOrUpdate")
-    public Y9Result<String> saveOrUpdate(@RequestParam String itemId, @RequestParam String taskKey,
-        @RequestParam String assignee) {
-        quickSendApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId, taskKey,
-            assignee);
+    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey, @RequestParam String assignee) {
+        quickSendApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId, taskKey, assignee);
         return Y9Result.successMsg("保存成功");
     }
 }

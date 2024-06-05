@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ErrorLogApi;
@@ -36,25 +36,22 @@ import net.risesoft.y9.util.Y9Util;
  * @author 10858
  *
  */
+@RequiredArgsConstructor
 @EnableAsync
 @Service(value = "process4SearchService")
 @Slf4j
 public class Process4SearchService {
 
-    @Autowired
-    private OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
     @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private ErrorLogApi errorLogApi;
+    private final ErrorLogApi errorLogApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
     /**
      * 重定位，串行送下一人，修改办件信息
@@ -69,12 +66,10 @@ public class Process4SearchService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             ProcessParamModel processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
-            OfficeDoneInfoModel officeDoneInfo =
-                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+            OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
             if (officeDoneInfo != null) {
                 officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
-                officeDoneInfo.setUrgency(
-                    StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
+                officeDoneInfo.setUrgency(StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
                 officeDoneInfo.setUserComplete("");
                 officeDoneInfo.setBureauId(processParam.getBureauIds());
                 officeDoneInfo.setEndTime(null);
@@ -93,8 +88,7 @@ public class Process4SearchService {
                 officeDoneInfo.setEntrustUserId(entrustUserId);*/
 
                 // 处理参与人
-                sql =
-                    "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId + "'";
+                sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId + "'";
                 List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql);
                 String allUserId = "";
                 String deptIds = "";
@@ -156,19 +150,16 @@ public class Process4SearchService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String processInstanceId = processParam.getProcessInstanceId();
         try {
-            OfficeDoneInfoModel officeDoneInfo =
-                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+            OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
             if (officeDoneInfo != null) {
                 officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
-                officeDoneInfo.setUrgency(
-                    StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
+                officeDoneInfo.setUrgency(StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
                 officeDoneInfo.setUserComplete("");
                 officeDoneInfo.setBureauId(processParam.getBureauIds());
                 officeDoneInfo.setEndTime(null);
 
                 // 处理委托人
-                String sql =
-                    "SELECT e.OWNERID from FF_ENTRUSTDETAIL e where e.PROCESSINSTANCEID = '" + processInstanceId + "'";
+                String sql = "SELECT e.OWNERID from FF_ENTRUSTDETAIL e where e.PROCESSINSTANCEID = '" + processInstanceId + "'";
                 List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
                 String entrustUserId = "";
                 for (Map<String, Object> m : list2) {
@@ -180,8 +171,7 @@ public class Process4SearchService {
                 officeDoneInfo.setEntrustUserId(entrustUserId);
 
                 // 处理参与人
-                sql =
-                    "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId + "'";
+                sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId + "'";
                 List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql);
                 String allUserId = "";
                 String deptIds = "";

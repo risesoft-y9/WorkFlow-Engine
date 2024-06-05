@@ -8,15 +8,18 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
@@ -34,18 +37,17 @@ import net.risesoft.y9public.service.Y9FileStoreService;
  * @author 10858
  *
  */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/mobile/attachment")
 public class MobileAttachmentController {
 
-    @Autowired
-    private Y9FileStoreService y9FileStoreService;
+    private final Y9FileStoreService y9FileStoreService;
 
-    @Autowired
-    private Attachment4PositionApi attachment4PositionApi;
+    private final Attachment4PositionApi attachment4PositionApi;
 
-    @Autowired
-    private TransactionWordApi transactionWordApi;
+    private final TransactionWordApi transactionWordApi;
 
     /**
      * 附件下载
@@ -59,9 +61,7 @@ public class MobileAttachmentController {
      * @throws Exception
      */
     @RequestMapping(value = "/download")
-    public void attachmentDownload(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String id, HttpServletResponse response, HttpServletRequest request) throws Exception {
+    public void attachmentDownload(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) throws Exception {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Map<String, Object> map = attachment4PositionApi.attachmentDownload(tenantId, id);
@@ -97,9 +97,7 @@ public class MobileAttachmentController {
      * @param rows 行数
      */
     @RequestMapping(value = "/list")
-    public void attachmentList(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String processSerialNumber, @RequestParam(required = false) String fileSource, int page, int rows,
+    public void attachmentList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processSerialNumber, @RequestParam String fileSource, int page, int rows,
         HttpServletResponse response) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
@@ -129,11 +127,8 @@ public class MobileAttachmentController {
      * @throws Exception
      */
     @RequestMapping(value = "/upload")
-    public void attachmentUpload(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam(required = false) MultipartFile file, @RequestParam String processInstanceId,
-        @RequestParam String taskId, @RequestParam String describes, @RequestParam String processSerialNumber,
-        @RequestParam(required = false) String fileSource, HttpServletResponse response) throws Exception {
+    public void attachmentUpload(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) MultipartFile file, @RequestParam String processInstanceId, @RequestParam String taskId,
+        @RequestParam String describes, @RequestParam @NotBlank String processSerialNumber, @RequestParam String fileSource, HttpServletResponse response) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -143,12 +138,9 @@ public class MobileAttachmentController {
             String originalFilename = file.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);
             fileName = URLDecoder.decode(fileName, "UTF-8");
-            String fullPath =
-                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
+            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
-            map =
-                attachment4PositionApi.upload(tenantId, userId, positionId, fileName, y9FileStore.getDisplayFileSize(),
-                    processInstanceId, taskId, describes, processSerialNumber, fileSource, y9FileStore.getId());
+            map = attachment4PositionApi.upload(tenantId, userId, positionId, fileName, y9FileStore.getDisplayFileSize(), processInstanceId, taskId, describes, processSerialNumber, fileSource, y9FileStore.getId());
         } catch (Exception e) {
             e.printStackTrace();
             map.put(UtilConsts.SUCCESS, false);
@@ -168,8 +160,7 @@ public class MobileAttachmentController {
      * @param response
      */
     @RequestMapping(value = "/delFile")
-    public void delFile(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam String ids, HttpServletResponse response) {
+    public void delFile(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String ids, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -195,14 +186,11 @@ public class MobileAttachmentController {
      * @throws Exception
      */
     @RequestMapping(value = "/downloadWord")
-    public void downloadWord(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String processSerialNumber, @RequestParam String itemId, HttpServletResponse response,
+    public void downloadWord(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processSerialNumber, @RequestParam String itemId, HttpServletResponse response,
         HttpServletRequest request) throws Exception {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Map<String, Object> fileDocument =
-                transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
+            Map<String, Object> fileDocument = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
             String filename = fileDocument.get("fileName") != null ? (String)fileDocument.get("fileName") : "正文.doc";
             String fileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId);
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
@@ -241,18 +229,13 @@ public class MobileAttachmentController {
      * @return
      */
     @RequestMapping(value = "/uploadWord")
-    public String uploadWord(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam(required = false) String documentTitle, @RequestParam(required = false) MultipartFile file,
-        @RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String taskId) {
+    public String uploadWord(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String documentTitle, @RequestParam(required = false) MultipartFile file, @RequestParam String fileType,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam String taskId) {
         String result = "";
         try {
-            String fullPath =
-                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
+            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, "正文.doc");
-            result = transactionWordApi.uploadWord(tenantId, userId, documentTitle, fileType, processSerialNumber, "0",
-                taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
+            result = transactionWordApi.uploadWord(tenantId, userId, documentTitle, fileType, processSerialNumber, "0", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
         } catch (Exception e) {
             e.printStackTrace();
         }

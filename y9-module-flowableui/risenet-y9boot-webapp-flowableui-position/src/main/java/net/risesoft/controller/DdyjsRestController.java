@@ -2,12 +2,15 @@ package net.risesoft.controller;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.pojo.Y9Page;
@@ -21,15 +24,15 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2023/11/20
  */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/vue/ddyjs")
 public class DdyjsRestController {
 
-    @Autowired
-    private OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
-    @Autowired
-    private WorkList4ddyjsService workList4ddyjsService;
+    private final WorkList4ddyjsService workList4ddyjsService;
 
     /**
      * 取消上会
@@ -37,9 +40,8 @@ public class DdyjsRestController {
      * @param processInstanceId 流程实例id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/cancelMeeting", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> cancelMeeting(@RequestParam(required = true) String processInstanceId) {
+    public Y9Result<String> cancelMeeting(@RequestParam @NotBlank String processInstanceId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             officeDoneInfo4PositionApi.cancelMeeting(tenantId, processInstanceId);
@@ -61,12 +63,8 @@ public class DdyjsRestController {
      * @param rows
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getMeetingList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getMeetingList(@RequestParam(required = false) String meetingType,
-        @RequestParam(required = false) String userName, @RequestParam(required = false) String deptName,
-        @RequestParam(required = false) String title, @RequestParam(required = true) Integer page,
-        @RequestParam(required = true) Integer rows) {
+    public Y9Page<Map<String, Object>> getMeetingList(@RequestParam String meetingType, @RequestParam String userName, @RequestParam String deptName, @RequestParam String title, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
         return workList4ddyjsService.getMeetingList(userName, deptName, title, meetingType, page, rows);
     }
 
@@ -77,10 +75,8 @@ public class DdyjsRestController {
      * @param meetingType 会议类型
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/setMeeting", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> setMeeting(@RequestParam(required = true) String processInstanceId,
-        @RequestParam(required = true) String meetingType) {
+    public Y9Result<String> setMeeting(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String meetingType) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             officeDoneInfo4PositionApi.setMeeting(tenantId, processInstanceId, meetingType);

@@ -8,11 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -22,14 +23,13 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.FlowableReminderService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+@RequiredArgsConstructor
 @Service(value = "flowableReminderService")
 public class FlowableReminderServiceImpl implements FlowableReminderService {
 
-    @Autowired
-    private TaskApi taskApi;
+    private final TaskApi taskApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -60,15 +60,14 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
         return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
     }
 
-    private String longTime(Date startTime, Date endTime) {
+    private final String longTime(Date startTime, Date endTime) {
         if (endTime == null) {
             return "";
         } else {

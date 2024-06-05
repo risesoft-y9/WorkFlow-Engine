@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
@@ -26,36 +27,28 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
+@RequiredArgsConstructor
 @Service(value = "multiInstanceService")
 public class MultiInstanceServiceImpl implements MultiInstanceService {
 
-    @Autowired
-    private TaskApi taskApi;
+    private final TaskApi taskApi;
 
-    @Autowired
-    private VariableApi variableApi;
+    private final VariableApi variableApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private ButtonOperation4PositionApi buttonOperation4PositionApi;
+    private final ButtonOperation4PositionApi buttonOperation4PositionApi;
 
-    @Autowired
-    private Document4PositionApi document4PositionApi;
+    private final Document4PositionApi document4PositionApi;
 
-    @Autowired
-    private RuntimeApi runtimeApi;
+    private final RuntimeApi runtimeApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private Process4SearchService process4SearchService;
+    private final Process4SearchService process4SearchService;
 
     @Override
-    public void addExecutionId(String processInstanceId, String taskId, String userChoice, String isSendSms,
-        String isShuMing, String smsContent) throws Exception {
+    public void addExecutionId(String processInstanceId, String taskId, String userChoice, String isSendSms, String isShuMing, String smsContent) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel task = taskApi.findById(tenantId, taskId);
         String activityId = task.getTaskDefinitionKey();
@@ -73,16 +66,14 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
             e.printStackTrace();
         }
         for (String user : users) {
-            buttonOperation4PositionApi.addMultiInstanceExecution(tenantId, activityId, processInstanceId, taskId,
-                user);
+            buttonOperation4PositionApi.addMultiInstanceExecution(tenantId, activityId, processInstanceId, taskId, user);
         }
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParamModel);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void addExecutionId4Sequential(String executionId, String taskId, String userChoice, String selectUserId,
-        int num) throws Exception {
+    public void addExecutionId4Sequential(String executionId, String taskId, String userChoice, String selectUserId, int num) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String[] userChoiceArr = userChoice.split(";");
         String usersObj = variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.USERS);
@@ -113,8 +104,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         variableApi.setVariableLocal(tenantId, taskId, SysVariables.USERS, val);
 
         // 改变多实例的标量
-        Integer nrOfInstances = Integer
-            .valueOf(variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES));
+        Integer nrOfInstances = Integer.valueOf(variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES));
         Map<String, Object> val1 = new HashMap<String, Object>();
         val1.put("val", nrOfInstances + userChoiceArr.length);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.NROFINSTANCES, val1);
@@ -200,12 +190,10 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         if (!taskList.isEmpty()) {
             ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
             TaskModel task = taskList.get(0);
-            String taskId = task.getId(), processDefinitionId = task.getProcessDefinitionId(),
-                processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
+            String taskId = task.getId(), processDefinitionId = task.getProcessDefinitionId(), processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
             String routeToTask = task.getTaskDefinitionKey();
             String itemId = processParamModel.getItemId();
-            map = document4PositionApi.docUserChoise(tenantId, personId, Y9LoginUserHolder.getPositionId(), itemId,
-                processDefinitionKey, processDefinitionId, taskId, routeToTask, processInstanceId);
+            map = document4PositionApi.docUserChoise(tenantId, personId, Y9LoginUserHolder.getPositionId(), itemId, processDefinitionKey, processDefinitionId, taskId, routeToTask, processInstanceId);
             map.put("taskId", taskId);
             map.put("processInstanceId", processInstanceId);
         }
@@ -220,8 +208,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void removeExecution4Sequential(String executionId, String taskId, String elementUser, int num)
-        throws Exception {
+    public void removeExecution4Sequential(String executionId, String taskId, String elementUser, int num) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String usersObj = variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.USERS);
         // 计算删除后的users
@@ -249,8 +236,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         // 改变任务变量中的users
         variableApi.setVariableLocal(tenantId, taskId, SysVariables.USERS, val);
         // 改变多实例的标量
-        Integer nrOfInstances = Integer
-            .valueOf(variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES));
+        Integer nrOfInstances = Integer.valueOf(variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES));
         Map<String, Object> val1 = new HashMap<String, Object>();
         val1.put("val", nrOfInstances - 1);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.NROFINSTANCES, val1);

@@ -9,11 +9,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.consts.UtilConsts;
@@ -28,12 +30,13 @@ import net.risesoft.y9.util.Y9Util;
  * @author 10858
  *
  */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/mobile/item")
 public class MobileItemController {
 
-    @Autowired
-    private Item4PositionApi item4PositionApi;
+    private final Item4PositionApi item4PositionApi;
 
     /**
      * 获取事项列表
@@ -46,9 +49,7 @@ public class MobileItemController {
      */
     @ResponseBody
     @RequestMapping(value = "/getItemList")
-    public void getItemList(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        HttpServletRequest request, HttpServletResponse response) {
+    public void getItemList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);

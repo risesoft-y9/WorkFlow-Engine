@@ -17,39 +17,43 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.pojo.Y9Result;
 
+/**
+ * 人事办件统计
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/vue/leaveCount")
 @Slf4j
 public class LeaveCountController {
 
-    @Autowired
-    @Qualifier("y9TenantDataSource") private DataSource y9TenantDS;
+    @Qualifier("y9TenantDataSource")
+    private final DataSource y9TenantDS;
 
     private JdbcTemplate jdbcTemplate4Tenant = null;
 
-    @ResponseBody
     @RequestMapping(value = "/countList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> countList(@RequestParam(required = false) String leaveType,
-        @RequestParam(required = false) String userName, @RequestParam(required = false) String deptName,
-        @RequestParam(required = false) String startTime, @RequestParam(required = false) String endTime) {
+    public Y9Result<List<Map<String, Object>>> countList(@RequestParam String leaveType, @RequestParam String userName, @RequestParam String deptName, @RequestParam String startTime, @RequestParam String endTime) {
         try {
             List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-            String sql =
-                "SELECT USERNAME,DEPTNAME,LEAVETYPE,SUM(leaveDuration) AS leaveDuration,CASE WHEN LEAVETYPE = '事假' OR LEAVETYPE = '病假' OR LEAVETYPE = '哺乳假' OR LEAVETYPE = '调休' OR LEAVETYPE = '公出' THEN '小时' WHEN LEAVETYPE = '转正申请' OR LEAVETYPE = '入职申请'"
-                    + " OR LEAVETYPE = '离职申请' THEN '位' ELSE '天' END AS danwei FROM y9_form_qingjiabanjian AS Y,ff_process_param AS f WHERE y.guid = f.PROCESSSERIALNUMBER AND f.PROCESSINSTANCEID IS NOT NULL AND f.COMPLETER IS NOT NULL ";
+            String sql = "SELECT USERNAME,DEPTNAME,LEAVETYPE,SUM(leaveDuration) AS leaveDuration,CASE WHEN LEAVETYPE = '事假' OR LEAVETYPE = '病假' OR LEAVETYPE = '哺乳假' OR LEAVETYPE = '调休' OR LEAVETYPE = '公出' THEN '小时' WHEN LEAVETYPE = '转正申请' OR LEAVETYPE = '入职申请'"
+                + " OR LEAVETYPE = '离职申请' THEN '位' ELSE '天' END AS danwei FROM y9_form_qingjiabanjian AS Y,ff_process_param AS f WHERE y.guid = f.PROCESSSERIALNUMBER AND f.PROCESSINSTANCEID IS NOT NULL AND f.COMPLETER IS NOT NULL ";
 
             String whereStr = "";
             if (StringUtils.isNotBlank(deptName)) {
@@ -81,16 +85,11 @@ public class LeaveCountController {
 
     @SuppressWarnings("resource")
     @RequestMapping(value = "/exportExcel", method = RequestMethod.GET, produces = "application/json")
-    public void exportExcel(@RequestParam(required = false) String leaveType,
-        @RequestParam(required = false) String userName, @RequestParam(required = false) String deptName,
-        @RequestParam(required = false) String startTime, @RequestParam(required = false) String endTime,
-        HttpServletResponse response, HttpServletRequest request) {
+    public void exportExcel(@RequestParam String leaveType, @RequestParam String userName, @RequestParam String deptName, @RequestParam String startTime, @RequestParam String endTime, HttpServletResponse response, HttpServletRequest request) {
         try {
             List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-            String sql =
-                "SELECT USERNAME,DEPTNAME,LEAVETYPE,SUM(leaveDuration) AS leaveDuration, CASE WHEN LEAVETYPE = '事假' OR LEAVETYPE = '病假' OR LEAVETYPE = '哺乳假' OR LEAVETYPE = '调休' OR LEAVETYPE = '公出' THEN '小时' WHEN LEAVETYPE = '转正申请' OR LEAVETYPE = '入职申请'"
-                    + " OR LEAVETYPE = '离职申请' THEN '位' ELSE '天' END AS danwei FROM y9_form_qingjiabanjian AS Y,ff_process_param AS f "
-                    + "WHERE y.guid = f.PROCESSSERIALNUMBER AND f.PROCESSINSTANCEID IS NOT NULL AND f.COMPLETER IS NOT NULL ";
+            String sql = "SELECT USERNAME,DEPTNAME,LEAVETYPE,SUM(leaveDuration) AS leaveDuration, CASE WHEN LEAVETYPE = '事假' OR LEAVETYPE = '病假' OR LEAVETYPE = '哺乳假' OR LEAVETYPE = '调休' OR LEAVETYPE = '公出' THEN '小时' WHEN LEAVETYPE = '转正申请' OR LEAVETYPE = '入职申请'"
+                + " OR LEAVETYPE = '离职申请' THEN '位' ELSE '天' END AS danwei FROM y9_form_qingjiabanjian AS Y,ff_process_param AS f " + "WHERE y.guid = f.PROCESSSERIALNUMBER AND f.PROCESSINSTANCEID IS NOT NULL AND f.COMPLETER IS NOT NULL ";
 
             String whereStr = "";
             if (StringUtils.isNotBlank(deptName)) {
@@ -154,8 +153,7 @@ public class LeaveCountController {
                 row.createCell(4).setCellValue(map.get("danwei").toString());
                 sheet.autoSizeColumn(4);
             }
-            response.setHeader("Content-Disposition",
-                "attachment;filename=" + new String(("请假统计.xlsx").getBytes("utf-8"), "iso8859-1"));
+            response.setHeader("Content-Disposition", "attachment;filename=" + new String(("请假统计.xlsx").getBytes("utf-8"), "iso8859-1"));
             response.setContentType("text/html;charset=utf-8");
             OutputStream out = response.getOutputStream();
             wb.write(out);

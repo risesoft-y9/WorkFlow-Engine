@@ -13,13 +13,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.CalendarConfigApi;
@@ -32,13 +33,14 @@ import net.risesoft.y9.util.Y9Util;
 /**
  * 请休假接口
  */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/mobile/sign")
 @Slf4j
 public class MobileSignController {
 
-    @Autowired
-    private CalendarConfigApi calendarConfigApi;
+    private final CalendarConfigApi calendarConfigApi;
 
     // 两个日期时间相隔天数
     public String daysBetween(String startTime, String endTime) {
@@ -90,7 +92,7 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/getDay")
     @ResponseBody
-    public void getDay(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public void getDay(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String startDate, @RequestParam String endDate, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -134,8 +136,8 @@ public class MobileSignController {
     @SuppressWarnings("deprecation")
     @ResponseBody
     @RequestMapping("/getDayOrHour")
-    public void getDayOrHour(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String type, @RequestParam(required = false) String leaveStartTime, @RequestParam(required = false) String leaveEndTime, @RequestParam(required = false) String startSel,
-        @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime, @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType, HttpServletRequest request, HttpServletResponse response) {
+    public void getDayOrHour(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String type, @RequestParam String leaveStartTime, @RequestParam String leaveEndTime, @RequestParam String startSel, @RequestParam String endSel, @RequestParam String selStartTime,
+        @RequestParam String selEndTime, @RequestParam String leaveType, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("data", "");
         map.put("msg", "获取成功");
@@ -328,8 +330,8 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/getDays")
     @ResponseBody
-    public void getDays(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String startSel, @RequestParam(required = false) String endDate, @RequestParam(required = false) String endSel,
-        @RequestParam(required = false) String dateType, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public void getDays(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String startDate, @RequestParam String startSel, @RequestParam String endDate, @RequestParam String endSel, @RequestParam String dateType, HttpServletRequest request, HttpServletResponse response,
+        HttpSession session) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("day", 0);
         map.put(UtilConsts.SUCCESS, true);

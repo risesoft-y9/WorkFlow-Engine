@@ -6,13 +6,16 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.CalendarConfigApi;
@@ -20,6 +23,14 @@ import net.risesoft.model.itemadmin.CalendarConfigModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+/**
+ * 计算天数
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
 @SuppressWarnings("deprecation")
 @RestController
 @RequestMapping(value = "/vue/sign")
@@ -33,8 +44,7 @@ public class SignController {
         return DigestUtils.sha1Hex(psw);
     }
 
-    @Autowired
-    private CalendarConfigApi calendarConfigApi;
+    private final CalendarConfigApi calendarConfigApi;
 
     // 两个日期时间相隔天数
     public String daysBetween(String startTime, String endTime) {
@@ -80,7 +90,7 @@ public class SignController {
      * @return
      */
     @RequestMapping(value = "/getDay")
-    public Y9Result<String> getDay(@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
+    public Y9Result<String> getDay(@RequestParam String startDate, @RequestParam String endDate) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             String day = "";
@@ -114,7 +124,7 @@ public class SignController {
      * @return
      */
     @RequestMapping("/getDayOrHour")
-    public Y9Result<String> getDayOrHour(String type, String leaveStartTime, String leaveEndTime, String startSel, String endSel, String selStartTime, String selEndTime, String leaveType) {
+    public Y9Result<String> getDayOrHour(@NotBlank String type, String leaveStartTime, String leaveEndTime, String startSel, String endSel, String selStartTime, String selEndTime, String leaveType) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr = "";

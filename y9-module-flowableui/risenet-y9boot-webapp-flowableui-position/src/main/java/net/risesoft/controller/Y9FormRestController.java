@@ -6,11 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.OptionClassApi;
@@ -31,30 +35,31 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+/**
+ * 表单数据
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/vue/y9form")
 public class Y9FormRestController {
 
-    @Autowired
-    private TenantApi tenantApi;
+    private final TenantApi tenantApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private PersonApi personApi;
+    private final PersonApi personApi;
 
-    @Autowired
-    private FormDataApi formDataApi;
+    private final FormDataApi formDataApi;
 
-    @Autowired
-    private OptionClassApi optionClassApi;
+    private final OptionClassApi optionClassApi;
 
-    @Autowired
-    private DepartmentApi departmentApi;
+    private final DepartmentApi departmentApi;
 
     /**
      * 删除子表单数据
@@ -65,7 +70,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/delChildTableRow", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> delChildTableRow(String formId, String tableId, String guid) {
+    public Y9Result<String> delChildTableRow(@NotBlank String formId, @NotBlank String tableId, @NotBlank String guid) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map = formDataApi.delChildTableRow(tenantId, formId, tableId, guid);
@@ -86,7 +91,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/delPreFormData", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> delPreFormData(String formId, String guid) {
+    public Y9Result<String> delPreFormData(@NotBlank String formId, @NotBlank String guid) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map = formDataApi.delPreFormData(tenantId, formId, guid);
@@ -108,7 +113,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/getAllFieldPerm", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getAllFieldPerm(@RequestParam(required = true) String formId, @RequestParam(required = false) String taskDefKey, @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<List<Map<String, Object>>> getAllFieldPerm(@RequestParam @NotBlank String formId, @RequestParam String taskDefKey, @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
         List<Map<String, Object>> list = formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
@@ -122,7 +127,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/getBindPreFormByItemId", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBindPreFormByItemId(@RequestParam(required = true) String itemId) {
+    public Y9Result<Map<String, Object>> getBindPreFormByItemId(@RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = formDataApi.getBindPreFormByItemId(tenantId, itemId);
         return Y9Result.success(map, "获取成功");
@@ -137,7 +142,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/getChildTableData", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getChildTableData(String formId, String tableId, String processSerialNumber) {
+    public Y9Result<List<Map<String, Object>>> getChildTableData(@NotBlank String formId, @NotBlank String tableId, @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             List<Map<String, Object>> list = formDataApi.getChildTableData(tenantId, formId, tableId, processSerialNumber);
@@ -158,7 +163,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/getFieldPerm", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getFieldPerm(@RequestParam(required = true) String formId, @RequestParam(required = true) String fieldName, @RequestParam(required = false) String taskDefKey, @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<Map<String, Object>> getFieldPerm(@RequestParam @NotBlank String formId, @RequestParam @NotBlank String fieldName, @RequestParam String taskDefKey, @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
         Map<String, Object> map = formDataApi.getFieldPerm(tenantId, userId, formId, fieldName, taskDefKey, processDefinitionId);
@@ -174,7 +179,7 @@ public class Y9FormRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getFormData", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getFormData(@RequestParam(required = true) String formId, @RequestParam(required = true) String processSerialNumber) {
+    public Y9Result<Map<String, Object>> getFormData(@RequestParam @NotBlank String formId, @RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map = formDataApi.getFromData(tenantId, formId, processSerialNumber);
@@ -194,7 +199,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/getFormField", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Y9FormFieldModel>> getFormField(@RequestParam(required = true) String itemId) {
+    public Y9Result<List<Y9FormFieldModel>> getFormField(@RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             List<Y9FormFieldModel> list = formDataApi.getFormField(tenantId, itemId);
@@ -212,7 +217,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/getFormJson", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<String> getFormJson(@RequestParam(required = true) String formId) {
+    public Y9Result<String> getFormJson(@RequestParam @NotBlank String formId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String formJson = formDataApi.getFormJson(tenantId, formId);
         return Y9Result.success(formJson, "获取成功");
@@ -225,7 +230,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/getInitData", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getInitData(@RequestParam(required = false) String processSerialNumber) {
+    public Y9Result<Map<String, Object>> getInitData(@RequestParam String processSerialNumber) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         Date date = new Date();
@@ -273,7 +278,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/getOptionValueList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getOptionValueList(String type) {
+    public Y9Result<List<Map<String, Object>>> getOptionValueList(@NotBlank String type) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> list = optionClassApi.getOptionValueList(tenantId, type);
         return Y9Result.success(list, "获取成功");
@@ -286,7 +291,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/getPreFormDataByFormId", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(String formId) {
+    public Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(@NotBlank String formId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             List<Map<String, Object>> list = formDataApi.getPreFormDataByFormId(tenantId, formId);
@@ -307,7 +312,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/saveChildTableData", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData) {
+    public Y9Result<String> saveChildTableData(@NotBlank String formId, @NotBlank String tableId, @NotBlank String processSerialNumber, @NotBlank String jsonData) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             formDataApi.saveChildTableData(tenantId, formId, tableId, processSerialNumber, jsonData);
@@ -326,7 +331,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/saveFormData", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveFormData(@RequestParam(required = true) String formId, @RequestParam(required = true) String jsonData) {
+    public Y9Result<String> saveFormData(@RequestParam @NotBlank String formId, @RequestParam @NotBlank String jsonData) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             formDataApi.saveFormData(tenantId, formId, jsonData);
@@ -346,7 +351,7 @@ public class Y9FormRestController {
      * @return
      */
     @RequestMapping(value = "/savePreFormData", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> savePreFormData(@RequestParam(required = true) String formId, @RequestParam(required = true) String itemId, @RequestParam(required = true) String jsonData) {
+    public Y9Result<String> savePreFormData(@RequestParam @NotBlank String formId, @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String jsonData) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             String processSerialNumber = formDataApi.savePreFormData(tenantId, itemId, formId, jsonData);

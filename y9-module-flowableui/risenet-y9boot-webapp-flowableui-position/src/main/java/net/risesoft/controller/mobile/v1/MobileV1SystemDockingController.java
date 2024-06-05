@@ -83,7 +83,7 @@ public class MobileV1SystemDockingController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/startAndForwarding")
     public Y9Result<Map<String, Object>> startAndForwarding(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String mappingId, @RequestParam @NotBlank String routeToTaskId, @RequestParam @NotBlank String positionChoice, @RequestParam @NotBlank String formJsonData,
-        @RequestParam(required = false) String taskId, @RequestParam(required = false) MultipartFile[] files) {
+        @RequestParam String taskId, @RequestParam(required = false) MultipartFile[] files) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -218,7 +218,7 @@ public class MobileV1SystemDockingController {
                         }
                         Map<String, Object> att_map = attachment4PositionApi.upload(tenantId, userId, positionId, fileName, fileSizeString, "", "", "", guid, "", y9FileStore.getId());
                         if (!(boolean)att_map.get(UtilConsts.SUCCESS)) {
-                            System.out.println("***********************" + title + "**********保存附件失败");
+                            LOGGER.info("***********************" + title + "**********保存附件失败");
                             return Y9Result.failure("保存附件失败");
                         }
                     }

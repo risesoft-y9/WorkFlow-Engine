@@ -2,28 +2,27 @@ package net.risesoft.service;
 
 import java.util.concurrent.Future;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.todo.TodoTaskApi;
 
+@RequiredArgsConstructor
 @EnableAsync
 @Service(value = "asyncUtilService")
 public class AsyncUtilService {
 
-    @Autowired
-    private TodoTaskApi todoTaskApi;
+    private final TodoTaskApi todoTaskApi;
 
-    @Autowired
-    private ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSong4PositionApi chaoSong4PositionApi;
 
-    @Autowired
-    private OfficeFollow4PositionApi officeFollow4PositionApi;
+    private final OfficeFollow4PositionApi officeFollow4PositionApi;
 
     /**
      * 更新统一待办，抄送件标题
@@ -34,8 +33,7 @@ public class AsyncUtilService {
      * @return
      */
     @Async
-    public Future<Boolean> updateTitle(final String tenantId, final String processInstanceId,
-        final String documentTitle) {
+    public Future<Boolean> updateTitle(final String tenantId, final String processInstanceId, final String documentTitle) {
         try {
             chaoSong4PositionApi.updateTitle(tenantId, processInstanceId, documentTitle);
             todoTaskApi.updateTitle(tenantId, processInstanceId, documentTitle);

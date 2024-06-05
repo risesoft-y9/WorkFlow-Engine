@@ -11,11 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
 import net.risesoft.api.platform.org.DepartmentApi;
@@ -41,29 +43,25 @@ import net.risesoft.y9.util.Y9Util;
  * @author 10858
  *
  */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/mobile/org")
 public class MobileOrgController {
 
     protected final Logger log = LoggerFactory.getLogger(MobileOrgController.class);
 
-    @Autowired
-    private PersonApi personApi;
+    private final PersonApi personApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private DepartmentApi departmentApi;
+    private final DepartmentApi departmentApi;
 
-    @Autowired
-    private TodoTaskApi todoTaskApi;
+    private final TodoTaskApi todoTaskApi;
 
-    @Autowired
-    private Entrust4PositionApi entrust4PositionApi;
+    private final Entrust4PositionApi entrust4PositionApi;
 
     private List<String> addUserIds(List<String> userIds, String userId) {
         if (!userIds.contains(userId)) {

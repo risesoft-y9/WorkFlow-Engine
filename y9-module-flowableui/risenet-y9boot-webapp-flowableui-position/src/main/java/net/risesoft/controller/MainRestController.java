@@ -5,14 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
@@ -39,48 +42,43 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
-@Controller
+/**
+ * 事项，统计相关
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
+@RestController
 @RequestMapping(value = "/vue/mian")
 public class MainRestController {
 
-    @Autowired
-    private Item4PositionApi item4PositionApi;
+    private final Item4PositionApi item4PositionApi;
 
-    @Autowired
-    private HistoricProcessApi historicProcessApi;
+    private final HistoricProcessApi historicProcessApi;
 
-    @Autowired
-    private PositionRoleApi positionRoleApi;
+    private final PositionRoleApi positionRoleApi;
 
-    @Autowired
-    private TaskApi taskApi;
+    private final TaskApi taskApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private ProcessTodoApi processTodoApi;
+    private final ProcessTodoApi processTodoApi;
 
-    @Autowired
-    private Draft4PositionApi draft4PositionApi;
+    private final Draft4PositionApi draft4PositionApi;
 
-    @Autowired
-    private ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSong4PositionApi chaoSong4PositionApi;
 
-    @Autowired
-    private OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
-    @Autowired
-    private TodoTaskApi todotaskApi;
+    private final TodoTaskApi todotaskApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private Entrust4PositionApi entrust4PositionApi;
+    private final Entrust4PositionApi entrust4PositionApi;
 
-    @Autowired
-    private ItemLink4PositionApi itemLink4PositionApi;
+    private final ItemLink4PositionApi itemLink4PositionApi;
 
     /**
      * 获取所有事项
@@ -88,7 +86,6 @@ public class MainRestController {
      * @return
      */
     @RequestMapping(value = "/geAllItemList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<Map<String, Object>> geAllItemList() {
         Map<String, Object> map = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -105,9 +102,8 @@ public class MainRestController {
      * @param itemId
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getCount4Item")
-    public Y9Result<Map<String, Object>> getCount4Item(String itemId) {
+    public Y9Result<Map<String, Object>> getCount4Item(@NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -179,9 +175,8 @@ public class MainRestController {
      * @param systemName
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getCount4SystemName")
-    public Y9Result<Map<String, Object>> getCount4SystemName(String systemName) {
+    public Y9Result<Map<String, Object>> getCount4SystemName(@NotBlank String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -232,8 +227,7 @@ public class MainRestController {
      * @return
      */
     @RequestMapping(value = "/getItem", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    public Y9Result<Map<String, Object>> getItem(@RequestParam(required = true) String itemId) {
+    public Y9Result<Map<String, Object>> getItem(@RequestParam @NotBlank String itemId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -257,8 +251,7 @@ public class MainRestController {
      * @return
      */
     @RequestMapping(value = "/getItemBySystemName", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    public Y9Result<Map<String, Object>> getItemBySystemName(@RequestParam(required = true) String systemName) {
+    public Y9Result<Map<String, Object>> getItemBySystemName(@RequestParam @NotBlank String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemModel> itemList = item4PositionApi.findAll(tenantId, systemName);
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -273,11 +266,24 @@ public class MainRestController {
     }
 
     /**
+     * 获取流程绑定的链接
+     *
+     * @param itemId 事项id
+     * @return List<LinkInfoModel>
+     */
+    @GetMapping("/getItemLinkList")
+    public Y9Result<List<LinkInfoModel>> getItemLinkList(@RequestParam @NotBlank String itemId) {
+        String positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<LinkInfoModel> itemLinkList = itemLink4PositionApi.getItemLinkList(tenantId, positionId, itemId);
+        return Y9Result.success(itemLinkList);
+    }
+
+    /**
      * 获取个人所有件统计
      *
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getMyCount", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getMyCount() {
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -310,8 +316,7 @@ public class MainRestController {
      * @return
      */
     @RequestMapping(value = "/getPositionList", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    public Y9Result<Map<String, Object>> getPositionList(@RequestParam(required = false) String count, @RequestParam(required = false) String itemId, @RequestParam(required = false) String systemName) {
+    public Y9Result<Map<String, Object>> getPositionList(@RequestParam String count, @RequestParam String itemId, @RequestParam String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> resMap = new HashMap<String, Object>(16);
         List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
@@ -386,7 +391,7 @@ public class MainRestController {
      *
      * @return
      */
-    @ResponseBody
+
     @RequestMapping(value = "/getReadCount", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getReadCount() {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -403,7 +408,6 @@ public class MainRestController {
      * @return
      */
     @RequestMapping(value = "/getRole", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
     public Y9Result<Map<String, Object>> getRole() {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -419,19 +423,17 @@ public class MainRestController {
     /**
      * 获取流程任务信息
      *
-     * @param taskId            任务id
+     * @param taskId 任务id
      * @param processInstanceId 流程实例id
-     * @param type              类型
+     * @param type 类型
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getTaskOrProcessInfo", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getTaskOrProcessInfo(@RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId, @RequestParam(required = true) String type) {
+    public Y9Result<Map<String, Object>> getTaskOrProcessInfo(@RequestParam String taskId, @RequestParam String processInstanceId, @RequestParam @NotBlank String type) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         String processSerialNumber = "";
         try {
-
             if (type.equals("fromTodo")) {
                 try {
                     TaskModel taskModel = taskApi.findById(tenantId, taskId);
@@ -504,21 +506,6 @@ public class MainRestController {
         map.put("processInstanceId", processInstanceId);
         map.put("processSerialNumber", processSerialNumber);
         return Y9Result.success(map, "获取成功");
-    }
-
-    /**
-     * 获取流程绑定的链接
-     *
-     * @param itemId 事项id
-     * @return List<LinkInfoModel>
-     */
-    @ResponseBody
-    @GetMapping("/getItemLinkList")
-    public Y9Result<List<LinkInfoModel>> getItemLinkList(@RequestParam String itemId) {
-        String positionId = Y9LoginUserHolder.getPositionId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<LinkInfoModel> itemLinkList = itemLink4PositionApi.getItemLinkList(tenantId, positionId, itemId);
-        return Y9Result.success(itemLinkList);
     }
 
 }

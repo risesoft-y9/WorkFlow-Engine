@@ -4,9 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
@@ -21,18 +22,16 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ActRuDetailService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+@RequiredArgsConstructor
 @Service(value = "actRuDetailService")
 @Transactional(readOnly = true)
 public class ActRuDetailServiceImpl implements ActRuDetailService {
 
-    @Autowired
-    private Item4PositionApi item4PositionApi;
+    private final Item4PositionApi item4PositionApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private ActRuDetailApi actRuDetailApi;
+    private final ActRuDetailApi actRuDetailApi;
 
     @Override
     public Y9Result<String> complete(String processSerialNumber) {
@@ -47,15 +46,12 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     public Y9Result<String> saveOrUpdate(String itemId, String processSerialNumber) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(),
-                personName = person.getName();
-            List<ActRuDetailModel> ardmList =
-                actRuDetailApi.findByProcessSerialNumberAndStatus(tenantId, processSerialNumber, 0);
+            String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(), personName = person.getName();
+            List<ActRuDetailModel> ardmList = actRuDetailApi.findByProcessSerialNumberAndStatus(tenantId, processSerialNumber, 0);
             if (!ardmList.isEmpty()) {
                 return Y9Result.successMsg("已设置办理人信息");
             }
-            ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
             actRuDetailModel.setCreateTime(new Date());

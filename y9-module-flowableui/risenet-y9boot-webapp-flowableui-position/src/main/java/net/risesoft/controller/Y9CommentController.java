@@ -5,13 +5,15 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.druid.pool.DruidDataSource;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -20,18 +22,20 @@ import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
 
 import y9.dbcomment.Y9CommentUtil;
 
-@Controller
+@Validated
+@RequiredArgsConstructor
+@RestController
 @RequestMapping("/admin/comment")
 public class Y9CommentController {
 
-    @Autowired
-    @Qualifier("y9PublicDS") private DruidDataSource y9PublicDS;
+    @Qualifier("y9PublicDS")
+    private DruidDataSource y9PublicDS;
 
-    @Autowired
-    @Qualifier("defaultDataSource") private DruidDataSource y9FlowableDS;
+    @Qualifier("defaultDataSource")
+    private DruidDataSource y9FlowableDS;
 
-    @Autowired
-    @Qualifier("y9TenantDataSource") private Y9TenantDataSource y9TenantDS;
+    @Qualifier("y9TenantDataSource")
+    private Y9TenantDataSource y9TenantDS;
 
     private JdbcTemplate jdbcTemplate4Public = null;
 
@@ -50,10 +54,8 @@ public class Y9CommentController {
     public String refreshComment() {
         String dbType = DbUtil.getDbTypeString(y9FlowableDS);
 
-        String y9publicPackageEntity =
-            Y9Context.getProperty("y9.feature.comment.packagesToScanEntityPublic", "net.risesoft.y9public.entity");// 自定义公共表路径
-        String packageEntity =
-            Y9Context.getProperty("y9.app.itemAdmin.jpa.packagesToScanEntity", "net.risesoft.entity");// 自定义租户表路径
+        String y9publicPackageEntity = Y9Context.getProperty("y9.feature.comment.packagesToScanEntityPublic", "net.risesoft.y9public.entity");// 自定义公共表路径
+        String packageEntity = Y9Context.getProperty("y9.app.itemAdmin.jpa.packagesToScanEntity", "net.risesoft.entity");// 自定义租户表路径
         /**
          * 默认库
          */

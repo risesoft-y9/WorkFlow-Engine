@@ -4,14 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.consts.UtilConsts;
@@ -25,14 +28,15 @@ import net.risesoft.y9.util.Y9Util;
  * @author 10858
  *
  */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/mobile/draft")
 public class MobileDraftController {
 
     protected Logger log = LoggerFactory.getLogger(MobileDraftController.class);
 
-    @Autowired
-    private Draft4PositionApi draft4PositionApi;
+    private final Draft4PositionApi draft4PositionApi;
 
     /**
      * 彻底删除草稿
@@ -44,8 +48,7 @@ public class MobileDraftController {
      * @param response
      */
     @RequestMapping(value = "/delDraft")
-    public void delDraft(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam String ids, HttpServletResponse response) {
+    public void delDraft(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String ids, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -69,9 +72,7 @@ public class MobileDraftController {
      * @param response
      */
     @RequestMapping(value = "/getDeleteDraftCount")
-    public void getDeleteDraftCount(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, HttpServletResponse response) {
+    public void getDeleteDraftCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -98,9 +99,7 @@ public class MobileDraftController {
      * @param response
      */
     @RequestMapping(value = "/getDraftCount")
-    public void getDraftCount(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, HttpServletResponse response) {
+    public void getDraftCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -131,10 +130,8 @@ public class MobileDraftController {
      * @param response
      */
     @RequestMapping(value = "/getDraft")
-    public void getManuscript(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String itemId, @RequestParam(required = false) String title, boolean delFlag,
-        @RequestParam Integer page, @RequestParam Integer rows, HttpServletResponse response) {
+    public void getManuscript(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam String title, boolean delFlag, @RequestParam Integer page,
+        @RequestParam Integer rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -159,8 +156,7 @@ public class MobileDraftController {
      * @param response
      */
     @RequestMapping(value = "/reduction")
-    public void reduction(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam String id, HttpServletResponse response) {
+    public void reduction(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String id, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -184,9 +180,7 @@ public class MobileDraftController {
      * @param response
      */
     @RequestMapping(value = "/removeDraft")
-    public void removeDraft(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String ids, HttpServletResponse response) {
+    public void removeDraft(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String ids, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);

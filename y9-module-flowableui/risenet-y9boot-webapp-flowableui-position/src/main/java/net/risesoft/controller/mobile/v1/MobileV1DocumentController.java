@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -105,13 +107,12 @@ public class MobileV1DocumentController {
      * @param itemId 事项id
      */
     @RequestMapping(value = "/add")
-    public Y9Result<Map<String, Object>> add(@RequestParam String itemId) {
+    public Y9Result<Map<String, Object>> add(@RequestParam @NotBlank String itemId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             map = document4PositionApi.add(Y9LoginUserHolder.getTenantId(), positionId, itemId, true);
-            // 意见框？？？？？？？？？？
             String formIds = (String)map.get("formId");
             String taskDefKey = (String)map.get("taskDefKey");
             String processDefinitionId = (String)map.get("processDefinitionId");
@@ -157,7 +158,7 @@ public class MobileV1DocumentController {
      * @param processInstanceId 删除的流程实例id
      */
     @RequestMapping("/delAssociatedFile")
-    public Y9Result<String> delAssociatedFile(String processSerialNumber, String processInstanceId) {
+    public Y9Result<String> delAssociatedFile(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         boolean b = associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceId);
         if (b) {
@@ -176,7 +177,7 @@ public class MobileV1DocumentController {
      * @param processInstanceId 流程实例id
      */
     @RequestMapping(value = "/documentDetail")
-    public Y9Result<Map<String, Object>> documentDetail(@RequestParam String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox, @RequestParam String itemId, @RequestParam String processInstanceId) {
+    public Y9Result<Map<String, Object>> documentDetail(@RequestParam @NotBlank String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox, @RequestParam @NotBlank String itemId, @RequestParam String processInstanceId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -208,7 +209,7 @@ public class MobileV1DocumentController {
      * @param itembox 办件状态，待办：todo,在办：doing,办结：done
      */
     @RequestMapping(value = "/documentDetailByTaskId")
-    public Y9Result<Map<String, Object>> documentDetailByTaskId(@RequestParam String taskId, @RequestParam String itembox) {
+    public Y9Result<Map<String, Object>> documentDetailByTaskId(@RequestParam @NotBlank String taskId, @RequestParam String itembox) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("msg", "获取失败");
         map.put(UtilConsts.SUCCESS, false);
@@ -252,8 +253,7 @@ public class MobileV1DocumentController {
      * @param itemId 事项id
      */
     @RequestMapping("/findPermUser")
-    public Y9Result<List<Map<String, Object>>> findPermUser(@RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey, @RequestParam Integer principalType, @RequestParam String processInstanceId, @RequestParam(required = false) String id,
-        @RequestParam String itemId) {
+    public Y9Result<List<Map<String, Object>>> findPermUser(@RequestParam String processDefinitionId, @RequestParam String taskDefKey, @RequestParam Integer principalType, @RequestParam String processInstanceId, @RequestParam String id, @RequestParam String itemId) {
         String positionId = Y9LoginUserHolder.getPositionId();
         String userId = Y9LoginUserHolder.getPersonId();
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
@@ -276,8 +276,7 @@ public class MobileV1DocumentController {
      * @param name 搜索内容
      */
     @RequestMapping("/findPermUserByName")
-    public Y9Result<List<Map<String, Object>>> findPermUserByName(@RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey, @RequestParam Integer principalType, @RequestParam String processInstanceId, @RequestParam(required = false) String name,
-        @RequestParam String itemId) {
+    public Y9Result<List<Map<String, Object>>> findPermUserByName(@RequestParam String processDefinitionId, @RequestParam String taskDefKey, @RequestParam Integer principalType, @RequestParam String processInstanceId, @RequestParam String name, @RequestParam String itemId) {
         String positionId = Y9LoginUserHolder.getPositionId();
         String userId = Y9LoginUserHolder.getPersonId();
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
@@ -306,9 +305,8 @@ public class MobileV1DocumentController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping("/forwarding")
-    public Y9Result<Map<String, Object>> forwarding(@RequestParam(required = false) String itemId, @RequestParam(required = false) String temp_Ids, @RequestParam(required = false) String taskId, @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processDefinitionKey, @RequestParam(required = false) String userChoice, @RequestParam(required = false) String sponsorGuid, @RequestParam(required = false) String sponsorHandle, @RequestParam(required = false) String routeToTaskId,
-        @RequestParam(required = false) String processInstanceId, @RequestParam String formJsonData) {
+    public Y9Result<Map<String, Object>> forwarding(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String temp_Ids, @RequestParam String taskId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
+        @RequestParam @NotBlank String userChoice, @RequestParam String sponsorGuid, @RequestParam String sponsorHandle, @RequestParam String routeToTaskId, @RequestParam String processInstanceId, @RequestParam @NotBlank String formJsonData) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -358,7 +356,7 @@ public class MobileV1DocumentController {
      * @param processDefinitionId 流程定义id
      */
     @RequestMapping("/getAllFieldPerm")
-    public Y9Result<List<Map<String, Object>>> getAllFieldPerm(@RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey, @RequestParam String formId) {
+    public Y9Result<List<Map<String, Object>>> getAllFieldPerm(@RequestParam @NotBlank String processDefinitionId, @RequestParam String taskDefKey, @RequestParam @NotBlank String formId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
         List<Map<String, Object>> list = formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
@@ -372,7 +370,7 @@ public class MobileV1DocumentController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping("/getAssociatedFileList")
-    public Y9Result<List<Map<String, Object>>> getAssociatedFileList(@RequestParam(required = false) String processSerialNumber) {
+    public Y9Result<List<Map<String, Object>>> getAssociatedFileList(@RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>(16);
         map = associatedFile4PositionApi.getAssociatedFileList(tenantId, processSerialNumber);
@@ -389,7 +387,7 @@ public class MobileV1DocumentController {
      * @param processInstanceId 流程实例id
      */
     @RequestMapping(value = "/getByTaskId")
-    public Y9Result<Map<String, Object>> getByTaskId(@RequestParam String taskId, @RequestParam String processInstanceId) {
+    public Y9Result<Map<String, Object>> getByTaskId(@RequestParam @NotBlank String taskId, @RequestParam String processInstanceId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -492,7 +490,7 @@ public class MobileV1DocumentController {
      * @param processInstanceId 流程实例id
      */
     @RequestMapping("/getTabMap")
-    public Y9Result<Map<String, Object>> getTabMap(@RequestParam String processDefinitionKey, @RequestParam String processDefinitionId, @RequestParam String taskId, @RequestParam String taskDefKey, @RequestParam String itemId, @RequestParam String processInstanceId) {
+    public Y9Result<Map<String, Object>> getTabMap(@RequestParam @NotBlank String processDefinitionKey, @RequestParam @NotBlank String processDefinitionId, @RequestParam String taskId, @RequestParam String taskDefKey, @RequestParam String itemId, @RequestParam String processInstanceId) {
         String positionId = Y9LoginUserHolder.getPositionId();
         String userId = Y9LoginUserHolder.getPersonId();
         Map<String, Object> map = new HashMap<>(16);
@@ -512,7 +510,7 @@ public class MobileV1DocumentController {
      * @param processInstanceIds 关联的流程实例ids
      */
     @RequestMapping("/saveAssociatedFile")
-    public Y9Result<String> saveAssociatedFile(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceIds) {
+    public Y9Result<String> saveAssociatedFile(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processInstanceIds) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         boolean b = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
@@ -534,7 +532,8 @@ public class MobileV1DocumentController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping("/saveFormData")
-    public Y9Result<String> saveFormData(@RequestParam String temp_Ids, @RequestParam String processInstanceId, @RequestParam String processSerialNumber, @RequestParam String processDefinitionKey, @RequestParam String itemId, @RequestParam String formJsonData) {
+    public Y9Result<String> saveFormData(@RequestParam @NotBlank String temp_Ids, @RequestParam String processInstanceId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey, @RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String formJsonData) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -579,7 +578,7 @@ public class MobileV1DocumentController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping("/submitTo")
-    public Y9Result<String> submitTo(@RequestParam(required = true) String itemId, @RequestParam(required = true) String temp_Ids, @RequestParam(required = true) String taskId, @RequestParam(required = true) String processSerialNumber, @RequestParam String formJsonData) {
+    public Y9Result<String> submitTo(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String temp_Ids, @RequestParam String taskId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String formJsonData) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();

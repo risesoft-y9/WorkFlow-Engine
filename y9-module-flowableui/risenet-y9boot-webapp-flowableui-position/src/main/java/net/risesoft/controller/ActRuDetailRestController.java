@@ -1,21 +1,31 @@
 package net.risesoft.controller;
 
-import javax.annotation.Resource;
+import javax.validation.constraints.NotBlank;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ActRuDetailService;
 
-@Controller
-@RequestMapping(value = "/actRuDetail")
+/**
+ * 办件详情
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
+@RestController
+@RequestMapping(value = "/vue/actRuDetail")
 public class ActRuDetailRestController {
 
-    @Resource(name = "actRuDetailService")
-    private ActRuDetailService actRuDetailService;
+    private final ActRuDetailService actRuDetailService;
 
     /**
      * 办结
@@ -25,7 +35,7 @@ public class ActRuDetailRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/complete")
-    public Y9Result<String> complete(@RequestParam String processSerialNumber) {
+    public Y9Result<String> complete(@RequestParam @NotBlank String processSerialNumber) {
         return actRuDetailService.complete(processSerialNumber);
     }
 
@@ -39,7 +49,7 @@ public class ActRuDetailRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/saveOrUpdate")
-    public Y9Result<String> saveOrUpdate(@RequestParam String itemId, @RequestParam String processSerialNumber) {
+    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processSerialNumber) {
         return actRuDetailService.saveOrUpdate(itemId, processSerialNumber);
     }
 }

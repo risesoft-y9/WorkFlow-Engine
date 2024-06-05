@@ -6,13 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
@@ -32,24 +35,27 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+/**
+ * 我的关注
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/vue/officeFollow")
 public class OfficeFollowRestController {
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private OfficeFollow4PositionApi officeFollow4PositionApi;
+    private final OfficeFollow4PositionApi officeFollow4PositionApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private HistoricProcessApi historicProcessApi;
+    private final HistoricProcessApi historicProcessApi;
 
-    @Autowired
-    private OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
     /**
      * 取消关注
@@ -57,14 +63,12 @@ public class OfficeFollowRestController {
      * @param processInstanceIds 流程实例ids，逗号隔开
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/delOfficeFollow", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> delOfficeFollow(@RequestParam(required = false) String processInstanceIds) {
+    public Y9Result<String> delOfficeFollow(@RequestParam String processInstanceIds) {
         try {
             Map<String, Object> map = new HashMap<String, Object>(16);
             String tenantId = Y9LoginUserHolder.getTenantId();
-            map = officeFollow4PositionApi.delOfficeFollow(tenantId, Y9LoginUserHolder.getPositionId(),
-                processInstanceIds);
+            map = officeFollow4PositionApi.delOfficeFollow(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceIds);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("取消关注成功");
             }
@@ -83,16 +87,12 @@ public class OfficeFollowRestController {
      * @return
      */
     @SuppressWarnings("unchecked")
-    @ResponseBody
     @RequestMapping(value = "/followList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> followList(@RequestParam(required = true) Integer page,
-        @RequestParam(required = true) Integer rows, @RequestParam(required = false) String searchName) {
+    public Y9Page<Map<String, Object>> followList(@RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows, @RequestParam String searchName) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        map = officeFollow4PositionApi.getOfficeFollowList(tenantId, Y9LoginUserHolder.getPositionId(), searchName,
-            page, rows);
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()),
-            Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+        map = officeFollow4PositionApi.getOfficeFollowList(tenantId, Y9LoginUserHolder.getPositionId(), searchName, page, rows);
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
     }
 
     /**
@@ -100,7 +100,6 @@ public class OfficeFollowRestController {
      *
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getFollowCount", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Integer> getFollowCount() {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -114,17 +113,15 @@ public class OfficeFollowRestController {
      * @param processInstanceId 流程实例id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveOfficeFollow", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOfficeFollow(@RequestParam(required = true) String processInstanceId) {
+    public Y9Result<String> saveOfficeFollow(@RequestParam @NotBlank String processInstanceId) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Position position = Y9LoginUserHolder.getPosition();
             String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
             OfficeFollowModel officeFollow = new OfficeFollowModel();
             if (StringUtils.isNotBlank(processInstanceId)) {
-                ProcessParamModel processParamModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 officeFollow.setGuid(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, position.getParentId()).getData();
                 officeFollow.setBureauId(orgUnit != null ? orgUnit.getId() : "");
@@ -140,11 +137,9 @@ public class OfficeFollowRestController {
                 officeFollow.setProcessSerialNumber(processParamModel.getProcessSerialNumber());
                 officeFollow.setSendDept("");
                 officeFollow.setSystemName(processParamModel.getSystemName());
-                HistoricProcessInstanceModel historicProcessInstanceModel =
-                    historicProcessApi.getById(tenantId, processInstanceId);
+                HistoricProcessInstanceModel historicProcessInstanceModel = historicProcessApi.getById(tenantId, processInstanceId);
                 if (historicProcessInstanceModel == null) {
-                    OfficeDoneInfoModel officeDoneInfoModel =
-                        officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    OfficeDoneInfoModel officeDoneInfoModel = officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
                     officeFollow.setStartTime(officeDoneInfoModel != null ? officeDoneInfoModel.getStartTime() : "");
                 } else {
                     officeFollow.setStartTime(sdf.format(historicProcessInstanceModel.getStartTime()));

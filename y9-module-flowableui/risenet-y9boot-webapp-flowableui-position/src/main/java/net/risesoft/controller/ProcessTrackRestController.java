@@ -5,12 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
@@ -21,18 +24,23 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+/**
+ * 历程，流程图数据
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/vue/processTrack")
 public class ProcessTrackRestController {
 
-    @Autowired
-    private ProcessTrack4PositionApi processTrack4PositionApi;
+    private final ProcessTrack4PositionApi processTrack4PositionApi;
 
-    @Autowired
-    private ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSong4PositionApi chaoSong4PositionApi;
 
-    @Autowired
-    private RepositoryApi repositoryApi;
+    private final RepositoryApi repositoryApi;
 
     /**
      * 获取流程图
@@ -43,9 +51,8 @@ public class ProcessTrackRestController {
      * @param response
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getFlowChart", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<String> getFlowChart(@RequestParam String resourceType, @RequestParam(required = false) String processInstanceId, @RequestParam String processDefinitionId) {
+    public Y9Result<String> getFlowChart(@RequestParam String resourceType, @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String processDefinitionId) {
         try {
             return repositoryApi.getXmlByProcessInstance(Y9LoginUserHolder.getTenantId(), resourceType, processInstanceId, processDefinitionId);
         } catch (Exception e) {
@@ -60,9 +67,8 @@ public class ProcessTrackRestController {
      * @param processInstanceId 流程实例id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/getTaskList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam(required = true) String processInstanceId) {
+    public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam @NotBlank String processInstanceId) {
         try {
             return processTrack4PositionApi.getTaskList(Y9LoginUserHolder.getTenantId(), processInstanceId);
         } catch (Exception e) {
@@ -77,9 +83,8 @@ public class ProcessTrackRestController {
      * @param processInstanceId 流程实例id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/historyList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> historyList(@RequestParam(required = false) String processInstanceId) {
+    public Y9Result<Map<String, Object>> historyList(@RequestParam @NotBlank String processInstanceId) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -99,7 +104,7 @@ public class ProcessTrackRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/processList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> processList(@RequestParam(required = true) String processInstanceId) {
+    public Y9Result<List<Map<String, Object>>> processList(@RequestParam @NotBlank String processInstanceId) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();

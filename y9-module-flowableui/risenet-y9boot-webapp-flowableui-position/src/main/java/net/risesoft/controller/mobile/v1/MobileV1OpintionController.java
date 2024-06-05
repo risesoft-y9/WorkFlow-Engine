@@ -42,7 +42,7 @@ public class MobileV1OpintionController {
      * @param formJsonData 意见json内容
      */
     @RequestMapping(value = "/comment/save")
-    public Y9Result<String> addComment(@RequestParam String formJsonData) {
+    public Y9Result<String> addComment(@RequestParam @NotBlank String formJsonData) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -64,7 +64,7 @@ public class MobileV1OpintionController {
      * @param processSerialNumber 流程编号
      */
     @RequestMapping(value = "/comment/checkSignOpinion")
-    public Y9Result<Boolean> checkSignOpinion(@RequestParam(required = false) String taskId, @RequestParam(required = false) String processSerialNumber) {
+    public Y9Result<Boolean> checkSignOpinion(@RequestParam String taskId, @RequestParam @NotBlank String processSerialNumber) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String userId = Y9LoginUserHolder.getPersonId();
@@ -116,8 +116,8 @@ public class MobileV1OpintionController {
      * @param activitiUser 当前任务受让人
      */
     @RequestMapping(value = "/personCommentList")
-    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox, @RequestParam String opinionFrameMark, @RequestParam String itemId, @RequestParam String taskDefinitionKey,
-        @RequestParam String activitiUser, @RequestParam(required = false) String orderByUser) {
+    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam @NotBlank String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox, @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
+        @RequestParam String taskDefinitionKey, @RequestParam String activitiUser, @RequestParam String orderByUser) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();

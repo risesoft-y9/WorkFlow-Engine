@@ -13,13 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
@@ -39,22 +39,19 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @RestController
 @RequestMapping("/mobile/docWps")
 @Slf4j
+@Validated
+@RequiredArgsConstructor
 public class WpsRestController {
 
-    @Autowired
-    private Draft4PositionApi draft4PositionApi;
+    private final Draft4PositionApi draft4PositionApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private Y9FileStoreService y9FileStoreService;
+    private final Y9FileStoreService y9FileStoreService;
 
-    @Autowired
-    private TransactionWordApi transactionWordApi;
+    private final TransactionWordApi transactionWordApi;
 
     /**
      * 下载正文
@@ -67,7 +64,7 @@ public class WpsRestController {
      * @param request
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String itemId, HttpServletResponse response, HttpServletRequest request) {
+    public void download(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processSerialNumber, @RequestParam String itemId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Object documentTitle = null;
             ProcessParamModel processModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
@@ -112,8 +109,7 @@ public class WpsRestController {
      * @param response
      */
     @RequestMapping(value = "/getTaoHongTemplate")
-    @ResponseBody
-    public void getTaoHongTemplate(@RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, @RequestParam(required = false) String templateGuid, HttpServletResponse response) {
+    public void getTaoHongTemplate(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String templateGuid, HttpServletResponse response) {
         String content = transactionWordApi.openDocumentTemplate(tenantId, userId, templateGuid);
         ServletOutputStream out = null;
         try {
@@ -150,8 +146,7 @@ public class WpsRestController {
      * @param request
      */
     @RequestMapping(value = "/revokeRedHeader")
-    @ResponseBody
-    public void revokeRedHeader(@RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, @RequestParam(required = false) String processSerialNumber, HttpServletResponse response, HttpServletRequest request) {
+    public void revokeRedHeader(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processSerialNumber, HttpServletResponse response, HttpServletRequest request) {
         try {
             Object documentTitle = null;
             ProcessParamModel processModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
@@ -196,8 +191,7 @@ public class WpsRestController {
      * @return
      */
     @RequestMapping(value = "/taoHongTemplateList")
-    @ResponseBody
-    public List<Map<String, Object>> taoHongTemplateList(@RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId) {
+    public List<Map<String, Object>> taoHongTemplateList(@RequestParam String tenantId, @RequestParam String userId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, userId).getData();
         String currentBureauGuid = currentBureau != null ? currentBureau.getId() : "";
@@ -216,9 +210,7 @@ public class WpsRestController {
      * @return
      */
     @RequestMapping(value = "/upload")
-    @ResponseBody
-    public Map<String, Object> upload(@RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String istaohong, @RequestParam(required = false) MultipartFile file) {
+    public Map<String, Object> upload(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String taskId, @RequestParam String istaohong, @RequestParam MultipartFile file) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "上传成功");

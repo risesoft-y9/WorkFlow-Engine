@@ -5,13 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -25,24 +28,27 @@ import net.risesoft.service.MultiInstanceService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+/**
+ * 加减签
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/vue/multiInstance")
 public class MultiInstanceRestController {
 
-    @Autowired
-    private MultiInstanceService multiInstanceService;
+    private final MultiInstanceService multiInstanceService;
 
-    @Autowired
-    private TaskApi taskApi;
+    private final TaskApi taskApi;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionApi;
+    private final ProcessDefinitionApi processDefinitionApi;
 
-    @Autowired
-    private VariableApi variableApi;
+    private final VariableApi variableApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
     /**
      * 加签
@@ -58,20 +64,15 @@ public class MultiInstanceRestController {
      * @param smsContent 短信内容
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/addExecutionId", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> addExecutionId(@RequestParam(required = true) String processInstanceId,
-        @RequestParam(required = true) String executionId, @RequestParam(required = true) String taskId,
-        @RequestParam(required = true) String userChoice, @RequestParam(required = false) String selectUserId,
-        @RequestParam(required = false) int num, @RequestParam(required = false) String isSendSms,
-        @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
+    public Y9Result<String> addExecutionId(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String executionId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice, @RequestParam String selectUserId, @RequestParam int num,
+        @RequestParam String isSendSms, @RequestParam String isShuMing, @RequestParam String smsContent) {
         try {
             /**
              * selectUserId不为空说明是从串行加签过来的
              */
             if (StringUtils.isBlank(selectUserId)) {
-                multiInstanceService.addExecutionId(processInstanceId, taskId, userChoice, isSendSms, isShuMing,
-                    smsContent);
+                multiInstanceService.addExecutionId(processInstanceId, taskId, userChoice, isSendSms, isShuMing, smsContent);
             } else {
                 multiInstanceService.addExecutionId4Sequential(executionId, taskId, userChoice, selectUserId, num);
             }
@@ -89,9 +90,7 @@ public class MultiInstanceRestController {
      * @return
      */
     @RequestMapping(value = "/getAddOrDeleteMultiInstance", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    public Y9Result<Map<String, Object>>
-        getAddOrDeleteMultiInstance(@RequestParam(required = true) String processInstanceId) {
+    public Y9Result<Map<String, Object>> getAddOrDeleteMultiInstance(@RequestParam @NotBlank String processInstanceId) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         Position position = Y9LoginUserHolder.getPosition();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -102,8 +101,7 @@ public class MultiInstanceRestController {
         }
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         if (task != null) {
-            String type =
-                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+            String type = processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey());
             if (SysVariables.PARALLEL.equals(type)) {
                 listMap = multiInstanceService.assigneeList4Parallel(processInstanceId);
             } else if (SysVariables.SEQUENTIAL.equals(type)) {
@@ -127,10 +125,8 @@ public class MultiInstanceRestController {
      * @param elementUser 减签人员
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/removeExecution", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeExecution(@RequestParam(required = true) String executionId,
-        @RequestParam(required = true) String taskId, @RequestParam(required = true) String elementUser) {
+    public Y9Result<String> removeExecution(@RequestParam @NotBlank String executionId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String elementUser) {
         try {
             multiInstanceService.removeExecution(executionId, taskId, elementUser);
             return Y9Result.successMsg("减签成功");
@@ -149,11 +145,8 @@ public class MultiInstanceRestController {
      * @param num 减签序号
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/removeExecution4Sequential", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeExecution4Sequential(@RequestParam(required = true) String executionId,
-        @RequestParam(required = true) String taskId, @RequestParam(required = true) String elementUser,
-        @RequestParam(required = true) int num) {
+    public Y9Result<String> removeExecution4Sequential(@RequestParam @NotBlank String executionId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String elementUser, @RequestParam @NotBlank int num) {
         try {
             multiInstanceService.removeExecution4Sequential(executionId, taskId, elementUser, num);
             return Y9Result.successMsg("减签成功");
@@ -169,9 +162,8 @@ public class MultiInstanceRestController {
      * @param taskId 任务id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/setSponsor", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> setSponsor(@RequestParam(required = true) String taskId) {
+    public Y9Result<String> setSponsor(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel taskModel = taskApi.findById(tenantId, taskId);
         List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId());
@@ -194,8 +186,7 @@ public class MultiInstanceRestController {
         variableApi.setVariableLocal(tenantId, taskId, SysVariables.PARALLELSPONSOR, val);
 
         // 修改自定义变量主办人字段
-        ProcessParamModel processParam =
-            processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId());
+        ProcessParamModel processParam = processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId());
         processParam.setSponsorGuid(taskModel.getAssignee());
         processParamApi.saveOrUpdate(tenantId, processParam);
         return Y9Result.successMsg("设置成功");

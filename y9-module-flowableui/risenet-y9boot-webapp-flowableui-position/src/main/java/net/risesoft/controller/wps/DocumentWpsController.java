@@ -15,14 +15,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentWpsApi;
@@ -66,9 +66,11 @@ import cn.wps.yun.model.UploadTransactionPatchResponse;
 import cn.wps.yun.model.User;
 import cn.wps.yun.model.WebofficeEditorGetUrlRequest;
 
-@Controller
+@RestController
 @RequestMapping("/docWps")
 @Slf4j
+@Validated
+@RequiredArgsConstructor
 public class DocumentWpsController {
 
     /**
@@ -138,23 +140,17 @@ public class DocumentWpsController {
         taoHongService.word2RedDocument(content, destDocx);
     }
 
-    @Autowired
-    private Draft4PositionApi draft4PositionApi;
+    private final Draft4PositionApi draft4PositionApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private DocumentWpsApi documentWpsApi;
+    private final DocumentWpsApi documentWpsApi;
 
-    @Autowired
-    private Y9FileStoreService y9FileStoreService;
+    private final Y9FileStoreService y9FileStoreService;
 
-    @Autowired
-    private TransactionWordApi transactionWordApi;
+    private final TransactionWordApi transactionWordApi;
 
     /**
      * 下载正文
@@ -164,7 +160,7 @@ public class DocumentWpsController {
      * @param request
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam(required = false) String id, HttpServletResponse response, HttpServletRequest request) {
+    public void download(@RequestParam String id, HttpServletResponse response, HttpServletRequest request) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             DocumentWpsModel documentWps = documentWpsApi.findById(tenantId, id);
@@ -215,8 +211,7 @@ public class DocumentWpsController {
     }
 
     @RequestMapping(value = "/getDocument")
-    @ResponseBody
-    public Map<String, Object> getDocument(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String itemId, HttpServletResponse response, HttpServletRequest request) {
+    public Map<String, Object> getDocument(@RequestParam String processSerialNumber, @RequestParam String itemId, HttpServletResponse response, HttpServletRequest request) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<String, Object>(16);
@@ -252,8 +247,7 @@ public class DocumentWpsController {
     }
 
     @RequestMapping(value = "/saveWps")
-    @ResponseBody
-    public Map<String, Object> saveWps(@RequestParam(required = false) String processSerialNumber) {
+    public Map<String, Object> saveWps(@RequestParam String processSerialNumber) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -272,7 +266,7 @@ public class DocumentWpsController {
      * @return
      */
     @RequestMapping("/showWps")
-    public String showWord(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String itembox, Model model) throws Exception {
+    public String showWord(@RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String itembox, Model model) throws Exception {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         String documentTitle = "";
@@ -428,8 +422,7 @@ public class DocumentWpsController {
      * @return
      */
     @RequestMapping(value = "/upload")
-    @ResponseBody
-    public Map<String, Object> upload(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) MultipartFile file) {
+    public Map<String, Object> upload(@RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam MultipartFile file) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "上传成功");

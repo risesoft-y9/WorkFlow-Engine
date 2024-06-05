@@ -166,7 +166,7 @@ public class MobileV1ButtonOperationController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping("/handleParallel")
-    public Y9Result<String> handleParallel(@RequestParam String taskId) {
+    public Y9Result<String> handleParallel(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel task = taskApi.findById(tenantId, taskId);
@@ -211,7 +211,7 @@ public class MobileV1ButtonOperationController {
      * @param taskId 任务id
      */
     @RequestMapping(value = "/handleSerial")
-    public Y9Result<String> handleSerial(@RequestParam String taskId) {
+    public Y9Result<String> handleSerial(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel task = taskApi.findById(tenantId, taskId);
@@ -242,7 +242,7 @@ public class MobileV1ButtonOperationController {
      * @param desc 描述
      */
     @RequestMapping(value = "/multipleResumeToDo")
-    public Y9Result<String> multipleResumeToDo(@RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String desc) {
+    public Y9Result<String> multipleResumeToDo(@RequestParam @NotBlank String processInstanceId, @RequestParam String desc) {
         try {
             buttonOperationService.multipleResumeToDo(processInstanceId, desc);
             return Y9Result.successMsg("恢复待办成功");
@@ -261,7 +261,7 @@ public class MobileV1ButtonOperationController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/refuseClaim")
-    public Y9Result<String> refuseClaim(@RequestParam String taskId, @RequestParam Boolean isLastPerson4RefuseClaim) {
+    public Y9Result<String> refuseClaim(@RequestParam @NotBlank String taskId, @RequestParam Boolean isLastPerson4RefuseClaim) {
         String activitiUser = "";
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -311,7 +311,7 @@ public class MobileV1ButtonOperationController {
      * @param userChoice 人员id
      */
     @RequestMapping(value = "/reposition")
-    public Y9Result<String> reposition(@RequestParam String taskId, @RequestParam String repositionToTaskId, @RequestParam String userChoice) {
+    public Y9Result<String> reposition(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String repositionToTaskId, @RequestParam @NotBlank String userChoice) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -334,7 +334,7 @@ public class MobileV1ButtonOperationController {
      * @param userChoice 人员id
      */
     @RequestMapping(value = "/reposition1")
-    public Y9Result<String> reposition1(@RequestParam String taskId, @RequestParam String userChoice) {
+    public Y9Result<String> reposition1(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -357,7 +357,7 @@ public class MobileV1ButtonOperationController {
      * @param taskId 任务id
      */
     @RequestMapping(value = "/rollback")
-    public Y9Result<String> rollback(@RequestParam String taskId) {
+    public Y9Result<String> rollback(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -391,7 +391,7 @@ public class MobileV1ButtonOperationController {
      * @param taskId 任务id
      */
     @RequestMapping(value = "/rollbackToStartor")
-    public Y9Result<String> rollbackToStartor(@RequestParam String taskId) {
+    public Y9Result<String> rollbackToStartor(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -409,7 +409,7 @@ public class MobileV1ButtonOperationController {
      * @param taskId 任务id
      */
     @RequestMapping(value = "/sendToSender")
-    public Y9Result<String> sendToSender(@RequestParam String taskId) {
+    public Y9Result<String> sendToSender(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -427,7 +427,7 @@ public class MobileV1ButtonOperationController {
      * @param taskId 任务id
      */
     @RequestMapping(value = "/sendToStartor")
-    public Y9Result<String> sendToStartor(@RequestParam String taskId) {
+    public Y9Result<String> sendToStartor(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -463,7 +463,7 @@ public class MobileV1ButtonOperationController {
      * @param reason 办结原因
      */
     @RequestMapping(value = "/specialComplete")
-    public Y9Result<String> specialComplete(@RequestParam String taskId, @RequestParam(required = false) String reason) {
+    public Y9Result<String> specialComplete(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -509,7 +509,7 @@ public class MobileV1ButtonOperationController {
      * @param taskId 任务id
      */
     @RequestMapping(value = "/takeback")
-    public Y9Result<String> takeback(@RequestParam String taskId) {
+    public Y9Result<String> takeback(@RequestParam @NotBlank String taskId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();

@@ -9,19 +9,20 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
 
-import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.FormDataApi;
@@ -42,6 +43,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -65,6 +67,8 @@ import net.risesoft.y9.util.Y9Util;
  * @author 10858
  *
  */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/mobile/document")
 @Slf4j
@@ -72,56 +76,39 @@ public class MobileDocumentController {
 
     protected final Logger log = LoggerFactory.getLogger(MobileDocumentController.class);
 
-    @Autowired
-    private PersonApi personApi;
+    private final PersonApi personApi;
 
-    @Autowired
-    private PositionRoleApi positionRoleApi;
+    private final PositionRoleApi positionRoleApi;
 
-    @Autowired
-    private TenantApi tenantApi;
+    private final TenantApi tenantApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private Document4PositionApi document4PositionApi;
+    private final Document4PositionApi document4PositionApi;
 
-    @Autowired
-    private ItemOpinionFrameBindApi itemOpinionFrameBindApi;
+    private final ItemOpinionFrameBindApi itemOpinionFrameBindApi;
 
-    @Autowired
-    private TaskApi taskApi;
+    private final TaskApi taskApi;
 
-    @Autowired
-    private AssociatedFile4PositionApi associatedFile4PositionApi;
+    private final AssociatedFile4PositionApi associatedFile4PositionApi;
 
-    @Autowired
-    private Draft4PositionApi draft4PositionApi;
+    private final Draft4PositionApi draft4PositionApi;
 
-    @Autowired
-    private ItemRole4PositionApi itemRole4PositionApi;
+    private final ItemRole4PositionApi itemRole4PositionApi;
 
-    @Autowired
-    private FormDataApi formDataApi;
+    private final FormDataApi formDataApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private ProcessParamService processParamService;
+    private final ProcessParamService processParamService;
 
-    @Autowired
-    private TodoTaskApi todotaskApi;
+    private final TodoTaskApi todotaskApi;
 
-    @Autowired
-    private HistoricProcessApi historicProcessApi;
+    private final HistoricProcessApi historicProcessApi;
 
-    @Autowired
-    private DepartmentApi departmentApi;
+    private final DepartmentApi departmentApi;
 
     /**
      * 新建公文
@@ -135,23 +122,18 @@ public class MobileDocumentController {
      */
     @ResponseBody
     @RequestMapping(value = "/add")
-    public void add(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam String itemId, HttpServletRequest request,
-        HttpServletResponse response) {
+    public void add(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             map = document4PositionApi.add(Y9LoginUserHolder.getTenantId(), positionId, itemId, true);
-            // 意见框？？？？？？？？？？
             String formIds = (String)map.get("formId");
             String taskDefKey = (String)map.get("taskDefKey");
             String processDefinitionId = (String)map.get("processDefinitionId");
             String formId[] = formIds.split(SysVariables.COMMA);
             List<Map<String, Object>> fieldDefineList = new ArrayList<Map<String, Object>>();
             List<Map<String, Object>> opinionFrameList = new ArrayList<Map<String, Object>>();
-            List<ItemOpinionFrameBindModel> bindList =
-                itemOpinionFrameBindApi.findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(tenantId, positionId,
-                    itemId, processDefinitionId, taskDefKey);
+            List<ItemOpinionFrameBindModel> bindList = itemOpinionFrameBindApi.findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(tenantId, positionId, itemId, processDefinitionId, taskDefKey);
             for (ItemOpinionFrameBindModel bind : bindList) {
                 Map<String, Object> opinionFrameMap = new HashMap<String, Object>(16);
                 opinionFrameMap.put("hasRole", false);
@@ -199,9 +181,7 @@ public class MobileDocumentController {
      */
     @RequestMapping("/delAssociatedFile")
     @ResponseBody
-    public void delAssociatedFile(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        String processSerialNumber, String processInstanceId, HttpServletResponse response) {
+    public void delAssociatedFile(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @NotBlank String processSerialNumber, @NotBlank String processInstanceId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
         boolean b = associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceId);
@@ -224,10 +204,8 @@ public class MobileDocumentController {
      * @param response
      */
     @RequestMapping(value = "/documentDetail")
-    public void documentDetail(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox,
-        @RequestParam String itemId, @RequestParam String processInstanceId, HttpServletResponse response) {
+    public void documentDetail(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox,
+        @RequestParam @NotBlank String itemId, @RequestParam String processInstanceId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -244,8 +222,7 @@ public class MobileDocumentController {
             String formIds = (String)map.get("formId");
             String formNames = (String)map.get("formName");
             DocumentUtil documentUtil = new DocumentUtil();
-            Map<String, Object> dataMap = documentUtil.documentDetail(itemId, processDefinitionId, processSerialNumber,
-                processInstanceId, taskDefKey, taskId, itembox, activitiUser, formIds, formNames);
+            Map<String, Object> dataMap = documentUtil.documentDetail(itemId, processDefinitionId, processSerialNumber, processInstanceId, taskDefKey, taskId, itembox, activitiUser, formIds, formNames);
             map.putAll(dataMap);
             map.put("msg", "获取数据成功");
             map.put(UtilConsts.SUCCESS, true);
@@ -270,9 +247,8 @@ public class MobileDocumentController {
      * @param model
      */
     @RequestMapping(value = "/documentDetailByTaskId")
-    public void documentDetailByTaskId(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, @RequestParam String itembox, HttpServletResponse response, Model model) {
+    public void documentDetailByTaskId(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank @NotBlank String taskId, @RequestParam String itembox, HttpServletResponse response,
+        Model model) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("msg", "获取失败");
         map.put(UtilConsts.SUCCESS, false);
@@ -282,11 +258,9 @@ public class MobileDocumentController {
             if (StringUtils.isNotBlank(taskId)) {// 打开办件
                 TaskModel taskModel = taskApi.findById(tenantId, taskId);
                 if (taskModel != null && taskModel.getId() != null) {
-                    ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId());
+                    ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId());
                     String itemId = processParamModel.getItemId();
-                    map = document4PositionApi.edit(tenantId, positionId, itembox, taskId,
-                        taskModel.getProcessInstanceId(), itemId, true);
+                    map = document4PositionApi.edit(tenantId, positionId, itembox, taskId, taskModel.getProcessInstanceId(), itemId, true);
                     String activitiUser = (String)map.get(SysVariables.ACTIVITIUSER);
                     String processDefinitionId = (String)map.get("processDefinitionId");
                     String taskDefKey = (String)map.get("taskDefKey");
@@ -294,10 +268,7 @@ public class MobileDocumentController {
                     String formNames = (String)map.get("formName");
                     String processSerialNumber = processParamModel.getProcessSerialNumber();
                     DocumentUtil documentUtil = new DocumentUtil();
-                    Map<String,
-                        Object> dataMap = documentUtil.documentDetail(itemId, processDefinitionId, processSerialNumber,
-                            taskModel.getProcessInstanceId(), taskDefKey, taskId, itembox, activitiUser, formIds,
-                            formNames);
+                    Map<String, Object> dataMap = documentUtil.documentDetail(itemId, processDefinitionId, processSerialNumber, taskModel.getProcessInstanceId(), taskDefKey, taskId, itembox, activitiUser, formIds, formNames);
                     map.putAll(dataMap);
                     map.put("msg", "获取数据成功");
                     map.put(UtilConsts.SUCCESS, true);
@@ -330,19 +301,15 @@ public class MobileDocumentController {
      */
     @RequestMapping("/findPermUser")
     @ResponseBody
-    public void findPermUser(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey,
-        @RequestParam Integer principalType, @RequestParam String processInstanceId,
-        @RequestParam(required = false) String id, @RequestParam String itemId, HttpServletResponse response) {
+    public void findPermUser(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey, @RequestParam Integer principalType,
+        @RequestParam String processInstanceId, @RequestParam String id, @RequestParam String itemId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(processDefinitionId) || StringUtils.isBlank(itemId)) {
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
             return;
         } else {
-            item = itemRole4PositionApi.findPermUser(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId,
-                processDefinitionId, taskDefKey, principalType, id, processInstanceId);
+            item = itemRole4PositionApi.findPermUser(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
             return;
         }
@@ -364,19 +331,15 @@ public class MobileDocumentController {
      */
     @RequestMapping("/findPermUserByName")
     @ResponseBody
-    public void findPermUserByName(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey,
-        @RequestParam Integer principalType, @RequestParam String processInstanceId,
-        @RequestParam(required = false) String name, @RequestParam String itemId, HttpServletResponse response) {
+    public void findPermUserByName(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey, @RequestParam Integer principalType,
+        @RequestParam String processInstanceId, @RequestParam String name, @RequestParam String itemId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(processDefinitionId) || StringUtils.isBlank(itemId)) {
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
             return;
         } else {
-            item = itemRole4PositionApi.findPermUserByName(Y9LoginUserHolder.getTenantId(), userId, positionId, name,
-                principalType, itemId, processDefinitionId, taskDefKey, processInstanceId);
+            item = itemRole4PositionApi.findPermUserByName(Y9LoginUserHolder.getTenantId(), userId, positionId, name, principalType, itemId, processDefinitionId, taskDefKey, processInstanceId);
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
             return;
         }
@@ -404,14 +367,9 @@ public class MobileDocumentController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping("/forwarding")
-    public void forwarding(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String itemId,
-        @RequestParam(required = false) String temp_Ids, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processDefinitionKey, @RequestParam(required = false) String userChoice,
-        @RequestParam(required = false) String sponsorGuid, @RequestParam(required = false) String sponsorHandle,
-        @RequestParam(required = false) String routeToTaskId, @RequestParam(required = false) String processInstanceId,
-        @RequestParam String formJsonData, HttpServletResponse response) {
+    public void forwarding(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam String temp_Ids, @RequestParam String taskId,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey, @RequestParam @NotBlank String userChoice, @RequestParam String sponsorGuid, @RequestParam String sponsorHandle, @RequestParam String routeToTaskId,
+        @RequestParam String processInstanceId, @RequestParam @NotBlank String formJsonData, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
@@ -427,11 +385,9 @@ public class MobileDocumentController {
                 level = (String)mapFormJsonData.get("workLevel");
             }
             if (StringUtils.isBlank(taskId)) {// 保存草稿
-                draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey,
-                    number, level, title);
+                draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number, level, title);
             }
-            Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId,
-                title, number, level, false);
+            Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, title, number, level, false);
             if (!map1.isSuccess()) {
                 map.put(UtilConsts.SUCCESS, false);
                 map.put("msg", "发生异常");
@@ -446,8 +402,7 @@ public class MobileDocumentController {
                 }
             }
             Map<String, Object> variables = new HashMap<String, Object>(16);
-            map = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle,
-                itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
+            map = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "发送失败");
@@ -470,13 +425,10 @@ public class MobileDocumentController {
      */
     @RequestMapping("/getAllFieldPerm")
     @ResponseBody
-    public void getAllFieldPerm(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey,
-        @RequestParam String formId, HttpServletResponse response) {
+    public void getAllFieldPerm(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processDefinitionId, @RequestParam String taskDefKey,
+        @RequestParam @NotBlank String formId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> list =
-            formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
+        List<Map<String, Object>> list = formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(list));
         return;
     }
@@ -492,9 +444,7 @@ public class MobileDocumentController {
      */
     @RequestMapping("/getAssociatedFileList")
     @ResponseBody
-    public void getAssociatedFileList(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
+    public void getAssociatedFileList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processSerialNumber, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
         map = associatedFile4PositionApi.getAssociatedFileList(tenantId, processSerialNumber);
@@ -513,9 +463,7 @@ public class MobileDocumentController {
      * @param response
      */
     @RequestMapping(value = "/getByTaskId")
-    public void getByTaskId(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String taskId, @RequestParam String processInstanceId, HttpServletResponse response) {
+    public void getByTaskId(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String taskId, @RequestParam String processInstanceId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("msg", "获取成功");
         map.put(UtilConsts.SUCCESS, true);
@@ -567,9 +515,7 @@ public class MobileDocumentController {
      * @param response
      */
     @RequestMapping(value = "/getFormInitData")
-    public void getFormInitData(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        HttpServletResponse response) {
+    public void getFormInitData(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("msg", "获取表单初始化数据失败");
         map.put("success", false);
@@ -605,10 +551,8 @@ public class MobileDocumentController {
             List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, parent.getId(), DepartmentPropCategoryEnum.LEADER.getValue()).getData();
             map.put("deptLeader", "未配置");// 岗位所在部门领导
             if (!leaders.isEmpty()) {
-                List<Person> personLeaders =
-                    positionApi.listPersonsByPositionId(tenantId, leaders.get(0).getId()).getData();
-                map.put("deptLeader",
-                    personLeaders.isEmpty() ? leaders.get(0).getName() : personLeaders.get(0).getName());
+                List<Person> personLeaders = positionApi.listPersonsByPositionId(tenantId, leaders.get(0).getId()).getData();
+                map.put("deptLeader", personLeaders.isEmpty() ? leaders.get(0).getName() : personLeaders.get(0).getName());
             }
             /** 办件表单数据初始化 **/
             map.put("zihao", second + "号");// 编号
@@ -637,15 +581,12 @@ public class MobileDocumentController {
      */
     @ResponseBody
     @RequestMapping("/getTabMap")
-    public void getTabMap(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam String processDefinitionKey,
-        @RequestParam String processDefinitionId, @RequestParam String taskId, @RequestParam String taskDefKey,
-        @RequestParam String itemId, @RequestParam String processInstanceId, HttpServletResponse response) {
+    public void getTabMap(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processDefinitionKey, @RequestParam @NotBlank String processDefinitionId,
+        @RequestParam String taskId, @RequestParam String taskDefKey, @RequestParam @NotBlank String itemId, @RequestParam String processInstanceId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
         try {
-            map = document4PositionApi.docUserChoise(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId,
-                processDefinitionKey, processDefinitionId, taskId, taskDefKey, processInstanceId);
+            map = document4PositionApi.docUserChoise(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId, processDefinitionKey, processDefinitionId, taskId, taskDefKey, processInstanceId);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取数据成功");
         } catch (Exception e) {
@@ -669,14 +610,11 @@ public class MobileDocumentController {
      */
     @RequestMapping("/saveAssociatedFile")
     @ResponseBody
-    public void saveAssociatedFile(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceIds, HttpServletResponse response) {
+    public void saveAssociatedFile(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processInstanceIds,
+        HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
-        boolean b = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId, processSerialNumber,
-            processInstanceIds);
+        boolean b = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
         map.put(UtilConsts.SUCCESS, b);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
         return;
@@ -699,11 +637,8 @@ public class MobileDocumentController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping("/saveFormData")
-    public void saveFormData(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
-        @RequestParam String temp_Ids, @RequestParam String processInstanceId, @RequestParam String processSerialNumber,
-        @RequestParam String processDefinitionKey, @RequestParam String itemId, @RequestParam String formJsonData,
-        HttpServletRequest request, HttpServletResponse response) {
+    public void saveFormData(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String temp_Ids, @RequestParam String processInstanceId,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey, @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String formJsonData, HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
@@ -719,11 +654,9 @@ public class MobileDocumentController {
                 level = (String)mapFormJsonData.get("workLevel");
             }
             if (StringUtils.isBlank(processInstanceId)) {// 保存草稿
-                draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey,
-                    number, level, title);
+                draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number, level, title);
             }
-            Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId,
-                title, number, level, false);
+            Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, title, number, level, false);
             if (!map1.isSuccess()) {
                 map.put(UtilConsts.SUCCESS, false);
                 map.put("msg", "发生异常");
@@ -762,11 +695,8 @@ public class MobileDocumentController {
     @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping("/submitTo")
-    public void submitTo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestHeader("auth-positionId") String positionId, @RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String temp_Ids, @RequestParam(required = true) String taskId,
-        @RequestParam(required = true) String processSerialNumber, @RequestParam String formJsonData,
-        HttpServletResponse response) {
+    public void submitTo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String temp_Ids, @RequestParam String taskId,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String formJsonData, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
@@ -783,16 +713,14 @@ public class MobileDocumentController {
             }
             String processInstanceId = "";
             if (StringUtils.isBlank(taskId)) {// 保存草稿
-                draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, "", number, level,
-                    title);
+                draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, "", number, level, title);
             } else {
                 TaskModel task = taskApi.findById(tenantId, taskId);
                 if (null != task) {
                     processInstanceId = task.getProcessInstanceId();
                 }
             }
-            Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId,
-                title, number, level, false);
+            Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, title, number, level, false);
             if (!map1.isSuccess()) {
                 map.put(UtilConsts.SUCCESS, false);
                 map.put("msg", "发生异常");

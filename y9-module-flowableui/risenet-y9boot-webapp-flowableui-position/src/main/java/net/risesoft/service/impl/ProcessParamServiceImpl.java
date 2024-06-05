@@ -1,11 +1,10 @@
 package net.risesoft.service.impl;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
@@ -16,30 +15,25 @@ import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+@RequiredArgsConstructor
 @Service(value = "processParamService")
 @Transactional(readOnly = true)
 public class ProcessParamServiceImpl implements ProcessParamService {
 
-    @Autowired
-    private Item4PositionApi item4PositionApi;
+    private final Item4PositionApi item4PositionApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Resource(name = "asyncUtilService")
-    private AsyncUtilService asyncUtilService;
+    private final AsyncUtilService asyncUtilService;
 
     @Override
-    public Y9Result<String> saveOrUpdate(String itemId, String processSerialNumber, String processInstanceId,
-        String documentTitle, String number, String level, Boolean customItem) {
+    public Y9Result<String> saveOrUpdate(String itemId, String processSerialNumber, String processInstanceId, String documentTitle, String number, String level, Boolean customItem) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
-            ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             if (StringUtils.isNotBlank(processInstanceId)) {
-                if (StringUtils.isNotBlank(documentTitle) && (StringUtils.isBlank(processParamModel.getTitle())
-                    || !processParamModel.getTitle().equals(documentTitle))) {
+                if (StringUtils.isNotBlank(documentTitle) && (StringUtils.isBlank(processParamModel.getTitle()) || !processParamModel.getTitle().equals(documentTitle))) {
                     asyncUtilService.updateTitle(tenantId, processInstanceId, documentTitle);
                 }
             }
@@ -62,8 +56,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             pp.setTodoTaskUrlPrefix(item.getTodoTaskUrlPrefix());
             pp.setCustomItem(processParamModel != null ? processParamModel.getCustomItem() : customItem);
             StringBuffer searchTerm = new StringBuffer();
-            searchTerm.append(documentTitle).append("|").append(number).append("|").append(level).append("|")
-                .append(item.getName());
+            searchTerm.append(documentTitle).append("|").append(number).append("|").append(level).append("|").append(item.getName());
             pp.setSearchTerm(searchTerm.toString());
             processParamApi.saveOrUpdate(tenantId, pp);
             return Y9Result.successMsg("保存成功");

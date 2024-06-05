@@ -7,14 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.api.platform.org.DepartmentApi;
@@ -33,29 +36,31 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
+/**
+ * 意见
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Slf4j
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/vue/opinion")
 public class OpinionRestController {
 
-    private static final Logger log = LoggerFactory.getLogger(OpinionRestController.class);
+    private final Opinion4PositionApi opinion4PositionApi;
 
-    @Autowired
-    private Opinion4PositionApi opinion4PositionApi;
+    private final OrgUnitApi orgUnitApi;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final DepartmentApi departmentApi;
 
-    @Autowired
-    private DepartmentApi departmentApi;
+    private final PersonApi personApi;
 
-    @Autowired
-    private PersonApi personApi;
-
-    @Autowired
-    private OrganizationApi organizationApi;
+    private final OrganizationApi organizationApi;
 
     @RequestMapping(value = "/checkSignOpinion")
-    public Map<String, Object> checkSignOpinion(@RequestParam(required = false) String taskId, @RequestParam(required = false) String processSerialNumber) {
+    public Map<String, Object> checkSignOpinion(@RequestParam String taskId, @RequestParam String processSerialNumber) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -63,7 +68,7 @@ public class OpinionRestController {
             Boolean checkSignOpinion = opinion4PositionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId);
             map.put("checkSignOpinion", checkSignOpinion);
         } catch (Exception e) {
-            log.error("查询" + taskId + "是否签写意见失败！");
+            LOGGER.error("查询" + taskId + "是否签写意见失败！");
             e.printStackTrace();
         }
         return map;
@@ -77,7 +82,7 @@ public class OpinionRestController {
      * @return
      */
     @RequestMapping(value = "/countOpinionHistory", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Integer> countOpinionHistory(@RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String opinionFrameMark) {
+    public Y9Result<Integer> countOpinionHistory(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String opinionFrameMark) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Integer num = opinion4PositionApi.countOpinionHistory(tenantId, processSerialNumber, opinionFrameMark);
         return Y9Result.success(num, "获取成功");
@@ -90,7 +95,7 @@ public class OpinionRestController {
      * @return
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> delete(@RequestParam(required = true) String id) {
+    public Y9Result<String> delete(@RequestParam @NotBlank String id) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             opinion4PositionApi.delete(tenantId, id);
@@ -108,7 +113,7 @@ public class OpinionRestController {
      * @return
      */
     @RequestMapping(value = "/bureauTreeSearch", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = false) String name) {
+    public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
@@ -145,7 +150,7 @@ public class OpinionRestController {
      * @return
      */
     @RequestMapping(value = "/getBindOpinionFrame", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<String>> getBindOpinionFrame(@RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<List<String>> getBindOpinionFrame(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<String> list = opinion4PositionApi.getBindOpinionFrame(tenantId, itemId, processDefinitionId);
         return Y9Result.success(list, "获取成功");
@@ -158,7 +163,7 @@ public class OpinionRestController {
      * @return
      */
     @RequestMapping(value = "/getBureauTree", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getBureauTree(@RequestParam(required = false) String id) {
+    public Y9Result<List<Map<String, Object>>> getBureauTree(@RequestParam String id) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(id)) {
@@ -211,7 +216,7 @@ public class OpinionRestController {
      * @return
      */
     @RequestMapping(value = "/opinionHistoryList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam(required = true) String processSerialNumber, @RequestParam(required = true) String opinionFrameMark) {
+    public Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String opinionFrameMark) {
         List<OpinionHistoryModel> list = new ArrayList<OpinionHistoryModel>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         list = opinion4PositionApi.opinionHistoryList(tenantId, processSerialNumber, opinionFrameMark);
@@ -225,7 +230,7 @@ public class OpinionRestController {
      * @return
      */
     @RequestMapping(value = "/newOrModify/personalComment", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> personalComment(@RequestParam(required = false) String id) {
+    public Y9Result<Map<String, Object>> personalComment(@RequestParam String id) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -252,8 +257,8 @@ public class OpinionRestController {
      * @return
      */
     @RequestMapping(value = "/personCommentList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam(required = true) String processSerialNumber, @RequestParam(required = false) String taskId, @RequestParam(required = true) String itembox, @RequestParam(required = true) String opinionFrameMark,
-        @RequestParam(required = true) String itemId, @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser, @RequestParam(required = false) String orderByUser) {
+    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam @NotBlank String processSerialNumber, @RequestParam String taskId, @RequestParam @NotBlank String itembox, @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
+        @RequestParam String taskDefinitionKey, @RequestParam String activitiUser, @RequestParam String orderByUser) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
@@ -295,7 +300,7 @@ public class OpinionRestController {
      * @return
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<OpinionModel> save(String jsonData) {
+    public Y9Result<OpinionModel> save(@NotBlank String jsonData) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String userId = person.getPersonId(), tenantId = person.getTenantId();

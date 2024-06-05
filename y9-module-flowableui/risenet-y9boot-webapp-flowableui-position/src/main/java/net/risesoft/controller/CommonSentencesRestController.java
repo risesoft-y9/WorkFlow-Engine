@@ -4,31 +4,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+/**
+ * 常用语
+ *
+ * @author zhangchongjie
+ * @date 2024/06/05
+ */
+@Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/vue/commonSentences")
 public class CommonSentencesRestController {
 
-    @Autowired
-    private CommonSentencesApi commonSentencesApi;
+    private final CommonSentencesApi commonSentencesApi;
 
     /**
      * 获取个人常用语
      *
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> listSentencesService() {
         List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
@@ -50,9 +59,8 @@ public class CommonSentencesRestController {
      * @param tabIndex 序号
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> remove(@RequestParam(required = true) int tabIndex) {
+    public Y9Result<String> remove(@RequestParam @NotBlank int tabIndex) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             commonSentencesApi.removeCommonSentences(Y9LoginUserHolder.getTenantId(), person.getPersonId(), tabIndex);
@@ -68,7 +76,6 @@ public class CommonSentencesRestController {
      *
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/removeUseNumber", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> removeUseNumber() {
         try {
@@ -87,9 +94,8 @@ public class CommonSentencesRestController {
      * @param content 内容
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> save(@RequestParam(required = true) String content) {
+    public Y9Result<String> save(@RequestParam @NotBlank String content) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String userId = person.getPersonId(), tenantId = person.getTenantId();
@@ -108,15 +114,12 @@ public class CommonSentencesRestController {
      * @param tabIndex 序号
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/saveEdit", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveEdit(@RequestParam(required = true) String content,
-        @RequestParam(required = true) String tabIndex) {
+    public Y9Result<String> saveEdit(@RequestParam @NotBlank String content, @RequestParam @NotBlank String tabIndex) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         try {
-            commonSentencesApi.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content,
-                Integer.parseInt(tabIndex));
+            commonSentencesApi.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content, Integer.parseInt(tabIndex));
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -130,9 +133,8 @@ public class CommonSentencesRestController {
      * @param id 常用语id
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/updateUseNumber", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> updateUseNumber(@RequestParam(required = true) String id) {
+    public Y9Result<String> updateUseNumber(@RequestParam @NotBlank String id) {
         try {
             commonSentencesApi.updateUseNumber(Y9LoginUserHolder.getTenantId(), id);
             return Y9Result.successMsg("保存成功");
