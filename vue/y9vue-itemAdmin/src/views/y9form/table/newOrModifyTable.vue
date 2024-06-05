@@ -4,8 +4,8 @@
  * @Author: zhangchongjie
  * @Date: 2024-04-23 15:08:39
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-05-21 15:42:17
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\views\y9form\table\newOrModifyTable.vue
+ * @LastEditTime: 2024-06-04 17:54:50
+ * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-flowable\vue\y9vue-itemAdmin\src\views\y9form\table\newOrModifyTable.vue
 -->
 <!--
  * @Descripttion: 
@@ -47,11 +47,7 @@
 				<tr>
 					<td class="lefttd" >表类型</td>
 					<td class="rigthtd" >
-						<el-select v-model="table.tableType" @change="tableTypeChange">
-							<el-option :key="1" label="主表" :value="1"></el-option>
-							<el-option :key="2" label="子表" :value="2"></el-option>
-							<!-- <el-option :key="3" label="字典" :value="3"></el-option> -->
-						</el-select>
+						<span>主表</span>
 					</td>
 					<td class="lefttd" >所属系统</td>
 					<td class="rigthtd"  >
@@ -127,7 +123,7 @@
 		dialogVisible:false,
 		loading:false,
 		title:'',
-		table:{},
+		table:{tableType:1},
 		tableOldName:'',
 		prefix:'y9_form_',
 		tableNames:'',

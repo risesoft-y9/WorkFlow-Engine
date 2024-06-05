@@ -4,8 +4,8 @@
  * @Author: zhangchongjie
  * @Date: 2022-07-06 16:32:39
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2023-06-16 10:17:16
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\views\y9form\table\tableManage.vue
+ * @LastEditTime: 2024-06-04 17:55:27
+ * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-flowable\vue\y9vue-itemAdmin\src\views\y9form\table\tableManage.vue
 -->
 <template>
 	<y9Card class="y9tablecard" :title="`业务表管理${currTreeNodeInfo.name ? ' - ' + currTreeNodeInfo.name : ''}`">
@@ -60,20 +60,6 @@
 					title: "中文名称",
 					key: "tableCnName",
 					width: 'auto'
-				},
-				{
-					title: "表类型",
-					key: "tableType",
-					width: '80',
-					render:(row) =>{
-						if(row.tableType == 1){
-							return '主表';
-						}else if(row.tableType == 2){
-							return '子表';
-						}else if(row.tableType == 3){
-							return '字典';
-						}
-					}
 				},
 				{
 					title: "系统英文名称",
