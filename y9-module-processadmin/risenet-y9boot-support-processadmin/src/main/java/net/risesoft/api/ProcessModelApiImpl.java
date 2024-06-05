@@ -2,6 +2,7 @@ package net.risesoft.api;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.ProcessModelApi;
 import net.risesoft.model.platform.Person;
@@ -38,7 +39,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +54,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/processModel")
@@ -95,7 +96,7 @@ public class ProcessModelApiImpl implements ProcessModelApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Model modelData = modelService.getModel(modelId);
         BpmnModel model = modelService.getBpmnModel(modelData);
-        if (model.getProcesses().size() == 0) {
+        if (model.getProcesses().isEmpty()) {
             return Y9Result.failure("数据模型不符要求，请至少设计一条主线流程。");
         }
         byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(model);
@@ -109,8 +110,7 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      *
      * @param tenantId 租户id
      * @param modelId  模型id
-     * @param response
-     * @return
+     * @param response response
      */
     @Override
     @PostMapping(value = "/exportModel", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -126,7 +126,7 @@ public class ProcessModelApiImpl implements ProcessModelApi {
             IOUtils.copy(in, response.getOutputStream());
             response.flushBuffer();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("导出模型文件失败", e);
         }
     }
 
@@ -143,8 +143,8 @@ public class ProcessModelApiImpl implements ProcessModelApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<Map<String, Object>> items = new ArrayList<>();
         List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
-        ProcessDefinition processDefinition = null;
-        Map<String, Object> mapTemp = null;
+        ProcessDefinition processDefinition;
+        Map<String, Object> mapTemp;
         for (AbstractModel model : list) {
             mapTemp = new HashMap<>(16);
             mapTemp.put("id", model.getId());
@@ -167,20 +167,17 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      *
      * @param tenantId 租户id
      * @param modelId  模型id
-     * @param response
-     * @return
+     * @param response response
+     * @return Y9Result<String>
      */
     @Override
     @GetMapping(value = "/getModelXml", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getModelXml(@RequestParam String tenantId, @RequestParam String modelId, HttpServletResponse response) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        byte[] bpmnBytes = null;
-        Map<String, Object> map = new HashMap<>();
+        byte[] bpmnBytes;
         Model model = modelService.getModel(modelId);
-        map.put("key", model.getKey());
-        map.put("name", model.getName());
         bpmnBytes = modelService.getBpmnXML(model);
-        return Y9Result.success(bpmnBytes == null ? "" : new String(bpmnBytes, Charset.forName("UTF-8")), "获取成功");
+        return Y9Result.success(bpmnBytes == null ? "" : new String(bpmnBytes, StandardCharsets.UTF_8), "获取成功");
     }
 
     /**
@@ -189,7 +186,7 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      * @param tenantId 租户id
      * @param userId   用户id
      * @param file     文件
-     * @return
+     * @return Y9Result<String>
      */
     @PostMapping(value = "/saveModelXml", produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
@@ -210,12 +207,12 @@ public class ProcessModelApiImpl implements ProcessModelApi {
             if (!errors.isEmpty()) {
                 StringBuffer es = new StringBuffer();
                 errors.forEach(ve -> es.append(ve.toString()).append("/n"));
-                return Y9Result.failure("保存失败：模板验证失败，原因: " + es.toString());
+                return Y9Result.failure("保存失败：模板验证失败，原因: " + es);
             }
             if (bpmnModel.getProcesses().isEmpty()) {
                 return Y9Result.failure("保存失败： 文件中不存在流程的信息");
             }
-            if (bpmnModel.getLocationMap().size() == 0) {
+            if (bpmnModel.getLocationMap().isEmpty()) {
                 BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
                 bpmnLayout.execute();
             }
@@ -245,10 +242,10 @@ public class ProcessModelApiImpl implements ProcessModelApi {
             newModel.setLastUpdatedBy(person.getName());
             newModel.setTenantId(tenantId);
             String createdBy = SecurityUtils.getCurrentUserId();
-            newModel = modelService.createModel(newModel, createdBy);
+            modelService.createModel(newModel, createdBy);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("导入模型文件失败", e);
         }
         return Y9Result.failure("保存失败");
     }

@@ -27,12 +27,11 @@ public class ProcessModelServiceImpl implements ProcessModelService {
     private final RepositoryService repositoryService;
 
     @Override
-    public void copyModel(String sourceTenantId, String targetTenantId, String modelKey) throws Exception {
-        /**
+    public void copyModel(String sourceTenantId, String targetTenantId, String modelKey){
+        /*
          * 查找原租户中的模型
          */
         FlowableTenantInfoHolder.setTenantId(sourceTenantId);
-
         String modelId = null;
         List<AbstractModel> sourceModelList = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
         for (AbstractModel aModel : sourceModelList) {
@@ -42,11 +41,11 @@ public class ProcessModelServiceImpl implements ProcessModelService {
             }
         }
         Model sourceModel = modelService.getModel(modelId);
-        /**
+        /*
          * 切换租户
          */
         FlowableTenantInfoHolder.setTenantId(targetTenantId);
-        /**
+        /*
          * 判断目标租户是否存在该流程，不存在才新增
          */
         boolean has = false;
@@ -58,13 +57,13 @@ public class ProcessModelServiceImpl implements ProcessModelService {
             }
         }
         if (!has) {
-            /**
+            /*
              * 复制流程
              */
             sourceModel.setId(null);
             sourceModel.setTenantId(targetTenantId);
             Model modelData = modelService.createModel(sourceModel, "管理员");
-            /**
+            /*
              * 部署流程
              */
             BpmnModel bpmnModel = modelService.getBpmnModel(modelData);

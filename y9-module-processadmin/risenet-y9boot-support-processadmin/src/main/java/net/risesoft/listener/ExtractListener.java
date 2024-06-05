@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
  * @author qinman
  * @date 2024/03/19
  */
-@SuppressWarnings("serial")
 @Slf4j
 public class ExtractListener implements ExecutionListener {
 

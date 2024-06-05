@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import java.util.Map;
-
 import org.flowable.task.service.delegate.DelegateTask;
+
+import java.util.Map;
 
 /**
  * @author qinman
@@ -14,16 +14,16 @@ public interface ProcessInstanceDetailsService {
     /**
      * Description:
      *
-     * @param taskEntity
-     * @param variables
+     * @param taskEntity 任务
+     * @param variables  变量
      */
-    public void saveProcessInstanceDetails(final DelegateTask taskEntity, final Map<String, Object> variables);
+    void saveProcessInstanceDetails(final DelegateTask taskEntity, final Map<String, Object> variables);
 
     /**
      * Description:
      *
-     * @param taskEntity
-     * @param variables
+     * @param taskEntity 任务
+     * @param variables  变量
      */
-    public void updateProcessInstanceDetails(final DelegateTask taskEntity, final Map<String, Object> variables);
+    void updateProcessInstanceDetails(final DelegateTask taskEntity, final Map<String, Object> variables);
 }

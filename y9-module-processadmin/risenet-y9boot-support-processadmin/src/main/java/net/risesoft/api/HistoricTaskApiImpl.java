@@ -47,11 +47,10 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         if (StringUtils.isBlank(processInstanceId)) {
-            return new ArrayList<HistoricTaskInstanceModel>();
+            return new ArrayList<>();
         }
         List<HistoricTaskInstance> list = customHistoricTaskService.getByProcessInstanceIdOrderByEndTimeAsc(processInstanceId, year);
-        List<HistoricTaskInstanceModel> htiList = FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list);
-        return htiList;
+        return FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list);
     }
 
     /**
@@ -68,11 +67,10 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         if (StringUtils.isBlank(processInstanceId)) {
-            return new ArrayList<HistoricTaskInstanceModel>();
+            return new ArrayList<>();
         }
         List<HistoricTaskInstance> list = customHistoricTaskService.getByProcessInstanceIdOrderByStartTimeAsc(processInstanceId, year);
-        List<HistoricTaskInstanceModel> htiList = FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list);
-        return htiList;
+        return FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list);
     }
 
     /**
@@ -87,8 +85,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
     public HistoricTaskInstanceModel getById(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricTaskInstance hti = customHistoricTaskService.getById(taskId);
-        HistoricTaskInstanceModel htiModel = FlowableModelConvertUtil.historicTaskInstance2Model(hti);
-        return htiModel;
+        return FlowableModelConvertUtil.historicTaskInstance2Model(hti);
     }
 
     /**
@@ -104,8 +101,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
     public List<HistoricTaskInstanceModel> getByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricTaskInstance> list = customHistoricTaskService.getByProcessInstanceId(processInstanceId, year);
-        List<HistoricTaskInstanceModel> htiList = FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list);
-        return htiList;
+        return FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list);
     }
 
     /**
@@ -121,8 +117,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
     public List<HistoricTaskInstanceModel> getByProcessInstanceIdOrderByEndTimeDesc(@RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricTaskInstance> list = customHistoricTaskService.getByProcessInstanceIdOrderByEndTimeDesc(processInstanceId, year);
-        List<HistoricTaskInstanceModel> htiList = FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list);
-        return htiList;
+        return FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list);
     }
 
     /**
@@ -152,8 +147,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
     public HistoricTaskInstanceModel getThePreviousTask(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricTaskInstance hti = customHistoricTaskService.getThePreviousTask(taskId);
-        HistoricTaskInstanceModel htiModel = FlowableModelConvertUtil.historicTaskInstance2Model(hti);
-        return htiModel;
+        return FlowableModelConvertUtil.historicTaskInstance2Model(hti);
     }
 
     /**
@@ -168,8 +162,7 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
     public List<HistoricTaskInstanceModel> getThePreviousTasks(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricTaskInstance> htiList = customHistoricTaskService.getThePreviousTasks(taskId);
-        List<HistoricTaskInstanceModel> htiModelList = FlowableModelConvertUtil.historicTaskInstanceList2ModelList(htiList);
-        return htiModelList;
+        return FlowableModelConvertUtil.historicTaskInstanceList2ModelList(htiList);
     }
 
     /**

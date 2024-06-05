@@ -105,7 +105,7 @@ public class JumpCommand implements Command<Void> {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String taskSender = userInfo.getName(), userId = userInfo.getPersonId();
         String taskSenderId = userId, user = null;
-        Map<String, Object> vars = new HashMap<String, Object>(16);
+        Map<String, Object> vars = new HashMap<>(16);
         vars.put(SysVariables.TASKSENDER, taskSender);
         vars.put(SysVariables.TASKSENDERID, taskSenderId);
         if (users.size() == 1) {

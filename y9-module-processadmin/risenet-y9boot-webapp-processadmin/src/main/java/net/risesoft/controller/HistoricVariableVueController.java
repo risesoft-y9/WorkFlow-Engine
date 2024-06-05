@@ -42,7 +42,7 @@ public class HistoricVariableVueController {
             map.put("processInstanceId", var.getProcessInstanceId());
             map.put("taskId", var.getTaskId());
             map.put("name", var.getVariableName());
-            if (var.getValue().equals(null)) {
+            if (var.getValue() == null) {
                 map.put("value", "");
             } else {
                 map.put("value", var.getValue());
@@ -101,7 +101,7 @@ public class HistoricVariableVueController {
             map.put("processInstanceId", var.getProcessInstanceId());
             map.put("taskId", var.getTaskId());
             map.put("name", var.getVariableName());
-            if (var.getValue().equals(null)) {
+            if (var.getValue() == null) {
                 map.put("value", "");
             } else {
                 map.put("value", var.getValue());

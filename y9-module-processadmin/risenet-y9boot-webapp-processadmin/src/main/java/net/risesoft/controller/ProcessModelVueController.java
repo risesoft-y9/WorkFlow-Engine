@@ -107,7 +107,7 @@ public class ProcessModelVueController {
 
         Model model = modelService.createModel(newModel, personName);
         String modelId = model.getId();
-        /**
+        /*
          * 跳转画图页面
          */
         String path = y9Config.getCommon().getProcessAdminBaseUrl() + "/modeler.html#/editor/" + modelId;
@@ -148,7 +148,7 @@ public class ProcessModelVueController {
     /**
      * 导出model的xml文件
      *
-     * @param modelId
+     * @param modelId 模型id
      * @param response
      * @return
      */

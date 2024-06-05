@@ -54,6 +54,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Future;
 
 /**
@@ -83,11 +84,11 @@ public class InterfaceUtilService {
     /**
      * 异步调用接口
      *
-     * @param tenantId
-     * @param processInstanceId
-     * @param itemId
-     * @param info
-     * @return
+     * @param tenantId          租户id          租户ID
+     * @param processInstanceId 流程实例id 流程实例ID
+     * @param itemId            接口ID
+     * @param info              接口信息
+     * @return Boolean
      */
     @Async
     public Future<Boolean> asynInterface(final String tenantId, final String positionId, final String processSerialNumber, final String itemId, final InterfaceModel info, final String processInstanceId, final String taskId, final String taskKey) {
@@ -103,7 +104,7 @@ public class InterfaceUtilService {
             }
             return new AsyncResult<>(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("接口调用异常", e);
         }
         return new AsyncResult<>(false);
     }
@@ -111,15 +112,15 @@ public class InterfaceUtilService {
     /**
      * 接口响应数据处理
      *
-     * @param processSerialNumber
-     * @param processInstanceId
+     * @param processSerialNumber 流程序列号
+     * @param processInstanceId   流程实例id   流程实例ID
      * @param map
      * @param paramsList
      * @param info
      * @throws Exception
      */
     public void dataHandling(String processSerialNumber, String processInstanceId, Map<String, Object> map, List<InterfaceParamsModel> paramsList, InterfaceModel info) throws Exception {
-        if (map != null && paramsList != null && paramsList.size() > 0) {
+        if (map != null && paramsList != null && !paramsList.isEmpty()) {
             Connection connection = null;
             try {
                 String tableName = "";
@@ -129,21 +130,18 @@ public class InterfaceUtilService {
                         break;
                     }
                 }
-                connection = jdbcTemplate.getDataSource().getConnection();
+                connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
                 DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
                 String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
-                StringBuffer sqlStr = new StringBuffer("");
+                StringBuilder sqlStr = new StringBuilder();
                 if ("oracle".equals(dialect)) {
-                    sqlStr.append("update \"" + tableName + "\" set ");
-
+                    sqlStr.append("update \"").append(tableName).append("\" set ");
                 } else if ("dm".equals(dialect)) {
-                    sqlStr.append("update \"" + tableName + "\" set ");
-
+                    sqlStr.append("update \"").append(tableName).append("\" set ");
                 } else if ("mysql".equals(dialect)) {
-                    sqlStr.append("update " + tableName + " set ");
-
+                    sqlStr.append("update ").append(tableName).append(" set ");
                 } else if ("kingbase".equals(dialect)) {
-                    sqlStr.append("update \"" + tableName + "\" set ");
+                    sqlStr.append("update \"").append(tableName).append("\" set ");
                 }
                 boolean isHaveField = false;
                 for (InterfaceParamsModel model : paramsList) {
@@ -153,14 +151,12 @@ public class InterfaceUtilService {
                         }
                         String fieldName = model.getColumnName();
                         String parameterName = model.getParameterName();
-                        sqlStr.append(fieldName + "=");
+                        sqlStr.append(fieldName).append("=");
                         sqlStr.append(StringUtils.isNotBlank((String) map.get(parameterName)) ? "'" + map.get(parameterName) + "'" : "''");
                         isHaveField = true;
                     }
                 }
-                StringBuffer sqlStr1 = new StringBuffer("");
-                sqlStr1.append(" where guid ='" + processSerialNumber + "'");
-                sqlStr.append(sqlStr1);
+                sqlStr.append(" where guid ='").append(processSerialNumber).append("'");
                 String sql = sqlStr.toString();
                 System.out.println("******************************sql:" + sql);
                 jdbcTemplate.execute(sql);
@@ -189,11 +185,13 @@ public class InterfaceUtilService {
     /**
      * get方法调用接口
      *
-     * @param tenantId
-     * @param processInstanceId
+     * @param processSerialNumber
      * @param itemId
      * @param info
-     * @return
+     * @param processInstanceId   流程实例id
+     * @param taskId              任务id
+     * @param taskKey             任务key
+     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     public void getMethod(final String processSerialNumber, final String itemId, final InterfaceModel info, final String processInstanceId, final String taskId, final String taskKey) throws Exception {
@@ -206,7 +204,7 @@ public class InterfaceUtilService {
             method.addRequestHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
             Y9Result<List<InterfaceParamsModel>> y9Result = itemInterfaceApi.getInterfaceParams(Y9LoginUserHolder.getTenantId(), itemId, info.getId());
             List<NameValuePair> nameValuePairs = new ArrayList<>();
-            if (y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
+            if (y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
                 List<Map<String, Object>> list = getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info);
                 for (InterfaceParamsModel model : y9Result.getData()) {
                     if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST.getValue())) {
@@ -235,7 +233,7 @@ public class InterfaceUtilService {
                     }
                 }
             }
-            if (nameValuePairs != null && !nameValuePairs.isEmpty()) {
+            if (!nameValuePairs.isEmpty()) {
                 method.setQueryString(nameValuePairs.toArray(new NameValuePair[nameValuePairs.size()]));
             }
             // 设置请求超时时间10s
@@ -280,7 +278,7 @@ public class InterfaceUtilService {
      *
      * @param list
      * @param processSerialNumber
-     * @param processInstanceId
+     * @param processInstanceId   流程实例id
      * @param info
      * @return
      * @throws Exception
@@ -295,19 +293,10 @@ public class InterfaceUtilService {
                     break;
                 }
             }
-            connection = jdbcTemplate.getDataSource().getConnection();
+            connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
-            StringBuffer sqlStr = new StringBuffer();
-            if ("oracle".equals(dialect)) {
-                sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
-            } else if ("dm".equals(dialect)) {
-                sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
-            } else if ("kingbase".equals(dialect)) {
-                sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
-            } else if ("mysql".equals(dialect)) {
-                sqlStr = new StringBuffer("SELECT * FROM " + tableName + " where guid =?");
-            }
+            StringBuilder sqlStr = getSqlStr(dialect, tableName);
             List<Map<String, Object>> listmap = jdbcTemplate.queryForList(sqlStr.toString(), processSerialNumber);
             LOGGER.info("*********************请求参数返回结果:listmap={}", Y9JsonUtil.writeValueAsString(listmap));
             return listmap;
@@ -329,7 +318,21 @@ public class InterfaceUtilService {
                 }
             }
         }
-        return new ArrayList<Map<String, Object>>();
+        return new ArrayList<>();
+    }
+
+    private StringBuilder getSqlStr(String dialect, String tableName) {
+        StringBuilder sqlStr = new StringBuilder();
+        if ("oracle".equals(dialect)) {
+            sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
+        } else if ("dm".equals(dialect)) {
+            sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
+        } else if ("kingbase".equals(dialect)) {
+            sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
+        } else if ("mysql".equals(dialect)) {
+            sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where guid =?");
+        }
+        return sqlStr;
     }
 
     /**
@@ -337,7 +340,8 @@ public class InterfaceUtilService {
      *
      * @param executionEntity
      * @param variables
-     * @param string
+     * @param condition
+     * @throws Exception
      */
     public void interfaceCallByProcess(ExecutionEntityImpl executionEntity, Map<String, Object> variables, String condition) throws Exception {
         String processDefinitionId = executionEntity.getProcessDefinitionId();
@@ -361,7 +365,7 @@ public class InterfaceUtilService {
             String msg = result.toString();
             saveErrorLog(tenantId, processInstanceId, "", "", "interfaceCallByProcess", msg);
         }
-        if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
+        if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
                     asynInterface(tenantId, positionId, processSerialNumber, itemId, info, processInstanceId, "", "");
@@ -378,8 +382,9 @@ public class InterfaceUtilService {
     /**
      * 路由经过接口调用
      *
-     * @param entity0
+     * @param flow
      * @param condition
+     * @throws Exception
      */
     public void interfaceCallBySequenceFlow(FlowableSequenceFlowTakenEventImpl flow, String condition) throws Exception {
         String processDefinitionId = flow.getProcessDefinitionId();
@@ -404,7 +409,7 @@ public class InterfaceUtilService {
             String msg = result.toString();
             saveErrorLog(tenantId, processInstanceId, flow.getId(), flow.getId(), "interfaceCallBySequenceFlow", msg);
         }
-        if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
+        if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
                     asynInterface(tenantId, positionId, processSerialNumber, itemId, info, processInstanceId, flow.getId(), taskDefinitionKey);
@@ -447,7 +452,7 @@ public class InterfaceUtilService {
             String msg = result.toString();
             saveErrorLog(tenantId, task.getProcessInstanceId(), task.getId(), task.getTaskDefinitionKey(), "interfaceCallByTask", msg);
         }
-        if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
+        if (y9Result != null && y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
             for (InterfaceModel info : y9Result.getData()) {
                 if (info.getAsyn().equals("1")) {
                     asynInterface(tenantId, positionId, processSerialNumber, itemId, info, task.getProcessInstanceId(), task.getId(), task.getTaskDefinitionKey());
@@ -463,11 +468,13 @@ public class InterfaceUtilService {
     /**
      * post方法调用接口
      *
-     * @param tenantId
-     * @param processInstanceId
+     * @param processSerialNumber
      * @param itemId
      * @param info
-     * @return
+     * @param processInstanceId   流程实例id
+     * @param taskId              任务id
+     * @param taskKey             任务key
+     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     public void postMethod(final String processSerialNumber, final String itemId, final InterfaceModel info, final String processInstanceId, final String taskId, final String taskKey) throws Exception {
@@ -480,9 +487,9 @@ public class InterfaceUtilService {
             httpPost.addHeader("auth-positionId", Y9LoginUserHolder.getPositionId());
             httpPost.addHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
             Y9Result<List<InterfaceParamsModel>> y9Result = itemInterfaceApi.getInterfaceParams(Y9LoginUserHolder.getTenantId(), itemId, info.getId());
-            if (y9Result.isSuccess() && y9Result.getData() != null && y9Result.getData().size() > 0) {
+            if (y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
                 List<Map<String, Object>> list = getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info);
-                Map<String, Object> paramsMap = new HashMap<String, Object>();
+                Map<String, Object> paramsMap = new HashMap<>();
                 for (InterfaceParamsModel model : y9Result.getData()) {
                     if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST.getValue())) {
                         // 请求参数
@@ -563,11 +570,11 @@ public class InterfaceUtilService {
     /**
      * 保存错误日志
      *
-     * @param tenantId
-     * @param processInstanceId
-     * @param taskId
-     * @param taskKey
-     * @param interfaceAddress
+     * @param tenantId          租户id
+     * @param processInstanceId 流程实例id
+     * @param taskId            任务id
+     * @param taskKey           任务key
+     * @param interfaceAddress  接口地址
      * @param msg
      * @return
      */
@@ -589,7 +596,7 @@ public class InterfaceUtilService {
             errorLogApi.saveErrorLog(tenantId, errorLogModel);
             return new AsyncResult<>(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存错误日志失败", e);
         }
         return new AsyncResult<>(false);
     }
@@ -597,11 +604,13 @@ public class InterfaceUtilService {
     /**
      * 同步调用接口
      *
-     * @param tenantId
-     * @param processInstanceId
-     * @param itemId
-     * @param info
-     * @return
+     * @param processSerialNumber 流程编号
+     * @param itemId              事项id
+     * @param info                接口信息
+     * @param processInstanceId   流程实例id
+     * @param taskId              任务id
+     * @param taskKey             任务key
+     * @throws Exception
      */
     public void syncInterface(final String processSerialNumber, final String itemId, final InterfaceModel info, final String processInstanceId, final String taskId, final String taskKey) throws Exception {
         if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_GET.getValue())) {

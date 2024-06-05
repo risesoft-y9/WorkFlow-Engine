@@ -1,6 +1,7 @@
 package net.risesoft.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.command.JumpSubProcessCommand;
 import net.risesoft.id.IdType;
@@ -43,41 +44,42 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service(value = "customTaskService")
 public class CustomTaskServiceImpl implements CustomTaskService {
 
-    private final  TaskService taskService;
+    private final TaskService taskService;
 
-    private final  HistoryService historyService;
+    private final HistoryService historyService;
 
-    private final  CustomProcessDefinitionService customProcessDefinitionService;
+    private final CustomProcessDefinitionService customProcessDefinitionService;
 
-    private final  CustomHistoricTaskService customHistoricTaskService;
+    private final CustomHistoricTaskService customHistoricTaskService;
 
-    private ManagementService managementService;
+    private final ManagementService managementService;
 
-    private RuntimeService runtimeService;
+    private final RuntimeService runtimeService;
 
-    private final  Process4CompleteUtilService process4CompleteUtilService;
+    private final Process4CompleteUtilService process4CompleteUtilService;
 
-    private final  ErrorLogApi errorLogManager;
+    private final ErrorLogApi errorLogManager;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void claim(String taskId, String userId) {
         taskService.claim(taskId, userId);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void complete(String taskId) {
         taskService.complete(taskId);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void complete(String processInstanceId, String taskId) throws Exception {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
@@ -85,9 +87,9 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             String personName = userInfo.getName();
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
             String nodeType =
-                customProcessDefinitionService.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+                    customProcessDefinitionService.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey());
             HistoricProcessInstance historicProcessInstance =
-                historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+                    historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             if (nodeType.equals(SysVariables.PARALLEL)) {
                 List<Task> taskList = this.findByProcessInstanceId(processInstanceId);
                 for (Task tTemp : taskList) {
@@ -99,29 +101,29 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 }
             }
             String year = sdf.format(historicProcessInstance.getStartTime());
-            /**
+            /*
              * 1-备份正在运行的执行实例数据，回复待办的时候会用到，只记录最后一个任务办结前的数据
              */
             String sql0 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list0 = runtimeService.createNativeExecutionQuery().sql(sql0)
-                .parameter("PROC_INST_ID_", processInstanceId).list();
-            if (list0.size() > 0) {
+                    .parameter("PROC_INST_ID_", processInstanceId).list();
+            if (!list0.isEmpty()) {
                 // 备份数据已有，则先删除再重新插入备份
                 String sql2 = "DELETE FROM FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
                 runtimeService.createNativeExecutionQuery().sql(sql2).parameter("PROC_INST_ID_", processInstanceId)
-                    .list();
+                        .list();
             }
             String sql = "INSERT INTO FF_ACT_RU_EXECUTION_" + year
-                + " (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ from ACT_RU_EXECUTION T WHERE T.PROC_INST_ID_ = #{PROC_INST_ID_}";
+                    + " (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ from ACT_RU_EXECUTION T WHERE T.PROC_INST_ID_ = #{PROC_INST_ID_}";
             runtimeService.createNativeExecutionQuery().sql(sql).parameter("PROC_INST_ID_", processInstanceId).list();
 
-            /**
+            /*
              * 2-办结流程
              */
             String sql3 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list1 = runtimeService.createNativeExecutionQuery().sql(sql3)
-                .parameter("PROC_INST_ID_", processInstanceId).list();
-            if (list1.size() > 0) {
+                    .parameter("PROC_INST_ID_", processInstanceId).list();
+            if (!list1.isEmpty()) {
                 // 成功备份数据才办结
                 String endNodeKey = customProcessDefinitionService.getEndNodeKeyByTaskId(taskId);
                 Map<String, Object> vars = new HashMap<>(16);
@@ -129,7 +131,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 this.completeWithVariables(taskId, vars);
                 // 保存到数据中心
                 process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year,
-                    userInfo.getPersonId(), processInstanceId, personName);
+                        userInfo.getPersonId(), processInstanceId, personName);
             }
         } catch (Exception e) {
             final Writer result = new StringWriter();
@@ -151,15 +153,15 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             try {
                 errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
             } catch (Exception e1) {
-                e1.printStackTrace();
+                LOGGER.error("保存错误日志失败", e1);
             }
-            e.printStackTrace();
+            LOGGER.error("流程办结失败", e);
             throw new Exception("CustomTaskServiceImpl complete error");
         }
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void complete4Position(String processInstanceId, String taskId) throws Exception {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
@@ -167,9 +169,9 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             String personName = position.getName();
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
             String nodeType =
-                customProcessDefinitionService.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+                    customProcessDefinitionService.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey());
             HistoricProcessInstance historicProcessInstance =
-                historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+                    historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             if (nodeType.equals(SysVariables.PARALLEL)) {
                 List<Task> taskList = this.findByProcessInstanceId(processInstanceId);
                 for (Task tTemp : taskList) {
@@ -181,37 +183,36 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 }
             }
             String year = sdf.format(historicProcessInstance.getStartTime());
-            /**
+            /*
              * 1-备份正在运行的执行实例数据，回复待办的时候会用到，只记录最后一个任务办结前的数据
              */
             String sql0 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list0 = runtimeService.createNativeExecutionQuery().sql(sql0)
-                .parameter("PROC_INST_ID_", processInstanceId).list();
-            if (list0.size() > 0) {
+                    .parameter("PROC_INST_ID_", processInstanceId).list();
+            if (!list0.isEmpty()) {
                 // 备份数据已有，则先删除再重新插入备份
                 String sql2 = "DELETE FROM FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
                 runtimeService.createNativeExecutionQuery().sql(sql2).parameter("PROC_INST_ID_", processInstanceId)
-                    .list();
+                        .list();
             }
             String sql = "INSERT INTO FF_ACT_RU_EXECUTION_" + year
-                + " (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ from ACT_RU_EXECUTION T WHERE T.PROC_INST_ID_ = #{PROC_INST_ID_}";
+                    + " (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ from ACT_RU_EXECUTION T WHERE T.PROC_INST_ID_ = #{PROC_INST_ID_}";
             runtimeService.createNativeExecutionQuery().sql(sql).parameter("PROC_INST_ID_", processInstanceId).list();
-
-            /**
+            /*
              * 2-办结流程
              */
             String sql3 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list1 = runtimeService.createNativeExecutionQuery().sql(sql3)
-                .parameter("PROC_INST_ID_", processInstanceId).list();
-            if (list1.size() > 0) {
+                    .parameter("PROC_INST_ID_", processInstanceId).list();
+            if (!list1.isEmpty()) {
                 // 成功备份数据才办结
                 String endNodeKey = customProcessDefinitionService.getEndNodeKeyByTaskId(taskId);
-                Map<String, Object> vars = new HashMap<String, Object>(16);
+                Map<String, Object> vars = new HashMap<>(16);
                 vars.put(SysVariables.ROUTETOTASKID, endNodeKey);
                 this.completeWithVariables(taskId, vars);
                 // 保存到数据中心
                 process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year, position.getId(),
-                    processInstanceId, personName);
+                        processInstanceId, personName);
             }
         } catch (Exception e) {
             final Writer result = new StringWriter();
@@ -233,20 +234,20 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             try {
                 errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
             } catch (Exception e1) {
-                e1.printStackTrace();
+                LOGGER.error("保存错误日志失败", e1);
             }
-            e.printStackTrace();
+            LOGGER.error("流程办结失败", e);
             throw new Exception("CustomTaskServiceImpl complete error");
         }
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void completeTaskWithoutAssignee(String processInstanceId) {
         List<Task> taskList = this.findByProcessInstanceId(processInstanceId);
         Task task = taskList.get(0);
         List<Map<String, String>> parallelGatewayList = customProcessDefinitionService
-            .getParallelGatewayList(task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+                .getParallelGatewayList(task.getProcessDefinitionId(), task.getTaskDefinitionKey());
         String routeToTaskId = parallelGatewayList.get(0).get(SysVariables.TASKDEFKEY);
         Map<String, Object> vars = new HashMap<>(16);
         vars.put(SysVariables.ROUTETOTASKID, routeToTaskId);
@@ -260,46 +261,43 @@ public class CustomTaskServiceImpl implements CustomTaskService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void completeWithVariables(String taskId, Map<String, Object> map) {
         taskService.complete(taskId, map, false);
     }
 
     @Override
     public TaskModel createWithVariables(Map<String, Object> vars, String routeToTaskId, List<String> userIdList) {
-        String parentTaskId = (String)vars.get("parentTaskId");
+        String parentTaskId = (String) vars.get("parentTaskId");
         managementService.executeCommand(
-            new JumpSubProcessCommand(parentTaskId, Y9LoginUserHolder.getPersonId(), vars, routeToTaskId, userIdList));
-        TaskModel taskModel = null;
-        return taskModel;
+                new JumpSubProcessCommand(parentTaskId, Y9LoginUserHolder.getPersonId(), vars, routeToTaskId, userIdList));
+        return null;
     }
 
     @Override
     public TaskModel createWithVariables(String positionId, Map<String, Object> vars, String routeToTaskId,
-        List<String> positionIdList) {
-        String parentTaskId = (String)vars.get("parentTaskId");
+                                         List<String> positionIdList) {
+        String parentTaskId = (String) vars.get("parentTaskId");
         managementService
-            .executeCommand(new JumpSubProcessCommand(parentTaskId, positionId, vars, routeToTaskId, positionIdList));
-        TaskModel taskModel = null;
-        return taskModel;
+                .executeCommand(new JumpSubProcessCommand(parentTaskId, positionId, vars, routeToTaskId, positionIdList));
+        return null;
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void delegateTask(String taskId, String userId) {
         taskService.delegateTask(taskId, userId);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void deleteCandidateUser(String taskId, String userId) {
         taskService.deleteCandidateUser(taskId, userId);
     }
 
     @Override
     public List<Task> findAll() {
-        List<Task> list = taskService.createTaskQuery().orderByTaskCreateTime().desc().list();
-        return list;
+        return taskService.createTaskQuery().orderByTaskCreateTime().desc().list();
     }
 
     @Override
@@ -316,19 +314,19 @@ public class CustomTaskServiceImpl implements CustomTaskService {
     public List<Task> findByProcessInstanceId(String processInstanceId, boolean active) {
         if (active) {
             return taskService.createTaskQuery().processInstanceId(processInstanceId).active().orderByTaskCreateTime()
-                .asc().list();
+                    .asc().list();
         } else {
             return taskService.createTaskQuery().processInstanceId(processInstanceId).suspended()
-                .orderByTaskCreateTime().asc().list();
+                    .orderByTaskCreateTime().asc().list();
         }
     }
 
     @Override
     public Map<String, Object> findListByProcessInstanceId(String processInstanceId, Integer page, Integer rows) {
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
+        Map<String, Object> returnMap = new HashMap<>(16);
         long totalCount = taskService.createTaskQuery().processInstanceId(processInstanceId).active().count();
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(processInstanceId).active()
-            .orderByTaskCreateTime().asc().listPage((page - 1) * rows, rows);
+                .orderByTaskCreateTime().asc().listPage((page - 1) * rows, rows);
 
         List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
         returnMap.put("currpage", page);
@@ -340,25 +338,25 @@ public class CustomTaskServiceImpl implements CustomTaskService {
 
     @Override
     public Integer getCompleteTaskCount4Parallel(String taskId) {
-        List<HistoricTaskInstance> list = new ArrayList<HistoricTaskInstance>();
+        List<HistoricTaskInstance> list = new ArrayList<>();
         try {
             Task currentTask = taskService.createTaskQuery().taskId(taskId).singleResult();
             String multinstance = customProcessDefinitionService.getNodeType(currentTask.getProcessDefinitionId(),
-                currentTask.getTaskDefinitionKey());
+                    currentTask.getTaskDefinitionKey());
             if (multinstance.equals(SysVariables.PARALLEL)) {
                 List<HistoricTaskInstance> hisTaskList = historyService.createHistoricTaskInstanceQuery()
-                    .processInstanceId(currentTask.getProcessInstanceId()).taskCreatedOn(currentTask.getCreateTime())
-                    .list();
+                        .processInstanceId(currentTask.getProcessInstanceId()).taskCreatedOn(currentTask.getCreateTime())
+                        .list();
                 for (HistoricTaskInstance entity : hisTaskList) {
                     // 由于并行任务的创建时间可能会有延迟，所以这里创建时间相差不超过2秒的，即为当前任务的所有并行任务
                     if (entity.getCreateTime().getTime() - currentTask.getCreateTime().getTime() > -2
-                        && entity.getCreateTime().getTime() - currentTask.getCreateTime().getTime() < 2) {
+                            && entity.getCreateTime().getTime() - currentTask.getCreateTime().getTime() < 2) {
                         list.add(entity);
                     }
                 }
             }
 
-            if (list.size() > 0) {
+            if (!list.isEmpty()) {
                 int count = 0;
                 for (HistoricTaskInstance task : list) {
                     if (task.getEndTime() != null) {
@@ -371,43 +369,43 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 return 0;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取并行任务完成数量失败", e);
         }
         return -1;
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void resolveTask(String taskId) {
         taskService.resolveTask(taskId);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void saveTask(Task task) {
         taskService.saveTask(task);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void setAssignee(String taskId, String userId) {
         taskService.setAssignee(taskId, userId);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void setDueDate(String taskId, Date date) {
         taskService.setDueDate(taskId, date);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void setPriority(String taskId, Integer priority) {
         taskService.setPriority(taskId, priority);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void unclaim(String taskId) {
         taskService.unclaim(taskId);
     }

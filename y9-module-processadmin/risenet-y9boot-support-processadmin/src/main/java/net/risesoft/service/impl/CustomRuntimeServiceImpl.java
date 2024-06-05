@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -93,45 +94,39 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Execution addMultiInstanceExecution(String activityId, String parentExecutionId, Map<String, Object> map) {
         return runtimeService.addMultiInstanceExecution(activityId, parentExecutionId, map);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void deleteMultiInstanceExecution(String executionId) {
         runtimeService.deleteMultiInstanceExecution(executionId, true);
     }
 
-    private final String getActGeBytearraySql(String year, String processInstanceId) {
-        String sql = "INSERT INTO ACT_GE_BYTEARRAY (" + "	ID_," + "	REV_," + "	NAME_," + "	DEPLOYMENT_ID_," + "	BYTES_," + "	GENERATED_" + " ) SELECT " + "	b.ID_," + "	b.REV_," + "	b.NAME_," + "	b.DEPLOYMENT_ID_," + "	b.BYTES_," + "	b.GENERATED_" + " FROM" + "	ACT_GE_BYTEARRAY_" + year + " b" + " LEFT JOIN ACT_HI_VARINST_" + year + " v ON v.BYTEARRAY_ID_ = b.ID_" + " WHERE" + "	v.PROC_INST_ID_ = '" + processInstanceId + "'" + " AND v.NAME_ = 'users'";
-        return sql;
+    private String getActGeBytearraySql(String year, String processInstanceId) {
+        return "INSERT INTO ACT_GE_BYTEARRAY (" + "	ID_," + "	REV_," + "	NAME_," + "	DEPLOYMENT_ID_," + "	BYTES_," + "	GENERATED_" + " ) SELECT " + "	b.ID_," + "	b.REV_," + "	b.NAME_," + "	b.DEPLOYMENT_ID_," + "	b.BYTES_," + "	b.GENERATED_" + " FROM" + "	ACT_GE_BYTEARRAY_" + year + " b" + " LEFT JOIN ACT_HI_VARINST_" + year + " v ON v.BYTEARRAY_ID_ = b.ID_" + " WHERE" + "	v.PROC_INST_ID_ = '" + processInstanceId + "'" + " AND v.NAME_ = 'users'";
     }
 
-    private final String getActHiActinstSql(String year, String processInstanceId) {
-        String sql3 = "INSERT INTO ACT_HI_ACTINST (" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	ACT_ID_," + "	TASK_ID_," + "	CALL_PROC_INST_ID_," + "	ACT_NAME_," + "	ACT_TYPE_," + "	ASSIGNEE_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_," + "	DELETE_REASON_," + "	TENANT_ID_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	ACT_ID_," + "	TASK_ID_," + "	CALL_PROC_INST_ID_," + "	ACT_NAME_," + "	ACT_TYPE_," + "	ASSIGNEE_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_," + "	DELETE_REASON_," + "	TENANT_ID_" + " FROM" + "	ACT_HI_ACTINST_" + year + " A" + " WHERE" + "	A.PROC_INST_ID_ = '" + processInstanceId + "'";
-        return sql3;
+    private String getActHiActinstSql(String year, String processInstanceId) {
+        return "INSERT INTO ACT_HI_ACTINST (" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	ACT_ID_," + "	TASK_ID_," + "	CALL_PROC_INST_ID_," + "	ACT_NAME_," + "	ACT_TYPE_," + "	ASSIGNEE_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_," + "	DELETE_REASON_," + "	TENANT_ID_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	ACT_ID_," + "	TASK_ID_," + "	CALL_PROC_INST_ID_," + "	ACT_NAME_," + "	ACT_TYPE_," + "	ASSIGNEE_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_," + "	DELETE_REASON_," + "	TENANT_ID_" + " FROM" + "	ACT_HI_ACTINST_" + year + " A" + " WHERE" + "	A.PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
-    private final String getActHiIdentiyLinkSql(String year, String processInstanceId) {
-        String sql3 = "INSERT INTO ACT_HI_IDENTITYLINK (" + "	ID_," + "	GROUP_ID_," + "	TYPE_," + "	USER_ID_," + "	TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_" + " ) SELECT" + "	ID_," + "	GROUP_ID_," + "	TYPE_," + "	USER_ID_," + "	TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_" + " FROM" + "	ACT_HI_IDENTITYLINK_" + year + " i" + " WHERE" + "	i.PROC_INST_ID_ = '" + processInstanceId + "'";
-        return sql3;
+    private String getActHiIdentiyLinkSql(String year, String processInstanceId) {
+        return "INSERT INTO ACT_HI_IDENTITYLINK (" + "	ID_," + "	GROUP_ID_," + "	TYPE_," + "	USER_ID_," + "	TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_" + " ) SELECT" + "	ID_," + "	GROUP_ID_," + "	TYPE_," + "	USER_ID_," + "	TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_" + " FROM" + "	ACT_HI_IDENTITYLINK_" + year + " i" + " WHERE" + "	i.PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
-    private final String getActHiProcinstSql(String year, String processInstanceId) {
-        String sql = "INSERT INTO ACT_HI_PROCINST (" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	BUSINESS_KEY_," + "	PROC_DEF_ID_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_," + "	START_USER_ID_," + "	START_ACT_ID_," + "	END_ACT_ID_," + "	SUPER_PROCESS_INSTANCE_ID_," + "	DELETE_REASON_," + "	TENANT_ID_," + "	NAME_," + "	CALLBACK_ID_," + "	CALLBACK_TYPE_" + ") SELECT" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	BUSINESS_KEY_," + "	PROC_DEF_ID_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_," + "	START_USER_ID_," + "	START_ACT_ID_," + "	END_ACT_ID_," + "	SUPER_PROCESS_INSTANCE_ID_," + "	DELETE_REASON_," + "	TENANT_ID_," + "	NAME_," + "	CALLBACK_ID_," + "	CALLBACK_TYPE_" + " FROM" + "	ACT_HI_PROCINST_" + year + " RES" + " WHERE" + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'";
-        return sql;
+    private String getActHiProcinstSql(String year, String processInstanceId) {
+        return "INSERT INTO ACT_HI_PROCINST (" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	BUSINESS_KEY_," + "	PROC_DEF_ID_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_," + "	START_USER_ID_," + "	START_ACT_ID_," + "	END_ACT_ID_," + "	SUPER_PROCESS_INSTANCE_ID_," + "	DELETE_REASON_," + "	TENANT_ID_," + "	NAME_," + "	CALLBACK_ID_," + "	CALLBACK_TYPE_" + ") SELECT" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	BUSINESS_KEY_," + "	PROC_DEF_ID_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_," + "	START_USER_ID_," + "	START_ACT_ID_," + "	END_ACT_ID_," + "	SUPER_PROCESS_INSTANCE_ID_," + "	DELETE_REASON_," + "	TENANT_ID_," + "	NAME_," + "	CALLBACK_ID_," + "	CALLBACK_TYPE_" + " FROM" + "	ACT_HI_PROCINST_" + year + " RES" + " WHERE" + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
-    private final String getActHiTaskinstSql(String year, String processInstanceId) {
-        String sql = "INSERT INTO ACT_HI_TASKINST (" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	TASK_DEF_ID_," + "	TASK_DEF_KEY_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_," + "	PARENT_TASK_ID_," + "	NAME_," + "	DESCRIPTION_," + "	OWNER_," + "	ASSIGNEE_," + "	START_TIME_," + "	CLAIM_TIME_," + "	END_TIME_," + "	DURATION_," + "	DELETE_REASON_," + "	PRIORITY_," + "	DUE_DATE_," + "	FORM_KEY_," + "	CATEGORY_," + "	TENANT_ID_," + "	LAST_UPDATED_TIME_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	TASK_DEF_ID_," + "	TASK_DEF_KEY_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_," + "	PARENT_TASK_ID_," + "	NAME_," + "	DESCRIPTION_," + "	OWNER_," + "	ASSIGNEE_," + "	START_TIME_," + "	CLAIM_TIME_," + "	END_TIME_," + "	DURATION_," + "	DELETE_REASON_," + "	PRIORITY_," + "	DUE_DATE_," + "	FORM_KEY_," + "	CATEGORY_," + "	TENANT_ID_," + "	LAST_UPDATED_TIME_" + " FROM" + "	ACT_HI_TASKINST_" + year + " T" + " WHERE" + "	T .PROC_INST_ID_ = '" + processInstanceId + "'";
-        return sql;
+    private String getActHiTaskinstSql(String year, String processInstanceId) {
+        return "INSERT INTO ACT_HI_TASKINST (" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	TASK_DEF_ID_," + "	TASK_DEF_KEY_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_," + "	PARENT_TASK_ID_," + "	NAME_," + "	DESCRIPTION_," + "	OWNER_," + "	ASSIGNEE_," + "	START_TIME_," + "	CLAIM_TIME_," + "	END_TIME_," + "	DURATION_," + "	DELETE_REASON_," + "	PRIORITY_," + "	DUE_DATE_," + "	FORM_KEY_," + "	CATEGORY_," + "	TENANT_ID_," + "	LAST_UPDATED_TIME_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	TASK_DEF_ID_," + "	TASK_DEF_KEY_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_," + "	PARENT_TASK_ID_," + "	NAME_," + "	DESCRIPTION_," + "	OWNER_," + "	ASSIGNEE_," + "	START_TIME_," + "	CLAIM_TIME_," + "	END_TIME_," + "	DURATION_," + "	DELETE_REASON_," + "	PRIORITY_," + "	DUE_DATE_," + "	FORM_KEY_," + "	CATEGORY_," + "	TENANT_ID_," + "	LAST_UPDATED_TIME_" + " FROM" + "	ACT_HI_TASKINST_" + year + " T" + " WHERE" + "	T .PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
-    private final String getActHiVarinstSql(String year, String processInstanceId) {
-        String sql3 = "INSERT INTO ACT_HI_VARINST (" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_," + "	CREATE_TIME_," + "	LAST_UPDATED_TIME_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_," + "	CREATE_TIME_," + "	LAST_UPDATED_TIME_" + " FROM" + "	ACT_HI_VARINST_" + year + " v" + " WHERE" + "	v.PROC_INST_ID_ = '" + processInstanceId + "'";
-        return sql3;
+    private String getActHiVarinstSql(String year, String processInstanceId) {
+        return "INSERT INTO ACT_HI_VARINST (" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_," + "	CREATE_TIME_," + "	LAST_UPDATED_TIME_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_," + "	CREATE_TIME_," + "	LAST_UPDATED_TIME_" + " FROM" + "	ACT_HI_VARINST_" + year + " v" + " WHERE" + "	v.PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
     @Override
@@ -160,16 +155,14 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void recovery4Completed(String processInstanceId, String year) throws Exception {
         try {
-            /**
+            /*
              * 1-恢复正在运行的流程实例
              */
             java.sql.Statement stmt = null;
-            Connection connection = null;
-            try {
-                connection = jdbcTemplate.getDataSource().getConnection();
+            try (Connection connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection()) {
                 stmt = connection.createStatement();
                 stmt.addBatch("SET FOREIGN_KEY_CHECKS=0");
                 stmt.addBatch("INSERT INTO ACT_RU_EXECUTION (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ FROM FF_ACT_RU_EXECUTION_" + year + " T WHERE T.PROC_INST_ID_ = '" + processInstanceId + "'");
@@ -180,12 +173,8 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                     stmt.execute("SET FOREIGN_KEY_CHECKS=1");
                     stmt.close();
                 }
-                if (connection != null) {
-                    connection.close();
-                }
             }
-
-            /**
+            /*
              * 2-恢复正在运行的变量，先查询出来，再删除。因为调接口保存的时候，会再向历史表里面插入一份
              */
             String sql = "SELECT DISTINCT" + "	RES.*" + " FROM" + "	ACT_HI_TASKINST_" + year + " RES" + " WHERE" + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "	RES.END_TIME_ DESC";
@@ -196,8 +185,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 executionSet.add(execution.getId());
             }
             String nodeType = customProcessDefinitionService.getNodeType(hti.getProcessDefinitionId(), hti.getTaskDefinitionKey());
-
-            /**
+            /*
              * 复制年度历史数据到正在运行历史表
              */
             saveYearData(year, processInstanceId);
@@ -207,7 +195,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             Map<String, Object> pVarMap = new HashMap<>(16);
             Map<String, Object> eVarMap = new HashMap<>(16);
             Map<String, Object> tVarMap = new HashMap<>(16);
-            /**
+            /*
              * 多实例任务时的循环次数，假如选择三个人发送，并行则同时生成三个变量分别为loopCounter=0，loopCounter=1，loopCounter=2，串行的时候，只有一个变量，刚开始loopCounter=0，办理完成一个loopCounter就加1
              * 所以这里还原的时候，如果是串行的就-1
              */
@@ -276,12 +264,12 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 historyService.createNativeHistoricVariableInstanceQuery().sql(sql01).parameter("PROC_INST_ID_", processInstanceId).parameter("TASK_ID_", hti.getId()).list();
             }
 
-            /**
+            /*
              * 3-执行数据恢复
              */
             managementService.executeCommand(new RecoveryTodoCommand(hti, pVarMap, tVarMap));
 
-            /**
+            /*
              * 4-删除历史节点中办结任务到结束节点的数据
              */
             List<HistoricActivityInstance> hisActivityList = historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId).orderByHistoricActivityInstanceEndTime().desc().list();
@@ -295,8 +283,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                     runtimeService.createNativeExecutionQuery().sql(sql2).parameter("ID_", hisActivity.getId()).list();
                 }
             }
-
-            /**
+            /*
              * 5-恢复成功后删除备份的数据
              */
             try {
@@ -306,10 +293,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 officeDoneInfo.setEndTime(null);
                 officeDoneInfoApi.saveOfficeDone(Y9LoginUserHolder.getTenantId(), officeDoneInfo);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("删除数据中心办结数据失败", e);
             }
-
-            /**
+            /*
              * 恢复整个流程的办件详情,恢复为未办结
              */
             try {
@@ -334,10 +320,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 try {
                     errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
                 } catch (Exception e1) {
-                    e1.printStackTrace();
+                    LOGGER.error("保存错误日志失败", e1);
                 }
             }
-
             // 删除年度数据
             deleteProcessUtilService.deleteYearData(Y9LoginUserHolder.getTenantId(), year, processInstanceId);
         } catch (Exception e) {
@@ -360,15 +345,15 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             try {
                 errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
             } catch (Exception e1) {
-                e1.printStackTrace();
+                LOGGER.error("保存错误日志失败", e1);
             }
-            e.printStackTrace();
+            LOGGER.error("恢复待办失败", e);
             throw new Exception("CustomRuntimeServiceImpl recovery4Completed error");
         }
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void recovery4SetUpCompleted(String processInstanceId) {
         runtimeService.activateProcessInstanceById(processInstanceId);
 
@@ -377,16 +362,14 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void recoveryCompleted4Position(String processInstanceId, String year) throws Exception {
         try {
-            /**
+            /*
              * 1-恢复正在运行的流程实例
              */
             java.sql.Statement stmt = null;
-            Connection connection = null;
-            try {
-                connection = jdbcTemplate.getDataSource().getConnection();
+            try (Connection connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection()) {
                 stmt = connection.createStatement();
                 stmt.addBatch("SET FOREIGN_KEY_CHECKS=0");
                 stmt.addBatch("INSERT INTO ACT_RU_EXECUTION (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ FROM FF_ACT_RU_EXECUTION_" + year + " T WHERE T.PROC_INST_ID_ = '" + processInstanceId + "'");
@@ -397,12 +380,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                     stmt.execute("SET FOREIGN_KEY_CHECKS=1");
                     stmt.close();
                 }
-                if (connection != null) {
-                    connection.close();
-                }
             }
 
-            /**
+            /*
              * 2-恢复正在运行的变量，先查询出来，再删除。因为调接口保存的时候，会再向历史表里面插入一份
              */
             String sql = "SELECT DISTINCT" + "	RES.*" + " FROM" + "	ACT_HI_TASKINST_" + year + " RES" + " WHERE" + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "	RES.END_TIME_ DESC";
@@ -414,7 +394,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             }
             String nodeType = customProcessDefinitionService.getNodeType(hti.getProcessDefinitionId(), hti.getTaskDefinitionKey());
 
-            /**
+            /*
              * 复制年度历史数据到正在运行历史表
              */
             saveYearData(year, processInstanceId);
@@ -424,7 +404,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             Map<String, Object> pVarMap = new HashMap<>(16);
             Map<String, Object> eVarMap = new HashMap<>(16);
             Map<String, Object> tVarMap = new HashMap<>(16);
-            /**
+            /*
              * 多实例任务时的循环次数，假如选择三个人发送，并行则同时生成三个变量分别为loopCounter=0，loopCounter=1，loopCounter=2，串行的时候，只有一个变量，刚开始loopCounter=0，办理完成一个loopCounter就加1
              * 所以这里还原的时候，如果是串行的就-1
              */
@@ -493,12 +473,12 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 historyService.createNativeHistoricVariableInstanceQuery().sql(sql01).parameter("PROC_INST_ID_", processInstanceId).parameter("TASK_ID_", hti.getId()).list();
             }
 
-            /**
+            /*
              * 3-执行数据恢复
              */
             managementService.executeCommand(new RecoveryTodoCommand4Position(hti, pVarMap, tVarMap));
 
-            /**
+            /*
              * 4-删除历史节点中办结任务到结束节点的数据
              */
             List<HistoricActivityInstance> hisActivityList = historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId).orderByHistoricActivityInstanceEndTime().desc().list();
@@ -512,8 +492,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                     runtimeService.createNativeExecutionQuery().sql(sql2).parameter("ID_", hisActivity.getId()).list();
                 }
             }
-
-            /**
+            /*
              * 5-恢复成功后删除备份的数据
              */
             try {
@@ -542,11 +521,11 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 try {
                     errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
                 } catch (Exception e1) {
-                    e1.printStackTrace();
+                    LOGGER.error("保存错误日志失败", e1);
                 }
             }
 
-            /**
+            /*
              * 恢复整个流程的办件详情,恢复为未办结
              */
             try {
@@ -571,10 +550,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 try {
                     errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
                 } catch (Exception e1) {
-                    e1.printStackTrace();
+                    LOGGER.error("保存错误日志失败", e1);
                 }
             }
-
             // 删除年度数据
             deleteProcessUtilService.deleteYearData(Y9LoginUserHolder.getTenantId(), year, processInstanceId);
         } catch (Exception e) {
@@ -597,9 +575,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             try {
                 errorLogManager.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
             } catch (Exception e1) {
-                e1.printStackTrace();
+                LOGGER.error("保存错误日志失败", e1);
             }
-            e.printStackTrace();
+            LOGGER.error("恢复待办失败", e);
             throw new Exception("CustomRuntimeServiceImpl recovery4Completed error");
         }
     }
@@ -607,8 +585,8 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     /**
      * 恢复年度历史数据
      *
-     * @param year
-     * @param PROC_INST_ID_
+     * @param year              年度
+     * @param processInstanceId 流程实例ID
      */
     public void saveYearData(String year, String processInstanceId) {
         String sql3 = getActHiTaskinstSql(year, processInstanceId);
@@ -637,7 +615,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void setUpCompleted(String processInstanceId) {
         runtimeService.suspendProcessInstanceById(processInstanceId);
 
@@ -659,33 +637,31 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
      * 这里流程的启动人为userId:deptId为了避免act_ru_identitylink的类型starter的数据对在办列表查询的干扰
      */
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public ProcessInstance startProcessInstanceByKey(String processDefinitionKey, String systemName, Map<String, Object> map) {
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String userIdAndDeptId = userInfo.getPersonId() + ":" + userInfo.getParentId();
             identityService.setAuthenticatedUserId(userIdAndDeptId);
-            ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefinitionKey, systemName, map);
-            return processInstance;
+            return runtimeService.startProcessInstanceByKey(processDefinitionKey, systemName, map);
         } finally {
             identityService.setAuthenticatedUserId(null);
         }
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public ProcessInstance startProcessInstanceByKey4Position(String processDefinitionKey, String systemName, Map<String, Object> map) {
         try {
             identityService.setAuthenticatedUserId(Y9LoginUserHolder.getPositionId());
-            ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefinitionKey, systemName, map);
-            return processInstance;
+            return runtimeService.startProcessInstanceByKey(processDefinitionKey, systemName, map);
         } finally {
             identityService.setAuthenticatedUserId(null);
         }
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void switchSuspendOrActive(String processInstanceId, String state) {
         if (ItemProcessStateTypeEnum.ACTIVE.getValue().equals(state)) {
             runtimeService.activateProcessInstanceById(processInstanceId);

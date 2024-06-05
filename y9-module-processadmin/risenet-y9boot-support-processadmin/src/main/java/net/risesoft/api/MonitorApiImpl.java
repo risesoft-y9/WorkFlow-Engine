@@ -41,8 +41,7 @@ public class MonitorApiImpl implements MonitorApi {
     @GetMapping(value = "/getDoingCountByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public long getDoingCountByProcessDefinitionKey(@RequestParam String tenantId, @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        long totalCount = customMonitorService.getDoingCountByProcessDefinitionKey(processDefinitionKey);
-        return totalCount;
+        return customMonitorService.getDoingCountByProcessDefinitionKey(processDefinitionKey);
     }
 
     /**
@@ -56,8 +55,7 @@ public class MonitorApiImpl implements MonitorApi {
     @GetMapping(value = "/getDoingCountBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public long getDoingCountBySystemName(@RequestParam String tenantId, @RequestParam String systemName) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        long totalCount = customMonitorService.getDoingCountBySystemName(systemName);
-        return totalCount;
+        return customMonitorService.getDoingCountBySystemName(systemName);
     }
 
     /**
@@ -103,8 +101,7 @@ public class MonitorApiImpl implements MonitorApi {
     @GetMapping(value = "/getDoneCountByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public long getDoneCountByProcessDefinitionKey(@RequestParam String tenantId, @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        long totalCount = customMonitorService.getDoneCountByProcessDefinitionKey(processDefinitionKey);
-        return totalCount;
+        return customMonitorService.getDoneCountByProcessDefinitionKey(processDefinitionKey);
     }
 
     /**
@@ -118,8 +115,7 @@ public class MonitorApiImpl implements MonitorApi {
     @GetMapping(value = "/getDoneCountBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public long getDoneCountBySystemName(@RequestParam String tenantId, @RequestParam String systemName) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        long totalCount = customMonitorService.getDoneCountBySystemName(systemName);
-        return totalCount;
+        return customMonitorService.getDoneCountBySystemName(systemName);
     }
 
     /**
@@ -165,8 +161,7 @@ public class MonitorApiImpl implements MonitorApi {
     @GetMapping(value = "/getRecycleCountByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public long getRecycleCountByProcessDefinitionKey(@RequestParam String tenantId, @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        long totalCount = customRecycleService.getRecycleCountByProcessDefinitionKey(processDefinitionKey);
-        return totalCount;
+        return customRecycleService.getRecycleCountByProcessDefinitionKey(processDefinitionKey);
     }
 
     /**

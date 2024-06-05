@@ -65,8 +65,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             String todoTaskUrlPrefix = processParamModel.getTodoTaskUrlPrefix();
 
             String userId = map.get(SysVariables.TASKSENDERID).toString();
-            String assigneeName = "";
-            String senderName = "";
+            String assigneeName,senderName;
             Person person = personManager.get(tenantId, assigneeId).getData();
             if (person == null || StringUtils.isBlank(person.getId())) {
                 Position position = positionApi.get(tenantId, assigneeId).getData();
@@ -80,13 +79,9 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
                 senderName = person.getName();
             }
             String processInstanceId = task.getProcessInstanceId();
-            try {
-                String sponsorGuid = processParamModel.getSponsorGuid();
-                if (StringUtils.isNotBlank(sponsorGuid) && sponsorGuid.equals(assigneeId)) {
-                    assigneeName = assigneeName + "(主办)";
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            String sponsorGuid = processParamModel.getSponsorGuid();
+            if (StringUtils.isNotBlank(sponsorGuid) && sponsorGuid.equals(assigneeId)) {
+                assigneeName = assigneeName + "(主办)";
             }
             String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processInstanceId
                 + "&type=fromCplane";
@@ -110,16 +105,14 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             processInstanceDetails.setUserName(processParamModel.getStartorName());
             boolean b = processInstanceApi.saveProcessInstanceDetails(tenantId, processInstanceDetails);
             if (b) {
-                LOGGER.info("#################协作状态保存成功-TASK_ASSIGNED####任务id:{}{}#################", task.getName(),
+                LOGGER.info("#################协作状态保存成功-TASK_ASSIGNED####任务id:{}{}#################", task.getAssignee(),
                     task.getId());
             } else {
-                LOGGER.info("#################协作状态保存失败-TASK_ASSIGNED####任务id:{}{}#################", task.getName(),
+                LOGGER.error("#################协作状态保存失败-TASK_ASSIGNED####任务id:{}{}#################", task.getAssignee(),
                     task.getId());
             }
-            return;
         } catch (Exception e) {
-            LOGGER.warn("#################保存事件办理情况失败:1-TASK_ASSIGNED{}#################", task.getName());
-            e.printStackTrace();
+            LOGGER.error("#################保存事件办理情况失败:1-TASK_ASSIGNED：{} 错误信息：{}#################",task.getAssignee(), e.getMessage());
         }
     }
 
@@ -141,12 +134,11 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
                 LOGGER.info("#################更新协作状态成功-TASK_COMPLETED####任务id:{}{}################",
                     taskEntityHti.getName(), taskEntityHti.getId());
             } else {
-                LOGGER.info("#################更新协作状态失败-TASK_COMPLETED####任务id:{}{}#################",
+                LOGGER.error("#################更新协作状态失败-TASK_COMPLETED####任务id:{}{}#################",
                     taskEntityHti.getName(), taskEntityHti.getId());
             }
         } catch (Exception e) {
-            LOGGER.warn("#################更新协作状态失败-TASK_COMPLETED#################");
-            e.printStackTrace();
+            LOGGER.error("#################更新协作状态失败-TASK_COMPLETED#################");
         }
     }
 

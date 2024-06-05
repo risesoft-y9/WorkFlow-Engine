@@ -41,7 +41,6 @@ public class IdentityApiImpl implements IdentityApi {
     public List<IdentityLinkModel> getIdentityLinksForTask(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<IdentityLink> list = customIdentityService.getIdentityLinksForTask(taskId);
-        List<IdentityLinkModel> model = FlowableModelConvertUtil.identityLinkList2ModelList(list);
-        return model;
+        return FlowableModelConvertUtil.identityLinkList2ModelList(list);
     }
 }

@@ -79,7 +79,7 @@ public class Process4CompleteUtilService {
     /**
      * 删除历史数据
      *
-     * @param processInstanceId
+     * @param processInstanceId 流程实例id
      */
     public void deleteDoneData(String processInstanceId) {
         String sql3 = "DELETE from ACT_HI_TASKINST where PROC_INST_ID_ = '" + processInstanceId + "'";
@@ -180,12 +180,11 @@ public class Process4CompleteUtilService {
 
     /**
      * 保存数据到数据中心，截转年度数据
-     *
      * @param tenantId
      * @param year
      * @param userId
      * @param processInstanceId
-     * @return
+     * @param personName
      */
     @Async
     public void saveToDataCenter(final String tenantId, final String year, final String userId,
@@ -276,21 +275,8 @@ public class Process4CompleteUtilService {
                 officeDoneInfo.setCreatUserName(StringUtils.isNotBlank(processParamModel.getStartorName())
                         ? processParamModel.getStartorName() : "");
             }
-            String sql = "";
-            // 处理委托人
-            // sql = "SELECT e.OWNERID from FF_ENTRUSTDETAIL e where e.PROCESSINSTANCEID = '" + processInstanceId + "'";
-            // List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
-            // String entrustUserId = "";
-            // for (Map<String, Object> m : list2) {
-            // String ownerId = (String)m.get("OWNERID");
-            // if (!entrustUserId.contains(ownerId)) {
-            // entrustUserId = Y9Util.genCustomStr(entrustUserId, ownerId);
-            // }
-            // }
-            // officeDoneInfo.setEntrustUserId(entrustUserId);
-
             // 处理参与人
-            sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId + "'";
+            String sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId + "'";
             List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql);
             String allUserId = "";
             for (Map<String, Object> m : list3) {
@@ -335,7 +321,7 @@ public class Process4CompleteUtilService {
             try {
                 errorLogManager.saveErrorLog(tenantId, errorLogModel);
             } catch (Exception e1) {
-                e1.printStackTrace();
+                LOGGER.error("保存错误日志失败", e1);
             }
             LOGGER.warn("#################保存办结件数据到数据中心失败#################", e);
         } finally {
@@ -352,8 +338,8 @@ public class Process4CompleteUtilService {
 
     /**
      * 办结保存年度历史数据
-     *
-     * @param processInstanceId
+     * @param year 年度
+     * @param processInstanceId 流程实例ID
      */
     public void saveYearData(String year, String processInstanceId) {
         String sql3 = getActHiTaskinstSql(year, processInstanceId);

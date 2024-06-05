@@ -58,11 +58,10 @@ public class DoingApiImpl implements DoingApi {
      * @param page     页码
      * @param rows     行数
      * @return Map<String, Object>
-     * @throws Exception Exception
      */
     @Override
     @GetMapping(value = "/getListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserId(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String userId, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
+    public Map<String, Object> getListByUserId(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String userId, @RequestParam Integer page, @RequestParam Integer rows){
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customDoingService.getListByUserId(userId, page, rows);
     }
@@ -76,11 +75,10 @@ public class DoingApiImpl implements DoingApi {
      * @param page                 页码
      * @param rows                 行数
      * @return Map<String, Object>
-     * @throws Exception Exception
      */
     @Override
     @GetMapping(value = "/getListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserIdAndProcessDefinitionKey(@RequestParam @NotBlank String tenantId, @NotBlank @RequestParam String userId, @RequestParam @NotBlank String processDefinitionKey, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
+    public Map<String, Object> getListByUserIdAndProcessDefinitionKey(@RequestParam @NotBlank String tenantId, @NotBlank @RequestParam String userId, @RequestParam @NotBlank String processDefinitionKey, @RequestParam Integer page, @RequestParam Integer rows){
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customDoingService.getListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, page, rows);
     }
@@ -94,21 +92,20 @@ public class DoingApiImpl implements DoingApi {
      * @param page                 页码
      * @param rows                 行数
      * @return Map<String, Object>
-     * @throws Exception Exception
      */
     @Override
     @GetMapping(value = "/getListByUserIdAndProcessDefinitionKeyOrderBySendTime", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String userId, @RequestParam @NotBlank String processDefinitionKey, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
+    public Map<String, Object> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String userId, @RequestParam @NotBlank String processDefinitionKey, @RequestParam Integer page, @RequestParam Integer rows){
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Map<String, Object> returnMap = new HashMap<String, Object>(16);
-        List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
-        int totalCount = 0;
+        Map<String, Object> returnMap = new HashMap<>(16);
+        List<Map<String, Object>> resList = new ArrayList<>();
+        int totalCount;
         // 已办件，以办理时间排序，即发送出去的时间
-        List<HistoricTaskInstance> htiList = null;
+        List<HistoricTaskInstance> htiList;
         String sql = "SELECT p.* from (" + " SELECT" + "	t.*" + " FROM" + "	ACT_HI_TASKINST t" + " LEFT JOIN ACT_HI_PROCINST p ON t.PROC_INST_ID_ = p.PROC_INST_ID_" + " WHERE" + "	t.PROC_DEF_ID_ LIKE '" + processDefinitionKey + "%'" + " AND p.END_TIME_ IS NULL" + " AND t.END_TIME_ IS NOT NULL" + " AND p.DELETE_REASON_ IS NULL" + " AND (" + "	t.ASSIGNEE_ = '" + userId + "'" + "	OR t.OWNER_ = '" + userId + "'" + " )" + " AND NOT EXISTS (" + "	SELECT" + "		ID_" + "	FROM" + "		ACT_HI_VARINST" + "	WHERE" + "		NAME_ = '" + userId + "'" + "	AND t.PROC_INST_ID_ = PROC_INST_ID_" + " )" + " ORDER BY t.END_TIME_ desc LIMIT 1000000" + " ) p" + " GROUP BY p.PROC_INST_ID_ ORDER BY p.END_TIME_ desc";
         htiList = historyService.createNativeHistoricTaskInstanceQuery().sql(sql).listPage((page - 1) * rows, rows);
         for (HistoricTaskInstance hpi : htiList) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("processInstanceId", hpi.getProcessInstanceId());
             map.put("processDefinitionId", hpi.getProcessDefinitionId());
             map.put("endTime", hpi.getEndTime());
@@ -133,11 +130,10 @@ public class DoingApiImpl implements DoingApi {
      * @param page       页码
      * @param rows       行数
      * @return Map<String, Object>
-     * @throws Exception Exception
      */
     @Override
     @GetMapping(value = "/getListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserIdAndSystemName(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
+    public Map<String, Object> getListByUserIdAndSystemName(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName, @RequestParam Integer page, @RequestParam Integer rows){
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customDoingService.getListByUserIdAndSystemName(userId, systemName, page, rows);
     }
@@ -151,11 +147,10 @@ public class DoingApiImpl implements DoingApi {
      * @param page       页码
      * @param rows       行数
      * @return Map<String, Object>
-     * @throws Exception Exception
      */
     @Override
     @GetMapping(value = "/searchListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserId(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String userId, @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
+    public Map<String, Object> searchListByUserId(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String userId, @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows){
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customDoingService.searchListByUserId(userId, searchTerm, page, rows);
     }
@@ -170,11 +165,10 @@ public class DoingApiImpl implements DoingApi {
      * @param page                 页码
      * @param rows                 行数
      * @return Map<String, Object>
-     * @throws Exception Exception
      */
     @Override
     @GetMapping(value = "/searchListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String userId, @RequestParam @NotBlank String processDefinitionKey, @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
+    public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String userId, @RequestParam @NotBlank String processDefinitionKey, @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows){
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customDoingService.searchListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, searchTerm, page, rows);
     }
@@ -189,11 +183,10 @@ public class DoingApiImpl implements DoingApi {
      * @param page       页码
      * @param rows       行数
      * @return Map<String, Object>
-     * @throws Exception Exception
      */
     @Override
     @GetMapping(value = "/searchListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserIdAndSystemName(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName, @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
+    public Map<String, Object> searchListByUserIdAndSystemName(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName, @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows){
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customDoingService.searchListByUserIdAndSystemName(userId, systemName, searchTerm, page, rows);
     }

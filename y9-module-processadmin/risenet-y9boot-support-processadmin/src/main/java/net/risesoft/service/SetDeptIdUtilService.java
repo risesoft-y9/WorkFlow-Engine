@@ -29,30 +29,29 @@ import java.util.Map;
 @Service(value = "setDeptIdUtilService")
 public class SetDeptIdUtilService {
 
-    private final  ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamManager;
 
-    private final  PersonApi personManager;
+    private final PersonApi personManager;
 
-    private final  PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    private final  OrgUnitApi orgUnitManager;
+    private final OrgUnitApi orgUnitManager;
 
     /**
      * 保存委办局id,科室id
      *
-     * @param taskEntity
-     * @param map
+     * @param taskEntity 任务
+     * @param map        变量
      */
     public void setDeptId(final DelegateTask taskEntity, final Map<String, Object> map) {
         try {
             String assignee = taskEntity.getAssignee();
-            String processSerialNumber = (String)map.get(SysVariables.PROCESSSERIALNUMBER);
-            String tenantId = (String)map.get("tenantId");
+            String processSerialNumber = (String) map.get(SysVariables.PROCESSSERIALNUMBER);
+            String tenantId = (String) map.get("tenantId");
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 Person person = personManager.get(tenantId, assignee).getData();
-                OrgUnit bureau = null;
-                OrgUnit orgUnit = null;
+                OrgUnit bureau, orgUnit;
                 if (person == null || StringUtils.isBlank(person.getId())) {
                     Position position = positionApi.get(tenantId, assignee).getData();
                     bureau = orgUnitManager.getBureau(tenantId, position.getParentId()).getData();

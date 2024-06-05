@@ -57,11 +57,6 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 }
                 break;
             case HISTORIC_PROCESS_INSTANCE_ENDED:
-                try {
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 break;
             default:
                 LOGGER.info("Event received:{} {}", event.getType(), System.nanoTime());

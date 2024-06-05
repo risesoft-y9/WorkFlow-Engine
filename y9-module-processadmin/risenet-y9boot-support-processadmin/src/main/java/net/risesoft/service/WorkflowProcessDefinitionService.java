@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.risesoft.util.SysVariables;
 import net.risesoft.util.WorkflowUtils;
-import net.risesoft.y9.Y9Context;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.BpmnModel;
@@ -30,7 +28,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -58,41 +55,6 @@ public class WorkflowProcessDefinitionService {
     private final  WorkflowHistoryProcessInstanceService workflowHistoryProcessInstanceService;
 
     /**
-     * 重新部署所有流程定义
-     *
-     * @throws Exception
-     */
-    public void deployAllFromClasspath() throws Exception {
-        ResourceLoader resourceLoader = new DefaultResourceLoader();
-        File file = null;
-
-        String classpathResourceUrl = "classpath:/application.yml";
-        Resource resource = resourceLoader.getResource(classpathResourceUrl);
-        if (resource.exists()) {
-            file = resource.getFile();
-            file = file.getParentFile();
-            file = new File(file, "deployments");
-        } else {
-            LOGGER.error("类路径下不存在application.yaml，不应该啊！");
-
-            String root = Y9Context.getWebRootRealPath();
-            file = new File(root);
-            file = new File(file, "WEB-INF");
-            file = new File(file, "classes");
-            file = new File(file, "deployments");
-        }
-
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-
-        Collection<File> files = FileUtils.listFiles(file, new String[] {"bar"}, false);
-        for (File f : files) {
-            deploySingleProcess(f.getName());
-        }
-    }
-
-    /**
      * 部署单个流程定义
      *
      * @param processKey 流程定义Key
@@ -104,19 +66,13 @@ public class WorkflowProcessDefinitionService {
         LOGGER.debug("read workflow from: {}", classpathResourceUrl);
         Resource resource = resourceLoader.getResource(classpathResourceUrl);
         InputStream inputStream = resource.getInputStream();
-        if (inputStream == null) {
-            LOGGER.warn("ignore deploy workflow module: {}", classpathResourceUrl);
-        } else {
-            LOGGER.debug("finded workflow module: {}, deploy it!", classpathResourceUrl);
-            ZipInputStream zis = new ZipInputStream(inputStream);
-            Deployment deployment = repositoryService.createDeployment().addZipInputStream(zis).deploy();
-
-            // export diagram
-            List<ProcessDefinition> list =
-                repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()).list();
-            for (ProcessDefinition processDefinition : list) {
-                WorkflowUtils.exportDiagramToFile(repositoryService, processDefinition);
-            }
+        LOGGER.debug("finded workflow module: {}, deploy it!", classpathResourceUrl);
+        ZipInputStream zis = new ZipInputStream(inputStream);
+        Deployment deployment = repositoryService.createDeployment().addZipInputStream(zis).deploy();
+        List<ProcessDefinition> list =
+            repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()).list();
+        for (ProcessDefinition processDefinition : list) {
+            WorkflowUtils.exportDiagramToFile(repositoryService, processDefinition);
         }
     }
 
@@ -124,8 +80,7 @@ public class WorkflowProcessDefinitionService {
      * 根据processDefinitionId(例如:luohufawen:10:2494)获取流程定义
      *
      * @param processDefinitionId 流程定义Id(例如:luohufawen:10:2494)
-     * @return
-     * @throws Exception
+     * @return ProcessDefinitionEntity
      */
     public ProcessDefinitionEntity findProcessDefinition(String processDefinitionId) {
         ProcessDefinitionEntity processDefinition = null;
@@ -228,7 +183,7 @@ public class WorkflowProcessDefinitionService {
     }
 
     /**
-     * 获取某一节点的指定属性
+     * 获取某节点的指定属性
      *
      * @param processDefinitionId 流程定义ID
      * @param activityId 任务节点Id（例如 outerflow）
@@ -483,7 +438,6 @@ public class WorkflowProcessDefinitionService {
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         Collection<FlowElement> flowElements = process.getFlowElements();
         for (FlowElement flowElement : flowElements) {
-
             flowElement.getId();
         }
         return result;
@@ -562,15 +516,13 @@ public class WorkflowProcessDefinitionService {
      */
     public String getStartTaskDefinitionKey(String processDefinitionId) {
         String result = "";
-        List<FlowElement> resultList = new ArrayList<FlowElement>();
+        List<FlowElement> resultList = new ArrayList<>();
         List<FlowElement> list = getActivityImpls(processDefinitionId);
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             // 这里需要复制一次，因为processDefinition是在内存中的，如果直接对list删除，将会影响processDefinition中的数据
             resultList.addAll(list);
         }
-        Iterator<FlowElement> sListIterator = resultList.iterator();
-        while (sListIterator.hasNext()) {
-            FlowElement e = sListIterator.next();
+        for (FlowElement e : resultList) {
             if (e instanceof StartEvent) {
                 result = e.getId();
                 break;
@@ -585,7 +537,7 @@ public class WorkflowProcessDefinitionService {
      * @return
      */
     public Map<String, String> procDefIdMap() {
-        Map<String, String> procDefMap = new HashMap<String, String>(16);
+        Map<String, String> procDefMap = new HashMap<>(16);
         ProcessDefinitionQuery processDefinitionQuery =
             repositoryService.createProcessDefinitionQuery().latestVersion().orderByProcessDefinitionKey().asc();
         List<ProcessDefinition> processDefinitionList = processDefinitionQuery.list();

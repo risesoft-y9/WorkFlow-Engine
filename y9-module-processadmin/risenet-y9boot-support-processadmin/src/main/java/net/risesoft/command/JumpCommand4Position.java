@@ -112,7 +112,7 @@ public class JumpCommand4Position implements Command<Void> {
          * 设置新任务的发送人和办理人-开始
          */
         String user = null;
-        Map<String, Object> vars = new HashMap<String, Object>(16);
+        Map<String, Object> vars = new HashMap<>(16);
         vars.put(SysVariables.TASKSENDER, Y9LoginUserHolder.getPosition().getName());
         vars.put(SysVariables.TASKSENDERID, Y9LoginUserHolder.getPositionId());
         vars.put(SysVariables.TASKSENDERPOSITIONID, Y9LoginUserHolder.getPositionId());

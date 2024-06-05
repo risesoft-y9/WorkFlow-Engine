@@ -1,8 +1,5 @@
 package net.risesoft.command;
 
-import java.util.List;
-import java.util.Map;
-
 import org.flowable.bpmn.model.FlowElement;
 import org.flowable.bpmn.model.Process;
 import org.flowable.common.engine.impl.interceptor.Command;
@@ -14,6 +11,9 @@ import org.flowable.engine.impl.util.CommandContextUtil;
 import org.flowable.engine.impl.util.ProcessDefinitionUtil;
 import org.flowable.task.service.TaskService;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -30,7 +30,7 @@ public class JumpSubProcessCommand implements Command<Void> {
 
     protected String positionId;
 
-    private List<String> users;
+    protected List<String> users;
 
     public JumpSubProcessCommand(String taskId, String positionId, Map<String, Object> vars, String targetNodeId,
         List<String> users) {
@@ -47,15 +47,14 @@ public class JumpSubProcessCommand implements Command<Void> {
             org.flowable.engine.impl.util.CommandContextUtil.getExecutionEntityManager();
         TaskService taskService = CommandContextUtil.getTaskService();
         TaskEntity parentTask = taskService.getTask(taskId);
-        ExecutionEntity parentExcutionEntity = executionEntityManager.findById(parentTask.getExecutionId());
-        // for (int i = 0; i < users.size(); i++) {
-        ExecutionEntity childExecution = executionEntityManager.createChildExecution(parentExcutionEntity);
+        ExecutionEntity parentExecutionEntity = executionEntityManager.findById(parentTask.getExecutionId());
+        ExecutionEntity childExecution = executionEntityManager.createChildExecution(parentExecutionEntity);
         if (users.size() == 1) {
             vars.put("user", users.get(0));
         }
         vars.put("users", users);
         childExecution.setVariables(vars);
-        Process process = ProcessDefinitionUtil.getProcess(parentExcutionEntity.getProcessDefinitionId());
+        Process process = ProcessDefinitionUtil.getProcess(parentExecutionEntity.getProcessDefinitionId());
         FlowElement targetFlowElement = process.getFlowElement(targetNodeId);
         FlowableEngineAgenda flowableEngineAgenda = org.flowable.engine.impl.util.CommandContextUtil.getAgenda();
         childExecution.setCurrentFlowElement(targetFlowElement);

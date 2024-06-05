@@ -1,6 +1,7 @@
 package net.risesoft.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.service.CustomIdentityService;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import org.flowable.engine.RuntimeService;
@@ -18,6 +19,7 @@ import java.util.List;
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 @EnableAsync
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -29,7 +31,7 @@ public class CustomIdentityServiceImpl implements CustomIdentityService {
     private final RuntimeService runtimeService;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void addParticipantUser(String tenantId, String userId, String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         runtimeService.addParticipantUser(processInstanceId, userId);
@@ -40,13 +42,13 @@ public class CustomIdentityServiceImpl implements CustomIdentityService {
      */
     @Async
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void deleteParticipantUser(String tenantId, String userId, String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
             Thread.sleep(200);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.error("InterruptedException", e);
         }
         runtimeService.deleteParticipantUser(processInstanceId, userId);
     }

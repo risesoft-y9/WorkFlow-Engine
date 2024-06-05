@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -34,23 +35,20 @@ import java.util.Map;
 @Service(value = "weiXinRemindService")
 public class WeiXinRemindServiceImpl implements WeiXinRemindService {
 
-    private final  PersonApi personManager;
+    private final PersonApi personManager;
 
-    private final  PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    private final  ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamManager;
 
-    private final  Y9Properties y9Conf;
+    private final Y9Properties y9Conf;
 
     /**
      * 微信提醒
-     */
-    /**
-     * Description:
-     * 
-     * @param task
-     * @param map
-     * @param local
+     *
+     * @param task  任务
+     * @param map   流程变量
+     * @param local 任务变量
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -61,10 +59,10 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
             return;
         }
         try {
-            String tenantId = (String)map.get("tenantId");
-            String processSerialNumber = (String)map.get(SysVariables.PROCESSSERIALNUMBER);
+            String tenantId = (String) map.get("tenantId");
+            String processSerialNumber = (String) map.get(SysVariables.PROCESSSERIALNUMBER);
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+                    processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             String documentTitle = processParamModel.getTitle();
             String itemId = processParamModel.getItemId();
             String itemName = processParamModel.getItemName();
@@ -74,9 +72,9 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
             }
             String assignee = task.getAssignee();
             String userId = map.get(SysVariables.TASKSENDERID).toString();
-            String sended = processParamModel.getSended();
+            String send = processParamModel.getSended();
             // 第一步新建产生的任务，不发送提醒
-            if (StringUtils.isBlank(sended) || UtilConsts.FALSE.equals(sended)) {
+            if (StringUtils.isBlank(send) || UtilConsts.FALSE.equals(send)) {
                 return;
             }
             Person person = personManager.get(tenantId, userId).getData();
@@ -96,7 +94,7 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
                         method.addParameter("taskName", itemName + "-" + task.getName());
                         method.addParameter("processSerialNumber", processSerialNumber);
                         method.addParameter("processDefinitionKey",
-                            task.getProcessDefinitionId().split(SysVariables.COLON)[0]);
+                                task.getProcessDefinitionId().split(SysVariables.COLON)[0]);
                         method.addParameter("processInstanceId", task.getProcessInstanceId());
                         method.addParameter("taskId", task.getId());
                         method.addParameter("itemId", itemId);
@@ -104,11 +102,11 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
                         int code = client.executeMethod(method);
                         LOGGER.info("##########################微信接口状态：{}##########################", code);
                         if (code == HttpStatus.SC_OK) {
-                            String response = new String(method.getResponseBodyAsString().getBytes("UTF-8"), "UTF-8");
+                            String response = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
                             LOGGER.info("##########################返回状态：{}##########################", response);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("##########################微信提醒时发生异常-userId:{}#", p.getId());
                     }
                 }
             } else {// 人员
@@ -130,19 +128,17 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
                 int code = client.executeMethod(method);
                 LOGGER.info("##########################微信接口状态：{}##########################", code);
                 if (code == HttpStatus.SC_OK) {
-                    String response = new String(method.getResponseBodyAsString().getBytes("UTF-8"), "UTF-8");
+                    String response = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
                     Map<String, Object> m = Y9JsonUtil.readValue(response, Map.class);
                     LOGGER.info("##########################返回状态：{}##########################", response);
-                    if (UtilConsts.TRUE.equals(m.get(UtilConsts.SUCCESS))) {
-                        return;
-                    } else {
-                        return;
+                    assert m != null;
+                    if (UtilConsts.FALSE.equals(m.get(UtilConsts.SUCCESS))) {
+                        LOGGER.error("##########微信提醒失败-userId:{}#", assignee);
                     }
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn("##########################微信提醒时发生异常-taskId:{}##########################", task.getId());
-            e.printStackTrace();
+            LOGGER.error("##########################微信提醒时发生异常-taskId:{} 错误信息：{}###########################", task.getId(),e.getMessage());
         }
     }
 

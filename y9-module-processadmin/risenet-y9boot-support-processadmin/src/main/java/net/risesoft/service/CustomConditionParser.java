@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface CustomConditionParser {
 
-    public Boolean parser(String conditionExpression, Map<String, Object> variables);
+    Boolean parser(String conditionExpression, Map<String, Object> variables);
 }

@@ -70,13 +70,10 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +136,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param modelId  模型id
-     * @return
+     * @return Y9Result<String>
      */
     @Override
     @RequestMapping(value = "/deployModel", method = RequestMethod.POST, produces = "application/json")
@@ -199,14 +196,13 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         }
 
         byte[] buf = new byte[1024];
-        int legth = 0;
+        int legth;
         try {
             ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
             while ((legth = in.read(buf)) != -1) {
                 swapStream.write(buf, 0, legth);
             }
-            byte[] in2b = swapStream.toByteArray();
-            return in2b;
+            return swapStream.toByteArray();
         } finally {
             if (in != null) {
                 in.close();
@@ -220,12 +216,11 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * @param tenantId          租户id
      * @param processInstanceId 流程实例id
      * @return Map<String, Object>
-     * @throws Exception Exception
      */
     @Override
     @GetMapping(value = "/getBpmnModel", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getBpmnModel(@RequestParam String tenantId, @RequestParam String processInstanceId) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+    public Map<String, Object> getBpmnModel(@RequestParam String tenantId, @RequestParam String processInstanceId){
+        Map<String, Object> map = new HashMap<>(16);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricProcessInstance pi = customHistoricProcessService.getById(processInstanceId);
         // 流程走完的不显示图
@@ -234,14 +229,14 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             return map;
         }
         String txtFlowPath = "";
-        List<Map<String, Object>> nodeDataArray = new ArrayList<Map<String, Object>>();
-        List<Map<String, Object>> linkDataArray = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> nodeDataArray = new ArrayList<>();
+        List<Map<String, Object>> linkDataArray = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(pi.getProcessDefinitionId());
         Map<String, GraphicInfo> infoMap = bpmnModel.getLocationMap();
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>) process.getFlowElements();
         for (FlowElement flowElement : flowElements) {
-            Map<String, Object> nodeMap = new HashMap<String, Object>(16);
+            Map<String, Object> nodeMap = new HashMap<>(16);
             if (flowElement instanceof StartEvent) {
                 StartEvent startEvent = (StartEvent) flowElement;
                 GraphicInfo graphicInfo = infoMap.get(startEvent.getId());
@@ -254,15 +249,13 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 nodeMap.put("stepType", "1");
                 nodeMap.put("loc", graphicInfo.getX() - 100 + " " + graphicInfo.getY());
                 nodeDataArray.add(nodeMap);
-
-                List<SequenceFlow> list = new ArrayList<SequenceFlow>();
                 // 获取开始节点输出路线
-                list = startEvent.getOutgoingFlows();
+                List<SequenceFlow> list = startEvent.getOutgoingFlows();
                 for (SequenceFlow tr : list) {
                     FlowElement fe = tr.getTargetFlowElement();
                     if ((fe instanceof UserTask)) {
                         UserTask u = (UserTask) fe;
-                        Map<String, Object> linkMap = new HashMap<String, Object>(16);
+                        Map<String, Object> linkMap = new HashMap<>(16);
                         linkMap.put("from", startEvent.getId());
                         linkMap.put("to", u.getId());
                         linkDataArray.add(linkMap);
@@ -276,39 +269,35 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 nodeMap.put("remark", "111111111");
                 nodeMap.put("loc", graphicInfo.getX() + " " + graphicInfo.getY());
                 nodeDataArray.add(nodeMap);
-                List<SequenceFlow> list = new ArrayList<SequenceFlow>();
-                // 获取任务节点输出路线
-                list = userTask.getOutgoingFlows();
+                List<SequenceFlow> list = userTask.getOutgoingFlows();
                 for (SequenceFlow tr : list) {
                     FlowElement fe = tr.getTargetFlowElement();
                     if (fe instanceof ExclusiveGateway) {
                         // 目标节点时排他网关时，需要再次获取输出路线
-                        List<SequenceFlow> outgoingFlows = new ArrayList<SequenceFlow>();
                         ExclusiveGateway gateway = (ExclusiveGateway) fe;
-                        outgoingFlows = gateway.getOutgoingFlows();
+                        List<SequenceFlow> outgoingFlows = gateway.getOutgoingFlows();
                         for (SequenceFlow sf : outgoingFlows) {
                             FlowElement element = sf.getTargetFlowElement();
                             if (element instanceof UserTask) {
                                 UserTask task = (UserTask) element;
-                                Map<String, Object> linkMap = new HashMap<String, Object>(16);
+                                Map<String, Object> linkMap = new HashMap<>(16);
                                 linkMap.put("from", userTask.getId());
                                 linkMap.put("to", task.getId());
                                 linkDataArray.add(linkMap);
                             } else if (element instanceof EndEvent) {
                                 EndEvent endEvent = (EndEvent) element;
-                                Map<String, Object> linkMap = new HashMap<String, Object>(16);
+                                Map<String, Object> linkMap = new HashMap<>(16);
                                 linkMap.put("from", userTask.getId());
                                 linkMap.put("to", endEvent.getId());
                                 linkDataArray.add(linkMap);
                             } else if (element instanceof ParallelGateway) {
                                 ParallelGateway parallelgateway = (ParallelGateway) element;
-                                List<SequenceFlow> outgoingFlows1 = new ArrayList<SequenceFlow>();
-                                outgoingFlows1 = parallelgateway.getOutgoingFlows();
+                                List<SequenceFlow> outgoingFlows1 = parallelgateway.getOutgoingFlows();
                                 for (SequenceFlow sf1 : outgoingFlows1) {
                                     FlowElement element1 = sf1.getTargetFlowElement();
                                     if (element1 instanceof UserTask) {
                                         UserTask task1 = (UserTask) element1;
-                                        Map<String, Object> linkMap = new HashMap<String, Object>(16);
+                                        Map<String, Object> linkMap = new HashMap<>(16);
                                         linkMap.put("from", userTask.getId());
                                         linkMap.put("to", task1.getId());
                                         linkDataArray.add(linkMap);
@@ -318,25 +307,24 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                         }
                     } else if ((fe instanceof UserTask)) {
                         UserTask u = (UserTask) fe;
-                        Map<String, Object> linkMap = new HashMap<String, Object>(16);
+                        Map<String, Object> linkMap = new HashMap<>(16);
                         linkMap.put("from", userTask.getId());
                         linkMap.put("to", u.getId());
                         linkDataArray.add(linkMap);
                     } else if (fe instanceof EndEvent) {
                         EndEvent endEvent = (EndEvent) fe;
-                        Map<String, Object> linkMap = new HashMap<String, Object>(16);
+                        Map<String, Object> linkMap = new HashMap<>(16);
                         linkMap.put("from", userTask.getId());
                         linkMap.put("to", endEvent.getId());
                         linkDataArray.add(linkMap);
                     } else if (fe instanceof ParallelGateway) {
                         ParallelGateway gateway = (ParallelGateway) fe;
-                        List<SequenceFlow> outgoingFlows = new ArrayList<SequenceFlow>();
-                        outgoingFlows = gateway.getOutgoingFlows();
+                        List<SequenceFlow> outgoingFlows = gateway.getOutgoingFlows();
                         for (SequenceFlow sf : outgoingFlows) {
                             FlowElement element = sf.getTargetFlowElement();
                             if (element instanceof UserTask) {
                                 UserTask task = (UserTask) element;
-                                Map<String, Object> linkMap = new HashMap<String, Object>(16);
+                                Map<String, Object> linkMap = new HashMap<>(16);
                                 linkMap.put("from", userTask.getId());
                                 linkMap.put("to", task.getId());
                                 linkDataArray.add(linkMap);
@@ -365,7 +353,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         map.put("nodeDataArray", nodeDataArray);
         map.put("linkDataArray", linkDataArray);
         map.put("txtFlowPath", txtFlowPath);
-        map.put("isCompleted", pi.getEndTime() != null ? true : false);
+        map.put("isCompleted", pi.getEndTime() != null);
         map.put("success", true);
         return map;
     }
@@ -376,15 +364,14 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * @param tenantId          租户id
      * @param processInstanceId 流程实例id
      * @return Map<String, Object>
-     * @throws Exception
      */
     @Override
     @GetMapping(value = "/getFlowChart", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getFlowChart(@RequestParam String tenantId, @RequestParam String processInstanceId) throws Exception {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+    public Map<String, Object> getFlowChart(@RequestParam String tenantId, @RequestParam String processInstanceId){
+        Map<String, Object> resMap = new HashMap<>(16);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         String activityId = "";
         String parentId = "";
         String year = "";
@@ -401,35 +388,25 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 }
             }
             List<HistoricActivityInstance> list = customHistoricActivityService.getByProcessInstanceIdAndYear(processInstanceId, year);
-            Collections.sort(list, new Comparator<HistoricActivityInstance>() {
-                @Override
-                public int compare(HistoricActivityInstance o1, HistoricActivityInstance o2) {
-                    try {
-                        if (o1.getEndTime() == null || o2.getEndTime() == null) {
-                            return 0;
-                        }
-                        long endTime1 = o1.getEndTime().getTime();
-                        long endTime2 = o2.getEndTime().getTime();
-                        if (endTime1 > endTime2) {
-                            return 1;
-                        } else if (endTime1 == endTime2) {
-                            return 0;
-                        } else {
-                            return -1;
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+            list.sort((o1, o2) -> {
+                try {
+                    if (o1.getEndTime() == null || o2.getEndTime() == null) {
+                        return 0;
                     }
-                    return -1;
+                    long endTime1 = o1.getEndTime().getTime();
+                    long endTime2 = o2.getEndTime().getTime();
+                    return Long.compare(endTime1, endTime2);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+                return -1;
             });
             int num = 0;
-            for (int i = 0; i < list.size(); i++) {
-                HistoricActivityInstance his = list.get(i);
+            for (HistoricActivityInstance his : list) {
                 String id = his.getId();
                 String taskId = his.getTaskId();
                 String type = his.getActivityType();
-                if (type.contains(SysVariables.STARTEVENT) || type.contains("Flow") || type.contains(SysVariables.ENDEVENT)) {
+                if (type.contains(SysVariables.STARTEVENT) || type.contains("Flow")) {
                     continue;
                 }
                 if (type.contains(SysVariables.ENDEVENT)) {
@@ -438,7 +415,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     if (completer.contains("主办")) {
                         completer = completer.substring(0, completer.length() - 4);
                     }
-                    Map<String, Object> map = new HashMap<String, Object>(16);
+                    Map<String, Object> map = new HashMap<>(16);
                     map.put("id", id);
                     map.put("name", "办结");
                     map.put("title", completer);
@@ -456,7 +433,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 String userId = his.getAssignee();
                 Person person = personManager.get(tenantId, userId).getData();
                 if ("".equals(activityId) || activityId.equals(his.getActivityId())) {
-                    Map<String, Object> map = new HashMap<String, Object>(16);
+                    Map<String, Object> map = new HashMap<>(16);
                     map.put("id", taskId);
                     map.put("name", his.getActivityName());
                     map.put("title", person != null ? person.getName() : "该用户不存在");
@@ -474,7 +451,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 } else {
                     num += 1;
                     activityId = his.getActivityId();
-                    Map<String, Object> map = new HashMap<String, Object>(16);
+                    Map<String, Object> map = new HashMap<>(16);
                     map.put("id", taskId);
                     map.put("name", his.getActivityName());
                     map.put("title", person != null ? person.getName() : "该用户不存在");
@@ -497,7 +474,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     if (j != 0) {
                         parentId0 = pt.getId();
                     }
-                    Map<String, Object> map = new HashMap<String, Object>(16);
+                    Map<String, Object> map = new HashMap<>(16);
                     map.put("id", pt.getId());
                     map.put("name", pt.getTaskDefName());
                     map.put("title", pt.getSenderName());
@@ -534,7 +511,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 }
             }
             parentId = "0";
-            List<Map<String, Object>> childrenMap = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> childrenMap = new ArrayList<>();
             for (int i = listMap.size() - 1; i >= 0; i--) {
                 Map<String, Object> map = listMap.get(i);
                 String id = (String) map.get("id");
@@ -545,7 +522,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     map.put("children", childrenMap);
                     map.put("collapsed", false);
                     parentId = (String) map.get("parentId");
-                    childrenMap = new ArrayList<Map<String, Object>>();
+                    childrenMap = new ArrayList<>();
                     childrenMap.add(map);
                     if ("".equals(parentId)) {
                         resMap = map;
@@ -562,7 +539,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * 获取模型列表
      *
      * @param tenantId 租户id
-     * @return
+     * @return Y9Result<List<Map<String, Object>>>
      */
     @Override
     @RequestMapping(value = "/getModelList", method = RequestMethod.GET, produces = "application/json")
@@ -570,9 +547,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<Map<String, Object>> items = new ArrayList<>();
         List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
-        ProcessDefinition processDefinition = null;
+        ProcessDefinition processDefinition;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Map<String, Object> mapTemp = null;
+        Map<String, Object> mapTemp;
         for (AbstractModel model : list) {
             mapTemp = new HashMap<>(16);
             mapTemp.put("id", model.getId());
@@ -595,7 +572,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param modelId  模型id
-     * @return
+     * @return Y9Result<Map<String, Object>>
      */
     @Override
     @RequestMapping(value = "/getModelXml")
@@ -611,7 +588,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes, Charset.forName("UTF-8")));
+        map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes, StandardCharsets.UTF_8));
         return Y9Result.success(map, "获取成功");
     }
 
@@ -621,7 +598,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * @param tenantId 租户id
      * @param userId   用户id
      * @param file     模型文件
-     * @return
+     * @return Map<String, Object>
      */
     @Override
     @RequestMapping(value = "/import")
@@ -645,7 +622,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             if (!errors.isEmpty()) {
                 StringBuffer es = new StringBuffer();
                 errors.forEach(ve -> es.append(ve.toString()).append("/n"));
-                map.put("msg", "导入失败：模板验证失败，原因: " + es.toString());
+                map.put("msg", "导入失败：模板验证失败，原因: " + es);
                 return map;
             }
             if (bpmnModel.getProcesses().isEmpty()) {
@@ -686,7 +663,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             newModel.setLastUpdated(Calendar.getInstance().getTime());
             newModel.setLastUpdatedBy(person.getName());
             newModel.setTenantId(tenantId);
-            newModel = modelService.createModel(newModel, userId);
+            modelService.createModel(newModel, userId);
             map.put("success", true);
             map.put("msg", "导入成功");
             return map;
@@ -703,7 +680,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      * @param userId   用户id
      * @param modelId  模型id
      * @param file     模型文件
-     * @return
+     * @return Y9Result<String>
      */
     @Override
     @RequestMapping(value = "/saveModelXml")
@@ -723,7 +700,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             if (!errors.isEmpty()) {
                 StringBuffer es = new StringBuffer();
                 errors.forEach(ve -> es.append(ve.toString()).append("/n"));
-                return Y9Result.failure("保存失败：模板验证失败，原因: " + es.toString());
+                return Y9Result.failure("保存失败：模板验证失败，原因: " + es);
             }
             if (bpmnModel.getProcesses().isEmpty()) {
                 return Y9Result.failure("保存失败： 文件中不存在流程的信息");
@@ -763,7 +740,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             newModel.setLastUpdated(Calendar.getInstance().getTime());
             newModel.setLastUpdatedBy(person.getName());
             newModel.setTenantId(tenantId);
-            newModel = modelService.createModel(newModel, userId);
+            modelService.createModel(newModel, userId);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();

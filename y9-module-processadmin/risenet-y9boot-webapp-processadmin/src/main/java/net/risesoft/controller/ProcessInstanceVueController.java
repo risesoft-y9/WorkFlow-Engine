@@ -75,36 +75,11 @@ public class ProcessInstanceVueController {
     /**
      * 彻底删除流程实例
      *
-     * @param processInstanceId
-     * @param type
-     * @param reason
+     * @param processInstanceId 流程实例id
      * @return
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> delete(@RequestParam(required = true) String processInstanceId, @RequestParam(required = false) String type, @RequestParam(required = false) String reason) {
-        // UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        // // 删除人不一定是当前正在处理流程的人员
-        // String assignee = userInfo.getPersonId();
-        // // 用户直接删除时，设置用户删除原因
-        // if (TYPE_DELETE.equals(type)) {
-        // if (StringUtils.isBlank(reason)) {
-        // reason = "delete:删除流程实例";
-        // } else {
-        // // 为防止reason中出现英文顿号，这里将它们替换成中文顿号
-        // reason.replace(SysVariables.COLON, "：");
-        // // 为防止reason中出现英文逗号，这里将它们替换成中文逗号
-        // reason.replace(SysVariables.COMMA, "，");
-        // reason = "delete:" + reason;
-        // }
-        // // 当删除流程实例的时候，保存删除人的guid
-        // reason = reason + SysVariables.COMMA + "operator" + SysVariables.COLON + assignee;
-        // }
-        // // 用户拒收时，设置用户拒收原因
-        // if (TYPE_REJECT.equals(type)) {
-        // reason = "reject:" + reason;
-        // }
-        // runtimeService.deleteProcessInstance(processInstanceId, reason);
-        // return Y9Result.successMsg("删除成功");
+    public Y9Result<String> delete(@RequestParam String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParamModel processParamModel = null;
         List<String> list = new ArrayList<String>();
@@ -131,26 +106,27 @@ public class ProcessInstanceVueController {
      * 获取流程实例列表（包括办结，未办结）
      *
      * @param searchName 标题，编号
-     * @param itemId 事项id
-     * @param userName 发起人
-     * @param state 状态
-     * @param year 年度
-     * @param page 页面
-     * @param rows 条数
+     * @param itemId     事项id
+     * @param userName   发起人
+     * @param state      状态
+     * @param year       年度
+     * @param page       页面
+     * @param rows       条数
      * @return
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getAllProcessList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> getAllProcessList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
-        @RequestParam int page, @RequestParam int rows) {
+                                                         @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> retMap = new HashMap<String, Object>(16);
         try {
             retMap = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page, rows);
             List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>) retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {});
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {
+            });
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp = null;
             for (OfficeDoneInfoModel hpim : hpiList) {
@@ -214,7 +190,7 @@ public class ProcessInstanceVueController {
         String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
         List<String> list = new ArrayList<String>();
         int i = 0;
-        if (taskList.size() > 0) {
+        if (!taskList.isEmpty()) {
             for (Task task : taskList) {
                 if (StringUtils.isEmpty(taskIds)) {
                     taskIds = task.getId();
@@ -282,8 +258,8 @@ public class ProcessInstanceVueController {
      * 获取流程实例列表
      *
      * @param processInstanceId 流程实例id
-     * @param page 页码
-     * @param rows 条数
+     * @param page              页码
+     * @param rows              条数
      * @return
      */
     @RequestMapping(value = "/runningList", method = RequestMethod.GET, produces = "application/json")
@@ -339,14 +315,14 @@ public class ProcessInstanceVueController {
             }
             items.add(map);
         }
-        int totalpages = (int)totalCount / rows + 1;
+        int totalpages = (int) totalCount / rows + 1;
         return Y9Page.success(page, totalpages, totalCount, items, "获取列表成功");
     }
 
     /**
      * 挂起、激活流程实例
      *
-     * @param state 状态
+     * @param state             状态
      * @param processInstanceId 流程实例
      * @return
      */

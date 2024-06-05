@@ -1,18 +1,17 @@
 package net.risesoft.listener;
 
-import java.util.Map;
-
+import net.risesoft.service.InterfaceUtilService;
+import net.risesoft.service.Task4ActRuDetaillService;
+import net.risesoft.service.Task4ListenerService;
+import net.risesoft.service.TodoTaskService;
+import net.risesoft.y9.Y9Context;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.FlowableListener;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.service.InterfaceUtilService;
-import net.risesoft.service.Task4ActRuDetaillService;
-import net.risesoft.service.Task4ListenerService;
-import net.risesoft.service.TodoTaskService;
-import net.risesoft.y9.Y9Context;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -35,18 +34,18 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);
             task4ListenerService.task4AssignmentListener(task, variables);
 
-            /**
+            /*
              * 1、签收的时候保存已办详情 2、委托的时候更改assignee的时候
              */
             if (task.getCandidates().size() > 1) {
                 Task4ActRuDetaillService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetaillService.class);
                 if (StringUtils.isNotEmpty(task.getAssignee())) {
-                    /**
+                    /*
                      * 签收的情况
                      */
                     task4ActRuDetaillService.saveOrUpdate4DoSign(task);
                 } else {
-                    /**
+                    /*
                      * 撤销签收的情况
                      */
                     task4ActRuDetaillService.saveOrUpdate4Sign(task, 0);
@@ -55,7 +54,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
 
         } else if (TaskListener.EVENTNAME_CREATE.equals(eventName)) {
             Map<String, Object> variables = task.getVariables();
-            Map<String, Object> localvariables = task.getVariablesLocal();
+            Map<String, Object> localVariables = task.getVariablesLocal();
 
             // 接口调用
             InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
@@ -64,14 +63,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             } catch (Exception e) {
                 throw new RuntimeException("调用接口失败 TaskListener4AllEvents_EVENTNAME_CREATE");
             }
-
-            /**
-             * 出差委托
-             */
-            // TaskEntrustService taskEntrustService = Y9Context.getBean(TaskEntrustService.class);
-            // task = taskEntrustService.entrust(task, variables);
-
-            /**
+            /*
              * 保存已办件详情
              */
             Task4ActRuDetaillService task4ActRuDetaillService = Y9Context.getBean(Task4ActRuDetaillService.class);
@@ -81,7 +73,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
                 task4ActRuDetaillService.saveOrUpdate4Sign(task, 0);
             }
 
-            /**
+            /*
              * 统一待办-新建这一步不使用异步方式保存
              */
             boolean b = "xinjian".equals(task.getTaskDefinitionKey()) || "faqiren".equals(task.getTaskDefinitionKey()) || "qicao".equals(task.getTaskDefinitionKey()) || "fenpei".equals(task.getTaskDefinitionKey());
@@ -92,13 +84,10 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
 
             ///////////////// 异步处理,统一待办,微信提醒,消息推送提醒,短信提醒,协作状态
             Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);
-            task4ListenerService.task4CreateListener(task, variables, localvariables);
-
-        } else if (TaskListener.EVENTNAME_COMPLETE.equals(eventName)) {
+            task4ListenerService.task4CreateListener(task, variables, localVariables);
 
         } else if (TaskListener.EVENTNAME_DELETE.equals(eventName)) {
             Map<String, Object> variables = task.getVariables();
-
             // 接口调用
             InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
             try {
@@ -115,8 +104,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             if (StringUtils.isNotBlank(assigneeHti)) {
                 task.removeVariable(assigneeHti);
             }
-
-            /**
+            /*
              * 任务删除的时候，改变已办详情状态为已办
              */
             if (null != task.getAssignee()) {

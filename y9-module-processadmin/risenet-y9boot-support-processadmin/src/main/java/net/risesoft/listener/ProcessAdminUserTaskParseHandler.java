@@ -21,9 +21,9 @@ public class ProcessAdminUserTaskParseHandler extends UserTaskParseHandler {
     protected void executeParse(BpmnParse bpmnParse, UserTask userTask) {
         super.executeParse(bpmnParse, userTask);
 
-        List<FlowableListener> taskListeners = new ArrayList<FlowableListener>();
+        List<FlowableListener> taskListeners = new ArrayList<>();
 
-        /**
+        /*
          * 任务监听器，监听UserTask所有事件
          */
         TaskListener4AllEvents taskListener4AllEvents = new TaskListener4AllEvents();

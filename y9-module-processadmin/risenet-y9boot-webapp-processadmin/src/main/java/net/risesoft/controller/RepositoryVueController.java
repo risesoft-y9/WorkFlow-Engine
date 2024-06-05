@@ -120,7 +120,7 @@ public class RepositoryVueController {
     /**
      * 输出跟踪流程信息 在在办件、待办件中使用processInstanceId，因为需要知道当前的活动节点并标红 但在流程部署列表页面中查看流程图时只有processDefinitionId，没有processInstanceId
      *
-     * @param processInstanceId
+     * @param processInstanceId 流程实例id
      * @return
      */
     @RequestMapping(value = "/trace")

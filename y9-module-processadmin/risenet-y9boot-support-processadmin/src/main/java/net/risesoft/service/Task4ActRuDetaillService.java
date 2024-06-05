@@ -84,7 +84,7 @@ public class Task4ActRuDetaillService {
     /**
      * 单任务节点签收时，当前任务的办理人的待办保留，其他人的待办改为在办
      *
-     * @param taskEntity
+     * @param taskEntity 任务实体
      */
     public void saveOrUpdate4DoSign(DelegateTask taskEntity) {
         try {
@@ -135,7 +135,7 @@ public class Task4ActRuDetaillService {
     /**
      * <签收节点还没有签收的时候,如果被重定向,则把待签收人都设置为在办>
      *
-     * @param taskEntity
+     * @param taskEntity 任务实体
      */
     public void saveOrUpdate4Reposition(DelegateTask taskEntity) {
         try {
@@ -181,8 +181,8 @@ public class Task4ActRuDetaillService {
     /**
      * 单任务节点选择多个人发送时，只会产生create事件，所以这里把所有候选人都生成待办
      *
-     * @param taskEntity
-     * @param status
+     * @param taskEntity 任务实体
+     * @param status 状态
      */
     public void saveOrUpdate4Sign(DelegateTask taskEntity, int status) {
         try {

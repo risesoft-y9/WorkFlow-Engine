@@ -1,6 +1,7 @@
 package net.risesoft.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.RemindInstanceApi;
@@ -30,95 +31,88 @@ import java.util.Map;
 /**
  * 消息提醒
  *
- * @author 10858
- *
- */
-/**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service(value = "process4MsgRemindService")
 public class Process4MsgRemindService {
 
-    private final  MsgRemindInfoApi msgRemindInfoManager;
+    private final MsgRemindInfoApi msgRemindInfoManager;
 
-    private final  ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamManager;
 
-    private final  PersonApi personManager;
+    private final PersonApi personManager;
 
-    private final  PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    private final  RemindInstanceApi remindInstanceManager;
+    private final RemindInstanceApi remindInstanceManager;
 
-    private final  OfficeDoneInfoApi officeDoneInfoManager;
+    private final OfficeDoneInfoApi officeDoneInfoManager;
 
-    private final  Y9Properties y9Conf;
+    private final Y9Properties y9Conf;
 
     /**
      * 流程办结消息提醒
      *
-     * @param processParamModel
-     * @param personName
+     * @param processParamModel 流程参数
+     * @param personName        办结人姓名
      */
     public void processComplete(final ProcessParamModel processParamModel, String personName) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            Boolean msgSwitch = y9Conf.getApp().getProcessAdmin().getMsgSwitch();
-            if (msgSwitch == null || !msgSwitch) {
-                return;
-            }
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            String processInstanceId = processParamModel.getProcessInstanceId();
-            Date date = new Date();
-            String allUserId = "";
-            List<RemindInstanceModel> list = remindInstanceManager.findRemindInstanceByProcessInstanceIdAndRemindType(
+        Boolean msgSwitch = y9Conf.getApp().getProcessAdmin().getMsgSwitch();
+        if (msgSwitch == null || !msgSwitch) {
+            return;
+        }
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String processInstanceId = processParamModel.getProcessInstanceId();
+        Date date = new Date();
+        String allUserId = "";
+        List<RemindInstanceModel> list = remindInstanceManager.findRemindInstanceByProcessInstanceIdAndRemindType(
                 tenantId, processInstanceId, RemindInstanceModel.processComplete);
-            if (list.size() > 0) {
-                for (RemindInstanceModel remind : list) {
-                    if (!allUserId.contains(remind.getUserId())) {
-                        allUserId = Y9Util.genCustomStr(allUserId, remind.getUserId());
-                    }
+        if (!list.isEmpty()) {
+            for (RemindInstanceModel remind : list) {
+                if (!allUserId.contains(remind.getUserId())) {
+                    allUserId = Y9Util.genCustomStr(allUserId, remind.getUserId());
                 }
-                String itemId = processParamModel.getItemId();
-                String todoTaskUrlPrefix = processParamModel.getTodoTaskUrlPrefix();
-                String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processInstanceId
-                    + "&type=fromCplane";
-                String title = processParamModel.getTitle();
-                String content = "【" + title + "】";
-                MsgRemindInfoModel info = new MsgRemindInfoModel();
-                info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                info.setItemId(processParamModel.getItemId());
-                info.setMsgType(MsgRemindInfoModel.MSG_TYPE_PROCESS_COMPLETE);
-                info.setProcessInstanceId(processInstanceId);
-                info.setStartTime(sdf.format(date));
-                info.setSystemName(processParamModel.getSystemName());
-                info.setTitle(title);
-                info.setTenantId(tenantId);
-                info.setUrl(url);
-                info.setUserName(personName);
-                info.setTime(date.getTime());
-                info.setReadUserId("");
-                info.setAllUserId(allUserId);
-                info.setContent(content);
-                msgRemindInfoManager.saveMsgRemindInfo(tenantId, info);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            String itemId = processParamModel.getItemId();
+            String todoTaskUrlPrefix = processParamModel.getTodoTaskUrlPrefix();
+            String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processInstanceId
+                    + "&type=fromCplane";
+            String title = processParamModel.getTitle();
+            String content = "【" + title + "】";
+            MsgRemindInfoModel info = new MsgRemindInfoModel();
+            info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            info.setItemId(processParamModel.getItemId());
+            info.setMsgType(MsgRemindInfoModel.MSG_TYPE_PROCESS_COMPLETE);
+            info.setProcessInstanceId(processInstanceId);
+            info.setStartTime(sdf.format(date));
+            info.setSystemName(processParamModel.getSystemName());
+            info.setTitle(title);
+            info.setTenantId(tenantId);
+            info.setUrl(url);
+            info.setUserName(personName);
+            info.setTime(date.getTime());
+            info.setReadUserId("");
+            info.setAllUserId(allUserId);
+            info.setContent(content);
+            msgRemindInfoManager.saveMsgRemindInfo(tenantId, info);
         }
     }
 
     /**
      * 节点到达消息提醒
      *
-     * @param task
-     * @param variables
+     * @param task 任务
+     * @param variables 变量
      */
     public void taskAssignment(DelegateTask task, Map<String, Object> variables) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String tenantId = (String)variables.get("tenantId");
-        String processSerialNumber = (String)variables.get("processSerialNumber");
+        String tenantId = (String) variables.get("tenantId");
+        String processSerialNumber = (String) variables.get("processSerialNumber");
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             Boolean msgSwitch = y9Conf.getApp().getProcessAdmin().getMsgSwitch();
@@ -126,13 +120,13 @@ public class Process4MsgRemindService {
                 return;
             }
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+                    processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             String assignee = task.getAssignee();
             String taskKey = task.getTaskDefinitionKey();
             String taskName = task.getName();
             String processInstanceId = task.getProcessInstanceId();
             Person person = personManager.get(tenantId, assignee).getData();
-            String userName = "";
+            String userName;
             if (person == null || StringUtils.isBlank(person.getId())) {
                 Position position = positionApi.get(tenantId, assignee).getData();
                 userName = position.getName();
@@ -143,9 +137,9 @@ public class Process4MsgRemindService {
             String allUserId = "";
             // 节点到达
             List<RemindInstanceModel> list =
-                remindInstanceManager.findRemindInstanceByProcessInstanceIdAndArriveTaskKey(tenantId, processInstanceId,
-                    taskKey + ":" + taskName);
-            if (list.size() > 0) {
+                    remindInstanceManager.findRemindInstanceByProcessInstanceIdAndArriveTaskKey(tenantId, processInstanceId,
+                            taskKey + ":" + taskName);
+            if (!list.isEmpty()) {
                 for (RemindInstanceModel remind : list) {
                     if (!allUserId.contains(remind.getUserId())) {
                         allUserId = Y9Util.genCustomStr(allUserId, remind.getUserId());
@@ -154,9 +148,8 @@ public class Process4MsgRemindService {
                 String itemId = processParamModel.getItemId();
                 String todoTaskUrlPrefix = processParamModel.getTodoTaskUrlPrefix();
                 String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processInstanceId
-                    + "&type=fromCplane";
+                        + "&type=fromCplane";
                 String title = processParamModel.getTitle();
-                String content = taskName;
                 MsgRemindInfoModel info = new MsgRemindInfoModel();
                 info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 info.setItemId(processParamModel.getItemId());
@@ -171,24 +164,24 @@ public class Process4MsgRemindService {
                 info.setTime(date.getTime());
                 info.setReadUserId("");
                 info.setAllUserId(allUserId);
-                info.setContent(content);
+                info.setContent(taskName);
                 msgRemindInfoManager.saveMsgRemindInfo(tenantId, info);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+           LOGGER.error("taskAssignment error", e);
         }
     }
 
     /**
      * 任务完成,节点完成消息提醒
      *
-     * @param task
-     * @param variables
+     * @param task 任务
+     * @param variables 变量
      */
     public void taskComplete(final DelegateTask task, final Map<String, Object> variables) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String tenantId = (String)variables.get("tenantId");
-        String processSerialNumber = (String)variables.get("processSerialNumber");
+        String tenantId = (String) variables.get("tenantId");
+        String processSerialNumber = (String) variables.get("processSerialNumber");
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             Boolean msgSwitch = y9Conf.getApp().getProcessAdmin().getMsgSwitch();
@@ -196,13 +189,13 @@ public class Process4MsgRemindService {
                 return;
             }
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+                    processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             String assignee = task.getAssignee();
             String taskId = task.getId();
             String taskKey = task.getTaskDefinitionKey();
             String taskName = task.getName();
             String processInstanceId = task.getProcessInstanceId();
-            String userName = "";
+            String userName;
             Person person = personManager.get(tenantId, assignee).getData();
             if (person == null || StringUtils.isBlank(person.getId())) {
                 Position position = positionApi.get(tenantId, assignee).getData();
@@ -216,12 +209,12 @@ public class Process4MsgRemindService {
             String itemId = processParamModel.getItemId();
             String todoTaskUrlPrefix = processParamModel.getTodoTaskUrlPrefix();
             String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId=" + processInstanceId
-                + "&type=fromCplane";
+                    + "&type=fromCplane";
 
             // 任务完成，针对任务设置
             List<RemindInstanceModel> list = remindInstanceManager
-                .findRemindInstanceByProcessInstanceIdAndTaskId(tenantId, processInstanceId, taskId);
-            if (list.size() > 0) {
+                    .findRemindInstanceByProcessInstanceIdAndTaskId(tenantId, processInstanceId, taskId);
+            if (!list.isEmpty()) {
                 for (RemindInstanceModel remind : list) {
                     if (!allUserId.contains(remind.getUserId())) {
                         allUserId = Y9Util.genCustomStr(allUserId, remind.getUserId());
@@ -253,7 +246,7 @@ public class Process4MsgRemindService {
                     String newPersonIds = "";
                     String[] ids = personIds.split(",");
                     OfficeDoneInfoModel officeDoneInfoModel =
-                        officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+                            officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
                     for (String id : ids) {
                         if (officeDoneInfoModel != null && officeDoneInfoModel.getAllUserId().contains(id)) {
                             newPersonIds = Y9Util.genCustomStr(newPersonIds, id);
@@ -279,20 +272,19 @@ public class Process4MsgRemindService {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("taskComplete error", e);
             }
 
             // 节点完成
             list = remindInstanceManager.findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(tenantId,
-                processInstanceId, taskKey + ":" + taskName);
-            if (list.size() > 0) {
+                    processInstanceId, taskKey + ":" + taskName);
+            if (!list.isEmpty()) {
                 for (RemindInstanceModel remind : list) {
                     if (!allUserId.contains(remind.getUserId())) {
                         allUserId = Y9Util.genCustomStr(allUserId, remind.getUserId());
                     }
                 }
                 date = new Date();
-                String content = taskName;
                 MsgRemindInfoModel info = new MsgRemindInfoModel();
                 info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 info.setItemId(processParamModel.getItemId());
@@ -307,12 +299,12 @@ public class Process4MsgRemindService {
                 info.setTime(date.getTime());
                 info.setReadUserId("");
                 info.setAllUserId(allUserId);
-                info.setContent(content);
+                info.setContent(taskName);
                 msgRemindInfoManager.saveMsgRemindInfo(tenantId, info);
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("taskComplete error", e);
         }
     }
 

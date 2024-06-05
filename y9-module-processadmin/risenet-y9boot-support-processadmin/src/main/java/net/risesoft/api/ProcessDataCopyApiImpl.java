@@ -1,6 +1,7 @@
 package net.risesoft.api;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.processadmin.ProcessDataCopyApi;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
@@ -24,6 +25,7 @@ import java.util.List;
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/processDataCopy")
@@ -38,14 +40,13 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
      *
      * @param sourceTenantId 源租户id
      * @param targetTenantId 目标租户id
-     * @param modelKey 定义key
-     * @return
+     * @param modelKey       定义key
      */
     @Override
     @PostMapping(value = "/copyModel", produces = MediaType.APPLICATION_JSON_VALUE)
     public void copyModel(@RequestParam String sourceTenantId, @RequestParam String targetTenantId, @RequestParam String modelKey) throws Exception {
         try {
-            /**
+            /*
              * 查找原租户中的模型
              */
             FlowableTenantInfoHolder.setTenantId(sourceTenantId);
@@ -59,11 +60,11 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
                 }
             }
             Model sourceModel = modelService.getModel(modelId);
-            /**
+            /*
              * 切换租户
              */
             FlowableTenantInfoHolder.setTenantId(targetTenantId);
-            /**
+            /*
              * 判断目标租户是否存在该流程，不存在才新增
              */
             boolean has = false;
@@ -75,13 +76,13 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
                 }
             }
             if (!has) {
-                /**
+                /*
                  * 复制流程
                  */
                 sourceModel.setId(null);
                 sourceModel.setTenantId(targetTenantId);
                 Model modelData = modelService.createModel(sourceModel, "管理员");
-                /**
+                /*
                  * 部署流程
                  */
                 BpmnModel bpmnModel = modelService.getBpmnModel(modelData);
@@ -90,10 +91,7 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
                 repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes).deploy();
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception("ProcessDataCopyApi copyModel error");
+            LOGGER.error("exception message", e);
         }
-
     }
-
 }

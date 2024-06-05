@@ -43,22 +43,22 @@ public class DeleteTaskCommand implements Command<Void> {
         TaskService taskService = CommandContextUtil.getTaskService();
         IdentityLinkService identityLinkService = CommandContextUtil.getIdentityLinkService();
         VariableService variableService = CommandContextUtil.getVariableService();
-        /**
+        /*
          * 根据taskId获取执行实例信息
          */
         TaskEntity taskEntity = taskService.getTask(taskId);
         String executionId = taskEntity.getExecutionId();
         ExecutionEntity executionEntity = executionEntityManager.findById(executionId);
-        /**
+        /*
          * 获取当前流程信息
          */
         Process process = ProcessDefinitionUtil.getProcess(executionEntity.getProcessDefinitionId());
-        /**
+        /*
          * 获取当前节点信息
          */
         Activity flowElement = (Activity)process.getFlowElement(taskEntity.getTaskDefinitionKey());
         Object currentBehavior = flowElement.getBehavior();
-        /**
+        /*
          * 根据是否是多实例，执行对应的跳转操作,多实例，一定存在parentExecutionEntity
          */
         if ((currentBehavior instanceof MultiInstanceActivityBehavior)) {

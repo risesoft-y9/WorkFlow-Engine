@@ -57,7 +57,7 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
                 processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             String title = processParamModel.getTitle();
             String itemName = processParamModel.getItemName();
-            List<String> list = new ArrayList<String>();
+            List<String> list = new ArrayList<>();
             Person person = personManager.get(tenantId, assignee).getData();
             if (person == null || StringUtils.isBlank(person.getId())) {
                 List<Person> plist = positionApi.listPersonsByPositionId(tenantId, assignee).getData();
@@ -68,9 +68,9 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
                 list.add(assignee);
             }
 
-            String sended = processParamModel.getSended();
+            String send = processParamModel.getSended();
             // 第一步新建产生的任务，不发送提醒
-            if (StringUtils.isBlank(sended) || UtilConsts.FALSE.equals(sended)) {
+            if (StringUtils.isBlank(send) || UtilConsts.FALSE.equals(send)) {
                 return;
             }
             Y9Push.pushNormalMessage(list, itemName, title);
