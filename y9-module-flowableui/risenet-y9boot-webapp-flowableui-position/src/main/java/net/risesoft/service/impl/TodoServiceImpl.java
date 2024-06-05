@@ -9,13 +9,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemTodoApi;
@@ -45,51 +46,38 @@ import net.risesoft.service.TodoService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+@RequiredArgsConstructor
 @Service(value = "todoService")
 @Transactional(readOnly = true)
 public class TodoServiceImpl implements TodoService {
 
-    @Autowired
-    private ProcessTodoApi processTodoApi;
+    private final ProcessTodoApi processTodoApi;
 
-    @Autowired
-    private Item4PositionApi item4PositionApi;
+    private final Item4PositionApi item4PositionApi;
 
-    @Autowired
-    private VariableApi variableApi;
+    private final VariableApi variableApi;
 
-    @Autowired
-    private HistoricTaskApi historicTaskApi;
+    private final HistoricTaskApi historicTaskApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private ProcessDefinitionApi processDefinitionApi;
+    private final ProcessDefinitionApi processDefinitionApi;
 
-    @Autowired
-    private ChaoSong4PositionApi chaoSong4PositionApi;
+    private final ChaoSong4PositionApi chaoSong4PositionApi;
 
-    @Autowired
-    private FormDataApi formDataApi;
+    private final FormDataApi formDataApi;
 
-    @Autowired
-    private TaskVariableApi taskvariableApi;
+    private final TaskVariableApi taskvariableApi;
 
-    @Autowired
-    private SpeakInfoApi speakInfoApi;
+    private final SpeakInfoApi speakInfoApi;
 
-    @Autowired
-    private RemindInstanceApi remindInstanceApi;
+    private final RemindInstanceApi remindInstanceApi;
 
-    @Autowired
-    private OfficeFollow4PositionApi officeFollow4PositionApi;
+    private final OfficeFollow4PositionApi officeFollow4PositionApi;
 
-    @Autowired
-    private ItemTodoApi itemTodoApi;
+    private final ItemTodoApi itemTodoApi;
 
-    @Autowired
-    private TaskApi taskApi;
+    private final TaskApi taskApi;
 
     @SuppressWarnings("unchecked")
     @Override

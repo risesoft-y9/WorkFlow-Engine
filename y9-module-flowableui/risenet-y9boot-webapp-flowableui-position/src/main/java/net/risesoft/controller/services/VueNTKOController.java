@@ -4,12 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
@@ -27,33 +29,27 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 
-@Controller
+@Validated
+@RequiredArgsConstructor
+@RestController
 @RequestMapping(value = "/services/vueNtko")
 public class VueNTKOController {
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private Draft4PositionApi draft4PositionApi;
+    private final Draft4PositionApi draft4PositionApi;
 
-    @Autowired
-    private TransactionWordApi transactionWordApi;
+    private final TransactionWordApi transactionWordApi;
 
-    @Autowired
-    private PersonApi personApi;
+    private final PersonApi personApi;
 
-    @Autowired
-    private PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    @Autowired
-    private Attachment4PositionApi attachment4PositionApi;
+    private final Attachment4PositionApi attachment4PositionApi;
 
-    @Autowired
-    private Y9Properties y9Config;
+    private final Y9Properties y9Config;
 
-    @Autowired
-    private OrgUnitApi orgUnitApi;
+    private final OrgUnitApi orgUnitApi;
 
     /**
      * 获取附件信息
@@ -72,19 +68,14 @@ public class VueNTKOController {
      */
     @RequestMapping("/showFile")
     @ResponseBody
-    public Y9Result<Map<String, Object>> showFile(@RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String fileName, @RequestParam(required = false) String itembox,
-        @RequestParam(required = false) String taskId, @RequestParam(required = false) String browser,
-        @RequestParam(required = false) String fileId, @RequestParam(required = false) String tenantId,
-        @RequestParam(required = false) String userId, @RequestParam(required = false) String positionId,
-        @RequestParam(required = false) String fileUrl) {
+    public Y9Result<Map<String, Object>> showFile(@RequestParam String processSerialNumber, @RequestParam String fileName, @RequestParam String itembox, @RequestParam String taskId, @RequestParam String browser, @RequestParam String fileId, @RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String positionId, @RequestParam String fileUrl) {
         try {
             Map<String, Object> map = new HashMap<String, Object>();
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
-            String downloadUrl =
-                y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + file.getFileStoreId() + "." + file.getFileType();
+            String downloadUrl = y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + file.getFileStoreId() + "." + file.getFileType();
             map.put("fileName", file.getName());
             map.put("browser", browser);
             map.put("fileUrl", downloadUrl);
@@ -119,18 +110,13 @@ public class VueNTKOController {
      */
     @RequestMapping("/showWord")
     @ResponseBody
-    public Y9Result<Map<String, Object>> showWord(@RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String itemId,
-        @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String browser, @RequestParam(required = false) String positionId,
-        @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId, Model model) {
+    public Y9Result<Map<String, Object>> showWord(@RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String itemId, @RequestParam String itembox, @RequestParam String taskId, @RequestParam String browser, @RequestParam String positionId,
+        @RequestParam String tenantId, @RequestParam String userId, Model model) {
         try {
-            Map<String, Object> map =
-                transactionWordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId);
+            Map<String, Object> map = transactionWordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId);
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+                Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
                 documentTitle = retMap.get("title");
             } else {
                 String[] pInstanceId = processInstanceId.split(",");

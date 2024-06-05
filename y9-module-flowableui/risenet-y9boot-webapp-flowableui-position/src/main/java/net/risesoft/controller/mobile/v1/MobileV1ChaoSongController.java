@@ -69,7 +69,7 @@ public class MobileV1ChaoSongController {
      * @param status 状态0为未阅件打开，1为已阅件打开
      */
     @RequestMapping(value = "/detail")
-    public Y9Result<Map<String, Object>> detail(@RequestParam(required = false) String id, @RequestParam(required = false) String processInstanceId, Integer status) {
+    public Y9Result<Map<String, Object>> detail(@RequestParam @NotBlank String id, @RequestParam @NotBlank String processInstanceId, Integer status) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -103,7 +103,7 @@ public class MobileV1ChaoSongController {
      * @param processInstanceId 流程实例id
      */
     @RequestMapping(value = "/findCsUser")
-    public Y9Result<List<Map<String, Object>>> findCsUser(@RequestParam(required = false) String id, @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId) {
+    public Y9Result<List<Map<String, Object>>> findCsUser(@RequestParam String id, @RequestParam Integer principalType, @RequestParam String processInstanceId) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         try {
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -125,7 +125,7 @@ public class MobileV1ChaoSongController {
      * @param name 搜索姓名
      */
     @RequestMapping(value = "/findCsUserSearch")
-    public Y9Result<List<Map<String, Object>>> findCsUserSearch(@RequestParam(required = false) String name, @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId) {
+    public Y9Result<List<Map<String, Object>>> findCsUserSearch(@RequestParam String name, @RequestParam Integer principalType, @RequestParam String processInstanceId) {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -150,7 +150,7 @@ public class MobileV1ChaoSongController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/list")
-    public Y9Page<Map<String, Object>> list(String type, String processInstanceId, int rows, int page) {
+    public Y9Page<Map<String, Object>> list(String type, @RequestParam @NotBlank String processInstanceId, int rows, int page) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -181,7 +181,7 @@ public class MobileV1ChaoSongController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/search")
-    public Y9Page<Map<String, Object>> search(@RequestParam(required = false) String year, @RequestParam(required = false) String documentTitle, Integer status, int rows, int page) {
+    public Y9Page<Map<String, Object>> search(@RequestParam String year, @RequestParam String documentTitle, Integer status, int rows, int page) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -210,7 +210,7 @@ public class MobileV1ChaoSongController {
      * @param smsContent 短信内容
      */
     @RequestMapping(value = "/send")
-    public Y9Result<String> send(@RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String users, @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
+    public Y9Result<String> send(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String users, @RequestParam String isSendSms, @RequestParam String isShuMing, @RequestParam String smsContent) {
         Map<String, Object> map = new HashMap<>(1);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();

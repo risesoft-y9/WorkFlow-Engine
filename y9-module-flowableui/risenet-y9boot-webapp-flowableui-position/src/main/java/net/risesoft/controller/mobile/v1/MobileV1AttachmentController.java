@@ -60,7 +60,7 @@ public class MobileV1AttachmentController {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map = attachment4PositionApi.delFile(Y9LoginUserHolder.getTenantId(), ids);
-            if ((boolean) map.get("success")) {
+            if ((boolean)map.get("success")) {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
@@ -72,7 +72,7 @@ public class MobileV1AttachmentController {
     /**
      * 附件下载
      *
-     * @param id       附件id
+     * @param id 附件id
      * @param response
      * @param request
      * @throws Exception
@@ -81,8 +81,8 @@ public class MobileV1AttachmentController {
     public void download(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) throws Exception {
         try {
             Map<String, Object> map = attachment4PositionApi.attachmentDownload(Y9LoginUserHolder.getTenantId(), id);
-            String filename = (String) map.get("filename");
-            String fileStoreId = (String) map.get("fileStoreId");
+            String filename = (String)map.get("filename");
+            String fileStoreId = (String)map.get("fileStoreId");
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
                 filename = new String(filename.getBytes("UTF-8"), "ISO8859-1");// 火狐浏览器
             } else {
@@ -105,7 +105,7 @@ public class MobileV1AttachmentController {
      * 正文下载
      *
      * @param processSerialNumber 流程编号
-     * @param itemId              事项id
+     * @param itemId 事项id
      * @param response
      * @param request
      * @throws Exception
@@ -114,7 +114,7 @@ public class MobileV1AttachmentController {
     public void downloadWord(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String itemId, HttpServletResponse response, HttpServletRequest request) throws Exception {
         try {
             Map<String, Object> fileDocument = transactionWordApi.findWordByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber);
-            String filename = fileDocument.get("fileName") != null ? (String) fileDocument.get("fileName") : "正文.doc";
+            String filename = fileDocument.get("fileName") != null ? (String)fileDocument.get("fileName") : "正文.doc";
             String fileStoreId = transactionWordApi.openDocument(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), processSerialNumber, itemId);
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
                 filename = new String(filename.getBytes("UTF-8"), "ISO8859-1");// 火狐浏览器
@@ -142,20 +142,20 @@ public class MobileV1AttachmentController {
      * 附件列表
      *
      * @param processSerialNumber 流程编号
-     * @param fileSource          附件来源
-     * @param page                页码
-     * @param rows                行数
+     * @param fileSource 附件来源
+     * @param page 页码
+     * @param rows 行数
      * @return
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/list")
-    public Y9Page<Map<String, Object>> list(@RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, int page, int rows) throws Exception {
+    public Y9Page<Map<String, Object>> list(@RequestParam @NotBlank String processSerialNumber, String fileSource, int page, int rows) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             map = attachment4PositionApi.getAttachmentList(Y9LoginUserHolder.getTenantId(), processSerialNumber, fileSource, page, rows);
-            if ((boolean) map.get("success")) {
-                List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("rows");
+            if ((boolean)map.get("success")) {
+                List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
                 return Y9Page.success(page, Integer.valueOf(map.get("totalpage").toString()), Long.valueOf(map.get("total").toString()), list, "获取成功");
             }
         } catch (Exception e) {
@@ -167,16 +167,16 @@ public class MobileV1AttachmentController {
     /**
      * 附件上传
      *
-     * @param file                文件
-     * @param processInstanceId   流程实例id
-     * @param taskId              任务id
-     * @param describes           描述
+     * @param file 文件
+     * @param processInstanceId 流程实例id
+     * @param taskId 任务id
+     * @param describes 描述
      * @param processSerialNumber 流程编号
-     * @param fileSource          附件来源
+     * @param fileSource 附件来源
      * @throws Exception
      */
     @RequestMapping(value = "/upload")
-    public Y9Result<String> upload(@RequestParam(required = false) MultipartFile file, @RequestParam String processInstanceId, @RequestParam String taskId, @RequestParam String describes, @RequestParam String processSerialNumber, @RequestParam(required = false) String fileSource) throws Exception {
+    public Y9Result<String> upload(@RequestParam(required = false) MultipartFile file, @RequestParam String processInstanceId, @RequestParam String taskId, @RequestParam String describes, @RequestParam String processSerialNumber, String fileSource) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             if (StringUtils.isNotEmpty(describes)) {
@@ -188,7 +188,7 @@ public class MobileV1AttachmentController {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), Y9LoginUserHolder.getTenantId(), "attachmentFile", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             map = attachment4PositionApi.upload(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), Y9LoginUserHolder.getPositionId(), fileName, y9FileStore.getDisplayFileSize(), processInstanceId, taskId, describes, processSerialNumber, fileSource, y9FileStore.getId());
-            if ((boolean) map.get("success")) {
+            if ((boolean)map.get("success")) {
                 return Y9Result.successMsg("上传成功");
             }
         } catch (Exception e) {
@@ -201,14 +201,14 @@ public class MobileV1AttachmentController {
      * 正文上传
      *
      * @param processSerialNumber 流程编号
-     * @param documentTitle       文件标题
-     * @param file                文件
-     * @param fileType            文件类型
-     * @param taskId              任务id
+     * @param documentTitle 文件标题
+     * @param file 文件
+     * @param fileType 文件类型
+     * @param taskId 任务id
      * @return
      */
     @RequestMapping(value = "/uploadWord")
-    public Y9Result<String> uploadWord(@RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String documentTitle, @RequestParam(required = false) MultipartFile file, @RequestParam(required = false) String fileType, @RequestParam(required = false) String taskId) {
+    public Y9Result<String> uploadWord(@RequestParam @NotBlank String processSerialNumber, String documentTitle, @RequestParam(required = false) MultipartFile file, String fileType, String taskId) {
         String result = "";
         try {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), Y9LoginUserHolder.getTenantId(), "word", processSerialNumber);

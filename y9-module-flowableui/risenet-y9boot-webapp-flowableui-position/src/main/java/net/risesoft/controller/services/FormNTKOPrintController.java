@@ -13,13 +13,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.FormDataApi;
@@ -42,37 +42,30 @@ import net.risesoft.y9.util.Y9Util;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
-@Controller
+@Validated
+@RequiredArgsConstructor
+@RestController
 @RequestMapping(value = "/services/print")
 @Slf4j
 public class FormNTKOPrintController {
 
-    @Autowired
-    private Y9FileStoreService y9FileStoreService;
+    private final Y9FileStoreService y9FileStoreService;
 
-    @Autowired
-    private PrintApi printApi;
+    private final PrintApi printApi;
 
-    @Autowired
-    private PersonApi personApi;
+    private final PersonApi personApi;
 
-    @Autowired
-    private ProcessParamApi processParamApi;
+    private final ProcessParamApi processParamApi;
 
-    @Autowired
-    private Draft4PositionApi draft4PositionApi;
+    private final Draft4PositionApi draft4PositionApi;
 
-    @Autowired
-    private TransactionWordApi transactionWordApi;
+    private final TransactionWordApi transactionWordApi;
 
-    @Autowired
-    private FormDataApi formDataApi;
+    private final FormDataApi formDataApi;
 
-    @Autowired
-    private Opinion4PositionApi opinion4PositionApi;
+    private final Opinion4PositionApi opinion4PositionApi;
 
-    @Autowired
-    private ItemOpinionFrameBindApi itemOpinionFrameBindApi;
+    private final ItemOpinionFrameBindApi itemOpinionFrameBindApi;
 
     /**
      * 下载正文
@@ -82,10 +75,9 @@ public class FormNTKOPrintController {
      * @param request
      */
     @RequestMapping(value = "/downloadWord")
-    public void downloadWord(@RequestParam(required = false) String id, @RequestParam(required = false) String fileType,
-        @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String tenantId,
-        @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
+    public void downloadWord(@RequestParam String id, @RequestParam String fileType,
+        @RequestParam String processSerialNumber,
+        @RequestParam String processInstanceId, @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
@@ -136,12 +128,11 @@ public class FormNTKOPrintController {
         }
     }
 
-    @ResponseBody
     @RequestMapping(value = "/getPrintLayuiTempalteData")
-    public Map<String, Object> getPrintLayuiTempalteData(@RequestParam(required = false) String activitiUser,
-        @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String itembox, @RequestParam(required = false) String tenantId,
-        @RequestParam(required = false) String userId, String itemId, String processSerialNumber) {
+    public Map<String, Object> getPrintLayuiTempalteData(@RequestParam String activitiUser,
+        @RequestParam String taskDefKey, @RequestParam String taskId,
+        @RequestParam String itembox, @RequestParam String tenantId,
+        @RequestParam String userId, String itemId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -169,14 +160,12 @@ public class FormNTKOPrintController {
         return map;
     }
 
-    @ResponseBody
     @RequestMapping(value = "/getPrintTempalteData")
-    public Map<String, Object> getPrintTempalteData(@RequestParam(required = false) String activitiUser,
-        @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String formIds,
-        @RequestParam(required = false) String formNames, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String itembox,
-        @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String tenantId,
-        @RequestParam(required = false) String userId) {
+    public Map<String, Object> getPrintTempalteData(@RequestParam String activitiUser,
+        @RequestParam String taskDefKey, @RequestParam String formIds,
+        @RequestParam String formNames, @RequestParam String taskId, @RequestParam String itemId, @RequestParam String itembox,
+        @RequestParam String processSerialNumber, @RequestParam String tenantId,
+        @RequestParam String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -229,10 +218,9 @@ public class FormNTKOPrintController {
      * @param itemId
      */
     @RequestMapping(value = "/openDoc")
-    @ResponseBody
-    public void openDoc(@RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String tenantId,
-        @RequestParam(required = false) String userId, HttpServletResponse response, HttpServletRequest request) {
+    public void openDoc(@RequestParam String processSerialNumber,
+        @RequestParam String itemId, @RequestParam String tenantId,
+        @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -279,7 +267,6 @@ public class FormNTKOPrintController {
         }
     }
 
-    @ResponseBody
     @RequestMapping(value = "/openDocument")
     public void openDocument(String itemId, String tenantId, String userId, HttpServletResponse response,
         HttpServletRequest request) {
@@ -341,12 +328,12 @@ public class FormNTKOPrintController {
      * @return
      */
     @RequestMapping(value = "/showPrintTemplate")
-    public String showPrintTemplate(@RequestParam(required = false) String activitiUser,
-        @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String itembox,
-        @RequestParam(required = false) String taskId, @RequestParam(required = false) String formIds,
-        @RequestParam(required = false) String formNames, @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String tenantId,
-        @RequestParam(required = false) String userId, Model model) {
+    public String showPrintTemplate(@RequestParam String activitiUser,
+        @RequestParam String taskDefKey, @RequestParam String itembox,
+        @RequestParam String taskId, @RequestParam String formIds, @RequestParam String formNames, @RequestParam String processSerialNumber,
+        @RequestParam String itemId,
+        @RequestParam String tenantId,
+        @RequestParam String userId, Model model) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         model.addAttribute("userName", person != null ? person.getName() : "");
         model.addAttribute("activitiUser", activitiUser);
