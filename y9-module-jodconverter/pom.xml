@@ -16,8 +16,6 @@
     </parent>
 
     <modules>
-        <module>risenet-y9boot-support-jodconverter</module>
-        <!--<module>risenet-y9boot-webapp-jodconverter</module>-->
         <module>risenet-y9boot-webapp-jodconverter-new</module>
     </modules>
 
