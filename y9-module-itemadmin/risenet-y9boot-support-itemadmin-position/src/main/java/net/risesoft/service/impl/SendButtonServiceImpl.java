@@ -49,7 +49,7 @@ public class SendButtonServiceImpl implements SendButtonService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeSendButtons(String[] sendButtonIds) {
         for (String sendButtonId : sendButtonIds) {
             sendButtonRepository.deleteById(sendButtonId);
@@ -57,7 +57,7 @@ public class SendButtonServiceImpl implements SendButtonService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public SendButton saveOrUpdate(SendButton sendButton) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getParentId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();

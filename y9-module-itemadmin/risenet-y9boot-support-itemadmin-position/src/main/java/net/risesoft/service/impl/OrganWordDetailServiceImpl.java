@@ -27,13 +27,13 @@ public class OrganWordDetailServiceImpl implements OrganWordDetailService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public OrganWordDetail save(OrganWordDetail organWordDetail) {
         return organWordDetailRepository.save(organWordDetail);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public OrganWordDetail saveOrUpdate(OrganWordDetail organWordDetail) {
         // TODO Auto-generated method stub
         return null;

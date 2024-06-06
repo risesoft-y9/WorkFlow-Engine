@@ -34,7 +34,7 @@ public class TransactionWordServiceImpl implements TransactionWordService {
     private final Y9FileStoreService y9FileStoreService;
 
     @Override
-    @Transactional()
+    @Transactional
     public void delBatchByProcessSerialNumbers(List<String> processSerialNumbers) {
         List<TransactionWord> list = transactionWordRepository.findByProcessSerialNumbers(processSerialNumbers);
         for (TransactionWord file : list) {
@@ -72,12 +72,12 @@ public class TransactionWordServiceImpl implements TransactionWordService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void save(TransactionWord tw) {
         transactionWordRepository.save(tw);
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public void saveTransactionWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
         String processSerialNumber, String istaohong) {
@@ -102,7 +102,7 @@ public class TransactionWordServiceImpl implements TransactionWordService {
     }
 
     @SuppressWarnings("unchecked")
-    @Transactional()
+    @Transactional
     @Override
     public Boolean saveWord(String docjson, String processSerialNumber) {
         boolean checkSave = false;
@@ -131,7 +131,7 @@ public class TransactionWordServiceImpl implements TransactionWordService {
         return checkSave;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public void updateTransactionWordById(String fileStoreId, String fileType, String fileName, String fileSize,
         String isTaoHong, String userId, String id) {

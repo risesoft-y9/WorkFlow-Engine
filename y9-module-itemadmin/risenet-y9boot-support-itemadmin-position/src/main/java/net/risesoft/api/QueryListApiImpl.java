@@ -1,6 +1,7 @@
 package net.risesoft.api;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.QueryListApi;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
@@ -22,6 +23,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2023/02/06
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/queryList", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -40,7 +42,7 @@ public class QueryListApiImpl implements QueryListApi {
      * @param searchMapStr 搜索条件
      * @param page 页面
      * @param rows 条数
-     * @return
+     * @return ItemPage<ActRuDetailModel>
      */
     @Override
     public ItemPage<ActRuDetailModel> getQueryList(String tenantId, String userId, String systemName, String state,
@@ -48,58 +50,71 @@ public class QueryListApiImpl implements QueryListApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             String sql0 = "";
-            String sql1 = "";
+            StringBuilder sql1 = new StringBuilder();
             if (StringUtils.isNotBlank(searchMapStr)) {// 表单搜索
-                Boolean query = false;
+                boolean query = false;
                 sql0 = " LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
                 List<Map<String, Object>> list = Y9JsonUtil.readListOfMap(searchMapStr, String.class, Object.class);
+                assert list != null;
                 for (Map<String, Object> map : list) {
-                    if (map.get("value") != null && !map.get("value").toString().equals("")) {// value有值
+                    if (map.get("value") != null && !map.get("value").toString().isEmpty()) {// value有值
                         query = true;
                         String queryType = map.get("queryType").toString();
                         String value = map.get("value").toString();
                         String columnName = map.get("columnName").toString();
                         // select，radio类型搜索用=
-                        if (queryType.equals("select") || queryType.equals("radio")) {
-                            sql1 += " AND F." + columnName.toUpperCase() + " = '" + value + "' ";
-                        } else if (queryType.equals("checkbox")) {// 多选框搜索
-                            String[] values = value.split(",");
-                            if (values.length == 1) {// 单个值
-                                sql1 += " AND INSTR(F." + columnName.toUpperCase() + ",'" + values[0] + "') > 0 ";
-                            } else {
-                                String sql2 = "";
-                                for (String val : values) {// 多个值
-                                    if (sql2.equals("")) {
-                                        sql2 += " AND ( INSTR(F." + columnName.toUpperCase() + ",'" + val + "') > 0 ";
-                                    } else {
-                                        sql2 += " OR INSTR(F." + columnName.toUpperCase() + ",'" + val + "') > 0 ";
+                        switch (queryType) {
+                            case "select":
+                            case "radio":
+                                sql1.append(" AND F.").append(columnName.toUpperCase()).append(" = '").append(value).append("' ");
+                                break;
+                            case "checkbox": {// 多选框搜索
+                                String[] values = value.split(",");
+                                if (values.length == 1) {// 单个值
+                                    sql1.append(" AND INSTR(F.").append(columnName.toUpperCase()).append(",'").append(values[0]).append("') > 0 ");
+                                } else {
+                                    StringBuilder sql2 = new StringBuilder();
+                                    for (String val : values) {// 多个值
+                                        if (sql2.toString().isEmpty()) {
+                                            sql2.append(" AND ( INSTR(F.").append(columnName.toUpperCase()).append(",'").append(val).append("') > 0 ");
+                                        } else {
+                                            sql2.append(" OR INSTR(F.").append(columnName.toUpperCase()).append(",'").append(val).append("') > 0 ");
+                                        }
                                     }
+                                    sql2.append(" ) ");
+                                    sql1.append(sql2);
                                 }
-                                sql2 += " ) ";
-                                sql1 += sql2;
+                                break;
                             }
-                        } else if (queryType.equals("date")) {// 日期搜索
-                            String[] values = value.split(",");
-                            sql1 += " AND F." + columnName.toUpperCase() + " >= '" + values[0] + "' ";
-                            sql1 += " AND F." + columnName.toUpperCase() + " < '" + values[1] + " 23:59:59' ";
-                        } else {
-                            sql1 += " AND INSTR(F." + columnName.toUpperCase() + ",'" + value + "') > 0 ";
+                            case "date": {// 日期搜索
+                                String[] values = value.split(",");
+                                sql1.append(" AND F.").append(columnName.toUpperCase()).append(" >= '").append(values[0]).append("' ");
+                                sql1.append(" AND F.").append(columnName.toUpperCase()).append(" < '").append(values[1]).append(" 23:59:59' ");
+                                break;
+                            }
+                            default:
+                                sql1.append(" AND INSTR(F.").append(columnName.toUpperCase()).append(",'").append(value).append("') > 0 ");
+                                break;
                         }
                     }
                 }
                 if (!query) {
                     sql0 = "";
-                    sql1 = "";
+                    sql1 = new StringBuilder();
                 }
             }
             String stateSql = "";
             if (StringUtils.isNotBlank(state)) {// 状态搜索
-                if (state.equals("todo")) {
-                    stateSql = " and T.STATUS = 0 AND T.ENDED = FALSE ";
-                } else if (state.equals("doing")) {
-                    stateSql = " and T.STATUS = 1 AND T.ENDED = FALSE ";
-                } else if (state.equals("done")) {
-                    stateSql = " and T.ENDED = TRUE ";
+                switch (state) {
+                    case "todo":
+                        stateSql = " and T.STATUS = 0 AND T.ENDED = FALSE ";
+                        break;
+                    case "doing":
+                        stateSql = " and T.STATUS = 1 AND T.ENDED = FALSE ";
+                        break;
+                    case "done":
+                        stateSql = " and T.ENDED = TRUE ";
+                        break;
                 }
             }
             String dateSql = "";
@@ -119,11 +134,10 @@ public class QueryListApiImpl implements QueryListApi {
             Object[] args = new Object[2];
             args[0] = systemName;
             args[1] = userId;
-            ItemPage<ActRuDetailModel> pageList = itemPageService.page(sql, args,
+            return itemPageService.page(sql, args,
                 new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
-            return pageList;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("查询列表失败", e);
         }
         return null;
     }

@@ -45,12 +45,12 @@ public class RoleRestController {
      */
     @RequestMapping(value = "/findRole", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> findAll(@RequestParam(required = false) String id) {
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         if (StringUtils.isBlank(id)) {
             System system = systemEntityManager.getByName(Y9Context.getSystemName()).getData();
             List<App> appList = appApi.listBySystemId(system.getId()).getData();
             for (App app : appList) {
-                Map<String, Object> map = new HashMap<String, Object>(16);
+                Map<String, Object> map = new HashMap<>(16);
                 map.put("id", app.getId());
                 map.put("name", app.getName());
                 map.put("parentId", app.getId());
@@ -62,7 +62,7 @@ public class RoleRestController {
             List<Role> listRole = roleManager.listRoleByParentId(id).getData();
             if (listRole != null) {
                 for (Role role : listRole) {
-                    Map<String, Object> map = new HashMap<String, Object>(16);
+                    Map<String, Object> map = new HashMap<>(16);
                     map.put("id", role.getId());
                     map.put("name", role.getName());
                     map.put("parentId", id);
@@ -74,7 +74,7 @@ public class RoleRestController {
                         List<Role> list = roleManager.listRoleByParentId(role.getId()).getData();
                         boolean isP = false;
                         if (list != null) {
-                            isP = list.size() > 0 ? true : false;
+                            isP = !list.isEmpty();
                         }
                         if (isP) {
                             map.put("chkDisabled", true);

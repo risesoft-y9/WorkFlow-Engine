@@ -38,7 +38,7 @@ public class Y9PreFormItemBindRestController {
      * @return
      */
     @RequestMapping(value = "/deleteBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteBind(@RequestParam(required = true) String id) {
+    public Y9Result<String> deleteBind(@RequestParam String id) {
         Map<String, Object> map = y9PreFormItemBindService.delete(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -53,7 +53,7 @@ public class Y9PreFormItemBindRestController {
      * @return
      */
     @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Y9PreFormItemBind> getBindList(@RequestParam(required = true) String itemId) {
+    public Y9Result<Y9PreFormItemBind> getBindList(@RequestParam String itemId) {
         Y9PreFormItemBind bind = y9PreFormItemBindService.findByItemId(itemId);
         if (bind != null) {
             Y9Form form = y9FormRepository.findById(bind.getFormId()).orElse(null);
@@ -71,17 +71,14 @@ public class Y9PreFormItemBindRestController {
      * @return
      */
     @RequestMapping(value = "/getFormList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getFormList(@RequestParam(required = true) String itemId, @RequestParam(required = true) String systemName, @RequestParam(required = false) String formName) {
-        List<Map<String, Object>> listmap = new ArrayList<Map<String, Object>>();
+    public Y9Result<List<Map<String, Object>>> getFormList(@RequestParam String itemId, @RequestParam String systemName, @RequestParam(required = false) String formName) {
+        List<Map<String, Object>> listmap = new ArrayList<>();
         List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(systemName, "%" + formName + "%");
         Y9PreFormItemBind bind = y9PreFormItemBindService.findByItemId(itemId);
         for (Y9Form y9Form : list) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
-            boolean isbind = false;
-            if (bind != null && bind.getFormId().equals(y9Form.getId())) {
-                isbind = true;
-            }
-            if (!isbind) {
+            Map<String, Object> map = new HashMap<>(16);
+            boolean isBind = bind != null && bind.getFormId().equals(y9Form.getId());
+            if (!isBind) {
                 map.put("formName", y9Form.getFormName());
                 map.put("formId", y9Form.getId());
                 listmap.add(map);

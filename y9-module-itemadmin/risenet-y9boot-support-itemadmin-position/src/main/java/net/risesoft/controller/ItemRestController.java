@@ -60,7 +60,7 @@ public class ItemRestController {
      * @return
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> delete(@RequestParam(required = true) String id) {
+    public Y9Result<String> delete(@RequestParam String id) {
         Map<String, Object> map = spmApproveItemService.delete(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -69,7 +69,7 @@ public class ItemRestController {
     }
 
     @SuppressWarnings("unused")
-    private final boolean deleteDirectory(String sPath) {
+    private  boolean deleteDirectory(String sPath) {
         if (!sPath.endsWith(File.separator)) {
             sPath = sPath + File.separator;
         }
@@ -79,34 +79,27 @@ public class ItemRestController {
         }
         boolean flag = true;
         File[] files = dirFile.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isFile()) {
-                flag = deleteFile(files[i].getAbsolutePath());
-                if (!flag) {
-                    break;
-                }
+        assert files != null;
+        for (File file : files) {
+            if (file.isFile()) {
+                flag = deleteFile(file.getAbsolutePath());
             } else {
-                flag = deleteDirectory(files[i].getAbsolutePath());
-                if (!flag) {
-                    break;
-                }
+                flag = deleteDirectory(file.getAbsolutePath());
+            }
+            if (!flag) {
+                break;
             }
         }
         if (!flag) {
             return false;
         }
-        if (dirFile.delete()) {
-            return true;
-        } else {
-            return false;
-        }
+        return dirFile.delete();
     }
 
-    private final boolean deleteFile(String sPath) {
+    private  boolean deleteFile(String sPath) {
         boolean flag = false;
         File file = new File(sPath);
         if (file.isFile() && file.exists()) {
-            file.delete();
             flag = true;
         }
         return flag;
@@ -115,45 +108,35 @@ public class ItemRestController {
     /**
      * 获取部门
      *
-     * @param id
-     * @param name
+     * @param id 部门id
      * @return
      */
     @RequestMapping(value = "/getDept")
-    public String getDept(@RequestParam(required = true) String id, @RequestParam(required = false) String name) {
+    public String getDept(@RequestParam String id) {
         StringBuffer sb = new StringBuffer();
         getJson(sb, id);
-        String json = "[" + sb.substring(0, sb.lastIndexOf(",")).toString() + "]";
-        return json;
+        return "[" + sb.substring(0, sb.lastIndexOf(",")) + "]";
     }
 
     public void getJson(StringBuffer sb, String deptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(deptId)) {
             List<Organization> orgList = organizationManager.list(tenantId).getData();
-            if (orgList != null && orgList.size() > 0) {
+            if (orgList != null && !orgList.isEmpty()) {
                 List<Department> deptList =
                     departmentManager.listByParentId(tenantId, orgList.get(0).getId()).getData();
                 for (Department dept : deptList) {
                     List<Department> subDeptList = departmentManager.listByParentId(tenantId, dept.getId()).getData();
-                    boolean isParent = false;
-                    if (subDeptList != null && subDeptList.size() > 0) {
-                        isParent = true;
-                    }
-                    sb.append("{ id:'" + dept.getId() + "', pId:'" + orgList.get(0).getId() + "', name:'"
-                        + dept.getName() + "', isParent: " + isParent + "},");
+                    boolean isParent = subDeptList != null && !subDeptList.isEmpty();
+                    sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(orgList.get(0).getId()).append("', name:'").append(dept.getName()).append("', isParent: ").append(isParent).append("},");
                 }
             }
         } else {
             List<Department> deptList = departmentManager.listByParentId(tenantId, deptId).getData();
             for (Department dept : deptList) {
                 List<Department> subDeptList = departmentManager.listByParentId(tenantId, dept.getId()).getData();
-                boolean isParent = false;
-                if (subDeptList != null && subDeptList.size() > 0) {
-                    isParent = true;
-                }
-                sb.append("{ id:'" + dept.getId() + "', pId:'" + deptId + "', name:'" + dept.getName() + "', isParent: "
-                    + isParent + "},");
+                boolean isParent = subDeptList != null && !subDeptList.isEmpty();
+                sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(deptId).append("', name:'").append(dept.getName()).append("', isParent: ").append(isParent).append("},");
             }
         }
     }
@@ -179,11 +162,11 @@ public class ItemRestController {
      */
     @RequestMapping(value = "/newOrModify", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = new SpmApproveItem();
         item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        List<Position> manager = new ArrayList<Position>();
+        List<Position> manager = new ArrayList<>();
         if (StringUtils.isNotBlank(id)) {
             item = spmApproveItemService.findById(id);
             if (StringUtils.isNotBlank(item.getNature())) {// 事项管理员
@@ -198,10 +181,10 @@ public class ItemRestController {
         }
         map.put("item", item);
         map.put("manager", manager);
-        List<Map<String, Object>> workflowList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> workflowList = new ArrayList<>();
         List<ProcessDefinitionModel> pdModelList = repositoryManager.getLatestProcessDefinitionList(tenantId);
         for (ProcessDefinitionModel pdModel : pdModelList) {
-            Map<String, Object> row = new HashMap<String, Object>(16);
+            Map<String, Object> row = new HashMap<>(16);
             row.put("id", pdModel.getKey());
             row.put("name", pdModel.getName());
             workflowList.add(row);
@@ -217,7 +200,7 @@ public class ItemRestController {
      * @return
      */
     @RequestMapping(value = "/publishToSystemApp", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> publishToSystemApp(@RequestParam(required = true) String itemId) {
+    public Y9Result<String> publishToSystemApp(@RequestParam String itemId) {
         Map<String, Object> map = spmApproveItemService.publishToSystemApp(itemId);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -232,19 +215,19 @@ public class ItemRestController {
      */
     @RequestMapping(value = "/readAppIconFile", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> readAppIconFile() {
-        List<Map<String, String>> iconList = null;
+        List<Map<String, String>> iconList;
         List<AppIcon> list = appIconManager.listAllIcon().getData();
-        iconList = new ArrayList<Map<String, String>>();
+        iconList = new ArrayList<>();
         if (list != null) {
             for (AppIcon appicon : list) {
-                Map<String, String> filemap = new HashMap<String, String>(16);
+                Map<String, String> filemap = new HashMap<>(16);
                 filemap.put("path", appicon.getPath());
                 filemap.put("name", appicon.getName());
                 filemap.put("iconData", appicon.getIconData());
                 iconList.add(filemap);
             }
         }
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("iconList", iconList);
         return Y9Result.success(map, "获取成功");
     }
@@ -274,17 +257,17 @@ public class ItemRestController {
     @RequestMapping(value = "/searchAppIcon", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> searchAppIcon(@RequestParam(required = false) String name) {
         List<AppIcon> list = appIconManager.searchAppIcon("%" + name + "%").getData();
-        List<Map<String, String>> iconList = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> iconList = new ArrayList<>();
         if (list != null) {
             for (AppIcon appicon : list) {
-                Map<String, String> filemap = new HashMap<String, String>(16);
+                Map<String, String> filemap = new HashMap<>(16);
                 filemap.put("path", appicon.getPath());
                 filemap.put("name", appicon.getName());
                 filemap.put("iconData", appicon.getIconData());
                 iconList.add(filemap);
             }
         }
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("iconList", iconList);
         return Y9Result.success(map, "获取成功");
     }

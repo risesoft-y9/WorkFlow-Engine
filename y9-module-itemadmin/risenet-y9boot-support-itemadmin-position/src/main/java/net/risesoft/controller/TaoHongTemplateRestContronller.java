@@ -1,5 +1,6 @@
 package net.risesoft.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.ManagerApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.TaoHongTemplate;
@@ -18,24 +19,27 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @RestController
 @RequestMapping(value = "/vue/taoHongTemplate")
 public class TaoHongTemplateRestContronller {
@@ -66,11 +70,11 @@ public class TaoHongTemplateRestContronller {
      */
     @RequestMapping(value = "/bureauTree", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> bureauTree(@RequestParam(required = false) String name) {
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         name = StringUtils.isBlank(name) ? "" : name;
         List<Map<String, Object>> orgUnitList = jdbcTemplate.queryForList(" SELECT ID,NAME,PARENT_ID FROM Y9_ORG_DEPARTMENT where bureau = 1 and deleted = 0 and name like '%" + name + "%' and disabled = 0 order by GUID_PATH asc");
         for (Map<String, Object> dept : orgUnitList) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", dept.get("ID").toString());
             map.put("name", dept.get("NAME").toString());
             map.put("parentId", dept.get("PARENT_ID").toString());
@@ -83,12 +87,11 @@ public class TaoHongTemplateRestContronller {
      * 下载套红
      *
      * @param templateGuid 模板id
-     * @param request
-     * @param response
-     * @throws Exception
+     * @param request HttpServletRequest
+     * @param response  HttpServletResponse
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam(required = true) String templateGuid, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void download(@RequestParam String templateGuid, HttpServletRequest request, HttpServletResponse response){
         try {
             TaoHongTemplate taoHongTemplate = taoHongTemplateService.findOne(templateGuid);
             byte[] b = taoHongTemplate.getTemplateContent();
@@ -96,7 +99,7 @@ public class TaoHongTemplateRestContronller {
             String filename = taoHongTemplate.getTemplateFileName();
             String userAgent = "User-Agent", firefox = "firefox", msie = "MSIE";
             if (request.getHeader(userAgent).toLowerCase().indexOf(firefox) > 0) {
-                filename = new String(filename.getBytes("UTF-8"), "ISO8859-1");
+                filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");
             } else if (request.getHeader(userAgent).toUpperCase().indexOf(msie) > 0) {
                 filename = URLEncoder.encode(filename, "UTF-8");
             } else {
@@ -108,7 +111,7 @@ public class TaoHongTemplateRestContronller {
             IOUtils.write(b, response.getOutputStream());
             response.flushBuffer();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("下载套红失败", e);
         }
     }
 
@@ -122,26 +125,26 @@ public class TaoHongTemplateRestContronller {
     public Y9Result<List<Map<String, Object>>> getList(@RequestParam(required = false) String name) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<TaoHongTemplate> list = new ArrayList<TaoHongTemplate>();
+        List<TaoHongTemplate> list;
         if (person.isGlobalManager()) {
             list = taoHongTemplateService.findByTenantId(Y9LoginUserHolder.getTenantId(), StringUtils.isBlank(name) ? "%%" : "%" + name + "%");
         } else {
             OrgUnit orgUnit = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), person.getPersonId()).getData();
             list = taoHongTemplateService.findByBureauGuid(orgUnit.getId());
         }
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
-        for (int i = 0; i < list.size(); i++) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
-            map.put("templateGuid", list.get(i).getTemplateGuid());
-            map.put("template_fileName", list.get(i).getTemplateFileName());
-            map.put("bureauName", list.get(i).getBureauName());
-            map.put("templateType", list.get(i).getTemplateType());
-            map.put("uploadTime", sdf.format(list.get(i).getUploadTime()));
+        List<Map<String, Object>> items = new ArrayList<>();
+        for (TaoHongTemplate taoHongTemplate : list) {
+            Map<String, Object> map = new HashMap<>(16);
+            map.put("templateGuid", taoHongTemplate.getTemplateGuid());
+            map.put("template_fileName", taoHongTemplate.getTemplateFileName());
+            map.put("bureauName", taoHongTemplate.getBureauName());
+            map.put("templateType", taoHongTemplate.getTemplateType());
+            map.put("uploadTime", sdf.format(taoHongTemplate.getUploadTime()));
 
-            String userId = list.get(i).getUserId();
+            String userId = taoHongTemplate.getUserId();
             Manager manger = managerApi.get(Y9LoginUserHolder.getTenantId(), userId).getData();
             map.put("userName", manger != null ? manger.getName() : "人员不存在");
-            map.put("tabIndex", list.get(i).getTabIndex());
+            map.put("tabIndex", taoHongTemplate.getTabIndex());
             items.add(map);
         }
         return Y9Result.success(items, "获取成功");
@@ -157,8 +160,8 @@ public class TaoHongTemplateRestContronller {
     public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        List<TaoHongTemplateType> typeList = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>(16);
+        List<TaoHongTemplateType> typeList;
         map.put("tenantManager", person.isGlobalManager());
         if (person.isGlobalManager()) {
             typeList = taoHongTemplateTypeService.findAll();
@@ -183,7 +186,7 @@ public class TaoHongTemplateRestContronller {
      * @return
      */
     @RequestMapping(value = "/removeTaoHongTemplate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeTaoHongTemplate(@RequestParam(required = true) String[] ids) {
+    public Y9Result<String> removeTaoHongTemplate(@RequestParam String[] ids) {
         taoHongTemplateService.removeTaoHongTemplate(ids);
         return Y9Result.successMsg("删除成功");
     }
@@ -199,7 +202,7 @@ public class TaoHongTemplateRestContronller {
      * @return
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrUpdate(@RequestParam(required = false) String templateGuid, @RequestParam(required = true) String bureauGuid, @RequestParam(required = true) String bureauName, @RequestParam(required = true) String templateType, MultipartFile file) {
+    public Y9Result<String> saveOrUpdate(@RequestParam(required = false) String templateGuid, @RequestParam String bureauGuid, @RequestParam String bureauName, @RequestParam String templateType, MultipartFile file) {
         try {
             TaoHongTemplate taoHong = new TaoHongTemplate();
             taoHong.setBureauGuid(bureauGuid);
@@ -207,7 +210,7 @@ public class TaoHongTemplateRestContronller {
             taoHong.setTemplateGuid(templateGuid);
             taoHong.setTemplateType(templateType);
             if (file != null) {
-                String[] fileName = file.getOriginalFilename().split("\\\\");
+                String[] fileName = Objects.requireNonNull(file.getOriginalFilename()).split("\\\\");
                 taoHong.setTemplateContent(file.getBytes());
                 if (fileName.length > 1) {
                     taoHong.setTemplateFileName(fileName[fileName.length - 1]);
@@ -218,7 +221,7 @@ public class TaoHongTemplateRestContronller {
             taoHongTemplateService.saveOrUpdate(taoHong);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存套红失败", e);
         }
         return Y9Result.failure("保存失败");
     }

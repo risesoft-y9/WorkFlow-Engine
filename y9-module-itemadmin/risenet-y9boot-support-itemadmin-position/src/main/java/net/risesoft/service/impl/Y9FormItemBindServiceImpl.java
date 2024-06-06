@@ -46,7 +46,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     private final RepositoryApi repositoryManager;
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyEform(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
@@ -90,9 +90,9 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delete(String id) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "删除成功");
         try {
@@ -127,7 +127,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(procDefId)) {
                 // 查找本任务的form,在任务上设置的表单有优先权。
-                List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+                List<Map<String, Object>> list = new ArrayList<>();
                 // taskDefKey为空表示为办结件，需要获取最后一个任务的表单。
                 if (taskDefKey == "") {
                     list = processDefinitionManager.getNodes(tenantId, procDefId, false);
@@ -155,7 +155,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(procDefId)) {
                 // 查找本任务的form,在任务上设置的表单有优先权。
-                List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+                List<Map<String, Object>> list = new ArrayList<>();
                 // taskDefKey为空表示为办结件，需要获取最后一个任务的表单。
                 if (taskDefKey == "") {
                     list = processDefinitionManager.getNodes(tenantId, procDefId, false);
@@ -262,9 +262,9 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> save(Y9FormItemBind eformItem) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "保存失败");
         try {
@@ -297,9 +297,9 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> save(Y9FormItemMobileBind eformItem) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "保存失败");
         try {

@@ -59,8 +59,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     @PostMapping(value = "/deleteAllAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean deleteAllAssociatedFile(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String delIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        boolean b = associatedFileService.deleteAllAssociatedFile(processSerialNumber, delIds);
-        return b;
+        return associatedFileService.deleteAllAssociatedFile(processSerialNumber, delIds);
     }
 
     /**
@@ -75,8 +74,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     @PostMapping(value = "/deleteAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean deleteAssociatedFile(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String delId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        boolean b = associatedFileService.deleteAssociatedFile(processSerialNumber, delId);
-        return b;
+        return associatedFileService.deleteAssociatedFile(processSerialNumber, delId);
     }
 
     /**
@@ -94,9 +92,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        map = associatedFileService.getAssociatedFileAllList(processSerialNumber);
-        return map;
+        return associatedFileService.getAssociatedFileAllList(processSerialNumber);
     }
 
     /**
@@ -110,7 +106,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     @GetMapping(value = "/getAssociatedFileList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getAssociatedFileList(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map = associatedFileService.getAssociatedFileList(processSerialNumber);
         return map;
     }

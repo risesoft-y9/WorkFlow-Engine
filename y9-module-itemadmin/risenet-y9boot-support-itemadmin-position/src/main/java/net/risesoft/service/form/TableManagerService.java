@@ -65,7 +65,7 @@ public class TableManagerService {
      * @throws Exception
      */
     public Map<String, Object> addFieldToTable(Y9Table td, List<DbColumn> dbcs) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("msg", "操作成功");
         map.put(UtilConsts.SUCCESS, true);
         try {
@@ -138,7 +138,7 @@ public class TableManagerService {
      * @return
      */
     public Map<String, Object> buildTable(Y9Table td, List<DbColumn> dbcs) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("msg", "操作成功");
         map.put(UtilConsts.SUCCESS, true);
         StringBuffer createSql = new StringBuffer();
@@ -207,7 +207,7 @@ public class TableManagerService {
      * @param tableId
      */
     public void getAllFieldName(String tableId) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         if (allFieldName != null) {
             return;
         }
@@ -253,7 +253,7 @@ public class TableManagerService {
      * 返回所有的业务表
      */
     public Map<String, Object> getDataSourceTableNames() {
-        Map<String, Object> al = new HashMap<String, Object>(16);
+        Map<String, Object> al = new HashMap<>(16);
         Statement stmt = null;
         ResultSet rs = null;
         Connection conn = null;
@@ -304,7 +304,7 @@ public class TableManagerService {
      * @return
      */
     public Map<String, Object> getExistTableFields(String tableId) {
-        Map<String, Object> al = new HashMap<String, Object>(16);
+        Map<String, Object> al = new HashMap<>(16);
         String tableName = null;
         Connection conn = null;
         Statement stmt = null;

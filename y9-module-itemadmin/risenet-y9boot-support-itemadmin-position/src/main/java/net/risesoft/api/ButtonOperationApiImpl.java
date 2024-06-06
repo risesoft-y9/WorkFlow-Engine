@@ -1,6 +1,7 @@
 package net.risesoft.api;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
@@ -37,6 +38,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/buttonOperation4Position")
@@ -119,8 +121,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
             documentService.forwarding(taskId, "true", startUserId, routeToTask, "");
             b = true;
         } catch (Exception e) {
-            b = false;
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
         return b;
     }
@@ -137,13 +138,13 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
     @PostMapping(value = "/refuseClaimRollback", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> refuseClaimRollback(String tenantId, String positionId, String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "退回成功");
             taskManager.claim(tenantId, positionId, taskId);
             TaskModel currentTask = taskManager.findById(tenantId, taskId);
-            List<String> userAndDeptIdList = new ArrayList<String>();
+            List<String> userAndDeptIdList = new ArrayList<>();
             // 获取当前任务的前一个任务
             HistoricTaskInstanceModel hti = historicTaskManager.getThePreviousTask(tenantId, taskId);
             // 前一任务的受让人，标题
@@ -154,18 +155,18 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
                 hti.getTaskDefinitionKey());
             Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(),
                 hti.getTaskDefinitionKey(), userAndDeptIdList, "");
-            Map<String, Object> val = new HashMap<String, Object>();
+            Map<String, Object> val = new HashMap<>();
             val.put("val", SysVariables.REFUSECLAIMROLLBACK);
             variableManager.setVariableLocal(tenantId, taskId, SysVariables.REFUSECLAIMROLLBACK, val);
             taskManager.completeWithVariables(tenantId, taskId, variables);
-            /**
+            /*
              * 如果上一任务是并行，则回退时设置主办人
              */
             if (SysVariables.PARALLEL.equals(htiMultiInstance)) {
                 List<TaskModel> taskNextList1 =
                     taskManager.findByProcessInstanceId(tenantId, currentTask.getProcessInstanceId());
                 for (TaskModel taskModelNext : taskNextList1) {
-                    Map<String, Object> val1 = new HashMap<String, Object>();
+                    Map<String, Object> val1 = new HashMap<>();
                     val1.put("val", assignee.split(SysVariables.COLON)[0]);
                     variableManager.setVariableLocal(tenantId, taskModelNext.getId(), SysVariables.PARALLELSPONSOR,
                         val1);
@@ -175,7 +176,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
             taskManager.unclaim(tenantId, taskId);
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "退回失败");
-            e.printStackTrace();
+            LOGGER.error("退回失败{}", e.getMessage());
         }
         return map;
     }

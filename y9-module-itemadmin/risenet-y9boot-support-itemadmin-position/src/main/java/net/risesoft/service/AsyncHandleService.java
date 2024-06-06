@@ -239,7 +239,7 @@ public class AsyncHandleService {
                 sponsorGuid = sponsor;
             }
         }
-        Map<String, Object> vmap = new HashMap<String, Object>(16);
+        Map<String, Object> vmap = new HashMap<>(16);
         /**
          * 解决协作状态串行办理历程的所有人员显示
          */
@@ -288,7 +288,7 @@ public class AsyncHandleService {
             // 保存下个任务节点的时限
             List<TaskModel> nextTaskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
             for (TaskModel taskNext : nextTaskList) {
-                Map<String, Object> vars = new HashMap<String, Object>(16);
+                Map<String, Object> vars = new HashMap<>(16);
                 vars.put(SysVariables.TASKSENDER, position.getName());
                 vars.put(SysVariables.TASKSENDERID, positionId);
                 /**

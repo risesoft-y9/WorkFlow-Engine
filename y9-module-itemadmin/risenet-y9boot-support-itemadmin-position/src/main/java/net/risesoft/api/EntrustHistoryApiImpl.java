@@ -43,8 +43,7 @@ public class EntrustHistoryApiImpl implements EntrustHistoryApi {
         String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<EntrustHistory> ehList = entrustHistoryService.list(ownerId, itemId);
-        List<EntrustHistoryModel> ehModelList = ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);
-        return ehModelList;
+        return ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);
     }
 
     /**
@@ -60,7 +59,6 @@ public class EntrustHistoryApiImpl implements EntrustHistoryApi {
     public List<EntrustHistoryModel> findOneByOwnerId(String tenantId, String userId, String ownerId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<EntrustHistory> ehList = entrustHistoryService.list(ownerId);
-        List<EntrustHistoryModel> ehModelList = ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);
-        return ehModelList;
+        return ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);
     }
 }

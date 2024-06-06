@@ -58,7 +58,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     private final Y9Properties y9Config;
 
     @Override
-    @Transactional()
+    @Transactional
     public void delBatchByProcessSerialNumbers(List<String> processSerialNumbers) {
         List<TransactionFile> list = transactionFileRepository.findByProcessSerialNumbers(processSerialNumbers);
         for (TransactionFile file : list) {
@@ -71,10 +71,10 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         }
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Map<String, Object> delFile(String ids) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
             String[] id = ids.split(",");
@@ -96,7 +96,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> download(String id) {
         Optional<TransactionFile> transactionFile = transactionFileRepository.findById(id);
         Map<String, Object> map = new HashMap<>(16);
@@ -112,10 +112,10 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> getAttachmentList(String processSerialNumber, String fileSource, int page, int rows) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
+        Map<String, Object> map = new HashMap<>(16);
+        List<Map<String, Object>> item = new ArrayList<>();
         try {
             SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             SimpleDateFormat sdfymdhm = new SimpleDateFormat("yyyy/MM/dd HH:mm");
@@ -128,7 +128,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             }
             int number = (page - 1) * rows;
             for (TransactionFile transactionFile : transactionFileList) {
-                Map<String, Object> m = new HashMap<String, Object>(16);
+                Map<String, Object> m = new HashMap<>(16);
                 m.put("serialNumber", number + 1);
                 m.put("name", transactionFile.getName());
                 m.put("fileSize", transactionFile.getFileSize());
@@ -210,13 +210,13 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void save(TransactionFile file) {
         transactionFileRepository.save(file);
     }
 
     @SuppressWarnings("unchecked")
-    @Transactional()
+    @Transactional
     @Override
     public Boolean saveAttachment(String attachjson, String processSerialNumber) {
         boolean checkSave = false;
@@ -250,7 +250,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         return checkSave;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public void update(String processSerialNumber, String processInstanceId, String taskId) {
         try {
@@ -260,10 +260,10 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         }
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Map<String, Object> upload(MultipartFile multipartFile, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         TransactionFile transactionFile = new TransactionFile();
         try {
             SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -311,10 +311,10 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         return map;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Map<String, Object> uploadRest(String fileName, String fileSize, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource, String y9FileStoreId) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "保存附件信息失败");
         String[] types = fileName.split("\\.");
@@ -348,7 +348,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         return map;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public TransactionFile uploadRestModel(TransactionFile transactionFile) throws ParseException {
         SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

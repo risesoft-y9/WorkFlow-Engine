@@ -43,7 +43,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
     public List<RemindInstanceModel> findRemindInstance(String tenantId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<RemindInstance> list = remindInstanceService.findRemindInstance(processInstanceId);
-        List<RemindInstanceModel> newList = new ArrayList<RemindInstanceModel>();
+        List<RemindInstanceModel> newList = new ArrayList<>();
         for (RemindInstance remindInstance : list) {
             RemindInstanceModel remindInstanceModel = new RemindInstanceModel();
             Y9BeanUtil.copyProperties(remindInstance, remindInstanceModel);
@@ -68,7 +68,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<RemindInstance> list =
             remindInstanceService.findRemindInstanceByProcessInstanceIdAndArriveTaskKey(processInstanceId, taskKey);
-        List<RemindInstanceModel> newList = new ArrayList<RemindInstanceModel>();
+        List<RemindInstanceModel> newList = new ArrayList<>();
         for (RemindInstance remindInstance : list) {
             RemindInstanceModel remindInstanceModel = new RemindInstanceModel();
             Y9BeanUtil.copyProperties(remindInstance, remindInstanceModel);
@@ -93,7 +93,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<RemindInstance> list =
             remindInstanceService.findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(processInstanceId, taskKey);
-        List<RemindInstanceModel> newList = new ArrayList<RemindInstanceModel>();
+        List<RemindInstanceModel> newList = new ArrayList<>();
         for (RemindInstance remindInstance : list) {
             RemindInstanceModel remindInstanceModel = new RemindInstanceModel();
             Y9BeanUtil.copyProperties(remindInstance, remindInstanceModel);
@@ -118,7 +118,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<RemindInstance> list =
             remindInstanceService.findRemindInstanceByProcessInstanceIdAndRemindType(processInstanceId, remindType);
-        List<RemindInstanceModel> newList = new ArrayList<RemindInstanceModel>();
+        List<RemindInstanceModel> newList = new ArrayList<>();
         for (RemindInstance remindInstance : list) {
             RemindInstanceModel remindInstanceModel = new RemindInstanceModel();
             Y9BeanUtil.copyProperties(remindInstance, remindInstanceModel);
@@ -142,7 +142,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<RemindInstance> list =
             remindInstanceService.findRemindInstanceByProcessInstanceIdAndTaskId(processInstanceId, taskId);
-        List<RemindInstanceModel> newList = new ArrayList<RemindInstanceModel>();
+        List<RemindInstanceModel> newList = new ArrayList<>();
         for (RemindInstance remindInstance : list) {
             RemindInstanceModel remindInstanceModel = new RemindInstanceModel();
             Y9BeanUtil.copyProperties(remindInstance, remindInstanceModel);

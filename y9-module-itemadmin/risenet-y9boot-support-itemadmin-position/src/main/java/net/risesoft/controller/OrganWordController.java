@@ -76,7 +76,7 @@ public class OrganWordController {
     /**
      * 新增编号
      *
-     * @param organWord
+     * @param organWord 编号实体
      * @return
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")

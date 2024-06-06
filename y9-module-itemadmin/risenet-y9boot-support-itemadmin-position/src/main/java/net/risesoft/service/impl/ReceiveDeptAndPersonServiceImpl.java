@@ -53,9 +53,9 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delDepartment(String id) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "取消成功");
         try {
@@ -73,7 +73,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delPerson(String id) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -120,14 +120,14 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
 
     @Override
     public Map<String, Object> personList(String deptId) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
-            List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> list = new ArrayList<>();
             List<ReceivePerson> personList = receivePersonRepository.findByDeptId(deptId);
             String tenantId = Y9LoginUserHolder.getTenantId();
             for (ReceivePerson receivePerson : personList) {
-                Map<String, Object> m = new HashMap<String, Object>(16);
+                Map<String, Object> m = new HashMap<>(16);
                 Position person = positionApi.get(tenantId, receivePerson.getPersonId()).getData();
                 if (person == null || person.getId() == null || person.getDisabled()) {
                     receivePersonRepository.delete(receivePerson);
@@ -151,15 +151,15 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public ReceiveDepartment save(ReceiveDepartment receiveDepartment) {
         return receiveDepartmentRepository.save(receiveDepartment);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveDepartment(String id) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "设置成功");
         try {
@@ -188,9 +188,9 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveOrder(String ids) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
             if (StringUtils.isNotBlank(ids)) {
@@ -215,7 +215,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
 
     @Override
     public Map<String, Object> savePosition(String deptId, String ids) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "保存成功");
         try {
@@ -344,9 +344,9 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> setReceive(boolean receive, String ids) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
             if (StringUtils.isNotBlank(ids)) {
@@ -367,9 +367,9 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> setSend(boolean send, String ids) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
             if (StringUtils.isNotBlank(ids)) {

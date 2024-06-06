@@ -36,7 +36,7 @@ public class ItemInterfaceTaskBindServiceImpl implements ItemInterfaceTaskBindSe
     private final ProcessDefinitionApi processDefinitionApi;
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyBind(String itemId, String interfaceId, String processDefinitionId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -75,7 +75,7 @@ public class ItemInterfaceTaskBindServiceImpl implements ItemInterfaceTaskBindSe
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveBind(String itemId, String interfaceId, String processDefinitionId, String elementKey, String condition) {
         ItemInterfaceTaskBind bind = itemInterfaceTaskBindRepository.findByTaskDefKeyAndItemIdAndProcessDefinitionIdAndInterfaceId(elementKey, itemId, processDefinitionId, interfaceId);
         if (bind != null) {

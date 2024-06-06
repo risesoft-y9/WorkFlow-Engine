@@ -73,7 +73,7 @@ public class PropertiesUtil implements InitializingBean {
      */
     public List<String> getKeys(String resourceUrl) {
         Properties prop = getProperties(resourceUrl);
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         Enumeration e = prop.propertyNames();
         while (e.hasMoreElements()) {
             String key = (String)e.nextElement();

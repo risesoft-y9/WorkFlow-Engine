@@ -58,9 +58,9 @@ public class ItemMappingConfRestController {
      * @return
      */
     @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Y9FormField>> getColumns(@RequestParam(required = true) String tableName) {
-        List<Y9FormField> list = new ArrayList<Y9FormField>();
-        List<String> fieldNameList = new ArrayList<String>();
+    public Y9Result<List<Y9FormField>> getColumns(@RequestParam String tableName) {
+        List<Y9FormField> list = new ArrayList<>();
+        List<String> fieldNameList = new ArrayList<>();
         List<Y9FormField> formFieldList = y9FormFieldService.findByTableName(tableName);
         for (Y9FormField formField : formFieldList) {
             if (!fieldNameList.contains(formField.getFieldName())) {
@@ -81,8 +81,8 @@ public class ItemMappingConfRestController {
      */
     @RequestMapping(value = "/getConfInfo", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getConfInfo(@RequestParam(required = false) String id,
-        @RequestParam(required = true) String itemId, @RequestParam(required = false) String mappingItemId) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+        @RequestParam String itemId, @RequestParam(required = false) String mappingItemId) {
+        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
@@ -141,8 +141,8 @@ public class ItemMappingConfRestController {
      * @return
      */
     @RequestMapping(value = "/getList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemMappingConf>> getList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String mappingId) {
+    public Y9Result<List<ItemMappingConf>> getList(@RequestParam String itemId,
+        @RequestParam String mappingId) {
         List<ItemMappingConf> list = itemMappingConfService.getList(itemId, mappingId);
         return Y9Result.success(list, "获取成功");
     }
@@ -150,10 +150,10 @@ public class ItemMappingConfRestController {
     /**
      * 删除
      *
-     * @param ids
+     * @param ids id数组
      */
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> remove(@RequestParam(required = true) String[] ids) {
+    public Y9Result<String> remove(@RequestParam String[] ids) {
         itemMappingConfService.delItemMappingConf(ids);
         return Y9Result.successMsg("删除成功");
     }

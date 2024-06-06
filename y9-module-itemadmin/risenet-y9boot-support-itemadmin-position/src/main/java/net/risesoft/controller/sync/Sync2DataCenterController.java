@@ -28,10 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -87,25 +85,26 @@ public class Sync2DataCenterController {
     }
 
     @RequestMapping(value = "/tongbu2DataCenter")
-    public void tongbu2DataCenter(String tenantId, HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+    public void tongbu2DataCenter(String tenantId, HttpServletResponse response) {
+        Map<String, Object> resMap = new HashMap<>(16);
         Connection connection = null;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
             String sql =
-                "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
-                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
-                    + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
+                    "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
+                            + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
+                            + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
+            assert dataSource != null;
             connection = dataSource.getConnection();
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql = "SELECT" + "  P .PROC_INST_ID_," + "  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,"
-                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST_2023 P" + " WHERE"
-                    + "   P .END_TIME_ IS NOT NULL" + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY"
-                    + "  P .START_TIME_ DESC";
+                        + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST_2023 P" + " WHERE"
+                        + "   P .END_TIME_ IS NOT NULL" + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY"
+                        + "  P .START_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
@@ -113,8 +112,8 @@ public class Sync2DataCenterController {
             String processInstanceId = "";
             for (Map<String, Object> map : list) {
                 try {
-                    processInstanceId = (String)map.get("PROC_INST_ID_");
-                    String processDefinitionId = (String)map.get("PROC_DEF_ID_");
+                    processInstanceId = (String) map.get("PROC_INST_ID_");
+                    String processDefinitionId = (String) map.get("PROC_DEF_ID_");
                     dataCenterService.saveToDateCenter1(processInstanceId, processDefinitionId);
                 } catch (Exception e) {
                     i = i + 1;
@@ -136,22 +135,23 @@ public class Sync2DataCenterController {
                     try {
                         errorLogService.saveErrorLog(errorLogModel);
                     } catch (Exception e1) {
+                        LOGGER.error("保存错误日志失败", e1);
                     }
-                    e.printStackTrace();
+                    LOGGER.error("同步办结数据到数据中心失败", e);
                 }
             }
             LOGGER.info("********************同步失败{}条数据***************************", i);
             resMap.put("总数", list.size());
             resMap.put("同步失败", i);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("同步数据到数据中心失败", e);
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("关闭数据库连接失败", e);
             }
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
@@ -160,31 +160,32 @@ public class Sync2DataCenterController {
     /**
      * 同步已办结办件详情
      *
-     * @param tenantId
-     * @param request
-     * @param response
+     * @param tenantId 租户ID
+     * @param year     年份
+     * @param response 响应
      */
     @RequestMapping(value = "/tongbuActRuDetail")
-    public void tongbuActRuDetail(String tenantId, String year, HttpServletRequest request,
-        HttpServletResponse response) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+    public void tongbuActRuDetail(String tenantId, String year,
+                                  HttpServletResponse response) {
+        Map<String, Object> resMap = new HashMap<>(16);
         Connection connection = null;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
             String sql =
-                "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
-                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
-                    + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
+                    "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
+                            + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
+                            + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
+            assert dataSource != null;
             connection = dataSource.getConnection();
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql =
-                    "SELECT  P .PROC_INST_ID_, SUBSTRING(P.START_TIME_,1,19) as START_TIME_,  P .PROC_DEF_ID_ FROM  ACT_HI_PROCINST_"
-                        + year
-                        + " P WHERE P .END_TIME_ IS NOT NULL AND P .DELETE_REASON_ IS NULL ORDER BY P .START_TIME_ DESC";
+                        "SELECT  P .PROC_INST_ID_, SUBSTRING(P.START_TIME_,1,19) as START_TIME_,  P .PROC_DEF_ID_ FROM  ACT_HI_PROCINST_"
+                                + year
+                                + " P WHERE P .END_TIME_ IS NOT NULL AND P .DELETE_REASON_ IS NULL ORDER BY P .START_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
@@ -192,25 +193,24 @@ public class Sync2DataCenterController {
             String processInstanceId = "";
             for (Map<String, Object> map : list) {
                 try {
-                    processInstanceId = (String)map.get("PROC_INST_ID_");
+                    processInstanceId = (String) map.get("PROC_INST_ID_");
                     List<HistoricTaskInstanceModel> htiList = historicTaskManager
-                        .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, year);
-                    ActRuDetail newActRuDetail = null;
-                    String assignee = null;
-                    String owner = null;
+                            .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, year);
+                    ActRuDetail newActRuDetail;
+                    String assignee, owner;
                     for (HistoricTaskInstanceModel hti : htiList) {
                         newActRuDetail = new ActRuDetail();
                         assignee = hti.getAssignee();
                         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
                         String systemName = processParam.getSystemName();
                         if (StringUtils.isNotBlank(assignee)) {
-                            /**
+                            /*
                              * 1owner不为空，是恢复待办且恢复的人员不是办理人员的情况，要取出owner,并保存
                              * owner的Status为1，并判断当前taskId是不是正在运行，正在运行的话assignee的Status为0否则为1(因为恢复待办的时候，没有把历史任务的结束时间设为null)
                              */
                             owner = hti.getOwner();
                             if (StringUtils.isNotBlank(owner)) {
-                                /** 先保存owner */
+                                /* 先保存owner */
                                 newActRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                                 newActRuDetail.setProcessSerialNumber(processParam.getProcessSerialNumber());
                                 newActRuDetail.setAssignee(owner);
@@ -234,7 +234,7 @@ public class Sync2DataCenterController {
                                 newActRuDetail.setSystemName(systemName);
                                 actRuDetailService.saveOrUpdate(newActRuDetail);
                             }
-                            /** 再保存assignee */
+                            /* 再保存assignee */
                             newActRuDetail = new ActRuDetail();
                             newActRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                             newActRuDetail.setProcessSerialNumber(processParam.getProcessSerialNumber());
@@ -281,22 +281,23 @@ public class Sync2DataCenterController {
                     try {
                         errorLogService.saveErrorLog(errorLogModel);
                     } catch (Exception e1) {
+                        LOGGER.error("保存错误日志失败", e1);
                     }
-                    e.printStackTrace();
+                    LOGGER.error("同步办结数据到数据中心失败", e);
                 }
             }
             LOGGER.info("********************同步失败{}条数据***************************", i);
             resMap.put("总数", list.size());
             resMap.put("同步失败", i);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("同步办结数据到数据中心失败", e);
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("关闭数据库连接失败", e);
             }
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
@@ -305,28 +306,28 @@ public class Sync2DataCenterController {
     /**
      * 同步未办结办件详情
      *
-     * @param tenantId
-     * @param request
-     * @param response
+     * @param tenantId 租户ID
+     * @param response 响应
      */
     @RequestMapping(value = "/tongbuActRuDetail1")
-    public void tongbuActRuDetail1(String tenantId, HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+    public void tongbuActRuDetail1(String tenantId, HttpServletResponse response) {
+        Map<String, Object> resMap = new HashMap<>(16);
         Connection connection = null;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
             String sql =
-                "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
-                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
-                    + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
+                    "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
+                            + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
+                            + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
+            assert dataSource != null;
             connection = dataSource.getConnection();
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql =
-                    "SELECT P .PROC_INST_ID_,  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,  P .PROC_DEF_ID_ FROM  ACT_HI_PROCINST P WHERE P .DELETE_REASON_ IS NULL ORDER BY  P .START_TIME_ DESC";
+                        "SELECT P .PROC_INST_ID_,  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,  P .PROC_DEF_ID_ FROM  ACT_HI_PROCINST P WHERE P .DELETE_REASON_ IS NULL ORDER BY  P .START_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
@@ -334,25 +335,24 @@ public class Sync2DataCenterController {
             String processInstanceId = "";
             for (Map<String, Object> map : list) {
                 try {
-                    processInstanceId = (String)map.get("PROC_INST_ID_");
+                    processInstanceId = (String) map.get("PROC_INST_ID_");
                     List<HistoricTaskInstanceModel> htiList = historicTaskManager
-                        .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "");
-                    ActRuDetail newActRuDetail = null;
-                    String assignee = null;
-                    String owner = null;
+                            .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "");
+                    ActRuDetail newActRuDetail;
+                    String assignee, owner;
                     for (HistoricTaskInstanceModel hti : htiList) {
                         newActRuDetail = new ActRuDetail();
                         assignee = hti.getAssignee();
                         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
                         String systemName = processParam.getSystemName();
                         if (StringUtils.isNotBlank(assignee)) {
-                            /**
+                            /*
                              * 1owner不为空，是恢复待办且恢复的人员不是办理人员的情况，要取出owner,并保存
                              * owner的Status为1，并判断当前taskId是不是正在运行，正在运行的话assignee的Status为0否则为1(因为恢复待办的时候，没有把历史任务的结束时间设为null)
                              */
                             owner = hti.getOwner();
                             if (StringUtils.isNotBlank(owner)) {
-                                /** 先保存owner */
+                                /* 先保存owner */
                                 newActRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                                 newActRuDetail.setProcessSerialNumber(processParam.getProcessSerialNumber());
                                 newActRuDetail.setAssignee(owner);
@@ -376,7 +376,7 @@ public class Sync2DataCenterController {
                                 newActRuDetail.setSystemName(systemName);
                                 actRuDetailService.saveOrUpdate(newActRuDetail);
                             }
-                            /** 再保存assignee */
+                            /* 再保存assignee */
                             newActRuDetail = new ActRuDetail();
                             newActRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                             newActRuDetail.setProcessSerialNumber(processParam.getProcessSerialNumber());
@@ -423,22 +423,23 @@ public class Sync2DataCenterController {
                     try {
                         errorLogService.saveErrorLog(errorLogModel);
                     } catch (Exception e1) {
+                        LOGGER.error("保存错误日志失败", e1);
                     }
-                    e.printStackTrace();
+                    LOGGER.error("同步办结数据到数据中心失败", e);
                 }
             }
             LOGGER.info("********************同步失败{}条数据***************************", i);
             resMap.put("总数", list.size());
             resMap.put("同步失败", i);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("同步办结数据到数据中心失败", e);
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("关闭数据库连接失败", e);
             }
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
@@ -447,14 +448,12 @@ public class Sync2DataCenterController {
     /**
      * 同步未办结办件详情
      *
-     * @param tenantId
-     * @param request
-     * @param response
+     * @param tenantId 租户ID
+     * @param response 响应
      */
     @RequestMapping(value = "/tongbuActRuDetailStartTime")
-    public void tongbuActRuDetailStartTime(String tenantId, HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
-        Connection connection = null;
+    public void tongbuActRuDetailStartTime(String tenantId, HttpServletResponse response) {
+        Map<String, Object> resMap = new HashMap<>(16);
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -465,11 +464,11 @@ public class Sync2DataCenterController {
             String processInstanceId = "";
             for (Map<String, Object> map : list) {
                 try {
-                    processInstanceId = (String)map.get("PROCESSINSTANCEID");
+                    processInstanceId = (String) map.get("PROCESSINSTANCEID");
                     OfficeDoneInfo info = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
                     if (info != null) {
                         sql = "update FF_ACT_RU_DETAIL set STARTTIME = '" + info.getStartTime()
-                            + "' where PROCESSINSTANCEID = '" + processInstanceId + "'";
+                                + "' where PROCESSINSTANCEID = '" + processInstanceId + "'";
                         jdbcTemplate.execute(sql);
                     }
                 } catch (Exception e) {
@@ -492,23 +491,16 @@ public class Sync2DataCenterController {
                     try {
                         errorLogService.saveErrorLog(errorLogModel);
                     } catch (Exception e1) {
+                        LOGGER.error("保存错误日志失败", e1);
                     }
-                    e.printStackTrace();
+                    LOGGER.error("同步办结数据到数据中心失败", e);
                 }
             }
             LOGGER.info("********************同步失败{}条数据***************************", i);
             resMap.put("总数", list.size());
             resMap.put("同步失败", i);
         } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            LOGGER.error("同步办结数据到数据中心失败", e);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
     }

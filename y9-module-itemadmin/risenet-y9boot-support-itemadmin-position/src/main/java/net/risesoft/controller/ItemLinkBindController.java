@@ -31,7 +31,7 @@ public class ItemLinkBindController {
      * @return
      */
     @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemLinkBind>> getBindList(@RequestParam(required = true) String itemId) {
+    public Y9Result<List<ItemLinkBind>> getBindList(@RequestParam String itemId) {
         List<ItemLinkBind> list = itemLinkBindService.findByItemId(itemId);
         return Y9Result.success(list, "获取成功");
     }
@@ -43,7 +43,7 @@ public class ItemLinkBindController {
      * @return
      */
     @RequestMapping(value = "/getBindRoleList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemLinkRole>> getBindRoleList(@RequestParam(required = true) String itemLinkId) {
+    public Y9Result<List<ItemLinkRole>> getBindRoleList(@RequestParam String itemLinkId) {
         List<ItemLinkRole> list = itemLinkBindService.getBindRoleList(itemLinkId);
         return Y9Result.success(list, "获取成功");
     }
@@ -55,7 +55,7 @@ public class ItemLinkBindController {
      * @return
      */
     @RequestMapping(value = "/removeBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeBind(@RequestParam(required = true) String[] ids) {
+    public Y9Result<String> removeBind(@RequestParam String[] ids) {
         itemLinkBindService.removeBind(ids);
         return Y9Result.successMsg("删除成功");
     }
@@ -67,7 +67,7 @@ public class ItemLinkBindController {
      * @return
      */
     @RequestMapping(value = "/removeRole", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeRole(@RequestParam(required = true) String[] ids) {
+    public Y9Result<String> removeRole(@RequestParam String[] ids) {
         itemLinkBindService.removeRole(ids);
         return Y9Result.successMsg("删除成功");
     }
@@ -80,7 +80,7 @@ public class ItemLinkBindController {
      * @return
      */
     @RequestMapping(value = "/saveBindRole", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveBindRole(@RequestParam(required = true) String roleIds, @RequestParam(required = true) String itemLinkId) {
+    public Y9Result<String> saveBindRole(@RequestParam String roleIds, @RequestParam String itemLinkId) {
         itemLinkBindService.saveBindRole(itemLinkId, roleIds);
         return Y9Result.successMsg("保存成功");
     }
@@ -93,7 +93,7 @@ public class ItemLinkBindController {
      * @return
      */
     @RequestMapping(value = "/saveItemLinkBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveItemLinkBind(@RequestParam(required = true) String[] linkIds, @RequestParam(required = true) String itemId) {
+    public Y9Result<String> saveItemLinkBind(@RequestParam String[] linkIds, @RequestParam String itemId) {
         itemLinkBindService.saveItemLinkBind(itemId, linkIds);
         return Y9Result.successMsg("保存成功");
     }

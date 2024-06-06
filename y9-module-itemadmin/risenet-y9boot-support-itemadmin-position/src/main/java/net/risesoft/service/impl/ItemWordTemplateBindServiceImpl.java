@@ -27,7 +27,7 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
     private final ItemWordTemplateBindRepository wordTemplateBindRepository;
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> deleteBind(String id) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
@@ -48,7 +48,7 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> save(String itemId, String processDefinitionId, String templateId) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);

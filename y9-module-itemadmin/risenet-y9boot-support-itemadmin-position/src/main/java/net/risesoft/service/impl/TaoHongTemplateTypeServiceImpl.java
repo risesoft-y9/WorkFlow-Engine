@@ -47,7 +47,7 @@ public class TaoHongTemplateTypeServiceImpl implements TaoHongTemplateTypeServic
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeTaoHongTemplateType(String[] ids) {
         for (String id : ids) {
             taoHongTemplateTypeRepository.deleteById(id);
@@ -55,7 +55,7 @@ public class TaoHongTemplateTypeServiceImpl implements TaoHongTemplateTypeServic
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveOrder(String[] idAndTabIndexs) {
         for (String idAndTabIndex : idAndTabIndexs) {
             String id = idAndTabIndex.split(SysVariables.COLON)[0];
@@ -65,7 +65,7 @@ public class TaoHongTemplateTypeServiceImpl implements TaoHongTemplateTypeServic
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public TaoHongTemplateType saveOrUpdate(TaoHongTemplateType t) {
         String id = t.getId();
         if (StringUtils.isNotEmpty(id)) {

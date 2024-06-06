@@ -30,7 +30,7 @@ public class QuickSendApiImpl implements QuickSendApi {
      * @param positionId 岗位id
      * @param itemId 事项id
      * @param taskKey 任务key
-     * @return
+     * @return String
      */
     @Override
     public String getAssignee(@NotBlank String tenantId, @NotBlank String positionId, @NotBlank String itemId,

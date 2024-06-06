@@ -34,7 +34,7 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     private final ProcessDefinitionApi processDefinitionManager;
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyTaskConf(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String proDefKey = processDefinitionId.split(":")[0];
@@ -91,7 +91,7 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void delete(String id) {
         taskConfRepository.deleteById(id);
     }
@@ -151,7 +151,7 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void save(ItemTaskConf t) {
         String id = t.getId();
         if (StringUtils.isNotBlank(id)) {

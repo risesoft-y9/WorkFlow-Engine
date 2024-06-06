@@ -67,10 +67,10 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delChildTableRow(String formId, String tableId, String guid) {
         Connection connection = null;
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
             connection = jdbcTemplate4Tenant.getDataSource().getConnection();
@@ -105,9 +105,9 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delete(String ids) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             String[] id = ids.split(",");
             for (String idTemp : id) {
@@ -125,7 +125,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean deleteByGuid(String y9TableId, String guid) {
         try {
             Y9Table y9Table = y9TableService.findById(y9TableId);
@@ -140,10 +140,10 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delPreFormData(String formId, String guid) {
         Connection connection = null;
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
             connection = jdbcTemplate4Tenant.getDataSource().getConnection();
@@ -193,7 +193,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     @Override
     public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber) throws Exception {
         Connection connection = null;
-        List<Map<String, Object>> datamap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> datamap = new ArrayList<>();
         try {
             connection = jdbcTemplate4Tenant.getDataSource().getConnection();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
@@ -228,7 +228,7 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @Override
     public Map<String, Object> getData(String guid, String tableName) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("edittype", "0");
         Connection connection = null;
         try {
@@ -272,8 +272,8 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @Override
     public Map<String, Object> getFormData(String formId, String guid) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
+        Map<String, Object> resMap = new HashMap<>(16);
         Connection connection = null;
         try {
             connection = jdbcTemplate4Tenant.getDataSource().getConnection();
@@ -323,7 +323,7 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @Override
     public Map<String, Object> getFormData4Var(String formId, String guid) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         Connection connection = null;
         try {
             connection = jdbcTemplate4Tenant.getDataSource().getConnection();
@@ -371,7 +371,7 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @Override
     public List<Map<String, Object>> getFormDataList(String formId) {
-        List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> resList = new ArrayList<>();
         Connection connection = null;
         try {
             connection = jdbcTemplate4Tenant.getDataSource().getConnection();
@@ -394,7 +394,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                     List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString());
                     for (Map<String, Object> data : datamap) {
                         List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
-                        Map<String, Object> map = new HashMap<String, Object>(16);
+                        Map<String, Object> map = new HashMap<>(16);
                         for (Y9FormField element : elementList) {
                             String fieldName = element.getFieldName();
                             map.put(fieldName, data.get(fieldName) != null ? data.get(fieldName).toString() : "");
@@ -425,7 +425,7 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @Override
     public Map<String, Object> getFormList(String systemName, int page, int rows) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+        Map<String, Object> resMap = new HashMap<>(16);
         if (page < 1) {
             page = 1;
         }
@@ -438,7 +438,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             pageList = y9FormRepository.findBySystemName(systemName, pageable);
         }
         List<Y9Form> list = pageList.getContent();
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<Map<String, Object>> slist = approveItemRepository.getItemSystem();
         String systemCnName = "";
@@ -448,7 +448,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             }
         }
         for (Y9Form y9Form : list) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", y9Form.getId());
             map.put("formName", y9Form.getFormName());
             map.put("formType", y9Form.getFormType());
@@ -483,9 +483,9 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @SuppressWarnings("unchecked")
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         Connection connection = null;
         try {
             connection = jdbcTemplate4Tenant.getDataSource().getConnection();
@@ -690,9 +690,9 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @SuppressWarnings({"unchecked"})
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveFormData(String formdata) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         Connection connection = null;
         try {
             connection = jdbcTemplate4Tenant.getDataSource().getConnection();
@@ -894,9 +894,9 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveFormField(String formId, String fieldJson) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+        Map<String, Object> resMap = new HashMap<>(16);
         try {
             List<Map<String, Object>> listMap = Y9JsonUtil.readListOfMap(fieldJson, String.class, Object.class);
             y9FormFieldRepository.deleteByFormId(formId);
@@ -926,9 +926,9 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveFormJson(String id, String formJson) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             Y9Form form = y9FormRepository.findById(id).orElse(null);
             form.setFormJson(formJson);
@@ -945,9 +945,9 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveOrUpdate(Y9Form form) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             if (StringUtils.isBlank(form.getId())) {
                 Y9Form newForm = new Y9Form();

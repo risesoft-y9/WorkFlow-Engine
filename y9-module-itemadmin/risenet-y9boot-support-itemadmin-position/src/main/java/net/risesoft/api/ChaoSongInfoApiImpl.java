@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -154,8 +153,7 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
                                       Integer status, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        map = chaoSongInfoService.detail(processInstanceId, status, mobile);
+        Map<String, Object> map = chaoSongInfoService.detail(processInstanceId, status, mobile);
         map.put("id", id);
         map.put("status", status);
         ChaoSongInfo chaoSong = chaoSongInfoService.findOne(id);

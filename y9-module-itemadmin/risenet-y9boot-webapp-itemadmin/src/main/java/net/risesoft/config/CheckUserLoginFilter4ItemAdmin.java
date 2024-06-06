@@ -1,21 +1,16 @@
 package net.risesoft.config;
 
-import java.io.IOException;
+import net.risesoft.model.user.UserInfo;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.io.IOException;
 
 /**
  * @author qinman
@@ -23,11 +18,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2023/01/03
  */
 public class CheckUserLoginFilter4ItemAdmin implements Filter {
-
-    protected Logger logger = LoggerFactory.getLogger(CheckUserLoginFilter4ItemAdmin.class);
-
-    @Override
-    public void destroy() {}
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -46,8 +36,4 @@ public class CheckUserLoginFilter4ItemAdmin implements Filter {
             Y9LoginUserHolder.clear();
         }
     }
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
-
 }

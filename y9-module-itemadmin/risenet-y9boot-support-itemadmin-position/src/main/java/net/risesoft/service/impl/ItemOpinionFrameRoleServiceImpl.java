@@ -28,7 +28,7 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
     private final RoleApi roleManager;
 
     @Override
-    @Transactional()
+    @Transactional
     public void deleteById(String id) {
         itemOpinionFrameRoleRepository.deleteById(id);
     }
@@ -50,7 +50,7 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void remove(String[] ids) {
         for (String id : ids) {
             itemOpinionFrameRoleRepository.deleteById(id);
@@ -58,7 +58,7 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeByItemOpinionFrameId(String itemOpinionFrameId) {
         List<ItemOpinionFrameRole> roleList =
             itemOpinionFrameRoleRepository.findByItemOpinionFrameId(itemOpinionFrameId);
@@ -66,7 +66,7 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public ItemOpinionFrameRole saveOrUpdate(String itemOpinionFrameId, String roleId) {
         ItemOpinionFrameRole iofr =
             itemOpinionFrameRoleRepository.findByItemOpinionFrameIdAndRoleId(itemOpinionFrameId, roleId);

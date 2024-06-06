@@ -1,6 +1,7 @@
 package net.risesoft.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
@@ -33,6 +34,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/vue/entrust")
@@ -54,17 +56,17 @@ public class EntrustController {
      * 委办局树搜索
      *
      * @param name 搜索词
-     * @return
+     * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/deptTreeSearch", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = true) String name) {
+    public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
-        List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
+        List<Map<String, Object>> item = new ArrayList<>();
+        List<OrgUnit> orgUnitList = new ArrayList<>();
         OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
         if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
             List<Person> personList =
-                personManager.listRecursivelyByParentIdAndName(tenantId, orgUnit.getId(), name).getData();
+                    personManager.listRecursivelyByParentIdAndName(tenantId, orgUnit.getId(), name).getData();
             for (Person person : personList) {
                 orgUnitList.add(person);
                 Person p = personManager.get(tenantId, person.getId()).getData();
@@ -74,7 +76,7 @@ public class EntrustController {
             orgUnitList = orgUnitManager.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
         }
         for (OrgUnit orgUnit0 : orgUnitList) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", orgUnit0.getId());
             map.put("name", orgUnit0.getName());
             map.put("orgType", orgUnit0.getOrgType());
@@ -95,16 +97,16 @@ public class EntrustController {
      * 获取部门树
      *
      * @param id 部门id
-     * @return
+     * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/getDeptTree", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getDeptTree(@RequestParam(required = false) String id) {
-        List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(id)) {
             OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
             if (orgUnit != null && orgUnit.getId() != null) {
-                Map<String, Object> map = new HashMap<String, Object>(16);
+                Map<String, Object> map = new HashMap<>(16);
                 id = orgUnit.getId();
                 map.put("id", orgUnit.getId());
                 map.put("parentID", orgUnit.getParentId());
@@ -115,12 +117,11 @@ public class EntrustController {
             }
         }
         if (StringUtils.isNotBlank(id)) {
-            List<OrgUnit> orgList = new ArrayList<OrgUnit>();
+            List<OrgUnit> orgList;
             orgList = orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
             for (OrgUnit orgunit : orgList) {
-                Map<String, Object> map = new HashMap<String, Object>(16);
-                String orgunitId = orgunit.getId();
-                map.put("id", orgunitId);
+                Map<String, Object> map = new HashMap<>(16);
+                map.put("id", orgunit.getId());
                 map.put("parentID", id);
                 map.put("name", orgunit.getName());
                 map.put("orgType", orgunit.getOrgType());
@@ -144,11 +145,11 @@ public class EntrustController {
      * 获取委托信息
      *
      * @param id 委托id
-     * @return
+     * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getEntrustInfo", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getEntrustInfo(String id) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotEmpty(id)) {
             Entrust entrust = entrustService.findOne(id);
             if (entrust.getItemId().equals(Entrust.ITEMID4ALL)) {
@@ -160,7 +161,7 @@ public class EntrustController {
             map.put("entrust", entrust);
         }
         List<SpmApproveItem> itemList = spmApproveItemRepository.findAll();
-        List<SpmApproveItem> list = new ArrayList<SpmApproveItem>();
+        List<SpmApproveItem> list = new ArrayList<>();
         Integer count = entrustService.getCountByOwnerIdAndItemId(Y9LoginUserHolder.getPersonId(), Entrust.ITEMID4ALL);
         if (count == 0) {
             SpmApproveItem item = new SpmApproveItem();
@@ -178,7 +179,7 @@ public class EntrustController {
         return Y9Result.success(map, "获取成功");
     }
 
-    public OrgUnit getParent(String tenantId, String nodeId, String parentId) {
+    public OrgUnit getParent(String tenantId, String parentId) {
         Organization parent = organizationManager.get(tenantId, parentId).getData();
         return parent.getId() != null ? parent : departmentManager.get(tenantId, parentId).getData();
     }
@@ -186,7 +187,7 @@ public class EntrustController {
     /**
      * 委托列表
      *
-     * @return
+     * @return Y9Result<List < Entrust>>
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Entrust>> list() {
@@ -196,12 +197,12 @@ public class EntrustController {
     }
 
     public void recursionUpToOrg(String tenantId, String nodeId, String parentId, List<OrgUnit> orgUnitList,
-        boolean isParent) {
-        OrgUnit parent = getParent(tenantId, nodeId, parentId);
+                                 boolean isParent) {
+        OrgUnit parent = getParent(tenantId, parentId);
         if (isParent) {
             parent.setDescription("parent");
         }
-        if (orgUnitList.size() == 0) {
+        if (orgUnitList.isEmpty()) {
             orgUnitList.add(parent);
         } else {
             boolean add = true;
@@ -226,7 +227,7 @@ public class EntrustController {
     /**
      * 删除委托对象实体
      *
-     * @param id
+     * @param id 委托id
      */
     @RequestMapping(value = "/removeEntrust", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> removeEntrust(String id) {
@@ -237,8 +238,8 @@ public class EntrustController {
     /**
      * 保存或者更新委托对象实体
      *
-     * @param entrust
-     * @return
+     * @param entrust 委托对象实体
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(Entrust entrust) {
@@ -246,7 +247,7 @@ public class EntrustController {
             entrustService.saveOrUpdate(entrust);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存失败", e);
         }
         return Y9Result.failure("保存失败");
     }

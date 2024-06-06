@@ -44,7 +44,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * 正文接口
@@ -107,12 +106,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param isTaoHong 是否套红
-     * @return
      */
     @Override
     @PostMapping(value = "/deleteByIsTaoHong", produces = MediaType.APPLICATION_JSON_VALUE)
     public void deleteByIsTaoHong(String tenantId, String userId, String processSerialNumber, String isTaoHong) {
-        List<TransactionWord> list = new ArrayList<TransactionWord>();
+        List<TransactionWord> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber) && StringUtils.isNotBlank(isTaoHong)) {
             list = transactionWordService.findByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
         }
@@ -121,7 +119,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             try {
                 y9FileStoreService.deleteFile(transactionWord.getFileStoreId());
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("删除文件失败", e);
             }
         }
         if (ItemWordTypeEnum.PDF1.getValue().equals(isTaoHong)) {
@@ -141,14 +139,14 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     @GetMapping(value = "/exchangeFindWordByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> exchangeFindWordByProcessSerialNumber(String tenantId, String userId,
         String processSerialNumber) {
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personManager.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             List<TransactionWord> list = transactionWordService.findByProcessSerialNumber(processSerialNumber);
-            if (list != null && list.size() > 0) {
-                Map<String, Object> m = new HashMap<String, Object>(16);
+            if (list != null && !list.isEmpty()) {
+                Map<String, Object> m = new HashMap<>(16);
                 TransactionWord transactionWord = list.get(0);
                 Person user = personManager.get(tenantId, transactionWord.getUserId()).getData();
                 m.put("fileName", transactionWord.getTitle() + transactionWord.getFileType());
@@ -163,7 +161,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 listMap.add(m);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取正文文件信息失败", e);
         }
         return listMap;
     }
@@ -182,7 +180,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> map = new HashMap<String, Object>(1);
+        Map<String, Object> map = new HashMap<>(1);
         List<TransactionHistoryWord> historyWord = transactionHistoryWordService.getListByTaskId(taskId);
         if (null != historyWord && StringUtils.isNotBlank(historyWord.get(0).getId())) {
             if (StringUtils.isNotEmpty(historyWord.get(0).getIstaohong())) {
@@ -219,11 +217,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     @Override
     @GetMapping(value = "/findWordByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> findWordByProcessSerialNumber(String tenantId, String processSerialNumber) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             List<TransactionWord> list = transactionWordService.findByProcessSerialNumber(processSerialNumber);
-            if (list != null && list.size() > 0) {
+            if (list != null && !list.isEmpty()) {
                 TransactionWord transactionWord = list.get(0);
                 Person user = personManager.get(tenantId, transactionWord.getUserId()).getData();
                 map.put("fileName", transactionWord.getTitle() + transactionWord.getFileType());
@@ -236,7 +234,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 map.put("isTaoHong", transactionWord.getIstaohong());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取正文文件信息失败", e);
         }
         return map;
     }
@@ -252,29 +250,34 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     @Override
     @GetMapping(value = "/getWordList", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getWordList(String tenantId, String userId, String processSerialNumber) {
-        List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> retList = new ArrayList<>();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personManager.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             List<TransactionWord> list = transactionWordRepository.findByProcessSerialNumber(processSerialNumber);
             for (TransactionWord word : list) {
-                Map<String, Object> map = new HashMap<String, Object>(16);
-                map.put("id", word.getId());
-                map.put("title", word.getTitle());
-                map.put("fileStoreId", word.getFileStoreId());
-                map.put("fileSize", word.getFileSize());
-                map.put("fileName", word.getFileName());
-                map.put("processSerialNumber", word.getProcessSerialNumber());
-                map.put("saveDate", word.getSaveDate());
-                map.put("userId", word.getUserId());
-                map.put("istaohong", word.getIstaohong());
+                Map<String, Object> map = getMap(word);
                 retList.add(map);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取正文列表失败", e);
         }
         return retList;
+    }
+
+    private Map<String, Object> getMap(TransactionWord word) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("id", word.getId());
+        map.put("title", word.getTitle());
+        map.put("fileStoreId", word.getFileStoreId());
+        map.put("fileSize", word.getFileSize());
+        map.put("fileName", word.getFileName());
+        map.put("processSerialNumber", word.getProcessSerialNumber());
+        map.put("saveDate", word.getSaveDate());
+        map.put("userId", word.getUserId());
+        map.put("istaohong", word.getIstaohong());
+        return map;
     }
 
     /**
@@ -292,7 +295,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<TransactionWord> list = new ArrayList<TransactionWord>();
+        List<TransactionWord> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber)) {
             list = transactionWordService.findByProcessSerialNumber(processSerialNumber);
         }
@@ -300,8 +303,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         if (!list.isEmpty()) {
             transactionWord = list.get(0);
             if (StringUtils.isNotBlank(transactionWord.getFileStoreId())) {
-                String docBase = transactionWord.getFileStoreId();
-                return docBase;
+                return transactionWord.getFileStoreId();
             } else {
                 LOGGER.error("fileStoreId为空，保存正文的时候出错");
             }
@@ -316,8 +318,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             WordTemplate wordTemplate = wordTemplateRepository
                 .findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "").orElse(null);
             if (wordTemplate != null && wordTemplate.getId() != null) {
-                String docBase = wordTemplate.getFilePath();
-                return docBase;
+                return wordTemplate.getFilePath();
             } else {
                 LOGGER.error("数据库没有processSerialNumber=" + processSerialNumber + "的正文，请联系管理员");
             }
@@ -336,11 +337,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     @GetMapping(value = "/openDocumentByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
     public String openDocumentByProcessSerialNumber(String tenantId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<TransactionWord> list = new ArrayList<TransactionWord>();
+        List<TransactionWord> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber)) {
             // 获取套红文档
             list = transactionWordService.findByProcessSerialNumberAndIstaohong(processSerialNumber, "1");
-            /**
+            /*
              * 套红文档不存在,则获取未套红文档
              */
             if (list.isEmpty()) {
@@ -351,8 +352,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         if (!list.isEmpty()) {
             transactionWord = list.get(0);
             if (StringUtils.isNotBlank(transactionWord.getFileStoreId())) {
-                String docBase = transactionWord.getFileStoreId();
-                return docBase;
+                return transactionWord.getFileStoreId();
             } else {
                 LOGGER.error("fileStoreId为空，保存正文的时候出错");
             }
@@ -375,18 +375,15 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         LOGGER.debug("call /ntko/openTaohongTemplate");
-        byte[] buf = null;
+        byte[] buf;
         TaoHongTemplate taohongTemplate = taoHongTemplateService.findOne(templateGuid);
         if (null != taohongTemplate) {
             buf = taohongTemplate.getTemplateContent();
             if (buf != null) {
                 try {
-                    String docBase = jodd.util.Base64.encodeToString(buf);
-                    return docBase;
+                    return jodd.util.Base64.encodeToString(buf);
                 } catch (Exception e) {
-                    LOGGER.error("向jsp页面输出word二进制流错误");
-                    e.printStackTrace();
-                } finally {
+                    LOGGER.error("向jsp页面输出word二进制流错误{}",e.getMessage());
                 }
             }
         } else {
@@ -437,7 +434,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<TransactionWord> list = new ArrayList<TransactionWord>();
+        List<TransactionWord> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber)) {
             list = transactionWordService.findByProcessSerialNumber(processSerialNumber);
         }
@@ -445,8 +442,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         if (!list.isEmpty()) {
             transactionWord = list.get(0);
             if (StringUtils.isNotBlank(transactionWord.getFileStoreId())) {
-                String docBase = transactionWord.getFileStoreId();
-                return docBase;
+                return transactionWord.getFileStoreId();
             } else {// 从数据库读取正文
                 LOGGER.error("fileStoreId为空，保存正文的时候出错");
             }
@@ -470,7 +466,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<TransactionWord> list = new ArrayList<TransactionWord>();
+        List<TransactionWord> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber) && StringUtils.isNotBlank(isTaoHong)) {
             list = transactionWordService.findByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
         }
@@ -478,8 +474,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         if (!list.isEmpty()) {
             transactionWord = list.get(0);
             if (StringUtils.isNotBlank(transactionWord.getFileStoreId())) {
-                String docBase = transactionWord.getFileStoreId();
-                return docBase;
+                return transactionWord.getFileStoreId();
             } else {// 从数据库读取正文
                 LOGGER.error("fileStoreId为空，保存正文的时候出错");
             }
@@ -498,7 +493,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     @Override
     @GetMapping(value = "/openTaoHong", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> openTaoHong(String tenantId, String userId, String activitiUser) {
-        Map<String, Object> model = new HashMap<String, Object>(16);
+        Map<String, Object> model = new HashMap<>(16);
 
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
@@ -527,10 +522,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Boolean checkSave = false;
+        boolean checkSave = false;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Map<String, Object> documentMap = Y9JsonUtil.readValue(docjson, Map.class);
+            assert documentMap != null;
             List<Map<String, Object>> documentList = (List<Map<String, Object>>)documentMap.get("document");
             for (Map<String, Object> dMap : documentList) {
                 TransactionWord tw = new TransactionWord();
@@ -547,7 +543,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 checkSave = true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存公文传输转入工作流的正文信息失败", e);
             checkSave = false;
         }
         return checkSave;
@@ -568,7 +564,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     @GetMapping(value = "/showWord", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> showWord(String tenantId, String userId, String processSerialNumber, String itemId,
         String itembox, String taskId) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -585,11 +581,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             wordReadOnly = "YES";
         }
         String saveDate = "";
-        List<TransactionWord> list = new ArrayList<TransactionWord>();
+        List<TransactionWord> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber)) {
             list = transactionWordService.findByProcessSerialNumber(processSerialNumber);
         }
-        if (list != null && list.size() > 0) {
+        if (list != null && !list.isEmpty()) {
             TransactionWord d = list.get(0);
             fileDocumentId = d.getId();
             saveDate = d.getSaveDate();
@@ -612,7 +608,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             retMap.put("fileType", d.getFileType());
             retMap.put("uid", d.getFileStoreId());
         } else {
-            String processDefinitionId = "";
+            String processDefinitionId;
             if (StringUtils.isNoneBlank(taskId)) {
                 TaskModel task = taskManager.findById(tenantId, taskId);
                 processDefinitionId = task.getProcessDefinitionId();
@@ -662,17 +658,17 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         LOGGER.debug("call /ntko/list");
-        List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> retList = new ArrayList<>();
 
         List<TaoHongTemplate> list = taoHongTemplateService.findByBureauGuid(currentBureauGuid);
 
         if (list.isEmpty()) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("hasTaoHongTemplate", "0");
             retList.add(map);
         } else {
             for (TaoHongTemplate taoHongTemplate : list) {
-                Map<String, Object> map = new HashMap<String, Object>(16);
+                Map<String, Object> map = new HashMap<>(16);
                 map.put("hasDocumentTemplate", "1");
                 map.put("templateGuid", taoHongTemplate.getTemplateGuid());
                 map.put("template_fileName", taoHongTemplate.getTemplateFileName());
@@ -704,12 +700,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        String info = "";
+        String info;
         try {
-            if (StringUtils.isNotBlank(processSerialNumber) && !"".equals(processSerialNumber)) {
+            if (StringUtils.isNotBlank(processSerialNumber)) {
                 List<TransactionWord> list =
                     transactionWordService.findByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
-                if (list.size() == 0) {
+                if (list.isEmpty()) {
                     transactionWordService.saveTransactionWord(fileStoreId, fileSizeString, documentTitle, fileType,
                         processSerialNumber, isTaoHong);
                     transactionHistoryWordService.saveTransactionHistoryWord(fileStoreId, fileSizeString, documentTitle,
@@ -723,18 +719,18 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                     transactionWordService.updateTransactionWordById(fileStoreId, fileType, documentTitle + fileType,
                         fileSizeString, isTaoHong, userId, list.get(0).getId());
 
-                    List<TransactionHistoryWord> thwlist = null;
+                    List<TransactionHistoryWord> thwlist;
                     if (StringUtils.isNotBlank(taskId)) {
                         thwlist = transactionHistoryWordRepository
                             .getByProcessSerialNumberAndIsTaoHongAndTaskId(processSerialNumber, isTaoHong, taskId);
                     } else {
-                        /**
+                        /*
                          * 流程刚启动的时候taskId为空
                          */
                         thwlist = transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
                     }
-                    if (thwlist.size() == 0) {
-                        /**
+                    if (thwlist.isEmpty()) {
+                        /*
                          * 在当前任务还没有保存过正文
                          */
                         transactionHistoryWordService.saveTransactionHistoryWord(fileStoreId, fileSizeString,
@@ -750,7 +746,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             }
         } catch (Exception e) {
             info = "success:false";
-            e.printStackTrace();
+            LOGGER.error("草稿箱保存正文失败", e);
         }
         return info;
     }
@@ -765,11 +761,12 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     @Override
     @GetMapping(value = "/wordDownload", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> wordDownload(String tenantId, String id) {
-        Optional<TransactionWord> transactionWord = transactionWordRepository.findById(id);
+        TransactionWord transactionWord = transactionWordRepository.findById(id).orElse(null);
         Map<String, Object> map = new HashMap<>(16);
-        map.put("fileSize", transactionWord.get().getFileSize());
-        map.put("filename", transactionWord.get().getTitle());
-        map.put("fileStoreId", transactionWord.get().getFileStoreId());
+        assert transactionWord != null;
+        map.put("fileSize", transactionWord.getFileSize());
+        map.put("filename", transactionWord.getTitle());
+        map.put("fileStoreId", transactionWord.getFileStoreId());
         return map;
     }
 }

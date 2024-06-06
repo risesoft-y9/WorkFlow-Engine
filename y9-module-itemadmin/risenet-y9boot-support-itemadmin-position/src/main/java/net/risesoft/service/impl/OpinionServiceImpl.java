@@ -119,7 +119,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copy(String oldProcessSerialNumber, String oldOpinionFrameMark, String newProcessSerialNumber, String newOpinionFrameMark, String newProcessInstanceId, String newTaskId) throws Exception {
         try {
             List<Opinion> oldOpinionList = this.findByProcessSerialNumber(oldProcessSerialNumber);
@@ -141,7 +141,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void delete(String id) {
         Opinion oldOpinion = opinionRepository.findById(id).orElse(null);
         opinionRepository.delete(oldOpinion);
@@ -277,11 +277,11 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     public List<Map<String, Object>> personCommentList(String processSerialNumber, String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser, String orderByUser) {
-        List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> resList = new ArrayList<>();
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
-            Map<String, Object> addableMap = new HashMap<String, Object>(16);
+            Map<String, Object> addableMap = new HashMap<>(16);
             // 代录意见权限
             addableMap.put("addAgent", false);
             addableMap.put("addable", true);
@@ -302,7 +302,7 @@ public class OpinionServiceImpl implements OpinionService {
                 if (list.size() >= 1) {
                     addableMap.put("addable", true);
                     for (Opinion opinion : list) {
-                        Map<String, Object> map = new HashMap<String, Object>(16);
+                        Map<String, Object> map = new HashMap<>(16);
                         opinion.setContent(CommentUtil.replaceEnter2Br(opinion.getContent()));
                         map.put("date", sdf2.format(sdf.parse(opinion.getCreateDate())));
                         opinion.setModifyDate(sdf1.format(sdf.parse(opinion.getModifyDate())));
@@ -375,7 +375,7 @@ public class OpinionServiceImpl implements OpinionService {
                 if (StringUtils.isBlank(activitiUser)) {
                     addableMap.put("addable", false);
                     for (Opinion opinion : list) {
-                        Map<String, Object> map = new HashMap<String, Object>(16);
+                        Map<String, Object> map = new HashMap<>(16);
                         opinion.setContent(CommentUtil.replaceEnter2Br(opinion.getContent()));
                         if (!opinion.getCreateDate().equals(opinion.getModifyDate())) {
                             map.put("isEdit", true);
@@ -401,7 +401,7 @@ public class OpinionServiceImpl implements OpinionService {
                 TaskModel task = taskManager.findById(tenantId, taskId);
                 String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK);
                 for (Opinion opinion : list) {
-                    Map<String, Object> map = new HashMap<String, Object>(16);
+                    Map<String, Object> map = new HashMap<>(16);
                     opinion.setContent(CommentUtil.replaceEnter2Br(opinion.getContent()));
                     if (!opinion.getCreateDate().equals(opinion.getModifyDate())) {
                         map.put("isEdit", true);
@@ -504,7 +504,7 @@ public class OpinionServiceImpl implements OpinionService {
             } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue()) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())) {
                 addableMap.put("addable", false);
                 for (Opinion opinion : list) {
-                    Map<String, Object> map = new HashMap<String, Object>(16);
+                    Map<String, Object> map = new HashMap<>(16);
                     opinion.setContent(CommentUtil.replaceEnter2Br(opinion.getContent()));
                     if (!opinion.getCreateDate().equals(opinion.getModifyDate())) {
                         map.put("isEdit", true);
@@ -542,7 +542,7 @@ public class OpinionServiceImpl implements OpinionService {
                     e.printStackTrace();
                 }
                 for (Opinion opinion : list) {
-                    Map<String, Object> map = new HashMap<String, Object>(16);
+                    Map<String, Object> map = new HashMap<>(16);
                     opinion.setContent(CommentUtil.replaceEnter2Br(opinion.getContent()));
                     if (!opinion.getCreateDate().equals(opinion.getModifyDate())) {
                         map.put("isEdit", true);
@@ -600,19 +600,19 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void save(List<Opinion> entities) {
         opinionRepository.saveAll(entities);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void save(Opinion entity) {
         opinionRepository.save(entity);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Opinion saveOrUpdate(Opinion entity) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -714,7 +714,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void update(String processSerialNumber, String processInstanceId, String taskId) {
         opinionRepository.update(processInstanceId, taskId, processSerialNumber);
     }

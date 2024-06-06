@@ -48,9 +48,9 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     private final ItemMappingConfRepository itemMappingConfRepository;
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delete(String ids) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "删除成功");
         try {
@@ -116,7 +116,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
     @Override
     public Map<String, Object> list() {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             List<SpmApproveItem> itemList = spmApproveItemRepository.findAll();
             map.put("rows", itemList);
@@ -128,7 +128,7 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
 
     @Override
     public Map<String, Object> list(Integer page, Integer rows) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             PageRequest pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "createDate"));
             Page<SpmApproveItem> itemPage = spmApproveItemRepository.findAll(pageable);
@@ -143,9 +143,9 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> publishToSystemApp(String itemId) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
         try {
             SpmApproveItem item = this.findById(itemId);
@@ -189,9 +189,9 @@ public class SpmApproveItemServiceImpl implements SpmApproveItemService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> save(SpmApproveItem item) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "保存失败");
         try {

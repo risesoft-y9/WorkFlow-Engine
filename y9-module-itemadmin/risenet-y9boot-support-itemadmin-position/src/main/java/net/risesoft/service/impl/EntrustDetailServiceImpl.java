@@ -39,7 +39,7 @@ public class EntrustDetailServiceImpl implements EntrustDetailService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void save(String processInstanceId, String taskId, String ownerId, String assigneeId) {
         EntrustDetail entrustDetail = entrustDetailRepository.findByTaskId(taskId);
         if (null != entrustDetail) {

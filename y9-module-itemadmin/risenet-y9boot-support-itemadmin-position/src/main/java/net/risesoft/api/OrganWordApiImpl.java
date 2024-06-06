@@ -47,18 +47,16 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param common common
      * @param processSerialNumber 流程编号
      * @return Integer
-     * @throws Exception Exception
      */
     @Override
     @GetMapping(value = "/checkNumberStr", produces = MediaType.APPLICATION_JSON_VALUE)
     public Integer checkNumberStr(String tenantId, String userId, String characterValue, String custom, Integer year,
-        Integer numberTemp, String itemId, Integer common, String processSerialNumber) throws Exception {
+        Integer numberTemp, String itemId, Integer common, String processSerialNumber){
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Integer status = organWordService.checkNumberStr(characterValue, custom, year, numberTemp, itemId, common,
+        return organWordService.checkNumberStr(characterValue, custom, year, numberTemp, itemId, common,
             processSerialNumber);
-        return status;
     }
 
     /**
@@ -71,17 +69,15 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param processInstanceId 流程实例id
      * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
      * @return Map&lt;String, Object&gt;
-     * @throws Exception Exception
      */
     @Override
     @GetMapping(value = "/exist", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> exist(String tenantId, String userId, String custom, String processSerialNumber,
-        String processInstanceId, String itembox) throws Exception {
+        String processInstanceId, String itembox){
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = organWordService.exist(custom, processSerialNumber, processInstanceId, itembox);
-        return map;
+        return organWordService.exist(custom, processSerialNumber, processInstanceId, itembox);
     }
 
     /**
@@ -94,18 +90,15 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务定义key
      * @return List&lt;Map&lt;String, Object&gt;&gt;
-     * @throws Exception Exception
      */
     @Override
     @GetMapping(value = "/findByCustom", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> findByCustom(String tenantId, String userId, String custom, String itemId,
-        String processDefinitionId, String taskDefKey) throws Exception {
+        String processDefinitionId, String taskDefKey){
         Position position = positionApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPosition(position);
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> listMap =
-            organWordService.findByCustom(itemId, processDefinitionId, taskDefKey, custom);
-        return listMap;
+        return organWordService.findByCustom(itemId, processDefinitionId, taskDefKey, custom);
     }
 
     /**
@@ -119,17 +112,15 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param common common
      * @param itemId 事项id
      * @return Map&lt;String, Object&gt;
-     * @throws Exception Exception
      */
     @Override
     @GetMapping(value = "/getNumber", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getNumber(String tenantId, String userId, String custom, String characterValue,
-        Integer year, Integer common, String itemId) throws Exception {
+        Integer year, Integer common, String itemId){
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = organWordService.getNumber(custom, characterValue, year, common, itemId);
-        return map;
+        return organWordService.getNumber(custom, characterValue, year, common, itemId);
     }
 
     /**
@@ -143,16 +134,14 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param common common
      * @param itemId 事项id
      * @return Integer
-     * @throws Exception
      */
     @Override
     @GetMapping(value = "/getNumberOnly", produces = MediaType.APPLICATION_JSON_VALUE)
     public Integer getNumberOnly(String tenantId, String userId, String custom, String characterValue, Integer year,
-        Integer common, String itemId) throws Exception {
+        Integer common, String itemId){
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
-        Integer number = organWordService.getNumberOnly(custom, characterValue, year, common, itemId);
-        return number;
+        return organWordService.getNumberOnly(custom, characterValue, year, common, itemId);
     }
 }

@@ -38,7 +38,7 @@ public class CurrentDept extends AbstractDynamicRoleMember {
 
     @Override
     public List<OrgUnit> getOrgUnitList() {
-        List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
+        List<OrgUnit> orgUnitList = new ArrayList<>();
         orgUnitList.add(getDepartment());
         return orgUnitList;
     }

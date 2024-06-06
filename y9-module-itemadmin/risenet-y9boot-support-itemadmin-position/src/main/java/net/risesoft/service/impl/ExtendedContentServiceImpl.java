@@ -42,8 +42,8 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
     @Override
     public List<Map<String, Object>> contentList(String processSerialNumber, String taskId, String itembox,
         String category) {
-        List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
-        Map<String, Object> addableMap = new HashMap<String, Object>(16);
+        List<Map<String, Object>> resList = new ArrayList<>();
+        Map<String, Object> addableMap = new HashMap<>(16);
         addableMap.put("addable", true);
         addableMap.put("category", category);
         try {
@@ -54,7 +54,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
                 || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue())) {
                 if (list != null && list.size() > 0) {
                     for (ExtendedContent content : list) {
-                        Map<String, Object> map = new HashMap<String, Object>(16);
+                        Map<String, Object> map = new HashMap<>(16);
                         map.put("content", content);
                         map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(content.getModifyDate()));
                         map.put("editable", false);
@@ -70,7 +70,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
                 addableMap.put("addable", false);
                 if (list.size() > 0) {
                     for (ExtendedContent content : list) {
-                        Map<String, Object> map = new HashMap<String, Object>(16);
+                        Map<String, Object> map = new HashMap<>(16);
                         map.put("content", content);
                         map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(content.getModifyDate()));
                         map.put("editable", false);
@@ -86,9 +86,9 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delete(String id) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "删除成功");
         try {
@@ -148,7 +148,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Model newOrModifyContent(String processSerialNumber, String taskId, String category, String id,
         Model model) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -182,9 +182,9 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveOrUpdate(ExtendedContent content) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
             String id = content.getId();
@@ -225,7 +225,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void update(String processSerialNumber, String taskId) {
         try {
             extendedContentRepository.update(taskId, processSerialNumber);

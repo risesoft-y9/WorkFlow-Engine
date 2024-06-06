@@ -41,19 +41,20 @@ public class ItemLinkApiImpl implements ItemLink4PositionApi {
 
     /**
      * 获取事项链接列表
-     * @param tenantId 租户id
+     *
+     * @param tenantId   租户id
      * @param positionId 岗位id
-     * @param itemId 事项id
-     * @return
+     * @param itemId     事项id
+     * @return List<LinkInfoModel>
      */
     @Override
     public List<LinkInfoModel> getItemLinkList(@NotBlank String tenantId, @NotBlank String positionId, @NotBlank String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<LinkInfoModel> res_list = new ArrayList<LinkInfoModel>();
+        List<LinkInfoModel> res_list = new ArrayList<>();
         List<ItemLinkBind> list = itemLinkBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
         for (ItemLinkBind bind : list) {
             List<ItemLinkRole> roleList = itemLinkRoleRepository.findByItemLinkId(bind.getId());
-            if (roleList.size() == 0) {// 未配置角色，没权限
+            if (roleList.isEmpty()) {// 未配置角色，没权限
                 continue;
             }
             for (ItemLinkRole linkRole : roleList) {

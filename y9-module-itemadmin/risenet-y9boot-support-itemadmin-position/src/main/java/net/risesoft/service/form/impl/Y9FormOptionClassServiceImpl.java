@@ -1,6 +1,7 @@
 package net.risesoft.service.form.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9FormOptionClass;
 import net.risesoft.entity.form.Y9FormOptionValue;
@@ -24,6 +25,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -34,9 +36,9 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
     private final Y9FormOptionValueRepository y9FormOptionValueRepository;
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delOptionClass(String type) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         retMap.put(UtilConsts.SUCCESS, true);
         retMap.put("msg", "删除成功");
         try {
@@ -47,15 +49,15 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
         } catch (Exception e) {
             retMap.put(UtilConsts.SUCCESS, false);
             retMap.put("msg", "删除失败");
-            e.printStackTrace();
+            LOGGER.error("删除失败", e);
         }
         return retMap;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delOptionValue(String id) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         retMap.put(UtilConsts.SUCCESS, true);
         retMap.put("msg", "删除成功");
         try {
@@ -65,7 +67,7 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
         } catch (Exception e) {
             retMap.put(UtilConsts.SUCCESS, false);
             retMap.put("msg", "删除失败");
-            e.printStackTrace();
+            LOGGER.error("删除失败", e);
         }
         return retMap;
     }
@@ -100,10 +102,10 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
         return y9FormOptionValueRepository.findByTypeOrderByTabIndexAsc(type);
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Map<String, Object> saveOptionClass(Y9FormOptionClass optionClass) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         retMap.put(UtilConsts.SUCCESS, true);
         retMap.put("msg", "保存成功");
         try {
@@ -117,15 +119,15 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
         } catch (Exception e) {
             retMap.put(UtilConsts.SUCCESS, false);
             retMap.put("msg", "保存失败");
-            e.printStackTrace();
+            LOGGER.error("保存失败", e);
         }
         return retMap;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Map<String, Object> saveOptionValue(Y9FormOptionValue optionValue) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         retMap.put(UtilConsts.SUCCESS, true);
         retMap.put("msg", "保存成功");
         try {
@@ -154,15 +156,15 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
         } catch (Exception e) {
             retMap.put(UtilConsts.SUCCESS, false);
             retMap.put("msg", "保存失败");
-            e.printStackTrace();
+            LOGGER.error("保存失败", e);
         }
         return retMap;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveOrder(String ids) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         retMap.put(UtilConsts.SUCCESS, true);
         retMap.put("msg", "保存成功");
         try {
@@ -179,15 +181,15 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
         } catch (Exception e) {
             retMap.put(UtilConsts.SUCCESS, false);
             retMap.put("msg", "保存失败");
-            e.printStackTrace();
+            LOGGER.error("保存失败", e);
         }
         return retMap;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> updateOptionValue(String id) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         retMap.put(UtilConsts.SUCCESS, true);
         retMap.put("msg", "设置成功");
         try {
@@ -208,7 +210,7 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
         } catch (Exception e) {
             retMap.put(UtilConsts.SUCCESS, false);
             retMap.put("msg", "设置失败");
-            e.printStackTrace();
+            LOGGER.error("设置失败", e);
         }
         return retMap;
     }

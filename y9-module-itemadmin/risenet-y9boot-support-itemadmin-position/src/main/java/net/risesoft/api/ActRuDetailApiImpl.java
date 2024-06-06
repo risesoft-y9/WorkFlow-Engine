@@ -82,7 +82,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
         List<ActRuDetail> actRuDetailList =
                 actRuDetailService.findByProcessInstanceIdAndStatus(processInstanceId, status);
         List<ActRuDetailModel> modelList = new ArrayList<>();
-        ActRuDetailModel model = null;
+        ActRuDetailModel model;
         for (ActRuDetail actRuDetail : actRuDetailList) {
             model = new ActRuDetailModel();
             Y9BeanUtil.copyProperties(actRuDetail, model);
@@ -105,7 +105,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ActRuDetail> actRuDetailList = actRuDetailService.findByProcessSerialNumber(processSerialNumber);
         List<ActRuDetailModel> modelList = new ArrayList<>();
-        ActRuDetailModel model = null;
+        ActRuDetailModel model;
         for (ActRuDetail actRuDetail : actRuDetailList) {
             model = new ActRuDetailModel();
             Y9BeanUtil.copyProperties(actRuDetail, model);
@@ -150,7 +150,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
         List<ActRuDetail> actRuDetailList =
                 actRuDetailService.findByProcessSerialNumberAndStatus(processSerialNumber, status);
         List<ActRuDetailModel> modelList = new ArrayList<>();
-        ActRuDetailModel model = null;
+        ActRuDetailModel model;
         for (ActRuDetail actRuDetail : actRuDetailList) {
             model = new ActRuDetailModel();
             Y9BeanUtil.copyProperties(actRuDetail, model);
@@ -246,7 +246,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      */
     @Override
     @PostMapping(value = "/syncByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean syncByProcessInstanceId(@RequestParam @NotBlank String tenantId,@RequestParam @NotBlank String processInstanceId) {
+    public boolean syncByProcessInstanceId(@RequestParam @NotBlank String tenantId, @RequestParam @NotBlank String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return actRuDetailService.syncByProcessInstanceId(processInstanceId);
     }

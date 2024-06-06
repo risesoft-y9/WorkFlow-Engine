@@ -102,10 +102,8 @@ public class DocumentApiImpl implements Document4PositionApi {
         Y9LoginUserHolder.setPerson(person);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        Map<String, Object> returnMap = new HashMap<>(16);
-        returnMap = documentService.docUserChoise(itemId, processDefinitionKey, processDefinitionId, taskId,
+        return documentService.docUserChoise(itemId, processDefinitionKey, processDefinitionId, taskId,
                 routeToTask, processInstanceId);
-        return returnMap;
     }
 
     /**
@@ -127,9 +125,7 @@ public class DocumentApiImpl implements Document4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        Map<String, Object> returnMap = new HashMap<>(16);
-        returnMap = documentService.edit(itembox, taskId, processInstanceId, itemId, mobile);
-        return returnMap;
+        return documentService.edit(itembox, taskId, processInstanceId, itemId, mobile);
     }
 
     /**
@@ -158,7 +154,7 @@ public class DocumentApiImpl implements Document4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map;
         if (StringUtils.isBlank(processInstanceId) || UtilConsts.NULL.equals(processInstanceId)) {
             map = documentService.saveAndForwarding(itemId, processSerialNumber, processDefinitionKey, userChoice,
                     sponsorGuid, routeToTaskId, variables);
@@ -187,7 +183,7 @@ public class DocumentApiImpl implements Document4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map;
         if (StringUtils.isBlank(taskId) || UtilConsts.NULL.equals(taskId)) {
             map = documentService.saveAndSubmitTo(itemId, processSerialNumber);
         } else {
@@ -224,7 +220,7 @@ public class DocumentApiImpl implements Document4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map;
         if (StringUtils.isBlank(processInstanceId) || UtilConsts.NULL.equals(processInstanceId)) {
             map = documentService.saveAndForwardingByTaskKey(itemId, processSerialNumber, processDefinitionKey,
                     userChoice, sponsorGuid, routeToTaskId, startRouteToTaskId, variables);
@@ -267,12 +263,11 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @param processSerialNumber  流程编号
      * @param processDefinitionKey 流程定义key
      * @return Map&lt;String, Object&gt;
-     * @throws Exception Exception
      */
     @Override
     @PostMapping(value = "/startProcess", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> startProcess(String tenantId, String positionId, String itemId,
-                                            String processSerialNumber, String processDefinitionKey) throws Exception {
+                                            String processSerialNumber, String processDefinitionKey){
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -289,12 +284,11 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @param processDefinitionKey 流程定义key
      * @param positionIds          岗位ids
      * @return Map<String, Object>
-     * @throws Exception
      */
     @Override
     @PostMapping(value = "/startProcess1", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> startProcess(String tenantId, String positionId, String itemId,
-                                            String processSerialNumber, String processDefinitionKey, String positionIds) throws Exception {
+                                            String processSerialNumber, String processDefinitionKey, String positionIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);

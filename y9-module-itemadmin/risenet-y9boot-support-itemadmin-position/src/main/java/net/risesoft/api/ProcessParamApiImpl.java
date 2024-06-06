@@ -35,7 +35,7 @@ public class ProcessParamApiImpl implements ProcessParamApi {
      * @param processInstanceId 流程实例Id
      */
     @Override
-    @PostMapping(value = "/deleteByPprocessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/deleteByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public void deleteByPprocessInstanceId(String tenantId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         processParamService.deleteByPprocessInstanceId(processInstanceId);
@@ -86,8 +86,6 @@ public class ProcessParamApiImpl implements ProcessParamApi {
      *
      * @param tenantId 租户ID
      * @param processParam 流程数据对象
-     * @return
-     * @throws Exception
      */
     @Override
     @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,

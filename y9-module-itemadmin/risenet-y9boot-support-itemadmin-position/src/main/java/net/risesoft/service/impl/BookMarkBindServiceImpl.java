@@ -29,7 +29,7 @@ public class BookMarkBindServiceImpl implements BookMarkBindService {
     private final BookMarkBindRepository bookMarkBindRepository;
 
     @Override
-    @Transactional()
+    @Transactional
     public void deleteBind(String wordTemplateId, String bookMarkName) {
         bookMarkBindRepository.deleteByWordTemplateIdAndBookMarkName(wordTemplateId, bookMarkName);
 
@@ -51,7 +51,7 @@ public class BookMarkBindServiceImpl implements BookMarkBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveOrUpdate(BookMarkBind bookMarkBind) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

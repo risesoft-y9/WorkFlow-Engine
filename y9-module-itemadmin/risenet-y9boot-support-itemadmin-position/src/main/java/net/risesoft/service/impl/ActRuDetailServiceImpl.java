@@ -1,6 +1,7 @@
 package net.risesoft.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.IdentityApi;
@@ -36,6 +37,7 @@ import java.util.List;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -56,7 +58,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     private final DepartmentApi departmentManager;
 
     @Override
-    @Transactional()
+    @Transactional
     public void copy(String oldProcessSerialNumber, String newProcessSerialNumber, String newProcessInstanceId) {
         try {
             ProcessParam processParam = processParamService.findByProcessSerialNumber(newProcessSerialNumber);
@@ -64,7 +66,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             SpmApproveItem item = itemService.findById(itemId);
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(oldProcessSerialNumber);
             List<ActRuDetail> listTemp = new ArrayList<>();
-            ActRuDetail neward = null;
+            ActRuDetail neward;
             for (ActRuDetail actRuDetail : list) {
                 neward = new ActRuDetail();
                 Y9BeanUtil.copyProperties(actRuDetail, neward);
@@ -80,31 +82,31 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             }
             actRuDetailRepository.saveAll(listTemp);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Copy act_ru_detail error", e);
         }
     }
 
     @Override
     public int countBySystemNameAndAssignee(String systemName, String assignee) {
         return actRuDetailRepository
-            .countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(systemName, assignee);
+                .countBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(systemName, assignee);
     }
 
     @Override
     public int countBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status) {
-        int count = 0;
+        int count;
         if (0 == status) {
             count = actRuDetailRepository.countBySystemNameAndAssigneeAndStatusAndDeletedFalse(systemName, assignee,
-                status);
+                    status);
         } else {
             count = actRuDetailRepository.countBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(systemName,
-                assignee, status);
+                    assignee, status);
         }
         return count;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean deletedByProcessSerialNumber(String processSerialNumber) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
@@ -116,13 +118,13 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             actRuDetailRepository.saveAll(listTemp);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Delete act_ru_detail error", e);
         }
         return false;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean endByProcessInstanceId(String processInstanceId) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(processInstanceId);
@@ -134,13 +136,13 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             actRuDetailRepository.saveAll(listTemp);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("End act_ru_detail error", e);
         }
         return false;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean endByProcessSerialNumber(String processSerialNumber) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
@@ -153,7 +155,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             actRuDetailRepository.saveAll(listTemp);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("End act_ru_detail error", e);
         }
         return false;
     }
@@ -191,35 +193,34 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     @Override
     public List<ActRuDetail> findByProcessSerialNumberAndStatus(String processSerialNumber, int status) {
         return actRuDetailRepository.findByProcessSerialNumberAndStatusOrderByCreateTimeAsc(processSerialNumber,
-            status);
+                status);
     }
 
     @Override
     public Page<ActRuDetail> findBySystemNameAndAssigneeAndEndedTrue(String systemName, String assignee, int rows,
-        int page, Sort sort) {
+                                                                     int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        Page<ActRuDetail> pageList = actRuDetailRepository
-            .findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(systemName, assignee, pageable);
-        return pageList;
+        return actRuDetailRepository
+                .findBySystemNameAndAssigneeAndEndedTrueAndDeletedFalseAndPlaceOnFileFalse(systemName, assignee, pageable);
     }
 
     @Override
     public Page<ActRuDetail> findBySystemNameAndAssigneeAndStatus(String systemName, String assignee, int status,
-        int rows, int page, Sort sort) {
+                                                                  int rows, int page, Sort sort) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        Page<ActRuDetail> pageList = null;
+        Page<ActRuDetail> pageList;
         if (0 == status) {
             pageList = actRuDetailRepository.findBySystemNameAndAssigneeAndStatusAndDeletedFalse(systemName, assignee,
-                status, pageable);
+                    status, pageable);
         } else {
             pageList = actRuDetailRepository.findBySystemNameAndAssigneeAndStatusAndEndedFalseAndDeletedFalse(
-                systemName, assignee, status, pageable);
+                    systemName, assignee, status, pageable);
         }
         return pageList;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean placeOnFileByProcessSerialNumber(String processSerialNumber) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
@@ -232,13 +233,13 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             actRuDetailRepository.saveAll(listTemp);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Place on file act_ru_detail error", e);
         }
         return false;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean recoveryByProcessInstanceId(String processInstanceId) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(processInstanceId);
@@ -250,13 +251,13 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             actRuDetailRepository.saveAll(listTemp);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Recovery act_ru_detail error", e);
         }
         return false;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean recoveryTodoByProcessSerialNumber(String processSerialNumber, String todoPersonId) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
@@ -276,55 +277,55 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             actRuDetailRepository.saveAll(listTemp);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Recovery todo act_ru_detail error", e);
         }
         return false;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean removeByProcessInstanceId(String processInstanceId) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(processInstanceId);
             actRuDetailRepository.deleteAll(list);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Remove act_ru_detail error", e);
         }
         return false;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean removeByProcessSerialNumber(String processSerialNumber) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
             actRuDetailRepository.deleteAll(list);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Remove act_ru_detail error", e);
         }
         return false;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean removeByProcessSerialNumberAndAssignee(String processSerialNumber, String assignee) {
         try {
             ActRuDetail actRuDetail =
-                actRuDetailRepository.findByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
+                    actRuDetailRepository.findByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
             if (null != actRuDetail) {
                 actRuDetailRepository.delete(actRuDetail);
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Remove act_ru_detail error", e);
         }
         return false;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean revokePlaceOnFileByProcessSerialNumber(String processSerialNumber, String todoPersonId) {
         try {
             List<ActRuDetail> list = actRuDetailRepository.findByProcessSerialNumber(processSerialNumber);
@@ -345,13 +346,13 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             actRuDetailRepository.saveAll(listTemp);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Revoke place on file act_ru_detail error", e);
         }
         return false;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean saveOrUpdate(ActRuDetail actRuDetail) {
         String processSerialNumber = actRuDetail.getProcessSerialNumber();
         String assignee = actRuDetail.getAssignee();
@@ -370,7 +371,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             }
 
             Department dept =
-                departmentManager.get(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
+                    departmentManager.get(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
             ActRuDetail newActRuDetail = new ActRuDetail();
             newActRuDetail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             newActRuDetail.setProcessSerialNumber(actRuDetail.getProcessSerialNumber());
@@ -396,34 +397,33 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             actRuDetailRepository.save(newActRuDetail);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Save or update act_ru_detail error", e);
         }
         return false;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean syncByProcessInstanceId(String processInstanceId) {
         try {
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             String systemName = processParam.getSystemName(), tenantId = Y9LoginUserHolder.getTenantId();
             List<HistoricTaskInstanceModel> htiList =
-                historicTaskManager.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, "");
-            ActRuDetail actRuDetail = null;
-            String assignee = null;
-            String owner = null;
-            TaskModel taskTemp = null;
+                    historicTaskManager.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, "");
+            ActRuDetail actRuDetail;
+            String assignee, owner;
+            TaskModel taskTemp;
             for (HistoricTaskInstanceModel hti : htiList) {
                 actRuDetail = new ActRuDetail();
                 assignee = hti.getAssignee();
                 if (StringUtils.isNotBlank(assignee)) {
-                    /**
+                    /*
                      * 1owner不为空，是恢复待办且恢复的人员不是办理人员的情况，要取出owner,并保存
                      * owner的Status为1，并判断当前taskId是不是正在运行，正在运行的话assignee的Status为0否则为1(因为恢复待办的时候，没有把历史任务的结束时间设为null)
                      */
                     owner = hti.getOwner();
                     if (StringUtils.isNotBlank(owner)) {
-                        /** 先保存owner */
+                        /* 先保存owner */
                         actRuDetail.setAssignee(owner);
                         actRuDetail.setLastTime(hti.getEndTime());
                         actRuDetail.setProcessDefinitionKey(hti.getProcessDefinitionId().split(":")[0]);
@@ -435,7 +435,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                         actRuDetail.setEnded(false);
                         this.saveOrUpdate(actRuDetail);
 
-                        /** 再保存assignee */
+                        /* 再保存assignee */
                         taskTemp = taskManager.findById(tenantId, hti.getId());
                         if (null != taskTemp) {
                             actRuDetail.setStatus(0);
@@ -450,7 +450,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                         actRuDetail.setTaskId(hti.getId());
                         this.saveOrUpdate(actRuDetail);
                     } else {
-                        /**
+                        /*
                          * 2assignee不为null也有可能是恢复待办的人员是当前任务的办理人，这个时候要查出当前任务是否正在运行，正在运行
                          * Status为0，lastTime为null;当前任务不存在，Status为1，，lastTime为endTime
                          */
@@ -469,7 +469,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                         this.saveOrUpdate(actRuDetail);
                     }
                 } else {
-                    /** 2办理人为空，说明是区长办件，可以从历史的参与人查找对应任务的办理人 */
+                    /* 2办理人为空，说明是区长办件，可以从历史的参与人查找对应任务的办理人 */
                     taskTemp = taskManager.findById(tenantId, hti.getId());
                     if (null != taskTemp) {
                         actRuDetail.setStatus(0);
@@ -482,7 +482,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                     try {
                         identityLinkList = identityManager.getIdentityLinksForTask(tenantId, hti.getId());
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("Get identity links for task error", e);
                     }
                     for (IdentityLinkModel il : identityLinkList) {
                         if (StringUtils.isNotBlank(il.getUserId()) && "assignee".equals(il.getType())) {
@@ -499,7 +499,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Sync act_ru_detail error", e);
         }
         return false;
     }

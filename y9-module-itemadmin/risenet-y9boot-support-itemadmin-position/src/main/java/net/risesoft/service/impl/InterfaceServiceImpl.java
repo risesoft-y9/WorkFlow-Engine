@@ -141,7 +141,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeInterface(String id) {
         interfaceInfoRepository.deleteById(id);
         interfaceRequestParamsRepository.deleteByInterfaceId(id);
@@ -149,7 +149,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeReqParams(String[] ids) {
         for (String id : ids) {
             interfaceRequestParamsRepository.deleteById(id);
@@ -157,7 +157,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeResParams(String[] ids) {
         for (String id : ids) {
             interfaceResponseParamsRepository.deleteById(id);
@@ -166,7 +166,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     @SuppressWarnings("unchecked")
     @Override
-    @Transactional()
+    @Transactional
     public void saveAllResponseParams(String interfaceId, String jsonData) {
         Map<String, Object> map = Y9JsonUtil.readValue(jsonData, Map.class);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -185,7 +185,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveInterfaceInfo(InterfaceInfo info) {
         String id = info.getId();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -212,7 +212,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveRequestParams(InterfaceRequestParams info) {
         String id = info.getId();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -237,7 +237,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveResponseParams(InterfaceResponseParams info) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = info.getId();

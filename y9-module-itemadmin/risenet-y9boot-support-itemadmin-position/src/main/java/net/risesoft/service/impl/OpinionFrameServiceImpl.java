@@ -94,7 +94,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void remove(String id) {
         OpinionFrame opinionFrame = this.findOne(id);
         if (opinionFrame != null) {
@@ -106,7 +106,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void remove(String[] ids) {
         for (String id : ids) {
             this.remove(id);
@@ -115,13 +115,13 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public OpinionFrame save(OpinionFrame opinionFrame) {
         return opinionFrameRepository.save(opinionFrame);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public OpinionFrame saveOrUpdate(OpinionFrame opinionFrame) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

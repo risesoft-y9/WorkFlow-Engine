@@ -37,7 +37,7 @@ public class CommonOpt {
         if (users.size() == 1) {
             user = users.get(0);
         }
-        Map<String, Object> varMap = new HashMap<String, Object>(16);
+        Map<String, Object> varMap = new HashMap<>(16);
         varMap.put(SysVariables.TASKSENDERID, taskSenderId);
         varMap.put(SysVariables.TASKSENDER, taskSender);
         if (StringUtils.isNotBlank(routeToTaskId)) {
@@ -86,7 +86,7 @@ public class CommonOpt {
                 e.printStackTrace();
             }
         }
-        Map<String, Object> varMap = new HashMap<String, Object>(16);
+        Map<String, Object> varMap = new HashMap<>(16);
         varMap.put(SysVariables.TASKSENDERID, taskSenderId);
         varMap.put(SysVariables.TASKSENDER, taskSender);
         if (StringUtils.isNotBlank(routeToTaskId)) {

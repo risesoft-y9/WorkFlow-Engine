@@ -57,7 +57,7 @@ public class WordTemplateRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/bookMarKList")
-    public Y9Result<List<Map<String, Object>>> bookMarkList(String wordTemplateId, @RequestParam(required = true) String wordTemplateType) {
+    public Y9Result<List<Map<String, Object>>> bookMarkList(String wordTemplateId, @RequestParam String wordTemplateType) {
         Map<String, Object> map = wordTemplateService.getBookMarkList(wordTemplateId, wordTemplateType);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.success((List<Map<String, Object>>)map.get("rows"), (String)map.get("msg"));
@@ -72,7 +72,7 @@ public class WordTemplateRestController {
      * @return
      */
     @RequestMapping(value = "/deleteWordTemplate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteWordTemplate(@RequestParam(required = true) String id) {
+    public Y9Result<String> deleteWordTemplate(@RequestParam String id) {
         Map<String, Object> map = wordTemplateService.deleteWordTemplate(id);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg((String)map.get("msg"));
@@ -83,12 +83,12 @@ public class WordTemplateRestController {
     /**
      * 下载模板
      *
-     * @param id
-     * @param response
-     * @param request
+     * @param id 模板id
+     * @param response 响应
+     * @param request 请求
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam(required = true) String id, HttpServletResponse response, HttpServletRequest request) {
+    public void download(@RequestParam String id, HttpServletResponse response, HttpServletRequest request) {
         wordTemplateService.download(id, response, request);
     }
 
@@ -101,10 +101,10 @@ public class WordTemplateRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getBookMarkBind", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBookMarkBind(@RequestParam(required = true) String bookMarkName, @RequestParam(required = true) String wordTemplateId) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+    public Y9Result<Map<String, Object>> getBookMarkBind(@RequestParam String bookMarkName, @RequestParam String wordTemplateId) {
+        Map<String, Object> resMap = new HashMap<>(16);
         List<Y9Table> tableList = y9TableService.getAllTable();
-        List<String> columnList = new ArrayList<String>();
+        List<String> columnList = new ArrayList<>();
         BookMarkBind bookMarkBind = bookMarkBindService.findByWordTemplateIdAndBookMarkName(wordTemplateId, bookMarkName);
         if (null != bookMarkBind) {
             String tableId = "";
@@ -113,7 +113,7 @@ public class WordTemplateRestController {
                     tableId = table.getId();
                 }
             }
-            if (!tableId.equals("")) {
+            if (!tableId.isEmpty()) {
                 Map<String, Object> map = y9TableFieldService.getFieldList(tableId);
                 List<Y9TableField> fieldList = (List<Y9TableField>)map.get("rows");
                 for (Y9TableField field : fieldList) {
@@ -135,7 +135,7 @@ public class WordTemplateRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<String>> getColumns(@RequestParam(required = true) String tableId) {
+    public Y9Result<List<String>> getColumns(@RequestParam String tableId) {
         List<String> columnList = new ArrayList<>();
         Map<String, Object> map = y9TableFieldService.getFieldList(tableId);
         List<Y9TableField> fieldList = (List<Y9TableField>)map.get("rows");
@@ -170,15 +170,15 @@ public class WordTemplateRestController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String personId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<WordTemplate> list = new ArrayList<>();
+        List<WordTemplate> list;
         if (person.isGlobalManager()) {
             list = wordTemplateService.findAll();
         } else {
             list = wordTemplateService.findByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
         }
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         for (WordTemplate wordTemplate : list) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", wordTemplate.getId());
             map.put("fileName", wordTemplate.getFileName());
             map.put("fileSize", wordTemplate.getFileSize());

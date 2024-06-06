@@ -7,7 +7,6 @@ import net.risesoft.service.BookMarkBindService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -28,11 +27,11 @@ public class BookMarkBindRestController {
      *
      * @param wordTemplateId 模板id
      * @param bookMarkName 书签名称
-     * @return
+     * @return  Y9Result<String>
      */
     @RequestMapping(value = "/deleteBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteBind(@RequestParam(required = true) String wordTemplateId,
-        @RequestParam(required = true) String bookMarkName) {
+    public Y9Result<String> deleteBind(@RequestParam String wordTemplateId,
+        @RequestParam String bookMarkName) {
         bookMarkBindService.deleteBind(wordTemplateId, bookMarkName);
         return Y9Result.successMsg("删除成功");
     }
@@ -41,7 +40,7 @@ public class BookMarkBindRestController {
      * 保存书签绑定
      *
      * @param bookMarkBind 绑定信息
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(BookMarkBind bookMarkBind) {

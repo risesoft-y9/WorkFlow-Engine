@@ -36,7 +36,7 @@ public class DynamicRoleServiceImpl implements DynamicRoleService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeDynamicRoles(String[] dynamicRoleIds) {
         for (String id : dynamicRoleIds) {
             dynamicRoleRepository.deleteById(id);
@@ -44,7 +44,7 @@ public class DynamicRoleServiceImpl implements DynamicRoleService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public DynamicRole saveOrUpdate(DynamicRole dynamicRole) {
         String id = dynamicRole.getId();
         if (StringUtils.isNotEmpty(id)) {

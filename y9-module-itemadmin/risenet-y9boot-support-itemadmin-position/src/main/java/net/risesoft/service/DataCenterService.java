@@ -174,7 +174,7 @@ public class DataCenterService {
      * @return
      */
     public Map<String, Object> historyExcel(String processSerialNumber, String processInstanceId) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         String undertaker = "";
         String userIds = "";
         retMap.put("undertaker", undertaker);

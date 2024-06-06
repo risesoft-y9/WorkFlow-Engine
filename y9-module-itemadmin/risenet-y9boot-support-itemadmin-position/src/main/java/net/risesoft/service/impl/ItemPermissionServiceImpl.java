@@ -58,7 +58,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     private final OrgUnitApi orgUnitManager;
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyPerm(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
@@ -98,7 +98,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void delete(String id) {
         itemPermissionRepository.deleteById(id);
     }
@@ -174,7 +174,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemPermission> objectPermList =
             findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("existPosition", false);
         map.put("existDepartment", false);
         for (ItemPermission o : objectPermList) {
@@ -229,7 +229,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemPermission> objectPermList =
             findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         boolean existDepartment = false;
         boolean existPosition = false;
         for (ItemPermission o : objectPermList) {
@@ -273,7 +273,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removePerm(String itemId, String processDefinitionId) {
         List<ItemPermission> ipList =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
@@ -281,7 +281,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public ItemPermission save(String itemId, String processDefinitionId, String taskDefKey, String roleId,
         Integer roleType) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

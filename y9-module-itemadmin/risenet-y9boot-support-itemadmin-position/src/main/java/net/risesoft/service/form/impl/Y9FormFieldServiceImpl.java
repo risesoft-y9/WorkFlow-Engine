@@ -1,6 +1,7 @@
 package net.risesoft.service.form.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.id.IdType;
@@ -22,6 +23,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -50,7 +52,7 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveOrUpdate(Y9FormField formField) {
         Map<String, Object> map = new HashMap<>(16);
         try {
@@ -82,7 +84,7 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "保存失败");
-            e.printStackTrace();
+            LOGGER.error("保存表单字段失败", e);
         }
         return map;
     }
@@ -94,7 +96,7 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> deleteFormFieldBind(String id) {
         Map<String, Object> map = new HashMap<>(16);
         try {
@@ -102,9 +104,9 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "删除表单绑定字段成功");
         } catch (Exception e) {
-            e.printStackTrace();
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "删除表单绑定字段失败");
+            LOGGER.error("删除表单绑定字段失败", e);
         }
         return map;
     }

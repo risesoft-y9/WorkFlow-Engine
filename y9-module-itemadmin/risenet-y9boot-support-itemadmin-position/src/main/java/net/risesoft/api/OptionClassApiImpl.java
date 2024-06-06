@@ -41,9 +41,9 @@ public class OptionClassApiImpl implements OptionClassApi {
     public List<Map<String, Object>> getOptionValueList(String tenantId, String type) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Y9FormOptionValue> list = y9FormOptionClassService.findByTypeOrderByTabIndexAsc(type);
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         for (Y9FormOptionValue option : list) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("code", option.getCode());
             map.put("name", option.getName());
             map.put("defaultSelected", option.getDefaultSelected());

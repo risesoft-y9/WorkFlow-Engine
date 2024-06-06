@@ -1,6 +1,7 @@
 package net.risesoft.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.entity.CustomProcessInfo;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -20,6 +21,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -42,7 +44,7 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("getCurrentTaskNextNode error", e);
             return null;
         }
         return null;
@@ -50,7 +52,7 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
 
     @SuppressWarnings("unchecked")
     @Override
-    @Transactional()
+    @Transactional
     public boolean saveOrUpdate(String itemId, String processSerialNumber, List<Map<String, Object>> taskList) {
         try {
             int i = 1;
@@ -74,7 +76,7 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
                 }
                 info.setOrgId(orgId);
                 if (i == 1) {
-                    /**
+                    /*
                      * 第一个节点，设置成当前运行节点
                      */
                     info.setCurrentTask(true);
@@ -84,14 +86,14 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
                 i++;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("saveOrUpdate error", e);
             return false;
         }
         return true;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean updateCurrentTask(String processSerialNumber) {
         try {
             List<CustomProcessInfo> taskList =
@@ -103,7 +105,7 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
                     customProcessInfoRepository.save(info);
                     break;
                 }
-                /**
+                /*
                  * 找到当前运行节点,设为false,下次循环更新下一个节点结束
                  */
                 if (info.getCurrentTask()) {
@@ -113,7 +115,7 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("updateCurrentTask error", e);
             return false;
         }
         return true;

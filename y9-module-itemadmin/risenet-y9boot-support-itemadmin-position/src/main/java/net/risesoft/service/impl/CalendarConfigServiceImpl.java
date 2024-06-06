@@ -20,7 +20,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -38,9 +37,9 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
     private final CalendarConfigRepository calendarConfigRepository;
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delCalendar(String startDate) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("message", "删除成功");
         map.put(UtilConsts.SUCCESS, true);
         try {
@@ -52,42 +51,42 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                 String everyYearHoliday = calendarConfig.getEveryYearHoliday();
 
                 List<String> workingDay2HolidayList = StringUtils.isNotBlank(workingDay2Holiday)
-                    ? new ArrayList<String>(Arrays.asList(workingDay2Holiday.split(","))) : new ArrayList<String>();
+                    ? new ArrayList<>(Arrays.asList(workingDay2Holiday.split(","))) : new ArrayList<>();
                 List<String> weekend2WorkingDayList = StringUtils.isNotBlank(weekend2WorkingDay)
-                    ? new ArrayList<String>(Arrays.asList(weekend2WorkingDay.split(","))) : new ArrayList<String>();
+                    ? new ArrayList<>(Arrays.asList(weekend2WorkingDay.split(","))) : new ArrayList<>();
                 List<String> everyYearHolidayList = StringUtils.isNotBlank(everyYearHoliday)
-                    ? new ArrayList<String>(Arrays.asList(everyYearHoliday.split(","))) : new ArrayList<String>();
-                /**
+                    ? new ArrayList<>(Arrays.asList(everyYearHoliday.split(","))) : new ArrayList<>();
+                /*
                  * 删除休假
                  */
                 if (workingDay2HolidayList.contains(startDate)) {
                     if (workingDay2HolidayList.contains(startDate)) {
-                        /**
+                        /*
                          * 若有，删除日期
                          */
                         workingDay2HolidayList = this.remove(workingDay2HolidayList, startDate);
                     }
-                    /**
+                    /*
                      * 如不是周末，删除休假，需从全年节假日期中删除
                      */
                     if (!isWeekend(startDate)) {
                         if (everyYearHolidayList.contains(startDate)) {
-                            /**
+                            /*
                              * 若有，删除日期
                              */
                             everyYearHolidayList = this.remove(everyYearHolidayList, startDate);
                         }
                     }
                 }
-                /**
+                /*
                  * 删除补班
                  */
                 if (weekend2WorkingDayList.contains(startDate)) {
-                    /**
+                    /*
                      * 若有，删除补班日期
                      */
                     weekend2WorkingDayList = this.remove(weekend2WorkingDayList, startDate);
-                    /**
+                    /*
                      * 如是周末，删除补班，需添加至全年节假日期中
                      */
                     if (isWeekend(startDate)) {
@@ -95,11 +94,11 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                             everyYearHolidayList.add(startDate);
                         }
                     } else {
-                        /**
+                        /*
                          * 如不是周末，删除补班，需从全年节假日期中删除
                          */
                         if (everyYearHolidayList.contains(startDate)) {
-                            /**
+                            /*
                              * 若有，删除日期
                              */
                             everyYearHolidayList = this.remove(everyYearHolidayList, startDate);
@@ -118,7 +117,7 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
         } catch (Exception e) {
             map.put("message", "删除失败");
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("删除失败", e);
         }
         return map;
     }
@@ -130,7 +129,7 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
 
     @Override
     public List<Map<String, Object>> getCalendar(String month) {
-        List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> resList = new ArrayList<>();
         try {
             String[] str = month.split("-");
             CalendarConfig calendarConfig = calendarConfigRepository.findByYear(str[0]);
@@ -140,7 +139,7 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                 if (StringUtils.isNotBlank(weekend2WorkingDay)) {
                     String[] list = weekend2WorkingDay.split(",");
                     for (String date : list) {
-                        Map<String, Object> map = new HashMap<String, Object>(16);
+                        Map<String, Object> map = new HashMap<>(16);
                         map.put("date", date);
                         map.put("type", 2);
                         resList.add(map);
@@ -149,7 +148,7 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                 if (StringUtils.isNotBlank(workingDay2Holiday)) {
                     String[] list1 = workingDay2Holiday.split(",");
                     for (String date : list1) {
-                        Map<String, Object> map = new HashMap<String, Object>(16);
+                        Map<String, Object> map = new HashMap<>(16);
                         map.put("date", date);
                         map.put("type", 1);
                         resList.add(map);
@@ -157,7 +156,7 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取日历失败", e);
         }
         return resList;
     }
@@ -165,15 +164,15 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
     /**
      * 获取一年所有的周末
      *
-     * @return
+     * @return List<String>
      */
     public List<String> getYearHoliday(String years) {
         // 返回的日期集合
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        List<String> days = new ArrayList<String>();
+        List<String> days = new ArrayList<>();
         try {
-            int year = Integer.valueOf(years);
-            Calendar calendar = new GregorianCalendar(year, 0, 1);
+            int year = Integer.parseInt(years);
+            Calendar calendar = new GregorianCalendar(year, Calendar.JANUARY, 1);
             int i = 1;
             while (calendar.get(Calendar.YEAR) < year + 1) {
                 calendar.set(Calendar.WEEK_OF_YEAR, i++);
@@ -189,7 +188,7 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取一年所有的周末失败", e);
         }
         return days;
     }
@@ -199,36 +198,25 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
         Date bdate = sdf.parse(date);
         Calendar cal = Calendar.getInstance();
         cal.setTime(bdate);
-        if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-            return true;
-        } else {
-            return false;
-        }
-
+        return cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY;
     }
 
     public List<String> remove(List<String> list, String date) {
-        Iterator<String> iterator = list.iterator();
-        while (iterator.hasNext()) {
-            String str = iterator.next();
-            if (date.equals(str)) {
-                iterator.remove();
-            }
-        }
+        list.removeIf(date::equals);
         return list;
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveCalendar(String startDate, Integer type) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("message", "保存成功");
         map.put(UtilConsts.SUCCESS, true);
         try {
             String year = startDate.split("-")[0];
             CalendarConfig calendarConfig = calendarConfigRepository.findByYear(year);
             if (calendarConfig == null) {
-                List<String> yearHoliday = new ArrayList<String>();
+                List<String> yearHoliday;
                 yearHoliday = this.getYearHoliday(year);
                 calendarConfig = new CalendarConfig();
                 calendarConfig.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -246,9 +234,9 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                 }
                 // 获取前一年的配置
                 CalendarConfig calendarConfig0 =
-                    calendarConfigRepository.findByYear(String.valueOf((Integer.valueOf(year) - 1)));
+                    calendarConfigRepository.findByYear(String.valueOf((Integer.parseInt(year) - 1)));
                 String yearHolidayStr = StringUtils.join(yearHoliday, ",");
-                /**
+                /*
                  * 每年休假日期累加,方便跨年计算
                  */
                 if (calendarConfig0 != null) {
@@ -262,12 +250,12 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                 String everyYearHoliday = calendarConfig.getEveryYearHoliday();
 
                 List<String> workingDay2HolidayList = StringUtils.isNotBlank(workingDay2Holiday)
-                    ? new ArrayList<String>(Arrays.asList(workingDay2Holiday.split(","))) : new ArrayList<String>();
+                    ? new ArrayList<>(Arrays.asList(workingDay2Holiday.split(","))) : new ArrayList<>();
                 List<String> weekend2WorkingDayList = StringUtils.isNotBlank(weekend2WorkingDay)
-                    ? new ArrayList<String>(Arrays.asList(weekend2WorkingDay.split(","))) : new ArrayList<String>();
+                    ? new ArrayList<>(Arrays.asList(weekend2WorkingDay.split(","))) : new ArrayList<>();
                 List<String> everyYearHolidayList = StringUtils.isNotBlank(everyYearHoliday)
-                    ? new ArrayList<String>(Arrays.asList(everyYearHoliday.split(","))) : new ArrayList<String>();
-                /**
+                    ? new ArrayList<>(Arrays.asList(everyYearHoliday.split(","))) : new ArrayList<>();
+                /*
                  * 休假
                  */
                 if (type == 1) {
@@ -304,7 +292,7 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
         } catch (Exception e) {
             map.put("message", "保存失败");
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("保存失败", e);
         }
         return map;
     }
@@ -322,11 +310,10 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                 oldcc.setYear(calendarConfig.getYear());
 
                 calendarConfigRepository.save(oldcc);
-                return;
             } else {
                 calendarConfigRepository.save(calendarConfig);
-                return;
             }
+            return;
         }
 
         CalendarConfig newcc = new CalendarConfig();
@@ -336,6 +323,5 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
         newcc.setWorkingDay2Holiday(calendarConfig.getWorkingDay2Holiday());
         newcc.setYear(calendarConfig.getYear());
         calendarConfigRepository.save(newcc);
-        return;
     }
 }

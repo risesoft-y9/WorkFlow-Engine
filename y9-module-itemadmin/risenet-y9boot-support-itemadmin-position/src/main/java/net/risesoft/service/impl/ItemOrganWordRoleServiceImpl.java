@@ -48,7 +48,7 @@ public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void remove(String[] ids) {
         for (String id : ids) {
             itemOrganWordRoleRepository.deleteById(id);
@@ -56,14 +56,14 @@ public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeByItemOrganWordBindId(String itemOrganWordBindId) {
         List<ItemOrganWordRole> roleList = itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
         itemOrganWordRoleRepository.deleteAll(roleList);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public ItemOrganWordRole saveOrUpdate(String itemOrganWordBindId, String roleId) {
         ItemOrganWordRole role =
             itemOrganWordRoleRepository.findByItemOrganWordBindIdAndRoleId(itemOrganWordBindId, roleId);

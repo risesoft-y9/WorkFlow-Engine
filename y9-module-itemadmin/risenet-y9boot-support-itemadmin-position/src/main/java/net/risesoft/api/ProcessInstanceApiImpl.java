@@ -36,7 +36,7 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
      * 删除协作状态
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return
+     * @return boolean
      */
     @Override
     @PostMapping(value = "/deleteProcessInstance", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,7 +52,7 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
      * @param title 标题或文号
      * @param page 页码
      * @param rows 条数
-     * @return
+     * @return Map<String, Object>
      */
     @Override
     @GetMapping(value = "/processInstanceList", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -65,7 +65,7 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
      * 保存协作状态详情
      * @param tenantId 租户id
      * @param model 状态详情
-     * @return
+     * @return  boolean
      */
     @Override
     @PostMapping(value = "/saveProcessInstanceDetails", produces = MediaType.APPLICATION_JSON_VALUE,
@@ -83,7 +83,7 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
      * @param taskId 任务id
      * @param itembox 办件状态，todo（待办）,doing（在办）,done（办结）
      * @param endTime 结束时间
-     * @return
+     * @return boolean
      */
     @Override
     @PostMapping(value = "/updateProcessInstanceDetails", produces = MediaType.APPLICATION_JSON_VALUE)

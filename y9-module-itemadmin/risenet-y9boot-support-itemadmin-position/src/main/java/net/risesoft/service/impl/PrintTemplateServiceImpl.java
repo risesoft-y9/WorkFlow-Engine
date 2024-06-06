@@ -47,9 +47,9 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     private final PrintTemplateItemBindRepository printTemplateItemBindRepository;
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> deleteBindPrintTemplate(String id) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "删除成功");
@@ -66,9 +66,9 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> deletePrintTemplate(String id) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "删除成功");
@@ -132,11 +132,11 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
         return list;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Map<String, Object> saveBindTemplate(String itemId, String templateId, String templateName,
         String templateUrl, String templateType) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             ItemPrintTemplateBind printTemplateItemBind = printTemplateItemBindRepository.findByItemId(itemId);
             if (printTemplateItemBind == null) {
@@ -168,7 +168,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveOrUpdate(PrintTemplate printTemplate) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String personId = person.getPersonId(), personName = person.getName(),
@@ -206,9 +206,9 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> uploadTemplate(MultipartFile file) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         String[] fileNames = file.getOriginalFilename().split("\\\\");
         String fileName = "";
         UserInfo person = Y9LoginUserHolder.getUserInfo();

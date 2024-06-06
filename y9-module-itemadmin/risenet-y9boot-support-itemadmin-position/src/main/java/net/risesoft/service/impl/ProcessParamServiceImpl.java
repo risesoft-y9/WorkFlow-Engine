@@ -33,13 +33,13 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     private final VariableApi variableManager;
 
     @Override
-    @Transactional()
+    @Transactional
     public void deleteByPprocessInstanceId(String processInstanceId) {
         processParamRepository.deleteByPprocessInstanceId(processInstanceId);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void deleteByProcessSerialNumber(String processSerialNumber) {
         processParamRepository.deleteByProcessSerialNumber(processSerialNumber);
     }
@@ -55,7 +55,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public ProcessParam saveOrUpdate(ProcessParam processParam) {
         String processSerialNumber = processParam.getProcessSerialNumber();
         ProcessParam oldpp = processParamRepository.findByProcessSerialNumber(processSerialNumber);
@@ -142,7 +142,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void setUpCompleter(String processInstanceId) {
         ProcessParam pp = processParamRepository.findByProcessInstanceId(processInstanceId);
         if (null != pp) {
@@ -153,7 +153,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void updateByProcessSerialNumber(String processSerialNumber, String processInstanceId) {
         ProcessParam pp = processParamRepository.findByProcessSerialNumber(processSerialNumber);
         if (null != pp) {
@@ -167,7 +167,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void updateCustomItem(String processSerialNumber, boolean b) {
         try {
             processParamRepository.updateCustomItem(processSerialNumber, b);

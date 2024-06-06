@@ -86,7 +86,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Integer checkNumberStr(String characterValue, String custom, Integer year, Integer numberTemp, String itemId, Integer common, String processSerialNumber) {
         int status = 3;
         try {
@@ -278,8 +278,8 @@ public class OrganWordServiceImpl implements OrganWordService {
 
     @Override
     public Map<String, Object> exist(String custom, String processSerialNumber, String processInstanceId, String itembox) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        Map<String, Object> retMap = new HashMap<>(16);
+        List<Map<String, Object>> listMap = new ArrayList<>();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
         OrganWordUseHistory owuh = organWordUseHistoryService.findByProcessSerialNumberAndCustom(processSerialNumber, custom);
@@ -311,20 +311,20 @@ public class OrganWordServiceImpl implements OrganWordService {
                 }
             }
             if (!hasPermission) {
-                Map<String, Object> editMap = new HashMap<String, Object>(16);
+                Map<String, Object> editMap = new HashMap<>(16);
                 editMap.put("hasPermission", false);
                 listMap.add(editMap);
             } else {
                 List<OrganWordProperty> propertyList = organWordPropertyService.findByOrganWordId(organWord.getId());
                 for (OrganWordProperty op : propertyList) {
-                    Map<String, Object> editMap = new HashMap<String, Object>(16);
+                    Map<String, Object> editMap = new HashMap<>(16);
                     editMap.put("hasPermission", true);
                     editMap.put("name", op.getName());
                     listMap.add(editMap);
                 }
             }
         } else {
-            Map<String, Object> editMap = new HashMap<String, Object>(16);
+            Map<String, Object> editMap = new HashMap<>(16);
             editMap.put("hasPermission", false);
             listMap.add(editMap);
         }
@@ -344,7 +344,7 @@ public class OrganWordServiceImpl implements OrganWordService {
 
     @Override
     public List<Map<String, Object>> findByCustom(String itemId, String processDefinitionId, String taskDefKey, String custom) {
-        List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> retList = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         OrganWord organWord = this.findByCustom(custom);
         if (organWord != null) {
@@ -364,20 +364,20 @@ public class OrganWordServiceImpl implements OrganWordService {
                 }
             }
             if (!hasPermission) {
-                Map<String, Object> editMap = new HashMap<String, Object>(16);
+                Map<String, Object> editMap = new HashMap<>(16);
                 editMap.put("hasPermission", false);
                 retList.add(editMap);
             } else {
                 List<OrganWordProperty> propertyList = organWordPropertyService.findByOrganWordId(organWord.getId());
                 for (OrganWordProperty op : propertyList) {
-                    Map<String, Object> editMap = new HashMap<String, Object>(16);
+                    Map<String, Object> editMap = new HashMap<>(16);
                     editMap.put("hasPermission", true);
                     editMap.put("name", op.getName());
                     retList.add(editMap);
                 }
             }
         } else {
-            Map<String, Object> editMap = new HashMap<String, Object>(16);
+            Map<String, Object> editMap = new HashMap<>(16);
             editMap.put("hasPermission", false);
             retList.add(editMap);
         }
@@ -390,9 +390,9 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> getNumber(String custom, String characterValue, Integer year, Integer common, String itemId) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         Integer number = 0;
         OrganWordDetail owd = null;
         try {
@@ -470,9 +470,9 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> getNumber4DeptName(String custom, Integer year, Integer common, String itemId) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         String numberStr = "";
         Integer number = 0;
         Integer numberTemp = 0;
@@ -509,7 +509,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Integer getNumberOnly(String custom, String characterValue, Integer year, Integer common, String itemId) {
         Integer number = 0;
         OrganWordDetail owd = null;
@@ -595,7 +595,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeOrganWords(String[] organWordIds) {
         for (String organWordId : organWordIds) {
             organWordRepository.deleteById(organWordId);
@@ -603,9 +603,9 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> save(OrganWord organWord) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();

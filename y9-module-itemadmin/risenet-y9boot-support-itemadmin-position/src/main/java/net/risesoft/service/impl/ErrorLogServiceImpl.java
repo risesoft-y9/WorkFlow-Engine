@@ -23,7 +23,7 @@ public class ErrorLogServiceImpl implements ErrorLogService {
     private final ErrorLogRepository errorLogRepository;
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveErrorLog(ErrorLog errorLog) {
         try {
             if (StringUtils.isBlank(errorLog.getId())) {

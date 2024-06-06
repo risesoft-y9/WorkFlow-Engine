@@ -100,9 +100,9 @@ public class SyncYearTableService {
      *
      * @return
      */
-    @Transactional()
+    @Transactional
     public Map<String, Object> syncYearTable(String year) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "生成年度表结构成功");
         FileInputStream fis = null;

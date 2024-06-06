@@ -39,7 +39,7 @@ public class TabEntityServiceImpl implements TabEntityService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeTabEntitys(String[] tabEntityIds) {
         for (String tabEntityId : tabEntityIds) {
             tabEntityRepository.deleteById(tabEntityId);
@@ -47,7 +47,7 @@ public class TabEntityServiceImpl implements TabEntityService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public TabEntity saveOrUpdate(TabEntity tabEntity) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();

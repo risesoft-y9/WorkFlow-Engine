@@ -29,7 +29,7 @@ public class RejectReasonServiceImpl implements RejectReasonService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void save(String reason, String taskId, Integer action) {
         RejectReason r = this.findByTaskIdAndAction(taskId, action);
         if (null != r) {

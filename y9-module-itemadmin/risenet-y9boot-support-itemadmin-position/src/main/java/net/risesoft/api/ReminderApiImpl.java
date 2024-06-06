@@ -1,6 +1,7 @@
 package net.risesoft.api;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ReminderApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -30,6 +31,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/reminder")
@@ -66,7 +68,7 @@ public class ReminderApiImpl implements ReminderApi {
     @GetMapping(value = "/findById", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> findById(String tenantId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         Reminder reminder = reminderService.findById(id);
         if (reminder != null && reminder.getId() != null) {
             map.put("id", reminder.getId());
@@ -91,9 +93,7 @@ public class ReminderApiImpl implements ReminderApi {
     @GetMapping(value = "/findByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> findByProcessInstanceId(String tenantId, String processInstanceId, int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        map = reminderService.findByProcessInstanceId(processInstanceId, page, rows);
-        return map;
+        return reminderService.findByProcessInstanceId(processInstanceId, page, rows);
     }
 
     /**
@@ -111,9 +111,7 @@ public class ReminderApiImpl implements ReminderApi {
     public Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String tenantId, String senderId,
         String processInstanceId, int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        map = reminderService.findBySenderIdAndProcessInstanceIdAndActive(senderId, processInstanceId, page, rows);
-        return map;
+        return reminderService.findBySenderIdAndProcessInstanceIdAndActive(senderId, processInstanceId, page, rows);
     }
 
     /**
@@ -129,9 +127,7 @@ public class ReminderApiImpl implements ReminderApi {
     @GetMapping(value = "/findByTaskId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> findByTaskId(String tenantId, String taskId, int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        map = reminderService.findByTaskId(taskId, page, rows);
-        return map;
+        return reminderService.findByTaskId(taskId, page, rows);
     }
 
     /**
@@ -148,7 +144,7 @@ public class ReminderApiImpl implements ReminderApi {
     public Map<String, Object> getReminder(String tenantId, String userId, String taskId, String type) {
         Y9LoginUserHolder.setTenantId(tenantId);
         taskId = taskId.contains(SysVariables.COMMA) ? taskId.split(SysVariables.COMMA)[0] : taskId;
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         Reminder reminder = new Reminder();
         if (ItemBoxTypeEnum.DOING.getValue().equals(type)) {
             reminder = reminderService.findByTaskIdAndSenderId(taskId, userId);
@@ -194,11 +190,11 @@ public class ReminderApiImpl implements ReminderApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPosition(position);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "保存失败");
         try {
-            Reminder reminder = null;
+            Reminder reminder;
             for (String taskId : taskIds) {
                 reminder = new Reminder();
                 reminder.setMsgContent(URLDecoder.decode(msgContent, "utf-8"));
@@ -214,7 +210,7 @@ public class ReminderApiImpl implements ReminderApi {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "保存成功!");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("saveReminder error", e);
         }
         return map;
     }
@@ -240,7 +236,7 @@ public class ReminderApiImpl implements ReminderApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPosition(position);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             // 催办信息处理
             String err = reminderService.handleReminder(URLDecoder.decode(msgContent, "utf-8"), procInstId, 1, remType,
@@ -258,7 +254,7 @@ public class ReminderApiImpl implements ReminderApi {
                 }
                 if (!"".equals(errs[1])) {
                     errs[1] = errs[1].substring(0, errs[1].length() - 1);
-                    if ("".equals(errMsg)) {
+                    if (errMsg.isEmpty()) {
                         errMsg = errs[1] + "邮件未发送成功，请联系相关人员。";
                     } else {
                         errMsg = "," + errs[1] + "邮件未发送成功，请联系相关人员。";
@@ -268,7 +264,7 @@ public class ReminderApiImpl implements ReminderApi {
                 map.put("msg", errMsg);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+           LOGGER.error("sendReminderMessage error", e);
         }
         return map;
     }
@@ -299,7 +295,7 @@ public class ReminderApiImpl implements ReminderApi {
     @PostMapping(value = "/updateReminder", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> updateReminder(String tenantId, String id, String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "保存失败");
         try {
@@ -310,7 +306,7 @@ public class ReminderApiImpl implements ReminderApi {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "保存成功!");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("updateReminder error", e);
         }
         return map;
     }

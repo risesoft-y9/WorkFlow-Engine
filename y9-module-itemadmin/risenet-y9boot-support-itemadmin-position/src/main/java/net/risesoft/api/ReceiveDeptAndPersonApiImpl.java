@@ -26,7 +26,7 @@ import java.util.Map;
 
 /**
  * 收发单位接口
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -50,21 +50,21 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      * 根据name模糊搜索收发单位
      *
      * @param tenantId 租户id
-     * @param name 搜索名称
+     * @param name     搜索名称
      * @return Map&lt;String, Object&gt;
      */
     @Override
     @GetMapping(value = "/findByDeptNameLike", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> findByDeptNameLike(String tenantId, String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         if (StringUtils.isBlank(name)) {
             name = "";
         }
         name = "%" + name + "%";
         List<ReceiveDepartment> list = receiveDepartmentRepository.findByDeptNameLikeOrderByTabIndex(name);
         for (ReceiveDepartment receiveDepartment : list) {
-            Map<String, Object> data = new HashMap<String, Object>(16);
+            Map<String, Object> data = new HashMap<>(16);
             Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
             if (department == null || department.getId() == null) {
                 continue;
@@ -85,16 +85,16 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      * 获取所有收发单位
      *
      * @param tenantId 租户id
-     * @return List<Map<String, Object>>
+     * @return List<Map < String, Object>>
      */
     @Override
     @GetMapping(value = "/getReceiveDeptTree", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getReceiveDeptTree(String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         List<ReceiveDepartment> list = receiveDepartmentRepository.findAll();
         for (ReceiveDepartment receiveDepartment : list) {
-            Map<String, Object> data = new HashMap<String, Object>(16);
+            Map<String, Object> data = new HashMap<>(16);
             data.put("id", receiveDepartment.getDeptId());
             Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
             if (department == null || department.getId() == null) {
@@ -114,21 +114,21 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
     /**
      * 获取所有收发单位
      *
-     * @param tenantId 租户id
+     * @param tenantId  租户id
      * @param orgUnitId 单位Id
-     * @param name 名称
-     * @return List<Map<String, Object>>
+     * @param name      名称
+     * @return List<Map < String, Object>>
      */
     @Override
     @GetMapping(value = "/getReceiveDeptTreeById", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getReceiveDeptTreeById(String tenantId, String orgUnitId, String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-        List<ReceiveDepartment> list = null;
+        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<ReceiveDepartment> list;
         if (StringUtils.isNotBlank(name)) {
             list = receiveDepartmentRepository.findByDeptNameContainingOrderByTabIndex(name);
             for (ReceiveDepartment receiveDepartment : list) {
-                Map<String, Object> data = new HashMap<String, Object>(16);
+                Map<String, Object> data = new HashMap<>(16);
                 data.put("id", receiveDepartment.getDeptId());
                 Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
                 if (department == null || department.getId() == null) {
@@ -142,7 +142,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
                 }
                 data.put("isPerm", true);
                 Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
-                data.put("isParent", count > 0 ? true : false);
+                data.put("isParent", count > 0);
                 data.put("orgType", "Department");
                 if (listMap.contains(data)) {
                     continue;// 去重
@@ -153,7 +153,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
             if (StringUtils.isBlank(orgUnitId)) {
                 list = receiveDepartmentRepository.findAll();
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Map<String, Object> data = new HashMap<String, Object>(16);
+                    Map<String, Object> data = new HashMap<>(16);
                     data.put("id", receiveDepartment.getDeptId());
                     Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
@@ -163,7 +163,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
                     data.put("name", department.getName());
                     data.put("isPerm", true);
                     Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
-                    data.put("isParent", count > 0 ? true : false);
+                    data.put("isParent", count > 0);
                     data.put("orgType", "Department");
                     if (listMap.contains(data)) {
                         continue;// 去重
@@ -173,7 +173,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
             } else {
                 list = receiveDepartmentRepository.findByParentIdOrderByTabIndex(orgUnitId);
                 for (ReceiveDepartment receiveDepartment : list) {
-                    Map<String, Object> data = new HashMap<String, Object>(16);
+                    Map<String, Object> data = new HashMap<>(16);
                     data.put("id", receiveDepartment.getDeptId());
                     Department department = departmentManager.get(tenantId, receiveDepartment.getDeptId()).getData();
                     if (department == null || department.getId() == null) {
@@ -183,7 +183,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
                     data.put("name", department.getName());
                     data.put("isPerm", true);
                     Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
-                    data.put("isParent", count > 0 ? true : false);
+                    data.put("isParent", count > 0);
                     data.put("orgType", "Department");
                     if (listMap.contains(data)) {
                         continue;// 去重
@@ -199,7 +199,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      * 根据收发单位id,获取人员集合
      *
      * @param tenantId 租户id
-     * @param deptId 部门id
+     * @param deptId   部门id
      * @return List<Person>
      */
     @Override
@@ -207,7 +207,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
     public List<Person> getSendReceiveByDeptId(String tenantId, String deptId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ReceivePerson> list = receivePersonRepository.findByDeptId(deptId);
-        List<Person> users = new ArrayList<Person>();
+        List<Person> users = new ArrayList<>();
         for (ReceivePerson receivePerson : list) {
             Person person = personManager.get(tenantId, receivePerson.getPersonId()).getData();
             if (person != null && StringUtils.isNotBlank(person.getId()) && !person.getDisabled()) {
@@ -221,31 +221,30 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      * 根据人员id,获取对应的收发单位
      *
      * @param tenantId 租户id
-     * @param userId 人员id
-     * @return List<Map<String, Object>>
+     * @param userId   人员id
+     * @return List<Map < String, Object>>
      */
     @Override
     @GetMapping(value = "/getSendReceiveByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getSendReceiveByUserId(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         Y9LoginUserHolder.setPerson(person);
         if (StringUtils.isBlank(userId)) {
             userId = "";
         }
         userId = "%" + userId + "%";
         List<ReceivePerson> list = receivePersonRepository.findByPersonId(userId);
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             for (ReceivePerson receivePerson : list) {
-                Map<String, Object> map = new HashMap<String, Object>(16);
+                Map<String, Object> map = new HashMap<>(16);
                 Department department = departmentManager.get(tenantId, receivePerson.getDeptId()).getData();
                 if (department == null || department.getId() == null) {
                     continue;
                 }
                 map.put("deptId", receivePerson.getDeptId());
-                map.put("deptName",
-                    department != null ? department.getName() : receivePerson.getDeptName() + "(该部门已不存在)");
+                map.put("deptName", department.getName());
                 listMap.add(map);
             }
         }

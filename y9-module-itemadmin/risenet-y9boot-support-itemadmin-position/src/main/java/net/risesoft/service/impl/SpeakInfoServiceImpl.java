@@ -34,7 +34,7 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
     private final SpeakInfoRepository speakInfoRepository;
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> deleteById(String id) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
@@ -68,7 +68,7 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public List<SpeakInfo> findByProcessInstanceId(String processInstanceId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -112,7 +112,7 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public String saveOrUpdate(SpeakInfo speakInfo) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = speakInfo.getId();

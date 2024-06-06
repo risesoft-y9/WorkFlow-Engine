@@ -74,7 +74,7 @@ public class ProcInstanceRelationshipService {
      */
     public List<String> getAllRelateProcessInstanceIds(String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         // 根据当前流程实例查找其子流程实例Id
         List<String> subProcessInstanceIds = getSubProcessInstanceIds(processInstanceId);
         if (subProcessInstanceIds != null && subProcessInstanceIds.size() > 0) {
@@ -123,11 +123,11 @@ public class ProcInstanceRelationshipService {
      */
     public List<String> getAllSubProcessInstanceIds(String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         results.addAll(getSubProcessInstanceIds(processInstanceId));
         List<HistoricProcessInstanceModel> hpiModel =
             historicProcessManager.getBySuperProcessInstanceId(tenantId, processInstanceId);
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (HistoricProcessInstanceModel hpi : hpiModel) {
             list.add(hpi.getId());
         }
@@ -142,7 +142,7 @@ public class ProcInstanceRelationshipService {
      */
     public List<String> getAllSuperProcessInstanceIds(String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         results.add(getParentProcInstanceId(processInstanceId));
         results.add(historicProcessManager.getSuperProcessInstanceById(tenantId, processInstanceId).getId());
         return results;
@@ -169,7 +169,7 @@ public class ProcInstanceRelationshipService {
      * @return
      */
     public List<String> getProcInstanceIdsByProcDefKey(String processDefinitionKey) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         List<ProcInstanceRelationship> list = findByProcDefKey(processDefinitionKey);
         for (ProcInstanceRelationship entity : list) {
             result.add(entity.getProcInstanceId());
@@ -197,7 +197,7 @@ public class ProcInstanceRelationshipService {
      * @return
      */
     public List<String> getSubProcessInstanceIds(String processInstanceId) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         List<ProcInstanceRelationship> entityList = findByParentProcInstanceId(processInstanceId);
         for (ProcInstanceRelationship entity : entityList) {
             list.add(entity.getProcInstanceId());
@@ -218,7 +218,7 @@ public class ProcInstanceRelationshipService {
         if (count > 0) {
             return true;
         } else {
-            List<String> list = new ArrayList<String>();
+            List<String> list = new ArrayList<>();
             List<HistoricProcessInstanceModel> hpiModelTemp =
                 historicProcessManager.getBySuperProcessInstanceId(tenantId, processInstanceId);
             for (HistoricProcessInstanceModel hpi : hpiModelTemp) {

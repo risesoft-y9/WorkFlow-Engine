@@ -52,7 +52,7 @@ public class ReminderServiceImpl implements ReminderService {
     private final HistoricTaskApi historicTaskManager;
 
     @Override
-    @Transactional()
+    @Transactional
     public void deleteList(String[] ids) {
         Reminder r = null;
         for (String id : ids) {
@@ -83,7 +83,7 @@ public class ReminderServiceImpl implements ReminderService {
     @Override
     public Map<String, Object> findByProcessInstanceId(String processInstanceId, int page, int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         List<Reminder> reminderList = new ArrayList<Reminder>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
@@ -91,11 +91,11 @@ public class ReminderServiceImpl implements ReminderService {
         reminderList = pageList.getContent();
         int num = (page - 1) * rows;
         SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         HistoricTaskInstanceModel historicTaskTemp = null;
         Position pTemp = null;
         for (Reminder reminder : reminderList) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", reminder.getId());
             map.put("msgContent", reminder.getMsgContent());
             map.put("createTime", sdf.format(reminder.getCreateTime()));
@@ -132,7 +132,7 @@ public class ReminderServiceImpl implements ReminderService {
     public Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId,
         int page, int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         List<Reminder> reminderList = new ArrayList<Reminder>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
@@ -145,11 +145,11 @@ public class ReminderServiceImpl implements ReminderService {
         reminderList = pageList.getContent();
         int num = (page - 1) * rows;
         SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         TaskModel taskTemp = null;
         Position pTemp = null;
         for (Reminder reminder : reminderList) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", reminder.getId());
             map.put("msgContent", reminder.getMsgContent());
             map.put("createTime", sdf.format(reminder.getCreateTime()));
@@ -190,7 +190,7 @@ public class ReminderServiceImpl implements ReminderService {
     @Override
     public Map<String, Object> findByTaskId(String taskId, int page, int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         List<Reminder> reminderList = new ArrayList<Reminder>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
@@ -198,11 +198,11 @@ public class ReminderServiceImpl implements ReminderService {
         reminderList = pageList.getContent();
         int num = (page - 1) * rows;
         SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         TaskModel taskTemp = taskManager.findById(tenantId, taskId);
         Position pTemp = positionApi.get(tenantId, taskTemp.getAssignee()).getData();
         for (Reminder reminder : reminderList) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", reminder.getId());
             map.put("msgContent", reminder.getMsgContent());
             map.put("createTime", sdf.format(reminder.getCreateTime()));
@@ -236,7 +236,7 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType,
         String taskId, String taskAssigneeId, String documentTitle) {
         String smsErr = "";
@@ -285,7 +285,7 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Reminder saveOrUpdate(Reminder reminder) {
         String id = reminder.getId();
         if (StringUtils.isNotBlank(id)) {
@@ -315,25 +315,25 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveReminder(List<Reminder> list) {
         reminderRepository.saveAll(list);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveReminder(Reminder reminder) {
         reminderRepository.save(reminder);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void setReadTime(Date readTime, String taskId, String type) {
         reminderRepository.updateReadTime(readTime, taskId, type);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void setReadTime(String[] ids) {
         Reminder r = null;
         for (String id : ids) {

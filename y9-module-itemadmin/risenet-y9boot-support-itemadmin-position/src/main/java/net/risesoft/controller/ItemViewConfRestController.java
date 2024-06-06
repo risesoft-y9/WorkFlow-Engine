@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -51,8 +51,8 @@ public class ItemViewConfRestController {
 
     /**
      * 保存或者修改
-     * @param ids
-     * @param viewType
+     * @param ids 视图id
+     * @param viewType 视图类型
      * @return
      */
     @RequestMapping(value = "/copyView", method = RequestMethod.POST, produces = "application/json")
@@ -69,8 +69,8 @@ public class ItemViewConfRestController {
      * @return
      */
     @RequestMapping(value = "/findByItemId", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String viewType) {
+    public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam String itemId,
+        @RequestParam String viewType) {
         List<ItemViewConf> list = itemViewConfService.findByItemIdAndViewType(itemId, viewType);
         return Y9Result.success(list, "获取成功");
     }
@@ -82,11 +82,11 @@ public class ItemViewConfRestController {
      * @return
      */
     @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Y9FormField>> getColumns(@RequestParam(required = true) String tableName,
-        @RequestParam(required = true) String itemId) {
+    public Y9Result<List<Y9FormField>> getColumns(@RequestParam String tableName,
+        @RequestParam String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Y9FormField> list = new ArrayList<Y9FormField>();
-        List<String> fieldNameList = new ArrayList<String>();
+        List<Y9FormField> list = new ArrayList<>();
+        List<String> fieldNameList = new ArrayList<>();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
@@ -112,13 +112,12 @@ public class ItemViewConfRestController {
      *
      * @param id 视图id
      * @param itemId 事项id
-     * @param viewType 视图类型
      * @return
      */
     @RequestMapping(value = "/newOrModify", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id,
-        @RequestParam(required = true) String itemId) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+        @RequestParam String itemId) {
+        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
@@ -128,7 +127,7 @@ public class ItemViewConfRestController {
             y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         List<String> tableNameList = new ArrayList<>();
         List<Y9Table> tableList = new ArrayList<>();
-        List<Map<String, Object>> tablefield = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> tableField = new ArrayList<>();
         for (Y9FormItemBind bind : formList) {
             String formId = bind.getFormId();
             List<Y9FormField> formFieldList = y9FormFieldService.findByFormId(formId);
@@ -137,16 +136,16 @@ public class ItemViewConfRestController {
                     Y9Table y9Table = y9TableService.findById(formField.getTableId());
                     tableNameList.add(formField.getTableName());
                     tableList.add(y9Table);
-                    List<Y9FormField> fieldlist = new ArrayList<Y9FormField>();
+                    List<Y9FormField> fieldlist = new ArrayList<>();
                     for (Y9FormField formField1 : formFieldList) {
                         if (y9Table.getTableName().equals(formField1.getTableName())) {
                             fieldlist.add(formField1);
                         }
                     }
-                    Map<String, Object> tableFieldMap = new HashMap<String, Object>();
+                    Map<String, Object> tableFieldMap = new HashMap<>();
                     tableFieldMap.put("tableName", y9Table.getTableName());
                     tableFieldMap.put("fieldlist", fieldlist);
-                    tablefield.add(tableFieldMap);
+                    tableField.add(tableFieldMap);
                 }
             }
         }
@@ -155,7 +154,7 @@ public class ItemViewConfRestController {
             resMap.put("itemViewConf", itemViewConf);
         }
         resMap.put("tableList", tableList);
-        resMap.put("tablefield", tablefield);
+        resMap.put("tablefield", tableField);
         return Y9Result.success(resMap, "获取成功");
     }
 
@@ -177,10 +176,10 @@ public class ItemViewConfRestController {
     /**
      * 删除
      *
-     * @param ids
+     * @param ids 视图id
      */
     @RequestMapping(value = "/removeView", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeView(@RequestParam(required = true) String[] ids) {
+    public Y9Result<String> removeView(@RequestParam String[] ids) {
         itemViewConfService.removeItemViewConfs(ids);
         return Y9Result.successMsg("删除成功");
     }
@@ -188,10 +187,10 @@ public class ItemViewConfRestController {
     /**
      * 保存排序
      *
-     * @param idAndTabIndexs
+     * @param idAndTabIndexs 视图id和排序索引
      */
     @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrder(@RequestParam(required = true) String[] idAndTabIndexs) {
+    public Y9Result<String> saveOrder(@RequestParam String[] idAndTabIndexs) {
         itemViewConfService.update4Order(idAndTabIndexs);
         return Y9Result.successMsg("保存成功");
     }

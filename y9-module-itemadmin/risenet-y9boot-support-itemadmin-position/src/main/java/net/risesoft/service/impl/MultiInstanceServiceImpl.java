@@ -81,7 +81,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
                 }
             }
         }
-        Map<String, Object> vmap = new HashMap<String, Object>(16);
+        Map<String, Object> vmap = new HashMap<>(16);
         vmap.put(SysVariables.USERS, usersTemp);
         variableManager.setVariables(tenantId, taskId, vmap);
         /*

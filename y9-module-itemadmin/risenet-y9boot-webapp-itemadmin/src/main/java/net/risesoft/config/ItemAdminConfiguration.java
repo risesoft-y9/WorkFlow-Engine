@@ -29,16 +29,16 @@ import net.risesoft.y9.configuration.Y9Properties;
 @EnableScheduling
 @EnableConfigurationProperties(Y9Properties.class)
 @EnableKafka
-public class ItemAdminConfiguraton implements WebMvcConfigurer {
+public class ItemAdminConfiguration implements WebMvcConfigurer {
 
-    private static final Logger log = LoggerFactory.getLogger(ItemAdminConfiguraton.class);
+    private static final Logger log = LoggerFactory.getLogger(ItemAdminConfiguration.class);
 
     /**
      *
-     * Description: starter-log工程用到了RequestContextHolder https://github.com/spring-projects/spring-boot/issues/2637
-     * https://github.com/spring-projects/spring-boot/issues/4331
+     * Description: starter-log工程用到了RequestContextHolder
+     * <a href="https://github.com/spring-projects/spring-boot/issues/2637">...</a>
+     * <a href="https://github.com/spring-projects/spring-boot/issues/4331">...</a>
      *
-     * @return
      */
     @Bean
     public static RequestContextFilter requestContextFilter() {

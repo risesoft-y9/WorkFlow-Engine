@@ -52,7 +52,7 @@ public class OrganWordPropertyController {
     /**
      * 删除机关代字
      *
-     * @param propertyIds
+     * @param propertyIds 机关代字id
      * @return
      */
     @RequestMapping(value = "/removeProperty", method = RequestMethod.POST, produces = "application/json")
@@ -64,7 +64,7 @@ public class OrganWordPropertyController {
     /**
      * 保存机关代字
      *
-     * @param organWordProperty
+     * @param organWordProperty 机关代字实体
      * @return
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")

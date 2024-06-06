@@ -45,13 +45,13 @@ public class TaoHongTemplateServiceImpl implements TaoHongTemplateService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeTaoHongTemplate(String id) {
         taoHongTemplateRepository.deleteById(id);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeTaoHongTemplate(String[] templateGuids) {
         for (String templateGuid : templateGuids) {
             taoHongTemplateRepository.deleteById(templateGuid);
@@ -59,7 +59,7 @@ public class TaoHongTemplateServiceImpl implements TaoHongTemplateService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public TaoHongTemplate saveOrUpdate(TaoHongTemplate t) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();

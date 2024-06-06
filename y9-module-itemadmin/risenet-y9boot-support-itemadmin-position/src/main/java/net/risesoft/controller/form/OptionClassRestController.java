@@ -24,44 +24,42 @@ import java.util.Map;
 @RequestMapping(value = "/vue/y9form/optionClass")
 public class OptionClassRestController {
 
-    
+
     private final Y9FormOptionClassService y9FormOptionClassService;
 
     /**
      * 删除数据字典
      *
      * @param type 字典类型
-     * @return
      */
     @RequestMapping(value = "/delOptionClass", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> delOptionClass(String type) {
         Map<String, Object> map = y9FormOptionClassService.delOptionClass(type);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
+        if ((boolean) map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String) map.get("msg"));
         }
-        return Y9Result.failure((String)map.get("msg"));
+        return Y9Result.failure((String) map.get("msg"));
     }
 
     /**
      * 删除数据字典值
      *
      * @param id 主键id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/delOptionValue", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> delOptionValue(String id) {
         Map<String, Object> map = y9FormOptionClassService.delOptionValue(id);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
+        if ((boolean) map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String) map.get("msg"));
         }
-        return Y9Result.failure((String)map.get("msg"));
+        return Y9Result.failure((String) map.get("msg"));
     }
 
     /**
      * 获取数据字典
      *
      * @param type 字典类型
-     * @return
      */
     @RequestMapping(value = "/getOptionClass", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Y9FormOptionClass> getOptionClass(String type) {
@@ -73,7 +71,6 @@ public class OptionClassRestController {
      * 获取数据字典列表
      *
      * @param name 数据字典名称
-     * @return
      */
     @RequestMapping(value = "/getOptionClassList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Y9FormOptionClass>> getOptionClassList(@RequestParam(required = false) String name) {
@@ -85,7 +82,7 @@ public class OptionClassRestController {
      * 数据字典值
      *
      * @param id 主键id
-     * @return
+     * @return Y9Result<Y9FormOptionValue>
      */
     @RequestMapping(value = "/getOptionValue", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Y9FormOptionValue> getOptionValue(String id) {
@@ -97,7 +94,7 @@ public class OptionClassRestController {
      * 获取数据字典值列表
      *
      * @param type 字典标识
-     * @return
+     * @return Y9Result<List < Y9FormOptionValue>>
      */
     @RequestMapping(value = "/getOptionValueList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Y9FormOptionValue>> getOptionValueList(String type) {
@@ -114,10 +111,10 @@ public class OptionClassRestController {
     @RequestMapping(value = "/saveOptionClass", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOptionClass(Y9FormOptionClass optionClass) {
         Map<String, Object> map = y9FormOptionClassService.saveOptionClass(optionClass);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
+        if ((boolean) map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String) map.get("msg"));
         }
-        return Y9Result.failure((String)map.get("msg"));
+        return Y9Result.failure((String) map.get("msg"));
     }
 
     /**
@@ -129,10 +126,10 @@ public class OptionClassRestController {
     @RequestMapping(value = "/saveOptionValue", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOptionValue(Y9FormOptionValue optionValue) {
         Map<String, Object> map = y9FormOptionClassService.saveOptionValue(optionValue);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
+        if ((boolean) map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String) map.get("msg"));
         }
-        return Y9Result.failure((String)map.get("msg"));
+        return Y9Result.failure((String) map.get("msg"));
     }
 
     /**
@@ -144,10 +141,10 @@ public class OptionClassRestController {
     @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrder(String ids) {
         Map<String, Object> map = y9FormOptionClassService.saveOrder(ids);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
+        if ((boolean) map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String) map.get("msg"));
         }
-        return Y9Result.failure((String)map.get("msg"));
+        return Y9Result.failure((String) map.get("msg"));
     }
 
     /**
@@ -159,10 +156,10 @@ public class OptionClassRestController {
     @RequestMapping(value = "/updateOptionValue", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> updateOptionValue(String id) {
         Map<String, Object> map = y9FormOptionClassService.updateOptionValue(id);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
+        if ((boolean) map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String) map.get("msg"));
         }
-        return Y9Result.failure((String)map.get("msg"));
+        return Y9Result.failure((String) map.get("msg"));
     }
 
 }

@@ -17,7 +17,7 @@ public class MapUtil {
      * @param map
      */
     public static List<String> getKey(Map<String, String> map) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String key : map.keySet()) {
             list.add(key);
         }

@@ -57,7 +57,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     private final ProcessDefinitionApi processDefinitionManager;
 
     @Override
-    @Transactional()
+    @Transactional
     public ItemButtonBind bindButton(String itemId, String buttonId, String processDefinitionId, String taskDefKey,
         Integer buttonType) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -87,7 +87,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -361,7 +361,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeButtonItemBinds(String[] buttonItemBindIds) {
         for (String buttonItemBindId : buttonItemBindIds) {
             itemButtonRoleService.deleteByItemButtonId(buttonItemBindId);
@@ -370,7 +370,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public ItemButtonBind save(ItemButtonBind buttonItemBind) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -409,7 +409,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveOrder(String[] idAndTabIndexs) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();

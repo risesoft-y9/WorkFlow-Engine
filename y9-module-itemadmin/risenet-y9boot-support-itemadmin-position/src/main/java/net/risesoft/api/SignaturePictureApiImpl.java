@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.SignaturePictureApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.SignaturePicture;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/signaturePicture")
@@ -50,7 +52,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
      * 根据id获取签名图片
      * @param tenantId 租户id
      * @param id id
-     * @return
+     * @return SignaturePictureModel
      */
     @Override
     @GetMapping(value = "/findById", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -68,7 +70,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
      * 根据人员id获取签名图片
      * @param tenantId 租户id
      * @param userId 人员id
-     * @return
+     * @return SignaturePictureModel
      */
     @Override
     @GetMapping(value = "/findByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -88,7 +90,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param spJson spJson
-     * @return
+     * @return SignaturePictureModel
      */
     @Override
     @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -103,13 +105,13 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
             om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             SignaturePictureModel spModel = new SignaturePictureModel();
             SignaturePicture sp = om.readValue(jn.toString(), SignaturePicture.class);
-            SignaturePicture newsp = signaturePictureService.saveOrUpdate(sp);
-            if (null != newsp) {
-                Y9BeanUtil.copyProperties(newsp, spModel);
+            SignaturePicture signaturePicture = signaturePictureService.saveOrUpdate(sp);
+            if (null != signaturePicture) {
+                Y9BeanUtil.copyProperties(signaturePicture, spModel);
             }
             return spModel;
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LOGGER.error("保存或更新签名图片失败", e);
             return null;
         }
     }

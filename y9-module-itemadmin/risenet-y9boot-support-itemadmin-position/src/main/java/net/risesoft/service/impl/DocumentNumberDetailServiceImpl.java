@@ -32,7 +32,7 @@ public class DocumentNumberDetailServiceImpl implements DocumentNumberDetailServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public DocumentNumberDetail saveDocumentNumberDetail(DocumentNumberDetail documentNumberDetail) {
         return documentNumberDetailRepository.save(documentNumberDetail);
     }
