@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
@@ -81,6 +82,7 @@ import net.risesoft.y9.util.Y9Util;
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/bpmnModel")
@@ -368,17 +370,12 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             List<HistoricActivityInstance> list =
                 customHistoricActivityService.getByProcessInstanceIdAndYear(processInstanceId, year);
             list.sort((o1, o2) -> {
-                try {
-                    if (o1.getEndTime() == null || o2.getEndTime() == null) {
-                        return 0;
-                    }
-                    long endTime1 = o1.getEndTime().getTime();
-                    long endTime2 = o2.getEndTime().getTime();
-                    return Long.compare(endTime1, endTime2);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (o1.getEndTime() == null || o2.getEndTime() == null) {
+                    return 0;
                 }
-                return -1;
+                long endTime1 = o1.getEndTime().getTime();
+                long endTime2 = o2.getEndTime().getTime();
+                return Long.compare(endTime1, endTime2);
             });
             int num = 0;
             for (HistoricActivityInstance his : list) {
@@ -513,7 +510,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取流程图数据失败", e);
         }
         return resMap;
     }

@@ -33,7 +33,7 @@ public class ProcessDefinitionController {
      *
      * @param processDefinitionId 流程定义ID
      * @param isFilter 是否过滤掉开始节点和结束节点
-     * @return
+     * @return List<Map<String, Object>>
      */
     @RequestMapping(value = "/getBpmList")
     public List<Map<String, Object>> getBpmList(String processDefinitionId, Boolean isFilter) {
@@ -44,7 +44,7 @@ public class ProcessDefinitionController {
      * 获取任务节点信息和流程定义信息，包含流程启动节点start
      *
      * @param processDefinitionId 流程定义ID
-     * @return
+     * @return List<Map<String, Object>>
      */
     @RequestMapping(value = "/getBpmListContainStart")
     public List<Map<String, Object>> getBpmListContainStart(String processDefinitionId) {
@@ -54,8 +54,8 @@ public class ProcessDefinitionController {
     /**
      * 获取指定流程定义的所有流程定义Id
      *
-     * @param processDefinitionKey 流程定义Key，例如luohubanwen
-     * @return
+     * @param processDefinitionKey 流程定义Key
+     * @return List<String>
      */
     @RequestMapping(value = "/getProcDefIds", method = RequestMethod.GET)
     public List<String> getProcDefIds(@RequestParam(required = false) String processDefinitionKey) {
@@ -65,8 +65,8 @@ public class ProcessDefinitionController {
     /**
      * 获取指定流程定义的所有版本号
      *
-     * @param processDefinitionKey 流程定义Key，例如luohubanwen
-     * @return
+     * @param processDefinitionKey 流程定义Key
+     * @return  List<Integer>
      */
     @RequestMapping(value = "/getProcDefVersions", method = RequestMethod.GET)
     public List<Integer> getProcDefVersions(@RequestParam(required = false) String processDefinitionKey) {
@@ -77,7 +77,7 @@ public class ProcessDefinitionController {
      * 获取任务节点信息
      *
      * @param processDefinitionId 流程定义ID
-     * @return
+     * @return Map<String, Object>
      */
     @RequestMapping(value = "/getTaskList")
     public Map<String, Object> getTaskByProcDef(@RequestParam String processDefinitionId) {
@@ -86,7 +86,7 @@ public class ProcessDefinitionController {
         List<FlowElement> activitieList =
             workflowProcessDefinitionService.getFilteredActivityImpls(processDefinitionId);
         for (FlowElement activity : activitieList) {
-            Map<String, Object> tempMap = new HashMap<String, Object>(16);
+            Map<String, Object> tempMap = new HashMap<>(16);
             tempMap.put("taskDefKey", activity.getId());
             tempMap.put("taskDefName", activity.getName());
             list.add(tempMap);
@@ -100,7 +100,7 @@ public class ProcessDefinitionController {
      * 获取
      *
      * @param processDefinitionId 流程定义ID
-     * @return
+     * @return Map<String, Object>
      */
     @RequestMapping(value = "/getTaskMap", method = RequestMethod.GET)
     public Map<String, Object> getTaskMap(@RequestParam(required = false) String processDefinitionId) {
@@ -120,7 +120,7 @@ public class ProcessDefinitionController {
 
     /**
      * 查询流程定义，获取map，其key为流程定义对象ID，其value为流程定义对象名称
-     * @return
+     * @return Map<String, String>
      */
     @RequestMapping(value = "/map", method = RequestMethod.GET)
     public Map<String, String> runningShow() {

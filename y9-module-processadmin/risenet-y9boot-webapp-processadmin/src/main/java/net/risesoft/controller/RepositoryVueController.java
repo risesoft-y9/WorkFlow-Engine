@@ -1,8 +1,8 @@
 package net.risesoft.controller;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.pojo.Y9Result;
@@ -29,6 +29,7 @@ import net.risesoft.service.CustomRepositoryService;
  * @author zhangchongjie
  * @date 2023/01/03
  */
+@Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -83,23 +84,26 @@ public class RepositoryVueController {
     /**
      * 获取流程实例
      *
-     * @param resourceType    资源类型
+     * @param resourceType        资源类型
      * @param processInstanceId   流程实例id
      * @param processDefinitionId 流程定义id
-     * @param response
-     * @throws Exception
+     * @param response            HttpServletResponse
      */
     @RequestMapping(value = "/process-instance")
     public void loadByProcessInstance(@RequestParam String resourceType,
                                       @RequestParam(required = false) String processInstanceId, @RequestParam String processDefinitionId,
-                                      HttpServletResponse response) throws Exception {
-        InputStream resourceAsStream =
-                customRepositoryService.getProcessInstance(resourceType, processInstanceId, processDefinitionId);
-        int ii = 1024;
-        byte[] b = new byte[1024];
-        int len = -1;
-        while ((len = resourceAsStream.read(b, 0, ii)) != -1) {
-            response.getOutputStream().write(b, 0, len);
+                                      HttpServletResponse response) {
+        try {
+            InputStream resourceAsStream =
+                    customRepositoryService.getProcessInstance(resourceType, processInstanceId, processDefinitionId);
+            int ii = 1024;
+            byte[] b = new byte[1024];
+            int len;
+            while ((len = resourceAsStream.read(b, 0, ii)) != -1) {
+                response.getOutputStream().write(b, 0, len);
+            }
+        } catch (IOException e) {
+            LOGGER.error("获取流程实例失败", e);
         }
     }
 
@@ -121,39 +125,23 @@ public class RepositoryVueController {
     }
 
     /**
-     * 输出跟踪流程信息 在在办件、待办件中使用processInstanceId，因为需要知道当前的活动节点并标红 但在流程部署列表页面中查看流程图时只有processDefinitionId，没有processInstanceId
-     *
-     * @param processInstanceId 流程实例id
-     * @return
-     */
-    @RequestMapping(value = "/trace")
-    public List<Map<String, Object>> traceProcess(@RequestParam("pid") String processInstanceId,
-                                                  @RequestParam("processDefinitionId") String processDefinitionId) {
-        List<Map<String, Object>> activityInfos = new ArrayList<>();
-        if (StringUtils.isNotBlank(processInstanceId) || StringUtils.isNotBlank(processDefinitionId)) {
-            if (StringUtils.isNotBlank(processInstanceId)) {
-
-            } else {
-
-            }
-        }
-        return activityInfos;
-    }
-
-    /**
      * 获取流程实例的xml
      *
      * @param resourceType        资源类型
      * @param processInstanceId   流程实例id
      * @param processDefinitionId 流程定义id
-     * @throws Exception
      */
     @RequestMapping(value = "/processInstanceXml")
     public Y9Result<String> getXmlByProcessInstance(@RequestParam String resourceType,
                                                     @RequestParam(required = false) String processInstanceId, @RequestParam String processDefinitionId
-    ) throws Exception {
+    ) {
         InputStream resourceAsStream =
                 customRepositoryService.getProcessInstance(resourceType, processInstanceId, processDefinitionId);
-        return Y9Result.success(IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8));
+        try {
+            return Y9Result.success(IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            LOGGER.error("获取流程实例xml失败", e);
+        }
+        return Y9Result.failure("获取流程实例xml失败");
     }
 }

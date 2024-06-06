@@ -62,15 +62,15 @@ public class HistoricVariableVueController {
      * @param variableName 变量名
      * @param page 页码
      * @param rows 条数
-     * @return
+     * @return Y9Page<Map<String, Object>>
      */
     @RequestMapping(value = "/searchHistoricVariable", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> searchHistoricVariable(@RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String variableName,
         @RequestParam int page, @RequestParam int rows) {
         List<Map<String, Object>> items = new ArrayList<>();
-        long totalCount = 0;
-        List<HistoricVariableInstance> hviList = null;
+        long totalCount;
+        List<HistoricVariableInstance> hviList;
         if (StringUtils.isBlank(processInstanceId)) {
             if (StringUtils.isBlank(taskId)) {
                 totalCount = historyService.createHistoricVariableInstanceQuery()
