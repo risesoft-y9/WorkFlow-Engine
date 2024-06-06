@@ -32,7 +32,7 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     private final ItemViewConfRepository itemViewConfRepository;
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyView(String[] ids, String viewType) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String id : ids) {
@@ -69,7 +69,7 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeByViewType(String viewType) {
         List<ItemViewConf> list = itemViewConfRepository.findByViewTypeOrderByTabIndexAsc(viewType);
         itemViewConfRepository.deleteAll(list);
@@ -77,7 +77,7 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeItemViewConfs(String[] itemViewConfIds) {
         for (String id : itemViewConfIds) {
             itemViewConfRepository.deleteById(id);
@@ -85,7 +85,7 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveOrUpdate(ItemViewConf itemViewConf) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -142,7 +142,7 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void update4Order(String[] idAndTabIndexs) {
         List<String> list = Lists.newArrayList(idAndTabIndexs);
         try {

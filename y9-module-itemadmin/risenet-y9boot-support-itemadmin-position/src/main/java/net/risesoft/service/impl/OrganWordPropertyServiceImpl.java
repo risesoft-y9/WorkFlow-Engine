@@ -50,7 +50,7 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeOrganWordPropertys(String[] organWordPropertyIds) {
         for (String id : organWordPropertyIds) {
             organWordPropertyRepository.deleteById(id);
@@ -58,9 +58,9 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> save(OrganWordProperty organWordProperty) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "保存失败!");
         String id = organWordProperty.getId();
@@ -99,7 +99,7 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void update4Order(String[] idAndTabIndexs) {
         List<String> list = Lists.newArrayList(idAndTabIndexs);
         try {

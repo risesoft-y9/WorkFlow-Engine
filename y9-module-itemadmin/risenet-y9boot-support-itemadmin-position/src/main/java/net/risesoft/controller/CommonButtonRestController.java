@@ -28,10 +28,10 @@ public class CommonButtonRestController {
      * 判断customId是否已经存在
      *
      * @param customId 定义key
-     * @return
+     * @return Y9Result<Boolean>
      */
     @RequestMapping(value = "/checkCustomId", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Boolean> checkCustomId(@RequestParam(required = true) String customId) {
+    public Y9Result<Boolean> checkCustomId(@RequestParam String customId) {
         boolean b = commonButtonService.checkCustomId("common_" + customId);
         return Y9Result.success(b, "获取成功");
     }
@@ -40,10 +40,10 @@ public class CommonButtonRestController {
      * 获取普通按钮
      *
      * @param id 按钮id
-     * @return
+     * @return Y9Result<CommonButton>
      */
     @RequestMapping(value = "/getCommonButton", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<CommonButton> getCommonButton(@RequestParam(required = true) String id) {
+    public Y9Result<CommonButton> getCommonButton(@RequestParam String id) {
         CommonButton commonButton = commonButtonService.findOne(id);
         return Y9Result.success(commonButton, "获取成功");
     }
@@ -51,7 +51,7 @@ public class CommonButtonRestController {
     /**
      * 获取普通按钮列表
      *
-     * @return
+     * @return Y9Result<List<CommonButton>>
      */
     @RequestMapping(value = "/getCommonButtonList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<CommonButton>> getCommonButtonList() {
@@ -63,10 +63,10 @@ public class CommonButtonRestController {
      * 删除按钮
      *
      * @param commonButtonIds 按钮id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/removeCommonButtons", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeCommonButtons(@RequestParam(required = true) String[] commonButtonIds) {
+    public Y9Result<String> removeCommonButtons(@RequestParam String[] commonButtonIds) {
         commonButtonService.removeCommonButtons(commonButtonIds);
         return Y9Result.successMsg("删除成功");
     }
@@ -75,7 +75,7 @@ public class CommonButtonRestController {
      * 保存普通按钮
      *
      * @param commonButton 按钮信息
-     * @return
+     * @return  Y9Result<String>
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(CommonButton commonButton) {

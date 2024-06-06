@@ -26,7 +26,7 @@ public class ItemMappingConfServiceImpl implements ItemMappingConfService {
     private final ItemMappingConfRepository itemMappingConfRepository;
 
     @Override
-    @Transactional()
+    @Transactional
     public void delItemMappingConf(String[] ids) {
         for (String id : ids) {
             itemMappingConfRepository.deleteById(id);
@@ -39,7 +39,7 @@ public class ItemMappingConfServiceImpl implements ItemMappingConfService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveItemMappingConf(ItemMappingConf itemMappingConf) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = itemMappingConf.getId();

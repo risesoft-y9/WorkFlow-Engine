@@ -7,7 +7,7 @@ import net.risesoft.service.ItemOpinionFrameRoleService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class ItemOpinionFrameRoleRestController {
      * @return
      */
     @RequestMapping(value = "/bindRole", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> bindRole(@RequestParam(required = true) String roleIds, @RequestParam(required = true) String itemOpinionFrameId) {
+    public Y9Result<String> bindRole(@RequestParam String roleIds, @RequestParam String itemOpinionFrameId) {
         String[] roleIdarr = roleIds.split(";");
         for (String roleId : roleIdarr) {
             itemOpinionFrameRoleService.saveOrUpdate(itemOpinionFrameId, roleId);
@@ -47,7 +47,7 @@ public class ItemOpinionFrameRoleRestController {
      * @return
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemOpinionFrameRole>> list(@RequestParam(required = true) String itemOpinionFrameId) {
+    public Y9Result<List<ItemOpinionFrameRole>> list(@RequestParam String itemOpinionFrameId) {
         List<ItemOpinionFrameRole> list = itemOpinionFrameRoleService.findByItemOpinionFrameIdContainRoleName(itemOpinionFrameId);
         return Y9Result.success(list, "获取成功");
     }

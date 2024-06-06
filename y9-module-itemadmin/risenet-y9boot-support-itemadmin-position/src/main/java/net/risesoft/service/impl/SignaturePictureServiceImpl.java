@@ -27,7 +27,7 @@ public class SignaturePictureServiceImpl implements SignaturePictureService {
     private final SignaturePictureRepository signaturePictureRepository;
 
     @Override
-    @Transactional()
+    @Transactional
     public void deleteById(String id) {
         signaturePictureRepository.deleteById(id);
     }
@@ -43,7 +43,7 @@ public class SignaturePictureServiceImpl implements SignaturePictureService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public SignaturePicture saveOrUpdate(SignaturePicture sp) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();

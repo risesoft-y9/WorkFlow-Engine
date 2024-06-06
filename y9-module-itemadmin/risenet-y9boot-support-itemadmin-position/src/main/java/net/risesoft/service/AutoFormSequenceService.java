@@ -74,7 +74,7 @@ public class AutoFormSequenceService {
      * @param labelName
      * @return
      */
-    @Transactional()
+    @Transactional
     public Integer getSequence(String tenantId, String labelName, String character) {
         Integer sequence = 1;
         if (StringUtils.isNotBlank(tenantId) && StringUtils.isNotBlank(labelName)
@@ -106,7 +106,7 @@ public class AutoFormSequenceService {
      * @param tenantId
      * @param labelName
      */
-    @Transactional()
+    @Transactional
     public void updateSequence(String tenantId, String labelName, String character) {
         if (StringUtils.isNotBlank(tenantId) && StringUtils.isNotBlank(labelName)
             && StringUtils.isNotBlank(character)) {

@@ -31,7 +31,7 @@ public class ProcessHistoryRestController {
      * @return
      */
     @RequestMapping(value = "/historyList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> historyList(@RequestParam(required = true) String processInstanceId) {
+    public Y9Result<List<Map<String, Object>>> historyList(@RequestParam String processInstanceId) {
         List<Map<String, Object>> items = processTrackService.getListMap(processInstanceId);
         return Y9Result.success(items, "获取成功");
     }

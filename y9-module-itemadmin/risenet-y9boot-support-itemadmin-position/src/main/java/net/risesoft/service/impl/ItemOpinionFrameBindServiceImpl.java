@@ -54,7 +54,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     private final ProcessDefinitionApi processDefinitionManager;
 
     @Override
-    @Transactional()
+    @Transactional
     public void changeSignOpinion(String id, Boolean signOpinion) {
         ItemOpinionFrameBind itemOpinionFrameBind = this.findOne(id);
         if (null != itemOpinionFrameBind) {
@@ -64,7 +64,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -124,14 +124,14 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void delete(String id) {
         itemOpinionFrameRoleService.removeByItemOpinionFrameId(id);
         itemOpinionFrameBindRepository.deleteById(id);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void delete(String[] ids) {
         for (String id : ids) {
             this.delete(id);
@@ -238,7 +238,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public ItemOpinionFrameBind save(ItemOpinionFrameBind opinionFrameTaskRoleBind) {
         return itemOpinionFrameBindRepository.save(opinionFrameTaskRoleBind);
     }
@@ -252,7 +252,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
      * @param taskDefKey
      */
     @Override
-    @Transactional()
+    @Transactional
     public void save(String opinionFrameNameAndMarks, String itemId, String processDefinitionId, String taskDefKey) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<ItemOpinionFrameBind> resList = new ArrayList<ItemOpinionFrameBind>();

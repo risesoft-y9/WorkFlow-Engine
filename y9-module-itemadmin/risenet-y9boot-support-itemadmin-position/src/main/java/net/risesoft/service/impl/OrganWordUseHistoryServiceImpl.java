@@ -30,7 +30,7 @@ public class OrganWordUseHistoryServiceImpl implements OrganWordUseHistoryServic
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public OrganWordUseHistory save(OrganWordUseHistory organWordUseHistory) {
         return organWordUseHistoryRepository.save(organWordUseHistory);
     }

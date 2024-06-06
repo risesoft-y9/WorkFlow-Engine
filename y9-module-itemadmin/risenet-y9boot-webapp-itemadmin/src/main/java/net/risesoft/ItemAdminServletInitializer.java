@@ -31,6 +31,7 @@ public class ItemAdminServletInitializer extends SpringBootServletInitializer {
         String cookieSecure = env.getProperty("server.servlet.session.cookie.secure", "false");
 
         ServletContext servletContext = ctx.getServletContext();
+        assert servletContext != null;
         servletContext.setSessionTrackingModes(Collections.singleton(SessionTrackingMode.COOKIE));
         SessionCookieConfig sessionCookieConfig = servletContext.getSessionCookieConfig();
         sessionCookieConfig.setHttpOnly(true);

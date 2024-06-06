@@ -77,7 +77,7 @@ public class ViewTypeServiceImpl implements ViewTypeService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void remove(String id) {
         ViewType viewType = this.findById(id);
         if (viewType != null) {
@@ -86,7 +86,7 @@ public class ViewTypeServiceImpl implements ViewTypeService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void remove(String[] ids) {
         for (String id : ids) {
             this.remove(id);
@@ -95,13 +95,13 @@ public class ViewTypeServiceImpl implements ViewTypeService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public ViewType save(ViewType viewType) {
         return viewTypeRepository.save(viewType);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public ViewType saveOrUpdate(ViewType viewType) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

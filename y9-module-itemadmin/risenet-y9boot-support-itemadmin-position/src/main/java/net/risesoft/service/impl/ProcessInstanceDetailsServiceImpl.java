@@ -49,7 +49,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
     private final OpinionService opinionService;
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean deleteProcessInstance(String processInstanceId) {
         try {
             processInstanceRepository.deleteByProcessInstanceId(processInstanceId);
@@ -66,7 +66,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
         Map<String, Object> ret_map = new HashMap<String, Object>();
         ret_map.put("success", true);
         try {
-            List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> listMap = new ArrayList<>();
             Sort sort = Sort.by(Sort.Direction.DESC, "startTime");
             PageRequest pageable = PageRequest.of(page - 1, rows, sort);
             Page<ProcessInstance> pageList = null;
@@ -79,7 +79,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for (ProcessInstance obj : pageList.getContent()) {
                 Map<String, Object> mapData = new HashMap<String, Object>();
-                List<Map<String, Object>> listData = new ArrayList<Map<String, Object>>();
+                List<Map<String, Object>> listData = new ArrayList<>();
                 List<ProcessInstanceDetails> list =
                     processInstanceDetailsRepository.findByProcessInstanceId(obj.getProcessInstanceId());
                 mapData.put("itembox", "done");
@@ -123,7 +123,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean save(ProcessInstanceDetailsModel model) {
         try {
             SpmApproveItem spmApproveItem = spmApproveitemService.findById(model.getItemId());
@@ -176,7 +176,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean updateProcessInstanceDetails(String processInstanceId, String taskId, String itembox, Date endTime) {
         try {
             ProcessInstanceDetails details =

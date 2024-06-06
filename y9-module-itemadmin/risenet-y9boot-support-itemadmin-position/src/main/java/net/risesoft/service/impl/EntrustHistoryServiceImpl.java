@@ -106,7 +106,7 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public EntrustHistory save(EntrustHistory entrustHistory) throws ParseException {
         return entrustHistoryRepository.save(entrustHistory);
     }

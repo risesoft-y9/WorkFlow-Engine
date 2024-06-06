@@ -12,7 +12,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -66,8 +65,8 @@ public class MobileSyncWeiBanJieController {
     }
 
     @RequestMapping(value = "/tongbu2DataCenter")
-    public void tongbu2DataCenter(String tenantId, HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+    public void tongbu2DataCenter(String tenantId,HttpServletResponse response) {
+        Map<String, Object> resMap = new HashMap<>(16);
         Connection connection = null;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -78,6 +77,7 @@ public class MobileSyncWeiBanJieController {
                             + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "	P .START_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
+            assert dataSource != null;
             connection = dataSource.getConnection();
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
@@ -94,9 +94,9 @@ public class MobileSyncWeiBanJieController {
                     processInstanceId = (String) map.get("PROC_INST_ID_");
                     String processDefinitionId = (String) map.get("PROC_DEF_ID_");
                     String startTime = (String) map.get("START_TIME_");
-                    /**********************************
+                    /*
                      * 保存办结数据到数据中心，用于办结件列表查询
-                     *********************************************/
+                     */
                     ProcessParam processParamModel = processParamRepository.findByProcessInstanceId(processInstanceId);
                     OfficeDoneInfo officeDoneInfo = new OfficeDoneInfo();
                     officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -184,30 +184,31 @@ public class MobileSyncWeiBanJieController {
                     try {
                         errorLogService.saveErrorLog(errorLogModel);
                     } catch (Exception e1) {
+                        LOGGER.error("保存错误日志失败", e1);
                     }
-                    e.printStackTrace();
+                    LOGGER.error("同步失败", e);
                 }
             }
             LOGGER.info("********************同步失败{}条数据***************************", i);
             resMap.put("总数", list.size());
             resMap.put("同步失败", i);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("同步失败", e);
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("关闭连接失败", e);
             }
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
     }
 
     @RequestMapping(value = "/tongbuBanjie")
-    public void tongbuBanjie(String tenantId, HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+    public void tongbuBanjie(String tenantId, HttpServletResponse response) {
+        Map<String, Object> resMap = new HashMap<>(16);
         Connection connection = null;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -218,6 +219,7 @@ public class MobileSyncWeiBanJieController {
                             + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
+            assert dataSource != null;
             connection = dataSource.getConnection();
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
@@ -324,22 +326,23 @@ public class MobileSyncWeiBanJieController {
                     try {
                         errorLogService.saveErrorLog(errorLogModel);
                     } catch (Exception e1) {
+                        LOGGER.error("保存错误日志失败", e1);
                     }
-                    e.printStackTrace();
+                    LOGGER.error("同步失败", e);
                 }
             }
             LOGGER.info("********************同步失败{}条数据***************************", i);
             resMap.put("总数", list.size());
             resMap.put("同步失败", i);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("同步失败", e);
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("关闭连接失败", e);
             }
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));

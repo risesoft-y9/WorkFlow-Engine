@@ -1,10 +1,12 @@
 package net.risesoft.api;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ProcessTrack;
+import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
@@ -31,6 +33,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/processTrack4Position")
@@ -44,7 +47,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * 根据唯一标示删除历程数据
      *
      * @param tenantId 租户id
-     * @param id 唯一标识
+     * @param id       唯一标识
      * @throws Exception Exception
      */
     @Override
@@ -58,21 +61,21 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * 根据任务id获取自定义历程
      *
      * @param tenantId 租户id
-     * @param taskId 任务id
+     * @param taskId   任务id
      * @return List<ProcessTrackModel>
      */
     @Override
     @GetMapping(value = "/findByTaskId", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ProcessTrackModel> findByTaskId(String tenantId, String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ProcessTrackModel> items = new ArrayList<ProcessTrackModel>();
+        List<ProcessTrackModel> items = new ArrayList<>();
         try {
             if (StringUtils.isNotBlank(taskId)) {
                 List<ProcessTrack> list = processTrackService.findByTaskId(taskId);
                 items = ItemAdminModelConvertUtil.processTrackList2ModelList(list);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("根据任务id获取自定义历程异常：{}", e.getMessage());
         }
         return items;
     }
@@ -81,22 +84,21 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * 根据任务id获取自定义历程
      *
      * @param tenantId 租户id
-     * @param taskId 任务id
+     * @param taskId   任务id
      * @return List<ProcessTrackModel>
-     * @return
      */
     @Override
     @GetMapping(value = "/findByTaskIdAsc", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ProcessTrackModel> findByTaskIdAsc(String tenantId, String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ProcessTrackModel> items = new ArrayList<ProcessTrackModel>();
+        List<ProcessTrackModel> items = new ArrayList<>();
         try {
             if (StringUtils.isNotBlank(taskId)) {
                 List<ProcessTrack> list = processTrackService.findByTaskIdAsc(taskId);
                 items = ItemAdminModelConvertUtil.processTrackList2ModelList(list);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("根据任务id获取自定义历程异常：{}", e.getMessage());
         }
         return items;
     }
@@ -104,13 +106,13 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
     /**
      * 获取流程图任务节点信息
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 流程实例id
-     * @return
+     * @return Y9Result<List < HistoricActivityInstanceModel>>
      */
     @Override
     @GetMapping(value = "/getTaskList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<List<net.risesoft.model.itemadmin.HistoricActivityInstanceModel>> getTaskList(String tenantId, String processInstanceId) {
+    public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(String tenantId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return processTrackService.getTaskList(processInstanceId);
     }
@@ -118,8 +120,8 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
     /**
      * 获取历程列表(包含每个任务节点的特殊操作的历程)
      *
-     * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param tenantId          租户id
+     * @param positionId        岗位id
      * @param processInstanceId 流程实例id
      * @return Map&lt;String, Object&gt;
      */
@@ -129,9 +131,9 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         retMap.put(UtilConsts.SUCCESS, false);
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items;
         try {
             if (StringUtils.isNotBlank(processInstanceId)) {
                 items = processTrackService.getListMap(processInstanceId);
@@ -140,7 +142,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
             }
         } catch (Exception e) {
             retMap.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("获取历程列表异常：{}", e.getMessage());
         }
         return retMap;
     }
@@ -148,8 +150,8 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
     /**
      * 获取历程信息
      *
-     * @param tenantId 租户id
-     * @param positionId 岗位id
+     * @param tenantId          租户id
+     * @param positionId        岗位id
      * @param processInstanceId 流程实例id
      * @return Map&lt;String, Object&gt;
      */
@@ -159,9 +161,9 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         retMap.put(UtilConsts.SUCCESS, false);
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items;
         try {
             if (StringUtils.isNotBlank(processInstanceId)) {
                 items = processTrackService.getListMap4Simple(processInstanceId);
@@ -170,7 +172,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
             }
         } catch (Exception e) {
             retMap.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("获取历程列表异常：{}", e.getMessage());
         }
         return retMap;
     }
@@ -188,7 +190,6 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         ProcessTrack processTrack = ItemAdminModelConvertUtil.processTrackModel2ProcessTrack(processTrackModel);
         ProcessTrack ptTemp = processTrackService.saveOrUpdate(processTrack);
-        ProcessTrackModel ptModelTemp = ItemAdminModelConvertUtil.processTrack2Model(ptTemp);
-        return ptModelTemp;
+        return ItemAdminModelConvertUtil.processTrack2Model(ptTemp);
     }
 }

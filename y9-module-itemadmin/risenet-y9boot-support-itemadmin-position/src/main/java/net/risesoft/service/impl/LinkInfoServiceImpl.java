@@ -70,7 +70,7 @@ public class LinkInfoServiceImpl implements LinkInfoService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void remove(String id) {
         linkInfoRepository.deleteById(id);
         List<ItemLinkBind> list = itemLinkBindRepository.findByLinkIdOrderByCreateTimeDesc(id);
@@ -81,7 +81,7 @@ public class LinkInfoServiceImpl implements LinkInfoService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveOrUpdate(LinkInfo linkInfo) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = linkInfo.getId();

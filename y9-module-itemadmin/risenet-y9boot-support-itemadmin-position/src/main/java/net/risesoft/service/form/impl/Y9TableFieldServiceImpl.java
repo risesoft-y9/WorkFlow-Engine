@@ -1,10 +1,10 @@
 package net.risesoft.service.form.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.form.Y9TableField;
-import net.risesoft.enums.ItemFieldTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.form.Y9TableFieldRepository;
@@ -24,6 +24,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -36,9 +37,9 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
     private final TableManagerService tableManagerService;
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delete(String id) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             y9TableFieldRepository.deleteById(id);
             map.put("msg", "删除成功");
@@ -46,50 +47,36 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "删除失败");
-            e.printStackTrace();
+            LOGGER.error("删除失败", e);
         }
         return map;
     }
 
     @Override
     public Y9TableField findById(String id) {
-        Y9TableField c = y9TableFieldRepository.findById(id).orElse(null);
-        return c;
+        return y9TableFieldRepository.findById(id).orElse(null);
     }
 
     @Override
     public List<Y9TableField> findSystemField(String tableId) {
-        List<Y9TableField> list =
-            y9TableFieldRepository.findByTableIdAndIsSystemFieldOrderByDisplayOrderAsc(tableId, 1);
-        return list;
-    }
-
-    public String getCnFieldType(String fieldType) {
-        ItemFieldTypeEnum[] ftArr = ItemFieldTypeEnum.values();
-        for (ItemFieldTypeEnum ft : ftArr) {
-            if (fieldType.indexOf(ft.getValue()) >= 0) {
-                fieldType = fieldType.replaceFirst(ft.getValue(), ft.getName());
-            }
-        }
-        return fieldType;
+        return y9TableFieldRepository.findByTableIdAndIsSystemFieldOrderByDisplayOrderAsc(tableId, 1);
     }
 
     @Override
     public Map<String, Object> getFieldList(String tableId) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+        Map<String, Object> resMap = new HashMap<>(16);
         List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
         Map<String, Object> map = tableManagerService.getExistTableFields(tableId);
         for (Y9TableField field : list) {
-            /**
+            /*
              * 指定表中是否存在该字段，0为否，1为是
              */
             field.setState(0);
-            if (map != null && map.size() > 0) {
+            if (map != null && !map.isEmpty()) {
                 if (map.get(field.getFieldName().toLowerCase()) != null) {
                     field.setState(1);
                 }
             }
-            /** field.setFieldType(this.getCnFieldType(field.getFieldType())); */
         }
         resMap.put("rows", list);
         resMap.put(UtilConsts.SUCCESS, true);
@@ -97,9 +84,9 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveOrUpdate(Y9TableField field) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             if (StringUtils.isBlank(field.getId())) {
                 field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -109,6 +96,7 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
                 field.setDisplayOrder(order == null ? 1 : order + 1);
             }
             Y9Table y9Table = y9TableRepository.findById(field.getTableId()).orElse(null);
+            assert y9Table != null;
             field.setTableName(y9Table.getTableName());
             boolean b = field.getFieldType().contains("(");
             if (!b) {
@@ -120,25 +108,23 @@ public class Y9TableFieldServiceImpl implements Y9TableFieldService {
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "保存失败");
-            e.printStackTrace();
+            LOGGER.error("保存失败", e);
         }
         return map;
     }
 
     @Override
     public List<Y9TableField> searchFieldsByTableId(String tableId) {
-        List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
-        return list;
+        return y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
     }
 
     @Override
     public List<Y9TableField> searchFieldsByTableId(String tableId, Integer state) {
-        List<Y9TableField> list = y9TableFieldRepository.findByTableIdAndStateOrderByDisplayOrderAsc(tableId, state);
-        return list;
+        return y9TableFieldRepository.findByTableIdAndStateOrderByDisplayOrderAsc(tableId, state);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void updateState(String tableId) {
         y9TableFieldRepository.updateState(tableId);
     }

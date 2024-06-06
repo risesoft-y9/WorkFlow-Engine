@@ -33,7 +33,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     private final Y9FileStoreService y9FileStoreService;
 
     @Override
-    @Transactional()
+    @Transactional
     public void delBatchByProcessSerialNumbers(List<String> processSerialNumbers) {
         List<TransactionHistoryWord> list =
             transactionHistoryWordRepository.findByProcessSerialNumbers(processSerialNumbers);
@@ -48,7 +48,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
 
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public void deleteHistoryWordByIsTaoHong(String processSerialNumber, String isTaoHong) {
         List<TransactionHistoryWord> list = new ArrayList<TransactionHistoryWord>();
@@ -99,7 +99,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
         return null;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public void saveTransactionHistoryWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
         String processSerialNumber, String isTaoHong, String taskId) {
@@ -127,7 +127,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
         transactionHistoryWordRepository.save(transactionHistoryWord);
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public int update(String taskId, String processSerialNumber) {
         try {
@@ -148,7 +148,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
         return -1;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public void updateTransactionHistoryWordById(String fileStoreId, String fileType, String fileName, String fileSize,
         String isTaoHong, String userId, String id) {

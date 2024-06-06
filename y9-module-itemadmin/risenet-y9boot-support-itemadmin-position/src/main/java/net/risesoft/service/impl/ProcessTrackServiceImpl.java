@@ -78,7 +78,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     private final HistoricActivityApi historicActivityApi;
 
     @Override
-    @Transactional()
+    @Transactional
     public void deleteById(String id) {
         processTrackRepository.deleteById(id);
     }
@@ -107,7 +107,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     @Override
     public List<Map<String, Object>> getListMap(String processInstanceId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         // 由于需要获取call Activity类型的节点，将查询方法改为如下
         List<HistoricTaskInstanceModel> results = historicTaskManager.getByProcessInstanceId(tenantId, processInstanceId, "");
@@ -129,7 +129,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 continue;
             }
             String id = hai.getId(), taskId = hai.getId();
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", id);
             // 收件人
             map.put("assignee", "");
@@ -266,7 +266,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             items.add(map);
 
             for (ProcessTrack pt : ptList) {
-                Map<String, Object> mapTemp = new HashMap<String, Object>(16);
+                Map<String, Object> mapTemp = new HashMap<>(16);
                 mapTemp.put("id", id);
                 mapTemp.put("assignee", pt.getReceiverName() == null ? "" : pt.getReceiverName());
                 mapTemp.put("name", pt.getTaskDefName() == null ? "" : pt.getTaskDefName());
@@ -334,7 +334,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         String seq = "串行办理";
         if (seq.equals(name)) {
             HistoricVariableInstanceModel users = historicVariableApi.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, SysVariables.USERS, "");
-            List<String> list = users != null ? (ArrayList<String>)users.getValue() : new ArrayList<String>();
+            List<String> list = users != null ? (ArrayList<String>)users.getValue() : new ArrayList<>();
             boolean start = false;
             String assigneeId = (String)items.get(items.size() - 1).get("assigneeId");
             for (Object obj : list) {
@@ -345,7 +345,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                         continue;
                     }
                     if (start) {
-                        Map<String, Object> map = new HashMap<String, Object>(16);
+                        Map<String, Object> map = new HashMap<>(16);
                         Position employee = positionApi.get(Y9LoginUserHolder.getTenantId(), user).getData();
                         map.put("assignee", employee.getName());
                         map.put("name", "串行办理");
@@ -366,7 +366,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     @Override
     public List<Map<String, Object>> getListMap4Simple(String processInstanceId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricTaskInstanceModel> results = historicTaskManager.getByProcessInstanceId(tenantId, processInstanceId, "");
         String year = "";
@@ -387,7 +387,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 continue;
             }
             String taskId = hai.getId();
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             // 收件人
             map.put("assignee", "");
             // 任务名称
@@ -450,7 +450,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             items.add(map);
 
             for (ProcessTrack pt : ptList) {
-                Map<String, Object> mapTemp = new HashMap<String, Object>(16);
+                Map<String, Object> mapTemp = new HashMap<>(16);
                 mapTemp.put("assignee", pt.getReceiverName() == null ? "" : pt.getReceiverName());
                 mapTemp.put("name", pt.getTaskDefName() == null ? "" : pt.getTaskDefName());
                 mapTemp.put("startTime", pt.getStartTime() == null ? "" : pt.getStartTime());
@@ -500,7 +500,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         String seq = "串行办理";
         if (name.equals(seq)) {
             HistoricVariableInstanceModel users = historicVariableApi.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, SysVariables.USERS, "");
-            List<String> list = users != null ? (ArrayList<String>)users.getValue() : new ArrayList<String>();
+            List<String> list = users != null ? (ArrayList<String>)users.getValue() : new ArrayList<>();
             boolean start = false;
             String assigneeId = (String)items.get(items.size() - 1).get("assigneeId");
             for (Object obj : list) {
@@ -511,7 +511,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                         continue;
                     }
                     if (start) {
-                        Map<String, Object> map = new HashMap<String, Object>(16);
+                        Map<String, Object> map = new HashMap<>(16);
                         Position employee = positionApi.get(Y9LoginUserHolder.getTenantId(), user).getData();
                         map.put("assignee", employee.getName());
                         map.put("name", "串行办理");
@@ -592,7 +592,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public ProcessTrack saveOrUpdate(ProcessTrack pt) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = pt.getId();

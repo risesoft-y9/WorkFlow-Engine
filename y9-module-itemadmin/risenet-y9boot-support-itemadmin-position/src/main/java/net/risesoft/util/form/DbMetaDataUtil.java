@@ -150,14 +150,14 @@ public class DbMetaDataUtil {
     }
 
     public static List<Map<String, Object>> listAllTypes(Connection connection) throws Exception {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
         ResultSet rs = null;
         try {
             DatabaseMetaData dbmd = connection.getMetaData();
             connection.getTypeMap();
             rs = dbmd.getTypeInfo();
             while (rs.next()) {
-                Map<String, Object> map = new HashMap<String, Object>(16);
+                Map<String, Object> map = new HashMap<>(16);
                 map.put("TYPE_NAME", rs.getString("TYPE_NAME"));
                 map.put("DATA_TYPE", rs.getInt("DATA_TYPE"));
                 list.add(map);
@@ -335,7 +335,7 @@ public class DbMetaDataUtil {
                 tableSchema = dbmd.getUserName().toUpperCase();
                 String dialect = getDatabaseDialectName(connection);
                 rs = getPrimaryKeys(dialect, dbmd, databaseName, tableName, tableSchema);
-                List<String> pkList = new ArrayList<String>();
+                List<String> pkList = new ArrayList<>();
                 while (rs.next()) {
                     pkList.add(rs.getString("COLUMN_NAME"));
                 }
@@ -475,7 +475,7 @@ public class DbMetaDataUtil {
      * 不需要 PointBase 不支持 数据库名
      ***********/
     public String listAllTablesTree(Connection connection, String tableNamePattern) throws Exception {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
         ResultSet rs = null;
         ObjectMapper mapper = new ObjectMapper();
         String json = "[]";
@@ -507,21 +507,21 @@ public class DbMetaDataUtil {
                     } else if ("kingbase".equals(dialect)) {
                         dbName = dbmd.getUserName();
                     }
-                    HashMap<String, Object> map = new HashMap<String, Object>(16);
+                    HashMap<String, Object> map = new HashMap<>(16);
                     map.put("text", rs.getString("TABLE_NAME"));
-                    HashMap<String, Object> attributes = new HashMap<String, Object>(16);
+                    HashMap<String, Object> attributes = new HashMap<>(16);
                     attributes.put("catalog", rs.getString("TABLE_CAT"));
                     attributes.put("schema", rs.getString("TABLE_SCHEM"));
                     map.put("attributes", attributes);
                     list.add(map);
                 }
             }
-            HashMap<String, Object> pNode = new HashMap<String, Object>(16);
+            HashMap<String, Object> pNode = new HashMap<>(16);
             pNode.put("id", 0);
             pNode.put("text", dbName + "库表列表");
             pNode.put("iconCls", "icon-folder");
             pNode.put("children", list);
-            List<Map<String, Object>> tree = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> tree = new ArrayList<>();
             tree.add(pNode);
             json = mapper.writeValueAsString(tree);
 
@@ -535,7 +535,7 @@ public class DbMetaDataUtil {
     }
 
     public List<Map<String, Object>> listTypes(Connection connection) throws Exception {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
         try {
             String dialect = getDatabaseDialectName(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
@@ -558,118 +558,118 @@ public class DbMetaDataUtil {
     }
 
     private List<Map<String, Object>> listTypes4Mysql() {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>(16);
         map.put("typeName", "varchar");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "int");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "integer");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "longblob");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "text");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "longtext");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "datetime");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "date");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "bit");
         return list;
     }
 
     private List<Map<String, Object>> listTypes4Oracle() {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>(16);
         map.put("typeName", "VARCHAR2");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "NUMBER");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "LONG");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "TIMESTAMP");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "BLOB");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "DATE");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "INTEGER");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "CLOB");
         list.add(map);
         return list;
     }
 
     private List<Map<String, Object>> listTypes4Dm() {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>(16);
         map.put("typeName", "VARCHAR2");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "NUMBER");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "LONG");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "TIMESTAMP");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "BLOB");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "DATE");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "INTEGER");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "CLOB");
         list.add(map);
         return list;
     }
 
     private List<Map<String, Object>> listTypes4Kingbase() {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>(16);
         map.put("typeName", "VARCHAR2");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "NUMBER");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "LONG");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "TIMESTAMP");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "BLOB");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "DATE");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "INTEGER");
         list.add(map);
-        map = new HashMap<String, Object>(16);
+        map = new HashMap<>(16);
         map.put("typeName", "CLOB");
         list.add(map);
         return list;

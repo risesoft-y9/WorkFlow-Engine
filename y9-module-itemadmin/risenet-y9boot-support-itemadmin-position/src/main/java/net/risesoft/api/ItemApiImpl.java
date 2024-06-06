@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +48,7 @@ public class ItemApiImpl implements Item4PositionApi {
     /**
      * 根据系统名称获取事项
      *
-     * @param tenantId 租户id
+     * @param tenantId   租户id
      * @param systemName 系统名称
      * @return List<ItemModel>
      */
@@ -58,7 +57,7 @@ public class ItemApiImpl implements Item4PositionApi {
     public List<ItemModel> findAll(String tenantId, String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<SpmApproveItem> list = spmApproveItemRepository.findAll(systemName);
-        List<ItemModel> itemModelList = new ArrayList<ItemModel>();
+        List<ItemModel> itemModelList = new ArrayList<>();
         for (SpmApproveItem item : list) {
             ItemModel itemModel = new ItemModel();
             Y9BeanUtil.copyProperties(item, itemModel);
@@ -70,7 +69,7 @@ public class ItemApiImpl implements Item4PositionApi {
     /**
      * 根据流程的定义Key查找对应的事项
      *
-     * @param tenantId 租户Id
+     * @param tenantId             租户Id
      * @param processDefinitionKey 流程定义Key
      * @return ItemModel
      */
@@ -92,7 +91,7 @@ public class ItemApiImpl implements Item4PositionApi {
     public List<ItemModel> getAllItem(String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<SpmApproveItem> list = spmApproveItemRepository.findAll();
-        List<ItemModel> itemModelList = new ArrayList<ItemModel>();
+        List<ItemModel> itemModelList = new ArrayList<>();
         for (SpmApproveItem item : list) {
             ItemModel itemModel = new ItemModel();
             Y9BeanUtil.copyProperties(item, itemModel);
@@ -112,10 +111,9 @@ public class ItemApiImpl implements Item4PositionApi {
     @GetMapping(value = "/getAllItemList", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemModel> getAllItemList(String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        map = spmApproveItemService.list();
-        List<SpmApproveItem> list = (List<SpmApproveItem>)map.get("rows");
-        List<ItemModel> itemList = new ArrayList<ItemModel>();
+        Map<String, Object> map = spmApproveItemService.list();
+        List<SpmApproveItem> list = (List<SpmApproveItem>) map.get("rows");
+        List<ItemModel> itemList = new ArrayList<>();
         for (SpmApproveItem item : list) {
             ItemModel itemModel = new ItemModel();
             Y9BeanUtil.copyProperties(item, itemModel);
@@ -128,7 +126,7 @@ public class ItemApiImpl implements Item4PositionApi {
      * 根据事项id获取事项
      *
      * @param tenantId 租户id
-     * @param itemId 事项id
+     * @param itemId   事项id
      * @return ItemModel
      */
     @Override
@@ -146,7 +144,7 @@ public class ItemApiImpl implements Item4PositionApi {
     /**
      * 获取有权限的首个事项id
      *
-     * @param tenantId 租户id
+     * @param tenantId   租户id
      * @param positionId 岗位id
      * @return String
      */
@@ -162,8 +160,8 @@ public class ItemApiImpl implements Item4PositionApi {
     /**
      * 根据事项id获取绑定的表单id
      *
-     * @param tenantId 租户Id
-     * @param itemId 事项id
+     * @param tenantId             租户Id
+     * @param itemId               事项id
      * @param processDefinitionKey 流程定义Key
      * @return String
      */
@@ -177,9 +175,9 @@ public class ItemApiImpl implements Item4PositionApi {
     /**
      * 获取新建事项列表
      *
-     * @param tenantId 租户id
+     * @param tenantId   租户id
      * @param positionId 岗位id
-     * @return List<Map<String, Object>>
+     * @return List<Map < String, Object>>
      */
     @Override
     @GetMapping(value = "/getItemList", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -187,16 +185,14 @@ public class ItemApiImpl implements Item4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-        listMap = documentService.getItemList();
-        return listMap;
+        return documentService.getItemList();
     }
 
     /**
      * 获取事项系统字段映射配置
      *
-     * @param tenantId 租户Id
-     * @param itemId 事项id
+     * @param tenantId  租户Id
+     * @param itemId    事项id
      * @param mappingId 系统标识
      * @return List<ItemMappingConfModel>
      */
@@ -205,8 +201,8 @@ public class ItemApiImpl implements Item4PositionApi {
     public List<ItemMappingConfModel> getItemMappingConf(String tenantId, String itemId, String mappingId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemMappingConf> list =
-            itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
-        List<ItemMappingConfModel> itemList = new ArrayList<ItemMappingConfModel>();
+                itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
+        List<ItemMappingConfModel> itemList = new ArrayList<>();
         for (ItemMappingConf item : list) {
             ItemMappingConfModel itemModel = new ItemMappingConfModel();
             Y9BeanUtil.copyProperties(item, itemModel);
@@ -225,21 +221,15 @@ public class ItemApiImpl implements Item4PositionApi {
     @GetMapping(value = "/getItemSystem", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getItemSystem(String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-        try {
-            listMap = spmApproveItemRepository.getItemSystem();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return listMap;
+        return spmApproveItemRepository.getItemSystem();
     }
 
     /**
      * 获取个人有权限事项列表
      *
-     * @param tenantId 租户id
+     * @param tenantId   租户id
      * @param positionId 岗位id
-     * @return List<Map<String, Object>>
+     * @return List<Map < String, Object>>
      */
     @Override
     @GetMapping(value = "/getMyItemList", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -247,15 +237,13 @@ public class ItemApiImpl implements Item4PositionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-        listMap = documentService.getMyItemList();
-        return listMap;
+        return documentService.getMyItemList();
     }
 
     /**
      * 判断该租户是否有流程定义
      *
-     * @param tenantId 租户Id
+     * @param tenantId             租户Id
      * @param processDefinitionKey 流程定义Key
      * @return Boolean
      */
@@ -263,7 +251,6 @@ public class ItemApiImpl implements Item4PositionApi {
     @GetMapping(value = "/hasProcessDefinitionByKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Boolean hasProcessDefinitionByKey(String tenantId, String processDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Boolean hasKey = spmApproveItemService.hasProcessDefinitionByKey(processDefinitionKey);
-        return hasKey;
+        return spmApproveItemService.hasProcessDefinitionByKey(processDefinitionKey);
     }
 }

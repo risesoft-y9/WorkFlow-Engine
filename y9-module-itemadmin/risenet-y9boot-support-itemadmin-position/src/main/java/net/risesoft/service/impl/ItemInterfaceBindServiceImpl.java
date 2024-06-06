@@ -61,7 +61,7 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeBind(String id) {
         ItemInterfaceBind bind = itemInterfaceBindRepository.findById(id).orElse(null);
         if (bind != null) {
@@ -72,7 +72,7 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveBind(String itemId, String[] interfaceIds) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String interfaceId : interfaceIds) {

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +38,7 @@ public class TaoHongTemplateTypeRestController {
     public Y9Result<List<TaoHongTemplateType>> list() {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
-        List<TaoHongTemplateType> list = new ArrayList<TaoHongTemplateType>();
+        List<TaoHongTemplateType> list;
         if (person.isGlobalManager()) {
             list = taoHongTemplateTypeService.findAll();
         } else {
@@ -56,7 +55,7 @@ public class TaoHongTemplateTypeRestController {
      * @return
      */
     @RequestMapping(value = "/newOrModify", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<TaoHongTemplateType> newOrModify(@RequestParam(required = true) String id) {
+    public Y9Result<TaoHongTemplateType> newOrModify(@RequestParam String id) {
         TaoHongTemplateType t = taoHongTemplateTypeService.findOne(id);
         return Y9Result.success(t, "获取成功");
     }
@@ -68,7 +67,7 @@ public class TaoHongTemplateTypeRestController {
      * @return
      */
     @RequestMapping(value = "/removeTaoHongTemplateType", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeTaoHongTemplateType(@RequestParam(required = true) String[] ids) {
+    public Y9Result<String> removeTaoHongTemplateType(@RequestParam String[] ids) {
         taoHongTemplateTypeService.removeTaoHongTemplateType(ids);
         return Y9Result.successMsg("删除成功");
     }
@@ -80,7 +79,7 @@ public class TaoHongTemplateTypeRestController {
      * @return
      */
     @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrder(@RequestParam(required = true) String[] idAndTabIndexs) {
+    public Y9Result<String> saveOrder(@RequestParam String[] idAndTabIndexs) {
         taoHongTemplateTypeService.saveOrder(idAndTabIndexs);
         return Y9Result.successMsg("保存成功");
     }

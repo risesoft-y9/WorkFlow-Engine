@@ -2,6 +2,7 @@ package net.risesoft.service.impl;
 
 import jodd.util.StringUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
@@ -44,6 +45,7 @@ import java.util.Optional;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -69,7 +71,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
 
     private final PositionApi positionManager;
 
-    @Transactional()
+    @Transactional
     @Override
     public void deleteByProcessSerialNumber(String processSerialNumber) {
         DraftEntity draftEntity = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
@@ -78,10 +80,10 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         }
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Map<String, Object> deleteDraft(String ids) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("message", "删除成功");
         map.put(UtilConsts.SUCCESS, true);
         try {
@@ -89,23 +91,24 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                 String[] id = ids.split(SysVariables.COMMA);
                 for (String idTemp : id) {
                     DraftEntity draftEntity = draftEntityRepository.findById(idTemp).orElse(null);
+                    assert draftEntity != null;
                     String processSerialNumber = draftEntity.getProcessSerialNumber();
                     draftEntityRepository.delete(draftEntity);
                     try {
                         processParamService.deleteByProcessSerialNumber(processSerialNumber);
-                        List<String> list = new ArrayList<String>();
+                        List<String> list = new ArrayList<>();
                         list.add(processSerialNumber);
                         transactionFileService.delBatchByProcessSerialNumbers(list);
                         transactionWordService.delBatchByProcessSerialNumbers(list);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("删除流程参数失败", e);
                     }
                 }
             }
         } catch (Exception e) {
             map.put("message", "删除失败");
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("删除草稿失败", e);
         }
         return map;
     }
@@ -115,7 +118,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         boolean delFlag) {
         PageRequest pageable =
             PageRequest.of(page > 0 ? page - 1 : 0, rows, Sort.by(Sort.Direction.DESC, "urgency", "draftTime"));
-        Page<DraftEntity> list = null;
+        Page<DraftEntity> list;
         title = "%" + title + "%";
         if (delFlag) {
             if (StringUtil.isEmpty(itemId)) {
@@ -140,7 +143,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         String title, boolean delFlag) {
         PageRequest pageable =
             PageRequest.of(page > 0 ? page - 1 : 0, rows, Sort.by(Sort.Direction.DESC, "urgency", "draftTime"));
-        Page<DraftEntity> list = null;
+        Page<DraftEntity> list;
         title = "%" + title + "%";
         if (delFlag) {
             list = draftEntityRepository.findByTypeAndCreaterIdAndTitleLikeAndDelFlagTrue(systemName, userId, title,
@@ -153,7 +156,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> openDraft(String processSerialNumber, String itemId, boolean mobile) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> returnMap = new HashMap<>(16);
@@ -173,7 +176,6 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         DraftEntity draft = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         returnMap.put("customItem", processParam.getCustomItem());
-        String activitiUser = positionId;
         returnMap = documentService.genDocumentModel(itemId, processDefinitionKey, "", taskDefKey, mobile, returnMap);
         returnMap.put("taskDefKeyList", taskDefKeyList);
         returnMap.put("taskDefNameList", taskDefNameList);
@@ -183,17 +185,17 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         returnMap.put("processDefinitionKey", processDefinitionKey);
         returnMap.put("taskDefKey", taskDefKey);
         returnMap.put("documentTitle", draft.getTitle());
-        returnMap.put("activitiUser", activitiUser);
+        returnMap.put("activitiUser", positionId);
         returnMap.put("processSerialNumber", processSerialNumber);
         returnMap.put("itembox", ItemBoxTypeEnum.DRAFT.getValue());
         returnMap.put("processInstanceId", "");
         return returnMap;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Map<String, Object> reduction(String ids) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("message", "还原成功");
         map.put(UtilConsts.SUCCESS, true);
         try {
@@ -201,7 +203,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                 String[] id = ids.split(",");
                 for (String idTemp : id) {
                     Optional<DraftEntity> draft = draftEntityRepository.findById(idTemp);
-                    if (draft != null && draft.get().getId() != null) {
+                    if (draft.isPresent() && draft.get().getId() != null) {
                         draft.get().setDelFlag(false);
                         draftEntityRepository.save(draft.get());
                     }
@@ -210,15 +212,15 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         } catch (Exception e) {
             map.put("message", "还原失败");
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("还原草稿失败", e);
         }
         return map;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Map<String, Object> removeDraft(String ids) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("message", "删除成功");
         map.put(UtilConsts.SUCCESS, true);
         try {
@@ -226,7 +228,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                 String[] id = ids.split(SysVariables.COMMA);
                 for (String idTemp : id) {
                     Optional<DraftEntity> draft = draftEntityRepository.findById(idTemp);
-                    if (draft != null) {
+                    if (draft.isPresent()) {
                         draft.get().setDelFlag(true);
                         draftEntityRepository.save(draft.get());
                     }
@@ -235,24 +237,25 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         } catch (Exception e) {
             map.put("message", "删除失败");
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("删除草稿失败", e);
         }
         return map;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
         String number, String level, String title, String type) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("message", "保存失败");
         map.put(UtilConsts.SUCCESS, false);
         try {
             if (StringUtils.isNotBlank(processSerialNumber)) {
                 DraftEntity draft = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
+                String urgency = level == null || level.isEmpty() ? "一般" : level;
                 if (draft != null && draft.getId() != null) {
                     draft.setDraftTime(new Date());
-                    draft.setUrgency(level == null || "".equals(level) ? "一般" : level);
+                    draft.setUrgency(urgency);
                     draft.setDocNumber(number);
                     draft.setTitle(title);
                     if (StringUtils.isNotBlank(type)) {
@@ -272,7 +275,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                     draft.setCreater(position.getName());
                     draft.setDelFlag(false);
                     draft.setDraftTime(new Date());
-                    draft.setUrgency(level == null || "".equals(level) ? "一般" : level);
+                    draft.setUrgency(urgency);
                     draft.setDocNumber(number);
                     draft.setTitle(title);
                     if (StringUtils.isNotBlank(type)) {
@@ -293,16 +296,16 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         } catch (Exception e) {
             map.put("message", "保存失败");
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("保存草稿失败", e);
         }
         return map;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
         String number, String level, String title, String jijian, String type) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("message", "保存失败");
         map.put(UtilConsts.SUCCESS, false);
         try {
@@ -311,7 +314,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                 DraftEntity draft = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
                 if (draft != null && draft.getId() != null) {
                     draft.setDraftTime(new Date());
-                    draft.setUrgency(jijian == null || "".equals(jijian) ? null : "51");
+                    draft.setUrgency(jijian == null || jijian.isEmpty() ? null : "51");
                     draft.setDocNumber(number);
                     draft.setTitle(title);
                     if (StringUtils.isNotBlank(type)) {
@@ -328,7 +331,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                     draft.setCreater(person.getName());
                     draft.setDelFlag(false);
                     draft.setDraftTime(new Date());
-                    draft.setUrgency(jijian == null || "".equals(jijian) ? null : "51");
+                    draft.setUrgency(jijian == null || jijian.isEmpty() ? null : "51");
                     draft.setDocNumber(number);
                     draft.setTitle(title);
                     if (StringUtils.isNotBlank(type)) {
@@ -349,7 +352,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         } catch (Exception e) {
             map.put("message", "保存失败");
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("保存草稿失败", e);
         }
         return map;
     }

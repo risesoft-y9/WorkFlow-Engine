@@ -32,7 +32,7 @@ public class PrintApiImpl implements PrintApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param itemId 事项id
-     * @return
+     * @return String
      */
     @Override
     @GetMapping(value = "/openDocument", produces = MediaType.APPLICATION_JSON_VALUE)

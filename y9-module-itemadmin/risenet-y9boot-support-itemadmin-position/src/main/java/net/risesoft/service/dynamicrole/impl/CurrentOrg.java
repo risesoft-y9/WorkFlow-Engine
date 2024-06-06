@@ -27,13 +27,12 @@ public class CurrentOrg extends AbstractDynamicRoleMember {
     @Override
     public Organization getOrg() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Organization org = orgUnitManager.getOrganization(tenantId, Y9LoginUserHolder.getPositionId()).getData();
-        return org;
+        return orgUnitManager.getOrganization(tenantId, Y9LoginUserHolder.getPositionId()).getData();
     }
 
     @Override
     public List<OrgUnit> getOrgUnitList() {
-        List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
+        List<OrgUnit> orgUnitList = new ArrayList<>();
         orgUnitList.add(getOrg());
         return orgUnitList;
     }

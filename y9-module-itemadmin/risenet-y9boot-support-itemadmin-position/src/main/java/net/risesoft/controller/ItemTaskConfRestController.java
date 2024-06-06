@@ -39,8 +39,8 @@ public class ItemTaskConfRestController {
      * @return
      */
     @RequestMapping(value = "/copyTaskConfig", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyTaskConfig(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> copyTaskConfig(@RequestParam String itemId,
+        @RequestParam String processDefinitionId) {
         taskConfService.copyTaskConf(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }
@@ -53,19 +53,19 @@ public class ItemTaskConfRestController {
      * @return
      */
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String processDefinitionId) {
-        List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+    public Y9Result<Map<String, Object>> getBpmList(@RequestParam String itemId,
+        @RequestParam String processDefinitionId) {
+        List<Map<String, Object>> resList = new ArrayList<>();
+        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
         for (Map<String, Object> map : list) {
             if (map.get(SysVariables.MULTIINSTANCE) != null
-                && !((String)map.get(SysVariables.MULTIINSTANCE)).equals(SysVariables.SEQUENTIAL)) {
+                && !map.get(SysVariables.MULTIINSTANCE).equals(SysVariables.SEQUENTIAL)) {
                 map.put("id", "");
                 map.put("signTask", false);
                 map.put("taskType", "单人");
-                if (((String)map.get(SysVariables.MULTIINSTANCE)).equals(SysVariables.PARALLEL)) {
+                if (map.get(SysVariables.MULTIINSTANCE).equals(SysVariables.PARALLEL)) {
                     map.put("taskType", "并行");
                 }
                 String taskDefKey = (String)map.get("taskDefKey");

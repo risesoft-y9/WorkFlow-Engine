@@ -176,7 +176,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     private final ProcessDataCopyApi processDataCopyApi;
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyCalendarConfig(String sourceTenantId, String targetTenantId) {
         /*
           1、查找源租户是否存在日历配置
@@ -198,7 +198,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyCommonButton(String sourceTenantId, String targetTenantId, String itemId) {
         /*
           1、查找源租户是否存在普通按钮
@@ -282,7 +282,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyDynamicRole(String sourceTenantId, String targetTenantId) {
         /*
          * 1、在源租户查找动态角色
@@ -300,7 +300,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyForm(String sourceTenantId, String targetTenantId, String itemId) {
         /*
          * 1、源租户的字典类型和字典值，
@@ -462,7 +462,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyItem(String sourceTenantId, String targetTenantId, String itemId) {
         /*
          * 1、在目标租户查找事项，不存在才继续复制
@@ -487,7 +487,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyItemViewConf(String sourceTenantId, String targetTenantId, String itemId) {
         /*
          * 1、查找目标租户该事项是否存在视图配置
@@ -512,7 +512,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyOpinionFrame(String sourceTenantId, String targetTenantId, String itemId) {
         /*
          * 1、先复制意见框
@@ -594,7 +594,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyOrganWord(String sourceTenantId, String targetTenantId, String itemId) {
         /*
          * 1、查找源租户是否存在编号
@@ -679,7 +679,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyPerm(String sourceTenantId, String targetTenantId, String itemId, Map<String, String> roleIdMap) {
         /*
          * 1、先查目标租户该事项是否有授权，没有再复制授权
@@ -724,7 +724,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyPrintTemplate(String sourceTenantId, String targetTenantId, String itemId) {
         /*
          * 1、查找源租户是否存在打印模板
@@ -761,7 +761,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copySendButton(String sourceTenantId, String targetTenantId, String itemId) {
         /*
          * 1、查找源租户是否存在发送按钮
@@ -844,7 +844,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyTabEntity(String sourceTenantId, String targetTenantId, String itemId) {
         /*
          * 1、查找源租户是否存在页签
@@ -896,7 +896,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyTaoHongTemplate(String sourceTenantId, String targetTenantId) {
         /*
          * 1、查找源租户是否存在套红模板
@@ -926,7 +926,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, String> copyTenantRole(String sourceTenantId, String targetTenantId, String itemId) {
         /*
          * 1、在源租户查找权限中绑定的租户的角色
@@ -979,7 +979,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyWordTemplate(String sourceTenantId, String targetTenantId, String itemId) {
         /*
          * 1、查找源租户是否存在正文模板

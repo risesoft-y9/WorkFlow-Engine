@@ -57,8 +57,7 @@ public class OpinionApiImpl implements Opinion4PositionApi {
     @GetMapping(value = "/checkSignOpinion", produces = MediaType.APPLICATION_JSON_VALUE)
     public Boolean checkSignOpinion(String tenantId, String userId, String processSerialNumber, String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Boolean checkSignOpinion = opinionService.checkSignOpinion(processSerialNumber, taskId);
-        return checkSignOpinion;
+        return opinionService.checkSignOpinion(processSerialNumber, taskId);
     }
 
     /**
@@ -162,9 +161,8 @@ public class OpinionApiImpl implements Opinion4PositionApi {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-        List<Map<String, Object>> listMap = opinionService.personCommentList(processSerialNumber, taskId, itembox,
+        return opinionService.personCommentList(processSerialNumber, taskId, itembox,
             opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
-        return listMap;
     }
 
     /**

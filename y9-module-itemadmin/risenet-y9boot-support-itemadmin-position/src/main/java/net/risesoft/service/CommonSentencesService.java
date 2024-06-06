@@ -38,7 +38,7 @@ public class CommonSentencesService {
      *
      * @param id
      */
-    @Transactional()
+    @Transactional
     public void deleteById(String id) {
         commonSentencesRepository.deleteById(id);
     }
@@ -56,9 +56,9 @@ public class CommonSentencesService {
      *
      * @return
      */
-    @Transactional()
+    @Transactional
     public List<Map<String, Object>> listSentencesService() {
-        List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> resList = new ArrayList<>();
         String userId = Y9LoginUserHolder.getPersonId();
         List<CommonSentences> list = commonSentencesRepository.findAllByUserId(userId);
         List<CommonSentencesInit> listInit = commonSentencesInitRepository.findByUserId(userId);
@@ -73,7 +73,7 @@ public class CommonSentencesService {
                 int i = 0;
                 for (String option : comment) {
                     CommonSentences commonSentences = saveCommonSentences(userId, option, i);
-                    Map<String, Object> map = new HashMap<String, Object>(16);
+                    Map<String, Object> map = new HashMap<>(16);
                     map.put("id", commonSentences.getId());
                     map.put("content", option);
                     map.put("tabIndex", i);
@@ -82,7 +82,7 @@ public class CommonSentencesService {
                 }
             } else {
                 for (CommonSentences commonSentences : list) {
-                    Map<String, Object> map = new HashMap<String, Object>(16);
+                    Map<String, Object> map = new HashMap<>(16);
                     map.put("content", commonSentences.getContent());
                     map.put("tabIndex", commonSentences.getTabIndex());
                     map.put("id", commonSentences.getId());
@@ -100,14 +100,14 @@ public class CommonSentencesService {
      *
      * @param tabIndex
      */
-    @Transactional()
+    @Transactional
     public void removeCommonSentences(int tabIndex) {
         String userId = Y9LoginUserHolder.getPersonId();
         CommonSentences commonSentences = commonSentencesRepository.findByUserIdAndTabIndex(userId, tabIndex);
         commonSentencesRepository.delete(commonSentences);
     }
 
-    @Transactional()
+    @Transactional
     public void removeUseNumber() {
         List<CommonSentences> list = commonSentencesRepository.findByUserId(Y9LoginUserHolder.getPersonId());
         for (CommonSentences info : list) {
@@ -122,7 +122,7 @@ public class CommonSentencesService {
      * @param content
      * @throws Exception
      */
-    @Transactional()
+    @Transactional
     public void save(String content) {
         int tabIndex = 0;
         String userId = Y9LoginUserHolder.getPersonId();
@@ -141,7 +141,7 @@ public class CommonSentencesService {
      * @param id
      * @param content
      */
-    @Transactional()
+    @Transactional
     public void save(String id, String content) {
         if (StringUtils.isNotBlank(id)) {
             Optional<CommonSentences> commonSentences = commonSentencesRepository.findById(id);
@@ -155,7 +155,7 @@ public class CommonSentencesService {
 
     }
 
-    @Transactional()
+    @Transactional
     public CommonSentences saveCommonSentences(String userId, String content, int tabIndex) {
         CommonSentences commonSentences = commonSentencesRepository.findByUserIdAndTabIndex(userId, tabIndex);
         if (commonSentences == null || commonSentences.getId() == null) {
@@ -169,7 +169,7 @@ public class CommonSentencesService {
         return commonSentencesRepository.save(commonSentences);
     }
 
-    @Transactional()
+    @Transactional
     public void updateUseNumber(String id) {
         CommonSentences info = commonSentencesRepository.findById(id).orElse(null);
         if (info != null) {

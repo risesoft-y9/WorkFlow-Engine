@@ -88,13 +88,13 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delChildTableRow(String formId, String tableId, String guid) {
         return y9FormService.delChildTableRow(formId, tableId, guid);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delPreFormData(String formId, String guid) {
         return y9FormService.delPreFormData(formId, guid);
     }
@@ -102,7 +102,7 @@ public class FormDataServiceImpl implements FormDataService {
     @Override
     public List<Map<String, Object>> getAllFieldPerm(String formId, String taskDefKey, String processDefinitionId) {
         List<String> list = y9FieldPermRepository.findByFormId(formId);
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         for (String fieldName : list) {
             Map<String, Object> map = this.getFieldPerm(formId, fieldName, taskDefKey, processDefinitionId);
             if (map != null) {
@@ -114,7 +114,7 @@ public class FormDataServiceImpl implements FormDataService {
 
     @Override
     public Map<String, Object> getBindPreFormByItemId(String itemId) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("formId", "");
         map.put("formName", "");
@@ -138,7 +138,7 @@ public class FormDataServiceImpl implements FormDataService {
 
     @Override
     public Map<String, Object> getData(String tenantId, String itemId, String processSerialNumber) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         try {
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
@@ -171,7 +171,7 @@ public class FormDataServiceImpl implements FormDataService {
     public Map<String, Object> getFieldPerm(String formId, String fieldName, String taskDefKey, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+        Map<String, Object> resMap = new HashMap<>(16);
         // 写权限
         resMap.put("writePerm", false);
         resMap.put("fieldName", fieldName);
@@ -200,7 +200,7 @@ public class FormDataServiceImpl implements FormDataService {
     public Map<String, Object> getFieldPerm(Y9FieldPerm y9FieldPerm) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+        Map<String, Object> resMap = new HashMap<>(16);
         // 绑定了角色
         if (StringUtils.isNotBlank(y9FieldPerm.getWriteRoleId())) {
             resMap.put("writePerm", false);
@@ -285,7 +285,7 @@ public class FormDataServiceImpl implements FormDataService {
 
     @Override
     public Map<String, Object> getFromData(String formId, String processSerialNumber) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             map = y9FormService.getFormData(formId, processSerialNumber);
         } catch (Exception e) {
@@ -301,19 +301,19 @@ public class FormDataServiceImpl implements FormDataService {
 
     @SuppressWarnings("unchecked")
     @Override
-    @Transactional()
+    @Transactional
     public String saveAFormData(String itemId, String formdata, String formId) throws Exception {
         try {
             Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formdata, Map.class);
-            List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            List<Map<String, Object>> listMap = new ArrayList<>();
+            Map<String, Object> map = new HashMap<>(16);
             map.put("name", "form_Id");
             map.put("value", formId);
             listMap.add(map);
             for (String columnName : mapFormJsonData.keySet()) {
                 // 根据数据库表名获取列名
                 String value = mapFormJsonData.get(columnName).toString();
-                map = new HashMap<String, Object>(16);
+                map = new HashMap<>(16);
                 map.put("name", columnName);
                 map.put("value", value);
                 listMap.add(map);
@@ -365,10 +365,10 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData) throws Exception {
         try {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map = y9FormService.saveChildTableData(formId, tableId, processSerialNumber, jsonData);
             if (!(boolean)map.get(UtilConsts.SUCCESS)) {
                 throw new Exception("FormDataService saveFormData error");
@@ -381,19 +381,19 @@ public class FormDataServiceImpl implements FormDataService {
 
     @SuppressWarnings("unchecked")
     @Override
-    @Transactional()
+    @Transactional
     public void saveFormData(String formdata, String formId) throws Exception {
         try {
             Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formdata, Map.class);
-            List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            List<Map<String, Object>> listMap = new ArrayList<>();
+            Map<String, Object> map = new HashMap<>(16);
             map.put("name", "form_Id");
             map.put("value", formId);
             listMap.add(map);
             for (String columnName : mapFormJsonData.keySet()) {
                 // 根据数据库表名获取列名
                 String value = mapFormJsonData.get(columnName).toString();
-                map = new HashMap<String, Object>(16);
+                map = new HashMap<>(16);
                 map.put("name", columnName);
                 map.put("value", value);
                 listMap.add(map);

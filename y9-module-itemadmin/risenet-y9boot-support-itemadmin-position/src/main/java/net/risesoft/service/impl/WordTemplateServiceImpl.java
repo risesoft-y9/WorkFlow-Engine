@@ -58,9 +58,9 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     private final OrgUnitApi orgUnitApi;
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> deleteWordTemplate(String id) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "删除成功");
@@ -123,7 +123,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
 
     @Override
     public Map<String, Object> getBookMarkList(String wordTemplateId, String wordTemplateType) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取成功");
@@ -137,7 +137,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
             } else {
                 bookMarkNameList = Y9WordTool4Docx.getBookMarkNameList(is);
             }
-            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> items = new ArrayList<>();
             Map<String, Object> mapTemp = null;
             BookMarkBind bookMarkBind = null;
             for (String bookMarkName : bookMarkNameList) {
@@ -161,7 +161,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveOrUpdate(WordTemplate wordTemplate) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(), personName = person.getName();
@@ -202,13 +202,13 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> upload(MultipartFile file) {
         String[] fileNames = Objects.requireNonNull(file.getOriginalFilename()).split("\\\\");
         String fileName = "";
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "上传成功");
         try {

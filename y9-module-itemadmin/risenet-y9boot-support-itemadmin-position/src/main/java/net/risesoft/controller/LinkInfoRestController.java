@@ -47,7 +47,7 @@ public class LinkInfoRestController {
      * @return
      */
     @RequestMapping(value = "/findById", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<LinkInfo> findById(@RequestParam(required = true) String id) {
+    public Y9Result<LinkInfo> findById(@RequestParam String id) {
         LinkInfo info = linkInfoService.findById(id);
         return Y9Result.success(info, "获取成功");
     }
@@ -59,7 +59,7 @@ public class LinkInfoRestController {
      * @return
      */
     @RequestMapping(value = "/findByLinkId", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemLinkBind>> findByLinkId(@RequestParam(required = true) String id) {
+    public Y9Result<List<ItemLinkBind>> findByLinkId(@RequestParam String id) {
         List<ItemLinkBind> list = itemLinkBindService.findByLinkId(id);
         return Y9Result.success(list, "获取成功");
     }
@@ -71,7 +71,7 @@ public class LinkInfoRestController {
      * @return
      */
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> remove(@RequestParam(required = true) String id) {
+    public Y9Result<String> remove(@RequestParam String id) {
         linkInfoService.remove(id);
         return Y9Result.successMsg("删除成功");
     }

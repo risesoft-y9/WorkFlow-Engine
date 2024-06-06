@@ -49,7 +49,7 @@ public class CommonButtonServiceImpl implements CommonButtonService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeCommonButtons(String[] commonButtonIds) {
         for (String commonButtonId : commonButtonIds) {
             commonButtonRepository.deleteById(commonButtonId);
@@ -57,7 +57,7 @@ public class CommonButtonServiceImpl implements CommonButtonService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public CommonButton saveOrUpdate(CommonButton commonButton) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();

@@ -142,7 +142,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
     @Override
     public Y9Page<Map<String, Object>> getProcessInstanceList(String itemId, String processDefinitionId, Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> items = new ArrayList<>();
         Map<String, Object> map = runtimeManager.getProcessInstancesByDefId(tenantId, processDefinitionId, page, rows);
         List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)map.get("rows");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -152,7 +152,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
         Map<String, Object> mapTemp = null;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         for (ProcessInstanceModel processInstance : pList) {
-            mapTemp = new HashMap<String, Object>(16);
+            mapTemp = new HashMap<>(16);
             try {
                 String processInstanceId = processInstance.getId();
                 mapTemp.put("processInstanceId", processInstanceId);

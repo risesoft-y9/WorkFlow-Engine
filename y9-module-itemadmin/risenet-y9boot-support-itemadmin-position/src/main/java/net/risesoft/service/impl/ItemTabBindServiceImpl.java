@@ -38,7 +38,7 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
     private final RepositoryApi repositoryManager;
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyTabItemBind(String itemId, String processDefinitionId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -108,7 +108,7 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeTabItemBinds(String[] tabItemBindIds) {
         for (String tabItemBindId : tabItemBindIds) {
             tabItemBindRepository.deleteById(tabItemBindId);
@@ -116,13 +116,13 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void save(ItemTabBind tabItemBind) {
         tabItemBindRepository.save(tabItemBind);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveOrder(String[] idAndTabIndexs) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -142,7 +142,7 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public ItemTabBind saveTabBind(String tabId, String itemId, String processDefinitionId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();

@@ -50,7 +50,7 @@ public class EntrustServiceImpl implements EntrustService {
     private final PositionApi positionApi;
 
     @Override
-    @Transactional()
+    @Transactional
     public void destroyEntrust(String id) {
         Entrust entrust = this.findOne(id);
         if (0 != entrust.getUsed()) {
@@ -73,7 +73,7 @@ public class EntrustServiceImpl implements EntrustService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void destroyEntrust(String ownerId, String itemId) {
         Entrust entrust = this.findOneByOwnerIdAndItemId(ownerId, itemId);
         if (0 != entrust.getUsed()) {
@@ -94,7 +94,7 @@ public class EntrustServiceImpl implements EntrustService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void destroyEntrustById(String id) {
         Entrust entrust = this.findOne(id);
         if (0 != entrust.getUsed()) {
@@ -476,13 +476,13 @@ public class EntrustServiceImpl implements EntrustService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeEntrust(String id) {
         entrustRepository.deleteById(id);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Entrust saveOrUpdate(Entrust entrust) throws ParseException {
         String id = entrust.getId();
         if (StringUtils.isNotEmpty(id)) {

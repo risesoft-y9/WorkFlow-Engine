@@ -62,7 +62,7 @@ public class ButtonUtil {
     @SuppressWarnings({"unused", "unchecked"})
     public Map<String, Object> showButton(String itemId, String taskId, String itembox) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         String[] buttonIds = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15",
             "16", "17", "18", "19", "20", "21"};
         String[] buttonNames = {"保存", "发送", "返回", "退回", "委托", "协商", "完成", "送下一人", "办理完成", "签收", "撤销签收", "办结", "收回",
@@ -76,10 +76,10 @@ public class ButtonUtil {
         if (ItemBoxTypeEnum.TODO.getValue().equals(itembox) || ItemBoxTypeEnum.DOING.getValue().equals(itembox)) {
             task = taskManager.findById(tenantId, taskId);
         }
-        Map<String, Object> vars = new HashMap<String, Object>(16);
+        Map<String, Object> vars = new HashMap<>(16);
         String varsUser = "";
         String taskSenderId = "";
-        List<String> varsUsers = new ArrayList<String>();
+        List<String> varsUsers = new ArrayList<>();
         String multiInstance = "", varsSponsorGuid = "";
         SpmApproveItem item = itemService.findById(itemId);
         boolean customItem = false, showSubmitButton = false;

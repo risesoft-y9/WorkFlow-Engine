@@ -37,7 +37,7 @@ public class StarterDeptDeputyLeaders extends AbstractDynamicRoleMember {
     @Override
     public List<OrgUnit> getOrgUnitList(String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> orgUnitList = new ArrayList<OrgUnit>();
+        List<OrgUnit> orgUnitList = new ArrayList<>();
         if (StringUtils.isNotBlank(processInstanceId)) {
             ProcessInstanceModel processInstance = runtimeManager.getProcessInstance(tenantId, processInstanceId);
             String userIdAndDeptId = processInstance.getStartUserId();

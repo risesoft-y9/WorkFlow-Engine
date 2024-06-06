@@ -71,10 +71,10 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveRemindInstance(String processInstanceId, String taskIds, Boolean process,
         String arriveTaskKey, String completeTaskKey) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         retMap.put("msg", "保存失败");
         retMap.put(UtilConsts.SUCCESS, false);
         try {

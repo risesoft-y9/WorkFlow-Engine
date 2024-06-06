@@ -47,6 +47,7 @@ public class KafkaConsumer {
             LOGGER.info("****************开始消费topic:{},value:{}******************", topic, msg);
             if (topic.equals(Y9TopicConst.Y9_DATACOPY_MESSAGE)) {
                 HashMap<String, Object> map = Y9JsonUtil.readHashMap(msg);
+                assert map != null;
                 String sourceTenantId = (String)map.get("sourceTenantId");
                 String targetTenantId = (String)map.get("targetTenantId");
                 tenantId = targetTenantId;
@@ -64,6 +65,7 @@ public class KafkaConsumer {
 
             } else if (topic.equals(Y9TopicConst.Y9_DATACOPY4SYSTEM_MESSAGE)) {
                 HashMap<String, Object> map = Y9JsonUtil.readHashMap(msg);
+                assert map != null;
                 String sourceTenantId = (String)map.get("sourceTenantId");
                 String targetTenantId = (String)map.get("targetTenantId");
                 tenantId = targetTenantId;

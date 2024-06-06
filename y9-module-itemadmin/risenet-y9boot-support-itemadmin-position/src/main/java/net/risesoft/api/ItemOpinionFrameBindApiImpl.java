@@ -45,7 +45,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
     public List<ItemOpinionFrameBindModel> findByItemId(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindService.findByItemId(itemId);
-        List<ItemOpinionFrameBindModel> modelList = new ArrayList<ItemOpinionFrameBindModel>();
+        List<ItemOpinionFrameBindModel> modelList = new ArrayList<>();
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
             Y9BeanUtil.copyProperties(o, model);
@@ -61,7 +61,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
-     * @return
+     * @return List<ItemOpinionFrameBindModel>
      */
     @Override
     @GetMapping(value = "/findByItemIdAndProcessDefinitionId", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -70,7 +70,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list =
             itemOpinionFrameBindService.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
-        List<ItemOpinionFrameBindModel> modelList = new ArrayList<ItemOpinionFrameBindModel>();
+        List<ItemOpinionFrameBindModel> modelList = new ArrayList<>();
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
             Y9BeanUtil.copyProperties(o, model);
@@ -98,7 +98,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindService
             .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
-        List<ItemOpinionFrameBindModel> modelList = new ArrayList<ItemOpinionFrameBindModel>();
+        List<ItemOpinionFrameBindModel> modelList = new ArrayList<>();
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
             Y9BeanUtil.copyProperties(o, model);
@@ -127,7 +127,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindService
             .findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(itemId, processDefinitionId, taskDefKey);
-        List<ItemOpinionFrameBindModel> modelList = new ArrayList<ItemOpinionFrameBindModel>();
+        List<ItemOpinionFrameBindModel> modelList = new ArrayList<>();
         for (ItemOpinionFrameBind o : list) {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
             Y9BeanUtil.copyProperties(o, model);

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +40,7 @@ public class ItemInterfaceTaskBindController {
      * @return
      */
     @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyBind(@RequestParam(required = true) String interfaceId, @RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> copyBind(@RequestParam String interfaceId, @RequestParam String itemId, @RequestParam String processDefinitionId) {
         itemInterfaceTaskBindService.copyBind(itemId, interfaceId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }
@@ -55,10 +54,9 @@ public class ItemInterfaceTaskBindController {
      * @return
      */
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam(required = true) String itemId, @RequestParam(required = true) String interfaceId, @RequestParam(required = true) String processDefinitionId) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+    public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam String itemId, @RequestParam String interfaceId, @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        list = processDefinitionApi.getFlowElement(tenantId, processDefinitionId, false);
+        List<Map<String, Object>> list = processDefinitionApi.getFlowElement(tenantId, processDefinitionId, false);
         for (Map<String, Object> map : list) {
             String elementKey = (String)map.get("elementKey");
             ItemInterfaceTaskBind bind = itemInterfaceTaskBindRepository.findByTaskDefKeyAndItemIdAndProcessDefinitionIdAndInterfaceId(elementKey, itemId, processDefinitionId, interfaceId);
@@ -82,7 +80,7 @@ public class ItemInterfaceTaskBindController {
      * @return
      */
     @RequestMapping(value = "/saveBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveBind(@RequestParam(required = true) String interfaceId, @RequestParam(required = true) String itemId, @RequestParam(required = true) String processDefinitionId, String elementKey, @RequestParam String condition) {
+    public Y9Result<String> saveBind(@RequestParam String interfaceId, @RequestParam String itemId, @RequestParam String processDefinitionId, String elementKey, @RequestParam String condition) {
         itemInterfaceTaskBindService.saveBind(itemId, interfaceId, processDefinitionId, elementKey, condition);
         return Y9Result.successMsg("保存成功");
     }

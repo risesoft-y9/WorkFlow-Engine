@@ -41,9 +41,9 @@ public class ItemViewConfApiImpl implements ItemViewConfApi {
     @GetMapping(value = "/findByItemIdAndViewType", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemViewConfModel> findByItemIdAndViewType(String tenantId, String itemId, String viewType) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ItemViewConfModel> modelList = new ArrayList<ItemViewConfModel>();
+        List<ItemViewConfModel> modelList = new ArrayList<>();
         List<ItemViewConf> list = itemViewConfService.findByItemIdAndViewType(itemId, viewType);
-        ItemViewConfModel model = null;
+        ItemViewConfModel model;
         for (ItemViewConf itemViewConf : list) {
             model = new ItemViewConfModel();
             Y9BeanUtil.copyProperties(itemViewConf, model);

@@ -111,7 +111,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeBind(String[] ids) {
         for (String id : ids) {
             itemLinkBindRepository.deleteById(id);
@@ -120,7 +120,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeRole(String[] ids) {
         for (String id : ids) {
             itemLinkRoleRepository.deleteById(id);
@@ -128,7 +128,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveBindRole(String itemLinkId, String roleIds) {
         String[] roleIdarr = roleIds.split(";");
         for (String roleId : roleIdarr) {
@@ -144,7 +144,7 @@ public class ItemLinkBindServiceImpl implements ItemLinkBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveItemLinkBind(String itemId, String[] linkIds) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String linkId : linkIds) {

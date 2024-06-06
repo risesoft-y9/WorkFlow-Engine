@@ -34,7 +34,7 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/findByInterfaceId", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemInterfaceBind>> findByInterfaceId(@RequestParam(required = true) String id) {
+    public Y9Result<List<ItemInterfaceBind>> findByInterfaceId(@RequestParam String id) {
         List<ItemInterfaceBind> list = interfaceService.findByInterfaceId(id);
         return Y9Result.success(list, "获取成功");
     }
@@ -62,7 +62,7 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/findRequestParamsList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<InterfaceRequestParams>> findRequestParamsList(@RequestParam(required = false) String name, @RequestParam(required = false) String type, @RequestParam(required = true) String id) {
+    public Y9Result<List<InterfaceRequestParams>> findRequestParamsList(@RequestParam(required = false) String name, @RequestParam(required = false) String type, @RequestParam String id) {
         List<InterfaceRequestParams> list = interfaceService.findRequestParamsList(name, type, id);
         return Y9Result.success(list, "获取列表成功");
     }
@@ -75,7 +75,7 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/findResponseParamsList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<InterfaceResponseParams>> findResponseParamsList(@RequestParam(required = false) String name, @RequestParam(required = true) String id) {
+    public Y9Result<List<InterfaceResponseParams>> findResponseParamsList(@RequestParam(required = false) String name, @RequestParam String id) {
         List<InterfaceResponseParams> list = interfaceService.findResponseParamsList(name, id);
         return Y9Result.success(list, "获取列表成功");
     }
@@ -87,7 +87,7 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/removeInterface", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeInterface(@RequestParam(required = true) String id) {
+    public Y9Result<String> removeInterface(@RequestParam String id) {
         interfaceService.removeInterface(id);
         return Y9Result.successMsg("删除成功");
     }
@@ -99,7 +99,7 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/removeRequestParams", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeRequestParams(@RequestParam(required = true) String[] ids) {
+    public Y9Result<String> removeRequestParams(@RequestParam String[] ids) {
         interfaceService.removeReqParams(ids);
         return Y9Result.successMsg("删除成功");
     }
@@ -111,7 +111,7 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/removeResponseParams", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeResponseParams(@RequestParam(required = true) String[] ids) {
+    public Y9Result<String> removeResponseParams(@RequestParam String[] ids) {
         interfaceService.removeResParams(ids);
         return Y9Result.successMsg("删除成功");
     }

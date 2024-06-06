@@ -52,7 +52,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     private final SpmApproveItemService spmApproveitemService;
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userName = person.getName();
@@ -204,7 +204,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void initRole(String itemId, String processDefinitionId, String taskDefKey, String taskDefName) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userName = person.getName();
@@ -232,7 +232,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeRole(String itemId, String processDefinitionId, String taskDefKey, String roleIds) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userName = person.getName();
@@ -267,7 +267,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveOrder(String[] idAndTabIndexs) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userName = person.getName();
@@ -283,7 +283,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveRole(String itemId, String processDefinitionId, String taskDefKey, String roleIds) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userName = person.getName();

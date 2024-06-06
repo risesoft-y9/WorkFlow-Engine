@@ -33,13 +33,13 @@ public class ItemInterfaceParamsBindServiceImpl implements ItemInterfaceParamsBi
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void removeBind(String id) {
         itemInterfaceParamsBindRepository.deleteById(id);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveBind(ItemInterfaceParamsBind info) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = info.getId();

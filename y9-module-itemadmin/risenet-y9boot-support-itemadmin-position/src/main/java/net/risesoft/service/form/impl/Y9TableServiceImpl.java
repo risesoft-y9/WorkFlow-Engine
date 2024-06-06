@@ -1,5 +1,6 @@
 package net.risesoft.service.form.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.form.Y9Table;
@@ -33,12 +34,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9TableServiceImpl implements Y9TableService {
@@ -66,15 +69,15 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> addDataBaseTable(String tableName, String systemName, String systemCnName) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("msg", "操作成功");
         map.put(UtilConsts.SUCCESS, true);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Connection connection = null;
         try {
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
+            connection = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()).getConnection();
             Y9Table y9Table = new Y9Table();
             y9Table.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             y9Table.setCreateTime(sdf.format(new Date()));
@@ -106,13 +109,13 @@ public class Y9TableServiceImpl implements Y9TableService {
         } catch (Exception e) {
             map.put("msg", "操作失败");
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("添加数据表失败", e);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    LOGGER.error("关闭数据库连接失败", e);
                 }
             }
         }
@@ -120,9 +123,9 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> buildTable(Y9Table table, List<Map<String, Object>> listMap) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("msg", "创建失败");
         map.put(UtilConsts.SUCCESS, false);
         try {
@@ -138,9 +141,9 @@ public class Y9TableServiceImpl implements Y9TableService {
             Y9Table tableTemp = this.saveOrUpdate(table);
             if (tableTemp != null && tableTemp.getId() != null) {
                 String tableId = tableTemp.getId();
-                if (listMap.size() > 0) {
-                    List<String> ids = new ArrayList<String>();
-                    List<DbColumn> dbcs = new ArrayList<DbColumn>();
+                if (!listMap.isEmpty()) {
+                    List<String> ids = new ArrayList<>();
+                    List<DbColumn> dbcs;
                     if (tableExist) {
                         List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
                         dbcs = saveField(tableId, tableTemp.getTableName(), listMap, ids);
@@ -156,7 +159,7 @@ public class Y9TableServiceImpl implements Y9TableService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("创建数据表失败", e);
             map.put("msg", "创建失败");
             map.put(UtilConsts.SUCCESS, false);
         }
@@ -165,9 +168,9 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delete(String ids) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             String[] id = ids.split(",");
             for (String idTemp : id) {
@@ -180,15 +183,14 @@ public class Y9TableServiceImpl implements Y9TableService {
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "删除失败");
-            e.printStackTrace();
+            LOGGER.error("删除数据表失败", e);
         }
         return map;
     }
 
     @Override
     public Y9Table findById(String id) {
-        Y9Table c = y9TableRepository.findById(id).orElse(null);
-        return c;
+        return y9TableRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -213,25 +215,25 @@ public class Y9TableServiceImpl implements Y9TableService {
             List<Y9Table> list = y9TableRepository.findAll();
             for (Y9Table y9Table : list) {
                 if (tableNames.length() != 0) {
-                    tableNames.append("," + y9Table.getTableName());
+                    tableNames.append(",").append(y9Table.getTableName());
                 } else {
                     tableNames.append(y9Table.getTableName());
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+           LOGGER.error("获取所有表名失败", e);
         }
         return tableNames.toString();
     }
 
     @Override
     public Map<String, Object> getAllTables(String name) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
         Connection connection = null;
         try {
-            connection = jdbcTemplate4Tenant.getDataSource().getConnection();
-            List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+            connection = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()).getConnection();
+            List<Map<String, String>> list = new ArrayList<>();
             if (StringUtils.isNotBlank(name)) {
                 List<Map<String, String>> list1 = dbMetaDataUtil.listAllTables(connection, "%" + name + "%");
                 for (Map<String, String> m : list1) {
@@ -252,13 +254,13 @@ public class Y9TableServiceImpl implements Y9TableService {
             }
             map.put("rows", list);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取所有表失败", e);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    LOGGER.error("关闭数据库连接失败", e);
                 }
             }
         }
@@ -267,16 +269,16 @@ public class Y9TableServiceImpl implements Y9TableService {
 
     @Override
     public List<Map<String, Object>> getAppList() {
-        List<Map<String, Object>> tree = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> tree = new ArrayList<>();
         List<SpmApproveItem> list = approveItemRepository.findAll();
-        Map<String, Object> pNode = new HashMap<String, Object>(16);
+        Map<String, Object> pNode = new HashMap<>(16);
         String parentId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
         pNode.put("id", parentId);
         pNode.put("systemName", "");
         pNode.put("name", "系统列表");
         tree.add(pNode);
         for (SpmApproveItem approveItem : list) {
-            pNode = new HashMap<String, Object>(16);
+            pNode = new HashMap<>(16);
             String systemName = approveItem.getSystemName();
             String sysLevel = approveItem.getSysLevel();
             pNode.put("id", systemName);
@@ -303,7 +305,7 @@ public class Y9TableServiceImpl implements Y9TableService {
 
     @Override
     public Map<String, Object> getTables(String systemName, int page, int rows) {
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+        Map<String, Object> resMap = new HashMap<>(16);
         if (page < 1) {
             page = 1;
         }
@@ -349,20 +351,20 @@ public class Y9TableServiceImpl implements Y9TableService {
      * @param ids
      * @return
      */
-    @Transactional()
+    @Transactional
     public List<DbColumn> saveField(String tableId, String tableName, List<Map<String, Object>> listMap, List<String> ids) {
         List<DbColumn> dbcs = new ArrayList<DbColumn>();
         int order = 1;
         Y9TableField fieldTemp = null;
         for (Map<String, Object> m : listMap) {
-            String id = (String)m.get("id");
-            Integer isSystemField = (Integer)m.get("isSystemField");
-            String fieldCnName = (String)m.get("fieldCnName");
-            String fieldName = (String)m.get("fieldName");
-            Integer fieldLength = (Integer)m.get("fieldLength");
-            String fieldType = (String)m.get("fieldType");
-            Integer isMayNull = (Integer)m.get("isMayNull");
-            String oldFieldName = (String)m.get("oldFieldName");
+            String id = (String) m.get("id");
+            Integer isSystemField = (Integer) m.get("isSystemField");
+            String fieldCnName = (String) m.get("fieldCnName");
+            String fieldName = (String) m.get("fieldName");
+            Integer fieldLength = (Integer) m.get("fieldLength");
+            String fieldType = (String) m.get("fieldType");
+            Integer isMayNull = (Integer) m.get("isMayNull");
+            String oldFieldName = (String) m.get("oldFieldName");
             if (StringUtils.isEmpty(id)) {
                 fieldTemp = new Y9TableField();
                 fieldTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -407,7 +409,7 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Y9Table saveOrUpdate(Y9Table table) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Connection connection = null;
@@ -438,9 +440,9 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> updateTable(Y9Table table, List<Map<String, Object>> listMap, String type) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("msg", "操作成功");
         map.put(UtilConsts.SUCCESS, true);
         try {
@@ -449,7 +451,7 @@ public class Y9TableServiceImpl implements Y9TableService {
                 String tableId = savetable.getId();
                 String tableName = savetable.getTableName();
                 if (listMap.size() > 0) {
-                    List<String> ids = new ArrayList<String>();
+                    List<String> ids = new ArrayList<>();
                     List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
                     List<DbColumn> dbcs = new ArrayList<DbColumn>();
                     dbcs = saveField(tableId, tableName, listMap, ids);

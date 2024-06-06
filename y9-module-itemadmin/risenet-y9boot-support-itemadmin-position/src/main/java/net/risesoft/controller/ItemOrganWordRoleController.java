@@ -27,8 +27,8 @@ public class ItemOrganWordRoleController {
     /**
      * 将意见框绑定到角色上
      *
-     * @param roleIds
-     * @param itemOrganWordBindId
+     * @param roleIds             角色id
+     * @param itemOrganWordBindId 绑定id
      * @return
      */
     @RequestMapping("/bindRole")
@@ -43,16 +43,16 @@ public class ItemOrganWordRoleController {
     }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemOrganWordRole>> list(@RequestParam(required = true) String itemOrganWordBindId) {
+    public Y9Result<List<ItemOrganWordRole>> list(@RequestParam String itemOrganWordBindId) {
         List<ItemOrganWordRole> list =
-            itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(itemOrganWordBindId);
+                itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(itemOrganWordBindId);
         return Y9Result.success(list, "获取成功");
     }
 
     /**
      * 移除意见框与角色的绑定
      *
-     * @param ids    绑定的id
+     * @param ids 绑定的id
      * @return
      */
     @RequestMapping("/remove")

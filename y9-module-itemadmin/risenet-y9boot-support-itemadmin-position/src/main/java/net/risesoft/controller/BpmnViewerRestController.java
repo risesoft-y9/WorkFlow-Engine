@@ -1,6 +1,7 @@
 package net.risesoft.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricActivityApi;
 import net.risesoft.api.processadmin.HistoricVariableApi;
@@ -18,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -32,6 +32,7 @@ import java.util.List;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/vue/bpmnViewer")
@@ -50,17 +51,17 @@ public class BpmnViewerRestController {
     /**
      * 获取流程实例节点列表
      *
-     * @param processInstanceId
-     * @return
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<List<HistoricActivityInstanceModel>>
      */
     @RequestMapping(value = "/getTaskList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam(required = true) String processInstanceId) {
+    public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<HistoricActivityInstanceModel> list = new ArrayList<HistoricActivityInstanceModel>();
+        List<HistoricActivityInstanceModel> list = new ArrayList<>();
         try {
             list = historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, "");
             String year = "";
-            if (list == null || list.size() == 0) {
+            if (list == null || list.isEmpty()) {
                 OfficeDoneInfo info = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
                 year = info.getStartTime().substring(0, 4);
                 list = historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, year);
@@ -71,7 +72,7 @@ public class BpmnViewerRestController {
                 if (assignee != null) {
                     // 意见
                     List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(task.getTaskId(), StringUtils.isBlank(assignee) ? "" : assignee);
-                    task.setTenantId(opinion.size() > 0 ? opinion.get(0).getContent() : "");
+                    task.setTenantId(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
                     Position employee = positionApi.get(Y9LoginUserHolder.getTenantId(), assignee).getData();
                     if (employee != null) {
                         String employeeName = employee.getName();
@@ -79,7 +80,7 @@ public class BpmnViewerRestController {
                         try {
                             zhuBan = historicVariableApi.getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLELSPONSOR, year);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            LOGGER.error("获取主办人失败", e);
                         }
                         if (zhuBan != null) {// 办理人
                             task.setCalledProcessInstanceId(employeeName + "(主办)");
@@ -93,25 +94,22 @@ public class BpmnViewerRestController {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取流程实例节点列表失败", e);
         }
         return Y9Result.success(list, "获取成功");
     }
 
-    private final String longTime(Date startTime, Date endTime) {
+    private  String longTime(Date startTime, Date endTime) {
         if (endTime == null) {
             return "";
         } else {
-            Date d1 = endTime;
-            Date d2 = startTime;
-            long time = d1.getTime() - d2.getTime();
+            long time = endTime.getTime() - startTime.getTime();
             time = time / 1000;
             int s = (int) (time % 60);
             int m = (int) (time / 60 % 60);
             int h = (int) (time / 3600 % 24);
             int d = (int) (time / 86400);
-            String str = d + "天" + h + "小时" + m + "分" + s + "秒";
-            return str;
+            return d + "天" + h + "小时" + m + "分" + s + "秒";
         }
     }
 

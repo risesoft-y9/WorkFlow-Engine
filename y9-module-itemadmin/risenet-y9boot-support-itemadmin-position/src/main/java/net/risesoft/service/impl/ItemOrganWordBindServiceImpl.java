@@ -54,7 +54,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     private final RoleApi roleManager;
 
     @Override
-    @Transactional()
+    @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -196,14 +196,14 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void remove(String id) {
         itemOrganWordRoleService.removeByItemOrganWordBindId(id);
         itemOrganWordBindRepository.deleteById(id);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void remove(String[] ids) {
         for (String id : ids) {
             this.remove(id);
@@ -211,13 +211,13 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void save(ItemOrganWordBind taskRoleBind) {
         itemOrganWordBindRepository.save(taskRoleBind);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void save(String id, String name, String custom) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ItemOrganWordBind taskRoleBind = this.findById(id);
@@ -227,7 +227,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void save(String custom, String itemId, String processDefinitionId, String taskDefKey) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ItemOrganWordBind bind = this.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId,

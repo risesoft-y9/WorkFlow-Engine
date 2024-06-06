@@ -110,7 +110,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void changeChaoSongState(String id, String type) {
         String opinionState = "";
         if (ItemBoxTypeEnum.ADD.getValue().equals(type)) {
@@ -144,10 +144,11 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void changeStatus(String id, Integer status) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ChaoSong chaoSong = chaoSongRepository.findById(id).orElse(null);
+        assert chaoSong != null;
         String year = chaoSong.getCreateTime().substring(0, 4);
         String opinionState = StringUtils.isBlank(chaoSong.getOpinionState()) ? "" : chaoSong.getOpinionState();
         String opinionContent = StringUtils.isBlank(chaoSong.getOpinionContent()) ? "" : chaoSong.getOpinionContent();
@@ -175,7 +176,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void changeStatus(String[] ids, Integer status) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String id : ids) {
@@ -296,7 +297,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean deleteByProcessInstanceId(String processInstanceId, String year) {
         try {
             List<ChaoSong> list = chaoSongRepository.findByProcessInstanceId(processInstanceId);
@@ -338,7 +339,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void deleteList(String[] ids, String processInstanceId) {
         for (String id : ids) {
             ChaoSong cs = this.findOne(id);
@@ -498,12 +499,12 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     public Map<String, Object> getDoneListByUserId(String userId, String year, String documentTitle, int rows,
         int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         if (StringUtils.isBlank(year)) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             year = sdf.format(new Date());
         }
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         int num = (page - 1) * rows;
         int totalCount = 0;
         int startRow = (page - 1) * rows;
@@ -541,7 +542,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             HistoricProcessInstanceModel hpi = null;
             ProcessParam processParam = null;
             for (Map<String, Object> m : list) {
-                Map<String, Object> map = new HashMap<String, Object>(16);
+                Map<String, Object> map = new HashMap<>(16);
                 try {
                     map.put("id", m.get("ID"));
                     String processInstanceId = (String)m.get("PROCESSINSTANCEID");
@@ -599,7 +600,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     public Map<String, Object> getDoneListByUserIdAndItemId(String userId, String itemId, int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         List<ChaoSong> csList = new ArrayList<ChaoSong>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
@@ -608,11 +609,11 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         int num = (page - 1) * rows;
         SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         HistoricProcessInstanceModel hpi = null;
         ProcessParam processParam = null;
         for (ChaoSong cs : csList) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             try {
                 map.put("id", cs.getId());
                 String processInstanceId = cs.getProcessInstanceId();
@@ -657,7 +658,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     public Map<String, Object> getDoneListByUserIdAndSystemName(String userId, String systemName, int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         List<ChaoSong> csList = new ArrayList<ChaoSong>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
@@ -681,14 +682,14 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     public Map<String, Object> getListByProcessInstanceId(String processInstanceId, String userName, int rows,
         int page) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         String tenantId = Y9LoginUserHolder.getTenantId();
         String year = "";
         int totalCount = 0;
         Connection connection = null;
         String senderId = Y9LoginUserHolder.getPersonId();
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         try {
             HistoricProcessInstanceModel historicProcessInstanceModel =
                 historicProcessManager.getById(tenantId, processInstanceId);
@@ -780,7 +781,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             SimpleDateFormat sdf0 = new SimpleDateFormat("yy/MM/dd HH:mm");
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for (Map<String, Object> m : list) {
-                Map<String, Object> map = new HashMap<String, Object>(16);
+                Map<String, Object> map = new HashMap<>(16);
                 try {
                     map.put("id", m.get("ID"));
                     map.put("createTime", sdf0.format(sdf1.parse((String)m.get("CREATETIME"))));
@@ -826,13 +827,13 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     public Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId,
         String userName, int rows, int page) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         String tenantId = Y9LoginUserHolder.getTenantId();
         String year = "";
         int totalCount = 0;
         Connection connection = null;
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         try {
             HistoricProcessInstanceModel historicProcessInstanceModel =
                 historicProcessManager.getById(tenantId, processInstanceId);
@@ -924,7 +925,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             SimpleDateFormat sdf0 = new SimpleDateFormat("yy/MM/dd HH:mm");
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for (Map<String, Object> m : list) {
-                Map<String, Object> map = new HashMap<String, Object>(16);
+                Map<String, Object> map = new HashMap<>(16);
                 try {
                     map.put("id", m.get("ID"));
                     map.put("createTime", sdf0.format(sdf1.parse((String)m.get("CREATETIME"))));
@@ -971,12 +972,12 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     public Map<String, Object> getOpinionChaosongByUserId(String userId, String year, String documentTitle, int rows,
         int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         if (StringUtils.isBlank(year)) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             year = sdf.format(new Date());
         }
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         int num = (page - 1) * rows;
         int totalCount = 0;
         int startRow = (page - 1) * rows;
@@ -1013,10 +1014,10 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             totalCount = jdbcTemplate.queryForObject(sqlCount, Integer.class);
             SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            HistoricProcessInstanceModel hpi = null;
-            ProcessParam processParam = null;
+            HistoricProcessInstanceModel hpi;
+            ProcessParam processParam;
             for (Map<String, Object> m : list) {
-                Map<String, Object> map = new HashMap<String, Object>(16);
+                Map<String, Object> map = new HashMap<>(16);
                 try {
                     map.put("id", m.get("ID"));
                     String processInstanceId = (String)m.get("PROCESSINSTANCEID");
@@ -1040,7 +1041,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                     int chaosongNum = chaoSongRepository.countByUserIdAndProcessInstanceId(userId, processInstanceId);
                     map.put("chaosongNum", chaosongNum);
                     hpi = historicProcessManager.getById(tenantId, processInstanceId);
-                    boolean banjie = hpi == null || (hpi != null && hpi.getEndTime() != null);
+                    boolean banjie = hpi == null || hpi.getEndTime() != null;
                     if (banjie) {
                         map.put("banjie", true);
                     }
@@ -1094,7 +1095,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     public Map<String, Object> getTodoListByUserId(String userId, String documentTitle, int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         List<ChaoSong> csList = new ArrayList<ChaoSong>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
@@ -1110,9 +1111,9 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi = null;
         ProcessParam processParam = null;
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         for (ChaoSong cs : csList) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             try {
                 map.put("id", cs.getId());
                 String processInstanceId = cs.getProcessInstanceId();
@@ -1155,7 +1156,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     public Map<String, Object> getTodoListByUserIdAndItemId(String userId, String itemId, int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         List<ChaoSong> csList = new ArrayList<ChaoSong>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
@@ -1166,9 +1167,9 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi = null;
         ProcessParam processParam = null;
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         for (ChaoSong cs : csList) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             try {
                 map.put("id", cs.getId());
                 String processInstanceId = cs.getProcessInstanceId();
@@ -1210,7 +1211,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     public Map<String, Object> getTodoListByUserIdAndItemIdAndTitle(String userId, String itemId, String title,
         int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         List<ChaoSong> csList = new ArrayList<ChaoSong>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
@@ -1235,7 +1236,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     public Map<String, Object> getTodoListByUserIdAndSystemName(String userId, String systemName, int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         List<ChaoSong> csList = new ArrayList<ChaoSong>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
@@ -1260,7 +1261,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     public Map<String, Object> getTodoListByUserIdAndSystemNameAndTitle(String userId, String systemName, String title,
         int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         List<ChaoSong> csList = new ArrayList<ChaoSong>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
@@ -1283,22 +1284,22 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public ChaoSong save(ChaoSong chaoSong) {
         return chaoSongRepository.save(chaoSong);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void save(List<ChaoSong> chaoSongList) {
         chaoSongRepository.saveAll(chaoSongList);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
         String smsContent, String smsPersonId) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "抄送失败");
         try {
@@ -1311,7 +1312,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 itemName = processParam.getItemName(), systemName = processParam.getSystemName();
             List<String> orgUnitList = Arrays.asList(users.split(";"));
             List<ChaoSong> csList = new ArrayList<ChaoSong>();
-            List<String> userIdListAdd = new ArrayList<String>();
+            List<String> userIdListAdd = new ArrayList<>();
             // 添加的人员
             for (String orgUnitStr : orgUnitList) {
                 String[] orgUnitArr = orgUnitStr.split(":");
@@ -1334,7 +1335,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             if (null == dept || null == dept.getId()) {
                 dept = organizationManager.get(tenantId, person.getParentId()).getData();
             }
-            List<String> mobile = new ArrayList<String>();
+            List<String> mobile = new ArrayList<>();
             for (String userIds : userIdListAdd) {
                 String[] id = userIds.split(SysVariables.COLON);
                 Person personTemp = personManager.get(tenantId, id[0]).getData();
@@ -1389,7 +1390,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void updateTitle(String processInstanceId, String documentTitle) {
         try {
             chaoSongRepository.updateTitle(processInstanceId, documentTitle);

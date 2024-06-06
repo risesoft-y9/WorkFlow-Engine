@@ -28,7 +28,7 @@ public class ItemButtonRoleServiceImpl implements ItemButtonRoleService {
     private final RoleApi roleManager;
 
     @Override
-    @Transactional()
+    @Transactional
     public void deleteByItemButtonId(String itemButtonId) {
         List<ItemButtonRole> roleList = itemButtonRoleRepository.findByItemButtonId(itemButtonId);
         itemButtonRoleRepository.deleteAll(roleList);
@@ -50,7 +50,7 @@ public class ItemButtonRoleServiceImpl implements ItemButtonRoleService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void remove(String[] ids) {
         for (String id : ids) {
             itemButtonRoleRepository.deleteById(id);
@@ -58,7 +58,7 @@ public class ItemButtonRoleServiceImpl implements ItemButtonRoleService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveOrUpdate(String itemButtonId, String roleId) {
         ItemButtonRole role = itemButtonRoleRepository.findByItemButtonIdAndRoleId(itemButtonId, roleId);
         if (null == role) {

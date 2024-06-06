@@ -1,6 +1,7 @@
 package net.risesoft.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.entity.DocumentWps;
 import net.risesoft.repository.jpa.DocumentWpsRepository;
 import net.risesoft.service.DocumentWpsService;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -30,7 +32,7 @@ public class DocumentWpsServiceImpl implements DocumentWpsService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveDocumentWps(DocumentWps documentWps) {
         DocumentWps wps = documentWpsRepository.findByProcessSerialNumber(documentWps.getProcessSerialNumber());
         if (wps != null) {
@@ -51,18 +53,18 @@ public class DocumentWpsServiceImpl implements DocumentWpsService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void saveWpsContent(String processSerialNumber, String hasContent) {
         documentWpsRepository.updateHasContent(processSerialNumber, hasContent);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void updateProcessInstanceId(String processSerialNumber, String processInstanceId) {
         try {
             documentWpsRepository.updateProcessInstanceId(processSerialNumber, processInstanceId);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to update processInstanceId for processSerialNumber: " + processSerialNumber, e);
         }
     }
 

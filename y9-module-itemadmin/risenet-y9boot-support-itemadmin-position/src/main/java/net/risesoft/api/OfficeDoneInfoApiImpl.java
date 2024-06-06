@@ -143,7 +143,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @param meetingType 会议类型
      * @param page        页码
      * @param rows        条数
-     * @return
+     * @return Map
      */
     @Override
     @GetMapping(value = "/getMeetingList", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -158,7 +158,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param info     办结信息
-     * @throws Exception
+     * @throws Exception 异常
      */
     @Override
     @PostMapping(value = "/saveOfficeDone", produces = MediaType.APPLICATION_JSON_VALUE,

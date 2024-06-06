@@ -65,15 +65,15 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void deleteByProcessInstanceId(String processInstanceId) {
         officeFollowRepository.deleteByProcessInstanceId(processInstanceId);
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> delOfficeFollow(String processInstanceIds) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "取消关注成功");
         try {
@@ -99,7 +99,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
         String positionId = Y9LoginUserHolder.getPositionId();
         String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
             taskId = "";
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         int i = 0;
         if (taskList.size() > 0) {
             for (TaskModel task : taskList) {
@@ -157,7 +157,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     @Override
     public Map<String, Object> getFollowListBySystemName(String systemName, String searchName, int page, int rows) {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> resultMap = new HashMap<String, Object>(16);
+        Map<String, Object> resultMap = new HashMap<>(16);
         SimpleDateFormat sdf5 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<OfficeFollowModel> list = new ArrayList<OfficeFollowModel>();
@@ -222,7 +222,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     @Override
     public Map<String, Object> getOfficeFollowList(String searchName, int page, int rows) {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> resultMap = new HashMap<String, Object>(16);
+        Map<String, Object> resultMap = new HashMap<>(16);
         SimpleDateFormat sdf5 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<OfficeFollowModel> list = new ArrayList<OfficeFollowModel>();
@@ -285,9 +285,9 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public Map<String, Object> saveOfficeFollow(OfficeFollow officeFollow) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "关注成功");
         try {
@@ -307,7 +307,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public void updateTitle(String processInstanceId, String documentTitle) {
         try {
             List<OfficeFollow> list = officeFollowRepository.findByProcessInstanceId(processInstanceId);

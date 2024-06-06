@@ -17,8 +17,8 @@ public class ComponentTypeUtil {
     public ComponentTypeUtil() {}
 
     public List<Map<String, Object>> getComponentType(String elementType) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>(16);
         elementType = elementType == null ? "" : elementType;
         switch (elementType) {
             case "text":
@@ -26,17 +26,17 @@ public class ComponentTypeUtil {
                 map.put("value", "textbox");
                 list.add(map);
 
-                map = new HashMap<String, Object>(16);
+                map = new HashMap<>(16);
                 map.put("text", "numberbox");
                 map.put("value", "numberbox");
                 list.add(map);
 
-                map = new HashMap<String, Object>(16);
+                map = new HashMap<>(16);
                 map.put("text", "datebox");
                 map.put("value", "datebox");
                 list.add(map);
 
-                map = new HashMap<String, Object>(16);
+                map = new HashMap<>(16);
                 map.put("text", "datetimebox");
                 map.put("value", "datetimebox");
                 list.add(map);

@@ -52,15 +52,14 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @param tenantId   租户id
      * @param positionId 岗位id
      * @param systemName 系统id
-     * @return
+     * @return int
      */
     @Override
     @GetMapping(value = "/countBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public int countBySystemName(String tenantId, String positionId, String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        int count = draftEntityRepository.countByTypeAndCreaterIdAndDelFlagFalse(systemName, positionId);
-        return count;
+        return draftEntityRepository.countByTypeAndCreaterIdAndDelFlagFalse(systemName, positionId);
     }
 
     /**
@@ -74,9 +73,7 @@ public class DraftApiImpl implements Draft4PositionApi {
     @PostMapping(value = "/deleteDraft", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> deleteDraft(String tenantId, String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        map = draftEntityService.deleteDraft(ids);
-        return map;
+        return draftEntityService.deleteDraft(ids);
     }
 
     /**
@@ -170,7 +167,7 @@ public class DraftApiImpl implements Draft4PositionApi {
                                             String itemId, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "获取草稿列表成功");
         try {
@@ -179,13 +176,13 @@ public class DraftApiImpl implements Draft4PositionApi {
             }
             Page<DraftEntity> pageList =
                     draftEntityService.getDraftList(itemId, positionId, page, rows, title, delFlag);
-            List<Map<String, Object>> draftList = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> draftList = new ArrayList<>();
             Map<String, Object> formDataMap = null;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             int number = (page - 1) * rows;
             ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
             for (DraftEntity draftEntity : pageList) {
-                Map<String, Object> retMap = new HashMap<String, Object>(16);
+                Map<String, Object> retMap = new HashMap<>(16);
                 Optional<SpmApproveItem> spmApproveitem = spmApproveitemRepository.findById(draftEntity.getItemId());
                 if (spmApproveitem != null && spmApproveitem.get().getId() != null) {
                     retMap.put("itemName", spmApproveitem.get().getName());
@@ -250,7 +247,7 @@ public class DraftApiImpl implements Draft4PositionApi {
                                                         String title, String systemName, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "获取草稿列表成功");
         try {
@@ -259,11 +256,11 @@ public class DraftApiImpl implements Draft4PositionApi {
             }
             Page<DraftEntity> pageList =
                     draftEntityService.getDraftListBySystemName(systemName, positionId, page, rows, title, delFlag);
-            List<Map<String, Object>> draftList = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> draftList = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             int number = (page - 1) * rows;
             for (DraftEntity draftEntity : pageList) {
-                Map<String, Object> retMap = new HashMap<String, Object>(16);
+                Map<String, Object> retMap = new HashMap<>(16);
                 Optional<SpmApproveItem> spmApproveitem = spmApproveitemRepository.findById(draftEntity.getItemId());
                 if (spmApproveitem != null && spmApproveitem.get().getId() != null) {
                     retMap.put("itemName", spmApproveitem.get().getName());
@@ -332,7 +329,7 @@ public class DraftApiImpl implements Draft4PositionApi {
     @PostMapping(value = "/reduction", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> reduction(String tenantId, String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map = draftEntityService.reduction(ids);
         return map;
     }
@@ -348,7 +345,7 @@ public class DraftApiImpl implements Draft4PositionApi {
     @PostMapping(value = "/removeDraft", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> removeDraft(String tenantId, String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map = draftEntityService.removeDraft(ids);
         return map;
     }
@@ -372,7 +369,7 @@ public class DraftApiImpl implements Draft4PositionApi {
                                          String processDefinitionKey, String number, String level, String title) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map = draftEntityService.saveDraft(itemId, processSerialNumber, processDefinitionKey, number, level, title, "");
         return map;
     }

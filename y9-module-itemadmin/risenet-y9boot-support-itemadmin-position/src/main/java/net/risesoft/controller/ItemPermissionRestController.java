@@ -43,8 +43,8 @@ public class ItemPermissionRestController {
      * @return
      */
     @RequestMapping(value = "/copyPerm", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyPerm(@RequestParam(required = true) String itemId,
-                                     @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> copyPerm(@RequestParam String itemId,
+                                     @RequestParam String processDefinitionId) {
         itemPermissionService.copyPerm(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }
@@ -56,7 +56,7 @@ public class ItemPermissionRestController {
      * @return
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> delete(@RequestParam(required = true) String id) {
+    public Y9Result<String> delete(@RequestParam String id) {
         itemPermissionService.delete(id);
         return Y9Result.successMsg("删除成功");
     }
@@ -69,23 +69,22 @@ public class ItemPermissionRestController {
      * @return
      */
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String itemId,
-                                                    @RequestParam(required = true) String processDefinitionId) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
+    public Y9Result<Map<String, Object>> getBpmList(@RequestParam String itemId,
+                                                    @RequestParam String processDefinitionId) {
+        Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
+        List<Map<String, Object>> list = processDefinitionManager.getNodes(tenantId, processDefinitionId, false);
         String freeFlowKey = y9Conf.getApp().getItemAdmin().getFreeFlowKey();
-        /**
+        /*
          * 自由流程额外添加一个办结角色，规定自由流的办结按钮控制
          */
         if (processDefinitionId.startsWith(freeFlowKey)) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("taskDefKey", SysVariables.FREEFLOWENDROLE);
             map.put("taskDefName", "办结");
             list.add(map);
         }
-        List<ItemPermission> ipList = new ArrayList<>();
+        List<ItemPermission> ipList;
         for (Map<String, Object> map : list) {
             String roleNames = "";
             ipList = itemPermissionService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
@@ -112,13 +111,13 @@ public class ItemPermissionRestController {
      * @return
      */
     @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getPerm(@RequestParam(required = true) String itemId,
-                                                       @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+    public Y9Result<List<Map<String, Object>>> getPerm(@RequestParam String itemId,
+                                                       @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
+        List<Map<String, Object>> list = new ArrayList<>();
         List<ItemPermission> itemPermissionList = itemPermissionService
                 .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         for (ItemPermission o : itemPermissionList) {
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("id", o.getId());
             map.put("roleId", o.getRoleId());
             map.put("roleName", o.getRoleName());
@@ -135,8 +134,8 @@ public class ItemPermissionRestController {
      * @return
      */
     @RequestMapping(value = "/removePerm", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removePerm(@RequestParam(required = true) String itemId,
-                                       @RequestParam(required = true) String processDefinitionId) {
+    public Y9Result<String> removePerm(@RequestParam String itemId,
+                                       @RequestParam String processDefinitionId) {
         itemPermissionService.removePerm(itemId, processDefinitionId);
         return Y9Result.successMsg("清空成功");
     }
@@ -152,9 +151,9 @@ public class ItemPermissionRestController {
      * @return
      */
     @RequestMapping(value = "/saveBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> save(@RequestParam(required = true) String itemId,
-                                 @RequestParam(required = true) String processDefinitionId, @RequestParam(required = false) String taskDefKey,
-                                 @RequestParam(required = true) String roleId, @RequestParam(required = true) Integer roleType) {
+    public Y9Result<String> save(@RequestParam String itemId,
+                                 @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey,
+                                 @RequestParam String roleId, @RequestParam Integer roleType) {
         if (roleId.contains(PunctuationConsts.SEMICOLON)) {
             String[] roleIds = roleId.split(";");
             for (String roleIdTemp : roleIds) {
