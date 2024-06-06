@@ -14,7 +14,7 @@
     </parent>
 
     <properties>
-        <springboot.version>2.6.8</springboot.version>
+        <springboot.version>2.7.18</springboot.version>
         <maven.deploy.skip>true</maven.deploy.skip>
 
         <java.version>11</java.version>
@@ -136,8 +136,9 @@
         </dependency>
 
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>${mysql-connector-j.version}</version>
         </dependency>
 
         <dependency>
