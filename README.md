@@ -3,8 +3,8 @@
 </p>
 <p align="center">基于SpringBoot+Vue前后端分离的Java快速开发框架</p>
 <p align="center">
- <a href='https://gitee.com/risesoft-y9/y9-core/stargazers'><img src='https://gitee.com/risesoft-y9/y9-core/badge/star.svg?theme=dark' alt='star'></img></a>
-    <img src="https://img.shields.io/badge/version-v9.6.3-yellow.svg">
+ <a href='https://gitee.com/risesoft-y9/y9-flowable/stargazers'><img src='https://gitee.com/risesoft-y9/y9-flowable/badge/star.svg?theme=dark' alt='star'></img></a>
+    <img src="https://img.shields.io/badge/version-v9.6.6-yellow.svg">
     <img src="https://img.shields.io/badge/Spring%20Boot-2.7-blue.svg">
     <img alt="logo" src="https://img.shields.io/badge/Vue-3.3-red.svg">
     <img alt="" src="https://img.shields.io/badge/JDK-11-green.svg">
@@ -13,7 +13,7 @@
 
 ## 简介
 
-数字底座是一款面向大型政府、企业数字化转型，基于身份认证、组织架构、岗位职务、应用系统、资源角色等功能构建的统一且安全的管理支撑平台。数字底座基于三员管理模式，具备微服务、多租户、容器化和国产化，支持用户利用代码生成器快速构建自己的业务应用，同时可关联诸多成熟且好用的内部生态应用。
+工作流引擎（Workflow Engine）是企业信息化系统中的关键组件，用于自动化和管理复杂的业务流程。工作流引擎通过自动化和标准化业务流程，提高了效率，减少了错误，并提供了更好的流程可见性和控制。 
 
 ## 源码目录
 
@@ -62,75 +62,7 @@ webapp -- 系统公共模块
 
 ## 内置功能
 
-系统三员是系统默认生成的三个账号，包含系统管理员、安全保密员、安全审计员。
 
-系统管理员：主要负责系统的配置和组织人员的管理
-
-安全保密员：主要负责权限管理和子域三员管理（部门三员管理）以及查看安全审计员的日志和普通用户的日志
-
-安全审计员：主要负责审查系统管理员的日志和安全保密员的日志
-
-#### 系统管理员
-
-- 控制台
-
-  显示系统总体信息，目前是一个模板页面，可以根据自己的实际需要进行改造。
-
-- 组织架构
-
-  包括组织机构、部门、人员、部门领导的管理，其中组织、部门、人员树结构展现。
-
-- 组织岗位
-
-  包括组织机构、部门、岗位、部门领导的管理，其中组织、部门、岗位树结构展现。
-
-- 应用系统管理
-
-  需要授权的系统的管理，可以添加系统并在系统下面添加应用。
-
-- 应用角色管理
-
-  对系统下面的应用的角色进行管理。
-
-- 应用资源管理
-
-  对系统下面的应用的资源进行管理。
-
-- 字典表管理
-
-  对系统中经常使用的一些较为固定的数据进行维护。
-
-- 图标管理
-
-  对系统中的图标进行管理，系统创建应用的时候可以从该图标库中选择。
-
-#### 安全保密员
-
-- 授权管理
-
-  针对应用中的菜单，授权给拥有某些角色的用户。
-
-- 子域三员管理
-
-  对部门的三员进行管理。
-
-- 用户日志
-
-  可以审查普通用户的登录日志以及操作日志。
-
-- 安全审计员日志
-
-  可以审查安全审计员的登录日志以及操作日志。
-
-#### 安全审计员
-
-- 系统管理员日志
-
-  可以审查系统管理员的登录日志以及操作日志。
-
-- 安全保密员日志
-
-  可以审查安全保密员的登录日志以及操作日志。
 
 ## 逻辑架构图
 
@@ -187,17 +119,7 @@ webapp -- 系统公共模块
 | 2    | Redis         | 6.2+       | <a href="https://redis.io/" target="_blank">官网</a>         |
 | 3    | elasticsearch | 7.9+       | <a href="https://www.elastic.co/cn/elasticsearch/" target="_blank">官网</a> |
 
-## 数字底座专利
-
-| 序号 | 专利号           | 专利名称 |
-| ----- | ---------------- | ----------------------- |
-| 1    | ZL202111207338.0 | 《基于集合运算的资源授权方法及资源授权系统》       |
-| 2    | ZL202210702228.X | 《一种静默化数据处理方法及处理系统》             |
-| 3    | ZL202310030893.3 | 《基于多租户模式下的权限调度方法及调度系统》       |
-| 4    | ZL202310238451.8 | 《一种基于前后端分离架构的前端双随机多态混淆方法》 |
-| 5    | ZL202310238534.7 | 《多租户模式下数字底座子域三员架构模型的实现方法》 |
-
-## 数字底座信创
+## 信创
 
 | **序号** | 类型     | 对象                       |
 | :------- | -------- | -------------------------- |
@@ -251,154 +173,6 @@ webapp -- 系统公共模块
 | 17 | <a href="https://vue.youshengyun.com/files/国际化.pdf" target="_blank">前端国际化</a>                   |
 | 18 | <a href="https://vue.youshengyun.com/files/Icon图标.pdf" target="_blank">前端Icon图标</a>             |
 | 19 | <a href="https://vue.youshengyun.com/files/Oracle数据库适配文档.pdf" target="_blank">Oracle数据库适配文档</a>          |
-
-## 数字底座截图
-
-#### 系统管理员界面截图
-
-<table>
-    <tr>
-        <td><img src="https://vue.youshengyun.com/files/img/1.png"></td>
-        <td><img src="https://vue.youshengyun.com/files/img/2.png"></td>
-    </tr>
-    <tr>
-        <td><img src="https://vue.youshengyun.com/files/img/3.png"></td>
-        <td><img src="https://vue.youshengyun.com/files/img/4.png"></td>
-    </tr>
-    <tr>
-        <td><img src="https://vue.youshengyun.com/files/img/5.png"></td>
-        <td><img src="https://vue.youshengyun.com/files/img/6.png"></td>
-    </tr>
-    <tr>
-        <td><img src="https://vue.youshengyun.com/files/img/7.png"></td>
-        <td><img src="https://vue.youshengyun.com/files/img/8.png"></td>
-    </tr>
-    <tr>
-        <td><img src="https://vue.youshengyun.com/files/img/9.png"></td>
-    </tr>
-</table>
-
-#### 安全保密员界面截图
-
-<table>
-    <tr>
-        <td><img src="https://vue.youshengyun.com/files/img/21.png"></td>
-        <td><img src="https://vue.youshengyun.com/files/img/22.png"></td>
-    </tr>
-    <tr>
-        <td><img src="https://vue.youshengyun.com/files/img/23.png"></td>
-        <td><img src="https://vue.youshengyun.com/files/img/24.png"></td>
-    </tr>
-</table>
-
-#### 安全审计员界面截图
-
-<table>
-    <tr>
-        <td><img src="https://vue.youshengyun.com/files/img/31.png"></td>
-        <td><img src="https://vue.youshengyun.com/files/img/32.png"></td>
-    </tr>
-    <tr>
-        <td><img src="https://vue.youshengyun.com/files/img/33.png"></td>
-        <td><img src="https://vue.youshengyun.com/files/img/34.png"></td>
-    </tr>
-</table>
-
-## 数字底座生态
-
-<div><img src="https://vue.youshengyun.com/files/img/shengtai.png"><div/>
-
-#### 工作桌面
-
-##### 简介
-
-工作桌面内置首页、内容管理、日程管理、统一待办、通讯录五大模块，支持拖拉拽和点选配置定制个性化的界面，方便集成各个应用、消息。
-
-##### 截图
-
-<div><img src="https://vue.youshengyun.com/files/img/gongzuozhuomian.png"><div/>
-<div><img src="https://vue.youshengyun.com/files/img/neirongguanli.png"><div/>
-<div><img src="https://vue.youshengyun.com/files/img/bianjiwendang.png"><div/>
-
-#### 工作流程
-
-##### 简介
-
-工作流程内置流程设计器、表单设计器、事项管理器三大工具，支持中国式流程的自由定义，具备细颗粒度的事项分类。
-
-##### 截图
-
-<div><img src="https://vue.youshengyun.com/files/img/gongzuoliucheng.png"><div/>
-<div><img src="https://vue.youshengyun.com/files/img/liuchengsheji.png"><div/>
-<div><img src="https://vue.youshengyun.com/files/img/biaodansheji.png"><div/>
-
-#### 即时通讯
-
-##### 简介
-
-即时通讯仿照微信的体验和界面，支持私有化部署，支持多端同步，支持组织架构，易于接入或者关联各类应用消息。
-
-##### 截图
-
-<div><img src="https://vue.youshengyun.com/files/img/jishitongxun.png"><div/>
-<div><img src="https://vue.youshengyun.com/files/img/qunliao.png"><div/>
-
-#### 网络硬盘
-
-##### 简介
-
-网络硬盘是一个私密安全的机关单位内部的知识共享和任务收发工具，支持分级权限管控和文件加密分享。
-
-##### 截图
-
-<div><img src="https://vue.youshengyun.com/files/img/wangluoyingpan.png"><div/>
-<div><img src="https://vue.youshengyun.com/files/img/wenjianyidong.png"><div/>
-<div><img src="https://vue.youshengyun.com/files/img/wenjiangongxiang.png"><div/>
-
-#### 电子邮件
-
-##### 简介
-
-电子邮件支持内网高效模式和互联网协议模式，具备精简、安全和高效的功能模块。
-
-##### 截图
-
-<div><img src="https://vue.youshengyun.com/files/img/dianziyoujian.png"><div/>
-<div><img src="https://vue.youshengyun.com/files/img/youjianxiangqing.png"><div/>
-<div><img src="https://vue.youshengyun.com/files/img/tongxunlu.png"><div/>
-
-## 助力政企数字化转型
-
-#### 三座大山
-
-<div><img src="https://vue.youshengyun.com/files/img/sanzuodashan.png"><div/>
-
-#### 七步走
-
-<div><img src="https://vue.youshengyun.com/files/img/qibuzou.png"><div/>
-
-## 赞助与支持
-
-### 中关村软件和信息服务产业创新联盟
-
-官网：<a href="https://www.zgcsa.net" target="_blank">https://www.zgcsa.net</a>
-
-> 介绍：中关村软件和信息服务产业创新联盟（简称中关村软联）是2013年7月在北京市民政局登记注册成立的全国性社团法人，主管单位为中关村管委会，在2023年被评为中国社会组织评估等级4A。中关村软联以自主原创型企业为龙头，设立了协同创新专业委员会，包括全过程咨询、数据治理、开源生态、金融、数字经济、信创、安全、人力资源、教育培训、法治合规、智能算法共十一大专委会。数字底座项目隶属中关村软联开源专委会孵化的开源项目，致力于服务国家政企持续的、全面的信创工作。
->
-
-### 北京有生博大软件股份有限公司
-
-官网：<a href="https://www.risesoft.net/" target="_blank">https://www.risesoft.net/</a>
-
-> 介绍：北京有生博大软件股份有限公司（简称有生软件，英文缩写RiseSoft），成立于 1999 年，是一家专业的政务领域软件开发和数据服务供应商。有生软件以北、上、深的政府机构和政府行业管理部门为主要的服务对象，通过深圳、北京、山东三地研发中心持续研发信创“1+5”产品和数据产品，向全国 1500 多家党政机关和企事业单位提供相关的服务。数字底座项目的核心内容由有生软件发起、组织、开源并持续技术维护。
->
-
-### 统一标识代码注册管理中心
-
-官网：<a href="https://www.idcode.org.cn/" target="_blank">https://www.idcode.org.cn/</a>
-
-> 介绍：标识代码是数字世界的身份证，可以为现实世界和虚拟世界有形或无形的对象分配全球唯一数字身份，是人、事、物、数据等对象的全球唯一数字身份证，可控安全、兼容开放、国际通用。MA码是中国首个获得ISO、CEN、AIM三大国际组织认可的全球顶级节点代码，是ISO/IEC 15459国际标准的组成部分。数字底座已经全面接入统一标识码（MA码），具体使用说明请查看：<a href="https://gitee.com/risesoft-y9/y9-core/tree/main/y9-digitalbase-idcode" target="_blank">https://gitee.com/risesoft-y9/y9-core/tree/main/y9-digitalbase-idcode</a>
->
 
 ## 咨询与合作
 
