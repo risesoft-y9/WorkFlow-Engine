@@ -5,7 +5,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <version>v9.6.6-SNAPSHOT</version>
-    <artifactId>risenet-y9boot-webapp-jodconverter-new</artifactId>
+    <artifactId>risenet-y9boot-webapp-jodconverter</artifactId>
     <packaging>war</packaging>
 
     <parent>
