@@ -52,11 +52,11 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
                             .deploy();
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("租户：{}，创建流程定义失败",tenant.getName(), e);
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取租户列表失败", e);
         }
     }
 
@@ -67,5 +67,4 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
         // createTenantSystem("processAdmin");
         // createDeployment("ziyouliucheng");
     }
-
 }

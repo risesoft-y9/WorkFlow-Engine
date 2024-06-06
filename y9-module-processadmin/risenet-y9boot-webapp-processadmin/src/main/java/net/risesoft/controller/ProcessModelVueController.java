@@ -27,37 +27,28 @@ import org.flowable.validation.ProcessValidator;
 import org.flowable.validation.ProcessValidatorFactory;
 import org.flowable.validation.ValidationError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 流程模型控制器
- */
-
-/**
  * @author qinman
  * @author zhangchongjie
  * @date 2023/01/03
@@ -93,7 +84,7 @@ public class ProcessModelVueController {
         editorNode.put("id", "canvas");
         editorNode.put("resourceId", "canvas");
         ObjectNode stencilSetNode = objectMapper.createObjectNode();
-        stencilSetNode.put("namespace", "http://b3mn.org/stencilset/bpmn2.0#");
+        stencilSetNode.put("namespace", "https://b3mn.org/stencilset/bpmn2.0#");
         editorNode.set("stencilset", stencilSetNode);
 
         Model newModel = new Model();
@@ -118,7 +109,7 @@ public class ProcessModelVueController {
      * 删除模型
      *
      * @param modelId 模型id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/deleteModel", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> deleteModel(@RequestParam @NotBlank String modelId) {
@@ -130,7 +121,7 @@ public class ProcessModelVueController {
      * 根据Model部署流程
      *
      * @param modelId 模型id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/deployModel", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> deployModel(@RequestParam @NotBlank String modelId) {
@@ -149,8 +140,7 @@ public class ProcessModelVueController {
      * 导出model的xml文件
      *
      * @param modelId 模型id
-     * @param response
-     * @return
+     * @param response response
      */
     @RequestMapping(value = "/exportModel")
     public void exportModel(@RequestParam @NotBlank String modelId, HttpServletResponse response) {
@@ -164,24 +154,23 @@ public class ProcessModelVueController {
             IOUtils.copy(in, response.getOutputStream());
             response.flushBuffer();
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("导出模型失败，modelId=" + modelId);
+            LOGGER.error("导出模型失败,modelId:{} 异常：{}" , modelId,e.getMessage());
         }
     }
 
     /**
      * 获取模型列表
      *
-     * @return
+     * @return Y9Result<List<Map<String, Object>>>
      */
     @RequestMapping(value = "/getModelList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getModelList(@RequestParam(required = false) String resourceId) {
+    public Y9Result<List<Map<String, Object>>> getModelList() {
         List<Map<String, Object>> items = new ArrayList<>();
         List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
-        ProcessDefinition processDefinition = null;
+        ProcessDefinition processDefinition;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         // if (tenantManager || ManagerLevelEnum.SYSTEM_MANAGER.equals(userInfo.getManagerLevel())) {
-        Map<String, Object> mapTemp = null;
+        Map<String, Object> mapTemp;
         for (AbstractModel model : list) {
             mapTemp = new HashMap<>(16);
             mapTemp.put("id", model.getId());
@@ -197,57 +186,19 @@ public class ProcessModelVueController {
             mapTemp.put("lastUpdateTime", sdf.format(model.getLastUpdated()));
             items.add(mapTemp);
         }
-        Collections.sort(items, new Comparator<Map<String, Object>>() {
-            @Override
-            public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-                try {
-                    long startTime1 = (long)o1.get("sortTime");
-                    long startTime2 = (long)o2.get("sortTime");
-                    if (startTime2 > startTime1) {
-                        return 1;
-                    } else {
-                        return -1;
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return -1;
-            }
+        items.sort((o1, o2) -> {
+            long startTime1 = (long) o1.get("sortTime");
+            long startTime2 = (long) o2.get("sortTime");
+            return Long.compare(startTime2, startTime1);
         });
-
-        // }
-        /* else {
-            Map<String, Object> mapTemp = null;
-            List<Resource> resourceList =
-        personResourceApi.listSubResources(tenantId, personId, AuthorityEnum.BROWSE, resourceId).getData();
-            for (AbstractModel model : list) {
-        for (Resource resource : resourceList) {
-            if (resource.getCustomId().equals(model.getKey())) {
-                mapTemp = new HashMap<>(16);
-                mapTemp.put("id", model.getId());
-                mapTemp.put("key", model.getKey());
-                mapTemp.put("name", model.getName());
-                mapTemp.put("version", 0);
-                processDefinition = repositoryService.createProcessDefinitionQuery()
-                    .processDefinitionKey(model.getKey()).latestVersion().singleResult();
-                if (null != processDefinition) {
-                    mapTemp.put("version", processDefinition.getVersion());
-                }
-                mapTemp.put("createTime", sdf.format(model.getCreated()));
-                mapTemp.put("lastUpdateTime", sdf.format(model.getLastUpdated()));
-                items.add(mapTemp);
-            }
-        }
-            }
-        }*/
         return Y9Result.success(items, "获取成功");
     }
 
     /**
      * 获取流程设计模型xml
      *
-     * @param modelId
-     * @return
+     * @param modelId 模型id
+     * @return  Y9Result<Map<String, Object>>
      */
     @RequestMapping(value = "/getModelXml")
     public Y9Result<Map<String, Object>> getModelXml(@RequestParam @NotBlank String modelId) {
@@ -259,34 +210,17 @@ public class ProcessModelVueController {
             map.put("name", model.getName());
             bpmnBytes = modelService.getBpmnXML(model);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取模型xml失败,modelId:{} 异常：{}" , modelId,e.getMessage());
         }
-        map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes, Charset.forName("UTF-8")));
+        map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes, StandardCharsets.UTF_8));
         return Y9Result.success(map, "获取成功");
     }
-
-    /**
-     * 编辑模型
-     *
-     * @param modelId
-     * @param request
-     * @param response
-     */
-    @RequestMapping(value = "/editor/{modelId}")
-    public void gotoEditor(@PathVariable("modelId") String modelId, HttpServletRequest request, HttpServletResponse response) {
-        try {
-            response.sendRedirect(request.getContextPath() + "/modeler.html#/editor/" + modelId);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * 导入流程模板
      *
-     * @param file
-     * @param model
-     * @return
+     * @param file  上传的文件
+     * @param model 模型信息
+     * @return  Map<String, Object>
      */
     @RequestMapping(value = "/import")
     public Map<String, Object> importProcessModel(MultipartFile file, ModelRepresentation model) {
@@ -308,14 +242,14 @@ public class ProcessModelVueController {
             if (!errors.isEmpty()) {
                 StringBuffer es = new StringBuffer();
                 errors.forEach(ve -> es.append(ve.toString()).append("/n"));
-                map.put("msg", "导入失败：模板验证失败，原因: " + es.toString());
+                map.put("msg", "导入失败：模板验证失败，原因: " + es);
                 return map;
             }
             if (bpmnModel.getProcesses().isEmpty()) {
                 map.put("msg", "导入失败： 上传的文件中不存在流程的信息");
                 return map;
             }
-            if (bpmnModel.getLocationMap().size() == 0) {
+            if (bpmnModel.getLocationMap().isEmpty()) {
                 BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
                 bpmnLayout.execute();
             }
@@ -349,12 +283,12 @@ public class ProcessModelVueController {
             newModel.setLastUpdatedBy(userInfo.getName());
             newModel.setTenantId(tenantId);
             String createdBy = SecurityUtils.getCurrentUserId();
-            newModel = modelService.createModel(newModel, createdBy);
+            modelService.createModel(newModel, createdBy);
             map.put("success", true);
             map.put("msg", "导入成功");
             return map;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("导入流程模板失败,异常：{}" , e.getMessage());
         }
         return map;
     }
@@ -362,9 +296,9 @@ public class ProcessModelVueController {
     /**
      * 保存设计模型xml
      *
-     * @param file
-     * @param model
-     * @return
+     * @param file  上传的文件
+     * @param model 模型信息
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveModelXml")
     public Y9Result<String> saveModelXml(MultipartFile file, ModelRepresentation model) {
@@ -383,12 +317,12 @@ public class ProcessModelVueController {
             if (!errors.isEmpty()) {
                 StringBuffer es = new StringBuffer();
                 errors.forEach(ve -> es.append(ve.toString()).append("/n"));
-                return Y9Result.failure("保存失败：模板验证失败，原因: " + es.toString());
+                return Y9Result.failure("保存失败：模板验证失败，原因: " + es);
             }
             if (bpmnModel.getProcesses().isEmpty()) {
                 return Y9Result.failure("保存失败： 文件中不存在流程的信息");
             }
-            if (bpmnModel.getLocationMap().size() == 0) {
+            if (bpmnModel.getLocationMap().isEmpty()) {
                 BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
                 bpmnLayout.execute();
             }
@@ -422,10 +356,10 @@ public class ProcessModelVueController {
             newModel.setLastUpdatedBy(userInfo.getName());
             newModel.setTenantId(tenantId);
             String createdBy = SecurityUtils.getCurrentUserId();
-            newModel = modelService.createModel(newModel, createdBy);
+            modelService.createModel(newModel, createdBy);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存模型xml失败,异常：{}" , e.getMessage());
         }
         return Y9Result.failure("保存失败");
     }

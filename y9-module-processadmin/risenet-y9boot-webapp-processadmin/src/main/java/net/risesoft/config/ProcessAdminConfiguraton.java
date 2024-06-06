@@ -119,7 +119,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> processAdminCheckUserLoginFilter() {
         final FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> filterBean =
-                new FilterRegistrationBean<ProcessAdminCheckUserLoginFilter>();
+                new FilterRegistrationBean<>();
         filterBean.setFilter(new ProcessAdminCheckUserLoginFilter());
         filterBean.setAsyncSupported(false);
         filterBean.setOrder(50);
@@ -130,7 +130,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean<RemoveUrlJsessionIdFilter> removeUrlJsessionIdFilter() {
         final FilterRegistrationBean<RemoveUrlJsessionIdFilter> filterBean =
-                new FilterRegistrationBean<RemoveUrlJsessionIdFilter>();
+                new FilterRegistrationBean<>();
         filterBean.setFilter(new RemoveUrlJsessionIdFilter());
         filterBean.setAsyncSupported(false);
         filterBean.addUrlPatterns("/*");

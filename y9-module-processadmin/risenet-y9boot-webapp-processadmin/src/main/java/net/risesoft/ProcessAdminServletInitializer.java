@@ -1,16 +1,15 @@
 package net.risesoft;
 
-import java.util.Collections;
-
-import javax.servlet.ServletContext;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.WebApplicationContext;
+
+import javax.servlet.ServletContext;
+import javax.servlet.SessionCookieConfig;
+import javax.servlet.SessionTrackingMode;
+import java.util.Collections;
 
 /**
  * @author qinman
@@ -31,10 +30,11 @@ public class ProcessAdminServletInitializer extends SpringBootServletInitializer
         String cookieSecure = env.getProperty("server.servlet.session.cookie.secure", "false");
 
         ServletContext servletContext = ctx.getServletContext();
+        assert servletContext != null;
         servletContext.setSessionTrackingModes(Collections.singleton(SessionTrackingMode.COOKIE));
         SessionCookieConfig sessionCookieConfig = servletContext.getSessionCookieConfig();
         sessionCookieConfig.setHttpOnly(true);
-        sessionCookieConfig.setSecure(Boolean.valueOf(cookieSecure));
+        sessionCookieConfig.setSecure(Boolean.parseBoolean(cookieSecure));
         return ctx;
     }
 }

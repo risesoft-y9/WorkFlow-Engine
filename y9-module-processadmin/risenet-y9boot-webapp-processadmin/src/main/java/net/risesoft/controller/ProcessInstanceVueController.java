@@ -3,6 +3,7 @@ package net.risesoft.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
@@ -45,6 +46,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2023/01/03
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/vue/processInstance")
@@ -76,13 +78,13 @@ public class ProcessInstanceVueController {
      * 彻底删除流程实例
      *
      * @param processInstanceId 流程实例id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> delete(@RequestParam String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        ProcessParamModel processParamModel = null;
-        List<String> list = new ArrayList<String>();
+        ProcessParamModel processParamModel;
+        List<String> list = new ArrayList<>();
         try {
             processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
             if (processParamModel != null) {
@@ -97,7 +99,7 @@ public class ProcessInstanceVueController {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除流程实例失败", e);
         }
         return Y9Result.failure("删除失败");
     }
@@ -112,50 +114,50 @@ public class ProcessInstanceVueController {
      * @param year       年度
      * @param page       页面
      * @param rows       条数
-     * @return
+     * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getAllProcessList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> getAllProcessList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
                                                          @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap;
         try {
             retMap = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page, rows);
-            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>) retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {
             });
             int serialNumber = (page - 1) * rows;
-            Map<String, Object> mapTemp = null;
-            for (OfficeDoneInfoModel hpim : hpiList) {
-                mapTemp = new HashMap<String, Object>(16);
-                String processInstanceId = hpim.getProcessInstanceId();
+            Map<String, Object> mapTemp;
+            for (OfficeDoneInfoModel officeDoneInfoModel : hpiList) {
+                mapTemp = new HashMap<>(16);
+                String processInstanceId = officeDoneInfoModel.getProcessInstanceId();
                 try {
-                    String processDefinitionId = hpim.getProcessDefinitionId();
-                    String startTime = hpim.getStartTime().substring(0, 16);
-                    String processSerialNumber = hpim.getProcessSerialNumber();
-                    String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
-                    String level = hpim.getUrgency();
-                    String number = hpim.getDocNumber();
-                    String completer = hpim.getUserComplete();
-                    mapTemp.put("itemName", hpim.getItemName());
+                    String processDefinitionId = officeDoneInfoModel.getProcessDefinitionId();
+                    String startTime = officeDoneInfoModel.getStartTime().substring(0, 16);
+                    String processSerialNumber = officeDoneInfoModel.getProcessSerialNumber();
+                    String documentTitle = StringUtils.isBlank(officeDoneInfoModel.getTitle()) ? "无标题" : officeDoneInfoModel.getTitle();
+                    String level = officeDoneInfoModel.getUrgency();
+                    String number = officeDoneInfoModel.getDocNumber();
+                    String completer = officeDoneInfoModel.getUserComplete();
+                    mapTemp.put("itemName", officeDoneInfoModel.getItemName());
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     mapTemp.put(SysVariables.DOCUMENTTITLE, documentTitle);
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("processDefinitionId", processDefinitionId);
-                    mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
+                    mapTemp.put("processDefinitionKey", officeDoneInfoModel.getProcessDefinitionKey());
                     mapTemp.put("startTime", startTime);
-                    mapTemp.put("endTime", StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
+                    mapTemp.put("endTime", StringUtils.isBlank(officeDoneInfoModel.getEndTime()) ? "--" : officeDoneInfoModel.getEndTime().substring(0, 16));
                     mapTemp.put("taskDefinitionKey", "");
                     mapTemp.put("taskAssignee", completer);
-                    mapTemp.put("creatUserName", hpim.getCreatUserName());
-                    mapTemp.put("itemId", hpim.getItemId());
+                    mapTemp.put("creatUserName", officeDoneInfoModel.getCreatUserName());
+                    mapTemp.put("itemId", officeDoneInfoModel.getItemId());
                     mapTemp.put("level", level == null ? "" : level);
                     mapTemp.put("number", number == null ? "" : number);
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
-                    if (StringUtils.isBlank(hpim.getEndTime())) {
+                    if (StringUtils.isBlank(officeDoneInfoModel.getEndTime())) {
                         List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
@@ -171,7 +173,7 @@ public class ProcessInstanceVueController {
                         mapTemp.put("suspended", processInstance.isSuspended());
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("获取流程实例列表失败processInstanceId:{}, e:{}", processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
@@ -179,16 +181,16 @@ public class ProcessInstanceVueController {
             }
             return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取流程实例列表失败", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
     private List<String> getAssigneeIdsAndAssigneeNames1(List<Task> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
-        List<String> list = new ArrayList<String>();
+        String taskIds = "", assigneeIds = "", assigneeNames = "", itemBox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
+        List<String> list = new ArrayList<>();
         int i = 0;
         if (!taskList.isEmpty()) {
             for (Task task : taskList) {
@@ -203,7 +205,7 @@ public class ProcessInstanceVueController {
                         }
                         i += 1;
                         if (assignee.contains(userId)) {
-                            itembox = ItemBoxTypeEnum.TODO.getValue();
+                            itemBox = ItemBoxTypeEnum.TODO.getValue();
                             taskId = task.getId();
                         }
                     } else {// 处理单实例未签收的当前办理人显示
@@ -236,7 +238,7 @@ public class ProcessInstanceVueController {
                             i += 1;
                         }
                         if (assignee.contains(userId)) {
-                            itembox = ItemBoxTypeEnum.TODO.getValue();
+                            itemBox = ItemBoxTypeEnum.TODO.getValue();
                             taskId = task.getId();
                         }
                     }
@@ -249,7 +251,7 @@ public class ProcessInstanceVueController {
         list.add(taskIds);
         list.add(assigneeIds);
         list.add(assigneeNames);
-        list.add(itembox);
+        list.add(itemBox);
         list.add(taskId);
         return list;
     }
@@ -260,14 +262,14 @@ public class ProcessInstanceVueController {
      * @param processInstanceId 流程实例id
      * @param page              页码
      * @param rows              条数
-     * @return
+     * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/runningList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> runningList(@RequestParam(required = false) String processInstanceId, @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<>();
-        long totalCount = 0;
-        List<ProcessInstance> processInstanceList = null;
+        long totalCount;
+        List<ProcessInstance> processInstanceList;
         if (StringUtils.isBlank(processInstanceId)) {
             totalCount = runtimeService.createProcessInstanceQuery().count();
             processInstanceList = runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
@@ -275,9 +277,9 @@ public class ProcessInstanceVueController {
             totalCount = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).count();
             processInstanceList = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).orderByStartTime().desc().listPage((page - 1) * rows, rows);
         }
-        Position position = null;
-        OrgUnit orgUnit = null;
-        Map<String, Object> map = null;
+        Position position;
+        OrgUnit orgUnit;
+        Map<String, Object> map;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (ProcessInstance processInstance : processInstanceList) {
             processInstanceId = processInstance.getId();
@@ -295,9 +297,7 @@ public class ProcessInstanceVueController {
                     if (userIdAndDeptId.length == 1) {
                         position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
                         orgUnit = orgUnitApi.getParent(tenantId, position.getId()).getData();
-                        if (null != position) {
-                            map.put("startUserName", position.getName() + "(" + orgUnit.getName() + ")");
-                        }
+                        map.put("startUserName", position.getName() + "(" + orgUnit.getName() + ")");
                     } else {
                         position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
                         if (null != position) {
@@ -311,12 +311,12 @@ public class ProcessInstanceVueController {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("获取流程实例列表失败processInstanceId:{}, e:{}", processInstanceId, e);
             }
             items.add(map);
         }
-        int totalpages = (int) totalCount / rows + 1;
-        return Y9Page.success(page, totalpages, totalCount, items, "获取列表成功");
+        int totalPages = (int) totalCount / rows + 1;
+        return Y9Page.success(page, totalPages, totalCount, items, "获取列表成功");
     }
 
     /**
@@ -324,7 +324,7 @@ public class ProcessInstanceVueController {
      *
      * @param state             状态
      * @param processInstanceId 流程实例
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/switchSuspendOrActive", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> switchSuspendOrActive(@RequestParam String state, @RequestParam String processInstanceId) {
@@ -337,7 +337,7 @@ public class ProcessInstanceVueController {
                 return Y9Result.successMsg("已挂起ID为[" + processInstanceId + "]的流程实例。");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("挂起、激活流程实例失败", e);
         }
         return Y9Result.failure("操作失败");
     }

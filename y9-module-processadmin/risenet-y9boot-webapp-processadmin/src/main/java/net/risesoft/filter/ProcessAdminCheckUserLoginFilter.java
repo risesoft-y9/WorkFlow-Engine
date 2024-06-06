@@ -28,10 +28,6 @@ import java.io.IOException;
 @Slf4j
 public class ProcessAdminCheckUserLoginFilter implements Filter {
     @Override
-    public void destroy() {
-    }
-
-    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         try {
@@ -48,7 +44,7 @@ public class ProcessAdminCheckUserLoginFilter implements Filter {
                         Manager manager = managerApi.get(personId.split(":")[0], personId.split(":")[1]).getData();
                         loginUser = manager.toUserInfo();
                     } catch (BeansException e) {
-                        e.printStackTrace();
+                        LOGGER.error("Failed to get managerApi bean");
                     }
                 }
             }
@@ -69,7 +65,7 @@ public class ProcessAdminCheckUserLoginFilter implements Filter {
     }
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("ProcessAdminCheckUserLoginFilter init........................");
         }

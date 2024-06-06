@@ -2,6 +2,7 @@ package net.risesoft.api;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
@@ -85,6 +86,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/bpmnModel")
@@ -389,17 +391,12 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             }
             List<HistoricActivityInstance> list = customHistoricActivityService.getByProcessInstanceIdAndYear(processInstanceId, year);
             list.sort((o1, o2) -> {
-                try {
-                    if (o1.getEndTime() == null || o2.getEndTime() == null) {
-                        return 0;
-                    }
-                    long endTime1 = o1.getEndTime().getTime();
-                    long endTime2 = o2.getEndTime().getTime();
-                    return Long.compare(endTime1, endTime2);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (o1.getEndTime() == null || o2.getEndTime() == null) {
+                    return 0;
                 }
-                return -1;
+                long endTime1 = o1.getEndTime().getTime();
+                long endTime2 = o2.getEndTime().getTime();
+                return Long.compare(endTime1, endTime2);
             });
             int num = 0;
             for (HistoricActivityInstance his : list) {
@@ -530,7 +527,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取流程图数据失败", e);
         }
         return resMap;
     }
@@ -586,7 +583,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             map.put("name", model.getName());
             bpmnBytes = modelService.getBpmnXML(model);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取流程设计模型xml失败", e);
         }
         map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes, StandardCharsets.UTF_8));
         return Y9Result.success(map, "获取成功");
@@ -668,7 +665,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             map.put("msg", "导入成功");
             return map;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("导入流程模型失败", e);
         }
         return map;
     }
@@ -743,7 +740,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             modelService.createModel(newModel, userId);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存模型xml失败", e);
         }
         return Y9Result.failure("保存失败");
     }

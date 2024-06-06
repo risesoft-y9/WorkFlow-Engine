@@ -44,7 +44,7 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
      */
     @Override
     @PostMapping(value = "/copyModel", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void copyModel(@RequestParam String sourceTenantId, @RequestParam String targetTenantId, @RequestParam String modelKey) throws Exception {
+    public void copyModel(@RequestParam String sourceTenantId, @RequestParam String targetTenantId, @RequestParam String modelKey) {
         try {
             /*
              * 查找原租户中的模型

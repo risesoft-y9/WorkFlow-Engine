@@ -48,7 +48,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 删除流程实例，在办件设为暂停，办结件加删除标识
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 流程实例id
      * @return boolean
      */
@@ -64,19 +64,23 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
                 for (org.flowable.task.api.Task task : list) {
                     try {
                         boolean msg1 = rpcTodoTaskManager.deleteTodoTaskByTaskId(tenantId, task.getId());
-                        LOGGER.info("##############################统一待办删除：{}#################################", msg1);
+                        LOGGER.error("##############################统一待办删除：{}#################################", msg1);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("##############################统一待办删除失败：{}#", e.getMessage());
                     }
                 }
             }
             try {
-                boolean msg2 = processInstance4PositionApi.deleteProcessInstance(tenantId, processInstanceId);
-                LOGGER.info("##############################协作状态删除：{}#################################", msg2);
                 boolean msg3 = chaoSongInfoManager.deleteByProcessInstanceId(tenantId, processInstanceId);
-                LOGGER.info("##############################抄送件删除：{}#################################", msg3);
+                LOGGER.error("##############################抄送件删除：{}#################################", msg3);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("##########抄送件删除失败：{}#", e.getMessage());
+            }
+            try {
+                boolean msg2 = processInstance4PositionApi.deleteProcessInstance(tenantId, processInstanceId);
+                LOGGER.error("##############################协作状态删除：{}#################################", msg2);
+            } catch (Exception e) {
+                LOGGER.error("##########协作状态删除失败：{}#", e.getMessage());
             }
         }
         return b;
@@ -85,7 +89,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 根据流程实例id获取实例
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 流程实例id
      * @return HistoricProcessInstanceModel
      */
@@ -101,9 +105,9 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 根据流程实例id和年度获取实例
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 流程实例id
-     * @param year 年份
+     * @param year              年份
      * @return HistoricProcessInstanceModel
      */
     @Override
@@ -122,7 +126,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 根据父流程实例获取所有历史子流程实例
      *
-     * @param tenantId 租户id
+     * @param tenantId               租户id
      * @param superProcessInstanceId 父流程实例id
      * @return List<HistoricProcessInstanceModel>
      */
@@ -138,7 +142,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 根据流程实例获取父流程实例
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 父流程实例id
      * @return HistoricProcessInstanceModel
      */
@@ -154,8 +158,8 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 恢复流程实例
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
+     * @param tenantId          租户id
+     * @param userId            人员id
      * @param processInstanceId 流程实例id
      * @return boolean
      */
@@ -184,7 +188,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 彻底删除流程实例
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 流程实例id
      * @return boolean
      */
@@ -199,7 +203,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 彻底删除流程实例,岗位
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 流程实例id
      * @return boolean
      */
@@ -214,9 +218,9 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 设置流程优先级
      *
-     * @param tenantId 租户id
+     * @param tenantId          租户id
      * @param processInstanceId 流程实例id
-     * @param priority 优先级
+     * @param priority          优先级
      * @throws Exception Exception
      */
     @Override
