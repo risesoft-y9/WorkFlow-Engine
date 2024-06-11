@@ -3,6 +3,7 @@ package net.risesoft.controller.services;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,13 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.FormDataApi;
-import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
 import net.risesoft.api.itemadmin.PrintApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
-import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -61,18 +59,16 @@ public class FormNTKOPrintController {
 
     private final TransactionWordApi transactionWordApi;
 
-    private final FormDataApi formDataApi;
-
-    private final Opinion4PositionApi opinion4PositionApi;
-
-    private final ItemOpinionFrameBindApi itemOpinionFrameBindApi;
 
     /**
      * 下载正文
      *
-     * @param id
-     * @param response
-     * @param request
+     * @param id                  正文id
+     * @param fileType            文件类型
+     * @param processSerialNumber 流程编号
+     * @param processInstanceId   流程实例id
+     * @param tenantId            租户id
+     * @param userId              人员id
      */
     @RequestMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam String fileType,
@@ -82,7 +78,7 @@ public class FormNTKOPrintController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            Object documentTitle = null;
+            String documentTitle;
             String[] pId = processInstanceId.split(",");
             processInstanceId = pId[0];
             if (StringUtils.isBlank(processInstanceId)) {
@@ -93,25 +89,25 @@ public class FormNTKOPrintController {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? (String)documentTitle : "正文";
+            String title = documentTitle != null ? documentTitle : "正文";
             // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
             // String fileName = y9FileStore.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
-            if (-1 < userAgent.indexOf("MSIE 8.0") || -1 < userAgent.indexOf("MSIE 6.0")
-                || -1 < userAgent.indexOf("MSIE 7.0")) {
+            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0")
+                || userAgent.contains("MSIE 7.0")) {
                 title = new String(title.getBytes("gb2312"), "ISO8859-1");
                 response.reset();
                 response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
                 response.setHeader("Content-type", "text/html;charset=GBK");
                 response.setContentType("application/octet-stream");
             } else {
-                if (-1 != userAgent.indexOf("Firefox")) {
+                if (userAgent.contains("Firefox")) {
                     title = "=?UTF-8?B?"
-                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes("UTF-8"))))
+                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
                         + "?=";
                 } else {
-                    title = java.net.URLEncoder.encode(title, "UTF-8");
+                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
                     title = StringUtils.replace(title, "+", "%20");// 替换空格
                 }
                 response.reset();
@@ -124,98 +120,18 @@ public class FormNTKOPrintController {
             out.flush();
             out.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("下载正文异常", e);
         }
     }
 
-    @RequestMapping(value = "/getPrintLayuiTempalteData")
-    public Map<String, Object> getPrintLayuiTempalteData(@RequestParam String activitiUser,
-        @RequestParam String taskDefKey, @RequestParam String taskId,
-        @RequestParam String itembox, @RequestParam String tenantId,
-        @RequestParam String userId, String itemId, String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> map = formDataApi.getData(tenantId, itemId, processSerialNumber);
-
-        // 意见框
-        List<Map<String, Object>> opinioListMap = new ArrayList<Map<String, Object>>();
-        List<ItemOpinionFrameBindModel> opinionFrameList = itemOpinionFrameBindApi.findByItemId(tenantId, itemId);
-        for (ItemOpinionFrameBindModel opinionFrame : opinionFrameList) {
-            Map<String, Object> opinionMap = new HashMap<String, Object>(16);
-            String opinionFrameMark = opinionFrame.getOpinionFrameMark();
-            List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-            listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
-                opinionFrameMark, itemId, taskDefKey, activitiUser);
-            opinionMap.put("opinionFrameMark", opinionFrameMark);
-            opinionMap.put("opinionFrameName", opinionFrame.getOpinionFrameName());
-            opinionMap.put("opinionList", listMap);
-            if (!opinioListMap.contains(opinionMap)) {
-                opinioListMap.add(opinionMap);
-            }
-        }
-        map.put("opinionListMap", opinioListMap);
-        String str = Y9JsonUtil.writeValueAsString(map);
-        LOGGER.debug("打印数据：{}", str);
-        return map;
-    }
-
-    @RequestMapping(value = "/getPrintTempalteData")
-    public Map<String, Object> getPrintTempalteData(@RequestParam String activitiUser,
-        @RequestParam String taskDefKey, @RequestParam String formIds,
-        @RequestParam String formNames, @RequestParam String taskId, @RequestParam String itemId, @RequestParam String itembox,
-        @RequestParam String processSerialNumber, @RequestParam String tenantId,
-        @RequestParam String userId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        // 表单数据
-        List<String> formIdList = Y9Util.stringToList(formIds, SysVariables.COMMA);
-        List<String> formNameList = Y9Util.stringToList(formNames, SysVariables.COMMA);
-        List<Map<String, Object>> formListMap = new ArrayList<Map<String, Object>>();
-        List<Map<String, Object>> dataMap = new ArrayList<Map<String, Object>>();
-        for (int i = 0; i < formIdList.size(); i++) {
-            Map<String, Object> formMap = new HashMap<String, Object>(16);
-            formMap.put("formId", formIdList.get(i));
-            formMap.put("formName", formNameList.get(i));
-            // dataMap = templateService.getFromData(formIdList.get(i),
-            // processSerialNumber);
-            formMap.put("fromData", dataMap);
-            formListMap.add(formMap);
-        }
-        map.put("formDataListMap", dataMap);
-
-        if (taskId.indexOf(",") != -1) {
-            String[] id = taskId.split(",");
-            taskId = id[0];
-        }
-
-        // 意见框
-        List<Map<String, Object>> opinioListMap = new ArrayList<Map<String, Object>>();
-        List<ItemOpinionFrameBindModel> opinionFrameList = itemOpinionFrameBindApi.findByItemId(tenantId, itemId);
-        for (ItemOpinionFrameBindModel opinionFrame : opinionFrameList) {
-            Map<String, Object> opinionMap = new HashMap<String, Object>(16);
-            String opinionFrameMark = opinionFrame.getOpinionFrameMark();
-            List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-            listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
-                opinionFrameMark, itemId, taskDefKey, activitiUser);
-            opinionMap.put("opinionFrameMark", opinionFrameMark);
-            opinionMap.put("opinionFrameName", opinionFrame.getOpinionFrameName());
-            opinionMap.put("opinionList", listMap);
-            if (!opinioListMap.contains(opinionMap)) {
-                opinioListMap.add(opinionMap);
-            }
-        }
-        map.put("opinionListMap", opinioListMap);
-        return map;
-    }
 
     /**
      * 打开正文
      *
-     * @param processSerialNumber
-     * @param itemId
+     * @param processSerialNumber 流程编号
+     * @param itemId              事项id
+     * @param tenantId            租户id
+     * @param userId              人员id
      */
     @RequestMapping(value = "/openDoc")
     public void openDoc(@RequestParam String processSerialNumber,
@@ -231,13 +147,11 @@ public class FormNTKOPrintController {
             String agent = request.getHeader("USER-AGENT");
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileName = y9FileStore.getFileName();
-            if (-1 != agent.indexOf("Firefox")) {
-                fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8"))))
-                    + "?=";
+            if (agent.contains("Firefox")) {
+                org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8));
             } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
-                fileName = StringUtils.replace(fileName, "+", "%20");// 替换空格
+                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+                StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
             // response.setHeader("Content-Type", "application/msword");
@@ -248,21 +162,28 @@ public class FormNTKOPrintController {
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("下载正文异常", e);
             }
-            ByteArrayInputStream bin = new ByteArrayInputStream(buf);
-            int b = 0;
+            ByteArrayInputStream bin = null;
+            if (buf != null) {
+                bin = new ByteArrayInputStream(buf);
+            }
+            int b;
             byte[] by = new byte[1024];
-            while ((b = bin.read(by)) != -1) {
-                out.write(by, 0, b);
+            if (bin != null) {
+                while ((b = bin.read(by)) != -1) {
+                    out.write(by, 0, b);
+                }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("下载正文异常", e);
         } finally {
             try {
-                out.close();
+                if (out != null) {
+                    out.close();
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error("下载正文异常", e);
             }
         }
     }
@@ -280,13 +201,11 @@ public class FormNTKOPrintController {
             String agent = request.getHeader("USER-AGENT");
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileName = y9FileStore.getFileName();
-            if (-1 != agent.indexOf("Firefox")) {
-                fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8"))))
-                    + "?=";
+            if (agent.contains("Firefox")) {
+                org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8));
             } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
-                fileName = StringUtils.replace(fileName, "+", "%20");// 替换空格
+                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+                StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
             // response.setHeader("Content-Type", "application/msword");
@@ -296,58 +215,31 @@ public class FormNTKOPrintController {
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("下载正文异常", e);
             }
-            ByteArrayInputStream bin = new ByteArrayInputStream(buf);
-            int b = 0;
+            ByteArrayInputStream bin = null;
+            if (buf != null) {
+                bin = new ByteArrayInputStream(buf);
+            }
+            int b;
             byte[] by = new byte[1024];
-            while ((b = bin.read(by)) != -1) {
-                out.write(by, 0, b);
+            if (bin != null) {
+                while ((b = bin.read(by)) != -1) {
+                    out.write(by, 0, b);
+                }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("下载正文异常", e);
         } finally {
             try {
-                out.close();
+                if (out != null) {
+                    out.close();
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error("下载正文异常", e);
             }
         }
     }
 
-    /**
-     * 打开工单打印的模板
-     *
-     * @param activitiUser
-     * @param taskDefKey
-     * @param temp_Id
-     * @param taskId
-     * @param guid
-     * @param itemId
-     * @param model
-     * @return
-     */
-    @RequestMapping(value = "/showPrintTemplate")
-    public String showPrintTemplate(@RequestParam String activitiUser,
-        @RequestParam String taskDefKey, @RequestParam String itembox,
-        @RequestParam String taskId, @RequestParam String formIds, @RequestParam String formNames, @RequestParam String processSerialNumber,
-        @RequestParam String itemId,
-        @RequestParam String tenantId,
-        @RequestParam String userId, Model model) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        model.addAttribute("userName", person != null ? person.getName() : "");
-        model.addAttribute("activitiUser", activitiUser);
-        model.addAttribute("taskDefKey", taskDefKey);
-        model.addAttribute("itembox", itembox);
-        model.addAttribute("taskId", taskId);
-        model.addAttribute("processSerialNumber", processSerialNumber);
-        String[] items = itemId.split(",");
-        model.addAttribute("itemId", items.length == 0 && items == null ? "" : items[0]);
-        model.addAttribute("formIds", formIds);
-        model.addAttribute("formNames", formNames);
-        model.addAttribute("tenantId", tenantId);
-        model.addAttribute("userId", userId);
-        return "print/printWorkOrderTeplate";
-    }
 
 }

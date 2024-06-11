@@ -1,18 +1,15 @@
 package net.risesoft.service;
 
-import java.util.concurrent.Future;
-
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.todo.TodoTaskApi;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Service;
 
+@Slf4j
 @RequiredArgsConstructor
 @EnableAsync
 @Service(value = "asyncUtilService")
@@ -27,22 +24,19 @@ public class AsyncUtilService {
     /**
      * 更新统一待办，抄送件标题
      *
-     * @param tenantId
-     * @param processInstanceId
-     * @param documentTitle
-     * @return
+     * @param tenantId          租户id
+     * @param processInstanceId 流程实例id
+     * @param documentTitle     标题
      */
     @Async
-    public Future<Boolean> updateTitle(final String tenantId, final String processInstanceId, final String documentTitle) {
+    public void updateTitle(final String tenantId, final String processInstanceId, final String documentTitle) {
         try {
             chaoSong4PositionApi.updateTitle(tenantId, processInstanceId, documentTitle);
             todoTaskApi.updateTitle(tenantId, processInstanceId, documentTitle);
             officeFollow4PositionApi.updateTitle(tenantId, processInstanceId, documentTitle);
-            return new AsyncResult<>(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("更新统一待办，抄送件标题", e);
         }
-        return new AsyncResult<>(false);
     }
 
 }

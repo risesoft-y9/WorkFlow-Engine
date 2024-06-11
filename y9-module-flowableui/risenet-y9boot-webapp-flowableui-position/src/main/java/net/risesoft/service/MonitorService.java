@@ -1,40 +1,41 @@
 package net.risesoft.service;
 
-import java.util.Map;
-
 import net.risesoft.pojo.Y9Page;
+
+
+import java.util.Map;
 
 public interface MonitorService {
 
     /**
      * 单位所有件
      *
-     * @param itemId
-     * @param searchName
-     * @param userName
-     * @param state
-     * @param year
-     * @param page
-     * @param rows
-     * @return
+     * @param itemId     事项id
+     * @param searchName 搜索名称
+     * @param userName   发起人
+     * @param state      状态
+     * @param year       年度
+     * @param page       页码
+     * @param rows       条数
+     * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> deptList(String itemId, String searchName, String userName, String state, String year,
-        Integer page, Integer rows);
+                                         Integer page, Integer rows);
 
     /**
      * 监控办件
      *
-     * @param searchName
-     * @param itemId
-     * @param userName
-     * @param state
-     * @param year
-     * @param page
-     * @param rows
-     * @return
+     * @param searchName 搜索名称
+     * @param itemId     事项id
+     * @param userName   发起人
+     * @param state      状态
+     * @param year       年度
+     * @param page       页码
+     * @param rows       条数
+     * @return Y9Page<Map < String, Object>>
      */
     Y9Page<Map<String, Object>> monitorBanjianList(String searchName, String itemId, String userName, String state,
-        String year, Integer page, Integer rows);
+                                                   String year, Integer page, Integer rows);
 
     /**
      * 监控阅件列表
@@ -50,19 +51,19 @@ public interface MonitorService {
      * @return
      */
     Y9Page<Map<String, Object>> monitorChaosongList(String searchName, String itemId, String senderName,
-        String userName, String state, String year, Integer page, Integer rows);
+                                                    String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 监控在办列表
      *
      * @param processDefinitionKey
-     * @param searchTerm 搜索词
+     * @param searchTerm           搜索词
      * @param page
      * @param rows
      * @return
      */
     Y9Page<Map<String, Object>> monitorDoingList(String processDefinitionKey, String searchTerm, Integer page,
-        Integer rows);
+                                                 Integer rows);
 
     /**
      * 获取监控办结列表
@@ -74,7 +75,7 @@ public interface MonitorService {
      * @return
      */
     Y9Page<Map<String, Object>> monitorDoneList(String processDefinitionKey, String searchTerm, Integer page,
-        Integer rows);
+                                                Integer rows);
 
     /**
      * 获取回收列表

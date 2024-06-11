@@ -1,20 +1,9 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.model.platform.OrgUnit;
@@ -22,7 +11,14 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.FlowableReminderService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service(value = "flowableReminderService")
 public class FlowableReminderServiceImpl implements FlowableReminderService {
@@ -34,20 +30,21 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
     @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> findTaskListByProcessInstanceId(String processInstanceId, int page, int rows) {
-        Map<String, Object> retMap = new HashMap<>(16);
+        Map<String, Object> retMap;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             retMap = taskApi.findListByProcessInstanceId(tenantId, processInstanceId, page, rows);
-            List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
+            List<TaskModel> list = (List<TaskModel>) retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<List<TaskModel>>() {});
-            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<>() {
+            });
+            List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
-            Map<String, Object> mapTemp = null;
+            Map<String, Object> mapTemp;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date currentTime = new Date();
             for (TaskModel task : taskList) {
-                mapTemp = new HashMap<String, Object>(16);
+                mapTemp = new HashMap<>(16);
                 String taskId = task.getId();
                 String taskName = task.getName();
                 mapTemp.put("taskId", taskId);
@@ -62,25 +59,22 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
             }
             return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取列表失败", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
-    private final String longTime(Date startTime, Date endTime) {
+    private String longTime(Date startTime, Date endTime) {
         if (endTime == null) {
             return "";
         } else {
-            Date d1 = endTime;
-            Date d2 = startTime;
-            long time = d1.getTime() - d2.getTime();
+            long time = endTime.getTime() - startTime.getTime();
             time = time / 1000;
-            int s = (int)(time % 60);
-            int m = (int)(time / 60 % 60);
-            int h = (int)(time / 3600 % 24);
-            int d = (int)(time / 86400);
-            String str = d + " 天  " + h + " 小时 " + m + " 分 " + s + " 秒 ";
-            return str;
+            int s = (int) (time % 60);
+            int m = (int) (time / 60 % 60);
+            int h = (int) (time / 3600 % 24);
+            int d = (int) (time / 86400);
+            return d + " 天  " + h + " 小时 " + m + " 分 " + s + " 秒 ";
         }
     }
 

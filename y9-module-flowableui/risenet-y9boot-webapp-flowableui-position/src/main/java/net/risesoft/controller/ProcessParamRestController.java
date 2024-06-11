@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessParamService;
@@ -22,6 +23,7 @@ import net.risesoft.service.ProcessParamService;
 @Validated
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping(value = "/vue/processParam")
 public class ProcessParamRestController {
 
@@ -30,18 +32,18 @@ public class ProcessParamRestController {
     /**
      * 保存流程变量
      *
-     * @param itemId 事项id
+     * @param itemId              事项id
      * @param processSerialNumber 流程编号
-     * @param processInstanceId 流程实例id
-     * @param documentTitle 标题
-     * @param number 编号
-     * @param level 紧急程度
-     * @param customItem 是否定制流程
-     * @return
+     * @param processInstanceId   流程实例id
+     * @param documentTitle       标题
+     * @param number              编号
+     * @param level               紧急程度
+     * @param customItem          是否定制流程
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processSerialNumber, @RequestParam String processInstanceId, @RequestParam @NotBlank String documentTitle, @RequestParam String number, @RequestParam String level,
-        @RequestParam Boolean customItem) {
+                                         @RequestParam Boolean customItem) {
         return processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, documentTitle, number, level, customItem);
     }
 }

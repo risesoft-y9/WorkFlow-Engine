@@ -36,7 +36,6 @@ import net.risesoft.y9.util.Y9Util;
  * 流程数据进入数据中心，用于综合搜索
  *
  * @author 10858
- *
  */
 @RequiredArgsConstructor
 @EnableAsync
@@ -58,9 +57,9 @@ public class Process4SearchService {
     /**
      * 重定位，串行送下一人，修改办件信息
      *
-     * @param tenantId
-     * @param taskId
-     * @param processInstanceId
+     * @param tenantId          租户id
+     * @param taskId            任务id
+     * @param processInstanceId 流程实例id
      */
     @Async
     public void saveToDataCenter(final String tenantId, final String taskId, final String processInstanceId) {
@@ -77,7 +76,7 @@ public class Process4SearchService {
                 officeDoneInfo.setEndTime(null);
 
                 // 处理委托人
-                String sql = "";
+                String sql;
                 /*    "SELECT e.OWNERID from FF_ENTRUSTDETAIL e where e.PROCESSINSTANCEID = '" + processInstanceId + "'";
                 List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
                 String entrustUserId = "";
@@ -95,14 +94,14 @@ public class Process4SearchService {
                 String allUserId = "";
                 String deptIds = "";
                 for (Map<String, Object> m : list3) {
-                    String USER_ID_ = m.get("USER_ID_") != null ? (String)m.get("USER_ID_") : "";
+                    String USER_ID_ = m.get("USER_ID_") != null ? (String) m.get("USER_ID_") : "";
                     if (USER_ID_.contains(":")) {
                         USER_ID_ = USER_ID_.split(":")[0];
                     }
-                    if (!USER_ID_.equals("") && !allUserId.contains(USER_ID_)) {
+                    if (!USER_ID_.isEmpty() && !allUserId.contains(USER_ID_)) {
                         allUserId = Y9Util.genCustomStr(allUserId, USER_ID_);
                     }
-                    if (!USER_ID_.equals("")) {
+                    if (!USER_ID_.isEmpty()) {
                         Position position = positionApi.get(tenantId, USER_ID_).getData();
                         if (position != null && position.getId() != null) {
                             if (!deptIds.contains(position.getParentId())) {
@@ -134,6 +133,7 @@ public class Process4SearchService {
             try {
                 errorLogApi.saveErrorLog(tenantId, errorLogModel);
             } catch (Exception e1) {
+                LOGGER.warn("#################保存错误日志失败#################", e1);
             }
             LOGGER.warn("#################保存办结件数据到数据中心失败#################", e);
         }
@@ -142,9 +142,9 @@ public class Process4SearchService {
     /**
      * 并行加签，修改办件信息
      *
-     * @param tenantId
-     * @param taskId
-     * @param processParam
+     * @param tenantId     租户id
+     * @param taskId       任务id
+     * @param processParam 流程参数
      */
     @Async
     public void saveToDataCenter1(final String tenantId, final String taskId, final ProcessParamModel processParam) {
@@ -165,7 +165,7 @@ public class Process4SearchService {
                 List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
                 String entrustUserId = "";
                 for (Map<String, Object> m : list2) {
-                    String USER_ID_ = (String)m.get("OWNERID");
+                    String USER_ID_ = (String) m.get("OWNERID");
                     if (!entrustUserId.contains(USER_ID_)) {
                         entrustUserId = Y9Util.genCustomStr(entrustUserId, USER_ID_);
                     }
@@ -178,14 +178,14 @@ public class Process4SearchService {
                 String allUserId = "";
                 String deptIds = "";
                 for (Map<String, Object> m : list3) {
-                    String USER_ID_ = m.get("USER_ID_") != null ? (String)m.get("USER_ID_") : "";
+                    String USER_ID_ = m.get("USER_ID_") != null ? (String) m.get("USER_ID_") : "";
                     if (USER_ID_.contains(":")) {
                         USER_ID_ = USER_ID_.split(":")[0];
                     }
-                    if (!USER_ID_.equals("") && !allUserId.contains(USER_ID_)) {
+                    if (!USER_ID_.isEmpty() && !allUserId.contains(USER_ID_)) {
                         allUserId = Y9Util.genCustomStr(allUserId, USER_ID_);
                     }
-                    if (!USER_ID_.equals("")) {
+                    if (!USER_ID_.isEmpty()) {
                         Position position = positionApi.get(tenantId, USER_ID_).getData();
                         if (position != null && position.getId() != null) {
                             if (!deptIds.contains(position.getParentId())) {
@@ -217,6 +217,7 @@ public class Process4SearchService {
             try {
                 errorLogApi.saveErrorLog(tenantId, errorLogModel);
             } catch (Exception e1) {
+                LOGGER.warn("#################保存错误日志失败#################", e1);
             }
             LOGGER.warn("#################保存办结件数据到数据中心失败#################", e);
         }

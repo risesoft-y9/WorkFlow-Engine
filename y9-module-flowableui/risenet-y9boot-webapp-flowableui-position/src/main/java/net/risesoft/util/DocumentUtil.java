@@ -23,13 +23,13 @@ public class DocumentUtil {
         String formIds, String formNames) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         // 表单数据
         List<String> formIdList = Y9Util.stringToList(formIds, SysVariables.COMMA);
         List<String> formNameList = Y9Util.stringToList(formNames, SysVariables.COMMA);
-        List<Map<String, Object>> formListMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> formListMap = new ArrayList<>();
         for (int i = 0; i < formIdList.size(); i++) {
-            Map<String, Object> formMap = new HashMap<String, Object>(16);
+            Map<String, Object> formMap = new HashMap<>(16);
             formMap.put("formId", formIdList.get(i));
             formMap.put("formName", formNameList.get(i));
             Map<String, Object> dataMap =
@@ -40,14 +40,13 @@ public class DocumentUtil {
         map.put("formDataListMap", formListMap);
 
         // 意见框
-        List<Map<String, Object>> opinioListMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> opinioListMap = new ArrayList<>();
         List<ItemOpinionFrameBindModel> opinionFrameList = Y9Context.getBean(ItemOpinionFrameBindApi.class)
             .findByItemIdAndProcessDefinitionId(tenantId, itemId, processDefinitionId);
         for (ItemOpinionFrameBindModel opinionFrame : opinionFrameList) {
-            Map<String, Object> opinionMap = new HashMap<String, Object>(16);
+            Map<String, Object> opinionMap = new HashMap<>(16);
             String opinionFrameMark = opinionFrame.getOpinionFrameMark();
-            List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-            listMap = Y9Context.getBean(Opinion4PositionApi.class).personCommentList(tenantId, userId,
+            List<Map<String, Object>> listMap = Y9Context.getBean(Opinion4PositionApi.class).personCommentList(tenantId, userId,
                 processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
             opinionMap.put("opinionFrameMark", opinionFrameMark);
             opinionMap.put("opinionFrameName", opinionFrame.getOpinionFrameName());

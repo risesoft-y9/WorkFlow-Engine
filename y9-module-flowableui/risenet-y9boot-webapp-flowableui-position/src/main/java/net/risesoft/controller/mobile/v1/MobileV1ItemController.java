@@ -1,7 +1,5 @@
 package net.risesoft.controller.mobile.v1;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -23,6 +22,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2024/01/17
  */
+@Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -33,6 +33,8 @@ public class MobileV1ItemController {
 
     /**
      * 获取事项列表
+     *
+     * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/getItemList")
     public Y9Result<List<Map<String, Object>>> getItemList() {
@@ -40,19 +42,16 @@ public class MobileV1ItemController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             List<Map<String, Object>> listMap = item4PositionApi.getItemList(tenantId, positionId);
-            List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
             for (Map<String, Object> app : listMap) {
-                Map<String, Object> map = new HashMap<String, Object>(16);
-                map.put("itemId", app.get("url"));
-                map.put("itemName", app.get("name"));
+                app.put("itemId", app.get("url"));
+                app.put("itemName", app.get("name"));
                 ItemModel itemModel = item4PositionApi.getByItemId(tenantId, (String) app.get("url"));
-                map.put("appIcon", StringUtils.isBlank(itemModel.getIconData()) ? "" : itemModel.getIconData());
-                map.put("processDefinitionKey", itemModel.getWorkflowGuid());
-                resList.add(map);
+                app.put("appIcon", itemModel != null && StringUtils.isNotBlank(itemModel.getIconData()) ? itemModel.getIconData() : "");
+                app.put("processDefinitionKey", itemModel != null ? itemModel.getWorkflowGuid() : "");
             }
             return Y9Result.success(listMap, "获取数据成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取数据异常", e);
         }
         return Y9Result.failure("获取数据异常");
     }

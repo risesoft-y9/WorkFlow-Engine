@@ -1,16 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
@@ -26,7 +17,17 @@ import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.ButtonOperationService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service(value = "buttonOperationService")
 public class ButtonOperationServiceImpl implements ButtonOperationService {
@@ -59,13 +60,13 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         TaskModel taskModel = taskApi.findById(tenantId, taskId);
         String processInstanceId = taskModel.getProcessInstanceId();
 
-        /**
-         * 1办结
+        /*
+          1办结
          */
         document4PositionApi.complete(tenantId, positionId, taskId);
 
-        /**
-         * 2更新自定义历程结束时间
+        /*
+          2更新自定义历程结束时间
          */
         List<ProcessTrackModel> ptModelList = processTrack4PositionApi.findByTaskId(tenantId, taskId);
         for (ProcessTrackModel ptModel : ptModelList) {
@@ -74,8 +75,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 processTrack4PositionApi.saveOrUpdate(tenantId, ptModel);
             }
         }
-        /**
-         * 3保存历程
+        /*
+          3保存历程
          */
         ProcessTrackModel ptModel = new ProcessTrackModel();
         ptModel.setDescribed(desc);
@@ -97,12 +98,9 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             return;
         }
         String[] array = processInstanceIds.split(";");
-        if (array != null && array.length > 0) {
-            for (int i = 0; i < array.length; i++) {
-                String processInstanceId = array[i];
-                if (StringUtils.isNotBlank(processInstanceId)) {
-                    resumeToDo(processInstanceId, desc);
-                }
+        for (String processInstanceId : array) {
+            if (StringUtils.isNotBlank(processInstanceId)) {
+                resumeToDo(processInstanceId, desc);
             }
         }
     }
@@ -112,11 +110,11 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         String positionId = Y9LoginUserHolder.getPositionId(), userName = Y9LoginUserHolder.getPosition().getName(), tenantId = Y9LoginUserHolder.getTenantId();
         String newDate = sdf.format(new Date());
         try {
-            /**
-             * 1、恢复待办
+            /*
+              1、恢复待办
              */
 
-            String year = "";
+            String year;
             OfficeDoneInfoModel officeDoneInfoModel = officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
             if (officeDoneInfoModel != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
@@ -127,8 +125,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
             HistoricTaskInstanceModel hisTaskModelTemp = historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year).get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
-            /**
-             * 2、添加流程的历程
+            /*
+              2、添加流程的历程
              */
             ProcessTrackModel ptm = new ProcessTrackModel();
             ptm.setDescribed(desc);
@@ -140,10 +138,10 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setTaskDefName("恢复待办");
             ptm.setTaskId(hisTaskModelTemp.getId());
 
-            ptm = processTrack4PositionApi.saveOrUpdate(tenantId, ptm);
+            processTrack4PositionApi.saveOrUpdate(tenantId, ptm);
 
-            /**
-             * 2、添加流程的历程
+            /*
+              2、添加流程的历程
              */
             ptm = new ProcessTrackModel();
             ptm.setDescribed(desc);
@@ -154,9 +152,9 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setEndTime("");
             ptm.setTaskDefName(hisTaskModelTemp.getName());
             ptm.setTaskId(hisTaskModelTemp.getId());
-            ptm = processTrack4PositionApi.saveOrUpdate(tenantId, ptm);
+            processTrack4PositionApi.saveOrUpdate(tenantId, ptm);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("runtimeApi resumeToDo error", e);
             throw new Exception("runtimeApi resumeToDo error");
         }
     }

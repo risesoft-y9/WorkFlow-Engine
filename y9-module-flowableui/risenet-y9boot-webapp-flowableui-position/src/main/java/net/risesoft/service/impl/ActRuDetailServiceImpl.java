@@ -1,14 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
@@ -21,9 +14,17 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ActRuDetailService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
+import java.util.Date;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service(value = "actRuDetailService")
+@Slf4j
 @Transactional(readOnly = true)
 public class ActRuDetailServiceImpl implements ActRuDetailService {
 
@@ -72,7 +73,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             actRuDetailApi.saveOrUpdate(tenantId, actRuDetailModel);
             return Y9Result.successMsg("设置办理人信息正常");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("设置办理人信息异常", e);
         }
         return Y9Result.failure("设置办理人信息异常");
     }

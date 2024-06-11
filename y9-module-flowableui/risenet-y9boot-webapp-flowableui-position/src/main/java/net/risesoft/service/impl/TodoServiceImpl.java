@@ -1,51 +1,32 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-
 import lombok.RequiredArgsConstructor;
-
-import net.risesoft.api.itemadmin.FormDataApi;
-import net.risesoft.api.itemadmin.ItemTodoApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.RemindInstanceApi;
-import net.risesoft.api.itemadmin.SpeakInfoApi;
-import net.risesoft.api.itemadmin.TaskVariableApi;
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.api.itemadmin.*;
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
-import net.risesoft.api.processadmin.HistoricTaskApi;
-import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.api.processadmin.ProcessTodoApi;
-import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.api.processadmin.*;
 import net.risesoft.enums.ItemLeaveTypeEnum;
-import net.risesoft.model.itemadmin.ActRuDetailModel;
-import net.risesoft.model.itemadmin.ItemModel;
-import net.risesoft.model.itemadmin.ItemPage;
-import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.model.itemadmin.RemindInstanceModel;
-import net.risesoft.model.itemadmin.TaskVariableModel;
+import net.risesoft.model.itemadmin.*;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.TodoService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service(value = "todoService")
 @Transactional(readOnly = true)
@@ -82,7 +63,7 @@ public class TodoServiceImpl implements TodoService {
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> list(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -93,19 +74,21 @@ public class TodoServiceImpl implements TodoService {
             } else {
                 retMap = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey, searchTerm, page, rows);
             }
-            List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
+            List<TaskModel> list = (List<TaskModel>) retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<List<TaskModel>>() {});
-            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {
+            });
+            List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
-            Map<String, Object> vars = null;
-            Collection<String> keys = null;
-            Map<String, Object> mapTemp = null;
-            ProcessParamModel processParam = null;
+            Map<String, Object> vars;
+            Collection<String> keys;
+            Map<String, Object> mapTemp;
+            ProcessParamModel processParam;
+            String taskId = "";
             for (TaskModel task : taslList) {
-                mapTemp = new HashMap<String, Object>(16);
+                mapTemp = new HashMap<>(16);
                 try {
-                    String taskId = task.getId();
+                    taskId = task.getId();
                     String processInstanceId = task.getProcessInstanceId();
                     String processDefinitionId = task.getProcessDefinitionId();
                     Date taskCreateTime = task.getCreateTime();
@@ -114,10 +97,10 @@ public class TodoServiceImpl implements TodoService {
                     String taskDefinitionKey = task.getTaskDefinitionKey();
                     String taskName = task.getName();
                     int priority = task.getPriority();
-                    keys = new ArrayList<String>();
+                    keys = new ArrayList<>();
                     keys.add(SysVariables.TASKSENDER);
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys);
-                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
+                    String taskSender = Strings.nullToEmpty((String) vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
@@ -154,7 +137,7 @@ public class TodoServiceImpl implements TodoService {
                             }
                         }
                         String obj = variableApi.getVariableByProcessInstanceId(tenantId, task.getExecutionId(), SysVariables.NROFACTIVEINSTANCES);
-                        Integer nrOfActiveInstances = obj != null ? Integer.valueOf(obj) : 0;
+                        int nrOfActiveInstances = obj != null ? Integer.parseInt(obj) : 0;
                         if (nrOfActiveInstances == 1) {
                             mapTemp.put("isZhuBan", "true");
                         }
@@ -164,12 +147,12 @@ public class TodoServiceImpl implements TodoService {
                     }
                     int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
                     mapTemp.put("chaosongNum", chaosongNum);
-                    /**
-                     * 红黄绿灯的情况判断，这里先不考虑
+                    /*
+                      红黄绿灯的情况判断，这里先不考虑
                      */
                     mapTemp.put("status", 1);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("查询待办任务出错" + taskId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
@@ -177,7 +160,7 @@ public class TodoServiceImpl implements TodoService {
             }
             retMap.put("rows", items);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("查询待办任务出错", e);
         }
         return retMap;
     }
@@ -185,7 +168,7 @@ public class TodoServiceImpl implements TodoService {
     @SuppressWarnings({"unchecked"})
     @Override
     public Y9Page<Map<String, Object>> listNew(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -196,19 +179,21 @@ public class TodoServiceImpl implements TodoService {
             } else {
                 retMap = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey, searchTerm, page, rows);
             }
-            List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
+            List<TaskModel> list = (List<TaskModel>) retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<List<TaskModel>>() {});
-            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {
+            });
+            List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
-            Map<String, Object> vars = null;
-            Collection<String> keys = null;
-            Map<String, Object> mapTemp = null;
-            Map<String, Object> formDataMap = null;
-            ProcessParamModel processParam = null;
+            Map<String, Object> vars;
+            Collection<String> keys;
+            Map<String, Object> mapTemp;
+            Map<String, Object> formDataMap;
+            ProcessParamModel processParam;
+            String taskId;
             for (TaskModel task : taslList) {
-                mapTemp = new HashMap<String, Object>(16);
-                String taskId = task.getId();
+                mapTemp = new HashMap<>(16);
+                taskId = task.getId();
                 String processInstanceId = task.getProcessInstanceId();
                 String processDefinitionId = task.getProcessDefinitionId();
                 try {
@@ -218,10 +203,10 @@ public class TodoServiceImpl implements TodoService {
                     String taskDefinitionKey = task.getTaskDefinitionKey();
                     String taskName = task.getName();
                     int priority = task.getPriority();
-                    keys = new ArrayList<String>();
+                    keys = new ArrayList<>();
                     keys.add(SysVariables.TASKSENDER);
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys);
-                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
+                    String taskSender = Strings.nullToEmpty((String) vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
@@ -254,7 +239,7 @@ public class TodoServiceImpl implements TodoService {
                             }
                         }
                         String obj = variableApi.getVariableByProcessInstanceId(tenantId, task.getExecutionId(), SysVariables.NROFACTIVEINSTANCES);
-                        Integer nrOfActiveInstances = obj != null ? Integer.valueOf(obj) : 0;
+                        int nrOfActiveInstances = obj != null ? Integer.parseInt(obj) : 0;
                         if (nrOfActiveInstances == 1) {
                             mapTemp.put("isZhuBan", "true");
                         }
@@ -265,11 +250,11 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put("isForwarding", false);
                     TaskVariableModel taskVariableModel = taskvariableApi.findByTaskIdAndKeyName(tenantId, taskId, "isForwarding");
                     if (taskVariableModel != null) {// 是否正在发送标识
-                        mapTemp.put("isForwarding", taskVariableModel.getText().contains("true") ? true : false);
+                        mapTemp.put("isForwarding", taskVariableModel.getText().contains("true"));
                     }
                     formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                     if (formDataMap.get("leaveType") != null) {
-                        String leaveType = (String)formDataMap.get("leaveType");
+                        String leaveType = (String) formDataMap.get("leaveType");
                         ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
                         for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
                             if (leaveType.equals(leaveTypeEnum.getValue())) {
@@ -290,25 +275,25 @@ public class TodoServiceImpl implements TodoService {
                     }
 
                     int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
-                    mapTemp.put("follow", countFollow > 0 ? true : false);
+                    mapTemp.put("follow", countFollow > 0);
 
                     String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK);
-                    if (rollBack != null && Boolean.valueOf(rollBack)) {// 退回件
+                    if (Boolean.parseBoolean(rollBack)) {// 退回件
                         mapTemp.put("rollBack", true);
                     }
                     try {
                         String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK);
-                        if (takeBack != null && Boolean.valueOf(takeBack)) {// 收回件
+                        if (Boolean.parseBoolean(takeBack)) {// 收回件
                             List<HistoricTaskInstanceModel> hlist = historicTaskApi.findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "");
                             if (hlist.get(0).getTaskDefinitionKey().equals(task.getTaskDefinitionKey())) {// 起草收回件，可删除
                                 mapTemp.put("takeBack", true);
                             }
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("收回件异常", e);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("获取待办异常" + taskId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
@@ -316,14 +301,14 @@ public class TodoServiceImpl implements TodoService {
             }
             return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取待办异常", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
     @Override
     public Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page, Integer rows) {
-        ItemPage<ActRuDetailModel> itemPage = new ItemPage<ActRuDetailModel>();
+        ItemPage<ActRuDetailModel> itemPage;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -336,18 +321,20 @@ public class TodoServiceImpl implements TodoService {
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<List<ActRuDetailModel>>() {});
-            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {
+            });
+            List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
-            Map<String, Object> vars = null;
-            Collection<String> keys = null;
-            Map<String, Object> mapTemp = null;
-            Map<String, Object> formDataMap = null;
-            ProcessParamModel processParam = null;
+            Map<String, Object> vars;
+            Collection<String> keys;
+            Map<String, Object> mapTemp;
+            Map<String, Object> formDataMap;
+            ProcessParamModel processParam;
+            String processInstanceId;
             for (ActRuDetailModel ardModel : taslList) {
-                mapTemp = new HashMap<String, Object>(16);
+                mapTemp = new HashMap<>(16);
                 String taskId = ardModel.getTaskId();
-                String processInstanceId = ardModel.getProcessInstanceId();
+                processInstanceId = ardModel.getProcessInstanceId();
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     Date taskCreateTime = ardModel.getCreateTime();
@@ -362,10 +349,10 @@ public class TodoServiceImpl implements TodoService {
                     String taskDefinitionKey = task.getTaskDefinitionKey();
                     String taskName = task.getName();
                     int priority = task.getPriority();
-                    keys = new ArrayList<String>();
+                    keys = new ArrayList<>();
                     keys.add(SysVariables.TASKSENDER);
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys);
-                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
+                    String taskSender = Strings.nullToEmpty((String) vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
@@ -389,7 +376,7 @@ public class TodoServiceImpl implements TodoService {
                             }
                         }
                         String obj = variableApi.getVariableByProcessInstanceId(tenantId, task.getExecutionId(), SysVariables.NROFACTIVEINSTANCES);
-                        Integer nrOfActiveInstances = obj != null ? Integer.valueOf(obj) : 0;
+                        int nrOfActiveInstances = obj != null ? Integer.parseInt(obj) : 0;
                         if (nrOfActiveInstances == 1) {
                             mapTemp.put("isZhuBan", "true");
                         }
@@ -400,7 +387,7 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put("isForwarding", false);
                     TaskVariableModel taskVariableModel = taskvariableApi.findByTaskIdAndKeyName(tenantId, taskId, "isForwarding");
                     if (taskVariableModel != null) {// 是否正在发送标识
-                        mapTemp.put("isForwarding", taskVariableModel.getText().contains("true") ? true : false);
+                        mapTemp.put("isForwarding", taskVariableModel.getText().contains("true"));
                     }
                     formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                     /*if (formDataMap.get("leaveType") != null) {
@@ -424,14 +411,14 @@ public class TodoServiceImpl implements TodoService {
                     }
 
                     int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
-                    mapTemp.put("follow", countFollow > 0 ? true : false);
+                    mapTemp.put("follow", countFollow > 0);
 
                     String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK);
-                    if (rollBack != null && Boolean.valueOf(rollBack)) {// 退回件
+                    if (Boolean.parseBoolean(rollBack)) {// 退回件
                         mapTemp.put("rollBack", true);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
@@ -439,8 +426,8 @@ public class TodoServiceImpl implements TodoService {
             }
             return Y9Page.success(page, itemPage.getTotalpages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取待办列表失败", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 }

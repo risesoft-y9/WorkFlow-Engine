@@ -28,12 +28,14 @@ public class CheckUserLoginFilter4Flowable implements Filter {
     protected final Logger log = LoggerFactory.getLogger(CheckUserLoginFilter4Flowable.class);
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        Filter.super.destroy();
+    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
-        throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest)servletRequest;
+            throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpSession session = request.getSession();
         try {
             UserInfo loginPerson = Y9LoginUserHolder.getUserInfo();
@@ -50,8 +52,8 @@ public class CheckUserLoginFilter4Flowable implements Filter {
                 } else {
                     PersonApi personApi = Y9Context.getBean(PersonApi.class);
                     List<Position> list = personApi
-                        .listPositionsByPersonId(loginPerson.getTenantId(), loginPerson.getPersonId()).getData();
-                    if (list.size() > 0) {
+                            .listPositionsByPersonId(loginPerson.getTenantId(), loginPerson.getPersonId()).getData();
+                    if (!list.isEmpty()) {
                         Y9LoginUserHolder.setPosition(list.get(0));
                     }
                 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
@@ -32,6 +33,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2024/01/17
  */
+@Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -56,6 +58,7 @@ public class MobileV1MonitorController {
      * 监控在办件统计
      *
      * @param itemId 事项id
+     * @return Y9Result<Long>
      */
     @RequestMapping(value = "/monitorDoingCount")
     public Y9Result<Long> monitorDoingCount(@RequestParam @NotBlank String itemId) {
@@ -66,7 +69,7 @@ public class MobileV1MonitorController {
             long monitorDoingCount = monitorApi.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey);
             return Y9Result.success(monitorDoingCount, "获取数据成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("监控在办件统计失败", e);
         }
         return Y9Result.failure("获取数据失败");
     }
@@ -75,10 +78,10 @@ public class MobileV1MonitorController {
      * 监控在办件
      *
      * @param itemId 事项id
-     * @param title 标题
-     * @param page 页码
-     * @param rows 条数
-     * @return
+     * @param title  标题
+     * @param page   页码
+     * @param rows   条数
+     * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorDoingList")
     public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam @NotBlank String itemId, @RequestParam String title, int page, int rows) {
@@ -89,6 +92,7 @@ public class MobileV1MonitorController {
      * 监控办结件统计
      *
      * @param itemId 事项id
+     * @return Y9Result<Long>
      */
     @RequestMapping(value = "/monitorDoneCount")
     public Y9Result<Long> monitorDoneCount(@RequestParam @NotBlank String itemId) {
@@ -99,7 +103,7 @@ public class MobileV1MonitorController {
             long monitorDoneCount = monitorApi.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey);
             return Y9Result.success(monitorDoneCount, "获取数据成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("监控办结件统计失败", e);
         }
         return Y9Result.failure("获取数据失败");
     }
@@ -108,9 +112,10 @@ public class MobileV1MonitorController {
      * 监控办结件
      *
      * @param itemId 事项id
-     * @param title 标题
-     * @param page 页码
-     * @param rows 条数
+     * @param title  标题
+     * @param page   页码
+     * @param rows   条数
+     * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorDoneList")
     public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam @NotBlank String itemId, @RequestParam String title, int page, int rows) {
@@ -121,13 +126,14 @@ public class MobileV1MonitorController {
      * 彻底删除流程实例
      *
      * @param processInstanceId 流程实例id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/removeProcess")
     public Y9Result<String> removeProcess(@RequestParam @NotBlank String processInstanceId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ProcessParamModel processParamModel = null;
-            List<String> list = new ArrayList<String>();
+            ProcessParamModel processParamModel;
+            List<String> list = new ArrayList<>();
             processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
             if (processParamModel != null) {
                 list.add(processParamModel.getProcessSerialNumber());
@@ -141,7 +147,7 @@ public class MobileV1MonitorController {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("彻底删除流程实例失败", e);
         }
         return Y9Result.failure("发生异常");
     }

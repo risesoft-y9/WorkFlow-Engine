@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -28,6 +29,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
  * @author zhangchongjie
  * @date 2024/06/05
  */
+@Slf4j
 @Validated
 @RequiredArgsConstructor
 @RestController
@@ -43,8 +45,8 @@ public class EntrustRestController {
     /**
      * 删除委托
      *
-     * @param id
-     * @return
+     * @param id 委托id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/deleteEntrust", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> deleteEntrust(String id) {
@@ -53,7 +55,7 @@ public class EntrustRestController {
             entrust4PositionApi.deleteEntrust(tenantId, id);
             return Y9Result.success("删除成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除委托出错", e);
         }
         return Y9Result.failure("删除失败");
     }
@@ -61,7 +63,7 @@ public class EntrustRestController {
     /**
      * 获取委托列表
      *
-     * @return
+     * @return Y9Result<List < EntrustModel>>
      */
     @RequestMapping(value = "/getEntrustList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<EntrustModel>> getEntrustList() {
@@ -70,15 +72,15 @@ public class EntrustRestController {
             List<EntrustModel> list = entrust4PositionApi.getEntrustList(tenantId, Y9LoginUserHolder.getPositionId());
             return Y9Result.success(list, "获取成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取委托列表出错", e);
         }
-        return Y9Result.failure(null, "获取失败");
+        return Y9Result.failure("获取失败");
     }
 
     /**
      * 获取组织架构
      *
-     * @return
+     * @return Y9Result<List < Organization>>
      */
     @RequestMapping(value = "/getOrgList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Organization>> getOrgList() {
@@ -87,17 +89,17 @@ public class EntrustRestController {
             List<Organization> list = organizationApi.list(tenantId).getData();
             return Y9Result.success(list, "获取成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取组织架构出错", e);
         }
-        return Y9Result.failure(null, "获取失败");
+        return Y9Result.failure("获取失败");
     }
 
     /**
      * 展开组织架构树
      *
-     * @param id
-     * @param treeType
-     * @return
+     * @param id       父节点id
+     * @param treeType 树类型
+     * @return Y9Result<List < OrgUnit>>
      */
     @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<OrgUnit>> getOrgTree(String id, OrgTreeTypeEnum treeType) {
@@ -106,16 +108,16 @@ public class EntrustRestController {
             List<OrgUnit> list = orgUnitApi.getSubTree(tenantId, id, treeType).getData();
             return Y9Result.success(list, "获取成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("展开组织架构树出错", e);
         }
-        return Y9Result.failure(null, "获取失败");
+        return Y9Result.failure("获取失败");
     }
 
     /**
      * 保存委托数据
      *
-     * @param jsonData
-     * @return
+     * @param jsonData json数据
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(@NotBlank String jsonData) {
@@ -125,7 +127,7 @@ public class EntrustRestController {
             entrust4PositionApi.saveOrUpdate(tenantId, Y9LoginUserHolder.getPositionId(), model);
             return Y9Result.success("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存委托数据出错", e);
         }
         return Y9Result.failure("保存失败");
     }
@@ -133,9 +135,9 @@ public class EntrustRestController {
     /**
      * 组织架构树搜索
      *
-     * @param name
-     * @param treeType
-     * @return
+     * @param name     搜索词
+     * @param treeType 树类型
+     * @return Y9Result<List < OrgUnit>>
      */
     @RequestMapping(value = "/treeSearch", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<OrgUnit>> treeSearch(String name, OrgTreeTypeEnum treeType) {
@@ -144,8 +146,8 @@ public class EntrustRestController {
             List<OrgUnit> list = orgUnitApi.treeSearch(tenantId, name, treeType).getData();
             return Y9Result.success(list, "获取成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("组织架构树搜索出错", e);
         }
-        return Y9Result.failure(null, "获取失败");
+        return Y9Result.failure("获取失败");
     }
 }

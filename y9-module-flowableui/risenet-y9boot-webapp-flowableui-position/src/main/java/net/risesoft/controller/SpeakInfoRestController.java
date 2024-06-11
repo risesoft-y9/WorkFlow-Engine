@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.consts.UtilConsts;
@@ -30,6 +31,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping(value = "/vue/speakInfo")
 public class SpeakInfoRestController {
 
@@ -39,7 +41,7 @@ public class SpeakInfoRestController {
      * 删除沟通交流信息
      *
      * @param id 信息id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/deleteById", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> deleteById(@RequestParam @NotBlank String id) {
@@ -47,13 +49,13 @@ public class SpeakInfoRestController {
         String userId = person.getPersonId(), tenantId = person.getTenantId();
         try {
             Map<String, Object> map = speakInfoApi.deleteById(tenantId, userId, id);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.successMsg((String)map.get("msg"));
+            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+                return Y9Result.successMsg((String) map.get("msg"));
             } else {
-                return Y9Result.failure((String)map.get("msg"));
+                return Y9Result.failure((String) map.get("msg"));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除沟通交流信息失败", e);
         }
         return Y9Result.failure("删除失败");
     }
@@ -61,9 +63,9 @@ public class SpeakInfoRestController {
     /**
      * 保存沟通交流信息
      *
-     * @param content 内容
+     * @param content           内容
      * @param processInstanceId 流程实例id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String content, @RequestParam @NotBlank String processInstanceId) {
@@ -79,15 +81,15 @@ public class SpeakInfoRestController {
     /**
      * 获取沟通交流列表
      *
-     * @param processInstanceId
-     * @return
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/speakInfoList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> speakInfoList(@RequestParam @NotBlank String processInstanceId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = person.getTenantId();
         List<SpeakInfoModel> siModelList = speakInfoApi.findByProcessInstanceId(tenantId, userId, processInstanceId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("rows", siModelList);
         map.put("processInstanceId", processInstanceId);
         map.put("userName", userName);

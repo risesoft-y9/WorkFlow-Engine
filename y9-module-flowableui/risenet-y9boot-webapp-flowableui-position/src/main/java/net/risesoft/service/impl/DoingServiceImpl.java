@@ -1,26 +1,10 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.RequiredArgsConstructor;
-
-import net.risesoft.api.itemadmin.FormDataApi;
-import net.risesoft.api.itemadmin.ItemDoingApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.RemindInstanceApi;
-import net.risesoft.api.itemadmin.SpeakInfoApi;
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.api.itemadmin.*;
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
@@ -29,11 +13,7 @@ import net.risesoft.api.processadmin.DoingApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
-import net.risesoft.model.itemadmin.ActRuDetailModel;
-import net.risesoft.model.itemadmin.ItemModel;
-import net.risesoft.model.itemadmin.ItemPage;
-import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.model.itemadmin.RemindInstanceModel;
+import net.risesoft.model.itemadmin.*;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
@@ -43,7 +23,15 @@ import net.risesoft.service.DoingService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service(value = "doingService")
 @Transactional(readOnly = true)
@@ -76,14 +64,14 @@ public class DoingServiceImpl implements DoingService {
     /**
      * 当并行的时候，会获取到多个task，为了并行时当前办理人显示多人，而不是显示多条记录，需要分开分别进行处理
      *
-     * @return
+     * @return List<String>
      */
-    private final List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
+    private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String taskIds = "", assigneeIds = "", assigneeNames = "";
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         int i = 0;
-        if (taskList.size() > 0) {
+        if (!taskList.isEmpty()) {
             for (TaskModel task : taskList) {
                 if (StringUtils.isEmpty(taskIds)) {
                     taskIds = task.getId();
@@ -151,9 +139,9 @@ public class DoingServiceImpl implements DoingService {
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> list(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         try {
-            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> items = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
@@ -162,18 +150,19 @@ public class DoingServiceImpl implements DoingService {
                 // retMap = doingApi.getListByUserIdAndProcessDefinitionKey(tenantId,
                 // userId, processDefinitionKey, page, rows);
                 retMap = doingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId, processDefinitionKey, page, rows);
-                List<Map<String, Object>> list = (List<Map<String, Object>>)retMap.get("rows");
+                List<Map<String, Object>> list = (List<Map<String, Object>>) retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<Map<String, Object>> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<Map<String, Object>>>() {});
+                List<Map<String, Object>> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {
+                });
                 int serialNumber = (page - 1) * rows;
-                Map<String, Object> mapTemp = null;
-                ProcessParamModel processParam = null;
+                Map<String, Object> mapTemp;
+                ProcessParamModel processParam;
                 SimpleDateFormat sdfT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
                 for (Map<String, Object> hpim : hpiModelList) {// 以办理时间排序
-                    mapTemp = new HashMap<String, Object>(16);
+                    mapTemp = new HashMap<>(16);
                     try {
-                        String processInstanceId = (String)hpim.get("processInstanceId");
-                        String processDefinitionId = (String)hpim.get("processDefinitionId");
+                        String processInstanceId = (String) hpim.get("processInstanceId");
+                        String processDefinitionId = (String) hpim.get("processDefinitionId");
                         Date endTime = sdfT.parse(hpim.get("endTime").toString());
                         endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
                         String taskCreateTime = hpim.get("endTime") != null ? sdf.format(endTime) : "";
@@ -207,7 +196,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("获取待办列表失败", e);
                     }
                     mapTemp.put("serialNumber", serialNumber + 1);
                     serialNumber += 1;
@@ -215,12 +204,12 @@ public class DoingServiceImpl implements DoingService {
                 }
             } else {
                 retMap = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey, searchTerm, page, rows);
-                List<ProcessInstanceModel> hpiModelList = (List<ProcessInstanceModel>)retMap.get("rows");
+                List<ProcessInstanceModel> hpiModelList = (List<ProcessInstanceModel>) retMap.get("rows");
                 int serialNumber = (page - 1) * rows;
-                Map<String, Object> mapTemp = null;
-                ProcessParamModel processParam = null;
+                Map<String, Object> mapTemp;
+                ProcessParamModel processParam;
                 for (ProcessInstanceModel hpim : hpiModelList) {
-                    mapTemp = new HashMap<String, Object>(16);
+                    mapTemp = new HashMap<>(16);
                     try {
                         String processInstanceId = hpim.getId();
                         String processDefinitionId = hpim.getProcessDefinitionId();
@@ -254,7 +243,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("获取待办列表失败", e);
                     }
                     mapTemp.put("serialNumber", serialNumber + 1);
                     serialNumber += 1;
@@ -263,7 +252,7 @@ public class DoingServiceImpl implements DoingService {
             }
             retMap.put("rows", items);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取待办列表失败", e);
         }
         return retMap;
     }
@@ -271,9 +260,9 @@ public class DoingServiceImpl implements DoingService {
     @SuppressWarnings({"unchecked"})
     @Override
     public Y9Page<Map<String, Object>> listNew(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap;
         try {
-            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> items = new ArrayList<>();
             SimpleDateFormat sdfT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -281,19 +270,21 @@ public class DoingServiceImpl implements DoingService {
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
                 retMap = doingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId, processDefinitionKey, page, rows);
-                List<Map<String, Object>> list = (List<Map<String, Object>>)retMap.get("rows");
+                List<Map<String, Object>> list = (List<Map<String, Object>>) retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<Map<String, Object>> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<Map<String, Object>>>() {});
+                List<Map<String, Object>> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {
+                });
                 int serialNumber = (page - 1) * rows;
-                Map<String, Object> mapTemp = null;
-                Map<String, Object> formDataMap = null;
-                ProcessParamModel processParam = null;
+                Map<String, Object> mapTemp;
+                Map<String, Object> formDataMap;
+                ProcessParamModel processParam;
                 ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
+                String processInstanceId = "";
                 for (Map<String, Object> hpim : hpiModelList) {// 以办理时间排序
-                    mapTemp = new HashMap<String, Object>(16);
+                    mapTemp = new HashMap<>(16);
                     try {
-                        String processInstanceId = (String)hpim.get("processInstanceId");
-                        String processDefinitionId = (String)hpim.get("processDefinitionId");
+                        processInstanceId = (String) hpim.get("processInstanceId");
+                        String processDefinitionId = (String) hpim.get("processDefinitionId");
                         Date endTime = sdfT.parse(hpim.get("endTime").toString());
                         endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
                         String taskCreateTime = hpim.get("endTime") != null ? sdf.format(endTime) : "";
@@ -327,7 +318,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("taskDueDate", "");
                         formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                         if (formDataMap.get("leaveType") != null) {
-                            String leaveType = (String)formDataMap.get("leaveType");
+                            String leaveType = (String) formDataMap.get("leaveType");
                             for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
                                 if (leaveType.equals(leaveTypeEnum.getValue())) {
                                     formDataMap.put("leaveType", leaveTypeEnum.getName());
@@ -347,9 +338,9 @@ public class DoingServiceImpl implements DoingService {
                         }
 
                         int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
-                        mapTemp.put("follow", countFollow > 0 ? true : false);
+                        mapTemp.put("follow", countFollow > 0);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("获取待办列表失败" + processInstanceId, e);
                     }
                     mapTemp.put("serialNumber", serialNumber + 1);
                     serialNumber += 1;
@@ -357,17 +348,19 @@ public class DoingServiceImpl implements DoingService {
                 }
             } else {
                 retMap = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey, searchTerm, page, rows);
-                List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
+                List<ProcessInstanceModel> list = (List<ProcessInstanceModel>) retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ProcessInstanceModel>>() {});
+                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {
+                });
                 int serialNumber = (page - 1) * rows;
-                Map<String, Object> mapTemp = null;
-                Map<String, Object> formDataMap = null;
-                ProcessParamModel processParam = null;
+                Map<String, Object> mapTemp;
+                Map<String, Object> formDataMap;
+                ProcessParamModel processParam;
+                String processInstanceId = "";
                 for (ProcessInstanceModel hpim : hpiModelList) {
-                    mapTemp = new HashMap<String, Object>(16);
+                    mapTemp = new HashMap<>(16);
                     try {
-                        String processInstanceId = hpim.getId();
+                        processInstanceId = hpim.getId();
                         String processDefinitionId = hpim.getProcessDefinitionId();
                         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
@@ -404,7 +397,7 @@ public class DoingServiceImpl implements DoingService {
                         int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
                         mapTemp.put("speakInfoNum", speakInfoNum);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("获取待办列表失败" + processInstanceId, e);
                     }
                     mapTemp.put("serialNumber", serialNumber + 1);
                     serialNumber += 1;
@@ -413,16 +406,16 @@ public class DoingServiceImpl implements DoingService {
             }
             return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取待办列表失败", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
     @Override
     public Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page, Integer rows) {
-        ItemPage<ActRuDetailModel> itemPage = new ItemPage<ActRuDetailModel>();
+        ItemPage<ActRuDetailModel> itemPage;
         try {
-            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> items = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
@@ -434,16 +427,18 @@ public class DoingServiceImpl implements DoingService {
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ActRuDetailModel>>() {});
+            List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {
+            });
             int serialNumber = (page - 1) * rows;
-            Map<String, Object> mapTemp = null;
-            Map<String, Object> formDataMap = null;
+            Map<String, Object> mapTemp;
+            Map<String, Object> formDataMap;
             // ProcessParamModel processParam = null;
             // ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
+            String processInstanceId = "";
             for (ActRuDetailModel ardModel : hpiModelList) {
-                mapTemp = new HashMap<String, Object>(16);
+                mapTemp = new HashMap<>(16);
                 try {
-                    String processInstanceId = ardModel.getProcessInstanceId();
+                    processInstanceId = ardModel.getProcessInstanceId();
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("processDefinitionKey", processDefinitionKey);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
@@ -486,9 +481,9 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("remindSetting", true);
                     }
                     int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
-                    mapTemp.put("follow", countFollow > 0 ? true : false);
+                    mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
@@ -496,9 +491,9 @@ public class DoingServiceImpl implements DoingService {
             }
             return Y9Page.success(page, itemPage.getTotalpages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取待办列表失败", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
 }

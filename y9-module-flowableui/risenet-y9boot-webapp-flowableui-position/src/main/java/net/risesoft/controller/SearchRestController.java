@@ -41,7 +41,7 @@ public class SearchRestController {
     /**
      * 获取我的事项列表
      *
-     * @return
+     * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/getMyItemList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getMyItemList() {
@@ -54,15 +54,15 @@ public class SearchRestController {
     /**
      * 获取我的事项系统列表
      *
-     * @return
+     * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/getMyItemSystemList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getMyItemSystemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemModel> listMap = item4PositionApi.getAllItemList(tenantId);
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
         for (ItemModel itemModel : listMap) {
-            Map<String, Object> newmap = new HashMap<String, Object>(16);
+            Map<String, Object> newmap = new HashMap<>(16);
             newmap.put("systemName", itemModel.getSystemName());
             newmap.put("systemCnName", itemModel.getSysLevel());
             if (!list.contains(newmap)) {
@@ -76,17 +76,17 @@ public class SearchRestController {
      * 获取个人所有件
      *
      * @param searchName 搜索词
-     * @param itemId 事项id
-     * @param userName 发起人
-     * @param state 办件状态
-     * @param year 年度
-     * @param page 页码
-     * @param rows 条数
-     * @return
+     * @param itemId     事项id
+     * @param userName   发起人
+     * @param state      办件状态
+     * @param year       年度
+     * @param page       页码
+     * @param rows       条数
+     * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/getSearchList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> getSearchList(@RequestParam String searchName, @RequestParam String itemId, @RequestParam String userName, @RequestParam String state, @RequestParam String year, @RequestParam String startDate, @RequestParam String endDate, @RequestParam @NotBlank Integer page,
-        @RequestParam @NotBlank Integer rows) {
+                                                     @RequestParam @NotBlank Integer rows) {
         return searchService.getSearchList(searchName, itemId, userName, state, year, startDate, endDate, page, rows);
     }
 
@@ -94,13 +94,13 @@ public class SearchRestController {
      * 获取阅件列表
      *
      * @param searchName 搜索词
-     * @param itemId 事项id
-     * @param userName 发起人
-     * @param state 办件状态
-     * @param year 年度
-     * @param page 页码
-     * @param rows 条数
-     * @return
+     * @param itemId     事项id
+     * @param userName   发起人
+     * @param state      办件状态
+     * @param year       年度
+     * @param page       页码
+     * @param rows       条数
+     * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/getYuejianList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> getYuejianList(@RequestParam String searchName, @RequestParam String itemId, @RequestParam String userName, @RequestParam String state, @RequestParam String year, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {

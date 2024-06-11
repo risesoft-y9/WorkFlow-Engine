@@ -1,15 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
@@ -26,7 +18,13 @@ import net.risesoft.service.Process4SearchService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
+
+import java.util.*;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service(value = "multiInstanceService")
 public class MultiInstanceServiceImpl implements MultiInstanceService {
@@ -63,12 +61,14 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
                 processParamApi.saveOrUpdate(tenantId, processParamModel);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存流程参数失败", e);
         }
         for (String user : users) {
             buttonOperation4PositionApi.addMultiInstanceExecution(tenantId, activityId, processInstanceId, taskId, user);
         }
-        process4SearchService.saveToDataCenter1(tenantId, taskId, processParamModel);
+        if (processParamModel != null) {
+            process4SearchService.saveToDataCenter1(tenantId, taskId, processParamModel);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -84,28 +84,28 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
             usersList = Y9JsonUtil.readValue(usersObj, List.class);
         }
         int number = 1;
-        for (Object obj : usersList) {
-            String user = obj.toString();
-            usersListTemp.add(user);
-            if (num == number) {
-                if (user.equals(selectUserId)) {
-                    for (String userTemp : userChoiceArr) {
-                        usersListTemp.add(userTemp);
+        if (usersList != null) {
+            for (Object obj : usersList) {
+                String user = obj.toString();
+                usersListTemp.add(user);
+                if (num == number) {
+                    if (user.equals(selectUserId)) {
+                        usersListTemp.addAll(Arrays.asList(userChoiceArr));
                     }
                 }
+                number += 1;
             }
-            number += 1;
         }
         // 改变流程变量中的users
-        Map<String, Object> val = new HashMap<String, Object>();
+        Map<String, Object> val = new HashMap<>();
         val.put("val", usersListTemp);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.USERS, val);
         // 改变任务变量中的users
         variableApi.setVariableLocal(tenantId, taskId, SysVariables.USERS, val);
 
         // 改变多实例的标量
-        Integer nrOfInstances = Integer.valueOf(variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES));
-        Map<String, Object> val1 = new HashMap<String, Object>();
+        int nrOfInstances = Integer.parseInt(variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES));
+        Map<String, Object> val1 = new HashMap<>();
         val1.put("val", nrOfInstances + userChoiceArr.length);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.NROFINSTANCES, val1);
     }
@@ -115,8 +115,8 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
         List<Map<String, Object>> listMap = new ArrayList<>();
-        Map<String, Object> mapTemp = null;
-        Position personTemp = null;
+        Map<String, Object> mapTemp;
+        Position personTemp;
         int num = 0;
         ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
         String parallelSponsor = processParamModel == null ? "" : processParamModel.getSponsorGuid();
@@ -149,34 +149,36 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         String usersObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS);
         List<String> users = Y9JsonUtil.readValue(usersObj, List.class);
         List<Map<String, Object>> listMap = new ArrayList<>();
-        Map<String, Object> mapTemp = null;
-        Position personTemp = null;
-        Boolean notStart = false;
+        Map<String, Object> mapTemp;
+        Position personTemp;
+        boolean notStart = false;
         int num = 0;
-        for (Object obj : users) {
-            String user = obj.toString();
-            personTemp = positionApi.get(tenantId, user).getData();
-            mapTemp = new HashMap<>(16);
-            mapTemp.put("num", num + 1);
-            mapTemp.put("taskId", taskId);
-            mapTemp.put("name", taskModel.getName());
-            mapTemp.put("executionId", taskModel.getExecutionId());
-            mapTemp.put("assigneeId", user);
-            mapTemp.put("assigneeName", personTemp == null ? "" : personTemp.getName());
-            if (user.equals(currentAssignee)) {
-                mapTemp.put("status", "正在办理");
+        if (users != null) {
+            for (Object obj : users) {
+                String user = obj.toString();
+                personTemp = positionApi.get(tenantId, user).getData();
+                mapTemp = new HashMap<>(16);
+                mapTemp.put("num", num + 1);
+                mapTemp.put("taskId", taskId);
+                mapTemp.put("name", taskModel.getName());
+                mapTemp.put("executionId", taskModel.getExecutionId());
+                mapTemp.put("assigneeId", user);
+                mapTemp.put("assigneeName", personTemp == null ? "" : personTemp.getName());
+                if (user.equals(currentAssignee)) {
+                    mapTemp.put("status", "正在办理");
+                    listMap.add(mapTemp);
+                    notStart = true;
+                    num += 1;
+                    continue;
+                }
+                if (notStart) {
+                    mapTemp.put("status", "未开始");
+                } else {
+                    mapTemp.put("status", "已办理");
+                }
                 listMap.add(mapTemp);
-                notStart = true;
                 num += 1;
-                continue;
             }
-            if (notStart) {
-                mapTemp.put("status", "未开始");
-            } else {
-                mapTemp.put("status", "已办理");
-            }
-            listMap.add(mapTemp);
-            num += 1;
         }
         return listMap;
     }
@@ -218,26 +220,28 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
             usersList = Y9JsonUtil.readValue(usersObj, List.class);
         }
         int number = 1;
-        for (Object obj : usersList) {
-            String user = obj.toString();
-            if (num == number) {// 为防止串行中有两个同一人，删除时只删除对应的
-                if (!user.equals(elementUser)) {
+        if (usersList != null) {
+            for (Object obj : usersList) {
+                String user = obj.toString();
+                if (num == number) {// 为防止串行中有两个同一人，删除时只删除对应的
+                    if (!user.equals(elementUser)) {
+                        usersListTemp.add(user);
+                    }
+                } else {
                     usersListTemp.add(user);
                 }
-            } else {
-                usersListTemp.add(user);
+                number += 1;
             }
-            number += 1;
         }
         // 改变流程变量中的users
-        Map<String, Object> val = new HashMap<String, Object>();
+        Map<String, Object> val = new HashMap<>();
         val.put("val", usersListTemp);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.USERS, val);
         // 改变任务变量中的users
         variableApi.setVariableLocal(tenantId, taskId, SysVariables.USERS, val);
         // 改变多实例的标量
-        Integer nrOfInstances = Integer.valueOf(variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES));
-        Map<String, Object> val1 = new HashMap<String, Object>();
+        int nrOfInstances = Integer.parseInt(variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES));
+        Map<String, Object> val1 = new HashMap<>();
         val1.put("val", nrOfInstances - 1);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.NROFINSTANCES, val1);
     }

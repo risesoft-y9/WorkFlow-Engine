@@ -31,7 +31,7 @@ public class ActRuDetailRestController {
      * 办结
      *
      * @param processSerialNumber 流程序列号
-     * @return
+     * @return Y9Result<String>
      */
     @ResponseBody
     @RequestMapping(value = "/complete")
@@ -42,10 +42,9 @@ public class ActRuDetailRestController {
     /**
      * 保存流程当前用户的参与人信息
      *
-     * @param itemId 事项唯一标示
+     * @param itemId              事项唯一标示
      * @param processSerialNumber 流程序列号
-     * @param sponsorDeptId 主办处室id
-     * @return
+     * @return Y9Result<String>
      */
     @ResponseBody
     @RequestMapping(value = "/saveOrUpdate")

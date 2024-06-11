@@ -1,12 +1,11 @@
 package net.risesoft.service.impl;
 
-import jakarta.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
@@ -17,6 +16,7 @@ import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service(value = "processParamService")
 @Transactional(readOnly = true)
@@ -57,13 +57,11 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             pp.setStartorName(processParamModel != null ? processParamModel.getStartorName() : "");
             pp.setTodoTaskUrlPrefix(item.getTodoTaskUrlPrefix());
             pp.setCustomItem(processParamModel != null ? processParamModel.getCustomItem() : customItem);
-            StringBuffer searchTerm = new StringBuffer();
-            searchTerm.append(documentTitle).append("|").append(number).append("|").append(level).append("|").append(item.getName());
-            pp.setSearchTerm(searchTerm.toString());
+            pp.setSearchTerm(documentTitle + "|" + number + "|" + level + "|" + item.getName());
             processParamApi.saveOrUpdate(tenantId, pp);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存失败", e);
         }
         return Y9Result.failure("保存失败");
     }

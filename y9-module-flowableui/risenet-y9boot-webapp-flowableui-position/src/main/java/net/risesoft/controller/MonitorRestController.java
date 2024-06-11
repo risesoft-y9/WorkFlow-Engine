@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
@@ -37,6 +38,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping(value = "/vue/monitor")
 public class MonitorRestController {
 
@@ -55,14 +57,14 @@ public class MonitorRestController {
     /**
      * 单位所有件
      *
-     * @param itemId 事项id
+     * @param itemId     事项id
      * @param searchName 搜索词
-     * @param userName 发起人
-     * @param state 办件状态
-     * @param year 年度
-     * @param page 页码
-     * @param rows 条数
-     * @return
+     * @param userName   发起人
+     * @param state      办件状态
+     * @param year       年度
+     * @param page       页码
+     * @param rows       条数
+     * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/deptList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> deptList(@RequestParam @NotBlank String itemId, @RequestParam String searchName, @RequestParam String userName, @RequestParam String state, @RequestParam String year, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
@@ -72,7 +74,7 @@ public class MonitorRestController {
     /**
      * 获取所有事项
      *
-     * @return
+     * @return Y9Result<List < ItemModel>>
      */
     @RequestMapping(value = "/getAllItemList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemModel>> getAllItemList() {
@@ -85,13 +87,13 @@ public class MonitorRestController {
      * 监控办件列表
      *
      * @param searchName 搜索词
-     * @param itemId 事项id
-     * @param userName 发起人
-     * @param state 办件状态
-     * @param year 年度
-     * @param page 页码
-     * @param rows 条数
-     * @return
+     * @param itemId     事项id
+     * @param userName   发起人
+     * @param state      办件状态
+     * @param year       年度
+     * @param page       页码
+     * @param rows       条数
+     * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorBanjianList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> monitorBanjianList(@RequestParam String searchName, @RequestParam String itemId, @RequestParam String userName, @RequestParam String state, @RequestParam String year, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
@@ -102,29 +104,29 @@ public class MonitorRestController {
      * 监控阅件列表
      *
      * @param searchName 搜索词
-     * @param itemId 事项id
+     * @param itemId     事项id
      * @param senderName 发送人
-     * @param userName 收件人
-     * @param state 办件状态
-     * @param year 年度
-     * @param page 页码
-     * @param rows 条数
-     * @return
+     * @param userName   收件人
+     * @param state      办件状态
+     * @param year       年度
+     * @param page       页码
+     * @param rows       条数
+     * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorChaosongList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> monitorChaosongList(@RequestParam String searchName, @RequestParam String itemId, @RequestParam String senderName, @RequestParam String userName, @RequestParam String state, @RequestParam String year, @RequestParam @NotBlank Integer page,
-        @RequestParam @NotBlank Integer rows) {
+                                                           @RequestParam @NotBlank Integer rows) {
         return monitorService.monitorChaosongList(searchName, itemId, senderName, userName, state, year, page, rows);
     }
 
     /**
      * 获取监控在办列表
      *
-     * @param itemId 事项id
+     * @param itemId     事项id
      * @param searchTerm 搜索词
-     * @param page 页码
-     * @param rows 条数
-     * @return
+     * @param page       页码
+     * @param rows       条数
+     * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorDoingList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam @NotBlank String itemId, @RequestParam String searchTerm, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
@@ -134,11 +136,11 @@ public class MonitorRestController {
     /**
      * 获取监控办结列表
      *
-     * @param itemId 事项id
+     * @param itemId     事项id
      * @param searchTerm 搜索词
-     * @param page 页码
-     * @param rows 条数
-     * @return
+     * @param page       页码
+     * @param rows       条数
+     * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorDoneList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam @NotBlank String itemId, @RequestParam String searchTerm, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
@@ -149,16 +151,16 @@ public class MonitorRestController {
      * 彻底删除流程实例
      *
      * @param processInstanceIds 流程实例ids，逗号隔开
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/removeProcess", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> removeProcess(@RequestParam @NotBlank String processInstanceIds) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        ProcessParamModel processParamModel = null;
+        ProcessParamModel processParamModel;
         List<String> list = null;
         try {
             if (StringUtils.isNotBlank(processInstanceIds)) {
-                list = new ArrayList<String>();
+                list = new ArrayList<>();
                 String[] ids = processInstanceIds.split(SysVariables.COMMA);
                 for (String processInstanceId : ids) {
                     processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
@@ -176,7 +178,7 @@ public class MonitorRestController {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除失败", e);
         }
         return Y9Result.failure("删除失败");
     }
