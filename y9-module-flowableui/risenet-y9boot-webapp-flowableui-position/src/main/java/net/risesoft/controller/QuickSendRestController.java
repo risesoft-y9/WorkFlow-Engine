@@ -1,20 +1,7 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.QuickSendApi;
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
@@ -26,6 +13,19 @@ import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import javax.validation.constraints.NotBlank;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 快捷发送
@@ -34,6 +34,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2024/06/05
  */
 @Validated
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/vue/quickSend")
@@ -50,22 +51,22 @@ public class QuickSendRestController {
     /**
      * 获取快捷发送人
      *
-     * @param itemId 事项id
+     * @param itemId  事项id
      * @param taskKey 任务key
-     * @return
+     * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/getAssignee")
     public Y9Result<List<Map<String, Object>>> getAssignee(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String assignee = quickSendApi.getAssignee(tenantId, Y9LoginUserHolder.getPositionId(), itemId, taskKey);
         if (StringUtils.isNotBlank(assignee)) {
             String[] ids = assignee.split(",");
             for (String id : ids) {
-                Map<String, Object> map = new HashMap<String, Object>();
+                Map<String, Object> map = new HashMap<>();
                 String type = id.split(":")[0];
                 String orgId = id.split(":")[1];
-                Integer principalType = Integer.parseInt(type);
+                int principalType = Integer.parseInt(type);
                 if (principalType == ItemPermissionEnum.POSITION.getValue()) {
                     Position position = positionApi.get(tenantId, orgId).getData();
                     map.put("id", position.getId());
@@ -93,10 +94,10 @@ public class QuickSendRestController {
     /**
      * 保存快捷发送人
      *
-     * @param itemId 事项id
-     * @param taskKey 任务key
+     * @param itemId   事项id
+     * @param taskKey  任务key
      * @param assignee 发送人
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey, @RequestParam String assignee) {

@@ -1,23 +1,22 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.constraints.NotBlank;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.api.itemadmin.CommonSentencesApi;
+import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9LoginUserHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.CommonSentencesApi;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9LoginUserHolder;
+import javax.validation.constraints.NotBlank;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 常用语
@@ -25,6 +24,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2024/06/05
  */
+@Slf4j
 @Validated
 @RequiredArgsConstructor
 @RestController
@@ -36,19 +36,18 @@ public class CommonSentencesRestController {
     /**
      * 获取个人常用语
      *
-     * @return
+     * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> listSentencesService() {
-        List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> resList;
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String userId = person.getPersonId(), tenantId = person.getTenantId();
-            resList = new ArrayList<Map<String, Object>>();
             resList = commonSentencesApi.listSentencesService(tenantId, userId);
             return Y9Result.success(resList, "获取成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取常用语失败", e);
         }
         return Y9Result.failure("获取失败");
     }
@@ -57,7 +56,7 @@ public class CommonSentencesRestController {
      * 删除个人常用语
      *
      * @param tabIndex 序号
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> remove(@RequestParam @NotBlank int tabIndex) {
@@ -66,7 +65,7 @@ public class CommonSentencesRestController {
             commonSentencesApi.removeCommonSentences(Y9LoginUserHolder.getTenantId(), person.getPersonId(), tabIndex);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除常用语失败", e);
         }
         return Y9Result.failure("删除失败");
     }
@@ -74,7 +73,7 @@ public class CommonSentencesRestController {
     /**
      * 清除常用语使用次数
      *
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/removeUseNumber", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> removeUseNumber() {
@@ -83,7 +82,7 @@ public class CommonSentencesRestController {
             commonSentencesApi.removeUseNumber(Y9LoginUserHolder.getTenantId(), person.getPersonId());
             return Y9Result.successMsg("操作成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("清除常用语使用次数失败", e);
         }
         return Y9Result.failure("操作失败");
     }
@@ -92,7 +91,7 @@ public class CommonSentencesRestController {
      * 保存个人常用语
      *
      * @param content 内容
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> save(@RequestParam @NotBlank String content) {
@@ -102,7 +101,7 @@ public class CommonSentencesRestController {
             commonSentencesApi.save(tenantId, userId, "", content);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存常用语失败", e);
         }
         return Y9Result.failure("保存失败");
     }
@@ -110,9 +109,9 @@ public class CommonSentencesRestController {
     /**
      * 修改个人常用语
      *
-     * @param content 内容
+     * @param content  内容
      * @param tabIndex 序号
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveEdit", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveEdit(@RequestParam @NotBlank String content, @RequestParam @NotBlank String tabIndex) {
@@ -122,7 +121,7 @@ public class CommonSentencesRestController {
             commonSentencesApi.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content, Integer.parseInt(tabIndex));
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("修改常用语失败", e);
         }
         return Y9Result.failure("保存失败");
     }
@@ -131,7 +130,7 @@ public class CommonSentencesRestController {
      * 更新常用语使用次数
      *
      * @param id 常用语id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/updateUseNumber", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> updateUseNumber(@RequestParam @NotBlank String id) {
@@ -139,7 +138,7 @@ public class CommonSentencesRestController {
             commonSentencesApi.updateUseNumber(Y9LoginUserHolder.getTenantId(), id);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("更新常用语使用次数失败", e);
         }
         return Y9Result.failure("保存失败");
     }

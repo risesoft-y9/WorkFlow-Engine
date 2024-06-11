@@ -8,74 +8,68 @@ public interface MultiInstanceService {
     /**
      * 并行加签
      *
-     * @param processInstanceId
-     * @param taskId
-     * @param userChoice
-     * @param isSendSms
-     * @param isShuMing
-     * @param smsContent
-     * @throws Exception
+     * @param processInstanceId 流程实例id
+     * @param taskId            任务id
+     * @param userChoice        选择人
+     * @param isSendSms         是否发送短信
+     * @param isShuMing         是否署名
+     * @param smsContent        短信内容
      */
     void addExecutionId(String processInstanceId, String taskId, String userChoice, String isSendSms, String isShuMing,
-        String smsContent) throws Exception;
+                        String smsContent) throws Exception;
 
     /**
      * 串行加签
      *
-     * @param executionId
-     * @param taskId
-     * @param userChoice
-     * @param selectUserId
-     * @param num
-     * @throws Exception
+     * @param executionId  执行实例id
+     * @param taskId       任务id
+     * @param userChoice   选择人
+     * @param selectUserId 选择人id
+     * @param num          加签位置
      */
     void addExecutionId4Sequential(String executionId, String taskId, String userChoice, String selectUserId, int num)
-        throws Exception;
+            throws Exception;
 
     /**
      * 并行时获取办理人列表
      *
-     * @param processInstanceId
-     * @param taskId
-     * @return
+     * @param processInstanceId 流程实例id
+     * @return List<Map < String, Object>>
      */
     List<Map<String, Object>> assigneeList4Parallel(String processInstanceId);
 
     /**
      * 串行时获取办理人列表
      *
-     * @param processInstanceId
-     * @param taskId
-     * @return
+     * @param taskId 任务id
+     * @return List<Map < String, Object>>
      */
     List<Map<String, Object>> assigneeList4Sequential(String taskId);
 
     /**
      * 获取人员树信息
      *
-     * @param processInstanceId
-     * @return
+     * @param processInstanceId 流程实例id
+     * @return Map<String, Object>
      */
     Map<String, Object> docUserChoise(String processInstanceId);
 
     /**
      * 减签
      *
-     * @param executionId
-     * @param taskId
-     * @param elementUser
-     * @throws Exception
+     * @param executionId 执行实例id
+     * @param taskId      任务id
+     * @param elementUser 人员id
      */
     void removeExecution(String executionId, String taskId, String elementUser) throws Exception;
 
     /**
      * 串行减签
      *
-     * @param executionId
-     * @param taskId
-     * @param elementUser
-     * @param num
-     * @throws Exception
+     * @param executionId 执行实例id
+     * @param taskId      任务id
+     * @param elementUser 人员id
+     * @param num         减签位置
      */
     void removeExecution4Sequential(String executionId, String taskId, String elementUser, int num) throws Exception;
 }

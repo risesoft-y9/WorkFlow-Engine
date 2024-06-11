@@ -1,27 +1,7 @@
 package net.risesoft.controller.wps;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
@@ -35,6 +15,26 @@ import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/mobile/docWps")
@@ -56,34 +56,30 @@ public class WpsRestController {
     /**
      * 下载正文
      *
-     * @param tenantId
-     * @param userId
-     * @param processSerialNumber
-     * @param itemId
-     * @param response
-     * @param request
+     * @param tenantId            租户id
+     * @param processSerialNumber 流程编号
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processSerialNumber, @RequestParam String itemId, HttpServletResponse response, HttpServletRequest request) {
+    public void download(@RequestParam String tenantId, @RequestParam String processSerialNumber, HttpServletResponse response, HttpServletRequest request) {
         try {
-            Object documentTitle = null;
+            String documentTitle;
             ProcessParamModel processModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             documentTitle = processModel.getTitle();
-            String title = documentTitle != null ? (String)documentTitle : "正文";
+            String title = documentTitle != null ? documentTitle : "正文";
             String y9FileStoreId = transactionWordApi.openDocumentByProcessSerialNumber(tenantId, processSerialNumber);
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
-            if (-1 < userAgent.indexOf("MSIE 8.0") || -1 < userAgent.indexOf("MSIE 6.0") || -1 < userAgent.indexOf("MSIE 7.0")) {
+            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
                 title = new String(title.getBytes("gb2312"), "ISO8859-1");
                 response.reset();
                 response.setHeader("Content-disposition", "attachment; filename=" + title + ".docx");
                 response.setHeader("Content-type", "text/html;charset=GBK");
                 response.setContentType("application/octet-stream");
             } else {
-                if (-1 != userAgent.indexOf("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes("UTF-8")))) + "?=";
+                if (userAgent.contains("Firefox")) {
+                    title = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
                 } else {
-                    title = java.net.URLEncoder.encode(title, "UTF-8");
+                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
                     title = StringUtils.replace(title, "+", "%20");// 替换空格
                 }
                 response.reset();
@@ -96,28 +92,27 @@ public class WpsRestController {
             out.flush();
             out.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("下载正文异常", e);
         }
     }
 
     /**
      * 打开套红模板
      *
-     * @param tenantId
-     * @param userId
-     * @param templateGuid
-     * @param response
+     * @param tenantId     租户id
+     * @param userId       用户id
+     * @param templateGuid 模板id
      */
     @RequestMapping(value = "/getTaoHongTemplate")
     public void getTaoHongTemplate(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String templateGuid, HttpServletResponse response) {
         String content = transactionWordApi.openDocumentTemplate(tenantId, userId, templateGuid);
         ServletOutputStream out = null;
         try {
-            byte[] result = null;
+            byte[] result;
             out = response.getOutputStream();
             result = jodd.util.Base64.decode(content);
             ByteArrayInputStream bin = new ByteArrayInputStream(result);
-            int b = 0;
+            int b;
             byte[] by = new byte[1024];
             response.reset();
             response.setHeader("Content-Type", "application/msword");
@@ -126,12 +121,14 @@ public class WpsRestController {
                 out.write(by, 0, b);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("打开套红模板异常", e);
         } finally {
             try {
-                out.close();
+                if (out != null) {
+                    out.close();
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error("关闭套红模板异常", e);
             }
         }
     }
@@ -139,34 +136,32 @@ public class WpsRestController {
     /**
      * 撤销红头
      *
-     * @param tenantId
-     * @param userId
-     * @param processSerialNumber
-     * @param response
-     * @param request
+     * @param tenantId            租户id
+     * @param userId              用户id
+     * @param processSerialNumber 流程编号
      */
     @RequestMapping(value = "/revokeRedHeader")
     public void revokeRedHeader(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processSerialNumber, HttpServletResponse response, HttpServletRequest request) {
         try {
-            Object documentTitle = null;
+            String documentTitle;
             ProcessParamModel processModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             documentTitle = processModel.getTitle();
-            String title = documentTitle != null ? (String)documentTitle : "正文";
+            String title = documentTitle != null ? documentTitle : "正文";
             transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "1");
             String y9FileStoreId = transactionWordApi.openDocumentByProcessSerialNumber(tenantId, processSerialNumber);
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
-            if (-1 < userAgent.indexOf("MSIE 8.0") || -1 < userAgent.indexOf("MSIE 6.0") || -1 < userAgent.indexOf("MSIE 7.0")) {
+            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
                 title = new String(title.getBytes("gb2312"), "ISO8859-1");
                 response.reset();
                 response.setHeader("Content-disposition", "attachment; filename=" + title + ".docx");
                 response.setHeader("Content-type", "text/html;charset=GBK");
                 response.setContentType("application/octet-stream");
             } else {
-                if (-1 != userAgent.indexOf("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes("UTF-8")))) + "?=";
+                if (userAgent.contains("Firefox")) {
+                    title = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
                 } else {
-                    title = java.net.URLEncoder.encode(title, "UTF-8");
+                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
                     title = StringUtils.replace(title, "+", "%20");// 替换空格
                 }
                 response.reset();
@@ -179,16 +174,16 @@ public class WpsRestController {
             out.flush();
             out.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("撤销红头异常", e);
         }
     }
 
     /**
      * 获取套红模板列表
      *
-     * @param tenantId
-     * @param userId
-     * @return
+     * @param tenantId 租户id
+     * @param userId   用户id
+     * @return List<Map < String, Object>>
      */
     @RequestMapping(value = "/taoHongTemplateList")
     public List<Map<String, Object>> taoHongTemplateList(@RequestParam String tenantId, @RequestParam String userId) {
@@ -204,32 +199,36 @@ public class WpsRestController {
     /**
      * 上传正文
      *
-     * @param processSerialNumber
-     * @param processInstanceId
-     * @param file
-     * @return
+     * @param processSerialNumber 流程编号
+     * @param processInstanceId   流程实例id
+     * @param file                文件
+     * @return Map<String, Object>
      */
     @RequestMapping(value = "/upload")
     public Map<String, Object> upload(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String taskId, @RequestParam String istaohong, @RequestParam MultipartFile file) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "上传成功");
         try {
             String fileName = file.getOriginalFilename();
             LOGGER.debug("fileName={}", fileName);
-            if (fileName.contains(File.separator)) {
+            if (fileName != null && fileName.contains(File.separator)) {
                 fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
             }
-            if (fileName.contains("\\")) {
+            if (fileName != null && fileName.contains("\\")) {
                 fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
             }
-            String fileType = !fileName.contains(".") ? ".docx" : fileName.substring(fileName.lastIndexOf(".")).toLowerCase();// 文件类型
+            String fileType = "";
+            if (fileName != null) {
+                fileType = !fileName.contains(".") ? ".docx" : fileName.substring(fileName.lastIndexOf(".")).toLowerCase();// 文件类型
+            }
+
             if (!(fileType.equals(".doc") || fileType.equals(".docx") || fileType.equals(".pdf") || fileType.equals(".tif") || fileType.equals(".ofd"))) {
                 map.put(UtilConsts.SUCCESS, false);
                 map.put("msg", "请上传后缀名为.doc,.docx,.pdf,.tif文件");
                 return map;
             }
-            String isTaoHong = "";
+            String isTaoHong;
             if (fileType.equals(".pdf") || fileType.equals(".tif")) {
                 isTaoHong = "2";
             } else if (fileType.equals(".ofd")) {
@@ -240,7 +239,7 @@ public class WpsRestController {
                     isTaoHong = istaohong;
                 }
             }
-            Object documentTitle = null;
+            Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
                 Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
                 documentTitle = retMap.get("title");
@@ -248,7 +247,7 @@ public class WpsRestController {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? (String)documentTitle : "正文";
+            String title = documentTitle != null ? (String) documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
             String result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
@@ -260,7 +259,7 @@ public class WpsRestController {
             }
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("上传正文异常", e);
         }
         return map;
     }

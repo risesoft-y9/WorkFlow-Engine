@@ -1,21 +1,7 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ItemViewConfApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
@@ -29,6 +15,19 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import javax.validation.constraints.NotBlank;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 草稿
@@ -36,6 +35,7 @@ import net.risesoft.y9.configuration.Y9Properties;
  * @author zhangchongjie
  * @date 2024/06/05
  */
+@Slf4j
 @Validated
 @RequiredArgsConstructor
 @RestController
@@ -58,18 +58,18 @@ public class DraftRestController {
      * 彻底删除草稿
      *
      * @param ids 草稿ids，逗号隔开
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/deleteDraft", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> deleteDraft(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map = draft4PositionApi.deleteDraft(tenantId, ids);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("彻底删除草稿失败", e);
         }
         return Y9Result.failure("删除失败");
     }
@@ -77,36 +77,36 @@ public class DraftRestController {
     /**
      * 获取草稿列表
      *
-     * @param page 页码
-     * @param rows 条数
+     * @param page   页码
+     * @param rows   条数
      * @param itemId 事项id
-     * @param title 搜索词
-     * @return
+     * @param title  搜索词
+     * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/draftList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> draftList(@RequestParam @NotBlank int page, @RequestParam @NotBlank int rows, @RequestParam @NotBlank String itemId, String title) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, false);
-        List<Map<String, Object>> draftList = (List<Map<String, Object>>)map.get("rows");
+        List<Map<String, Object>> draftList = (List<Map<String, Object>>) map.get("rows");
         return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), draftList, "获取列表成功");
     }
 
     /**
      * 获取草稿回收站列表
      *
-     * @param page 页码
-     * @param rows 条数
+     * @param page   页码
+     * @param rows   条数
      * @param itemId 事项id
-     * @param title 搜索词
-     * @return
+     * @param title  搜索词
+     * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/draftRecycleList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> draftRecycleList(@RequestParam @NotBlank int page, @RequestParam @NotBlank int rows, @RequestParam @NotBlank String itemId, String title) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = draft4PositionApi.getDraftList(tenantId, Y9LoginUserHolder.getPositionId(), page, rows, title, itemId, true);
-        List<Map<String, Object>> draftList = (List<Map<String, Object>>)map.get("rows");
+        List<Map<String, Object>> draftList = (List<Map<String, Object>>) map.get("rows");
         return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), draftList, "获取列表成功");
     }
 
@@ -114,12 +114,11 @@ public class DraftRestController {
      * 获取草稿列表视图配置
      *
      * @param itemId 事项id
-     * @return
+     * @return Y9Result<List < ItemViewConfModel>>
      */
     @RequestMapping(value = "/draftViewConf", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemViewConfModel>> draftViewConf(@RequestParam @NotBlank String itemId) {
-        List<ItemViewConfModel> itemViewConfList = new ArrayList<>();
-        itemViewConfList = itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DRAFT.getValue());
+        List<ItemViewConfModel> itemViewConfList = itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DRAFT.getValue());
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 
@@ -127,15 +126,15 @@ public class DraftRestController {
      * 打开草稿,获取草稿信息
      *
      * @param processSerialNumber 流程编号
-     * @param itemId 事项id
-     * @param draftRecycle 草稿标识
-     * @return
+     * @param itemId              事项id
+     * @param draftRecycle        草稿标识
+     * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping("/openDraft")
     public Y9Result<Map<String, Object>> openDraft(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String itemId, String draftRecycle) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(processSerialNumber)) {
             map = draft4PositionApi.openDraft4Position(tenantId, positionId, itemId, processSerialNumber, false);
         }
@@ -151,7 +150,7 @@ public class DraftRestController {
         int docNum = 0;
         // 是否正文正常
         Map<String, Object> wordMap = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-        if (!wordMap.isEmpty() && wordMap.size() > 0) {
+        if (!wordMap.isEmpty()) {
             docNum = 1;
         }
         int associatedFileNum = associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber);
@@ -165,18 +164,18 @@ public class DraftRestController {
      * 还原草稿
      *
      * @param id 草稿id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/reduction", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> reduction(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map = draft4PositionApi.reduction(tenantId, id);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("还原成功");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("还原草稿失败", e);
         }
         return Y9Result.failure("还原失败");
     }
@@ -185,18 +184,18 @@ public class DraftRestController {
      * 删除草稿
      *
      * @param ids 草稿ids，逗号隔开
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/removeDraft", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> removeDraft(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map = draft4PositionApi.removeDraft(tenantId, ids);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除草稿失败", e);
         }
         return Y9Result.failure("删除失败");
     }
@@ -204,13 +203,13 @@ public class DraftRestController {
     /**
      * 保存草稿
      *
-     * @param itemId 事项id
-     * @param processSerialNumber 流程编号
+     * @param itemId               事项id
+     * @param processSerialNumber  流程编号
      * @param processDefinitionKey 流程定义key
-     * @param number 文件编号
-     * @param level 紧急程度
-     * @param title 标题
-     * @return
+     * @param number               文件编号
+     * @param level                紧急程度
+     * @param title                标题
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveDraft", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveDraft(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey, String number, String level, String title) {
@@ -220,11 +219,11 @@ public class DraftRestController {
         }
         try {
             Map<String, Object> map = draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number, level, title);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("保存成功");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存草稿失败", e);
         }
         return Y9Result.failure("保存失败");
     }

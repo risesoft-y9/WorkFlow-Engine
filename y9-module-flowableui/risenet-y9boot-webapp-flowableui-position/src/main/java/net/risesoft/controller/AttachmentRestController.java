@@ -1,38 +1,7 @@
 package net.risesoft.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.BrowserTypeEnum;
@@ -44,6 +13,30 @@ import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9FileUtil;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
+
+import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * 附件
@@ -54,6 +47,7 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @Validated
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping("/vue/attachment")
 public class AttachmentRestController {
 
@@ -65,20 +59,18 @@ public class AttachmentRestController {
      * 附件下载
      *
      * @param id 附件id
-     * @param response
-     * @param request
      */
     @RequestMapping(value = "/attachmentDownload", method = RequestMethod.GET, produces = "application/json")
     public void attachmentDownload(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map = attachment4PositionApi.attachmentDownload(tenantId, id);
-            String filename = (String)map.get("filename");
-            String filePath = (String)map.get("fileStoreId");
+            String filename = (String) map.get("filename");
+            String filePath = (String) map.get("fileStoreId");
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
-                filename = new String(filename.getBytes("UTF-8"), "ISO8859-1");// 火狐浏览器
+                filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
             } else {
-                filename = URLEncoder.encode(filename, "UTF-8");
+                filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
             }
             OutputStream out = response.getOutputStream();
             response.reset();
@@ -89,7 +81,7 @@ public class AttachmentRestController {
             out.flush();
             out.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("附件下载失败", e);
         }
     }
 
@@ -97,19 +89,19 @@ public class AttachmentRestController {
      * 删除附件
      *
      * @param ids 附件ids，逗号隔开
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/delFile", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> delFile(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map;
         try {
             map = attachment4PositionApi.delFile(tenantId, ids);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除失败", e);
         }
         return Y9Result.failure("删除失败");
     }
@@ -118,33 +110,32 @@ public class AttachmentRestController {
      * 获取附件列表
      *
      * @param processSerialNumber 流程编号
-     * @param fileSource 文件来源
-     * @param page 页码
-     * @param rows 条数
-     * @return
+     * @param fileSource          文件来源
+     * @param page                页码
+     * @param rows                条数
+     * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getAttachmentList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> getAttachmentList(@RequestParam @NotBlank String processSerialNumber, @RequestParam String fileSource, @RequestParam @NotBlank int page, @RequestParam @NotBlank int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map;
         try {
             map = attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+                return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>) map.get("rows"), "获取列表成功");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取列表失败", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
     /**
      * 附加打包zip下载
      *
-     * @param ids 附件ids
-     * @param response
-     * @param request
+     * @param processSerialNumber 流程编号
+     * @param fileSource          附件来源
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/packDownload", method = RequestMethod.GET, produces = "application/json")
@@ -152,7 +143,7 @@ public class AttachmentRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> filemap = attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, 1, 100);
-            List<Map<String, Object>> list = (List<Map<String, Object>>)filemap.get("rows");
+            List<Map<String, Object>> list = (List<Map<String, Object>>) filemap.get("rows");
             // 拼接zip文件,之后下载下来的压缩文件的名字
             String base_name = "附件" + new Date().getTime();
             String fileZip = base_name + ".zip";
@@ -164,15 +155,15 @@ public class AttachmentRestController {
             String zipPath = packDownloadPath + File.separator + fileZip;
             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(zipPath));
             ZipOutputStream zos = new ZipOutputStream(bos);
-            ZipEntry ze = null;
+            ZipEntry ze;
             for (Map<String, Object> file : list) {
-                String filename = (String)file.get("name");
-                String filePath = (String)file.get("filePath");
+                String filename = (String) file.get("name");
+                String filePath = (String) file.get("filePath");
                 byte[] filebyte = y9FileStoreService.downloadFileToBytes(filePath);
                 InputStream bis = new ByteArrayInputStream(filebyte);
                 ze = new ZipEntry(filename);
                 zos.putNextEntry(ze);
-                int s = -1;
+                int s;
                 while ((s = bis.read()) != -1) {
                     zos.write(s);
                 }
@@ -182,9 +173,9 @@ public class AttachmentRestController {
             zos.close();
             boolean b = request.getHeader("User-Agent").toLowerCase().indexOf(BrowserTypeEnum.FIREFOX.getValue()) > 0;
             if (b) {
-                fileZip = new String(fileZip.getBytes("UTF-8"), "ISO8859-1");
+                fileZip = new String(fileZip.getBytes(StandardCharsets.UTF_8), "ISO8859-1");
             } else {
-                fileZip = URLEncoder.encode(fileZip, "UTF-8");
+                fileZip = URLEncoder.encode(fileZip, StandardCharsets.UTF_8);
             }
             OutputStream out = response.getOutputStream();
             response.reset();
@@ -202,43 +193,39 @@ public class AttachmentRestController {
                 }
                 out.flush();
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("下载失败", e);
             } finally {
                 if (out != null) {
                     out.close();
                 }
-                if (in != null) {
-                    in.close();
-                }
+                in.close();
                 // 删除服务器本地产生的临时压缩文件
-                if (reportZip != null) {
-                    reportZip.delete();
-                }
+                reportZip.delete();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("下载失败", e);
         }
     }
 
     /**
      * 上传附件
      *
-     * @param file 文件
-     * @param processInstanceId 流程实例id
-     * @param taskId 任务id
-     * @param describes 描述
+     * @param file                文件
+     * @param processInstanceId   流程实例id
+     * @param taskId              任务id
+     * @param describes           描述
      * @param processSerialNumber 流程编号
-     * @param fileSource 文件来源
-     * @return
+     * @param fileSource          文件来源
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> upload(MultipartFile file, @RequestParam String processInstanceId, @RequestParam String taskId, @RequestParam String describes, @RequestParam @NotBlank String processSerialNumber, @RequestParam String fileSource) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map;
         try {
             if (StringUtils.isNotEmpty(describes)) {
-                describes = URLDecoder.decode(describes, "UTF-8");
+                describes = URLDecoder.decode(describes, StandardCharsets.UTF_8);
             }
             String originalFilename = file.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);
@@ -247,11 +234,11 @@ public class AttachmentRestController {
             String storeId = y9FileStore.getId();
             String fileSize = Y9FileUtil.getDisplayFileSize(y9FileStore.getFileSize() != null ? y9FileStore.getFileSize() : 0);
             map = attachment4PositionApi.upload(tenantId, userId, Y9LoginUserHolder.getPositionId(), fileName, fileSize, processInstanceId, taskId, describes, processSerialNumber, fileSource, storeId);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("上传成功");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("上传失败", e);
         }
         return Y9Result.failure("上传失败");
     }

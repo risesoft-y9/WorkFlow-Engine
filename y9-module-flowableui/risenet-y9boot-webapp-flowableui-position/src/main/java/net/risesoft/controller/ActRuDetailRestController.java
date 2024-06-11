@@ -1,17 +1,16 @@
 package net.risesoft.controller;
 
-import javax.validation.constraints.NotBlank;
-
+import lombok.RequiredArgsConstructor;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.ActRuDetailService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.RequiredArgsConstructor;
 
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ActRuDetailService;
+import javax.validation.constraints.NotBlank;
 
 /**
  * 办件详情
@@ -31,7 +30,7 @@ public class ActRuDetailRestController {
      * 办结
      *
      * @param processSerialNumber 流程序列号
-     * @return
+     * @return Y9Result<String>
      */
     @ResponseBody
     @RequestMapping(value = "/complete")
@@ -42,10 +41,9 @@ public class ActRuDetailRestController {
     /**
      * 保存流程当前用户的参与人信息
      *
-     * @param itemId 事项唯一标示
+     * @param itemId              事项唯一标示
      * @param processSerialNumber 流程序列号
-     * @param sponsorDeptId 主办处室id
-     * @return
+     * @return Y9Result<String>
      */
     @ResponseBody
     @RequestMapping(value = "/saveOrUpdate")

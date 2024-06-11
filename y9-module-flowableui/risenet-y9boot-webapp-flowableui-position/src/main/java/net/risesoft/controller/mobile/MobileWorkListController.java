@@ -1,29 +1,7 @@
 package net.risesoft.controller.mobile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
@@ -43,90 +21,98 @@ import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 办件列表相关接口
  *
  * @author 10858
- *
  */
 @Validated
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping("/mobile/workList")
 public class MobileWorkListController {
 
-    protected Logger log = LoggerFactory.getLogger(MobileWorkListController.class);
-
     private final TodoService todoService;
-
     private final DoingService doingService;
-
     private final DoneService doneService;
-
     private final ProcessTrack4PositionApi processTrack4PositionApi;
-
     private final ProcessTodoApi processTodoApi;
-
     private final Item4PositionApi item4PositionApi;
-
     private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
-
     private final ResourceApi resourceApi;
-
     private final PositionResourceApi positionResourceApi;
+    protected Logger log = LoggerFactory.getLogger(MobileWorkListController.class);
 
     /**
      * 获取在办件列表
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
+     * @param tenantId   租户id
      * @param positionId 岗位id
-     * @param itemId 事项id
-     * @param title 搜索标题
-     * @param page 页码
-     * @param rows 行数
-     * @param response
+     * @param itemId     事项id
+     * @param title      搜索标题
+     * @param page       页码
+     * @param rows       行数
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/doingList")
-    public void doingList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam String title, @RequestParam Integer page, @RequestParam Integer rows,
-        HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+    public void doingList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam String title, @RequestParam Integer page, @RequestParam Integer rows,
+                          HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setPositionId(positionId);
             Map<String, Object> m = doingService.list(itemId, title, page, rows);
-            List<Map<String, Object>> doingList = (List<Map<String, Object>>)m.get("rows");
+            List<Map<String, Object>> doingList = (List<Map<String, Object>>) m.get("rows");
             map.put("doingList", doingList);
             map.put("currpage", page);
             map.put("totalpage", m.get("totalpages"));
             map.put("total", m.get("total"));
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
-            log.error("手机在办件列表异常：");
-            e.printStackTrace();
+            LOGGER.error("获取在办件列表失败", e);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
      * 办结件列表
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
+     * @param tenantId   租户id
      * @param positionId 岗位id
-     * @param itemId 事项id
-     * @param title 搜索标题
-     * @param page 页码
-     * @param rows 行数
-     * @param response
+     * @param itemId     事项id
+     * @param title      搜索标题
+     * @param page       页码
+     * @param rows       行数
      */
     @RequestMapping(value = "/doneList")
-    public void doneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam String title, @RequestParam Integer page, @RequestParam Integer rows,
-        HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+    public void doneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam String title, @RequestParam Integer page, @RequestParam Integer rows,
+                         HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -139,35 +125,32 @@ public class MobileWorkListController {
             map.put("total", y9page.getTotal());
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
-            log.error("办结件列表异常：");
-            e.printStackTrace();
+            LOGGER.error("获取办结件列表失败", e);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
      * app办件计数
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
+     * @param tenantId   租户id
+     * @param userId     人员id
      * @param positionId 岗位id
-     * @param response
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getAppCount")
     public void getAppCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setPositionId(positionId);
             Resource resource = resourceApi.getResource(tenantId).getData();
-            List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> list = new ArrayList<>();
             if (null != resource && null != resource.getId()) {
                 String resourceId = resource.getId();
                 List<Resource> list0 = positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
-                String url = "";
+                String url;
                 for (Resource r : list0) {
                     map = new HashMap<>(16);
                     url = r.getUrl();
@@ -181,10 +164,10 @@ public class MobileWorkListController {
                     ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
                     String processDefinitionKey = item.getWorkflowGuid();
                     long todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
-                    Map<String, Object> m = new HashMap<String, Object>(16);
+                    Map<String, Object> m = new HashMap<>(16);
                     Map<String, Object> resMap = todoService.list(item.getId(), "", 1, 1);
-                    List<Map<String, Object>> todoList = (List<Map<String, Object>>)resMap.get("rows");
-                    if (todoList != null && todoList.size() > 0) {
+                    List<Map<String, Object>> todoList = (List<Map<String, Object>>) resMap.get("rows");
+                    if (todoList != null && !todoList.isEmpty()) {
                         Map<String, Object> todo = todoList.get(0);
                         m.put("title", todo.get(SysVariables.DOCUMENTTITLE));
                         m.put("time", todo.get("taskCreateTime"));
@@ -212,22 +195,21 @@ public class MobileWorkListController {
             map.put("data", list);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("获取app办件计数失败", e);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
      * 获取日程应用
      *
      * @param tenantId 租户id
-     * @param userId 人员id
-     * @return
+     * @param userId   人员id
+     * @return Map
      */
     public Map<String, Object> getCalendar(String tenantId, String userId) {
 
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         HttpClient client = new HttpClient();
         client.getParams().setParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1024 * 1024 * 10);
         client.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
@@ -243,45 +225,11 @@ public class MobileWorkListController {
             method.addRequestHeader("auth-userId", userId);
             int code = client.executeMethod(method);
             if (code == HttpStatus.SC_OK) {
-                String msg = new String(method.getResponseBodyAsString().getBytes("UTF-8"), "UTF-8");
+                String msg = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
                 map = Y9JsonUtil.readHashMap(msg);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return map;
-    }
-
-    /**
-     * 获取消息快递
-     *
-     * @param tenantId
-     * @param userId
-     * @return
-     */
-    public Map<String, Object> getMessage(String tenantId, String userId) {
-        // 获取日程应用
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        HttpClient client = new HttpClient();
-        client.getParams().setParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1024 * 1024 * 10);
-        client.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
-        HttpMethod method = new GetMethod();
-        try {
-            // 设置请求超时时间10s
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-            // 设置读取数据超时时间10s
-            client.getHttpConnectionManager().getParams().setSoTimeout(5000);
-            String url = Y9Context.getProperty("y9.common.messageBaseUrl") + "/mobile/messageDelivery/getNotReadNum";
-            method.setPath(url);
-            method.addRequestHeader("auth-tenantId", tenantId);
-            method.addRequestHeader("auth-userId", userId);
-            int code = client.executeMethod(method);
-            if (code == HttpStatus.SC_OK) {
-                String msg = new String(method.getResponseBodyAsString().getBytes("UTF-8"), "UTF-8");
-                map = Y9JsonUtil.readHashMap(msg);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取日程应用失败", e);
         }
         return map;
     }
@@ -289,22 +237,20 @@ public class MobileWorkListController {
     /**
      * 办件计数
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
+     * @param tenantId   租户id
      * @param positionId 岗位id
-     * @param itemId 事项id
-     * @param response
+     * @param itemId     事项id
      */
     @RequestMapping(value = "/getCount")
-    public void getTodoCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+    public void getTodoCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             String processDefinitionKey = item.getWorkflowGuid();
             Map<String, Object> countMap = processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
-            int todoCount = countMap != null ? (int)countMap.get("todoCount") : 0;
-            int doingCount = countMap != null ? (int)countMap.get("doingCount") : 0;
+            int todoCount = countMap != null ? (int) countMap.get("todoCount") : 0;
+            int doingCount = countMap != null ? (int) countMap.get("doingCount") : 0;
             // int doneCount = countMap != null ? (int) countMap.get("doneCount") : 0;
             int doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, itemId);
             map.put("todoCount", todoCount);
@@ -312,68 +258,60 @@ public class MobileWorkListController {
             map.put("doneCount", doneCount);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("获取办件计数失败", e);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
      * 历程
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
+     * @param tenantId          租户id
+     * @param positionId        岗位id
      * @param processInstanceId 流程实例id
-     * @param response
      */
     @RequestMapping(value = "/history")
-    public void history(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processInstanceId, HttpServletResponse response) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+    public void history(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processInstanceId, HttpServletResponse response) {
+        Map<String, Object> retMap = new HashMap<>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             retMap = processTrack4PositionApi.processTrackList(tenantId, positionId, processInstanceId);
             retMap.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
             retMap.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("历程失败", e);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(retMap));
-        return;
     }
 
     /**
      * 待办件列表
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
+     * @param tenantId   租户id
      * @param positionId 岗位id
-     * @param itemId 事项id
-     * @param title 搜索标题
-     * @param page 页码
-     * @param rows 行数
-     * @param response
+     * @param itemId     事项id
+     * @param title      搜索标题
+     * @param page       页码
+     * @param rows       行数
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/todoList")
-    public void todoList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam String title, @RequestParam Integer page, @RequestParam Integer rows,
-        HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+    public void todoList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam String title, @RequestParam Integer page, @RequestParam Integer rows,
+                         HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setPositionId(positionId);
             Map<String, Object> m = todoService.list(itemId, title, page, rows);
-            List<Map<String, Object>> todoList = (List<Map<String, Object>>)m.get("rows");
+            List<Map<String, Object>> todoList = (List<Map<String, Object>>) m.get("rows");
             map.put("todoList", todoList);
             map.put("currpage", page);
             map.put("totalpage", m.get("totalpages"));
             map.put("total", m.get("total"));
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
-            log.error("手机端待办件列表异常");
-            e.printStackTrace();
+            LOGGER.error("获取待办件列表失败", e);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 }

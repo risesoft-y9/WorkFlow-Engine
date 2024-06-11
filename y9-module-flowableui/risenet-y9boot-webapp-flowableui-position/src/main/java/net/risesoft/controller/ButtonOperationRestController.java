@@ -1,37 +1,14 @@
 package net.risesoft.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.CustomProcessInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.processadmin.HistoricTaskApi;
-import net.risesoft.api.processadmin.HistoricVariableApi;
-import net.risesoft.api.processadmin.IdentityApi;
-import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.api.processadmin.*;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -50,6 +27,20 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import javax.validation.constraints.NotBlank;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 按钮方法
@@ -57,49 +48,35 @@ import net.risesoft.y9.util.Y9Util;
  * @author zhangchongjie
  * @date 2024/06/05
  */
+@Slf4j
 @Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/vue/buttonOperation")
 public class ButtonOperationRestController {
 
-    protected Logger log = LoggerFactory.getLogger(ButtonOperationRestController.class);
-
     private final ButtonOperation4PositionApi buttonOperation4PositionApi;
-
     private final TaskApi taskApi;
-
     private final IdentityApi identityApi;
-
     private final VariableApi variableApi;
-
     private final HistoricVariableApi historicvariableApi;
-
     private final ProcessDefinitionApi processDefinitionApi;
-
     private final PositionApi positionApi;
-
     private final HistoricTaskApi historictaskApi;
-
     private final Document4PositionApi document4PositionApi;
-
     private final MultiInstanceService multiInstanceService;
-
     private final ProcessTrack4PositionApi processTrack4PositionApi;
-
     private final Process4SearchService process4SearchService;
-
     private final ProcessParamApi processParamApi;
-
     private final CustomProcessInfoApi customProcessInfoApi;
-
     private final ButtonOperationService buttonOperationService;
+    protected Logger log = LoggerFactory.getLogger(ButtonOperationRestController.class);
 
     /**
      * 签收功能
      *
      * @param taskId 任务id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/claim", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> claim(@RequestParam @NotBlank String taskId) {
@@ -115,7 +92,7 @@ public class ButtonOperationRestController {
             taskApi.claim(tenantId, positionId, taskId);
             return Y9Result.successMsg("签收成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("签收失败", e);
         }
         return Y9Result.failure("签收失败");
     }
@@ -124,7 +101,7 @@ public class ButtonOperationRestController {
      * 完成任务. 在协办的时候使用，例如A点击协办按钮，将公文发给B，此时B协办完成后仍然要把流程返给A，这里解决这个问题
      *
      * @param taskId 任务id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/completeTask", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> completeTask(@RequestParam @NotBlank String taskId) {
@@ -133,7 +110,7 @@ public class ButtonOperationRestController {
             taskApi.completeTask(tenantId, taskId);
             return Y9Result.successMsg("完成任务成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("完成任务失败", e);
         }
         return Y9Result.failure("完成任务失败");
     }
@@ -141,9 +118,9 @@ public class ButtonOperationRestController {
     /**
      * 协商：协商是把任务转给其他人操作，被协商人会在待办任务列表里看到这条任务，正常处理任务后，任务会返回给原执行人，流程不会发生变化。
      *
-     * @param taskId 任务id
+     * @param taskId     任务id
      * @param userChoice 收件人
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/consult", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> consult(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice) {
@@ -152,7 +129,7 @@ public class ButtonOperationRestController {
             taskApi.delegateTask(tenantId, taskId, userChoice);
             return Y9Result.successMsg("协办成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("协办失败", e);
         }
         return Y9Result.failure("协办失败");
     }
@@ -160,23 +137,24 @@ public class ButtonOperationRestController {
     /**
      * 定制流程办理
      *
-     * @param itemId 事项id
-     * @param multiInstance 节点类型
-     * @param nextNode 是否下一节点
-     * @param processSerialNumber 流程编号
+     * @param itemId               事项id
+     * @param multiInstance        节点类型
+     * @param nextNode             是否下一节点
+     * @param processSerialNumber  流程编号
      * @param processDefinitionKey 流程定义key
-     * @param processInstanceId 流程实例id
-     * @param taskId 任务id
-     * @return
+     * @param processInstanceId    流程实例id
+     * @param taskId               任务id
+     * @param infoOvert            数据中心公开
+     * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/customProcessHandle", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> customProcessHandle(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String multiInstance, @RequestParam @NotBlank Boolean nextNode, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
-        @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String taskId, @RequestParam String infoOvert) {
+                                                @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String taskId, @RequestParam String infoOvert) {
         try {
             Position position = Y9LoginUserHolder.getPosition();
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            Map<String, Object> map = new HashMap<String, Object>(16);
+            Map<String, Object> map;
             if (nextNode) {// 需要发送下一个节点
                 CustomProcessInfoModel customProcessInfo = customProcessInfoApi.getCurrentTaskNextNode(tenantId, processSerialNumber);
                 if (customProcessInfo != null) {
@@ -189,15 +167,15 @@ public class ButtonOperationRestController {
                             processParamApi.updateCustomItem(tenantId, processSerialNumber, false);
                             return Y9Result.successMsg("办结成功");
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            LOGGER.error("办结失败", e);
                         }
                         return Y9Result.failure("办结失败");
                     }
-                    Map<String, Object> variables = new HashMap<String, Object>(16);
+                    Map<String, Object> variables = new HashMap<>(16);
                     String userChoice = customProcessInfo.getOrgId();
                     String routeToTaskId = customProcessInfo.getTaskKey();
                     map = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, "", itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
-                    if (!(boolean)map.get(UtilConsts.SUCCESS)) {
+                    if (!(boolean) map.get(UtilConsts.SUCCESS)) {
                         return Y9Result.failure("发送失败");
                     }
                     // 发送成功后更新当前运行节点
@@ -206,23 +184,23 @@ public class ButtonOperationRestController {
             } else {
                 if (multiInstance.equals(SysVariables.PARALLEL)) {// 并行处理
                     List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
-                    /**
-                     * 改变流程变量中users的值
+                    /*
+                      改变流程变量中users的值
                      */
                     try {
                         String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS);
                         List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
-                        if (users.size() == 0) {
-                            List<String> usersTemp = new ArrayList<String>();
+                        if (users != null && users.isEmpty()) {
+                            List<String> usersTemp = new ArrayList<>();
                             for (TaskModel t : list) {
                                 usersTemp.add(t.getAssignee());
                             }
-                            Map<String, Object> vmap = new HashMap<String, Object>(16);
+                            Map<String, Object> vmap = new HashMap<>(16);
                             vmap.put(SysVariables.USERS, usersTemp);
                             variableApi.setVariables(tenantId, taskId, vmap);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("改变流程变量中users的值失败", e);
                     }
                     taskApi.complete(tenantId, taskId);
                 } else if (multiInstance.equals(SysVariables.SEQUENTIAL)) {// 串行处理
@@ -233,7 +211,7 @@ public class ButtonOperationRestController {
                     taskApi.completeWithVariables(tenantId, taskId, vars);
                     List<TaskModel> taskNextList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId());
                     for (TaskModel taskNext : taskNextList) {
-                        Map<String, Object> mapTemp = new HashMap<String, Object>(16);
+                        Map<String, Object> mapTemp = new HashMap<>(16);
                         mapTemp.put(SysVariables.TASKSENDER, position.getName());
                         mapTemp.put(SysVariables.TASKSENDERID, position.getId());
                         variableApi.setVariables(tenantId, taskNext.getId(), mapTemp);
@@ -243,7 +221,7 @@ public class ButtonOperationRestController {
             }
             return Y9Result.successMsg("发送成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("发送失败", e);
         }
         return Y9Result.failure("发送失败");
     }
@@ -252,20 +230,20 @@ public class ButtonOperationRestController {
      * 直接发送至流程启动人
      *
      * @param processInstanceId 流程实例id
-     * @param taskId 任务id
-     * @param routeToTask 任务key
-     * @return
+     * @param taskId            任务id
+     * @param routeToTask       任务key
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/directSend", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> directSend(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTask) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         try {
-            Boolean b = buttonOperation4PositionApi.directSend(tenantId, positionId, taskId, routeToTask, processInstanceId);
+            boolean b = buttonOperation4PositionApi.directSend(tenantId, positionId, taskId, routeToTask, processInstanceId);
             if (b) {
                 return Y9Result.successMsg("发送成功");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("发送失败", e);
         }
         return Y9Result.failure("发送失败");
     }
@@ -274,7 +252,7 @@ public class ButtonOperationRestController {
      * 获取有办结权限的UserTask
      *
      * @param processDefinitionId 流程定义id
-     * @return
+     * @return Y9Result<List < Map < String, String>>>
      */
     @RequestMapping(value = "/getContainEndEvent4UserTask", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, String>>> getContainEndEvent4UserTask(@RequestParam @NotBlank String processDefinitionId) {
@@ -283,7 +261,7 @@ public class ButtonOperationRestController {
             List<Map<String, String>> routeToTasks = processDefinitionApi.getContainEndEvent4UserTask(tenantId, processDefinitionId);
             return Y9Result.success(routeToTasks, "获取成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取失败", e);
         }
         return Y9Result.failure("获取失败");
     }
@@ -292,7 +270,7 @@ public class ButtonOperationRestController {
      * 获取串行办理人顺序
      *
      * @param taskId 任务id
-     * @return
+     * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
 
@@ -303,19 +281,21 @@ public class ButtonOperationRestController {
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
             String str = variableApi.getVariableByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), SysVariables.USERS);
             List<String> users = Y9JsonUtil.readValue(str, List.class);
-            String userNames = "";
-            for (Object obj : users) {// 获取下一任务的所有办理人，办理顺序为list的顺序
-                String userId = obj.toString();
-                Position employee = positionApi.get(tenantId, userId).getData();
-                if (userId.equals(taskModel.getAssignee())) {
-                    userNames = "<font color='red'>" + employee.getName() + "</font>";
-                } else {
-                    userNames += ("->" + "<font color='green'>" + employee.getName() + "</font>");
+            StringBuilder userNames = new StringBuilder();
+            if (users != null) {
+                for (Object obj : users) {// 获取下一任务的所有办理人，办理顺序为list的顺序
+                    String userId = obj.toString();
+                    Position employee = positionApi.get(tenantId, userId).getData();
+                    if (userId.equals(taskModel.getAssignee())) {
+                        userNames = new StringBuilder("<font color='red'>" + employee.getName() + "</font>");
+                    } else {
+                        userNames.append("->" + "<font color='green'>").append(employee.getName()).append("</font>");
+                    }
                 }
             }
-            return Y9Result.success(userNames, "获取成功");
+            return Y9Result.success(userNames.toString(), "获取成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取失败", e);
         }
         return Y9Result.failure("获取失败");
     }
@@ -324,14 +304,14 @@ public class ButtonOperationRestController {
      * 获取目标任务节点
      *
      * @param processDefinitionId 流程定义id
-     * @param taskDefKey 任务key
-     * @return
+     * @param taskDefKey          任务key
+     * @return Y9Result<List < Map < String, String>>>
      */
     @RequestMapping(value = "/getTargetNodes", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, String>>> getTargetNodes(@RequestParam @NotBlank String processDefinitionId, @RequestParam String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            List<Map<String, String>> routeToTasks = new ArrayList<Map<String, String>>();
+            List<Map<String, String>> routeToTasks;
             if (StringUtils.isBlank(taskDefKey)) {
                 String startNodeKey = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
                 // 获取起草节点
@@ -344,7 +324,7 @@ public class ButtonOperationRestController {
             }
             return Y9Result.success(routeToTasks, "获取成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取失败", e);
         }
         return Y9Result.failure("获取失败");
     }
@@ -353,18 +333,18 @@ public class ButtonOperationRestController {
      * 退回收回任务列表
      *
      * @param taskId 任务id
-     * @return
+     * @return Y9Result<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getTaskList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getTaskList(@RequestParam @NotBlank String taskId) {
-        Map<String, Object> retMap = null;
+        Map<String, Object> retMap;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Position position = Y9LoginUserHolder.getPosition();
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId();
-            retMap = new HashMap<String, Object>(16);
+            retMap = new HashMap<>(16);
             retMap.put("employeeName", position.getName());
             retMap.put("employeeMobile", person.getMobile());
             List<Map<String, Object>> listMap = new ArrayList<>();
@@ -372,11 +352,11 @@ public class ButtonOperationRestController {
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
             // 得到该节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行,COMMON表示普通单实例
             String multiInstance = processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey());
-            List<String> users = (List<String>)variables.get("users");
+            List<String> users = (List<String>) variables.get("users");
             if (multiInstance.equals(SysVariables.COMMON)) {// 普通单实例
-                for (int i = 0; i < users.size(); i++) {
-                    Map<String, Object> map = new HashMap<String, Object>(16);
-                    Position employee = positionApi.get(Y9LoginUserHolder.getTenantId(), users.get(i)).getData();
+                for (String user : users) {
+                    Map<String, Object> map = new HashMap<>(16);
+                    Position employee = positionApi.get(Y9LoginUserHolder.getTenantId(), user).getData();
                     map.put("user", employee.getName());
                     map.put("order", "");
                     if (StringUtils.isBlank(taskModel.getAssignee())) {// 办理人为空，改件未被签收
@@ -391,9 +371,9 @@ public class ButtonOperationRestController {
                 retMap.put("multiInstance", "普通单实例");
             }
             if (multiInstance.equals(SysVariables.SEQUENTIAL)) {// 串行
-                Boolean isEnd = true;
+                boolean isEnd = true;
                 for (int i = 0; i < users.size(); i++) {// 获取下一任务的所有办理人，办理顺序为list的顺序
-                    Map<String, Object> map = new HashMap<String, Object>(16);
+                    Map<String, Object> map = new HashMap<>(16);
                     Position employee = positionApi.get(Y9LoginUserHolder.getTenantId(), users.get(i)).getData();
                     map.put("user", employee.getName());
                     map.put("order", i + 1);
@@ -420,18 +400,17 @@ public class ButtonOperationRestController {
             }
             if (multiInstance.equals(SysVariables.PARALLEL)) {
                 List<HistoricTaskInstanceModel> htims = historictaskApi.getByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), "");
-                for (int i = 0; i < htims.size(); i++) {
-                    HistoricTaskInstanceModel hai = htims.get(i);
+                for (HistoricTaskInstanceModel hai : htims) {
                     if (hai == null) {
                         continue;
                     }
                     long timediff = taskModel.getCreateTime().getTime() - hai.getStartTime().getTime();
                     if (((timediff >= -3000 && timediff <= 3000) && taskModel.getName().equals(hai.getName())) || hai.getEndTime() == null) {
-                        Map<String, Object> map = new HashMap<String, Object>(16);
+                        Map<String, Object> map = new HashMap<>(16);
                         Position employee = positionApi.get(tenantId, hai.getAssignee()).getData();
                         map.put("user", employee.getName());
                         Date endTime = hai.getEndTime();
-                        String parallelSponsorObj = null;
+                        String parallelSponsorObj;
                         if (null == endTime) {
                             parallelSponsorObj = variableApi.getVariableLocal(tenantId, hai.getId(), "parallelSponsor");
                         } else {
@@ -440,8 +419,7 @@ public class ButtonOperationRestController {
                         }
                         map.put("endTime", endTime == null ? "" : sdf.format(endTime));
                         if (parallelSponsorObj != null) {
-                            String parallelSponsor = parallelSponsorObj;
-                            if (parallelSponsor.equals(employee.getId())) {
+                            if (parallelSponsorObj.equals(employee.getId())) {
                                 map.put("parallelSponsor", "主办");
                             } else {
                                 map.put("parallelSponsor", "协办");
@@ -459,7 +437,7 @@ public class ButtonOperationRestController {
             retMap.put("rows", listMap);
             return Y9Result.success(retMap, "获取成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("getMultiInstanceInfo error", e);
         }
         return Y9Result.failure("获取失败");
     }
@@ -468,7 +446,7 @@ public class ButtonOperationRestController {
      * 办理完成，并行处理时使用
      *
      * @param taskId 任务id
-     * @return
+     * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/handleParallel", method = RequestMethod.POST, produces = "application/json")
@@ -483,28 +461,28 @@ public class ButtonOperationRestController {
             if (list.size() == 1) {// 并行状态且不区分主协办时，多人同时打开办理页面，当其他人都已办理完成，最后一人需提示已是并行办理的最后一人，需刷新重新办理。
                 return Y9Result.failure("您是并行办理的最后一人，请刷新后重新办理。");
             }
-            /**
+            /*
              * 改变流程变量中users的值
              */
             try {
                 String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS);
                 List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
-                if (users.size() == 0) {
-                    List<String> usersTemp = new ArrayList<String>();
+                if (users != null && users.isEmpty()) {
+                    List<String> usersTemp = new ArrayList<>();
                     for (TaskModel t : list) {
                         usersTemp.add(t.getAssignee());
                     }
-                    Map<String, Object> vmap = new HashMap<String, Object>(16);
+                    Map<String, Object> vmap = new HashMap<>(16);
                     vmap.put(SysVariables.USERS, usersTemp);
                     variableApi.setVariables(tenantId, taskId, vmap);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("handleParallel error", e);
             }
             taskApi.complete(tenantId, taskId);
             return Y9Result.successMsg("办理成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("handleParallel error", e);
         }
         return Y9Result.failure("办理失败");
     }
@@ -513,7 +491,7 @@ public class ButtonOperationRestController {
      * 送下一人，串行时使用
      *
      * @param taskId 任务id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/handleSerial", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> handleSerial(@RequestParam @NotBlank String taskId) {
@@ -525,7 +503,7 @@ public class ButtonOperationRestController {
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             return Y9Result.successMsg("办理成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("handleSerial error", e);
         }
         return Y9Result.failure("办理失败");
     }
@@ -533,9 +511,9 @@ public class ButtonOperationRestController {
     /**
      * 委托. 委托是把任务转给其他人操作，被委托人会在待办任务列表里看到这条任务，正常处理任务后，流程会继续向下运行。
      *
-     * @param taskId 任务id
+     * @param taskId     任务id
      * @param userChoice 收件人
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/reAssign", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> reAssign(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice) {
@@ -544,7 +522,7 @@ public class ButtonOperationRestController {
             taskApi.setAssignee(tenantId, taskId, userChoice);
             return Y9Result.successMsg("委托成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("reAssign error", e);
         }
         return Y9Result.failure("委托失败");
     }
@@ -553,7 +531,7 @@ public class ButtonOperationRestController {
      * 拒签
      *
      * @param taskId 任务id
-     * @return
+     * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/refuseClaim", method = RequestMethod.POST, produces = "application/json")
@@ -569,7 +547,7 @@ public class ButtonOperationRestController {
                 }
             }
             Map<String, Object> vars = variableApi.getVariables(tenantId, taskId);
-            ArrayList<String> users = (ArrayList<String>)vars.get(SysVariables.USERS);
+            ArrayList<String> users = (ArrayList<String>) vars.get(SysVariables.USERS);
             for (Object obj : users) {
                 String user = obj.toString();
                 if (user.contains(positionId)) {
@@ -580,7 +558,7 @@ public class ButtonOperationRestController {
             taskApi.deleteCandidateUser(tenantId, taskId, activitiUser);
             return Y9Result.successMsg("拒签成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("refuseClaim error", e);
         }
         return Y9Result.failure("拒签失败");
     }
@@ -589,22 +567,22 @@ public class ButtonOperationRestController {
      * 最后一人拒签退回
      *
      * @param taskId 任务id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/refuseClaimRollback", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> refuseClaimRollback(@RequestParam @NotBlank String taskId) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            Map<String, Object> map = new HashMap<>(16);
+            Map<String, Object> map;
             map = buttonOperation4PositionApi.refuseClaimRollback(tenantId, positionId, taskId);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.successMsg((String)map.get("msg"));
+            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+                return Y9Result.successMsg((String) map.get("msg"));
             } else {
-                return Y9Result.failure((String)map.get("msg"));
+                return Y9Result.failure((String) map.get("msg"));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("refuseClaimRollback error", e);
         }
         return Y9Result.failure("拒签失败");
     }
@@ -612,19 +590,19 @@ public class ButtonOperationRestController {
     /**
      * 重定向(选择任意流程节点重定向)
      *
-     * @param taskId 任务Id
-     * @param routeToTaskId 流程节点Id
-     * @param userChoice 选择重定向的人员
+     * @param taskId              任务Id
+     * @param routeToTaskId       流程节点Id
+     * @param userChoice          选择重定向的人员
      * @param processSerialNumber 流程编号
-     * @param sponsorGuid 主办人id
-     * @param isSendSms 是否短信提醒
-     * @param isShuMing 是否署名
-     * @param smsContent 短信内容
-     * @return
+     * @param sponsorGuid         主办人id
+     * @param isSendSms           是否短信提醒
+     * @param isShuMing           是否署名
+     * @param smsContent          短信内容
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/reposition", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> reposition(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTaskId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String userChoice, @RequestParam String sponsorGuid, @RequestParam String isSendSms,
-        @RequestParam String isShuMing, @RequestParam String smsContent) {
+                                       @RequestParam String isShuMing, @RequestParam String smsContent) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -646,7 +624,7 @@ public class ButtonOperationRestController {
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             return Y9Result.successMsg("重定向成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("reposition error", e);
         }
         return Y9Result.failure("重定向失败");
     }
@@ -656,7 +634,7 @@ public class ButtonOperationRestController {
      *
      * @param taskId 任务id
      * @param reason 退回原因
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/rollback", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> rollback(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
@@ -671,7 +649,7 @@ public class ButtonOperationRestController {
                     reason = "未填写。";
                 }
                 reason = "该任务由" + position.getName() + "退回:" + reason;
-                Map<String, Object> map = new HashMap<String, Object>();
+                Map<String, Object> map = new HashMap<>();
                 map.put("val", reason);
                 variableApi.setVariableLocal(tenantId, taskId, "rollBackReason", map);
                 multiInstanceService.removeExecution(task.getExecutionId(), taskId, task.getAssignee());
@@ -685,13 +663,13 @@ public class ButtonOperationRestController {
                     try {
                         processTrack4PositionApi.saveOrUpdate(tenantId, ptModel);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("更新自定义历程结束时间失败", e);
                     }
                 }
             }
             return Y9Result.successMsg("退回成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("rollback error", e);
         }
         return Y9Result.failure("退回失败");
     }
@@ -700,7 +678,7 @@ public class ButtonOperationRestController {
      * 退回发送人
      *
      * @param taskId 任务id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/rollbackToSender", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> rollbackToSender(@RequestParam @NotBlank String taskId) {
@@ -710,7 +688,7 @@ public class ButtonOperationRestController {
             buttonOperation4PositionApi.rollbackToSender(tenantId, positionId, taskId);
             return Y9Result.successMsg("返回发送人成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("rollbackToSender error", e);
         }
         return Y9Result.failure("返回发送人失败");
     }
@@ -720,7 +698,7 @@ public class ButtonOperationRestController {
      *
      * @param taskId 任务id
      * @param reason 原因
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/rollbackToStartor", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> rollbackToStartor(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
@@ -730,7 +708,7 @@ public class ButtonOperationRestController {
             buttonOperation4PositionApi.rollbackToStartor(tenantId, positionId, taskId, reason);
             return Y9Result.successMsg("返回起草人成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("rollbackToStartor error", e);
         }
         return Y9Result.failure("返回起草人失败");
     }
@@ -738,10 +716,11 @@ public class ButtonOperationRestController {
     /**
      * 保存流程定制信息
      *
-     * @param itemI 事项id
-     * @param processSerialNumber 流程编号
-     * @param taskList 任务列表
-     * @return
+     * @param itemId               事项id
+     * @param processSerialNumber  流程编号
+     * @param processDefinitionKey 流程定义key
+     * @param jsonData             数据
+     * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/saveCustomProcess", method = RequestMethod.POST, produces = "application/json")
@@ -753,23 +732,26 @@ public class ButtonOperationRestController {
             if (!msg) {
                 return Y9Result.failure("保存失败");
             }
-            Map<String, Object> map = list.get(1);
-            String routeToTaskId = (String)map.get("taskKey");
-            Map<String, Object> variables = new HashMap<String, Object>(16);
-            List<Map<String, Object>> orgList = (List<Map<String, Object>>)map.get("orgList");
+            Map<String, Object> map = new HashMap<>();
+            if (list != null) {
+                map = list.get(1);
+            }
+            String routeToTaskId = (String) map.get("taskKey");
+            Map<String, Object> variables = new HashMap<>(16);
+            List<Map<String, Object>> orgList = (List<Map<String, Object>>) map.get("orgList");
             String userChoice = "";
             for (Map<String, Object> org : orgList) {
-                userChoice = Y9Util.genCustomStr(userChoice, (String)org.get("id"), ";");
+                userChoice = Y9Util.genCustomStr(userChoice, (String) org.get("id"), ";");
             }
             map = document4PositionApi.saveAndForwarding(tenantId, positionId, "", "", "", itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
-            if (!(boolean)map.get(UtilConsts.SUCCESS)) {
+            if (!(boolean) map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.failure("保存成功,发送失败");
             }
             // 发送成功后更新当前运行节点
             customProcessInfoApi.updateCurrentTask(tenantId, processSerialNumber);
             return Y9Result.successMsg("发送成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("saveCustomProcess error", e);
         }
         return Y9Result.failure("发送失败");
     }
@@ -778,7 +760,7 @@ public class ButtonOperationRestController {
      * 返回任务发送人，不用选人，直接发送
      *
      * @param taskId 任务id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/sendToSender", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> sendToSender(@RequestParam @NotBlank String taskId) {
@@ -787,7 +769,7 @@ public class ButtonOperationRestController {
             buttonOperation4PositionApi.rollbackToSender(tenantId, positionId, taskId);
             return Y9Result.successMsg("返回发送人成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("sendToSender error", e);
         }
         return Y9Result.failure("返回发送人失败");
     }
@@ -796,7 +778,7 @@ public class ButtonOperationRestController {
      * 返回拟稿人，不用选人，直接发送
      *
      * @param taskId 任务id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/sendToStartor", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> sendToStartor(@RequestParam @NotBlank String taskId) {
@@ -809,7 +791,7 @@ public class ButtonOperationRestController {
             ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
             String itemId = processParamModel.getItemId();
             String processSerialNumber = processParamModel.getProcessSerialNumber();
-            Map<String, Object> variables = new HashMap<String, Object>(16);
+            Map<String, Object> variables = new HashMap<>(16);
 
             String user = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TASKSENDERID);
             String userChoice = "6:" + user;
@@ -822,7 +804,7 @@ public class ButtonOperationRestController {
             document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
             return Y9Result.successMsg("发送拟稿人成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("sendToStartor error", e);
         }
         return Y9Result.failure("发送拟稿人失败");
     }
@@ -832,7 +814,7 @@ public class ButtonOperationRestController {
      *
      * @param taskId 任务id
      * @param reason 特殊办结原因
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/specialComplete", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> specialComplete(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
@@ -849,12 +831,12 @@ public class ButtonOperationRestController {
                     try {
                         processTrack4PositionApi.saveOrUpdate(tenantId, ptModel);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("specialComplete error", e);
                     }
                 }
             }
-            /**
-             * 3保存历程
+            /*
+              3保存历程
              */
             ProcessTrackModel ptModel = new ProcessTrackModel();
             ptModel.setDescribed("已办结");
@@ -869,7 +851,7 @@ public class ButtonOperationRestController {
             processTrack4PositionApi.saveOrUpdate(tenantId, ptModel);
             return Y9Result.successMsg("特殊办结成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("specialComplete error", e);
         }
         return Y9Result.failure("特殊办结失败");
     }
@@ -879,7 +861,7 @@ public class ButtonOperationRestController {
      *
      * @param taskId 任务id
      * @param reason 收回原因
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/takeback", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> takeback(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
@@ -889,7 +871,7 @@ public class ButtonOperationRestController {
             buttonOperation4PositionApi.takeback(tenantId, positionId, taskId, reason);
             return Y9Result.successMsg("收回成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("takeback error", e);
         }
         return Y9Result.failure("收回失败");
     }
@@ -898,7 +880,7 @@ public class ButtonOperationRestController {
      * 撤销签收功能：用户签收后，可以进行撤销签收，撤销签收后，重新进行抢占式办理
      *
      * @param taskId 任务id
-     * @return
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/unclaim", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> unclaim(@RequestParam @NotBlank String taskId) {
@@ -907,7 +889,7 @@ public class ButtonOperationRestController {
             taskApi.unclaim(tenantId, taskId);
             return Y9Result.successMsg("撤销签收成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("unclaim error", e);
         }
         return Y9Result.failure("撤销签收失败");
     }

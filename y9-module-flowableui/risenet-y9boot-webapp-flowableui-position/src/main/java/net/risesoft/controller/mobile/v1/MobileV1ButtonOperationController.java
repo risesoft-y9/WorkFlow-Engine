@@ -1,34 +1,13 @@
 package net.risesoft.controller.mobile.v1;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.processadmin.HistoricProcessApi;
-import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.api.processadmin.SpecialOperationApi;
-import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.api.processadmin.VariableApi;
-import net.risesoft.consts.UtilConsts;
+import net.risesoft.api.processadmin.*;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
@@ -43,6 +22,17 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import javax.validation.constraints.NotBlank;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 菜单按钮方法接口
@@ -87,6 +77,7 @@ public class MobileV1ButtonOperationController {
      * 签收：抢占式办理时，签收后，其他人不可再签收办理
      *
      * @param taskId 任务id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/claim")
     public Y9Result<String> claim(@RequestParam @NotBlank String taskId) {
@@ -105,7 +96,7 @@ public class MobileV1ButtonOperationController {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("签收失败", e);
         }
         return Y9Result.failure("签收失败");
     }
@@ -114,6 +105,7 @@ public class MobileV1ButtonOperationController {
      * 流程办结
      *
      * @param taskId 任务id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/complete")
     public Y9Result<String> complete(@RequestParam @NotBlank String taskId) {
@@ -121,7 +113,7 @@ public class MobileV1ButtonOperationController {
             buttonOperationService.complete(taskId, "办结", "已办结", "");
             return Y9Result.successMsg("办结成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("办结失败", e);
         }
         return Y9Result.failure("办结失败");
     }
@@ -129,13 +121,14 @@ public class MobileV1ButtonOperationController {
     /**
      * 获取办件状态
      *
-     * @param taskId 任务id
+     * @param taskId            任务id
      * @param processInstanceId 流程实例id
+     * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getItemBox")
-    public Y9Result<String> getItemBox(@RequestParam String taskId, @RequestParam String processInstanceId) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        String itembox = ItemBoxTypeEnum.TODO.getValue();
+    public Y9Result<Map<String, Object>> getItemBox(@RequestParam String taskId, @RequestParam String processInstanceId) {
+        Map<String, Object> map = new HashMap<>(16);
+        String itembox;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
@@ -152,9 +145,10 @@ public class MobileV1ButtonOperationController {
                     itembox = ItemBoxTypeEnum.DONE.getValue();
                 }
             }
-            return Y9Result.success(itembox, "获取成功");
+            map.put("itembox", itembox);
+            return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取失败", e);
         }
         return Y9Result.failure("获取失败");
     }
@@ -163,6 +157,7 @@ public class MobileV1ButtonOperationController {
      * 办理完成，并行处理时使用
      *
      * @param taskId 任务id
+     * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping("/handleParallel")
@@ -177,30 +172,30 @@ public class MobileV1ButtonOperationController {
                 if (list.size() == 1) {// 并行状态且不区分主协办时，多人同时打开办理页面，当其他人都已办理完成，最后一人需提示已是并行办理的最后一人，需刷新重新办理。
                     return Y9Result.failure("您是并行办理的最后一人，请刷新后重新办理。");
                 } else {
-                    /**
-                     * 改变流程变量中users的值
+                    /*
+                      改变流程变量中users的值
                      */
                     try {
                         String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS);
                         List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
-                        if (users.size() == 0) {
-                            List<String> usersTemp = new ArrayList<String>();
+                        if (users != null && users.isEmpty()) {
+                            List<String> usersTemp = new ArrayList<>();
                             for (TaskModel t : list) {
                                 usersTemp.add(t.getAssignee());
                             }
-                            Map<String, Object> vmap = new HashMap<String, Object>(16);
+                            Map<String, Object> vmap = new HashMap<>(16);
                             vmap.put(SysVariables.USERS, usersTemp);
                             variableApi.setVariables(tenantId, taskId, vmap);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("改变流程变量中users的值失败", e);
                     }
                     taskApi.complete(tenantId, taskId);
                 }
             }
             return Y9Result.successMsg("办理成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("办理失败", e);
         }
         return Y9Result.failure("办理失败");
     }
@@ -209,6 +204,7 @@ public class MobileV1ButtonOperationController {
      * 处理完成，串行时使用
      *
      * @param taskId 任务id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/handleSerial")
     public Y9Result<String> handleSerial(@RequestParam @NotBlank String taskId) {
@@ -230,7 +226,7 @@ public class MobileV1ButtonOperationController {
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             return Y9Result.successMsg("办理成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("办理失败", e);
         }
         return Y9Result.failure("办理失败");
     }
@@ -239,7 +235,8 @@ public class MobileV1ButtonOperationController {
      * 恢复待办
      *
      * @param processInstanceId 流程实例id
-     * @param desc 描述
+     * @param desc              描述
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/multipleResumeToDo")
     public Y9Result<String> multipleResumeToDo(@RequestParam @NotBlank String processInstanceId, @RequestParam String desc) {
@@ -247,8 +244,7 @@ public class MobileV1ButtonOperationController {
             buttonOperationService.multipleResumeToDo(processInstanceId, desc);
             return Y9Result.successMsg("恢复待办成功");
         } catch (Exception e) {
-            LOGGER.error("手机端恢复待办异常");
-            e.printStackTrace();
+            LOGGER.error("手机端恢复待办异常", e);
         }
         return Y9Result.failure("恢复待办失败");
     }
@@ -256,8 +252,9 @@ public class MobileV1ButtonOperationController {
     /**
      * 拒签：抢占式办理时，拒签就把自己从多个抢占办理的人中排除掉
      *
-     * @param taskId 任务id
+     * @param taskId                   任务id
      * @param isLastPerson4RefuseClaim 是否最后一人拒签
+     * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/refuseClaim")
@@ -273,7 +270,7 @@ public class MobileV1ButtonOperationController {
                     buttonOperation4PositionApi.refuseClaimRollback(tenantId, userId, taskId);
                 } catch (Exception e) {
                     taskApi.unclaim(tenantId, taskId);// 失败则撤销签收
-                    e.printStackTrace();
+                    LOGGER.error("退回失败", e);
                     return Y9Result.failure("拒签失败");
                 }
             } else {
@@ -281,7 +278,7 @@ public class MobileV1ButtonOperationController {
                     String assigneeId = task.getAssignee();
                     if (StringUtils.isBlank(assigneeId)) {
                         Map<String, Object> vars = variableApi.getVariables(tenantId, taskId);
-                        ArrayList<String> users = (ArrayList<String>)vars.get(SysVariables.USERS);
+                        ArrayList<String> users = (ArrayList<String>) vars.get(SysVariables.USERS);
                         for (Object obj : users) {
                             String user = obj.toString();
                             if (user.contains(positionId)) {
@@ -298,7 +295,7 @@ public class MobileV1ButtonOperationController {
             }
             return Y9Result.successMsg("拒签成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("拒签失败", e);
         }
         return Y9Result.failure("拒签失败");
     }
@@ -306,23 +303,22 @@ public class MobileV1ButtonOperationController {
     /**
      * 重定位
      *
-     * @param taskId 任务id
+     * @param taskId             任务id
      * @param repositionToTaskId 定位路由key
-     * @param userChoice 人员id
+     * @param userChoice         人员id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/reposition")
     public Y9Result<String> reposition(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String repositionToTaskId, @RequestParam @NotBlank String userChoice) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
-            map.put(UtilConsts.SUCCESS, true);
             if (StringUtils.isNotBlank(taskId)) {
                 specialOperationApi.reposition4Position(tenantId, positionId, taskId, repositionToTaskId, Y9Util.stringToList(userChoice, ","), "重定向", "");
             }
             return Y9Result.successMsg("重定向成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("重定位失败", e);
         }
         return Y9Result.failure("重定向失败");
     }
@@ -330,12 +326,12 @@ public class MobileV1ButtonOperationController {
     /**
      * 重定位
      *
-     * @param taskId 任务id
+     * @param taskId     任务id
      * @param userChoice 人员id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/reposition1")
     public Y9Result<String> reposition1(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -344,17 +340,16 @@ public class MobileV1ButtonOperationController {
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             return Y9Result.successMsg("重定位成功");
         } catch (Exception e) {
-            e.printStackTrace();
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "重定位失败");
+            LOGGER.error("重定位失败", e);
         }
-        return Y9Result.failure("重定位向失败");
+        return Y9Result.failure("重定位失败");
     }
 
     /**
      * 退回
      *
      * @param taskId 任务id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/rollback")
     public Y9Result<String> rollback(@RequestParam @NotBlank String taskId) {
@@ -371,7 +366,7 @@ public class MobileV1ButtonOperationController {
                     reason = "未填写。";
                 }
                 reason = "该任务由" + position.getName() + "退回:" + reason;
-                Map<String, Object> val = new HashMap<String, Object>();
+                Map<String, Object> val = new HashMap<>();
                 val.put("val", reason);
                 variableApi.setVariableLocal(tenantId, taskId, "rollBackReason", val);
                 multiInstanceService.removeExecution(task.getExecutionId(), taskId, task.getAssignee());
@@ -380,7 +375,7 @@ public class MobileV1ButtonOperationController {
             }
             return Y9Result.successMsg("退回成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("退回失败", e);
         }
         return Y9Result.failure("退回失败");
     }
@@ -389,6 +384,7 @@ public class MobileV1ButtonOperationController {
      * 返回发起人
      *
      * @param taskId 任务id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/rollbackToStartor")
     public Y9Result<String> rollbackToStartor(@RequestParam @NotBlank String taskId) {
@@ -398,7 +394,7 @@ public class MobileV1ButtonOperationController {
             buttonOperation4PositionApi.rollbackToStartor(tenantId, positionId, taskId, "");
             return Y9Result.successMsg("返回发起人成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("返回发起人失败", e);
         }
         return Y9Result.failure("返回发起人失败");
     }
@@ -407,6 +403,7 @@ public class MobileV1ButtonOperationController {
      * 返回发送人
      *
      * @param taskId 任务id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/sendToSender")
     public Y9Result<String> sendToSender(@RequestParam @NotBlank String taskId) {
@@ -416,7 +413,7 @@ public class MobileV1ButtonOperationController {
             buttonOperation4PositionApi.rollbackToSender(tenantId, positionId, taskId);
             return Y9Result.successMsg("返回发送人成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("返回发送人失败", e);
         }
         return Y9Result.failure("返回发送人失败");
     }
@@ -425,6 +422,7 @@ public class MobileV1ButtonOperationController {
      * 发送拟稿人
      *
      * @param taskId 任务id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/sendToStartor")
     public Y9Result<String> sendToStartor(@RequestParam @NotBlank String taskId) {
@@ -438,7 +436,7 @@ public class MobileV1ButtonOperationController {
             ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
             String itemId = processParamModel.getItemId();
             String processSerialNumber = processParamModel.getProcessSerialNumber();
-            Map<String, Object> variables = new HashMap<String, Object>(16);
+            Map<String, Object> variables = new HashMap<>(16);
 
             String user = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TASKSENDERID);
             String userChoice = "3:" + user;
@@ -451,7 +449,7 @@ public class MobileV1ButtonOperationController {
             document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
             return Y9Result.successMsg("发送拟稿人成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("发送拟稿人失败", e);
         }
         return Y9Result.failure("发送拟稿人失败");
     }
@@ -461,6 +459,7 @@ public class MobileV1ButtonOperationController {
      *
      * @param taskId 任务id
      * @param reason 办结原因
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/specialComplete")
     public Y9Result<String> specialComplete(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
@@ -478,12 +477,12 @@ public class MobileV1ButtonOperationController {
                     try {
                         processTrack4PositionApi.saveOrUpdate(tenantId, ptModel);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("更新自定义历程结束时间失败", e);
                     }
                 }
             }
-            /**
-             * 3保存历程
+            /*
+              3保存历程
              */
             ProcessTrackModel ptModel = new ProcessTrackModel();
             ptModel.setDescribed("已办结");
@@ -498,7 +497,7 @@ public class MobileV1ButtonOperationController {
             processTrack4PositionApi.saveOrUpdate(tenantId, ptModel);
             return Y9Result.successMsg("特殊办结成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("特殊办结失败", e);
         }
         return Y9Result.failure("特殊办结失败");
     }
@@ -507,6 +506,7 @@ public class MobileV1ButtonOperationController {
      * 收回
      *
      * @param taskId 任务id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/takeback")
     public Y9Result<String> takeback(@RequestParam @NotBlank String taskId) {
@@ -516,7 +516,7 @@ public class MobileV1ButtonOperationController {
             buttonOperation4PositionApi.takeback(tenantId, positionId, taskId, "收回");
             return Y9Result.successMsg("收回成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("收回失败", e);
         }
         return Y9Result.failure("收回失败");
     }
@@ -525,6 +525,7 @@ public class MobileV1ButtonOperationController {
      * 撤销签收：抢占式办理时，签收后，撤销签收可以让此公文重新抢占式办理
      *
      * @param taskId 任务id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/unclaim")
     public Y9Result<String> unclaim(@RequestParam @NotBlank String taskId) {
@@ -532,7 +533,7 @@ public class MobileV1ButtonOperationController {
             taskApi.unclaim(Y9LoginUserHolder.getTenantId(), taskId);
             return Y9Result.successMsg("撤销签收成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("撤销签收失败", e);
         }
         return Y9Result.failure("撤销签收失败");
     }

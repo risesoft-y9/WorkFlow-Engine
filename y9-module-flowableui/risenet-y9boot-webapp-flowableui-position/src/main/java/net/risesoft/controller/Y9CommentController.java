@@ -1,30 +1,29 @@
 package net.risesoft.controller;
 
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-
+import com.alibaba.druid.pool.DruidDataSource;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.db.DbUtil;
+import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.alibaba.druid.pool.DruidDataSource;
-
-import lombok.RequiredArgsConstructor;
-
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.db.DbUtil;
-import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
-
 import y9.dbcomment.Y9CommentUtil;
+
+
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+
+import java.util.List;
 
 @Validated
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping("/admin/comment")
 public class Y9CommentController {
 
@@ -56,8 +55,8 @@ public class Y9CommentController {
 
         String y9publicPackageEntity = Y9Context.getProperty("y9.feature.comment.packagesToScanEntityPublic", "net.risesoft.y9public.entity");// 自定义公共表路径
         String packageEntity = Y9Context.getProperty("y9.app.itemAdmin.jpa.packagesToScanEntity", "net.risesoft.entity");// 自定义租户表路径
-        /**
-         * 默认库
+        /*
+          默认库
          */
         if ("mysql".equals(dbType)) {
             Y9CommentUtil.scanner4Mysql(jdbcTemplate4FlowableDefault, y9publicPackageEntity.split(","));
@@ -65,8 +64,8 @@ public class Y9CommentController {
             Y9CommentUtil.scanner4Oracle(jdbcTemplate4FlowableDefault, y9publicPackageEntity.split(","));
         }
 
-        /**
-         * 租户库
+        /*
+          租户库
          */
         List<String> tenants = jdbcTemplate4Public.queryForList("select id from Y9_COMMON_TENANT", String.class);
         for (String tenantId : tenants) {

@@ -1,19 +1,9 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.QueryListApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
@@ -35,7 +25,17 @@ import net.risesoft.service.QueryListService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service(value = "queryListService")
 @Transactional(readOnly = true)
@@ -57,13 +57,13 @@ public class QueryListServiceImpl implements QueryListService {
 
     private final OfficeDoneInfo4PositionApi officeDoneInfoApi;
 
-    private final List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
+    private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
         String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         int i = 0;
-        if (taskList.size() > 0) {
+        if (!taskList.isEmpty()) {
             for (TaskModel task : taskList) {
                 if (StringUtils.isEmpty(taskIds)) {
                     taskIds = task.getId();
@@ -129,21 +129,23 @@ public class QueryListServiceImpl implements QueryListService {
 
     @Override
     public Y9Page<Map<String, Object>> queryList(String itemId, String state, String createDate, String tableName, String searchMapStr, Integer page, Integer rows) {
-        ItemPage<ActRuDetailModel> itemPage = new ItemPage<ActRuDetailModel>();
+        ItemPage<ActRuDetailModel> itemPage;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             itemPage = queryListApi.getQueryList(tenantId, userId, item.getSystemName(), state, createDate, tableName, searchMapStr, page, rows);
-            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> items = new ArrayList<>();
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<List<ActRuDetailModel>>() {});
+            List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {
+            });
             int serialNumber = (page - 1) * rows;
-            Map<String, Object> mapTemp = null;
-            Map<String, Object> formDataMap = null;
+            Map<String, Object> mapTemp;
+            Map<String, Object> formDataMap;
+            String processInstanceId;
             for (ActRuDetailModel hpim : hpiModelList) {
-                mapTemp = new HashMap<String, Object>(16);
-                String processInstanceId = hpim.getProcessInstanceId();
+                mapTemp = new HashMap<>(16);
+                processInstanceId = hpim.getProcessInstanceId();
                 String processSerialNumber = hpim.getProcessSerialNumber();
                 try {
                     OfficeDoneInfoModel officeDoneInfo = officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId);
@@ -176,9 +178,9 @@ public class QueryListServiceImpl implements QueryListService {
                     mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
                     int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId, processInstanceId);
-                    mapTemp.put("follow", countFollow > 0 ? true : false);
+                    mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("获取流程实例信息失败" + processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
@@ -186,8 +188,8 @@ public class QueryListServiceImpl implements QueryListService {
             }
             return Y9Page.success(page, itemPage.getTotalpages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取列表失败", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 }

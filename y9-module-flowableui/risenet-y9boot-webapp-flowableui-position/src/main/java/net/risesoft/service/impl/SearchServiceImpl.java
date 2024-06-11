@@ -1,18 +1,9 @@
 package net.risesoft.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
@@ -29,7 +20,16 @@ import net.risesoft.service.SearchService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service(value = "searchService")
 public class SearchServiceImpl implements SearchService {
@@ -49,15 +49,15 @@ public class SearchServiceImpl implements SearchService {
     /**
      * 当并行的时候，会获取到多个task，为了并行时当前办理人显示多人，而不是显示多条记录，需要分开分别进行处理
      *
-     * @return
+     * @return List<String>
      */
-    private final List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
+    private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
         String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         int i = 0;
-        if (taskList.size() > 0) {
+        if (!taskList.isEmpty()) {
             for (TaskModel task : taskList) {
                 if (StringUtils.isEmpty(taskIds)) {
                     taskIds = task.getId();
@@ -121,35 +121,24 @@ public class SearchServiceImpl implements SearchService {
         return list;
     }
 
-    @Override
-    public Y9Page<Map<String, Object>> getEmailList(Integer page, Integer rows, String startDateStr, String endDateStr, Integer fileType, String userName, String title) {
-        try {
-            /*Map<String, Object> map = customEmailApi.search(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), page, rows, startDateStr, endDateStr, fileType, userName, title);
-            if ((boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
-            }*/
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> getSearchList(String searchTerm, String itemId, String userName, String state, String year, String startDate, String endDate, Integer page, Integer rows) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap;
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             retMap = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, searchTerm, itemId, userName, state, year, startDate, endDate, page, rows);
-            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
+            List<Map<String, Object>> items = new ArrayList<>();
+            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>) retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<List<OfficeDoneInfoModel>>() {});
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {
+            });
             int serialNumber = (page - 1) * rows;
-            Map<String, Object> mapTemp = null;
+            Map<String, Object> mapTemp;
+            String processInstanceId;
             for (OfficeDoneInfoModel hpim : hpiList) {
-                mapTemp = new HashMap<String, Object>(16);
-                String processInstanceId = hpim.getProcessInstanceId();
+                mapTemp = new HashMap<>(16);
+                processInstanceId = hpim.getProcessInstanceId();
                 try {
                     String processDefinitionId = hpim.getProcessDefinitionId();
                     String startTime = hpim.getStartTime().substring(0, 16);
@@ -184,11 +173,11 @@ public class SearchServiceImpl implements SearchService {
                         mapTemp.put("itembox", listTemp.get(3));
                     }
                     int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
-                    mapTemp.put("follow", countFollow > 0 ? true : false);
+                    mapTemp.put("follow", countFollow > 0);
                     // ddyjs上会功能
-                    mapTemp.put("meeting", (hpim.getMeeting() != null && hpim.getMeeting().equals("1")) ? true : false);
+                    mapTemp.put("meeting", hpim.getMeeting() != null && hpim.getMeeting().equals("1"));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("获取任务信息失败" + processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
@@ -196,23 +185,23 @@ public class SearchServiceImpl implements SearchService {
             }
             return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取列表失败", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> getYuejianList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap;
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             retMap = chaoSong4PositionApi.searchAllByUserId(tenantId, positionId, searchName, itemId, userName, state, year, page, rows);
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), (List<Map<String, Object>>)retMap.get("rows"), "获取列表成功");
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), (List<Map<String, Object>>) retMap.get("rows"), "获取列表成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取列表失败", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<Map<String, Object>>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
 }

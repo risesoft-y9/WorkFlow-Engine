@@ -1,13 +1,20 @@
 package net.risesoft.controller.mobile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
+import net.risesoft.api.platform.org.DepartmentApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.todo.TodoTaskApi;
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.itemadmin.EntrustModel;
+import net.risesoft.model.platform.*;
+import net.risesoft.util.SysVariables;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
+import net.risesoft.y9.util.Y9Util;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,35 +24,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
-import net.risesoft.api.platform.org.DepartmentApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.todo.TodoTaskApi;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.itemadmin.EntrustModel;
-import net.risesoft.model.platform.Department;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Organization;
-import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.Position;
-import net.risesoft.util.SysVariables;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
-import net.risesoft.y9.util.Y9Util;
+import javax.servlet.http.HttpServletResponse;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 人员接口
  *
  * @author 10858
- *
  */
 @Validated
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping("/mobile/org")
 public class MobileOrgController {
 
@@ -63,11 +58,10 @@ public class MobileOrgController {
 
     private final Entrust4PositionApi entrust4PositionApi;
 
-    private List<String> addUserIds(List<String> userIds, String userId) {
+    private void addUserIds(List<String> userIds, String userId) {
         if (!userIds.contains(userId)) {
             userIds.add(userId);
         }
-        return userIds;
     }
 
     public List<Position> getAllPersonsByDeptId(String deptId) {
@@ -80,26 +74,23 @@ public class MobileOrgController {
      * 获取组织架构
      *
      * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
-     * @param id 父节点id
-     * @param request
-     * @param response
+     * @param userId   人员id
+     * @param id       父节点id
      */
     @ResponseBody
     @RequestMapping(value = "/getOrg")
-    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, String id, HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, String id, HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> item = new ArrayList<>();
             if (StringUtils.isBlank(id)) {// 只获取当前组织架构
                 Organization org = orgUnitApi.getOrganization(tenantId, userId).getData();
                 String orgId = org.getId();
                 List<Department> deptList = departmentApi.listByParentId(tenantId, orgId).getData();
                 List<Person> personList = personApi.listByParentId(tenantId, orgId).getData();
                 for (Department dept : deptList) {
-                    Map<String, Object> m = new HashMap<String, Object>(16);
+                    Map<String, Object> m = new HashMap<>(16);
                     m.put("id", dept.getId());
                     m.put("pId", dept.getParentId());
                     m.put("name", dept.getName());
@@ -111,7 +102,7 @@ public class MobileOrgController {
                     item.add(m);
                 }
                 for (Person person : personList) {
-                    Map<String, Object> m = new HashMap<String, Object>(16);
+                    Map<String, Object> m = new HashMap<>(16);
                     m.put("id", person.getId());
                     m.put("pId", person.getParentId());
                     m.put("name", person.getName());
@@ -131,7 +122,7 @@ public class MobileOrgController {
                 List<Department> deptList = departmentApi.listByParentId(tenantId, id).getData();
                 List<Person> personList = personApi.listByParentId(tenantId, id).getData();
                 for (Department dept : deptList) {
-                    Map<String, Object> m = new HashMap<String, Object>(16);
+                    Map<String, Object> m = new HashMap<>(16);
                     m.put("id", dept.getId());
                     m.put("pId", id);
                     m.put("name", dept.getName());
@@ -143,7 +134,7 @@ public class MobileOrgController {
                     item.add(m);
                 }
                 for (Person person : personList) {
-                    Map<String, Object> m = new HashMap<String, Object>(16);
+                    Map<String, Object> m = new HashMap<>(16);
                     m.put("id", person.getId());
                     m.put("pId", id);
                     m.put("name", person.getName());
@@ -164,35 +155,32 @@ public class MobileOrgController {
             map.put("msg", "获取数据成功");
             map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取组织架构发生异常", e);
             map.put("msg", "发生异常");
             map.put(UtilConsts.SUCCESS, false);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
      * 获取人员岗位列表信息
      *
      * @param tenantId 租户id
-     * @param userId 人员id
-     * @param request
-     * @param response
+     * @param userId   人员id
      */
     @ResponseBody
     @RequestMapping(value = "/getPositionList")
-    public void getPositionList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+    public void getPositionList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<>(16);
         try {
-            List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> resList = new ArrayList<>();
             Y9LoginUserHolder.setTenantId(tenantId);
             List<Position> list = positionApi.listByPersonId(tenantId, userId).getData();
             for (Position p : list) {
-                Map<String, Object> map0 = new HashMap<String, Object>(16);
+                Map<String, Object> map0 = new HashMap<>(16);
                 map0.put("id", p.getId());
                 map0.put("name", p.getName());
-                long todoCount = 0;
+                long todoCount;
                 todoCount = todoTaskApi.countByReceiverId(tenantId, p.getId());
                 map0.put("todoCount", todoCount);
                 resList.add(map0);
@@ -202,13 +190,13 @@ public class MobileOrgController {
                     List<EntrustModel> list1 = entrust4PositionApi.getMyEntrustList(tenantId, p.getId());
                     for (EntrustModel model : list1) {
                         if (model.getUsed().equals(1)) {// 使用中的委托，将委托岗位加入岗位列表
-                            Map<String, Object> map1 = new HashMap<String, Object>(16);
+                            Map<String, Object> map1 = new HashMap<>(16);
                             String positionId = model.getOwnerId();
                             Position position = positionApi.get(tenantId, positionId).getData();
                             if (position != null) {
                                 map1.put("id", position.getId());
                                 map1.put("name", position.getName());
-                                long todoCount1 = 0;
+                                long todoCount1;
                                 todoCount1 = todoTaskApi.countByReceiverId(tenantId, position.getId());
                                 map1.put("todoCount", todoCount1);
                                 resList.add(map1);
@@ -216,35 +204,32 @@ public class MobileOrgController {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("获取人员岗位列表信息发生异常", e);
                 }
             }
             map.put("positionList", resList);
             map.put("msg", "获取数据成功");
             map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取人员岗位列表信息发生异常", e);
             map.put("msg", "发生异常");
             map.put(UtilConsts.SUCCESS, false);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
      * 获取发送人数
      *
-     * @param tenantId 租户id
+     * @param tenantId   租户id
      * @param userChoice 选择人员id
-     * @param request
-     * @param response
      */
     @ResponseBody
     @RequestMapping(value = "/getUserCount")
-    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, String userChoice, HttpServletRequest request, HttpServletResponse response) {
-        List<String> userIds = new ArrayList<String>();
+    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, String userChoice, HttpServletResponse response) {
+        List<String> userIds = new ArrayList<>();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotBlank(userChoice)) {
             String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
             for (String s : userChoices) {
@@ -252,38 +237,35 @@ public class MobileOrgController {
                     break;
                 }
                 String[] s2 = s.split(SysVariables.COLON);
-                Integer principalType = Integer.parseInt(s2[0]);
+                int principalType = Integer.parseInt(s2[0]);
                 if (principalType == 3) {
-                    userIds = this.addUserIds(userIds, s2[1]);
+                    this.addUserIds(userIds, s2[1]);
                 } else if (principalType == 2) {// 选取的是部门，获取部门下的所有人员
                     List<Position> personList = this.getAllPersonsByDeptId(s2[1]);
                     for (Position pTemp : personList) {
                         if (userIds.size() > 100) {
                             break;
                         }
-                        userIds = this.addUserIds(userIds, pTemp.getId());
+                        this.addUserIds(userIds, pTemp.getId());
                     }
                 }
             }
         }
         map.put("count", userIds.size());
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
      * 获取人员信息
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
+     * @param tenantId   租户id
+     * @param userId     人员id
      * @param positionId 岗位id
-     * @param request
-     * @param response
      */
     @ResponseBody
     @RequestMapping(value = "/getUserInfo")
-    public void getUserInfo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+    public void getUserInfo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Position position = positionApi.get(tenantId, positionId).getData();
@@ -298,12 +280,11 @@ public class MobileOrgController {
             map.put("msg", "获取数据成功");
             map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取人员信息发生异常", e);
             map.put("msg", "发生异常");
             map.put(UtilConsts.SUCCESS, false);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     private void recursionAllPersons(String parentID, List<Position> personList) {

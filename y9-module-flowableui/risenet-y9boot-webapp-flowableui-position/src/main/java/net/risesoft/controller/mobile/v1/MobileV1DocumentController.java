@@ -1,23 +1,7 @@
 package net.risesoft.controller.mobile.v1;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
@@ -39,11 +23,7 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.model.platform.OrgUnit;
-import net.risesoft.model.platform.Person;
-import net.risesoft.model.platform.PersonExt;
-import net.risesoft.model.platform.Position;
-import net.risesoft.model.platform.Tenant;
+import net.risesoft.model.platform.*;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
@@ -53,6 +33,17 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import javax.validation.constraints.NotBlank;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 新建，发送，详情，关联文件接口
@@ -105,23 +96,24 @@ public class MobileV1DocumentController {
      * 新建公文
      *
      * @param itemId 事项id
+     * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/add")
     public Y9Result<Map<String, Object>> add(@RequestParam @NotBlank String itemId) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             map = document4PositionApi.add(Y9LoginUserHolder.getTenantId(), positionId, itemId, true);
-            String formIds = (String)map.get("formId");
-            String taskDefKey = (String)map.get("taskDefKey");
-            String processDefinitionId = (String)map.get("processDefinitionId");
-            String formId[] = formIds.split(SysVariables.COMMA);
-            List<Map<String, Object>> fieldDefineList = new ArrayList<Map<String, Object>>();
-            List<Map<String, Object>> opinionFrameList = new ArrayList<Map<String, Object>>();
+            String formIds = (String) map.get("formId");
+            String taskDefKey = (String) map.get("taskDefKey");
+            String processDefinitionId = (String) map.get("processDefinitionId");
+            String[] formId = formIds.split(SysVariables.COMMA);
+            List<Map<String, Object>> fieldDefineList = new ArrayList<>();
+            List<Map<String, Object>> opinionFrameList = new ArrayList<>();
             List<ItemOpinionFrameBindModel> bindList = itemOpinionFrameBindApi.findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(tenantId, positionId, itemId, processDefinitionId, taskDefKey);
             for (ItemOpinionFrameBindModel bind : bindList) {
-                Map<String, Object> opinionFrameMap = new HashMap<String, Object>(16);
+                Map<String, Object> opinionFrameMap = new HashMap<>(16);
                 opinionFrameMap.put("hasRole", false);
                 opinionFrameMap.put("opinionFrameMark", bind.getOpinionFrameMark());
                 opinionFrameMap.put("opinionFrameName", bind.getOpinionFrameName());
@@ -135,18 +127,18 @@ public class MobileV1DocumentController {
                 }
                 opinionFrameList.add(opinionFrameMap);
             }
-            for (int i = 0; i < formId.length; i++) {// 获取表单定义字段
-                Map<String, Object> fieldDefineMap = new HashMap<String, Object>(16);
-                List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
-                listMap = formDataApi.getFormFieldDefine(tenantId, formId[i]);
-                fieldDefineMap.put(formId[i], listMap);
+            for (String s : formId) {// 获取表单定义字段
+                Map<String, Object> fieldDefineMap = new HashMap<>(16);
+                List<Map<String, String>> listMap;
+                listMap = formDataApi.getFormFieldDefine(tenantId, s);
+                fieldDefineMap.put(s, listMap);
                 fieldDefineList.add(fieldDefineMap);
             }
             map.put("opinionFrame", opinionFrameList);
             map.put("fieldDefine", fieldDefineList);
             return Y9Result.success(map, "获取数据成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取数据失败", e);
         }
         return Y9Result.failure("发生异常");
     }
@@ -155,7 +147,8 @@ public class MobileV1DocumentController {
      * 删除关联文件
      *
      * @param processSerialNumber 流程编号
-     * @param processInstanceId 删除的流程实例id
+     * @param processInstanceId   删除的流程实例id
+     * @return Y9Result<String>
      */
     @RequestMapping("/delAssociatedFile")
     public Y9Result<String> delAssociatedFile(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processInstanceId) {
@@ -171,14 +164,15 @@ public class MobileV1DocumentController {
      * 办件，草稿获取公文信息
      *
      * @param processSerialNumber 流程编号
-     * @param taskId 任务id
-     * @param itembox 办件状态，待办：todo,在办：doing,办结：done
-     * @param itemId 事项id
-     * @param processInstanceId 流程实例id
+     * @param taskId              任务id
+     * @param itembox             办件状态，待办：todo,在办：doing,办结：done
+     * @param itemId              事项id
+     * @param processInstanceId   流程实例id
+     * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/documentDetail")
     public Y9Result<Map<String, Object>> documentDetail(@RequestParam @NotBlank String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox, @RequestParam @NotBlank String itemId, @RequestParam String processInstanceId) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -187,17 +181,17 @@ public class MobileV1DocumentController {
             } else {// 打开草稿
                 map = draft4PositionApi.openDraft4Position(tenantId, positionId, itemId, processSerialNumber, true);
             }
-            String activitiUser = (String)map.get(SysVariables.ACTIVITIUSER);
-            String processDefinitionId = (String)map.get("processDefinitionId");
-            String taskDefKey = (String)map.get("taskDefKey");
-            String formIds = (String)map.get("formId");
-            String formNames = (String)map.get("formName");
+            String activitiUser = (String) map.get(SysVariables.ACTIVITIUSER);
+            String processDefinitionId = (String) map.get("processDefinitionId");
+            String taskDefKey = (String) map.get("taskDefKey");
+            String formIds = (String) map.get("formId");
+            String formNames = (String) map.get("formName");
             DocumentUtil documentUtil = new DocumentUtil();
             Map<String, Object> dataMap = documentUtil.documentDetail(itemId, processDefinitionId, processSerialNumber, processInstanceId, taskDefKey, taskId, itembox, activitiUser, formIds, formNames);
             map.putAll(dataMap);
             return Y9Result.success(map, "获取数据成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取数据失败", e);
         }
         return Y9Result.failure("发生异常");
     }
@@ -205,12 +199,13 @@ public class MobileV1DocumentController {
     /**
      * 待办获取公文信息
      *
-     * @param taskId 任务id
+     * @param taskId  任务id
      * @param itembox 办件状态，待办：todo,在办：doing,办结：done
+     * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/documentDetailByTaskId")
     public Y9Result<Map<String, Object>> documentDetailByTaskId(@RequestParam @NotBlank String taskId, @RequestParam String itembox) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put("msg", "获取失败");
         map.put(UtilConsts.SUCCESS, false);
         try {
@@ -222,11 +217,11 @@ public class MobileV1DocumentController {
                     ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId());
                     String itemId = processParamModel.getItemId();
                     map = document4PositionApi.edit(tenantId, positionId, itembox, taskId, taskModel.getProcessInstanceId(), itemId, true);
-                    String activitiUser = (String)map.get(SysVariables.ACTIVITIUSER);
-                    String processDefinitionId = (String)map.get("processDefinitionId");
-                    String taskDefKey = (String)map.get("taskDefKey");
-                    String formIds = (String)map.get("formId");
-                    String formNames = (String)map.get("formName");
+                    String activitiUser = (String) map.get(SysVariables.ACTIVITIUSER);
+                    String processDefinitionId = (String) map.get("processDefinitionId");
+                    String taskDefKey = (String) map.get("taskDefKey");
+                    String formIds = (String) map.get("formId");
+                    String formNames = (String) map.get("formName");
                     String processSerialNumber = processParamModel.getProcessSerialNumber();
                     DocumentUtil documentUtil = new DocumentUtil();
                     Map<String, Object> dataMap = documentUtil.documentDetail(itemId, processDefinitionId, processSerialNumber, taskModel.getProcessInstanceId(), taskDefKey, taskId, itembox, activitiUser, formIds, formNames);
@@ -237,7 +232,7 @@ public class MobileV1DocumentController {
             }
             return Y9Result.success(map, "获取数据成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取数据失败", e);
         }
         return Y9Result.failure("发生异常");
     }
@@ -246,17 +241,18 @@ public class MobileV1DocumentController {
      * 获取发送人
      *
      * @param processDefinitionId 流程定义id
-     * @param taskDefKey 任务key
-     * @param principalType 选人类型
-     * @param processInstanceId 流程实例id
-     * @param id 父节点id
-     * @param itemId 事项id
+     * @param taskDefKey          任务key
+     * @param principalType       选人类型
+     * @param processInstanceId   流程实例id
+     * @param id                  父节点id
+     * @param itemId              事项id
+     * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping("/findPermUser")
     public Y9Result<List<Map<String, Object>>> findPermUser(@RequestParam String processDefinitionId, @RequestParam String taskDefKey, @RequestParam Integer principalType, @RequestParam String processInstanceId, @RequestParam String id, @RequestParam String itemId) {
         String positionId = Y9LoginUserHolder.getPositionId();
         String userId = Y9LoginUserHolder.getPersonId();
-        List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> item = new ArrayList<>();
         if (StringUtils.isBlank(processDefinitionId) || StringUtils.isBlank(itemId)) {
             return Y9Result.success(item, "获取数据异常");
         } else {
@@ -269,17 +265,18 @@ public class MobileV1DocumentController {
      * 发送选人搜索
      *
      * @param processDefinitionId 流程定义id
-     * @param taskDefKey 任务key
-     * @param principalType 选人类型
-     * @param processInstanceId 流程实例id
-     * @param itemId 事项id
-     * @param name 搜索内容
+     * @param taskDefKey          任务key
+     * @param principalType       选人类型
+     * @param processInstanceId   流程实例id
+     * @param itemId              事项id
+     * @param name                搜索内容
+     * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping("/findPermUserByName")
     public Y9Result<List<Map<String, Object>>> findPermUserByName(@RequestParam String processDefinitionId, @RequestParam String taskDefKey, @RequestParam Integer principalType, @RequestParam String processInstanceId, @RequestParam String name, @RequestParam String itemId) {
         String positionId = Y9LoginUserHolder.getPositionId();
         String userId = Y9LoginUserHolder.getPersonId();
-        List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> item = new ArrayList<>();
         if (StringUtils.isBlank(processDefinitionId) || StringUtils.isBlank(itemId)) {
             return Y9Result.success(item, "获取数据异常");
         } else {
@@ -291,23 +288,24 @@ public class MobileV1DocumentController {
     /**
      * 发送，同时保存表单数据
      *
-     * @param itemId 事项id
-     * @param temp_Ids 表单ids
-     * @param taskId 任务id
-     * @param processSerialNumber 流程编号
+     * @param itemId               事项id
+     * @param temp_Ids             表单ids
+     * @param taskId               任务id
+     * @param processSerialNumber  流程编号
      * @param processDefinitionKey 流程定义key
-     * @param userChoice 选择人员
-     * @param sponsorGuid 主办人id，并行区分主协办设值，其他为""
-     * @param sponsorHandle 是否主办办理
-     * @param routeToTaskId 任务路由key
-     * @param processInstanceId 流程实例id
-     * @param formJsonData 表单数据json字符串
+     * @param userChoice           选择人员
+     * @param sponsorGuid          主办人id，并行区分主协办设值，其他为""
+     * @param sponsorHandle        是否主办办理
+     * @param routeToTaskId        任务路由key
+     * @param processInstanceId    流程实例id
+     * @param formJsonData         表单数据json字符串
+     * @return Y9Result<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping("/forwarding")
     public Y9Result<Map<String, Object>> forwarding(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String temp_Ids, @RequestParam String taskId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
-        @RequestParam @NotBlank String userChoice, @RequestParam String sponsorGuid, @RequestParam String sponsorHandle, @RequestParam String routeToTaskId, @RequestParam String processInstanceId, @RequestParam @NotBlank String formJsonData) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+                                                    @RequestParam @NotBlank String userChoice, @RequestParam String sponsorGuid, @RequestParam String sponsorHandle, @RequestParam String routeToTaskId, @RequestParam String processInstanceId, @RequestParam @NotBlank String formJsonData) {
+        Map<String, Object> map = new HashMap<>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -316,12 +314,19 @@ public class MobileV1DocumentController {
             formJsonData = formJsonData.replace("\n", "\\n");
             formJsonData = formJsonData.replace("\r", "\\r");
             Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formJsonData, Map.class);
-            String title = (String)mapFormJsonData.get("title");
-            String number = (String)mapFormJsonData.get("number");
-            String level = (String)mapFormJsonData.get("level");
-            if (StringUtils.isBlank(level)) {
-                level = (String)mapFormJsonData.get("workLevel");
+            String title = "";
+            String number = "";
+            String level = "";
+            if (mapFormJsonData != null) {
+                title = (String) mapFormJsonData.get("title");
+                number = (String) mapFormJsonData.get("number");
+                level = (String) mapFormJsonData.get("level");
+                if (StringUtils.isBlank(level)) {
+                    level = (String) mapFormJsonData.get("workLevel");
+                }
             }
+
+
             if (StringUtils.isBlank(taskId)) {// 保存草稿
                 draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number, level, title);
             }
@@ -336,14 +341,14 @@ public class MobileV1DocumentController {
                     formDataApi.saveFormData(tenantId, formId, formJsonData);
                 }
             }
-            Map<String, Object> variables = new HashMap<String, Object>(16);
+            Map<String, Object> variables = new HashMap<>(16);
             map = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
-            if ((boolean)map.get("success")) {
-                return Y9Result.success(map, (String)map.get("msg"));
+            if ((boolean) map.get("success")) {
+                return Y9Result.success(map, (String) map.get("msg"));
             }
-            return Y9Result.failure((String)map.get("msg"));
+            return Y9Result.failure((String) map.get("msg"));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("发送异常", e);
         }
         return Y9Result.failure("发送失败");
     }
@@ -351,9 +356,10 @@ public class MobileV1DocumentController {
     /**
      * 获取表单所有字段权限
      *
-     * @param formId 表单Id
-     * @param taskDefKey 任务key
+     * @param formId              表单Id
+     * @param taskDefKey          任务key
      * @param processDefinitionId 流程定义id
+     * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping("/getAllFieldPerm")
     public Y9Result<List<Map<String, Object>>> getAllFieldPerm(@RequestParam @NotBlank String processDefinitionId, @RequestParam String taskDefKey, @RequestParam @NotBlank String formId) {
@@ -367,15 +373,16 @@ public class MobileV1DocumentController {
      * 获取关联文件
      *
      * @param processSerialNumber 流程编号
+     * @return Y9Result<List < Map < String, Object>>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping("/getAssociatedFileList")
     public Y9Result<List<Map<String, Object>>> getAssociatedFileList(@RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map = new HashMap<>(16);
+        Map<String, Object> map;
         map = associatedFile4PositionApi.getAssociatedFileList(tenantId, processSerialNumber);
-        if ((boolean)map.get("success")) {
-            return Y9Result.success((List<Map<String, Object>>)map.get("rows"), "获取成功");
+        if ((boolean) map.get("success")) {
+            return Y9Result.success((List<Map<String, Object>>) map.get("rows"), "获取成功");
         }
         return Y9Result.failure("获取失败");
     }
@@ -383,12 +390,13 @@ public class MobileV1DocumentController {
     /**
      * 获取办件状态
      *
-     * @param taskId 任务id
+     * @param taskId            任务id
      * @param processInstanceId 流程实例id
+     * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getByTaskId")
     public Y9Result<Map<String, Object>> getByTaskId(@RequestParam @NotBlank String taskId, @RequestParam String processInstanceId) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             if (StringUtils.isNotBlank(taskId)) {
@@ -421,17 +429,19 @@ public class MobileV1DocumentController {
             }
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取失败", e);
         }
         return Y9Result.failure("获取失败");
     }
 
     /**
      * 获取表单初始化的数据
+     *
+     * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getFormInitData")
     public Y9Result<Map<String, Object>> getFormInitData() {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -448,7 +458,7 @@ public class MobileV1DocumentController {
             String itemNumber = "〔" + year + "〕" + second + "号";
             OrgUnit parent = orgUnitApi.getParent(tenantId, positionId).getData();
             Tenant tenant = tenantApi.getById(tenantId).getData();
-            /** 办件表单数据初始化 **/
+            /* 办件表单数据初始化 **/
             map.put("deptName", parent.getName());// 创建部门
             map.put("userName", person.getName());// 创建人
             map.put("positionName", position.getName());// 创建岗位
@@ -458,7 +468,6 @@ public class MobileV1DocumentController {
             map.put("number", itemNumber);// 编号
             map.put("tenantName", tenant.getName());// 租户名称
             map.put("tenantId", tenant.getId());// 租户名称
-            map.put("number", itemNumber);// 编号
             map.put("sign", "");// 签名
             PersonExt personExt = personApi.getPersonExtByPersonId(tenantId, userId).getData();
             if (personExt != null && personExt.getSign() != null) {
@@ -470,11 +479,11 @@ public class MobileV1DocumentController {
                 List<Person> personLeaders = positionApi.listPersonsByPositionId(tenantId, leaders.get(0).getId()).getData();
                 map.put("deptLeader", personLeaders.isEmpty() ? leaders.get(0).getName() : personLeaders.get(0).getName());
             }
-            /** 办件表单数据初始化 **/
+            /* 办件表单数据初始化 **/
             map.put("zihao", second + "号");// 编号
             return Y9Result.success(map, "获取表单初始化数据成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取表单初始化数据失败", e);
         }
         return Y9Result.failure("获取失败");
     }
@@ -483,22 +492,23 @@ public class MobileV1DocumentController {
      * 获取发送选人类型
      *
      * @param processDefinitionKey 流程定义key
-     * @param processDefinitionId 流程定义id
-     * @param taskId 任务id
-     * @param taskDefKey 任务key
-     * @param itemId 事项id
-     * @param processInstanceId 流程实例id
+     * @param processDefinitionId  流程定义id
+     * @param taskId               任务id
+     * @param taskDefKey           任务key
+     * @param itemId               事项id
+     * @param processInstanceId    流程实例id
+     * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping("/getTabMap")
     public Y9Result<Map<String, Object>> getTabMap(@RequestParam @NotBlank String processDefinitionKey, @RequestParam @NotBlank String processDefinitionId, @RequestParam String taskId, @RequestParam String taskDefKey, @RequestParam String itemId, @RequestParam String processInstanceId) {
         String positionId = Y9LoginUserHolder.getPositionId();
         String userId = Y9LoginUserHolder.getPersonId();
-        Map<String, Object> map = new HashMap<>(16);
+        Map<String, Object> map;
         try {
             map = document4PositionApi.docUserChoise(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId, processDefinitionKey, processDefinitionId, taskId, taskDefKey, processInstanceId);
             return Y9Result.success(map, "获取数据成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取数据失败", e);
         }
         return Y9Result.failure("获取数据失败");
     }
@@ -507,7 +517,8 @@ public class MobileV1DocumentController {
      * 保存关联文件
      *
      * @param processSerialNumber 流程实例编号
-     * @param processInstanceIds 关联的流程实例ids
+     * @param processInstanceIds  关联的流程实例ids
+     * @return Y9Result<String>
      */
     @RequestMapping("/saveAssociatedFile")
     public Y9Result<String> saveAssociatedFile(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processInstanceIds) {
@@ -523,28 +534,34 @@ public class MobileV1DocumentController {
     /**
      * 保存表单数据
      *
-     * @param itemId 事项id
-     * @param temp_Ids 表单ids
-     * @param processSerialNumber 流程编号
+     * @param itemId               事项id
+     * @param temp_Ids             表单ids
+     * @param processSerialNumber  流程编号
      * @param processDefinitionKey 流程定义key
-     * @param processInstanceId 流程实例id
-     * @param formJsonData 表单数据json字符串
+     * @param processInstanceId    流程实例id
+     * @param formJsonData         表单数据json字符串
+     * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping("/saveFormData")
     public Y9Result<String> saveFormData(@RequestParam @NotBlank String temp_Ids, @RequestParam String processInstanceId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey, @RequestParam @NotBlank String itemId,
-        @RequestParam @NotBlank String formJsonData) {
+                                         @RequestParam @NotBlank String formJsonData) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             formJsonData = formJsonData.replace("\n", "\\n");
             formJsonData = formJsonData.replace("\r", "\\r");
             Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formJsonData, Map.class);
-            String title = (String)mapFormJsonData.get("title");
-            String number = (String)mapFormJsonData.get("number");
-            String level = (String)mapFormJsonData.get("level");
-            if (StringUtils.isBlank(level)) {
-                level = (String)mapFormJsonData.get("workLevel");
+            String title = "";
+            String number = "";
+            String level = "";
+            if (mapFormJsonData != null) {
+                title = (String) mapFormJsonData.get("title");
+                number = (String) mapFormJsonData.get("number");
+                level = (String) mapFormJsonData.get("level");
+                if (StringUtils.isBlank(level)) {
+                    level = (String) mapFormJsonData.get("workLevel");
+                }
             }
             if (StringUtils.isBlank(processInstanceId)) {// 保存草稿
                 draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number, level, title);
@@ -562,7 +579,7 @@ public class MobileV1DocumentController {
             }
             return Y9Result.success("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存失败", e);
         }
         return Y9Result.failure("保存失败");
     }
@@ -570,27 +587,34 @@ public class MobileV1DocumentController {
     /**
      * 发送，同时保存表单数据
      *
-     * @param itemId 事项id
-     * @param temp_Ids 表单ids
-     * @param taskId 任务id
+     * @param itemId              事项id
+     * @param temp_Ids            表单ids
+     * @param taskId              任务id
      * @param processSerialNumber 流程编号
-     * @param formJsonData 表单数据json字符串
+     * @param formJsonData        表单数据json字符串
+     * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping("/submitTo")
     public Y9Result<String> submitTo(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String temp_Ids, @RequestParam String taskId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String formJsonData) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             formJsonData = formJsonData.replace("\n", "\\n");
             formJsonData = formJsonData.replace("\r", "\\r");
             Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formJsonData, Map.class);
-            String title = (String)mapFormJsonData.get("title");
-            String number = (String)mapFormJsonData.get("number");
-            String level = (String)mapFormJsonData.get("level");
-            if (StringUtils.isBlank(level)) {
-                level = (String)mapFormJsonData.get("workLevel");
+
+            String title = "";
+            String number = "";
+            String level = "";
+            if (mapFormJsonData != null) {
+                title = (String) mapFormJsonData.get("title");
+                number = (String) mapFormJsonData.get("number");
+                level = (String) mapFormJsonData.get("level");
+                if (StringUtils.isBlank(level)) {
+                    level = (String) mapFormJsonData.get("workLevel");
+                }
             }
             String processInstanceId = "";
             if (StringUtils.isBlank(taskId)) {// 保存草稿
@@ -613,12 +637,12 @@ public class MobileV1DocumentController {
                 }
             }
             map = document4PositionApi.saveAndSubmitTo(tenantId, positionId, taskId, itemId, processSerialNumber);
-            if ((boolean)map.get("success")) {
-                return Y9Result.success((String)map.get("msg"));
+            if ((boolean) map.get("success")) {
+                return Y9Result.success((String) map.get("msg"));
             }
-            return Y9Result.failure((String)map.get("msg"));
+            return Y9Result.failure((String) map.get("msg"));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("发送失败", e);
         }
         return Y9Result.failure("发送失败");
     }

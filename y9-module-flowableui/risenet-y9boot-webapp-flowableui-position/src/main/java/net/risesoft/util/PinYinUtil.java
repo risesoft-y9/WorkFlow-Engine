@@ -1,5 +1,6 @@
 package net.risesoft.util;
 
+import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
@@ -9,8 +10,8 @@ import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombi
 
 /**
  * 拼音工具类
- *
  */
+@Slf4j
 public class PinYinUtil {
 
     /**
@@ -20,23 +21,23 @@ public class PinYinUtil {
      * @return 汉语拼音首字母
      */
     public static String getFirstSpell(String chinese) {
-        StringBuffer pybf = new StringBuffer();
+        StringBuilder pybf = new StringBuilder();
         char[] arr = chinese.toCharArray();
         HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
         defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);
         defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] > 128) {
+        for (char c : arr) {
+            if (c > 128) {
                 try {
-                    String[] temp = PinyinHelper.toHanyuPinyinStringArray(arr[i], defaultFormat);
+                    String[] temp = PinyinHelper.toHanyuPinyinStringArray(c, defaultFormat);
                     if (temp != null) {
                         pybf.append(temp[0].charAt(0));
                     }
                 } catch (BadHanyuPinyinOutputFormatCombination e) {
-                    e.printStackTrace();
+                    LOGGER.error("获取汉字串拼音首字母出现异常", e);
                 }
             } else {
-                pybf.append(arr[i]);
+                pybf.append(c);
             }
         }
         return pybf.toString().replaceAll("\\W", "").trim();
@@ -49,20 +50,20 @@ public class PinYinUtil {
      * @return 汉语拼音
      */
     public static String getFullSpell(String chinese) {
-        StringBuffer pybf = new StringBuffer();
+        StringBuilder pybf = new StringBuilder();
         char[] arr = chinese.toCharArray();
         HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
         defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);
         defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] > 128) {
+        for (char c : arr) {
+            if (c > 128) {
                 try {
-                    pybf.append(PinyinHelper.toHanyuPinyinStringArray(arr[i], defaultFormat)[0]);
+                    pybf.append(PinyinHelper.toHanyuPinyinStringArray(c, defaultFormat)[0]);
                 } catch (BadHanyuPinyinOutputFormatCombination e) {
-                    e.printStackTrace();
+                    LOGGER.error("获取汉字串拼音出现异常", e);
                 }
             } else {
-                pybf.append(arr[i]);
+                pybf.append(c);
             }
         }
         return pybf.toString();
@@ -71,8 +72,8 @@ public class PinYinUtil {
     /**
      * 将字符串中的中文转化为拼音,其他字符不变
      *
-     * @param inputString
-     * @return
+     * @param inputString 字符串
+     * @return String
      */
     public static String getPingYin(String inputString) {
         HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
@@ -81,21 +82,21 @@ public class PinYinUtil {
         format.setVCharType(HanyuPinyinVCharType.WITH_V);
 
         char[] input = inputString.trim().toCharArray();
-        String output = "";
+        StringBuilder output = new StringBuilder();
 
         try {
-            for (int i = 0; i < input.length; i++) {
-                if (java.lang.Character.toString(input[i]).matches("[\\u4E00-\\u9FA5]+")) {
-                    String[] temp = PinyinHelper.toHanyuPinyinStringArray(input[i], format);
-                    output += temp[0];
+            for (char c : input) {
+                if (Character.toString(c).matches("[\\u4E00-\\u9FA5]+")) {
+                    String[] temp = PinyinHelper.toHanyuPinyinStringArray(c, format);
+                    output.append(temp[0]);
                 } else {
-                    output += java.lang.Character.toString(input[i]);
+                    output.append(c);
                 }
             }
         } catch (BadHanyuPinyinOutputFormatCombination e) {
-            e.printStackTrace();
+            LOGGER.error("将字符串中的中文转化为拼音出现异常", e);
         }
-        return output;
+        return output.toString();
     }
 
     public static void main(String[] args) {

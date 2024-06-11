@@ -1,12 +1,16 @@
 package net.risesoft.controller.services;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.model.itemadmin.AttachmentModel;
+import net.risesoft.model.platform.Person;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.Y9Properties;
+import net.risesoft.y9public.entity.Y9FileStore;
+import net.risesoft.y9public.service.Y9FileStoreService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -17,18 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.model.itemadmin.AttachmentModel;
-import net.risesoft.model.platform.Person;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
-import net.risesoft.y9public.entity.Y9FileStore;
-import net.risesoft.y9public.service.Y9FileStoreService;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Validated
 @RequiredArgsConstructor
@@ -48,7 +48,7 @@ public class FileNTKOController {
     /**
      * 打开正文
      *
-     * @param fileId
+     * @param fileId 正文id
      */
     @RequestMapping(value = "/openDoc")
     public void openDoc(@RequestParam String fileId, @RequestParam String tenantId, HttpServletResponse response, HttpServletRequest request) {
@@ -58,11 +58,11 @@ public class FileNTKOController {
         try {
             String agent = request.getHeader("USER-AGENT");
             String fileName = file.getName();
-            if (-1 != agent.indexOf("Firefox")) {
-                fileName = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8")))) + "?=";
+            if (agent.contains("Firefox")) {
+                org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8));
             } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
-                fileName = StringUtils.replace(fileName, "+", "%20");// 替换空格
+                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+                StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
             response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
@@ -71,21 +71,28 @@ public class FileNTKOController {
             try {
                 buf = y9FileStoreService.downloadFileToBytes(file.getFileStoreId());
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("下载文件失败", e);
             }
-            ByteArrayInputStream bin = new ByteArrayInputStream(buf);
-            int b = 0;
+            ByteArrayInputStream bin = null;
+            if (buf != null) {
+                bin = new ByteArrayInputStream(buf);
+            }
+            int b;
             byte[] by = new byte[1024];
-            while ((b = bin.read(by)) != -1) {
-                out.write(by, 0, b);
+            if (bin != null) {
+                while ((b = bin.read(by)) != -1) {
+                    out.write(by, 0, b);
+                }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("下载文件失败", e);
         } finally {
             try {
-                out.close();
+                if (out != null) {
+                    out.close();
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error("关闭流失败", e);
             }
         }
     }
@@ -93,22 +100,19 @@ public class FileNTKOController {
     /**
      * 获取文件
      *
-     * @param processSerialNumber
-     * @param fileName
-     * @param itembox
-     * @param taskId
-     * @param browser
-     * @param fileId
-     * @param tenantId
-     * @param userId
-     * @param positionId
-     * @param fileUrl
-     * @param model
-     * @return
+     * @param processSerialNumber 流程编号
+     * @param itembox             状态
+     * @param taskId              任务id
+     * @param browser             浏览器类型
+     * @param fileId              文件id
+     * @param tenantId            租户id
+     * @param userId              人员id
+     * @param positionId          岗位id
+     * @return String
      */
     @RequestMapping("/showWord")
-    public String showWord(@RequestParam String processSerialNumber, @RequestParam String fileName, @RequestParam String itembox, @RequestParam String taskId, @RequestParam String browser, @RequestParam String fileId, @RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String positionId, @RequestParam String fileUrl, Model model) {
+    public String showWord(@RequestParam String processSerialNumber, @RequestParam String itembox, @RequestParam String taskId, @RequestParam String browser, @RequestParam String fileId, @RequestParam String tenantId, @RequestParam String userId,
+                           @RequestParam String positionId, Model model) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             Person person = personApi.get(tenantId, userId).getData();
@@ -127,7 +131,7 @@ public class FileNTKOController {
             model.addAttribute("userName", person.getName());
             model.addAttribute("processSerialNumber", processSerialNumber);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取文件失败", e);
         }
         return "file/webOfficeNTKO";
     }
@@ -135,18 +139,16 @@ public class FileNTKOController {
     /**
      * 更新附件
      *
-     * @param fileId
-     * @param processSerialNumber
-     * @param positionId
-     * @param taskId
-     * @param tenantId
-     * @param userId
-     * @param request
-     * @param response
-     * @return
+     * @param fileId              文件id
+     * @param processSerialNumber 流程编号
+     * @param positionId          岗位id
+     * @param taskId              任务id
+     * @param tenantId            租户id
+     * @param userId              人员id
+     * @return String
      */
     @RequestMapping(value = "/uploadWord", method = RequestMethod.POST)
-    public String uploadWord(@RequestParam String fileId, @RequestParam String processSerialNumber, @RequestParam String positionId, @RequestParam String taskId, @RequestParam String tenantId, @RequestParam String userId, HttpServletRequest request, HttpServletResponse response) {
+    public String uploadWord(@RequestParam String fileId, @RequestParam String processSerialNumber, @RequestParam String positionId, @RequestParam String taskId, @RequestParam String tenantId, @RequestParam String userId, HttpServletRequest request) {
         String result = "success:false";
         try {
             LOGGER.debug("*****************fileId={}", fileId);
@@ -154,13 +156,13 @@ public class FileNTKOController {
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
-            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
             MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
             String fullPath = "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, file.getName());
             result = attachment4PositionApi.updateFile(tenantId, userId, positionId, fileId, y9FileStore.getDisplayFileSize(), taskId, y9FileStore.getId());
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("更新附件失败", e);
         }
         return result;
     }

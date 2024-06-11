@@ -1,34 +1,28 @@
 package net.risesoft.controller.mobile;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import net.risesoft.api.itemadmin.CalendarConfigApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.CalendarConfigModel;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+
+import javax.servlet.http.HttpServletResponse;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 请休假接口
@@ -52,7 +46,7 @@ public class MobileSignController {
             long difference = (endTime1.getTime() - startTime1.getTime()) / 86400000;
             day = String.valueOf(Math.abs(difference) + 1);
         } catch (ParseException e) {
-            e.printStackTrace();
+            LOGGER.error("日期格式错误", e);
         }
         return day;
     }
@@ -76,24 +70,20 @@ public class MobileSignController {
                 startTime1 = sdf.parse(sdf.format(cal.getTime()));
             }
         }
-        String s = String.valueOf(days);
-        return s;
+        return String.valueOf(days);
     }
 
     /**
      * 获取两个日期之间的天数，除去节假日
      *
-     * @param tenantId 租户id
+     * @param tenantId  租户id
      * @param startDate 开始日期
-     * @param endDate 结束日期
-     * @param request
-     * @param response
-     * @param session
+     * @param endDate   结束日期
      */
     @RequestMapping(value = "/getDay")
     @ResponseBody
-    public void getDay(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String startDate, @RequestParam String endDate, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+    public void getDay(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String startDate, @RequestParam String endDate, HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             map.put(UtilConsts.SUCCESS, false);
@@ -113,113 +103,146 @@ public class MobileSignController {
             }
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("获取请假天数失败", e);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
      * 有生云请假办件，计算请假天数和小时
      *
-     * @param tenantId 租户id
-     * @param type 计算类型，小时，天，半天
-     * @param leaveType 请假类型
+     * @param tenantId       租户id
+     * @param type           计算类型，小时，天，半天
+     * @param leaveType      请假类型
      * @param leaveStartTime 请假开始时间
-     * @param leaveEndTime 请假结束时间
-     * @param startSel 上午下午选择
-     * @param endSel 上午下午选择
-     * @param selStartTime 开始时间点选择
-     * @param selEndTime 结束时间点选择
-     * @return
+     * @param leaveEndTime   请假结束时间
+     * @param startSel       上午下午选择
+     * @param endSel         上午下午选择
+     * @param selStartTime   开始时间点选择
+     * @param selEndTime     结束时间点选择
      */
     @SuppressWarnings("deprecation")
     @ResponseBody
     @RequestMapping("/getDayOrHour")
     public void getDayOrHour(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String type, @RequestParam String leaveStartTime, @RequestParam String leaveEndTime, @RequestParam String startSel, @RequestParam String endSel, @RequestParam String selStartTime,
-        @RequestParam String selEndTime, @RequestParam String leaveType, HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>();
+                             @RequestParam String selEndTime, @RequestParam String leaveType, HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<>();
         map.put("data", "");
         map.put("msg", "获取成功");
         map.put("success", true);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            String dayStr = "";
+            String dayStr;
             CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
             dayStr = calendarConfig.getEveryYearHoliday();
-            if (type.equals("天")) {
-                boolean isdel = true;
-                if (StringUtils.isNotBlank(leaveType) && (leaveType.equals("离京报备") || leaveType.equals("产假") || leaveType.equals("婚假") || leaveType.equals("陪产假"))) {// 产假不排除节假日，直接算天数
-                    isdel = false;
-                }
-                if (leaveStartTime.equals(leaveEndTime)) {
-                    if (isdel && dayStr.contains(leaveStartTime)) {
-                        map.put("data", "0");
-                        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-                        return;
+            switch (type) {
+                case "天": {
+                    boolean isdel = true;
+                    if (StringUtils.isNotBlank(leaveType) && (leaveType.equals("离京报备") || leaveType.equals("产假") || leaveType.equals("婚假") || leaveType.equals("陪产假"))) {// 产假不排除节假日，直接算天数
+                        isdel = false;
                     }
-                }
-                String tmp = leaveStartTime;
-                int num = 0;
-                while (tmp.compareTo(leaveEndTime) <= 0) {
-                    LOGGER.debug("tmp={}", tmp);
-                    if (isdel) {
-                        if (!dayStr.contains(tmp)) {
+                    if (leaveStartTime.equals(leaveEndTime)) {
+                        if (isdel && dayStr.contains(leaveStartTime)) {
+                            map.put("data", "0");
+                            Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+                            return;
+                        }
+                    }
+                    String tmp = leaveStartTime;
+                    int num = 0;
+                    while (tmp.compareTo(leaveEndTime) <= 0) {
+                        LOGGER.debug("tmp={}", tmp);
+                        if (isdel) {
+                            if (!dayStr.contains(tmp)) {
+                                num++;
+                            }
+                        } else {
                             num++;
                         }
-                    } else {
-                        num++;
+                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
                     }
-                    tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
-                }
-                map.put("data", String.valueOf(num));
-                Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-                return;
-            } else if (type.equals("半天")) {
-                if (leaveStartTime.equals(leaveEndTime)) {
-                    if (dayStr.contains(leaveStartTime)) {
-                        map.put("data", "");
-                        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-                        return;
-                    }
-                }
-                String tmp = leaveStartTime;
-                int num = 0;
-                double start = 0;
-                while (tmp.compareTo(leaveEndTime) <= 0) {
-                    LOGGER.debug("tmp={}", tmp);
-                    if (!dayStr.contains(tmp)) {
-                        if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(startSel) && startSel.equals("下午")) {// 开始日期选择下午，算半天
-                            start += 0.5;
-                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
-                            continue;
-                        }
-                        if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(endSel) && endSel.equals("上午")) {// 结束日期选择上午，算半天
-                            start += 0.5;
-                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
-                            continue;
-                        }
-                        num++;
-                    }
-                    tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
-                }
-                if (start > 0) {
-                    map.put("data", String.valueOf(num + start));
+                    map.put("data", String.valueOf(num));
                     Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
                     return;
                 }
-                map.put("data", String.valueOf(num));
-                Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-                return;
-            } else if (type.equals("小时")) {
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                if (leaveStartTime.equals(leaveEndTime)) {
-                    if (dayStr.contains(leaveStartTime)) {
-                        map.put("data", "0");
+                case "半天": {
+                    if (leaveStartTime.equals(leaveEndTime)) {
+                        if (dayStr.contains(leaveStartTime)) {
+                            map.put("data", "");
+                            Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+                            return;
+                        }
+                    }
+                    String tmp = leaveStartTime;
+                    int num = 0;
+                    double start = 0;
+                    while (tmp.compareTo(leaveEndTime) <= 0) {
+                        LOGGER.debug("tmp={}", tmp);
+                        if (!dayStr.contains(tmp)) {
+                            if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(startSel) && startSel.equals("下午")) {// 开始日期选择下午，算半天
+                                start += 0.5;
+                                tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                                continue;
+                            }
+                            if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(endSel) && endSel.equals("上午")) {// 结束日期选择上午，算半天
+                                start += 0.5;
+                                tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                                continue;
+                            }
+                            num++;
+                        }
+                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                    }
+                    if (start > 0) {
+                        map.put("data", String.valueOf(num + start));
                         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
                         return;
-                    } else {// 同一天，计算时间
+                    }
+                    map.put("data", String.valueOf(num));
+                    Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+                    return;
+                }
+                case "小时": {
+                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                    if (leaveStartTime.equals(leaveEndTime)) {
+                        if (dayStr.contains(leaveStartTime)) {
+                            map.put("data", "0");
+                            Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+                            return;
+                        } else {// 同一天，计算时间
+                            if (StringUtils.isBlank(selStartTime)) {
+                                selStartTime = "09:00";
+                            }
+                            if (StringUtils.isBlank(selEndTime)) {
+                                selEndTime = "17:30";
+                            }
+                            long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
+                            double hours = (double) time / (60 * 60 * 1000);
+                            BigDecimal a = BigDecimal.valueOf(hours);
+                            double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
+                            // 减去中间包含的1.5个小时
+                            if (Integer.parseInt(selStartTime.split(":")[0]) < 12 && Integer.parseInt(selEndTime.split(":")[0]) > 12) {
+                                waitTime = waitTime - 1.5;
+                            }
+                            map.put("data", String.valueOf(waitTime));
+                            Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+                            return;
+                        }
+                    }
+
+                    if (leaveType.equals("哺乳假")) {
+                        // 计算天数
+                        String tmp = leaveStartTime;
+                        int num = 0;
+                        while (tmp.compareTo(leaveEndTime) <= 0) {
+                            LOGGER.debug("tmp={}", tmp);
+                            if (!dayStr.contains(tmp)) {
+                                num++;
+                            }
+                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                        }
+                        // 计算小时
                         if (StringUtils.isBlank(selStartTime)) {
                             selStartTime = "09:00";
                         }
@@ -227,121 +250,85 @@ public class MobileSignController {
                             selEndTime = "17:30";
                         }
                         long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
-                        double hours = (double)time / (60 * 60 * 1000);
+                        double hours = (double) time / (60 * 60 * 1000);
                         BigDecimal a = BigDecimal.valueOf(hours);
-                        double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                        double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
                         // 减去中间包含的1.5个小时
-                        if (Integer.valueOf(selStartTime.split(":")[0]) < 12 && Integer.valueOf(selEndTime.split(":")[0]) > 12) {
+                        if (Integer.parseInt(selStartTime.split(":")[0]) < 12 && Integer.parseInt(selEndTime.split(":")[0]) > 12) {
                             waitTime = waitTime - 1.5;
                         }
-                        map.put("data", String.valueOf(waitTime));
+                        map.put("data", String.valueOf(num * waitTime));
                         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
                         return;
                     }
-                }
 
-                if (leaveType.equals("哺乳假")) {
-                    // 计算天数
                     String tmp = leaveStartTime;
-                    int num = 0;
+                    double timeCount = 0.0;
                     while (tmp.compareTo(leaveEndTime) <= 0) {
                         LOGGER.debug("tmp={}", tmp);
                         if (!dayStr.contains(tmp)) {
-                            num++;
+                            if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(selStartTime)) {// 开始日期选择时间
+                                long time = sdf.parse("17:30").getTime() - sdf.parse(selStartTime).getTime();
+                                double hours = (double) time / (60 * 60 * 1000);
+                                BigDecimal a = BigDecimal.valueOf(hours);
+                                double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
+                                if (Integer.parseInt(selStartTime.split(":")[0]) < 12) {
+                                    waitTime = waitTime - 1.5;
+                                }
+                                timeCount = timeCount + waitTime;
+                                tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                                continue;
+                            }
+                            if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(selEndTime)) {// 结束日期选择时间
+                                long time = sdf.parse(selEndTime).getTime() - sdf.parse("09:00").getTime();
+                                double hours = (double) time / (60 * 60 * 1000);
+                                BigDecimal a = BigDecimal.valueOf(hours);
+                                double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
+                                if (Integer.parseInt(selEndTime.split(":")[0]) > 12) {
+                                    waitTime = waitTime - 1.5;
+                                }
+                                timeCount = timeCount + waitTime;
+                                tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                                continue;
+                            }
+                            timeCount = timeCount + 7;// 其余时间每天加7小时
                         }
                         tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
                     }
-                    // 计算小时
-                    if (StringUtils.isBlank(selStartTime)) {
-                        selStartTime = "09:00";
-                    }
-                    if (StringUtils.isBlank(selEndTime)) {
-                        selEndTime = "17:30";
-                    }
-                    long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
-                    double hours = (double)time / (60 * 60 * 1000);
-                    BigDecimal a = BigDecimal.valueOf(hours);
-                    double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                    // 减去中间包含的1.5个小时
-                    if (Integer.valueOf(selStartTime.split(":")[0]) < 12 && Integer.valueOf(selEndTime.split(":")[0]) > 12) {
-                        waitTime = waitTime - 1.5;
-                    }
-                    map.put("data", String.valueOf(num * waitTime));
+                    map.put("data", String.valueOf(timeCount));
                     Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
                     return;
                 }
-
-                String tmp = leaveStartTime;
-                double timeCount = 0.0;
-                while (tmp.compareTo(leaveEndTime) <= 0) {
-                    LOGGER.debug("tmp={}", tmp);
-                    if (!dayStr.contains(tmp)) {
-                        if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(selStartTime)) {// 开始日期选择时间
-                            long time = sdf.parse("17:30").getTime() - sdf.parse(selStartTime).getTime();
-                            double hours = (double)time / (60 * 60 * 1000);
-                            BigDecimal a = BigDecimal.valueOf(hours);
-                            double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                            if (Integer.valueOf(selStartTime.split(":")[0]) < 12) {
-                                waitTime = waitTime - 1.5;
-                            }
-                            timeCount = timeCount + waitTime;
-                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
-                            continue;
-                        }
-                        if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(selEndTime)) {// 结束日期选择时间
-                            long time = sdf.parse(selEndTime).getTime() - sdf.parse("09:00").getTime();
-                            double hours = (double)time / (60 * 60 * 1000);
-                            BigDecimal a = BigDecimal.valueOf(hours);
-                            double waitTime = a.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                            if (Integer.valueOf(selEndTime.split(":")[0]) > 12) {
-                                waitTime = waitTime - 1.5;
-                            }
-                            timeCount = timeCount + waitTime;
-                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
-                            continue;
-                        }
-                        timeCount = timeCount + 7;// 其余时间每天加7小时
-                    }
-                    tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
-                }
-                map.put("data", String.valueOf(timeCount));
-                Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-                return;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取请假天数失败", e);
             map.put("msg", "获取失败");
             map.put("success", false);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
      * 获取两个日期之间的天数
      *
-     * @param tenantId 租户id
+     * @param tenantId  租户id
      * @param startDate 开始日期
-     * @param endDate 结束日期
-     * @param dateType 是否排除节假日和周末
-     * @param request
-     * @param response
-     * @param session
+     * @param endDate   结束日期
+     * @param dateType  是否排除节假日和周末
      */
     @RequestMapping(value = "/getDays")
     @ResponseBody
-    public void getDays(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String startDate, @RequestParam String startSel, @RequestParam String endDate, @RequestParam String endSel, @RequestParam String dateType, HttpServletRequest request, HttpServletResponse response,
-        HttpSession session) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+    public void getDays(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String startDate, @RequestParam String startSel, @RequestParam String endDate, @RequestParam String endSel, @RequestParam String dateType, HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<>(16);
         map.put("day", 0);
         map.put(UtilConsts.SUCCESS, true);
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            String dayStr = "";
+            String dayStr;
             CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(tenantId, endDate.split("-")[0]);
             dayStr = calendarConfig != null ? calendarConfig.getEveryYearHoliday() : "";
             if (StringUtils.isBlank(startSel) && StringUtils.isBlank(endSel)) {// 按天算
-                boolean isdel = dateType.equals("1") ? true : false;
+                boolean isdel = dateType.equals("1");
                 if (startDate.equals(endDate)) {
                     if (isdel && dayStr.contains(startDate)) {
                         map.put("day", "0");
@@ -369,7 +356,7 @@ public class MobileSignController {
                 return;
             }
             if (StringUtils.isNotBlank(startSel) && StringUtils.isNotBlank(endSel)) {// 按半天算
-                boolean isdel = dateType.equals("1") ? true : false;
+                boolean isdel = dateType.equals("1");
                 if (startDate.equals(endDate)) {
                     if (isdel && dayStr.contains(startDate)) {
                         map.put("day", "0");
@@ -416,7 +403,7 @@ public class MobileSignController {
                 if (start > 0) {
                     String day = String.valueOf(num + start);
                     LOGGER.debug("day={}", day);
-                    map.put("day", day.contains(".0") ? String.valueOf((int)(num + start)) : day);
+                    map.put("day", day.contains(".0") ? String.valueOf((int) (num + start)) : day);
                     map.put(UtilConsts.SUCCESS, true);
                     Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
                     return;
@@ -428,9 +415,8 @@ public class MobileSignController {
             }
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("计算请假天数出错", e);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 }

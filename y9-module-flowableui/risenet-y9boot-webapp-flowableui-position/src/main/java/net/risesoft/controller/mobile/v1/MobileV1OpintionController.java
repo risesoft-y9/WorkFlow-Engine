@@ -1,24 +1,23 @@
 package net.risesoft.controller.mobile.v1;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.constraints.NotBlank;
-
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import javax.validation.constraints.NotBlank;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 意见相关接口
@@ -26,6 +25,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
  * @author zhangchongjie
  * @date 2024/01/17
  */
+@Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -40,6 +40,7 @@ public class MobileV1OpintionController {
      * 保存意见
      *
      * @param formJsonData 意见json内容
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/comment/save")
     public Y9Result<String> addComment(@RequestParam @NotBlank String formJsonData) {
@@ -48,11 +49,13 @@ public class MobileV1OpintionController {
             String positionId = Y9LoginUserHolder.getPositionId();
             String userId = Y9LoginUserHolder.getPersonId();
             OpinionModel opinionModel = Y9JsonUtil.readValue(formJsonData, OpinionModel.class);
-            opinionModel.setTenantId(tenantId + ":mobile");
+            if (opinionModel != null) {
+                opinionModel.setTenantId(tenantId + ":mobile");
+            }
             opinion4PositionApi.saveOrUpdate(tenantId, userId, positionId, opinionModel);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存意见失败", e);
         }
         return Y9Result.failure("保存失败");
     }
@@ -60,8 +63,9 @@ public class MobileV1OpintionController {
     /**
      * 是否已填写意见
      *
-     * @param taskId 任务id
+     * @param taskId              任务id
      * @param processSerialNumber 流程编号
+     * @return Y9Result<Boolean>
      */
     @RequestMapping(value = "/comment/checkSignOpinion")
     public Y9Result<Boolean> checkSignOpinion(@RequestParam String taskId, @RequestParam @NotBlank String processSerialNumber) {
@@ -71,7 +75,7 @@ public class MobileV1OpintionController {
             boolean b = opinion4PositionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId);
             return Y9Result.success(b, "获取成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取意见失败", e);
         }
         return Y9Result.failure("获取失败");
     }
@@ -80,6 +84,7 @@ public class MobileV1OpintionController {
      * 删除意见
      *
      * @param id 意见id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/comment/delete")
     public Y9Result<String> deleteComment(@RequestParam @NotBlank String id) {
@@ -88,13 +93,37 @@ public class MobileV1OpintionController {
             opinion4PositionApi.delete(tenantId, id);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除意见失败", e);
         }
         return Y9Result.failure("删除失败");
     }
 
     /**
+     * 获取意见
+     *
+     * @param processSerialNumber 流程编号
+     * @param taskId              任务id
+     * @param itembox             办件状态，待办：todo,在办：doing,办结：done
+     * @param opinionFrameMark    意见框标识
+     * @param itemId              事项id
+     * @param taskDefinitionKey   任务key
+     * @param activitiUser        当前任务受让人
+     * @return Y9Result<List < Map < String, Object>>>
+     */
+    @RequestMapping(value = "/personCommentList")
+    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam @NotBlank String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox, @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
+                                                                 @RequestParam String taskDefinitionKey, @RequestParam String activitiUser, @RequestParam String orderByUser) {
+        List<Map<String, Object>> listMap;
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9LoginUserHolder.getPersonId();
+        listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
+        return Y9Result.success(listMap, "获取成功");
+    }
+
+    /**
      * 获取个人常用语
+     *
+     * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/personalSetup")
     public Y9Result<List<Map<String, Object>>> personalSetup() {
@@ -105,30 +134,10 @@ public class MobileV1OpintionController {
     }
 
     /**
-     * 获取意见
-     *
-     * @param processSerialNumber 流程编号
-     * @param taskId 任务id
-     * @param itembox 办件状态，待办：todo,在办：doing,办结：done
-     * @param opinionFrameMark 意见框标识
-     * @param itemId 事项id
-     * @param taskDefinitionKey 任务key
-     * @param activitiUser 当前任务受让人
-     */
-    @RequestMapping(value = "/personCommentList")
-    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam @NotBlank String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox, @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
-        @RequestParam String taskDefinitionKey, @RequestParam String activitiUser, @RequestParam String orderByUser) {
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPersonId();
-        listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
-        return Y9Result.success(listMap, "获取成功");
-    }
-
-    /**
      * 删除常用语
      *
      * @param id 常用语id
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/removeCommonSentences")
     public Y9Result<String> removeCommonSentences(@RequestParam @NotBlank String id) {
@@ -137,7 +146,7 @@ public class MobileV1OpintionController {
             commonSentencesApi.delete(tenantId, id);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除常用语失败", e);
         }
         return Y9Result.failure("删除失败");
     }
@@ -146,7 +155,8 @@ public class MobileV1OpintionController {
      * 保存常用语
      *
      * @param content 内容
-     * @param id 常用语id,新增id为空
+     * @param id      常用语id,新增id为空
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveCommonSentences")
     public Y9Result<String> saveCommonSentences(@RequestParam String content, @RequestParam String id) {
@@ -156,13 +166,15 @@ public class MobileV1OpintionController {
             commonSentencesApi.save(tenantId, userId, id, content);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存常用语失败", e);
         }
         return Y9Result.failure("保存失败");
     }
 
     /**
      * 获取个人常用语
+     *
+     * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/systemSetup")
     public Y9Result<List<Map<String, Object>>> systemSetup() {
