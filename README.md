@@ -13,7 +13,7 @@
 
 ## 简介
 
-工作流引擎（Workflow Engine）是企业信息化系统中的关键组件，用于自动化和管理复杂的业务流程。工作流引擎通过自动化和标准化业务流程，提高了效率，减少了错误，并提供了更好的流程可见性和控制。 
+工作流引擎对内提供单位/机关流程管理规则和内部业务流程的数字化落地实践；对外提供自动化地第三方业务驱动、接口接入和算法单元驱动能力。工作流引擎在提供底层驱动引擎的同时对全局透明监控、安全防御和国产化特色功能进行充分考虑，是内部流程管理和业务算法驱动的不二之选。
 
 ## 源码目录
 
@@ -60,13 +60,10 @@ webapp -- 系统公共模块
  ├── y9-module-sso -- OAuth2.0认证服务端
 ```
 
-## 内置功能
-
-
-
 ## 逻辑架构图
 
-<div><img src="https://vue.youshengyun.com/files/img/ljjgt.png"><div/>
+待补充
+
 
 ## 后端技术选型
 
@@ -130,25 +127,13 @@ webapp -- 系统公共模块
 | 5        | 操作系统 | 统信、麒麟、中科方德等     |
 | 6        | 芯片     | ARM体系、MIPS体系、X86体系 |
 
+## 引擎高级特性
+
+待补充
+
 ## 在线体验
 
-演示地址：<a href="https://test.youshengyun.com/kernel-standard/" target="_blank">https://test.youshengyun.com/kernel-standard/</a>
-
-> 演示账号：
->
-> 系统管理员：systemManager  密码：Risesoft@2022
->
-> 安全保密员：securityManager  密码：Risesoft@2022
->
-> 安全审计员：auditManager   密码：Risesoft@2022
->
-> 说明：输入登录名后，请选择"北京有生博大软件股份有限公司"租户，再输入密码进行登录
-
-## 私有化部署
-
-地址：<a href="https://test.youshengyun.com/y9vue-code/" target="_blank">https://test.youshengyun.com/y9vue-code/</a>
-
-> 包含数字底座使用中间件的安装教程、数字底座重要配置讲解，进行本地化部署务必要浏览该网站，会少走弯路。
+待补充
 
 ## 文档专区
 
@@ -174,16 +159,38 @@ webapp -- 系统公共模块
 | 18 | <a href="https://vue.youshengyun.com/files/Icon图标.pdf" target="_blank">前端Icon图标</a>             |
 | 19 | <a href="https://vue.youshengyun.com/files/Oracle数据库适配文档.pdf" target="_blank">Oracle数据库适配文档</a>          |
 
+## 工作流引擎截图
+
+待补充
+
+## 同构开源项目
+
+| 序号 | 项目名称   | 项目介绍                                                     |                                           |
+| :--- | ---------- | ------------------------------------------------------------ | ----------------------------------------- |
+| 1    | 数字底座   | 数字底座是一款面向大型政府、企业数字化转型，基于身份认证、组织架构、岗位职务、应用系统、资源角色等功能构建的统一且安全的管理支撑平台。数字底座基于三员管理模式，具备微服务、多租户、容器化和国产化，支持用户利用代码生成器快速构建自己的业务应用，同时可关联诸多成熟且好用的内部生态应用。 | https://gitee.com/risesoft-y9/y9-core     |
+| 2    | 数据流引擎 | 数据流引擎是一款面向数据集成、数据同步、数据交换、数据共享、任务配置、任务调度的底层数据驱动引擎。数据流引擎采用管执分离、多流层、插件库等体系应对大规模数据任务、数据高频上报、数据高频采集、异构数据兼容的实际数据问题。 | https://gitee.com/risesoft-y9/y9-dataflow |
+
+## 赞助与支持
+
+### 中关村软件和信息服务产业创新联盟
+
+官网：<a href="https://www.zgcsa.net" target="_blank">https://www.zgcsa.net</a>
+
+### 北京有生博大软件股份有限公司
+
+官网：<a href="https://www.risesoft.net/" target="_blank">https://www.risesoft.net/</a>
+
 ## 咨询与合作
 
 联系人：曲经理
 
 微信号：qq349416828
 
-备注：开源数字底座咨询-姓名
+备注：工作流引擎咨询-姓名
 <div><img style="width: 40%" src="https://vue.youshengyun.com/files/img/曲经理-二维码.png"><div/>
 联系人：有生博大-咨询热线
 
 座机号：010-86393151
 <div><img style="width: 45%" src="https://vue.youshengyun.com/files/img/有生博大-咨询热线.png"><div/>
+
 
