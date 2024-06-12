@@ -39,32 +39,6 @@
                       </draggable>
                     </el-collapse-item>
 
-                    <el-collapse-item name="collection" v-if="collectionFields.length" :title="$t('fm.components.collection.title')">
-                      <draggable tag="ul" :list="collectionComponents" 
-                        :group="{ name:'people', pull:'clone',put:false}"
-                        :sort="false"
-                        ghost-class="ghost"
-                        @end="handleMoveEnd"
-                        @start="handleMoveStart"
-                        :move="handleMove"
-                        item-key="name"
-                      >
-                        <template #item="{element}">
-                          <li @click="handleField(element)" v-if="collectionFields.indexOf(element.type) >= 0" class="form-edit-widget-label" 
-                            :class="{
-                              'no-put': true,
-                              'subform-put': element.type == 'table' || element.type == 'subform',
-                              'dialog-put': element.type == 'dialog'
-                            }">
-                            <a>
-                              <i class="icon iconfont fm-iconfont" :class="element.icon"></i>
-                              <span>{{element.name}}</span>
-                            </a>
-                          </li>
-                        </template>
-                      </draggable>
-                    </el-collapse-item>
-                    
                     <el-collapse-item name="basic" v-if="basicFields.length" :title="$t('fm.components.basic.title')">
                       <draggable tag="ul" 
                         :list="basicComponents" 
@@ -143,44 +117,12 @@
               </el-scrollbar>
             </el-tab-pane>
 
-            <el-tab-pane name="outline">
-              <template #label>
-                <el-tooltip :content="$t('fm.actions.outline')" placement="bottom">
-                  <span>&nbsp;&nbsp;<i class="fm-iconfont icon-fuhao-dagangshu"></i>&nbsp;&nbsp;</span>
-                </el-tooltip>
-              </template>
-              <outline ref="outlineRef" :show="activeLeft == 'outline'" :data="widgetForm.list" @select="onSelectWidget"></outline>
-            </el-tab-pane>
           </el-tabs>
 
           <div class="container-left-arrow" @click="handleLeftToggle"></div>
         </el-aside>
         <el-container class="center-container" direction="vertical">
           <el-header class="btn-bar" style="height: 45px;">
-            <div class="btn-bar-plat">
-              <a :class="{'active': platform == 'pc'}" @click="handlePlatform('pc')"><i class="fm-iconfont icon-pc"></i></a>
-              <a :class="{'active': platform == 'pad'}" @click="handlePlatform('pad')"><i class="fm-iconfont icon-pad"></i></a>
-              <a :class="{'active': platform == 'mobile'}" @click="handlePlatform('mobile')"><i class="fm-iconfont icon-mobile"></i></a>
-            </div>
-            <div class="btn-diviler"></div>
-            <div class="btn-bar-action">
-              <el-tooltip :content="$t('fm.actions.undo')" placement="bottom">
-                <a @click="handleUndo" :class="{'disabled': !undo}"><i class="fm-iconfont icon-007caozuo_chexiao"></i></a>
-              </el-tooltip>
-              <el-tooltip :content="$t('fm.actions.redo')" placement="bottom">
-                <a @click="handleRedo" :class="{'disabled': !redo}"><i class="fm-iconfont icon-8zhongzuo"></i></a>
-              </el-tooltip>
-              
-            </div>
-            <div class="btn-diviler"></div>
-            <div class="btn-bar-action">
-              <el-tooltip :content="$t('fm.actions.fullScreen')" placement="bottom" v-if="!fullscreen">
-                <a @click="handleFullScreen"><i class="fm-iconfont icon-quanping_o"></i></a>
-              </el-tooltip>
-              <el-tooltip :content="$t('fm.actions.exitFullScreen')" placement="bottom" v-else>
-                <a @click="handleExitFullScreen"><i class="fm-iconfont icon-quxiaoquanping_o"></i></a>
-              </el-tooltip>
-            </div>
             <slot name="action">
             </slot>
 
@@ -286,6 +228,40 @@
         </cus-dialog>
       </el-container>
     </el-main>
+
+    <cus-dialog
+      :visible="uploadVisible"
+      @on-close="uploadVisible = false"
+      @on-submit="handleUploadJson"
+      ref="uploadJson"
+      width="800px"
+      form
+    >
+      <el-alert type="info" title="JSON格式如下，直接复制生成的json覆盖此处代码点击确定即可"></el-alert>
+      <div id="uploadeditor" style="height: 400px;width: 100%;">{{jsonEg}}</div>
+    </cus-dialog>
+
+    <cus-dialog
+      :visible="previewVisible"
+      @on-close="previewVisible = false"
+      ref="widgetPreview"
+      width="1000px"
+      form
+    >
+      <generate-form insite="true" v-if="previewVisible" :data="widgetForm" :value="widgetModels" :remote="remoteFuncs" ref="generateForm">
+
+        <template v-slot:blank="scope">
+          宽度：<el-input v-model="scope.model.blank.width" style="width: 100px"></el-input>
+          高度：<el-input v-model="scope.model.blank.height" style="width: 100px"></el-input>
+        </template>
+      </generate-form>
+
+      <template #action>
+        <el-button type="primary" @click="handleTest">获取数据</el-button>
+        <el-button @click="handleReset">重置</el-button>
+      </template>
+    </cus-dialog>
+
     <!-- <el-footer height="30px" style="font-weight: 600;">Powered by <a target="_blank" href="https://form.making.link">FormMaking</a> {{version ? ` - V${version}` : ''}}</el-footer> -->
   </el-container>
   
@@ -298,21 +274,18 @@ import FormConfig from './FormConfig.vue'
 import WidgetForm from './WidgetForm.vue'
 import CusDialog from './CusDialog.vue'
 import ClipboardJS from 'clipboard'
-import CodeEditor from './CodeEditor/index.vue'
-import {basicComponents, layoutComponents, advanceComponents, collectionComponents} from './componentsConfig.js'
+import {basicComponents, layoutComponents, advanceComponents} from './componentsConfig.js'
 import {updateStyleSheets, splitStyleSheets, splitSheetName, addClass, removeClass} from '../util/index.js'
 import { EventBus } from '../util/event-bus.js'
 import generateCode from './generateCode.js'
 import historyManager from '../util/history-manager.js'
 import _ from 'lodash'
 import { UpgradeData } from '../util/version-upgrade'
-import PreviewDialog from './PreviewDialog.vue'
-import ImportJsonDialog from './ImportJson/dialog.vue'
-import Outline from './Outline.vue'
 import { findModelNodeString } from '../util/find-node.js'
 import { getModels } from '../util/model-outline.js'
 import { ElMessage } from 'element-plus'
-
+import ImportJsonDialog from './ImportJson/dialog.vue'
+import CodeEditor from './CodeEditor/index.vue'
 export default {
   name: 'fm-making-form',
   components: {
@@ -320,11 +293,10 @@ export default {
     WidgetConfig,
     FormConfig,
     WidgetForm,
-    CusDialog,
-    CodeEditor,
-    PreviewDialog,
     ImportJsonDialog,
-    Outline
+    CodeEditor,
+    GenerateForm:defineAsyncComponent(() => import('./GenerateForm.vue')),
+    CusDialog,
   },
   props: {
     preview: {
@@ -419,7 +391,6 @@ export default {
       basicComponents,
       layoutComponents,
       advanceComponents,
-      collectionComponents,
       customComponents: [],
       resetJson: false,
       widgetForm: {
@@ -592,10 +563,10 @@ export default {
       return true
     },
     handlePreview () {
+      this.previewVisible = true
+      // this.$emit('preview', _.cloneDeep(this.widgetForm))
 
-      this.$emit('preview', _.cloneDeep(this.widgetForm))
-
-      this.$refs.previewDialog.preview(_.cloneDeep(this.widgetForm), this.platform)
+      // this.$refs.previewDialog.preview(_.cloneDeep(this.widgetForm), this.platform)
     },
     preivewGetData (data) {
       this.jsonTitle = this.$t('fm.actions.getData')
@@ -647,6 +618,17 @@ export default {
         })
         this.codeCopyValue = this.codeActiveName == 'vue' ? this.vueTemplate : this.htmlTemplate
       })
+    },
+    handleTest () {
+      this.$refs.generateForm.getData().then(data => {
+        this.$alert(data, '').catch(e=>{})
+        this.$refs.widgetPreview.end()
+      }).catch(e => {
+        this.$refs.widgetPreview.end()
+      })
+    },
+    handleReset () {
+      this.$refs.generateForm.reset()
     },
     handleUpload () {
       this.$refs.importJsonDialog.open(this.jsonTemplates)
@@ -890,21 +872,6 @@ export default {
         }
       })
 
-      this.collectionComponents = this.collectionComponents.map(item => {
-        return {
-          ...item,
-          name: this.$t(`fm.components.fields.${item.type}`),
-          options: (() => {
-            let newField = this.fieldConfig.find(o => o.type == item.type)
-             
-            if (newField) {
-              return {...item.options, ...newField.options}
-            } else {
-              return {...item.options}
-            }
-          })()
-        }
-      })
 
       this.customComponents = this.customFields.map(item => {
         return {

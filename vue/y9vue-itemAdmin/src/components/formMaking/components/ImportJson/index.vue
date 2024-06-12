@@ -1,31 +1,5 @@
 <template>
   <el-tabs v-model="activeName" class="import-json-container">
-    <el-tab-pane :label="$t('fm.importjson.name')" name="library">
-
-      <el-scrollbar height="560px" always class="import-json-library-container">
-        <el-space wrap :size="20" v-if="props.libraryList?.length">
-          <el-card class="import-json-card" v-for="item in props.libraryList" :key="item.title" shadow="hover" :body-style="{ padding: '0px', width: '218px' }">
-            <el-image style="width: 218px; height: 218px" 
-              :src="item.url" 
-              fit="contain"
-            >
-              <template #error>
-                <div class="image-slot">{{$t('fm.importjson.noimage')}}</div>
-              </template>
-            </el-image>
-            <div style="padding: 10px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap; ">
-              <span v-if="$i18n.locale == 'zh-cn'">{{item.title}}</span>
-              <span v-else>{{item.enTitle}}</span>
-            </div>  
-
-            <div class="action-cover">
-              <el-button type="primary" round @click="loadJson(item.json)">{{$t('fm.importjson.loadjson')}}</el-button>
-            </div>
-          </el-card>
-        </el-space>
-        <el-empty v-else :description="$t('fm.importjson.nojson')" />
-      </el-scrollbar>
-    </el-tab-pane>
     <el-tab-pane label="JSON" name="json">
       <div class="import-json-code">
         <el-alert type="info" :title="$t('fm.description.uploadJsonInfo')"></el-alert>
@@ -45,7 +19,7 @@ import {ref} from 'vue'
 import { ElMessage } from 'element-plus'
 import CodeEditor from '../CodeEditor/index.vue'
 
-const activeName = ref('library')
+const activeName = ref('json')
 const jsonEg = ref(`{
   "list": [],
   "config": {

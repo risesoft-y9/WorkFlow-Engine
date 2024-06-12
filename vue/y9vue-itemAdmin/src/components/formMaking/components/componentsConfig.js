@@ -137,7 +137,7 @@ export const basicComponents = [
       validator: '',
       width: '',
       remote: false,
-      remoteType: 'datasource',
+      remoteType: 'func',
       remoteOption: '',
       remoteOptions: [],
       props: {
@@ -185,7 +185,7 @@ export const basicComponents = [
       validator: '',
       width: '',
       remote: false,
-      remoteType: 'datasource',
+      remoteType: 'func',
       remoteOption: '',
       remoteOptions: [],
       props: {
@@ -236,7 +236,7 @@ export const basicComponents = [
         }
       ],
       remote: false,
-      remoteType: 'datasource',
+      remoteType: 'func',
       remoteOption: '',
       filterable: false,
       remoteOptions: [],
@@ -452,73 +452,9 @@ export const basicComponents = [
     }
   },
   {
-    type: 'html',
-    icon: 'icon-html',
-    options: {
-      defaultValue: '<b style="color: red;">\n\tThis is a HTML5\n</b>',
-      labelWidth: 100,
-      isLabelWidth: false,
-      hidden: false,
-      dataBind: true,
-      required: false,
-      width: '',
-      tip: ''
-    },
-    events: {
-      onChange: ''
-    }
-  },
-  {
-    type: 'button',
-    icon: 'icon-button',
-    options: {
-      customClass: '',
-      disabled: false,
-      labelWidth: 100,
-      isLabelWidth: false,
-      hideLabel: true,
-      hidden: false,
-      buttonSize: 'default',
-      buttonType: '',
-      buttonPlain: false,
-      buttonRound: false,
-      buttonCircle: false,
-      buttonName: 'Button',
-      width: '',
-      customProps: {},
-      tip: ''
-    },
-    events: {
-      onClick: ''
-    }
-  },
-  {
-    type: 'link',
-    icon: 'icon-lianjie',
-    options: {
-      customClass: '',
-      disabled: false,
-      labelWidth: 100,
-      isLabelWidth: false,
-      hideLabel: false,
-      hidden: false,
-      linkType: 'default',
-      linkName: 'Link',
-      underline: true,
-      blank: true,
-      href: '',
-      customProps: {},
-      tip: ''
-    },
-    events: {
-      onClick: ''
-    }
-  },
-  {
     type: 'cascader',
     icon: 'icon-jilianxuanze',
     options: {
-      defaultValue: [],
       width: '',
       placeholder: '',
       disabled: false,
@@ -542,8 +478,8 @@ export const basicComponents = [
           label: 'Option 3'
         }
       ],
-      remote: false,
-      remoteType: 'datasource',
+      remote: true,
+      remoteType: 'func',
       remoteOption: '',
       remoteOptions: [],
       props: {
@@ -572,165 +508,6 @@ export const basicComponents = [
       onBlur: ''
     }
   },
-  {
-    type: 'treeselect',
-    icon: 'icon-shuxuanzeqi',
-    options: {
-      defaultValue: [],
-      width: '',
-      placeholder: '',
-      disabled: false,
-      clearable: false,
-      options: [
-        {
-          value: 'Option 1',
-          label: 'Option 1',
-          children: [
-            {value: 'Option 1 - children', label: 'Option 1 - children'}
-          ]
-        },
-        {
-          value: 'Option 2',
-          label: 'Option 2',
-          children: [
-            {value: 'Option 2 - children', label: 'Option 2 - children'}
-          ]
-        },{
-          value: 'Option 3',
-          label: 'Option 3'
-        }
-      ],
-      remote: false,
-      remoteType: 'datasource',
-      remoteOption: '',
-      remoteOptions: [],
-      props: {
-        value: 'value',
-        label: 'label',
-        children: 'children'
-      },
-      remoteFunc: '',
-      customClass: '',
-      labelWidth: 100,
-      isLabelWidth: false,
-      hidden: false,
-      dataBind: true,
-      required: false,
-      validatorCheck: false,
-      validator: '',
-      multiple: false,
-      filterable: false,
-      checkStrictly: false,
-      customProps: {},
-      tip: ''
-    },
-    events: {
-      onChange: '',
-      onFocus: '',
-      onBlur: ''
-    }
-  },
-  {
-    type: 'steps',
-    icon: 'icon-m-buzhou',
-    options: {
-      defaultValue: 0,
-      customClass: '',
-      labelWidth: 100,
-      isLabelWidth: false,
-      hideLabel: true,
-      hidden: false,
-      dataBind: true,
-      steps: [
-        {
-          title: 'Step 1'
-        },
-        {
-          title: 'Step 2'
-        },
-        {
-          title: 'Step 3'
-        }
-      ],
-      props: {
-        title: 'title',
-        description: 'description'
-      },
-      remote: false,
-      width: '',
-      direction: 'horizontal',
-      processStatus: 'process',
-      finishStatus: 'finish',
-      alignCenter: false,
-      simple: false,
-      remoteType: 'datasource',
-      customProps: {},
-      tip: ''
-    },
-    events: {
-      onChange: ''
-    }
-  },
-  {
-    type: 'transfer',
-    icon: 'icon-m-chuansuokuang',
-    options: {
-      defaultValue: [],
-      customClass: '',
-      labelWidth: 100,
-      isLabelWidth: false,
-      hideLabel: false,
-      hidden: false,
-      dataBind: true,
-      data: [
-        {key: '1', label: 'Option 1'},
-        {key: '2', label: 'Option 2'},
-        {key: '3', label: 'Option 3'},
-      ],
-      props: {
-        key: 'key',
-        label: 'label',
-        disabled: 'disabled'
-      },
-      filterable: false,
-      required: false,
-      validatorCheck: false,
-      validator: '',
-      width: '',
-      remote: false,
-      titles: ['Source', 'Target'],
-      disabled: false,
-      remoteType: 'datasource',
-      customProps: {},
-      tip: ''
-    },
-    events: {
-      onChange: ''
-    }
-  },
-  {
-    type: 'pagination',
-    icon: 'icon-pagination',
-    options: {
-      defaultValue: 1,
-      customClass: '',
-      disabled: false,
-      labelWidth: 100,
-      isLabelWidth: false,
-      hideLabel: false,
-      hidden: false,
-      dataBind: true,
-      background: true,
-      pageSize: 10,
-      pagerCount: 7,
-      total: 100,
-      customProps: {}
-    },
-    events: {
-      onChange: '',
-      
-    }
-  }
 ]
 
 export const advanceComponents = [
@@ -752,61 +529,6 @@ export const advanceComponents = [
     },
     events: {
       onChange: ''
-    }
-  },
-  {
-    type: 'component',
-    icon: 'icon-component',
-    options: {
-      customClass: '',
-      labelWidth: 100,
-      isLabelWidth: false,
-      hidden: false,
-      dataBind: true,
-      template: '<div>自定义内容</div>',
-      required: false,
-      pattern: '',
-      validator: '',
-      width: '',
-      tip: ''
-    },
-    events: {
-      onChange: ''
-    }
-  },
-  {
-    type: 'fileupload',
-    icon: 'icon-wenjianshangchuan',
-    options: {
-      defaultValue: [],
-      width: '',
-      tokenFunc: 'funcGetToken',
-      token: '',
-      tokenType: 'datasource',
-      domain: '',
-      disabled: false,
-      tip: '',
-      action: '',
-      customClass: '',
-      limit: 9,
-      multiple: false,
-      isQiniu: false,
-      labelWidth: 100,
-      isLabelWidth: false,
-      hidden: false,
-      dataBind: true,
-      headers: [],
-      required: false,
-      validatorCheck: false,
-      validator: '',
-      withCredentials: false
-    },
-    events: {
-      onChange: '',
-      onSelect: '',
-      onUploadSuccess: '',
-      onUploadError: '',
-      onRemove: ''
     }
   },
   {
@@ -856,7 +578,7 @@ export const advanceComponents = [
     type: 'editor',
     icon: 'icon-fuwenbenkuang',
     options: {
-      defaultValue: '',
+      defaultValue:'',
       width: '',
       customClass: '',
       labelWidth: 100,
@@ -881,7 +603,6 @@ export const advanceComponents = [
       ],
       disabled: false,
       required: false,
-      validatorCheck: false,
       validator: '',
       tip: ''
     },
@@ -889,7 +610,6 @@ export const advanceComponents = [
       onChange: ''
     }
   },
-  
 ]
 
 export const layoutComponents = [
@@ -923,231 +643,6 @@ export const layoutComponents = [
       flex: true,
       responsive: true
     }
-  },
-  {
-    type: 'report',
-    icon: 'icon-table1',
-    options: {
-      customClass: '',
-      hidden: false,
-      borderWidth: 1,
-      borderColor: '#999',
-      width: '100%'
-    },
-    headerRow: [
-      {
-        type: 'th',
-        options: {
-          width: ''
-        }
-      }
-    ],
-    rows: [
-      {
-        columns: [
-          {
-            type: 'td',
-            options: {
-              customClass: '',
-              colspan: 1,
-              rowspan: 1,
-              align: 'left',
-              valign: 'top',
-              width: '',
-              height: ''
-            },
-            list: []
-          }
-        ]
-      }
-    ]
-  },
-  {
-    type: 'tabs',
-    icon: 'icon-tabs',
-    tabs: [
-      {
-        label: 'Tab 1',
-        name: 'tab_1',
-        list: []
-      }
-    ],
-    options: {
-      type: '',
-      tabPosition: 'top',
-      customClass: '',
-      hidden: false,
-    }
-  },
-  {
-    type: 'collapse',
-    icon: 'icon-zhediemianban',
-    tabs: [
-      {
-        title: 'Collapse 1',
-        name: 'collapse_1',
-        list: []
-      }
-    ],
-    options: {
-      type: '',
-      accordion: false,
-      customClass: '',
-      hidden: false,
-    }
-  },
-  {
-    type: 'inline',
-    icon: 'icon-inlineview',
-    options: {
-      customClass: '',
-      hidden: false,
-      spaceSize: 10
-    },
-    list: []
-  },
-  {
-    type: 'card',
-    icon: 'icon-kapian',
-    list: [],
-    options: {
-      title: 'Card name',
-      showHeader: true,
-      bordered: true,
-      customClass: '',
-      shadow: 'always',
-      width: '',
-      padding: '10px',
-      hidden: false
-    }
-  },
-  {
-    type: 'divider',
-    icon: 'icon-fengexian',
-    options: {
-      hidden: false,
-      contentPosition: 'left',
-      customProps: {}
-    }
-  },
-  {
-    type: 'alert',
-    icon: 'icon-jinggaotishi',
-    options: {
-      hidden: false,
-      title: 'Info alert',
-      type: 'info',
-      description: '',
-      closable: true,
-      center: false,
-      showIcon: false,
-      effect: 'light',
-      width: '',
-      customProps: {}
-    }
   }
 ]
 
-export const collectionComponents = [
-  {
-    type: 'table',
-    icon: 'icon-table',
-    options: {
-      defaultValue: [],
-      customClass: '',
-      labelWidth: 100,
-      isLabelWidth: false,
-      hidden: false,
-      dataBind: true,
-      disabled: false,
-      required: false,
-      validatorCheck: false,
-      validator: '',
-      paging: false,
-      pageSize: 5,
-      isAdd: true,
-      isDelete: true,
-      showControl: true,
-      virtualTable: true,
-      tip: ''
-    },
-    events: {
-      onChange: '',
-      onRowAdd: '',
-      onRowRemove: '',
-      onPageChange: ''
-    },
-    tableColumns: []
-  },
-  {
-    type: 'subform',
-    icon: 'icon-a-ziyuan25',
-    options: {
-      defaultValue: [],
-      customClass: '',
-      labelWidth: 100,
-      isLabelWidth: false,
-      hidden: false,
-      dataBind: true,
-      disabled: false,
-      required: false,
-      validatorCheck: false,
-      validator: '',
-      paging: false,
-      pageSize: 5,
-      showControl: true,
-      isAdd: true,
-      isDelete: true,
-      tip: ''
-    },
-    events: {
-      onChange: '',
-      onRowAdd: '',
-      onRowRemove: '',
-      onPageChange: ''
-    },
-    list: []
-  },
-  {
-    type: 'dialog',
-    icon: 'icon-Dialog',
-    options: {
-      defaultValue: {},
-      visible: false,
-      customClass: '',
-      title: 'Dialog Title',
-      width: '',
-      top: '15vh',
-      center: false,
-      cancelText: 'Cancel',
-      showClose: true,
-      okText: 'Confirm',
-      showCancel: true,
-      showOk: true,
-      confirmLoading: false,
-      dataBind: true,
-    },
-    list: [],
-    events: {
-      onCancel: '',
-      onConfirm: ''
-    }
-  },
-  {
-    type: 'group',
-    icon: 'icon-fenzu',
-    options: {
-      defaultValue: {},
-      customClass: '',
-      labelWidth: 100,
-      isLabelWidth: false,
-      hidden: false,
-      dataBind: true,
-      width: '',
-      validatorCheck: false,
-      validator: '',
-      tip: ''
-    },
-    list: [],
-  }
-]

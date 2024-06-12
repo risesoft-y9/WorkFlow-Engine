@@ -4,8 +4,8 @@
  * @Author: zhangchongjie
  * @Date: 2021-05-24 17:05:04
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2023-11-15 11:47:47
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\components\formMaking\components\SecondDev\permissionConfig.vue
+ * @LastEditTime: 2024-06-12 10:21:56
+ * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-flowable\vue\y9vue-itemAdmin\src\components\formMaking\components\SecondDev\permissionConfig.vue
 -->
 <template>
     <y9Dialog v-model:config="dialogConfig" 
@@ -129,7 +129,7 @@ async function reloadTable(){//获取列表
 	let res = await getBpmList(formId.value,fieldName.value);
 	loading.value = false;
 	listData.value = res.data;
-	if(listData.value[0].taskDefName == "流程"){
+	if(listData.value[0] && listData.value[0].taskDefName == "流程"){
 		listData.value.shift();
 	}
 }

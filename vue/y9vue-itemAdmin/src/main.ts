@@ -1,10 +1,10 @@
 /*
  * @Author: your name
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2024-04-10 16:54:41
- * @LastEditors: mengjuhua
+ * @LastEditTime: 2024-06-12 10:00:59
+ * @LastEditors: zhangchongjie
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\main.ts
+ * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-flowable\vue\y9vue-itemAdmin\src\main.ts
  */
 import router from "@/router/index"
 import { setupStore } from '@/store'
@@ -31,8 +31,8 @@ import zh from 'element-plus/es/locale/lang/zh-cn'
 import { jsPDF } from 'jspdf'
 import html2canvas from 'html2canvas'
 //富文本编辑器
-// import { QuillEditor } from '@vueup/vue-quill'
-// import '@vueup/vue-quill/dist/vue-quill.snow.css';
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import FormMakingV3 from './index';
 import y9pluginComponents from "y9plugin-components"
 
@@ -91,6 +91,7 @@ app.use(FormMakingV3, {
     jsPDF,
     html2canvas
 });
+app.component('QuillEditor', QuillEditor)
 app.component('custom-numberButton', numberButton)
 //表单设计
 

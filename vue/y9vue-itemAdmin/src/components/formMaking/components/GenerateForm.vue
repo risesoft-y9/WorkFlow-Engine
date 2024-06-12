@@ -22,13 +22,13 @@
       :label-suffix="formData.config?.labelSuffix ? ' : ' : ' '"
       >
 
-      <template v-for="item in formData.list">
+      <template v-for="element in formData.list">
         <generate-col-item
-          v-if="item.type == 'grid'"
-          :key="item.key"
+          v-if="element.type == 'grid'"
+          :key="element.key"
           :model="models"
           :rules="rules"
-          :element="item"
+          :element="element"
           :remote="remote"
           :blanks="blanks"
           :display="displayFields"
@@ -50,172 +50,18 @@
           </template>
         </generate-col-item>
 
-        <generate-tab-item
-          v-else-if="item.type == 'tabs'"
-          :key="item.key"
-          :model="models"
-          :rules="rules"
-          :element="item"
-          :remote="remote"
-          :blanks="blanks"
-          :display="displayFields"
-          @input-change="onInputChange"
-          :edit="edit"
-          :remote-option="remoteOption"
-          :platform="platform"
-          :preview="preview"
-          :container-key="containerKey"
-          :data-source-value="dataSourceValue"
-          :event-function="eventFunction"
-          :print-read="printRead"
-          :form-component="$refs[formRef]"
-          :group="''"
-          :field-node="''"
-        >
-          <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-            <slot :name="blank.name" :model="scope.model"></slot>
-          </template>
-        </generate-tab-item>
-
-        <generate-collapse
-          v-else-if="item.type == 'collapse'"
-          :key="item.key"
-          :model="models"
-          :rules="rules"
-          :element="item"
-          :remote="remote"
-          :blanks="blanks"
-          :display="displayFields"
-          @input-change="onInputChange"
-          :edit="edit"
-          :remote-option="remoteOption"
-          :platform="platform"
-          :preview="preview"
-          :container-key="containerKey"
-          :data-source-value="dataSourceValue"
-          :event-function="eventFunction"
-          :print-read="printRead"
-          :form-component="$refs[formRef]"
-          :group="''"
-          :field-node="''"
-        >
-          <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-            <slot :name="blank.name" :model="scope.model"></slot>
-          </template>
-        </generate-collapse>
-
-        <generate-report
-          v-else-if="item.type == 'report'"
-          :key="item.key"
-          :model="models"
-          :rules="rules"
-          :element="item"
-          :remote="remote"
-          :blanks="blanks"
-          :display="displayFields"
-          @input-change="onInputChange"
-          :edit="edit"
-          :remote-option="remoteOption"
-          :platform="platform"
-          :preview="preview"
-          :container-key="containerKey"
-          :data-source-value="dataSourceValue"
-          :event-function="eventFunction"
-          :print-read="printRead"
-          :form-component="$refs[formRef]"
-          :group="''"
-          :field-node="''"
-        >
-          <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-            <slot :name="blank.name" :model="scope.model"></slot>
-          </template>
-        </generate-report>
-
-        <generate-inline
-          v-else-if="item.type == 'inline'"
-          :key="item.key"
-          :model="models"
-          :rules="rules"
-          :element="item"
-          :remote="remote"
-          :blanks="blanks"
-          :display="displayFields"
-          @input-change="onInputChange"
-          :edit="edit"
-          :remote-option="remoteOption"
-          :platform="platform"
-          :preview="preview"
-          :container-key="containerKey"
-          :data-source-value="dataSourceValue"
-          :event-function="eventFunction"
-          :print-read="printRead"
-          :form-component="$refs[formRef]"
-          :group="''"
-          :field-node="''"
-        >
-          <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-            <slot :name="blank.name" :model="scope.model"></slot>
-          </template>
-        </generate-inline>
-
-        <generate-dialog
-          v-else-if="item.type == 'dialog'"
-          :key="item.key"
-          v-model:models="models"
-          :rules="rules"
-          :element="item"
-          :remote="remote"
-          :blanks="blanks"
-          :edit="edit"
-          :remote-option="remoteOption"
-          :platform="platform"
-          :preview="preview"
-          :container-key="containerKey"
-          :data-source-value="dataSourceValue"
-          :event-function="eventFunction"
-          :print-read="printRead"
-          :form-component="$refs[formRef]"
-          :group="''"
-          :field-node="''"
-        >
-          <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-            <slot :name="blank.name" :model="scope.model"></slot>
-          </template>
-        </generate-dialog>
-
-        <generate-card
-          v-else-if="item.type == 'card'"
-          :key="item.key"
-          :model="models"
-          :rules="rules"
-          :element="item"
-          :remote="remote"
-          :blanks="blanks"
-          :display="displayFields"
-          @input-change="onInputChange"
-          :edit="edit"
-          :remote-option="remoteOption"
-          :platform="platform"
-          :preview="preview"
-          :container-key="containerKey"
-          :data-source-value="dataSourceValue"
-          :event-function="eventFunction"
-          :print-read="printRead"
-          :form-component="$refs[formRef]"
-          :group="''"
-          :field-node="''"
-        >
-          <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-            <slot :name="blank.name" :model="scope.model"></slot>
-          </template>
-        </generate-card>
+        <template v-else-if="element.type == 'blank'">
+          <el-form-item :label="element.name" :prop="element.model" :key="element.key">
+            <slot :name="element.model" :model="models"></slot>
+          </el-form-item>
+        </template>
 
         <generate-form-item
           v-else
-          :key="item.key"
+          :key="element.key"
           :models="models"
           :rules="rules"
-          :widget="item"
+          :widget="element"
           :remote="remote"
           :blanks="blanks"
           :display="displayFields"
@@ -243,13 +89,6 @@
 
 <script>
 import GenerateFormItem from './GenerateFormItem.vue'
-import GenerateColItem from './GenerateColItem.vue'
-import GenerateTabItem from './GenerateTabItem.vue'
-import GenerateReport from './GenerateReport.vue'
-import GenerateInline from './GenerateInline.vue'
-import GenerateCollapse from './GenerateCollapse.vue'
-import GenerateDialog from './GenerateDialog.vue'
-import GenerateCard from './GenerateCard.vue'
 import {loadJs, updateStyleSheets, splitStyleSheets, clearStyleSheets, consoleError, getBindModels } from '../util/index.js'
 import { updateClassName } from '../util/reuse-methods.js'
 import { EventBus } from '../util/event-bus.js'
@@ -258,18 +97,12 @@ import axios from 'axios'
 import { defineAsyncComponent } from 'vue'
 import { exportPDF } from '../util/export.js'
 import { ruleToFunction } from '../util/rule-funcs.js'
-
+import GenerateColItem from './GenerateColItem.vue'
 export default {
   name: 'fm-generate-form',
   components: {
     GenerateFormItem,
-    GenerateColItem,
-    GenerateTabItem,
-    GenerateReport,
-    GenerateInline,
-    GenerateCollapse,
-    GenerateDialog,
-    GenerateCard
+    GenerateColItem
   },
   props: {
     data: {

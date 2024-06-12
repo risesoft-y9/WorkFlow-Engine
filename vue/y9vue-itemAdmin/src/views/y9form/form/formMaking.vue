@@ -49,11 +49,6 @@ import type {ElMessageBox, ElMessage,ElLoading } from 'element-plus';
 import y9_storage from "@/utils/storage";
 import settings from '@/settings.ts';
 import {saveFormJson,getForm,saveFormField,getFormBindFieldList,deleteFormFieldBind} from "@/api/itemAdmin/y9form.ts";
-import json0 from '@/components/formMaking/demo/json0.js';
-import json1 from '@/components/formMaking/demo/json1.js';
-import json2 from '@/components/formMaking/demo/json2.js';
-import json3 from '@/components/formMaking/demo/json3.js';
-import json8 from '@/components/formMaking/demo/json8.js';
 const props = defineProps({
   formInfo: {//当前tree节点信息
     type: Object,
@@ -83,21 +78,6 @@ const data = reactive({
           name: '附件列表',
           el: 'custom-file',
           model:'custom_file',
-          options: {
-            defaultValue: {},
-            customClass: '',
-            labelWidth: 0,
-            isLabelWidth: false,
-            hidden: false,
-            dataBind: true,
-            required: false,
-            pattern: ''
-          }
-        },
-        {
-          name: '正文组件',
-          el: 'custom-word',
-          model:'custom_word',
           options: {
             defaultValue: {},
             customClass: '',
@@ -205,34 +185,6 @@ let {
 // initForm();
 
 async function handleFormReady(){
-  jsonTemplates.value = [
-      {
-        title: '空白表单',
-        json: json0,
-        url: '/itemAdmin/images/json00.png'
-      },
-      {
-        title: '办件单',
-        json: json1,
-        url: '/itemAdmin/images/json1.jpg'
-      },
-      {
-        title: '报销单',
-        json: json2,
-        url: '/itemAdmin/images/json2.jpg'
-      },
-      {
-        title: '复杂表格 - 人员履历表',
-        json: json3,
-        url: '/itemAdmin/images/json3.png'
-      },
-      {
-        title: '复杂表格 - 动态增减表单项',
-        json: json8,
-        url: '/itemAdmin/images/json8.png'
-      },
-    ]
-
   let res = await getForm(props.formInfo.id);
   if(res.success){
     let y9form = res.data.y9Form;

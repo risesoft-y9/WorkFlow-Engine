@@ -77,7 +77,7 @@ export default {
       notSupport: '当前浏览器不支持'
     },
     actions: {
-      import: '导入模板',
+      import: '导入JSON',
       clear: '清空',
       preview: '预览',
       json: '生成JSON',
