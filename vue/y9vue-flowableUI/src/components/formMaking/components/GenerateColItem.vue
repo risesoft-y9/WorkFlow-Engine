@@ -60,171 +60,6 @@
             </template>
           </generate-col-item>
 
-          <generate-tab-item
-            v-else-if="col.type == 'tabs'"
-            :key="col.key"
-            :model="dataModels"
-            :rules="rules"
-            :element="col"
-            :remote="remote"
-            :blanks="blanks"
-            :display="display"
-            :sub-hide-fields="subHideFields"
-            :sub-disabled-fields="subDisabledFields"
-            :edit="edit"
-            :remote-option="remoteOption"
-            :platform="platform"
-            :preview="preview"
-            :container-key="containerKey"
-            :data-source-value="dataSourceValue"
-            :event-function="eventFunction"
-            :print-read="printRead"
-            :is-subform="isSubform"
-            :row-index="rowIndex"
-            :sub-name="subName"
-            :is-dialog="isDialog"
-            :dialog-name="dialogName"
-            :is-group="isGroup"
-            :group="group"
-            :field-node="fieldNode"
-          >
-            <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-              <slot :name="blank.name" :model="scope.model"></slot>
-            </template>
-          </generate-tab-item>
-
-          <generate-collapse
-            v-else-if="col.type == 'collapse'"
-            :key="col.key"
-            :model="dataModels"
-            :rules="rules"
-            :element="col"
-            :remote="remote"
-            :blanks="blanks"
-            :display="display"
-            :sub-hide-fields="subHideFields"
-            :sub-disabled-fields="subDisabledFields"
-            :edit="edit"
-            :remote-option="remoteOption"
-            :platform="platform"
-            :preview="preview"
-            :container-key="containerKey"
-            :data-source-value="dataSourceValue"
-            :event-function="eventFunction"
-            :print-read="printRead"
-            :is-subform="isSubform"
-            :row-index="rowIndex"
-            :sub-name="subName"
-            :is-dialog="isDialog"
-            :dialog-name="dialogName"
-            :is-group="isGroup"
-            :group="group"
-            :field-node="fieldNode"
-          >
-            <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-              <slot :name="blank.name" :model="scope.model"></slot>
-            </template>
-          </generate-collapse>
-
-          <generate-report
-            v-else-if="col.type == 'report'"
-            :key="col.key"
-            :model="dataModels"
-            :rules="rules"
-            :element="col"
-            :remote="remote"
-            :blanks="blanks"
-            :display="display"
-            :sub-hide-fields="subHideFields"
-            :sub-disabled-fields="subDisabledFields"
-            :edit="edit"
-            :remote-option="remoteOption"
-            :platform="platform"
-            :preview="preview"
-            :container-key="containerKey"
-            :data-source-value="dataSourceValue"
-            :event-function="eventFunction"
-            :print-read="printRead"
-            :is-subform="isSubform"
-            :row-index="rowIndex"
-            :sub-name="subName"
-            :is-dialog="isDialog"
-            :dialog-name="dialogName"
-            :is-group="isGroup"
-            :group="group"
-            :field-node="fieldNode"
-          >
-            <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-              <slot :name="blank.name" :model="scope.model"></slot>
-            </template>
-          </generate-report>
-
-          <generate-card
-            v-else-if="col.type == 'card'"
-            :key="col.key"
-            :model="dataModels"
-            :rules="rules"
-            :element="col"
-            :remote="remote"
-            :blanks="blanks"
-            :display="display"
-            :sub-hide-fields="subHideFields"
-            :sub-disabled-fields="subDisabledFields"
-            :edit="edit"
-            :remote-option="remoteOption"
-            :platform="platform"
-            :preview="preview"
-            :container-key="containerKey"
-            :data-source-value="dataSourceValue"
-            :event-function="eventFunction"
-            :print-read="printRead"
-            :is-subform="isSubform"
-            :row-index="rowIndex"
-            :sub-name="subName"
-            :is-dialog="isDialog"
-            :dialog-name="dialogName"
-            :is-group="isGroup"
-            :group="group"
-            :field-node="fieldNode"
-          >
-            <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-              <slot :name="blank.name" :model="scope.model"></slot>
-            </template>
-          </generate-card>
-
-          <generate-inline
-            v-else-if="col.type == 'inline'"
-            :key="col.key"
-            :model="dataModels"
-            :rules="rules"
-            :element="col"
-            :remote="remote"
-            :blanks="blanks"
-            :display="display"
-            :sub-hide-fields="subHideFields"
-            :sub-disabled-fields="subDisabledFields"
-            :edit="edit"
-            :remote-option="remoteOption"
-            :platform="platform"
-            :preview="preview"
-            :container-key="containerKey"
-            :data-source-value="dataSourceValue"
-            :event-function="eventFunction"
-            :print-read="printRead"
-            :is-subform="isSubform"
-            :row-index="rowIndex"
-            :sub-name="subName"
-            :is-dialog="isDialog"
-            :dialog-name="dialogName"
-            :is-group="isGroup"
-            :group="group"
-            :field-node="fieldNode"
-          >
-            <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-              <slot :name="blank.name" :model="scope.model"></slot>
-            </template>
-          </generate-inline>
-
           <generate-form-item
             v-else
             :key="col.key"
@@ -265,18 +100,12 @@
 
 <script>
 import GenerateFormItem from './GenerateFormItem.vue'
-import GenerateInline from './GenerateInline.vue'
 import { defineAsyncComponent } from 'vue'
 
 export default {
   name: 'generate-col-item',
   components: {
     GenerateFormItem:defineAsyncComponent(() => import('./GenerateFormItem.vue')),
-    GenerateInline,
-    GenerateTabItem: defineAsyncComponent(() => import('./GenerateTabItem.vue')),
-    GenerateReport: defineAsyncComponent(() => import('./GenerateReport.vue')),
-    GenerateCollapse: defineAsyncComponent(() => import('./GenerateCollapse.vue')),
-    GenerateCard: defineAsyncComponent(() => import('./GenerateCard.vue'))
   },
   props: ['element', 'model', 'rules', 'remote', 'blanks', 'display', 'edit', 'remoteOption', 'platform', 'preview', 'containerKey', 'dataSourceValue', 'eventFunction', 'printRead', 'isSubform', 'rowIndex', 'subName', 'subHideFields', 'subDisabledFields', 'isDialog', 'dialogName', 'group', 'fieldNode', 'isGroup'],
   data () {

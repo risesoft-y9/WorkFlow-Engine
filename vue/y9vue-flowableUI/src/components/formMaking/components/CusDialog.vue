@@ -10,6 +10,7 @@
     :width="width"
     ref="elDialog"
     :fullscreen="fullscreen"
+    :show-close="showclose"
     top="10vh"
     draggable
     destroy-on-close	
@@ -68,6 +69,10 @@ export default {
     customClass: {
       type: String,
       default: ''
+    },
+    showclose: {//Y9
+      type: Boolean,
+      default: true
     }
   },
   emits: ['on-submit', 'on-close'],

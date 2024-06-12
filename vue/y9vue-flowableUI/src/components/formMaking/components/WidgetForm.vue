@@ -25,126 +25,8 @@
         >
 
           <template #item="{element, index}">
-            
-              <widget-table
-                v-if="element.type === 'table'"
-                :key="element.key"
-                :element="element"
-                v-model:select="selectWidget" 
-                :index="index" 
-                :data="data"
-                @select-change="handleSelectChange" 
-                :platform="platform"
-                :form-key="formKey"
-              >
-              </widget-table>
-
-              <widget-collapse
-                v-else-if="element.type === 'collapse'"
-                :key="element.key"
-                :element="element"
-                v-model:select="selectWidget" 
-                :index="index" 
-                :data="data"
-                @select-change="handleSelectChange"  
-                :platform="platform"
-                :form-key="formKey"
-              >
-              </widget-collapse>
-
-              <widget-tab-item
-                v-else-if="element.type === 'tabs'"
-                :key="element.key"
-                :element="element"
-                v-model:select="selectWidget" 
-                :index="index" 
-                :data="data"
-                @select-change="handleSelectChange"  
-                :platform="platform"
-                :form-key="formKey"
-              >
-              </widget-tab-item>
-
-              <widget-report
-                v-else-if="element.type === 'report'"
-                :key="element.key"
-                :element="element"
-                v-model:select="selectWidget" 
-                :index="index" 
-                :data="data"
-                @select-change="handleSelectChange" 
-                :platform="platform" 
-                :form-key="formKey"
-              >
-              </widget-report>
-
-              <widget-inline
-                v-else-if="element.type === 'inline'"
-                :key="element.key"
-                :element="element"
-                v-model:select="selectWidget" 
-                :index="index"
-                :data="data"
-                @select-change="handleSelectChange" 
-                :platform="platform" 
-                :form-key="formKey"
-              >
-              </widget-inline>
-
-              <widget-sub-form
-                v-else-if="element.type === 'subform'"
-                :key="element.key"
-                :element="element"
-                v-model:select="selectWidget" 
-                :index="index"
-                :data="data"
-                @select-change="handleSelectChange" 
-                :platform="platform" 
-                :form-key="formKey"
-              >
-              </widget-sub-form>
-
-              <widget-group
-                v-else-if="element.type === 'group'"
-                :key="element.key"
-                :element="element"
-                v-model:select="selectWidget" 
-                :index="index"
-                :data="data"
-                @select-change="handleSelectChange" 
-                :platform="platform" 
-                :form-key="formKey"
-              >
-              </widget-group>
-
-              <widget-dialog
-                v-else-if="element.type === 'dialog'"
-                :key="element.key"
-                :element="element"
-                v-model:select="selectWidget" 
-                :index="index"
-                :data="data"
-                @select-change="handleSelectChange" 
-                :platform="platform" 
-                :form-key="formKey"
-              >
-              </widget-dialog>
-
-              <widget-card
-                v-else-if="element.type === 'card'"
-                :key="element.key"
-                :element="element"
-                v-model:select="selectWidget" 
-                :index="index"
-                :data="data"
-                @select-change="handleSelectChange" 
-                :platform="platform" 
-                :form-key="formKey"
-              >
-              </widget-card>
-
-              <widget-form-item 
-                v-else-if="element.type !== 'grid'" 
+            <widget-form-item 
+                v-if="element.type !== 'grid'" 
                 :key="element.key" 
                 :element="element" 
                 v-model:select="selectWidget" 
@@ -152,9 +34,11 @@
                 :data="data"
                 @select-change="handleSelectChange" 
                 :form-key="formKey" 
+                :fieldBind="fieldBind"
+                :formId="formId"
+                :fieldList="fieldList"
               >
               </widget-form-item>
-
               <widget-col-item
                 v-else
                 :key="element.key" 
@@ -165,9 +49,11 @@
                 @select-change="handleSelectChange"
                 :platform="platform"
                 :form-key="formKey"
+                :fieldBind="fieldBind"
+                :formId="formId"
+                :fieldList="fieldList"
               >
               </widget-col-item>
-            
           </template>
         </draggable>
       </el-scrollbar>
@@ -179,41 +65,23 @@
 import Draggable from 'vuedraggable/src/vuedraggable'
 import WidgetFormItem from './WidgetFormItem.vue'
 import WidgetColItem from './WidgetColItem.vue'
-import WidgetTable from './WidgetTable.vue'
-import WidgetTabItem from './WidgetTabItem.vue'
-import WidgetReport from './WidgetReport.vue'
-import WidgetInline from './WidgetInline.vue'
-import WidgetSubForm from './WidgetSubForm.vue'
-import WidgetCollapse from './WidgetCollapse.vue'
-import WidgetDialog from './WidgetDialog.vue'
-import WidgetCard from './WidgetCard.vue'
-import WidgetGroup from './WidgetGroup.vue'
 import { EventBus } from '../util/event-bus.js'
 import { generateKeyToTD, generateKeyToCol, generateKeyToTH } from '../util'
 import _ from 'lodash'
 import { ElMessage } from 'element-plus'
-
 export default {
   components: {
     Draggable,
     WidgetFormItem,
-    WidgetColItem,
-    WidgetTable,
-    WidgetTabItem,
-    WidgetReport,
-    WidgetInline,
-    WidgetSubForm,
-    WidgetCollapse,
-    WidgetDialog,
-    WidgetCard,
-    WidgetGroup
+    WidgetColItem
   },
-  props: ['data', 'select', 'platform', 'formKey'],
+  props: ['data', 'select', 'platform', 'formKey','fieldBind','formId'],
   emits: ['update:select'],
   inject: ['changeConfigTab'],
   data () {
     return {
-      selectWidget: this.select || {}
+      selectWidget: this.select || {},
+      fieldList:[]//Y9
     }
   },
   mounted () {
@@ -464,7 +332,7 @@ export default {
     },
     selectWidget (val) {
       this.$emit('update:select', val)
-    }
+    },
   }
 }
 </script>

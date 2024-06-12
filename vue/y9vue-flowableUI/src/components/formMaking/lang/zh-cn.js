@@ -77,7 +77,7 @@ export default {
       notSupport: '当前浏览器不支持'
     },
     actions: {
-      import: '导入模板',
+      import: '导入JSON',
       clear: '清空',
       preview: '预览',
       json: '生成JSON',
@@ -114,6 +114,8 @@ export default {
     config: {
       form: {
         title: '表单属性',
+        initDataUrl: '表单初始化数据路径',//Y9
+        permissionForm: '权限表单',//Y9
         labelPosition: {
           title: '标签对齐方式',
           left: '左对齐',
@@ -131,9 +133,13 @@ export default {
         widgetType: '类型',
         title: '字段属性',
         model: '字段标识',
+        model1: '字段标识(已绑定)',//Y9
         name: '标题',
         width: '宽度',
         height: '高度',
+        minHeight: '最小高度',//Y9
+        querySign: '开启查询',//Y9
+        fieldPermission: '字段权限',//Y9
         size: '大小',
         labelWidth: '标签宽度',
         labelWrap: '标签换行',
@@ -165,6 +171,7 @@ export default {
         label: '标签',
         childrenOption: '子选项',
         defaultValue: '默认值',
+        customDefaultValue: '自定义默认值',//Y9
         showType: '显示类型',
         isRange: '是否为范围选择',
         isTimestamp: '是否获取时间戳',
@@ -310,6 +317,7 @@ export default {
       delete: '删除'
     },
     tooltip: {
+      authority: '字段权限',//Y9
       trash: '删除',
       clone: '复制',
       addrow: '插入行',

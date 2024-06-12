@@ -1,33 +1,131 @@
 <template>
-  <span :class="{'print-read-label': printRead}">
+  <div :class="{'print-read-label': printRead}" style="width: 100%;">
     <template v-if="widget.type == 'blank'">
       <div :style="{width: isTable ? '100%' : widget.options.width}">
         <slot :name="widget.model" :model="dataModels"></slot>
       </div>
-      
-    </template>
-
-    <template v-if="widget.type == 'component'">  
-      <div :style="{width: isTable ? '100%' : widget.options.width}">
-        <component :is="`component-${widget.key}-${key}`" :key="key" v-model="dataModel" :ref="'fm-'+widget.model"></component>
-      </div>
     </template>
 
     <template v-if="widget.type == 'custom'">  
-      <div :style="{width: isTable ? '100%' : widget.options.width}">
-        <component 
-          :is="widget.el" 
+      <!-- 自定义意见框组件 -->
+      <div v-if="widget.el == 'custom-opinion'" :style="{width: isTable ? '100%' : widget.options.width}">
+        <component
+          :is="widget.el"
+          :ref="'fm-'+widget.model"
           v-model="dataModel"
-          :width="widget.options.width"
-          :height="widget.options.height"
-          :size="config.size"
-          :placeholder="widget.options.placeholder"
-          :readonly="widget.options.readonly"
+          :clearable="widget.options.clearable"
           :disabled="elementDisabled"
           :editable="widget.options.editable"
-          :clearable="widget.options.clearable"
-          :ref="'fm-'+widget.model"
+          :height="widget.options.height"
+          :minHeight="widget.options.minHeight"
+          :opinionName="widget.name"
+          :opinionframemark="widget.model.split('@')[1]"
+          :placeholder="widget.options.placeholder"
           :print-read="printRead"
+          :readonly="widget.options.readonly"
+           :width="widget.options.width"
+           v-bind="{...widget.options.customProps, ...widget.options.extendProps}"
+           v-on="dynamicEvents"
+           v-on:opinion_click="opinionClick($event)"
+        ></component>
+      </div>
+      <!-- 自定义意见框组件 -->
+      <!-- 自定义附件列表组件 -->
+      <div v-else-if="widget.el == 'custom-file'" :style="{width: isTable ? '100%' : widget.options.width}">
+        <component
+          :is="widget.el"
+          :ref="'fm-'+widget.model"
+          v-model="dataModel"
+          :clearable="widget.options.clearable"
+          :disabled="elementDisabled"
+          :editable="widget.options.editable"
+          :height="widget.options.height"
+          :placeholder="widget.options.placeholder"
+          :print-read="printRead"
+          :readonly="widget.options.readonly"
+          :width="widget.options.width"
+          v-bind="{...widget.options.customProps, ...widget.options.extendProps}"
+          v-on="dynamicEvents"
+        ></component>
+      </div>
+      <!-- 自定义附件列表组件 -->
+      <!-- 自定义人员树组件 -->
+      <div v-else-if="widget.el == 'custom-personTree'" :style="{width: isTable ? '100%' : widget.options.width}">
+        <component
+          :is="widget.el"
+          :ref="'fm-'+widget.model"
+          v-model="dataModel"
+          :clearable="widget.options.clearable"
+          :disabled="elementDisabled"
+          :editable="widget.options.editable"
+          :height="widget.options.height"
+          :placeholder="widget.options.placeholder"
+          :print-read="printRead"
+          :readonly="widget.options.readonly"
+          :tableField="widget.options.tableField"
+          :width="widget.options.width"
+          v-bind="{...widget.options.customProps, ...widget.options.extendProps}"
+          v-on="dynamicEvents"
+          v-on:update_personName="updatePersonName($event)"
+        ></component>
+      </div>
+      <!-- 自定义人员树组件 -->
+      <!-- 自定义编号按钮组件 -->
+      <div v-else-if="widget.el == 'custom-numberButton'" :style="{width: isTable ? '100%' : widget.options.width}">
+        <component
+          :is="widget.el"
+          :ref="'fm-'+widget.model"
+          v-model="dataModel"
+          :clearable="widget.options.clearable"
+          :disabled="elementDisabled"
+          :editable="widget.options.editable"
+          :height="widget.options.height"
+          :numberCustom="widget.model.split('@')[1]"
+          :numberName="widget.name"
+          :placeholder="widget.options.placeholder"
+          :print-read="printRead"
+          :readonly="widget.options.readonly"
+          :tableField="widget.options.tableField"
+          :width="widget.options.width"
+          v-bind="{...widget.options.customProps, ...widget.options.extendProps}"
+          v-on="dynamicEvents"
+          v-on:update_number="updateNumber($event)"
+        ></component>
+      </div>
+      <!-- 自定义编号按钮组件 -->
+      <!-- 图片显示组件 -->
+      <div v-else-if="widget.el == 'custom-picture'" :style="{width: isTable ? '100%' : widget.options.width}">
+        <component
+          :is="widget.el"
+          :ref="'fm-'+widget.model"
+          v-model="dataModel"
+          :clearable="widget.options.clearable"
+          :disabled="elementDisabled"
+          :editable="widget.options.editable"
+          :height="widget.options.height"
+          :placeholder="widget.options.placeholder"
+          :print-read="printRead"
+          :readonly="widget.options.readonly"
+          :tableField="widget.options.tableField"
+          :width="widget.options.width"
+          v-bind="{...widget.options.customProps, ...widget.options.extendProps}"
+          v-on="dynamicEvents"
+        ></component>
+      </div>
+      <!-- 图片显示组件 -->
+      <div v-else :style="{width: isTable ? '100%' : widget.options.width}">
+        <component
+          :is="widget.el"
+          :ref="'fm-'+widget.model"
+          v-model="dataModel"
+          :clearable="widget.options.clearable"
+          :disabled="elementDisabled"
+          :editable="widget.options.editable"
+          :height="widget.options.height"
+          :placeholder="widget.options.placeholder"
+          :print-read="printRead"
+          :readonly="widget.options.readonly"
+          :width="widget.options.width"
           v-bind="{...widget.options.customProps, ...widget.options.extendProps}"
           v-on="dynamicEvents"
         ></component>
@@ -39,42 +137,40 @@
         <span>{{dataModel}}</span>
       </template>
       <template v-else>
-        <template v-if="widget.options.showPassword" >
-          <a-input-password 
-            :type="widget.options.dataTypeCheck ? widget.options.dataType : 'text'"
-            v-model:value="dataModel"
-            :disabled="elementDisabled"
-            :placeholder="widget.options.placeholder"
-            :style="{width: isTable ? '100%' : widget.options.width}"
-            :ref="'fm-'+widget.model"
-            :size="config.size"
-            :allow-clear="widget.options.clearable"
-            v-bind="widget.options.customProps"
-            @focus="handleOnFocus"
-            @blur="handleOnBlur"
-            autocomplete="off"
-          />
-        </template>
-        <template v-else>
-          <a-input
-            :type="widget.options.dataTypeCheck ? widget.options.dataType : 'text'"
-            v-model:value="dataModel"
-            :disabled="elementDisabled"
-            :placeholder="widget.options.placeholder"
-            :style="{width: isTable ? '100%' : widget.options.width}"
-            :ref="'fm-'+widget.model"
-            :size="config.size"
-            :allow-clear="widget.options.clearable"
-            :maxlength="Number(widget.options.maxlength || Infinity)"
-            :show-count="widget.options.showWordLimit"
-            v-bind="widget.options.customProps"
-            @focus="handleOnFocus"
-            @blur="handleOnBlur"
-            autocomplete="off"
-          ></a-input>
-          
-        </template>
+        <el-input 
+          v-if="widget.options.dataTypeCheck && (widget.options.dataType == 'number' || widget.options.dataType == 'integer' || widget.options.dataType == 'float')"
+          type="number"
+          v-model.number="dataModel"
+          :disabled="elementDisabled"
+          :clearable="widget.options.clearable"
+          :placeholder="widget.options.placeholder"
+          :readonly="widget.options.readonly"
+          :show-password="widget.options.showPassword"
+          :style="{width: isTable ? '100%' : widget.options.width}"
+          :ref="'fm-'+widget.model"
+          v-bind="widget.options.customProps"
+          @focus="handleOnFocus"
+          @blur="handleOnBlur"
+        ></el-input>
+        <el-input 
+          v-else
+          :type="widget.options.dataTypeCheck ? widget.options.dataType : 'text'"
+          v-model="dataModel"
+          :disabled="elementDisabled"
+          :placeholder="widget.options.placeholder"
+          :readonly="widget.options.readonly"
+          :show-password="widget.options.showPassword"
+          :style="{width: isTable ? '100%' : widget.options.width}"
+          :clearable="widget.options.clearable"
+          :ref="'fm-'+widget.model"
+          :maxlength="widget.options.maxlength"
+          :show-word-limit="widget.options.showWordLimit"
+          v-bind="widget.options.customProps"
+          @focus="handleOnFocus"
+          @blur="handleOnBlur"
+        ></el-input>
       </template>
+      
     </template>
 
     <template v-if="widget.type == 'textarea'">
@@ -82,45 +178,45 @@
         <pre>{{dataModel}}</pre>
       </template>
       <template v-else>
-        <a-textarea type="textarea" :rows="widget.options.rows"
-          v-model:value="dataModel"
+        <el-input type="textarea" :rows="widget.options.rows"
+          v-model="dataModel"
           :disabled="elementDisabled"
           :placeholder="widget.options.placeholder"
+          :readonly="widget.options.readonly"
           :style="{width: isTable ? '100%' : widget.options.width}"
+          :clearable="widget.options.clearable"
           :ref="'fm-'+widget.model"
-          :allow-clear="widget.options.clearable"
-          :size="config.size"
-          :maxlength="Number(widget.options.maxlength)"
-          :show-count="widget.options.showWordLimit"
-          :autoSize="widget.options.autosize"
+          :maxlength="widget.options.maxlength"
+          :show-word-limit="widget.options.showWordLimit"
+          :autosize="widget.options.autosize"
           v-bind="widget.options.customProps"
           @focus="handleOnFocus"
           @blur="handleOnBlur"
-        ></a-textarea>
+        ></el-input>
       </template>
     </template>
 
     <template v-if="widget.type == 'number'">
       <template v-if="printRead">
-        <span>{{dataModel.toFixed(widget.options.precision)}}</span>
+        <span>{{typeof dataModel == 'number' ? dataModel.toFixed(widget.options.precision) : dataModel}}</span>
       </template>
       <template v-else>
-        <a-input-number 
-          v-model:value="dataModel" 
+        <el-input-number 
+          v-model="dataModel" 
           :style="{width: isTable ? '100%' : widget.options.width}"
           :step="widget.options.step"
           :disabled="elementDisabled"
+          :readonly="widget.options.readonly"
           :min="widget.options.min"
           :max="widget.options.max"
           :controls-position="widget.options.controlsPosition"
           :precision="widget.options.precision"
           :controls="widget.options.controls"
           :ref="'fm-'+widget.model"
-          :size="config.size"
           v-bind="widget.options.customProps"
           @focus="handleOnFocus"
           @blur="handleOnBlur"
-        ></a-input-number>
+        ></el-input-number>
       </template>
     </template>
 
@@ -141,21 +237,20 @@
         </template>
       </template>
       <template v-else>
-        <a-radio-group v-model:value="dataModel"
-          :style="{width: isTable ? '100%' : widget.options.width}"
+        <el-radio-group v-model="dataModel"
+          :style="{width: isTable ? '100%' : widget.options.width, display: 'block'}"
           :disabled="elementDisabled"
-          :size="config.size"
           :ref="'fm-'+widget.model"
           v-bind="widget.options.customProps"
         >
-          <a-radio
+          <el-radio
             :style="{display: widget.options.inline ? 'inline-block' : 'block'}"
-            :value="item.value" v-for="(item, index) in (widget.options.remote ? remoteOptions : widget.options.options)" :key="index"
+            :value="item.value" :label="item.value" v-for="(item, index) in (widget.options.remote ? remoteOptions : widget.options.options)" :key="index"
           >
             <template v-if="widget.options.remote">{{item.label}}</template>
             <template v-else>{{widget.options.showLabel ? item.label : item.value}}</template>
-          </a-radio>
-        </a-radio-group>
+          </el-radio>
+        </el-radio-group>
       </template>
     </template>
 
@@ -179,29 +274,21 @@
         </template>
       </template>
       <template v-else>
-        <a-checkbox-group v-model:value="dataModel"
-          :style="{
-            width: isTable ? '100%' : widget.options.width,
-            display: 'flex',
-            'flex-wrap': 'wrap',
-            'flex-direction': widget.options.inline ? 'row' : 'column'
-          }"
+        <el-checkbox-group v-model="dataModel"
+          :style="{width: isTable ? '100%' : widget.options.width}"
           :disabled="elementDisabled"
-          :size="config.size"
           :ref="'fm-'+widget.model"
           v-bind="widget.options.customProps"
         >
-          <a-checkbox
+          <el-checkbox
             
-            :style="{
-              'line-height': '30px'
-            }"
-            :value="item.value" v-for="(item, index) in (widget.options.remote ? remoteOptions : widget.options.options)" :key="index"
+            :style="{display: widget.options.inline ? 'inline-block' : 'block'}"
+            :label="item.value" v-for="(item, index) in (widget.options.remote ? remoteOptions : widget.options.options)" :key="index"
           >
             <template v-if="widget.options.remote">{{item.label}}</template>
             <template v-else>{{widget.options.showLabel ? item.label : item.value}}</template>
-          </a-checkbox>
-        </a-checkbox-group>
+          </el-checkbox>
+        </el-checkbox-group>
       </template>
     </template>
 
@@ -210,105 +297,52 @@
         {{dataModel}}
       </template>
       <template v-else>
-        <a-time-picker 
-          v-if="!widget.options.isRange"
-          v-model:value="dataModel"
+        <el-time-picker 
+          v-model="dataModel"
+          :is-range="widget.options.isRange"
           :placeholder="widget.options.placeholder"
           :start-placeholder="widget.options.startPlaceholder"
           :end-placeholder="widget.options.endPlaceholder"
           :readonly="widget.options.readonly"
           :disabled="elementDisabled"
-          :inputReadOnly="!widget.options.editable"
+          :editable="widget.options.editable"
           :clearable="widget.options.clearable"
           :arrowControl="widget.options.arrowControl"
           :value-format="widget.options.format"
-          :format="widget.options.format"
           :style="{width: isTable ? '100%' : widget.options.width}"
           :ref="'fm-'+widget.model"
-          :size="config.size"
+          v-bind="widget.options.customProps"
           @focus="handleOnFocus"
           @blur="handleOnBlur"
-          popupClassName="fm-popup-index"
-          v-bind="widget.options.customProps"
         >
-        </a-time-picker>
-        <a-time-range-picker 
-          v-else
-          v-model:value="dataModel"
-          :placeholder="[widget.options.startPlaceholder, widget.options.endPlaceholder]"
-          :readonly="widget.options.readonly"
-          :disabled="elementDisabled"
-          :inputReadOnly="!widget.options.editable"
-          :clearable="widget.options.clearable"
-          :arrowControl="widget.options.arrowControl"
-          :value-format="widget.options.format"
-          :format="widget.options.format"
-          :style="{width: isTable ? '100%' : widget.options.width}"
-          :ref="'fm-'+widget.model"
-          :size="config.size"
-          @focus="handleOnFocus"
-          @blur="handleOnBlur"
-          popupClassName="fm-popup-index"
-          v-bind="widget.options.customProps"
-        >
-        </a-time-range-picker>
+        </el-time-picker>
       </template>
     </template>
 
     <template v-if="widget.type=='date'">
       <template v-if="printRead">
-        {{
-          widget.options.type == 'dates' ? 
-          dataModel.join('、') :
-          typeof dataModel == 'object' ? dataModel.join(' ~ ')  : dataModel
-          
-        }}
+        {{typeof dataModel == 'object' ? dataModel.join('、')  : dataModel}}
       </template>
       <template v-else>
-        <a-date-picker
-          v-model:value="dataModel"
-          :picker="widget.options.type == 'datetime' ? 'date' : widget.options.type"
+        <el-date-picker
+          v-model="dataModel"
+          :type="widget.options.type"
           :placeholder="widget.options.placeholder"
           :start-placeholder="widget.options.startPlaceholder"
           :end-placeholder="widget.options.endPlaceholder"
           :readonly="widget.options.readonly"
           :disabled="elementDisabled"
-          :inputReadOnly="!widget.options.editable"
+          :editable="widget.options.editable"
           :clearable="widget.options.clearable"
           :value-format="widget.options.timestamp ? 'timestamp' : widget.options.format"
           :format="widget.options.format"
           :style="{width: isTable ? '100%' : widget.options.width}"
           :ref="'fm-'+widget.model"
-          :size="config.size"
+          v-bind="widget.options.customProps"
           @focus="handleOnFocus"
           @blur="handleOnBlur"
-          :show-time="widget.options.type == 'datetime'"
-          popupClassName="fm-popup-index"
-          v-if="widget.options.type != 'dates' && widget.options.type != 'daterange' && widget.options.type != 'datetimerange' && widget.options.type != 'monthrange'"
-          v-bind="widget.options.customProps"
         >
-        </a-date-picker>
-        <a-range-picker
-          v-model:value="dataModel"
-          :placeholder="[widget.options.startPlaceholder, widget.options.endPlaceholder]"
-          :readonly="widget.options.readonly"
-          :disabled="elementDisabled"
-          :inputReadOnly="!widget.options.editable"
-          :clearable="widget.options.clearable"
-          :value-format="widget.options.format"
-          :format="widget.options.format"
-          :style="{width: isTable ? '100%' : widget.options.width}"
-          :ref="'fm-'+widget.model"
-          :size="config.size"
-          @focus="handleOnFocus"
-          @blur="handleOnBlur"
-          :show-time="widget.options.type == 'datetimerange'"
-          :picker="widget.options.type == 'monthrange' ? 'month' : 'date'"
-          v-if="widget.options.type == 'daterange' || widget.options.type == 'datetimerange' || widget.options.type == 'monthrange'"
-          popupClassName="fm-popup-index"
-          v-bind="widget.options.customProps"
-        >
-        </a-range-picker>
+        </el-date-picker>
       </template>
     </template>
 
@@ -317,24 +351,32 @@
         {{dataModel}}
       </template>
       <template v-else>
-        <a-rate v-model:value="dataModel"
+        <el-rate v-model="dataModel"
           :max="widget.options.max"
-          :count="widget.options.max"
           :disabled="elementDisabled"
           :allow-half="widget.options.allowHalf"
           :show-score="widget.options.showScore"
           :ref="'fm-'+widget.model"
-          :size="config.size"
-          :style="{width: isTable ? '100%' : widget.options.width}"
+          :style="{width: isTable ? '100%' : widget.options.width, display: 'inline-block'}"
           v-bind="widget.options.customProps"
-        ></a-rate>
+        ></el-rate>
       </template>
     </template>
 
     <template v-if="widget.type == 'color'">
-      <div :style="{width: isTable ? '100%' : widget.options.width, color: '#999'}">
-        Not currently supported.
-      </div>
+      <template v-if="printRead">
+        {{dataModel}}
+      </template>
+      <template v-else>
+        <el-color-picker 
+          v-model="dataModel"
+          :disabled="elementDisabled"
+          :show-alpha="widget.options.showAlpha"
+          :ref="'fm-'+widget.model"
+          :style="{width: isTable ? '100%' : widget.options.width}"
+          v-bind="widget.options.customProps"
+        ></el-color-picker>
+      </template>
     </template>
 
     <template v-if="widget.type == 'select'">
@@ -361,26 +403,21 @@
         </template>
       </template>
       <template v-else>
-        <a-select
-          v-model:value="dataModel"
+        <el-select
+          v-model="dataModel"
           :disabled="elementDisabled"
-          :mode="widget.options.multiple ? 'multiple' : 'default'"
-          :allow-clear="widget.options.clearable"
+          :multiple="widget.options.multiple"
+          :clearable="widget.options.clearable"
           :placeholder="widget.options.placeholder"
           :style="{width: isTable ? '100%' : widget.options.width}"
-          :show-search="widget.options.filterable"
-          option-filter-prop="children"
+          :filterable="widget.options.filterable"
           :ref="'fm-'+widget.model"
-          :size="config.size"
+          v-bind="widget.options.customProps"
           @focus="handleOnFocus"
           @blur="handleOnBlur"
-          popupClassName="fm-select-dropdown"
-          v-bind="widget.options.customProps"
         >
-          <a-select-option v-for="item in (widget.options.remote ? remoteOptions : widget.options.options)" :key="item.value" :value="item.value">
-            {{widget.options.showLabel || widget.options.remote?item.label:item.value}}
-          </a-select-option>
-        </a-select>
+          <el-option :style="{ fontSize: sizeObjInfo.smallFontSize }" v-for="item in (widget.options.remote ? remoteOptions : widget.options.options)" :key="item.value" :value="item.value" :label="widget.options.showLabel || widget.options.remote?item.label:item.value"></el-option>
+        </el-select>
       </template>
     </template>
 
@@ -389,13 +426,14 @@
         {{dataModel}}
       </template>
       <template v-else>
-        <a-switch
-          v-model:checked="dataModel"
+        <el-switch
+          v-model="dataModel"
           :disabled="elementDisabled"
           :ref="'fm-'+widget.model"
-          :size="config.size"
+          :style="{width: isTable ? '100%' : widget.options.width}"
+          v-bind="widget.options.customProps"
         >
-        </a-switch>
+        </el-switch>
       </template>
     </template>
 
@@ -404,8 +442,8 @@
         {{dataModel}}
       </template>
       <template v-else>
-        <a-slider 
-          v-model:value="dataModel"
+        <el-slider 
+          v-model="dataModel"
           :min="widget.options.min"
           :max="widget.options.max"
           :disabled="elementDisabled"
@@ -414,9 +452,8 @@
           :range="widget.options.range"
           :style="{width: isTable ? '100%' : widget.options.width}"
           :ref="'fm-'+widget.model"
-          :size="config.size"
           v-bind="widget.options.customProps"
-        ></a-slider>
+        ></el-slider>
       </template>
     </template>
 
@@ -437,17 +474,15 @@
         :min="widget.options.min"
         :is-edit="widget.options.isEdit"
         :action="widget.options.action"
-        ui="antd"
         :headers="widget.options.headers || []"
         :ref="'fm-'+widget.model"
         :withCredentials="widget.options.withCredentials"
+        :print-read="printRead"
         @on-upload-success="handleOnUploadSuccess"
         @on-upload-error="handleOnUploadError"
         @on-upload-remove="handleOnUploadRemove"
         @on-upload-progress="handleOnUploadProgress"
         :on-select="handleOnUploadSelect"
-        :print-read="printRead"
-        :size="config.size"
       >
       </fm-upload>
     </template>
@@ -457,7 +492,6 @@
         <div v-html="dataModel" class="ql-editor"></div>
       </template>
       <template v-else>
-
         <Editor
           v-model="dataModel"
           :custom-style="{width: isTable ? '100%' : widget.options.width, cursor: (elementDisabled) ? 'no-drop' : '', backgroundColor: (elementDisabled) ? '#F5F7FA' : ''}"
@@ -486,339 +520,55 @@
         </template>
       </template>
       <template v-else>
-        <a-cascader
-          v-model:value="dataModel"
+        <el-cascader
+          v-model="dataModel"
           :disabled="elementDisabled"
-          :allow-clear="widget.options.clearable"
+          :clearable="widget.options.clearable"
           :placeholder="widget.options.placeholder"
           :style="{width: isTable ? '100%' : widget.options.width}"
           :options="widget.options.remote ? remoteOptions : widget.options.options"
+          @change="onCascaderChange"
           :ref="'fm-'+widget.model"
           @focus="handleOnFocus"
           @blur="handleOnBlur"
-          :showSearch="widget.options.filterable"
-          :change-on-select="widget.options.checkStrictly"
-          popupClassName="fm-popup-index"
-          :multiple="widget.options.multiple"
-          :size="config.size"
+          :props="propsModel"
+          collapse-tags
+          :filterable="widget.options.filterable"
           v-bind="widget.options.customProps"
         >
-
-        </a-cascader>
+        </el-cascader>
       </template>
     </template>
-
-    <template v-if="widget.type == 'treeselect'">
-      <template v-if="printRead">
-        <template v-if="widget.options.remote">
-          {{
-            typeof dataModel == 'object' ?
-              dataModel.map(dm => getTreeText(dm, remoteOptions)).join('、')
-              : getTreeText(dataModel, remoteOptions)
-          }}
-        </template>
-        <template v-else>
-          {{
-            typeof dataModel == 'object' ? 
-              dataModel.map(dm => getTreeText(dm, widget.options.options)).join('、')
-              : getTreeText(dataModel, widget.options.options)
-          }}
-        </template>
-      </template>
-      <template v-else>
-         <a-tree-select
-          v-model:value="dataModel"
-          :disabled="elementDisabled"
-          :allow-clear="widget.options.clearable"
-          :placeholder="widget.options.placeholder"
-          :style="{width: isTable ? '100%' : widget.options.width}"
-          :tree-data="widget.options.remote ? remoteOptions : widget.options.options"
-          :ref="'fm-'+widget.model"
-          @focus="handleOnFocus"
-          @blur="handleOnBlur"
-          :multiple="widget.options.multiple"
-          :showSearch="widget.options.filterable"
-          popupClassName="fm-popup-index"
-          :size="config.size"
-          v-bind="widget.options.customProps"
-        >
-        </a-tree-select>
-      </template>
-    </template>
-
     <template v-if="widget.type == 'text'">
       <span :ref="'fm-'+widget.model" :style="{width: isTable ? '100%' : (widget.options.width || '100%'), display: 'inline-block'}">{{dataModel}}</span>
     </template>
-
-    <template v-if="widget.type == 'html'">
-      <span v-html="dataModel" :ref="'fm-'+widget.model" :style="{width: isTable ? '100%' : (widget.options.width || '100%'), display: 'inline-block'}"></span>
-    </template>
-
-    <template v-if="widget.type == 'table'">
-      <fm-form-table
-        v-model:value="dataModel"
-        :columns="widget.tableColumns"
-        :models="dataModels"
-        :remote="remote"
-        :blanks="blanks"
-        :disableddata="elementDisabled || printRead"
-        :rules="rules"
-        :name="widget.model"
-        :remote-option="remoteOption"
-        :ref="'fm-'+widget.model"
-        :preview="preview"
-        :platform="platform"
-        :data-source-value="dataSourceValue"
-        :event-function="eventFunction"
-        :widget="widget"
-        :container-key="containerKey"
-        :print-read="printRead"
-        :paging="widget.options.paging"
-        :page-size="widget.options.pageSize"
-        :config="config"
-        :is-add="widget.options.isAdd ?? true"
-        :is-delete="widget.options.isDelete ?? true"
-        :show-control="widget.options.showControl ?? true"
-        :is-dialog="isDialog"
-        :dialog-name="dialogName"
-        :is-group="isGroup"
-        :group="group"
-        :field-node="fieldNode"
-      >
-        <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-          <slot :name="blank.name" :model="scope.model"></slot>
-        </template>
-      </fm-form-table>
-    </template>
-
-    <template v-if="widget.type == 'subform'">
-      <fm-sub-form
-        v-model:value="dataModel"
-        :list="widget.list"
-        :models="dataModels"
-        :remote="remote"
-        :blanks="blanks"
-        :disableddata="elementDisabled || printRead"
-        :rules="rules"
-        :name="widget.model"
-        :remote-option="remoteOption"
-        :ref="'fm-'+widget.model"
-        :preview="preview"
-        :platform="platform"
-        :data-source-value="dataSourceValue"
-        :event-function="eventFunction"
-        :widget="widget"
-        :print-read="printRead"
-        :paging="widget.options.paging"
-        :page-size="widget.options.pageSize"
-        :config="config"
-        :container-key="containerKey"
-        :show-control="widget.options.showControl"
-        :is-delete="widget.options.isDelete ?? true"
-        :is-add="widget.options.isAdd ?? true"
-        :is-dialog="isDialog"
-        :dialog-name="dialogName"
-        :is-group="isGroup"
-        :group="group"
-        :field-node="fieldNode"
-      >
-        <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-          <slot :name="blank.name" :model="scope.model"></slot>
-        </template>
-      </fm-sub-form>
-    </template>
-
-    <template v-if="widget.type == 'group'">
-      <fm-group
-        v-model:value="dataModel"
-        :rules="rules"
-        :element="widget"
-        :remote="remote"
-        :blanks="blanks"
-        :edit="!elementDisabled"
-        :remote-option="remoteOption"
-        :platform="platform"
-        :preview="preview"
-        :container-key="containerKey"
-        :data-source-value="dataSourceValue"
-        :event-function="eventFunction"
-        :print-read="printRead"
-        :ref="'fm-'+widget.model"
-        :is-group="isGroup"
-        :group="group"
-        :field-node="fieldNode"
-        :config="config"
-      >
-        <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-          <slot :name="blank.name" :model="scope.model"></slot>
-        </template>
-      </fm-group>
-    </template>
-
-    <template v-if="widget.type == 'fileupload'">
-      <fm-file-upload
-        v-model="dataModel"
-        :disabled="elementDisabled"
-        :style="{'width': isTable ? '100%' : widget.options.width}"
-        :token="widget.options.token"
-        :domain="widget.options.domain"
-        :multiple="widget.options.multiple"
-        :limit="widget.options.limit"
-        :is-qiniu="widget.options.isQiniu"
-        :min="widget.options.min"
-        :action="widget.options.action"
-        ui="antd"
-        :headers="widget.options.headers || []"
-        :ref="'fm-'+widget.model"
-        :withCredentials="widget.options.withCredentials"
-        :print-read="printRead"
-        @on-upload-success="handleOnUploadSuccess"
-        @on-upload-error="handleOnUploadError"
-        @on-upload-remove="handleOnUploadRemove"
-        @on-upload-progress="handleOnUploadProgress"
-        :on-select="handleOnUploadSelect"
-        :size="config.size"
-      >
-      </fm-file-upload>
-    </template>
-
-    <template v-if="widget.type == 'button'">
-      <a-button
-        :disabled="elementDisabled"
-        :size="widget.options.buttonSize"
-        :type="widget.options.buttonType == 'text' ? 'link' : widget.options.buttonType || 'default'"
-        :shape="widget.options.buttonCircle ? 'circle' : (widget.options.buttonRound ? 'round' : null)"
-        :ghost="widget.options.buttonPlain"
-        :style="{width: widget.options.width}"
-        :ref="'fm-'+widget.model"
-        @click="handleOnClick"
-        v-bind="widget.options.customProps"
-      >{{widget.options.buttonName}}
-      </a-button>
-    </template>
-
-    <template v-if="widget.type == 'link'">
-      <div :style="{width: isTable ? '100%' : widget.options.width, color: '#999'}">
-        <a-button 
-          type="link"
-          :danger="widget.options.linkType == 'danger'"
-          :disabled="elementDisabled"
-          :href="widget.options.href"
-          :target="widget.options.blank ? '_blank' : '_self'"
-          :ref="'fm-'+widget.model"
-          @click="handleOnClick"
-          :style="{width: isTable ? '100%' : widget.options.width}"
-          v-bind="widget.options.customProps"
-        >
-          {{widget.options.linkName}}
-        </a-button>
-      </div>
-    </template>
-
-    <template v-if="widget.type == 'steps'">
-      <a-steps :current="dataModel" 
-        :ref="'fm-'+widget.model"
-        :space="widget.options.space"
-        :direction="widget.options.direction"
-        :status="widget.options.processStatus"
-        :style="{'line-height': 'normal'}"
-        v-bind="widget.options.customProps"
-      >
-        <template v-for="(item, index) in (widget.options.remote ? remoteOptions : widget.options.steps)" :key="index">
-           <a-step 
-            :title="widget.options.remote ? item.value : item.title" 
-            :description="widget.options.remote ? item.label : item.description"  ></a-step>
-        </template>
-      </a-steps>
-    </template>
-
-    <template v-if="widget.type == 'pagination'">
-      <a-pagination
-        v-model:current="dataModel"
-        :page-size="widget.options.pageSize"
-        :pager-count="widget.options.pagerCount"
-        :disabled="widget.options.disabled"
-        :background="widget.options.background"
-        :total="widget.options.total"
-        :show-total="total => `${$t('fm.config.widget.total')} ${total}`"
-        show-less-items
-        :show-size-changer="false"
-        :size="widget.options.background ? '' : 'small'"
-        :ref="'fm-'+widget.model"
-        v-bind="widget.options.customProps"
-      />
-    </template>
-
-    <template v-if="widget.type == 'transfer'">
-      <template v-if="printRead">
-        <template v-if="widget.options.remote">
-          {{
-            dataModel.map(dm => remoteOptions.find(item => 
-              item.key == dm)?.title).join('、')
-          }}
-        </template>
-        <template v-else>
-          {{
-            dataModel.map(dm => widget.options.data.find(item => 
-              item.key == dm)?.label).join('、')
-          }}
-        </template>
-      </template>
-      <template v-else>
-         <a-transfer
-          v-model:target-keys="dataModel"
-          :disabled="elementDisabled"
-          :data-source="widget.options.remote ? remoteOptions : dataOnly"
-          :render="item => `${item.title}`"
-          :showSearch="widget.options.filterable"
-          :titles="widget.options.titles"
-          :style="{width: isTable ? '100%' : widget.options.width}"
-          :ref="'fm-'+widget.model"
-          v-bind="widget.options.customProps"
-        ></a-transfer>
-      </template>
-    </template>
-  </span>
+  </div>
 </template>
 
 <script>
-import FmUpload from '../Upload/index.vue'
-import FmFormTable from './FormTable.vue'
-import FmFileUpload from '../Upload/file.vue'
-import { EventBus } from '../../util/event-bus'
-import Editor from '../Editor/index.vue'
-import FmSubForm from './SubForm.vue'
-import FmGroup from './GenerateGroup.vue'
-import { inject } from 'vue'
+import FmUpload from './Upload/index.vue'
+import { EventBus } from '../util/event-bus'
+import Editor from './Editor/index.vue'
 
 export default {
   name: 'generate-element-item',
   components: {
     FmUpload,
-    FmFormTable,
-    FmFileUpload,
-    Editor,
-    FmSubForm,
-    FmGroup
+    Editor
   },
-  props: ['config', 'widget', 'modelValue', 'models', 'remote', 'isTable', 'blanks', 'disabled', 'edit', 'remoteOption', 'rules', 'platform', 'preview', 'dataSourceValue', 'eventFunction', 'rowIndex', 'tableName', 'containerKey', 'printRead', 'isMobile', 'isSubform', 'subName', 'isDialog', 'dialogName', 'group', 'fieldNode', 'isGroup'],
-  emits: ['on-table-change', 'update:modelValue', 'update:widget'],
-  setup () {
-    const useInjectFormItemContext = inject('useInjectFormItemContext')
-
-    const formItemContext = useInjectFormItemContext ? useInjectFormItemContext() : null
-
-    return {
-      formItemContext
-    }
-  },
+  props: ['widget', 'modelValue', 'models', 'remote', 'isTable', 'blanks', 'disabled', 'edit', 
+    'remoteOption', 'rules', 'platform', 'preview', 'dataSourceValue', 'eventFunction', 
+    'rowIndex', 'tableName', 'printRead', 'isMobile', 'isSubform', 'subName', 
+    'isDialog', 'dialogName', 'group', 'fieldNode', 'containerKey', 'isGroup'],
+  emits: ['update:modelValue', 'on-table-change'],
   data () {
     return {
       dataModel: this.modelValue,
       dataModels: this.models,
       key: new Date().getTime(),
       modelName: this.widget.model,
-      dataOnly : this.widget.options?.data?.map(item => ({...item, title: item.label})),
+      propsModel: {multiple: this.widget.options.multiple || false, checkStrictly: this.widget.options.checkStrictly || false},
+      propsTransfer: {key: 'key', label: 'label'},
       remoteOptions: [],
       dynamicEvents: this.handleOnDynamicEvent(),
       generateDisabled: undefined,
@@ -833,16 +583,26 @@ export default {
       }
     }
   },
-  inject: ['generateComponentInstance', 'deleteComponentInstance', 'eventScriptConfig'],
+  inject: ['generateComponentInstance', 'deleteComponentInstance', 'eventScriptConfig','sizeObjInfo'],
   created () {
-    
+
     if (this.widget.options.remote 
       && (Object.keys(this.widget.options).indexOf('remoteType') >= 0 ? this.widget.options.remoteType == 'func' : true)
       && this.remote[this.widget.options.remoteFunc]) {
-
-      this.remote[this.widget.options.remoteFunc]((data) => {
-        this.loadOptions(data)
-      })
+        if(this.widget.options.optionData != undefined){//绑定了数据字典，this.widget.options.optionData为数据字典绑定信息
+          this.remote[this.widget.options.remoteFunc]((data) => {
+            this.loadOptions(data.option);
+            setTimeout(()=>{
+                if(this.dataModel == ""){//值为空则设置默认值
+                  this.dataModel = data.defaultValue;
+                }
+              },500)
+          },this.widget.options.optionData)
+        }else{
+          this.remote[this.widget.options.remoteFunc]((data) => {
+            this.loadOptions(data)
+          })
+        }
     }
 
     if (this.widget.options.remote 
@@ -919,12 +679,11 @@ export default {
                 } else if (_pthis.isDialog && _pthis.dialogName) {
                   _pthis.eventFunction[currentEventScript.key]({
                     field: _pthis.widget.model,
-                    dialog: _pthis.dialogName,
+                    dialog: _pthis.isDialog ? _pthis.dialogName : null,
                     currentRef: this,
                     group: _pthis.group,
                     fieldNode: _pthis.fieldNode,
-                    $eventArgs: arg
-                  })
+                    $eventArgs: arg})
                 } else {
                   _pthis.eventFunction[currentEventScript.key]({
                     field: _pthis.widget.model, 
@@ -941,12 +700,14 @@ export default {
     }
   },
   mounted () {
+
     this.generateComponentInstance && this.generateComponentInstance(
       this.fieldNode, 
       this.$refs['fm-'+this.widget.model]
     )
   },
   beforeUnmount () {
+    
     this.deleteComponentInstance && this.deleteComponentInstance(this.fieldNode)
   },
   methods: {
@@ -954,6 +715,7 @@ export default {
       let currentEvents = {}
 
       for (let i in this.widget.events) {
+
         let funcKey = this.widget.events[i]
 
         funcKey && (
@@ -996,7 +758,7 @@ export default {
           })
         } else {
           this.eventFunction[funcKey]({
-            field: this.widget.model, 
+            field: this.widget.model,
             currentRef: this.$refs['fm-'+this.widget.model],
             group: this.group,
             fieldNode: this.fieldNode,
@@ -1009,8 +771,9 @@ export default {
     loadOptions (data) {
       if (!Array.isArray(data)) return
       this.remoteOptions = data.map(item => {
-        
-        if (this.widget.options.props.children && this.widget.options.props.children.length && Object.keys(item).includes(this.widget.options.props.children)) {
+        if (this.widget.options.props.children 
+              && this.widget.options.props.children.length 
+              && Object.keys(item).includes(this.widget.options.props.children)) {
           return {
             value: item[this.widget.options.props.value],
             label: item[this.widget.options.props.label],
@@ -1019,15 +782,11 @@ export default {
         } else {
           if (this.widget.type == 'steps') {
             return {
-              value: item[this.widget.options.props.title],
+              value: item[this.widget.options.props.title] + '', 
               label: item[this.widget.options.props.description]
             }
           } else if (this.widget.type == 'transfer') {
-            return {
-              key: item[this.widget.options.props.key],
-              title: item[this.widget.options.props.label],
-              disabled: item[this.widget.options.props.disabled]
-            }
+            return item
           } else {
             return {
               value: item[this.widget.options.props.value],
@@ -1058,6 +817,52 @@ export default {
         return []
       }
     },
+    onCascaderChange (value) {
+      if (value) {
+        this.$nextTick(() => {
+          setTimeout(() => {
+            this.$parent && this.$parent.clearValidate()
+            this.$parent && this.$parent.$parent && this.$parent.$parent.$refs.generateFormItem && this.$parent.$parent.$refs.generateFormItem.clearValidate()
+          })
+        })
+      }
+    },
+    handleTransferChange (value) {
+      this.dataModel = value
+    },
+    getCascaderText (value, options, texts = []) {
+      if (value.length >= 1) {
+        let currentOpt = options?.find(opt => opt.value == value[0])
+        if (currentOpt) {
+          texts.push(currentOpt.label)
+        }
+        value.splice(0, 1)
+        return this.getCascaderText(value, currentOpt?.children, texts)
+      } else if (value.length == 0) {
+        return texts
+      }
+    },
+    getTreeText (value, options) {
+      for (let i = 0; i < options.length; i++) {
+        let currentOpt = options[i]
+
+        if (currentOpt.value == value) {
+          return currentOpt.label
+        }
+
+        if (currentOpt.children && currentOpt.children.length > 0) {
+          let res = this.getTreeText(value, currentOpt.children)
+
+          if (res == '-') {
+            continue
+          } else {
+            return res
+          }
+        } 
+      }
+
+      return '-'
+    },
     loadUploadConfig () {
       if (this.widget.options.tokenType === 'func') {
         !this.widget.options.token && this.remote[this.widget.options.tokenFunc]((data) => {
@@ -1071,6 +876,18 @@ export default {
         }
       }
     },
+    opinionClick(data){//Y9
+      console.log("意见框点击事件："+data.opinionFrameMark);
+      EventBus.$emit('opinion_Click', data);
+    },
+    updateNumber(data){//Y9
+      console.log("编号更新事件");
+      EventBus.$emit('update_number', data);
+    },
+    updatePersonName(data){//Y9
+      console.log("人员选择更新事件");
+      EventBus.$emit('update_personName', data);
+    },
     handleOnClick () {
       this.execFunction('onClick', {})
     },
@@ -1078,7 +895,6 @@ export default {
       this.execFunction('onFocus', {})
     },
     handleOnBlur () {
-
       this.execFunction('onBlur', {})
     },
     handleOnUploadSelect (file) {
@@ -1125,7 +941,7 @@ export default {
         } else if (this.isDialog && this.dialogName) {
           return this.eventFunction[funcKey]({
             field: this.widget.model,
-            dialog: this.subName,
+            dialog: this.dialogName,
             currentRef: this.$refs['fm-'+this.widget.model],
             group: this.group,
             fieldNode: this.fieldNode,
@@ -1134,7 +950,7 @@ export default {
         } else {
           return this.eventFunction[funcKey]({
             field: this.widget.model, 
-            currentRef: this.$refs['fm-'+this.widget.model],
+            currentRef: this.$refs['fm-'+this.widget.model], 
             group: this.group,
             fieldNode: this.fieldNode,
             ...arg
@@ -1142,40 +958,8 @@ export default {
         }
       }
     },
-    getCascaderText (value, options, texts = []) {
-      if (value.length >= 1) {
-        let currentOpt = options?.find(opt => opt.value == value[0])
-        if (currentOpt) {
-          texts.push(currentOpt.label)
-        }
-        value.splice(0, 1)
-        return this.getCascaderText(value, currentOpt?.children, texts)
-      } else if (value.length == 0) {
-        return texts
-      }
-    },
-    getTreeText (value, options) {
-      for (let i = 0; i < options.length; i++) {
-        let currentOpt = options[i]
-
-        if (currentOpt.value == value) {
-          return currentOpt.label
-        }
-
-        if (currentOpt.children && currentOpt.children.length > 0) {
-          let res = this.getTreeText(value, currentOpt.children)
-
-          if (res == '-') {
-            continue
-          } else {
-            return res
-          }
-        }
-      }
-
-      return '-'
-    },
     getDataSourceOptions (remoteName = 'remoteDataSource') {
+
       let key = this.group ? this.group + '.' + this.widget.model + '.' + this.widget.options[remoteName]
         : this.widget.model + '.' + this.widget.options[remoteName]
 
@@ -1192,10 +976,6 @@ export default {
 
     dataModel (val, oldValue) {
       this.$emit('update:modelValue', val)
-
-      setTimeout(() => {
-        this.formItemContext && this.formItemContext.onFieldChange()
-      })
     },
     'remoteOption': {
       deep: true,
@@ -1211,7 +991,6 @@ export default {
     'dataSourceValue': {
       deep: true,
       handler: function(val) {
-
         if (this.dataSourceValue) {
           let options = this.getDataSourceOptions()
       
@@ -1227,3 +1006,21 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+/* Y9  sizeObjInfo */
+:deep(.el-radio.el-radio--small .el-radio__label) {
+  font-size: v-bind('sizeObjInfo.smallFontSize');
+}
+
+:global(.el-date-range-picker .el-date-range-picker__header button) {
+  font-size: v-bind('sizeObjInfo.smallFontSize');
+}
+
+:global(.el-date-range-picker .el-date-range-picker__header div) {
+  font-size: v-bind('sizeObjInfo.mediumFontSize');
+}
+
+:global(.el-date-range-picker .el-date-table) {
+  font-size: v-bind('sizeObjInfo.smallFontSize');
+}
+</style>

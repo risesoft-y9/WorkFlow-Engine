@@ -3,7 +3,6 @@ import { createI18n } from 'vue-i18n'
 
 import MakingForm from './components/formMaking/components/Container.vue'
 import GenerateForm from './components/formMaking/components/GenerateForm.vue'
-import GenerateAntdForm from './components/formMaking/components/AntdvGenerator/GenerateForm.vue'
 
 import enUS from './components/formMaking/lang/en-us.js'
 import zhCN from './components/formMaking/lang/zh-cn.js'
@@ -87,22 +86,10 @@ GenerateForm.install = function (app, opts = {
   loadOptions(opts)
 }
 
-GenerateAntdForm.install = function (app, opts = {
-  locale: 'en'
-}) {
-  loadLang(app, opts.locale, opts.i18n)
-  if (expire >= new Date().getTime()) {
-    app.component(GenerateForm.name, GenerateForm)
-  }
-  
-  displayVersion()
-  loadOptions(opts)
-}
 
 const components = [
   MakingForm,
   GenerateForm,
-  GenerateAntdForm
 ]
 
 const install = function (app, opts = {
@@ -138,12 +125,10 @@ export {
   install,
   MakingForm,
   GenerateForm,
-  GenerateAntdForm
 }
 
 export default {
   install,
   MakingForm,
   GenerateForm,
-  GenerateAntdForm
 }

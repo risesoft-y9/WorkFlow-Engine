@@ -196,12 +196,6 @@
               <el-radio v-model="data.options.remoteType" label="func" value="func">{{$t('fm.config.widget.remoteFunc')}}</el-radio>
               <el-input clearable  v-if="data.options.remoteType == 'func'" v-model="data.options.remoteFunc" style="margin-bottom: 5px;">
               </el-input>
-              <!-- Y9绑定数据字典 -->
-              <el-input v-if="data.options.remoteType == 'func'" v-model="data.options.optionData" :readonly="true" placeholder="点击绑定" size="mini">
-                <template #prepend>
-                  <div slot="prepend" style="width: 48px;">数据字典</div>
-                </template>
-              </el-input>
               <el-input clearable  v-model="data.options.props.value">
                 <template #prepend>
                   <div style="width: 48px;">{{$t('fm.config.widget.value')}}</div>

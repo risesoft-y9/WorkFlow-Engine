@@ -38,7 +38,6 @@ import FormMakingV3 from './index';
 
 import opinionList from "./views/opinion/opinionList.vue";
 import formFileList from "./views/file/formFileList.vue";
-import word from "./views/word/index.vue";
 import numberButton from "./views/number/numberButton.vue";
 import personTree from "./views/personTree/index.vue";
 import customPicture from "./views/customPicture/index.vue";
@@ -100,10 +99,6 @@ app.use(FormMakingV3, {
       name: 'custom-file',
       component: formFileList
     },
-    {//加入正文组件
-      name: 'custom-word',
-      component: word
-    },
     {//加入人员树组件
       name: 'custom-personTree',
       component: personTree
@@ -118,6 +113,7 @@ app.use(FormMakingV3, {
     }
   ]
 })
+app.component('QuillEditor', QuillEditor)
 app.use(print)
 // app.use(i18n)
 

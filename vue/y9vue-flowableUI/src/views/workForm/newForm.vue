@@ -6,7 +6,7 @@
                   element-loading-background="rgba(0, 0, 0, 0.8)"
                   element-loading-spinner="el-icon-loading"
     >
-        <el-aside class="formaside" style="width: 100%;height: auto;overflow: auto;padding: 1% 0% 2% 0%;">
+        <el-aside class="formaside" style="width: 80%;height: auto;overflow: auto;padding: 1% 0% 2% 0%;margin-left: 10%;">
             <fm-generate-form
                     id="printTest"
                     ref="generateForm"
@@ -238,7 +238,18 @@ function show(fId) {
                             }).catch(() => {
                             });
                         }else{
-                            generateForm.value.setData(res1.data);
+                            let data = res1.data;
+                            for (let key of Object.keys(data)) {//处理多选框
+                                if (data[key] != undefined && data[key] != '' && data[key].startsWith('[') && data[key].endsWith(']')) {
+                                    if(data[key] == '[]'){
+                                        data[key] = [];
+                                    }else{
+                                        let str = data[key].split('[')[1].split(']')[0];
+                                        data[key] = str.split(', ');
+                                    }
+                                }
+                            }
+                            generateForm.value.setData(data);
                         }
                         setTimeout(() => {//加载意见框,附件列表
                             generateForm.value.disabledAll(true);//默认禁用表单所有字段

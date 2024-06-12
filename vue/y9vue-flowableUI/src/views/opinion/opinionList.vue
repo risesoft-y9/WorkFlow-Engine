@@ -2,12 +2,12 @@
  * @Author: qinman
  * @Date: 2023-11-10 09:17:03
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-03-05 15:00:36
+ * @LastEditTime: 2024-06-12 15:34:20
  * @Description: 
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-flowableUI\src\views\opinion\opinionList.vue
+ * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-flowable\vue\y9vue-flowableUI\src\views\opinion\opinionList.vue
 -->
 <template>
-  <el-container style="height: 100%; width: 100%;padding:0 5px;" class="opinionList-container">
+  <el-container style="height: 100%; width: 100%;padding:0 0px;" class="opinionList-container">
     <el-header style="line-height: 25px;padding: 0;" :height="headerheight">
       <el-link v-if="historyShow" type="primary" icon="el-icon-time" :underline="false" @click="showOpinionHistory">{{ $t('意见留痕') }}</el-link>
     </el-header>
@@ -347,6 +347,7 @@ let {
     resize: none;
     width: 99.9%;
     border: 0;
+    padding: 10px;
   }
   .suggest ul {
     height: auto;

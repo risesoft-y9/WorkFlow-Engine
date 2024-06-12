@@ -50,12 +50,6 @@
           </template>
         </generate-col-item>
 
-        <template v-else-if="element.type == 'blank'">
-          <el-form-item :label="element.name" :prop="element.model" :key="element.key">
-            <slot :name="element.model" :model="models"></slot>
-          </el-form-item>
-        </template>
-
         <generate-form-item
           v-else
           :key="element.key"
@@ -413,24 +407,6 @@ export default {
           genList[i].columns.forEach(item => {
             this.generateSubformModel(subName, item.list, dataBindFields)
           })
-        } else if (genList[i].type === 'tabs') {
-          genList[i].tabs.forEach(item => {
-            this.generateSubformModel(subName, item.list, dataBindFields)
-          })
-        } else if (genList[i].type === 'collapse') {
-          genList[i].tabs.forEach(item => {
-            this.generateSubformModel(subName, item.list, dataBindFields)
-          })
-        } else if (genList[i].type === 'report') {
-          genList[i].rows.forEach(row => {
-            row.columns.forEach(column => {
-              this.generateSubformModel(subName, column.list, dataBindFields)
-            })
-          })
-        } else if (genList[i].type === 'inline') {
-          this.generateSubformModel(subName, genList[i].list, dataBindFields)
-        } else if (genList[i].type === 'card') {
-          this.generateSubformModel(subName, genList[i].list, dataBindFields)
         } else {
 
           if (genList[i].type === 'blank') {
@@ -440,11 +416,9 @@ export default {
           }
 
           if (genList[i].options.dataBind) {
-            if (['subform', 'group', 'table'].includes(genList[i].type)) {
-              dataBindFields[genList[i].model] = {}
-            } else {
+            
               dataBindFields[genList[i].model] = true
-            }
+            
           }
 
           genList[i].tableColumns && genList[i].tableColumns.length && genList[i].tableColumns.forEach(item => {
@@ -469,14 +443,7 @@ export default {
             this._generateDataSource(item, `${subName}.${genList[i].model}.${item.model}`)
           })
 
-          if (genList[i].type == 'subform') {
-            this.generateSubformModel(`${subName}.${genList[i].model}`, genList[i].list, dataBindFields[genList[i].model] || {})
-          }
-
-          if (genList[i].type == 'group') {
-            this.generateGroupModel(`${subName}.${genList[i].model}`, genList[i].list, dataBindFields[genList[i].model] || {})
-          }
-
+         
           this._generateRules(`${subName}.${genList[i].model}`, genList[i].rules)
 
           // 处理子表单中的DataSource
@@ -493,24 +460,6 @@ export default {
           genList[i].columns.forEach(item => {
             this.generateDialogModel(dialogName, item.list, dataBindFields)
           })
-        } else if (genList[i].type === 'tabs') {
-          genList[i].tabs.forEach(item => {
-            this.generateDialogModel(dialogName, item.list, dataBindFields)
-          })
-        } else if (genList[i].type === 'collapse') {
-          genList[i].tabs.forEach(item => {
-            this.generateDialogModel(dialogName, item.list, dataBindFields)
-          })
-        } else if (genList[i].type === 'report') {
-          genList[i].rows.forEach(row => {
-            row.columns.forEach(column => {
-              this.generateDialogModel(dialogName, column.list, dataBindFields)
-            })
-          })
-        } else if (genList[i].type === 'inline') {
-          this.generateDialogModel(dialogName, genList[i].list, dataBindFields)
-        } else if (genList[i].type === 'card') {
-          this.generateDialogModel(dialogName, genList[i].list, dataBindFields)
         } else {
 
           if (genList[i].type === 'blank') {
@@ -520,21 +469,10 @@ export default {
           }
 
           if (genList[i].options.dataBind) {
-            if (['subform', 'group', 'table'].includes(genList[i].type)) {
-              dataBindFields[genList[i].model] = {}
-            } else {
               dataBindFields[genList[i].model] = true
-            }
           }
 
-          if (genList[i].type == 'subform') {
-            this.generateSubformModel(`${dialogName}.${genList[i].model}`, genList[i].list, dataBindFields[genList[i].model] || {})
-          }
-
-          if (genList[i].type == 'group') {
-            this.generateGroupModel(`${dialogName}.${genList[i].model}`, genList[i].list, dataBindFields[genList[i].model] || {})
-          }
-
+         
           genList[i].tableColumns && genList[i].tableColumns.length && genList[i].tableColumns.forEach(item => {
             if (item.type === 'blank') {
               this.blanks.push({
@@ -573,24 +511,6 @@ export default {
           genList[i].columns.forEach(item => {
             this.generateGroupModel(groupName, item.list, dataBindFields)
           })
-        } else if (genList[i].type === 'tabs') {
-          genList[i].tabs.forEach(item => {
-            this.generateGroupModel(groupName, item.list, dataBindFields)
-          })
-        } else if (genList[i].type === 'collapse') {
-          genList[i].tabs.forEach(item => {
-            this.generateGroupModel(groupName, item.list, dataBindFields)
-          })
-        } else if (genList[i].type === 'report') {
-          genList[i].rows.forEach(row => {
-            row.columns.forEach(column => {
-              this.generateGroupModel(groupName, column.list, dataBindFields)
-            })
-          })
-        } else if (genList[i].type === 'inline') {
-          this.generateGroupModel(groupName, genList[i].list, dataBindFields)
-        } else if (genList[i].type === 'card') {
-          this.generateGroupModel(groupName, genList[i].list, dataBindFields)
         } else {
 
           if (genList[i].type === 'blank') {
@@ -600,20 +520,10 @@ export default {
           }
 
           if (genList[i].options.dataBind) {
-            if (['subform', 'group', 'table'].includes(genList[i].type)) {
-              dataBindFields[genList[i].model] = {}
-            } else {
               dataBindFields[genList[i].model] = true
-            }
           }
 
-          if (genList[i].type == 'subform') {
-            this.generateSubformModel(`${groupName}.${genList[i].model}`, genList[i].list, dataBindFields[genList[i].model] || {})
-          }
-
-          if (genList[i].type == 'group') {
-            this.generateGroupModel(`${groupName}.${genList[i].model}`, genList[i].list, dataBindFields[genList[i].model] || {})
-          }
+          
 
           genList[i].tableColumns && genList[i].tableColumns.length && genList[i].tableColumns.forEach(item => {
             if (item.type === 'blank') {
@@ -655,34 +565,6 @@ export default {
           genList[i].columns.forEach(item => {
             this.generateModel(item.list)
           })
-        } else if (genList[i].type === 'tabs') {
-          genList[i].tabs.forEach(item => {
-            this.generateModel(item.list)
-          })
-
-          this.displayFields[genList[i].model] = !genList[i].options.hidden
-        } else if (genList[i].type === 'collapse') {
-          genList[i].tabs.forEach(item => {
-            this.generateModel(item.list)
-          })
-
-          this.displayFields[genList[i].model] = !genList[i].options.hidden
-        } else if (genList[i].type === 'report') {
-          genList[i].rows.forEach(row => {
-            row.columns.forEach(column => {
-              this.generateModel(column.list)
-            })
-          })
-
-          this.displayFields[genList[i].model] = !genList[i].options.hidden
-        } else if (genList[i].type === 'inline') {
-          this.generateModel(genList[i].list)
-
-          this.displayFields[genList[i].model] = !genList[i].options.hidden
-        } else if (genList[i].type === 'card') {
-          this.generateModel(genList[i].list)
-
-          this.displayFields[genList[i].model] = !genList[i].options.hidden
         } else {
           if (Object.keys(this.formValue).indexOf(genList[i].model) >= 0) {
             this.models[genList[i].model] = this.formValue[genList[i].model]
@@ -712,25 +594,10 @@ export default {
 
           if ((Object.keys(genList[i].options).indexOf('dataBind') < 0 || genList[i].options.dataBind) && genList[i].key && genList[i].model) {
             
-            if (['subform', 'table', 'dialog', 'group'].includes(genList[i].type)) {
-              this.dataBindFields[genList[i].model] = {}
-            } else {
               this.dataBindFields[genList[i].model] = true
-            }
           }
 
-          if (genList[i].type == 'subform') {
-            this.generateSubformModel(genList[i].model, genList[i].list, this.dataBindFields[genList[i].model] || {})
-          }
-
-          if (genList[i].type == 'dialog') {
-            this.generateDialogModel(genList[i].model, genList[i].list, this.dataBindFields[genList[i].model] || {})
-          }
-
-          if (genList[i].type == 'group') {
-            this.generateGroupModel(genList[i].model, genList[i].list, this.dataBindFields[genList[i].model] || {})
-          }
-
+         
           genList[i].tableColumns && genList[i].tableColumns.length && genList[i].tableColumns.forEach(item => {
             if (item.type === 'blank') {
               this.blanks.push({
@@ -830,24 +697,6 @@ export default {
           genList[i].columns.forEach(item => {
             this._setSubDisabled(item.list, fields, disabled)
           })
-        } else if (genList[i].type === 'tabs') {
-          genList[i].tabs.forEach(item => {
-            this._setSubDisabled(item.list, fields, disabled)
-          })
-        } else if (genList[i].type === 'collapse') {
-          genList[i].tabs.forEach(item => {
-            this._setSubDisabled(item.list, fields, disabled)
-          })
-        } else if (genList[i].type === 'report') {
-          genList[i].rows.forEach(row => {
-            row.columns.forEach(column => {
-              this._setSubDisabled(column.list, fields, disabled)
-            })
-          })
-        } else if (genList[i].type === 'inline') {
-          this._setSubDisabled(genList[i].list, fields, disabled)
-        } else if (genList[i].type === 'card') {
-          this._setSubDisabled(genList[i].list, fields, disabled)
         } else {
           if (fields.length === 1) {
             if (genList[i].model === fields[0]) {
@@ -858,18 +707,7 @@ export default {
 
             let newFields = [...fields]
             newFields.splice(0, 1)
-            if (genList[i].type === 'table') {
-              this._setSubDisabled(genList[i].tableColumns, newFields, disabled)
-            }
-            if (genList[i].type === 'subform') {
-              this._setSubDisabled(genList[i].list, newFields, disabled)
-            }
-            if (genList[i].type === 'group') {
-              this._setSubDisabled(genList[i].list, newFields, disabled)
-            }
-            if (genList[i].type === 'dialog') {
-              this._setSubDisabled(genList[i].list, newFields, disabled)
-            }
+            
           }
         }
       }
@@ -886,24 +724,6 @@ export default {
               genList[i].columns.forEach(item => {
                 this._setSubOptions(item.list, fields, opts)
               })
-            } else if (genList[i].type === 'tabs') {
-              genList[i].tabs.forEach(item => {
-                this._setSubOptions(item.list, fields, opts)
-              })
-            } else if (genList[i].type === 'collapse') {
-              genList[i].tabs.forEach(item => {
-                this._setSubOptions(item.list, fields, opts)
-              })
-            } else if (genList[i].type === 'report') {
-              genList[i].rows.forEach(row => {
-                row.columns.forEach(column => {
-                  this._setSubOptions(column.list, fields, opts)
-                })
-              })
-            } else if (genList[i].type === 'inline') {
-              this._setSubOptions(genList[i].list, fields, opts)
-            } else if (genList[i].type === 'card') {
-              this._setSubOptions(genList[i].list, fields, opts)
             }
           }
         } else {
@@ -912,40 +732,9 @@ export default {
             genList[i].columns.forEach(item => {
               this._setSubOptions(item.list, fields, opts)
             })
-          } else if (genList[i].type === 'tabs') {
-            genList[i].tabs.forEach(item => {
-              this._setSubOptions(item.list, fields, opts)
-            })
-          } else if (genList[i].type === 'collapse') {
-            genList[i].tabs.forEach(item => {
-              this._setSubOptions(item.list, fields, opts)
-            })
-          } else if (genList[i].type === 'report') {
-            genList[i].rows.forEach(row => {
-              row.columns.forEach(column => {
-                this._setSubOptions(column.list, fields, opts)
-              })
-            })
-          } else if (genList[i].type === 'inline') {
-            this._setSubOptions(genList[i].list, fields, opts)
-          } else if (genList[i].type === 'card') {
-            this._setSubOptions(genList[i].list, fields, opts)
-          } else {
+          }else {
             let newFields = [...fields]
             newFields.splice(0, 1)
-            
-            if (genList[i].type === 'table') {
-              this._setSubOptions(genList[i].tableColumns, newFields, opts)
-            }
-            if (genList[i].type === 'subform') {
-              this._setSubOptions(genList[i].list, newFields, opts)
-            }
-            if (genList[i].type === 'group') {
-              this._setSubOptions(genList[i].list, newFields, opts)
-            }
-            if (genList[i].type === 'dialog') {
-              this._setSubOptions(genList[i].list, newFields, opts)
-            }
           }
         }
       }
@@ -1047,6 +836,57 @@ export default {
         }
       })
     },
+    clearValidate (writeField) {//Y9移除writeField之外字段的必填验证
+      this._clearValidate(this.formData.list,writeField)
+    },
+    _clearValidate (genList,writeField) {//Y9移除writeField之外字段的必填验证
+      for (let i = 0; i < genList.length; i++) {
+        if (genList[i].type === 'grid') {
+          genList[i].columns.forEach(item => {
+            this._clearValidate(item.list,writeField)
+          })
+        } else {
+          if (writeField.indexOf(genList[i].model) < 0) {
+            let field = [];
+            field.push(genList[i].model);
+            this.setRules (genList[i].model, [{required: false}]);
+            this.setOptions (field, {required: false});
+          }
+        }
+      }
+    },
+    clearAllValidate () {//Y9移除所有字段必填验证
+      this._clearAllValidate(this.formData.list)
+    },
+    _clearAllValidate (genList) {//Y9移除所有字段必填验证
+      for (let i = 0; i < genList.length; i++) {
+        if (genList[i].type === 'grid') {
+          genList[i].columns.forEach(item => {
+            this._clearAllValidate(item.list)
+          })
+        }else {
+          let field = [];
+          field.push(genList[i].model);
+          this.setRules (genList[i].model, [{required: false}]);
+          this.setOptions (field, {required: false});
+        }
+      }
+    },
+    disabledAll(disabled){//Y9表单所有字段设置是否禁用
+      this._disabledAll(this.formData.list,disabled);
+    },  
+    _disabledAll(genList,disabled){//Y9表单所有字段设置是否禁用
+      for (let i = 0; i < genList.length; i++) {
+        if (genList[i].type === 'grid') {
+          genList[i].columns.forEach(item => {
+            this._disabledAll(item.list, disabled)
+          })
+        } else {
+          //this.$set(genList[i].options, 'disabled', disabled)
+          genList[i].options.disabled = disabled;
+        }
+      }
+    },
     addClassName (fields, className) {
       if (typeof fields === 'string') {
         fields = [fields]
@@ -1100,6 +940,7 @@ export default {
       })
     },
     getComponent (name) {
+      console.log(111,this.instanceObject)
       if (this.instanceObject[name]) {
         return this.instanceObject[name]
       } else {

@@ -22,13 +22,13 @@
       :label-suffix="formData.config?.labelSuffix ? ' : ' : ' '"
       >
 
-      <template v-for="item in formData.list">
+      <template v-for="element in formData.list">
         <generate-col-item
-          v-if="item.type == 'grid'"
-          :key="item.key"
+          v-if="element.type == 'grid'"
+          :key="element.key"
           :model="models"
           :rules="rules"
-          :element="item"
+          :element="element"
           :remote="remote"
           :blanks="blanks"
           :display="displayFields"
@@ -50,172 +50,12 @@
           </template>
         </generate-col-item>
 
-        <generate-tab-item
-          v-else-if="item.type == 'tabs'"
-          :key="item.key"
-          :model="models"
-          :rules="rules"
-          :element="item"
-          :remote="remote"
-          :blanks="blanks"
-          :display="displayFields"
-          @input-change="onInputChange"
-          :edit="edit"
-          :remote-option="remoteOption"
-          :platform="platform"
-          :preview="preview"
-          :container-key="containerKey"
-          :data-source-value="dataSourceValue"
-          :event-function="eventFunction"
-          :print-read="printRead"
-          :form-component="$refs[formRef]"
-          :group="''"
-          :field-node="''"
-        >
-          <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-            <slot :name="blank.name" :model="scope.model"></slot>
-          </template>
-        </generate-tab-item>
-
-        <generate-collapse
-          v-else-if="item.type == 'collapse'"
-          :key="item.key"
-          :model="models"
-          :rules="rules"
-          :element="item"
-          :remote="remote"
-          :blanks="blanks"
-          :display="displayFields"
-          @input-change="onInputChange"
-          :edit="edit"
-          :remote-option="remoteOption"
-          :platform="platform"
-          :preview="preview"
-          :container-key="containerKey"
-          :data-source-value="dataSourceValue"
-          :event-function="eventFunction"
-          :print-read="printRead"
-          :form-component="$refs[formRef]"
-          :group="''"
-          :field-node="''"
-        >
-          <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-            <slot :name="blank.name" :model="scope.model"></slot>
-          </template>
-        </generate-collapse>
-
-        <generate-report
-          v-else-if="item.type == 'report'"
-          :key="item.key"
-          :model="models"
-          :rules="rules"
-          :element="item"
-          :remote="remote"
-          :blanks="blanks"
-          :display="displayFields"
-          @input-change="onInputChange"
-          :edit="edit"
-          :remote-option="remoteOption"
-          :platform="platform"
-          :preview="preview"
-          :container-key="containerKey"
-          :data-source-value="dataSourceValue"
-          :event-function="eventFunction"
-          :print-read="printRead"
-          :form-component="$refs[formRef]"
-          :group="''"
-          :field-node="''"
-        >
-          <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-            <slot :name="blank.name" :model="scope.model"></slot>
-          </template>
-        </generate-report>
-
-        <generate-inline
-          v-else-if="item.type == 'inline'"
-          :key="item.key"
-          :model="models"
-          :rules="rules"
-          :element="item"
-          :remote="remote"
-          :blanks="blanks"
-          :display="displayFields"
-          @input-change="onInputChange"
-          :edit="edit"
-          :remote-option="remoteOption"
-          :platform="platform"
-          :preview="preview"
-          :container-key="containerKey"
-          :data-source-value="dataSourceValue"
-          :event-function="eventFunction"
-          :print-read="printRead"
-          :form-component="$refs[formRef]"
-          :group="''"
-          :field-node="''"
-        >
-          <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-            <slot :name="blank.name" :model="scope.model"></slot>
-          </template>
-        </generate-inline>
-
-        <generate-dialog
-          v-else-if="item.type == 'dialog'"
-          :key="item.key"
-          v-model:models="models"
-          :rules="rules"
-          :element="item"
-          :remote="remote"
-          :blanks="blanks"
-          :edit="edit"
-          :remote-option="remoteOption"
-          :platform="platform"
-          :preview="preview"
-          :container-key="containerKey"
-          :data-source-value="dataSourceValue"
-          :event-function="eventFunction"
-          :print-read="printRead"
-          :form-component="$refs[formRef]"
-          :group="''"
-          :field-node="''"
-        >
-          <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-            <slot :name="blank.name" :model="scope.model"></slot>
-          </template>
-        </generate-dialog>
-
-        <generate-card
-          v-else-if="item.type == 'card'"
-          :key="item.key"
-          :model="models"
-          :rules="rules"
-          :element="item"
-          :remote="remote"
-          :blanks="blanks"
-          :display="displayFields"
-          @input-change="onInputChange"
-          :edit="edit"
-          :remote-option="remoteOption"
-          :platform="platform"
-          :preview="preview"
-          :container-key="containerKey"
-          :data-source-value="dataSourceValue"
-          :event-function="eventFunction"
-          :print-read="printRead"
-          :form-component="$refs[formRef]"
-          :group="''"
-          :field-node="''"
-        >
-          <template v-slot:[blank.name]="scope" v-for="blank in blanks">
-            <slot :name="blank.name" :model="scope.model"></slot>
-          </template>
-        </generate-card>
-
         <generate-form-item
           v-else
-          :key="item.key"
+          :key="element.key"
           :models="models"
           :rules="rules"
-          :widget="item"
+          :widget="element"
           :remote="remote"
           :blanks="blanks"
           :display="displayFields"
@@ -243,13 +83,6 @@
 
 <script>
 import GenerateFormItem from './GenerateFormItem.vue'
-import GenerateColItem from './GenerateColItem.vue'
-import GenerateTabItem from './GenerateTabItem.vue'
-import GenerateReport from './GenerateReport.vue'
-import GenerateInline from './GenerateInline.vue'
-import GenerateCollapse from './GenerateCollapse.vue'
-import GenerateDialog from './GenerateDialog.vue'
-import GenerateCard from './GenerateCard.vue'
 import {loadJs, updateStyleSheets, splitStyleSheets, clearStyleSheets, consoleError, getBindModels } from '../util/index.js'
 import { updateClassName } from '../util/reuse-methods.js'
 import { EventBus } from '../util/event-bus.js'
@@ -258,19 +91,12 @@ import axios from 'axios'
 import { defineAsyncComponent } from 'vue'
 import { exportPDF } from '../util/export.js'
 import { ruleToFunction } from '../util/rule-funcs.js'
-
+import GenerateColItem from './GenerateColItem.vue'
 export default {
   name: 'fm-generate-form',
-  inject: ['sizeObjInfo'],//Y9
   components: {
     GenerateFormItem,
-    GenerateColItem,
-    GenerateTabItem,
-    GenerateReport,
-    GenerateInline,
-    GenerateCollapse,
-    GenerateDialog,
-    GenerateCard
+    GenerateColItem
   },
   props: {
     data: {
@@ -581,24 +407,6 @@ export default {
           genList[i].columns.forEach(item => {
             this.generateSubformModel(subName, item.list, dataBindFields)
           })
-        } else if (genList[i].type === 'tabs') {
-          genList[i].tabs.forEach(item => {
-            this.generateSubformModel(subName, item.list, dataBindFields)
-          })
-        } else if (genList[i].type === 'collapse') {
-          genList[i].tabs.forEach(item => {
-            this.generateSubformModel(subName, item.list, dataBindFields)
-          })
-        } else if (genList[i].type === 'report') {
-          genList[i].rows.forEach(row => {
-            row.columns.forEach(column => {
-              this.generateSubformModel(subName, column.list, dataBindFields)
-            })
-          })
-        } else if (genList[i].type === 'inline') {
-          this.generateSubformModel(subName, genList[i].list, dataBindFields)
-        } else if (genList[i].type === 'card') {
-          this.generateSubformModel(subName, genList[i].list, dataBindFields)
         } else {
 
           if (genList[i].type === 'blank') {
@@ -608,11 +416,9 @@ export default {
           }
 
           if (genList[i].options.dataBind) {
-            if (['subform', 'group', 'table'].includes(genList[i].type)) {
-              dataBindFields[genList[i].model] = {}
-            } else {
+            
               dataBindFields[genList[i].model] = true
-            }
+            
           }
 
           genList[i].tableColumns && genList[i].tableColumns.length && genList[i].tableColumns.forEach(item => {
@@ -637,14 +443,7 @@ export default {
             this._generateDataSource(item, `${subName}.${genList[i].model}.${item.model}`)
           })
 
-          if (genList[i].type == 'subform') {
-            this.generateSubformModel(`${subName}.${genList[i].model}`, genList[i].list, dataBindFields[genList[i].model] || {})
-          }
-
-          if (genList[i].type == 'group') {
-            this.generateGroupModel(`${subName}.${genList[i].model}`, genList[i].list, dataBindFields[genList[i].model] || {})
-          }
-
+         
           this._generateRules(`${subName}.${genList[i].model}`, genList[i].rules)
 
           // 处理子表单中的DataSource
@@ -661,24 +460,6 @@ export default {
           genList[i].columns.forEach(item => {
             this.generateDialogModel(dialogName, item.list, dataBindFields)
           })
-        } else if (genList[i].type === 'tabs') {
-          genList[i].tabs.forEach(item => {
-            this.generateDialogModel(dialogName, item.list, dataBindFields)
-          })
-        } else if (genList[i].type === 'collapse') {
-          genList[i].tabs.forEach(item => {
-            this.generateDialogModel(dialogName, item.list, dataBindFields)
-          })
-        } else if (genList[i].type === 'report') {
-          genList[i].rows.forEach(row => {
-            row.columns.forEach(column => {
-              this.generateDialogModel(dialogName, column.list, dataBindFields)
-            })
-          })
-        } else if (genList[i].type === 'inline') {
-          this.generateDialogModel(dialogName, genList[i].list, dataBindFields)
-        } else if (genList[i].type === 'card') {
-          this.generateDialogModel(dialogName, genList[i].list, dataBindFields)
         } else {
 
           if (genList[i].type === 'blank') {
@@ -688,21 +469,10 @@ export default {
           }
 
           if (genList[i].options.dataBind) {
-            if (['subform', 'group', 'table'].includes(genList[i].type)) {
-              dataBindFields[genList[i].model] = {}
-            } else {
               dataBindFields[genList[i].model] = true
-            }
           }
 
-          if (genList[i].type == 'subform') {
-            this.generateSubformModel(`${dialogName}.${genList[i].model}`, genList[i].list, dataBindFields[genList[i].model] || {})
-          }
-
-          if (genList[i].type == 'group') {
-            this.generateGroupModel(`${dialogName}.${genList[i].model}`, genList[i].list, dataBindFields[genList[i].model] || {})
-          }
-
+         
           genList[i].tableColumns && genList[i].tableColumns.length && genList[i].tableColumns.forEach(item => {
             if (item.type === 'blank') {
               this.blanks.push({
@@ -741,24 +511,6 @@ export default {
           genList[i].columns.forEach(item => {
             this.generateGroupModel(groupName, item.list, dataBindFields)
           })
-        } else if (genList[i].type === 'tabs') {
-          genList[i].tabs.forEach(item => {
-            this.generateGroupModel(groupName, item.list, dataBindFields)
-          })
-        } else if (genList[i].type === 'collapse') {
-          genList[i].tabs.forEach(item => {
-            this.generateGroupModel(groupName, item.list, dataBindFields)
-          })
-        } else if (genList[i].type === 'report') {
-          genList[i].rows.forEach(row => {
-            row.columns.forEach(column => {
-              this.generateGroupModel(groupName, column.list, dataBindFields)
-            })
-          })
-        } else if (genList[i].type === 'inline') {
-          this.generateGroupModel(groupName, genList[i].list, dataBindFields)
-        } else if (genList[i].type === 'card') {
-          this.generateGroupModel(groupName, genList[i].list, dataBindFields)
         } else {
 
           if (genList[i].type === 'blank') {
@@ -768,20 +520,10 @@ export default {
           }
 
           if (genList[i].options.dataBind) {
-            if (['subform', 'group', 'table'].includes(genList[i].type)) {
-              dataBindFields[genList[i].model] = {}
-            } else {
               dataBindFields[genList[i].model] = true
-            }
           }
 
-          if (genList[i].type == 'subform') {
-            this.generateSubformModel(`${groupName}.${genList[i].model}`, genList[i].list, dataBindFields[genList[i].model] || {})
-          }
-
-          if (genList[i].type == 'group') {
-            this.generateGroupModel(`${groupName}.${genList[i].model}`, genList[i].list, dataBindFields[genList[i].model] || {})
-          }
+          
 
           genList[i].tableColumns && genList[i].tableColumns.length && genList[i].tableColumns.forEach(item => {
             if (item.type === 'blank') {
@@ -823,34 +565,6 @@ export default {
           genList[i].columns.forEach(item => {
             this.generateModel(item.list)
           })
-        } else if (genList[i].type === 'tabs') {
-          genList[i].tabs.forEach(item => {
-            this.generateModel(item.list)
-          })
-
-          this.displayFields[genList[i].model] = !genList[i].options.hidden
-        } else if (genList[i].type === 'collapse') {
-          genList[i].tabs.forEach(item => {
-            this.generateModel(item.list)
-          })
-
-          this.displayFields[genList[i].model] = !genList[i].options.hidden
-        } else if (genList[i].type === 'report') {
-          genList[i].rows.forEach(row => {
-            row.columns.forEach(column => {
-              this.generateModel(column.list)
-            })
-          })
-
-          this.displayFields[genList[i].model] = !genList[i].options.hidden
-        } else if (genList[i].type === 'inline') {
-          this.generateModel(genList[i].list)
-
-          this.displayFields[genList[i].model] = !genList[i].options.hidden
-        } else if (genList[i].type === 'card') {
-          this.generateModel(genList[i].list)
-
-          this.displayFields[genList[i].model] = !genList[i].options.hidden
         } else {
           if (Object.keys(this.formValue).indexOf(genList[i].model) >= 0) {
             this.models[genList[i].model] = this.formValue[genList[i].model]
@@ -880,25 +594,10 @@ export default {
 
           if ((Object.keys(genList[i].options).indexOf('dataBind') < 0 || genList[i].options.dataBind) && genList[i].key && genList[i].model) {
             
-            if (['subform', 'table', 'dialog', 'group'].includes(genList[i].type)) {
-              this.dataBindFields[genList[i].model] = {}
-            } else {
               this.dataBindFields[genList[i].model] = true
-            }
           }
 
-          if (genList[i].type == 'subform') {
-            this.generateSubformModel(genList[i].model, genList[i].list, this.dataBindFields[genList[i].model] || {})
-          }
-
-          if (genList[i].type == 'dialog') {
-            this.generateDialogModel(genList[i].model, genList[i].list, this.dataBindFields[genList[i].model] || {})
-          }
-
-          if (genList[i].type == 'group') {
-            this.generateGroupModel(genList[i].model, genList[i].list, this.dataBindFields[genList[i].model] || {})
-          }
-
+         
           genList[i].tableColumns && genList[i].tableColumns.length && genList[i].tableColumns.forEach(item => {
             if (item.type === 'blank') {
               this.blanks.push({
@@ -998,24 +697,6 @@ export default {
           genList[i].columns.forEach(item => {
             this._setSubDisabled(item.list, fields, disabled)
           })
-        } else if (genList[i].type === 'tabs') {
-          genList[i].tabs.forEach(item => {
-            this._setSubDisabled(item.list, fields, disabled)
-          })
-        } else if (genList[i].type === 'collapse') {
-          genList[i].tabs.forEach(item => {
-            this._setSubDisabled(item.list, fields, disabled)
-          })
-        } else if (genList[i].type === 'report') {
-          genList[i].rows.forEach(row => {
-            row.columns.forEach(column => {
-              this._setSubDisabled(column.list, fields, disabled)
-            })
-          })
-        } else if (genList[i].type === 'inline') {
-          this._setSubDisabled(genList[i].list, fields, disabled)
-        } else if (genList[i].type === 'card') {
-          this._setSubDisabled(genList[i].list, fields, disabled)
         } else {
           if (fields.length === 1) {
             if (genList[i].model === fields[0]) {
@@ -1026,18 +707,7 @@ export default {
 
             let newFields = [...fields]
             newFields.splice(0, 1)
-            if (genList[i].type === 'table') {
-              this._setSubDisabled(genList[i].tableColumns, newFields, disabled)
-            }
-            if (genList[i].type === 'subform') {
-              this._setSubDisabled(genList[i].list, newFields, disabled)
-            }
-            if (genList[i].type === 'group') {
-              this._setSubDisabled(genList[i].list, newFields, disabled)
-            }
-            if (genList[i].type === 'dialog') {
-              this._setSubDisabled(genList[i].list, newFields, disabled)
-            }
+            
           }
         }
       }
@@ -1054,24 +724,6 @@ export default {
               genList[i].columns.forEach(item => {
                 this._setSubOptions(item.list, fields, opts)
               })
-            } else if (genList[i].type === 'tabs') {
-              genList[i].tabs.forEach(item => {
-                this._setSubOptions(item.list, fields, opts)
-              })
-            } else if (genList[i].type === 'collapse') {
-              genList[i].tabs.forEach(item => {
-                this._setSubOptions(item.list, fields, opts)
-              })
-            } else if (genList[i].type === 'report') {
-              genList[i].rows.forEach(row => {
-                row.columns.forEach(column => {
-                  this._setSubOptions(column.list, fields, opts)
-                })
-              })
-            } else if (genList[i].type === 'inline') {
-              this._setSubOptions(genList[i].list, fields, opts)
-            } else if (genList[i].type === 'card') {
-              this._setSubOptions(genList[i].list, fields, opts)
             }
           }
         } else {
@@ -1080,40 +732,9 @@ export default {
             genList[i].columns.forEach(item => {
               this._setSubOptions(item.list, fields, opts)
             })
-          } else if (genList[i].type === 'tabs') {
-            genList[i].tabs.forEach(item => {
-              this._setSubOptions(item.list, fields, opts)
-            })
-          } else if (genList[i].type === 'collapse') {
-            genList[i].tabs.forEach(item => {
-              this._setSubOptions(item.list, fields, opts)
-            })
-          } else if (genList[i].type === 'report') {
-            genList[i].rows.forEach(row => {
-              row.columns.forEach(column => {
-                this._setSubOptions(column.list, fields, opts)
-              })
-            })
-          } else if (genList[i].type === 'inline') {
-            this._setSubOptions(genList[i].list, fields, opts)
-          } else if (genList[i].type === 'card') {
-            this._setSubOptions(genList[i].list, fields, opts)
-          } else {
+          }else {
             let newFields = [...fields]
             newFields.splice(0, 1)
-            
-            if (genList[i].type === 'table') {
-              this._setSubOptions(genList[i].tableColumns, newFields, opts)
-            }
-            if (genList[i].type === 'subform') {
-              this._setSubOptions(genList[i].list, newFields, opts)
-            }
-            if (genList[i].type === 'group') {
-              this._setSubOptions(genList[i].list, newFields, opts)
-            }
-            if (genList[i].type === 'dialog') {
-              this._setSubOptions(genList[i].list, newFields, opts)
-            }
           }
         }
       }
@@ -1214,6 +835,57 @@ export default {
           this._setSubDisabled(this.formData.list, item.split('.'), disabled)
         }
       })
+    },
+    clearValidate (writeField) {//Y9移除writeField之外字段的必填验证
+      this._clearValidate(this.formData.list,writeField)
+    },
+    _clearValidate (genList,writeField) {//Y9移除writeField之外字段的必填验证
+      for (let i = 0; i < genList.length; i++) {
+        if (genList[i].type === 'grid') {
+          genList[i].columns.forEach(item => {
+            this._clearValidate(item.list,writeField)
+          })
+        } else {
+          if (writeField.indexOf(genList[i].model) < 0) {
+            let field = [];
+            field.push(genList[i].model);
+            this.setRules (genList[i].model, [{required: false}]);
+            this.setOptions (field, {required: false});
+          }
+        }
+      }
+    },
+    clearAllValidate () {//Y9移除所有字段必填验证
+      this._clearAllValidate(this.formData.list)
+    },
+    _clearAllValidate (genList) {//Y9移除所有字段必填验证
+      for (let i = 0; i < genList.length; i++) {
+        if (genList[i].type === 'grid') {
+          genList[i].columns.forEach(item => {
+            this._clearAllValidate(item.list)
+          })
+        }else {
+          let field = [];
+          field.push(genList[i].model);
+          this.setRules (genList[i].model, [{required: false}]);
+          this.setOptions (field, {required: false});
+        }
+      }
+    },
+    disabledAll(disabled){//Y9表单所有字段设置是否禁用
+      this._disabledAll(this.formData.list,disabled);
+    },  
+    _disabledAll(genList,disabled){//Y9表单所有字段设置是否禁用
+      for (let i = 0; i < genList.length; i++) {
+        if (genList[i].type === 'grid') {
+          genList[i].columns.forEach(item => {
+            this._disabledAll(item.list, disabled)
+          })
+        } else {
+          //this.$set(genList[i].options, 'disabled', disabled)
+          genList[i].options.disabled = disabled;
+        }
+      }
     },
     addClassName (fields, className) {
       if (typeof fields === 'string') {
@@ -1368,128 +1040,10 @@ export default {
       if (dialogComponent) {
         dialogComponent.close()
       } 
-    },
-    clearValidate (writeField) {//Y9移除writeField之外字段的必填验证
-      this._clearValidate(this.formData.list,writeField)
-    },
-    _clearValidate (genList,writeField) {//Y9移除writeField之外字段的必填验证
-      for (let i = 0; i < genList.length; i++) {
-        if (genList[i].type === 'grid') {
-          genList[i].columns.forEach(item => {
-            this._clearValidate(item.list,writeField)
-          })
-        } else if (genList[i].type === 'tabs') {
-          genList[i].tabs.forEach(item => {
-            this._clearValidate(item.list,writeField)
-          })
-        } else if (genList[i].type === 'collapse') {
-          genList[i].tabs.forEach(item => {
-            this._clearValidate(item.list, writeField)
-          })
-        } else if (genList[i].type === 'report') {
-          genList[i].rows.forEach(row => {
-            row.columns.forEach(column => {
-              this._clearValidate(column.list,writeField)
-            })
-          })
-        } else if (genList[i].type === 'inline') {
-          this._clearValidate(genList[i].list,writeField)
-        } else if (genList[i].type === 'card') {
-          this._clearValidate(genList[i].list,writeField)
-        } else {
-          if (writeField.indexOf(genList[i].model) < 0) {
-            let field = [];
-            field.push(genList[i].model);
-            this.setRules (genList[i].model, [{required: false}]);
-            this.setOptions (field, {required: false});
-          }
-        }
-      }
-    },
-    clearAllValidate () {//Y9移除所有字段必填验证
-      this._clearAllValidate(this.formData.list)
-    },
-    _clearAllValidate (genList) {//Y9移除所有字段必填验证
-      for (let i = 0; i < genList.length; i++) {
-        if (genList[i].type === 'grid') {
-          genList[i].columns.forEach(item => {
-            this._clearAllValidate(item.list)
-          })
-        } else if (genList[i].type === 'tabs') {
-          genList[i].tabs.forEach(item => {
-            this._clearAllValidate(item.list)
-          })
-        } else if (genList[i].type === 'collapse') {
-          genList[i].tabs.forEach(item => {
-            this._clearAllValidate(item.list)
-          })
-        } else if (genList[i].type === 'report') {
-          genList[i].rows.forEach(row => {
-            row.columns.forEach(column => {
-              this._clearAllValidate(column.list)
-            })
-          })
-        } else if (genList[i].type === 'inline') {
-          this._clearAllValidate(genList[i].list)
-        } else if (genList[i].type === 'card') {
-          this._clearAllValidate(genList[i].list)
-        } else {
-          let field = [];
-          field.push(genList[i].model);
-          this.setRules (genList[i].model, [{required: false}]);
-          this.setOptions (field, {required: false});
-        }
-      }
-    },
-    disabledAll(disabled){//Y9表单所有字段设置是否禁用
-      this._disabledAll(this.formData.list,disabled);
-    },  
-    _disabledAll(genList,disabled){//Y9表单所有字段设置是否禁用
-      for (let i = 0; i < genList.length; i++) {
-        if (genList[i].type === 'grid') {
-          genList[i].columns.forEach(item => {
-            this._disabledAll(item.list, disabled)
-          })
-        } else if (genList[i].type === 'tabs') {
-          genList[i].tabs.forEach(item => {
-            this._disabledAll(item.list, disabled)
-          })
-        } else if (genList[i].type === 'collapse') {
-          genList[i].tabs.forEach(item => {
-            tthis._disabledAll(item.list, disabled)
-          })
-        } else if (genList[i].type === 'report') {
-          genList[i].rows.forEach(row => {
-            row.columns.forEach(column => {
-              this._disabledAll(column.list, disabled)
-            })
-          })
-        } else if (genList[i].type === 'inline') {
-          this._disabledAll(genList[i].list, disabled)
-        } else if (genList[i].type === 'card') {
-          this._disabledAll(genList[i].list, disabled)
-        } else {
-          //this.$set(genList[i].options, 'disabled', disabled)
-          genList[i].options.disabled = disabled;
-        }
-      }
-    },
-    eventBus(type,data){//Y9向newForm.vue发出事件信息,可在onChange事件调用：this.eventBus('dzxh_changeDate', {});
-      EventBus.$emit(type, data);
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
-// Y9
-:global(.el-date-picker .el-date-picker__header .el-date-picker__prev-btn), 
-:global(.el-date-picker .el-date-picker__header .el-date-picker__next-btn),
-:global(.el-date-picker .el-date-table )   {
-  font-size: v-bind('sizeObjInfo.smallFontSize');
-}
-
-:global(.el-date-picker .el-date-picker__header .el-date-picker__header-label)  {
-  font-size: v-bind('sizeObjInfo.mediumFontSize');
-}
+<style lang="scss">
 </style>

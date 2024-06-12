@@ -1,7 +1,7 @@
 <template>
   <div class="fm-form-item" :data-id="widget.model" v-if="widget.key">
     <el-form-item 
-      v-if="widget.type != 'divider' && widget.type != 'alert' && elementDisplay" 
+      v-if="elementDisplay" 
       :prop="fieldNode ? fieldNode + '.' + widget.model : widget.model"
       :rules="rules[ruleProp]"
       :class="{
@@ -51,41 +51,13 @@
       </generate-element-item>
       
     </el-form-item>
-
-    <el-form-item v-if="widget.type == 'divider' && elementDisplay" label-width="0">
-      <el-divider 
-        :content-position="widget.options.contentPosition"
-        v-bind="widget.options.customProps"
-        style="margin-bottom: 10px;"
-      >
-        {{widget.name}}
-      </el-divider>
-    </el-form-item>
-
-    
-    <el-form-item v-if="widget.type == 'alert' && elementDisplay" label-width="0">
-      <el-alert 
-        :title="widget.options.title"
-        :type="widget.options.type"
-        :description="widget.options.description"
-        :closable="widget.options.closable"
-        :center="widget.options.center"
-        :show-icon="widget.options.showIcon"
-        :effect="widget.options.effect"
-        :style="{width: widget.options.width}"
-        v-bind="widget.options.customProps"
-        @close="display[widget.model] = false"
-      ></el-alert>
-    </el-form-item>
     
   </div>
-  
 </template>
 
 <script>
 import GenerateElementItem from './GenerateElementItem.vue'
 import { EventBus } from '../util/event-bus.js'
-
 export default {
   components: {
     GenerateElementItem

@@ -1,3 +1,12 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2024-06-11 17:47:08
+ * @LastEditors: zhangchongjie
+ * @LastEditTime: 2024-06-12 09:55:54
+ * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-flowable\vue\y9vue-itemAdmin\src\components\formMaking\components\Editor\index.vue
+-->
 <template>
   <div :style="customStyle">
     <QuillEditor

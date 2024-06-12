@@ -70,7 +70,7 @@ $primary-background-color: var(--fm-widget-bg-color);
     height: 30px;
     line-height: 30px;
     border-top: 1px solid var(--fm-border-color);
-    font-size: v-bind('fontSizeObj.smallFontSize');
+    font-size: 12px;
     text-align: right;
     color: $primary-color;
     background: var(--fm-footer-bg-color);
@@ -88,7 +88,7 @@ $primary-background-color: var(--fm-widget-bg-color);
       margin: 0;
 
       .fm-iconfont{
-        font-size: v-bind('fontSizeObj.extraLargeFont');
+        font-size: 20px;
       }
     }
 
@@ -151,7 +151,7 @@ $primary-background-color: var(--fm-widget-bg-color);
 
       .el-form-item--default{
         &.el-form-item:not(.is-error){
-          margin-bottom: 5px;//Y9
+          margin-bottom: 22px;
         } 
       }
     }
@@ -165,7 +165,7 @@ $primary-background-color: var(--fm-widget-bg-color);
   .btn-bar{
     height: 45px;
     line-height: 45px;
-    font-size: v-bind('fontSizeObj.largeFontSize');
+    font-size: 18px;
     border-bottom: solid 2px var(--fm-border-color);
     text-align: right;
 
@@ -184,7 +184,7 @@ $primary-background-color: var(--fm-widget-bg-color);
     .btn-bar-action{
       height: 45px;
       line-height: 45px;
-      font-size: v-bind('fontSizeObj.extraLargerFont');
+      font-size: 24px;
       float: left;
 
       a{
@@ -212,7 +212,7 @@ $primary-background-color: var(--fm-widget-bg-color);
         }
 
         .fm-iconfont{
-          font-size: v-bind('fontSizeObj.extraLargeFont');
+          font-size: 20px;
         }
       }
     }
@@ -220,7 +220,7 @@ $primary-background-color: var(--fm-widget-bg-color);
     .btn-bar-plat{
       height: 45px;
       line-height: 45px;
-      font-size: v-bind('fontSizeObj.extraLargerFont');
+      font-size: 24px;
       float: left;
 
       a{
@@ -240,7 +240,7 @@ $primary-background-color: var(--fm-widget-bg-color);
         }
 
         .fm-iconfont{
-          font-size: v-bind('fontSizeObj.extraLargeFont');
+          font-size: 20px;
         }
       }
     }
@@ -275,7 +275,7 @@ $primary-background-color: var(--fm-widget-bg-color);
   }
 
   .form-edit-widget-label{
-    font-size: v-bind('fontSizeObj.smallFontSize');
+    font-size: 12px;
     display: block;
     width: 46%;
     line-height: 26px;
@@ -311,7 +311,7 @@ $primary-background-color: var(--fm-widget-bg-color);
       .icon{
         margin-right: 6px;
         margin-left: 6px;
-        font-size: v-bind('fontSizeObj.baseFontSize');
+        font-size: 14px;
         display: inline-block;
         vertical-align: middle;
 
@@ -427,7 +427,7 @@ $primary-background-color: var(--fm-widget-bg-color);
     width: 300px;
     height: 20px !important;
     min-height:  20px !important;
-    font-size: v-bind('fontSizeObj.extraLargeFont');
+    font-size: 20px;
     top: 50%;
     width: 100%;
     margin-top: -10px;
@@ -468,7 +468,7 @@ $primary-background-color: var(--fm-widget-bg-color);
       text-align: center;
       width: 300px;
       height: 20px;
-      font-size: v-bind('fontSizeObj.mediumFontSize');
+      font-size: 16px;
       top: 15px;
       left: 50%;
       margin-left: -150px;
@@ -480,7 +480,7 @@ $primary-background-color: var(--fm-widget-bg-color);
       // top: -8px;
       top: 2px;
       right: 3px;
-      font-size: v-bind('fontSizeObj.smallFontSize');
+      font-size: 12px;
       color: var(--fm-model-color);
       opacity: 0;
       z-index: 8;
@@ -505,8 +505,8 @@ $primary-background-color: var(--fm-widget-bg-color);
       display: inline-block;
     }
 
-    .is-hover > .widget-view-model{
-      opacity: 0.6;
+    .widget-view-model{//Y9
+      opacity: 0.8;
       display: inline-block;
     }
 
@@ -579,7 +579,7 @@ $primary-background-color: var(--fm-widget-bg-color);
       min-width: 50px;
 
       .fm-item-tooltip{
-        font-size: v-bind('fontSizeObj.smallFontSize');
+        font-size: 12px;
         color: var(--fm-text-color-secondary);
       }
 
@@ -615,7 +615,7 @@ $primary-background-color: var(--fm-widget-bg-color);
       .widget-view-description{
         height: 15px;
         line-height: 15px;
-        font-size:v-bind('fontSizeObj.baseFontSize');
+        font-size:13px;
         margin-top: 6px;
         color:var(--fm-text-color-secondary);
       }
@@ -635,7 +635,7 @@ $primary-background-color: var(--fm-widget-bg-color);
         }
 
         i{
-          font-size: v-bind('fontSizeObj.baseFontSize');
+          font-size: 14px;
           color: var(--fm-white);
           margin: 0 5px;
           cursor: pointer;
@@ -660,7 +660,7 @@ $primary-background-color: var(--fm-widget-bg-color);
         }
 
         i{
-          font-size: v-bind('fontSizeObj.baseFontSize');
+          font-size: 14px;
           color: var(--fm-white);
           margin: 0 5px;
           cursor: move;
@@ -1017,7 +1017,7 @@ $primary-background-color: var(--fm-widget-bg-color);
           text-align: center;
           width: 300px;
           height: 0;
-          font-size: v-bind('fontSizeObj.mediumFontSize');
+          font-size: 16px;
           top: 10px;
           left: 50%;
           margin-left: -150px;
@@ -1186,7 +1186,7 @@ $primary-background-color: var(--fm-widget-bg-color);
           .widget-view-description{
             height: 15px;
             line-height: 15px;
-            font-size:v-bind('fontSizeObj.baseFontSize');
+            font-size:13px;
             margin-top: 6px;
             color: var(--fm-text-color-secondary);
           }
@@ -1206,7 +1206,7 @@ $primary-background-color: var(--fm-widget-bg-color);
             }
     
             i{
-              font-size: v-bind('fontSizeObj.baseFontSize');
+              font-size: 14px;
               color: var(--fm-white);
               margin: 0 5px;
               cursor: pointer;
@@ -1226,7 +1226,7 @@ $primary-background-color: var(--fm-widget-bg-color);
             // display: none;
     
             i{
-              font-size: v-bind('fontSizeObj.baseFontSize');
+              font-size: 14px;
               color: var(--fm-white);
               margin: 0 5px;
               cursor: move;
@@ -1311,7 +1311,7 @@ $primary-background-color: var(--fm-widget-bg-color);
             text-align: center;
             width: 300px;
             height: 20px;
-            font-size: v-bind('fontSizeObj.mediumFontSize');
+            font-size: 16px;
             top: 30px;
             left: 50%;
             margin-left: -150px;
@@ -1996,7 +1996,7 @@ $primary-background-color: var(--fm-widget-bg-color);
     display: inline-block;
     width: 145px;
     text-align: center;
-    font-size: v-bind('fontSizeObj.baseFontSize');
+    font-size: 14px;
     font-weight: 500;
     position: relative;
     cursor: pointer;
@@ -2023,7 +2023,7 @@ $primary-background-color: var(--fm-widget-bg-color);
       text-align: center;
       width: 100px;
       height: 20px;
-      font-size: v-bind('fontSizeObj.extraLargeFont');
+      font-size: 20px;
       top: 50%;
       width: 90%;
       margin-top: -10px;

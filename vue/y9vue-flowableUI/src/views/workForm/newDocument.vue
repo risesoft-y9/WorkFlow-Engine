@@ -29,11 +29,6 @@
         <!-- {{ activeName }} -->
         <!-- 表单 -->
         <myFormRef v-show="activeName.indexOf('y9form') > -1" ref="myForm" :basicData="basicData" :processInstanceId="processInstanceId" @refreshCount="updateLeftListCount"/>
-        <!-- 正文 -->
-        <div v-if="activeName == 'word'" ref="wordIframe" style="width: 80%;height: 80%;position: absolute;border: 0;margin-left:10%;margin-top:10px;background-color: #fff;">
-              <span id="risesoftNTKOWord" style="color:red;display: none;vertical-align: middle;font-size: 16px;">不能装载文档控件,请在检查浏览器的选项中检查浏览器的安全设置,或者下载安装<a :href="href" style="color: blue;cursor:pointer;text-decoration: none;" title="点击下载">跨浏览器插件</a>
-              </span>
-        </div>
         <!-- 附件 -->
         <fileList v-if="activeName == 'attach'" ref="fileListRef" :basicData="basicData" :processSerialNumber="processSerialNumber"/>
         <!-- 关联文件 -->
@@ -318,10 +313,6 @@ function getTabs() {
     dataList.value.push({label: item.formName, name: 'y9form' + item.formId});
   }
   activeName.value = "y9form" + formList.value[0].formId;
-  if (showOtherFlag.value.includes('showDocumentTab')) {
-    let name = docNum.value == 0 ? '正文' : '正文(有)';
-    dataList.value.push({label: name, name: 'word'});
-  }
   if (showOtherFlag.value.includes('showFileTab')) {
     dataList.value.push({label: fileLabel.value, name: 'attach'});
   }
@@ -599,11 +590,7 @@ async function getOpenTodoData() {//获取办件数据
 
 function tabClick(item) {//页签切换
   activeName.value = item.name;
-  if (item.name == "word") {
-    setTimeout(() => {
-      openWord();
-    }, 500);
-  } else if (item.name == "attach") {
+  if (item.name == "attach") {
     fileListShow.value = true;
   } else if (item.name == "process") {
     processListShow.value = true;

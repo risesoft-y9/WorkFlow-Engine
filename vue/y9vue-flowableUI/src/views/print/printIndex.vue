@@ -206,7 +206,18 @@ async function showForm(){
     nextTick(async () => {
       generateFormRef.value.refresh();
       let res1 = await getFormData(formId.value,processSerialNumber.value);
-      generateFormRef.value.setData(res1.data);
+      let data = res1.data;
+      for (let key of Object.keys(data)) {//处理多选框
+          if (data[key] != undefined && data[key] != '' && data[key].startsWith('[') && data[key].endsWith(']')) {
+              if(data[key] == '[]'){
+                  data[key] = [];
+              }else{
+                  let str = data[key].split('[')[1].split(']')[0];
+                  data[key] = str.split(', ');
+              }
+          }
+      }
+      generateFormRef.value.setData(data);
       setTimeout(()=>{//加载意见框
         initOpinion();
         initFileList();

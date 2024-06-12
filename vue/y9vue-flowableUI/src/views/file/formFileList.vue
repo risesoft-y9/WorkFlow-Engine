@@ -1,5 +1,5 @@
 <template>
-    <div style="width: 690px; height: 97.7%; margin: 15px auto" class="from-file">
+    <div style="width: 100%; height: 97.7%; margin: 15px auto" class="from-file">
         <div style="padding-bottom: 15px; vertical-align: middle">
             <div class="att-files">{{ $t('附件')}}</div>
             <div class="addFile-bnt" v-if="optShow">
