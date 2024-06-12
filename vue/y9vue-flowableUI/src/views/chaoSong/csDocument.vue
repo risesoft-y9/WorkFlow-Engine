@@ -28,8 +28,6 @@
       <div style="margin-top: 104px">
         <!-- 表单 -->
         <newForm v-show="activeName == 'y9form'" ref="myForm" :basicData="basicData" :processInstanceId="processInstanceId"/>
-        <!-- 正文 -->
-        <iframe v-if="activeName == 'word'" :src="wordUrl" ref="wordIframe" style="width: 80%;height: 100%;position: absolute;border: 0;margin-left:10%;margin-top:10px;"></iframe>
         <!-- 附件 -->
         <fileList v-if="activeName == 'attach'" ref="fileListRef" :processSerialNumber="processSerialNumber" :basicData="basicData"/>
         <!-- 关联文件 -->
@@ -113,7 +111,6 @@ let basicData1 = {
 const emits = defineEmits(['refreshCount']);
 const data = reactive({
       myForm:'',
-      wordIframe:'',
       loading:false,
       activeName: 'y9form',
       itemId:'',
@@ -132,7 +129,6 @@ const data = reactive({
       showOtherFlag:'',//是否显示关联文件，正文，沟通交流页签
       listType:'',//列表类型，判断从哪个列表跳转过来，用于返回列表
       follow:false,//是否关注该件
-      wordUrl:import.meta.env.VUE_APP_CONTEXT + "static/tags/webOfficeNTKO.jsp",
       fileLabel:'附件',//是否有附件
       docNum:0,//是否有正文
       speakInfoLabel:'沟通交流',//是否沟通交流新消息
@@ -167,9 +163,9 @@ const data = reactive({
     let {
       myForm,loading,activeName,itemId,status,addData,menuMap,formId,basicData,
       formList,processInstanceId,processSerialNumber,id, printUrl,printFormType,
-      formUrl,showOtherFlag,listType,follow,wordUrl,fileLabel,docNum,processFlag,
+      formUrl,showOtherFlag,listType,follow,fileLabel,docNum,processFlag,
       speakInfoLabel,associatedFileLabel,fileListShow,processListShow,
-      speakInfoShow,associatedFileListShow,dialogConfig,wordIframe,csUserChoiseRef,
+      speakInfoShow,associatedFileListShow,dialogConfig,csUserChoiseRef,
       dataList,operationBtnList,processTimeLineList,
     } = toRefs(data);
 
@@ -253,11 +249,7 @@ const data = reactive({
 
     function tabClick(item){//页签切换
       activeName.value = item.name;
-      if(item.name == "word"){
-        setTimeout(() => {
-          openWord();
-        }, 500);
-      } else if(item.name == "attach"){
+      if(item.name == "attach"){
         fileListShow.value = true;
       } else if(item.name == "process"){
         processListShow.value = true;
@@ -272,10 +264,6 @@ const data = reactive({
     // 页签和按钮的获取
   function getTabs() {
     dataList.value.push({label: formList.value[0].formName, name: 'y9form'});
-      if(showOtherFlag.value.includes('showDocumentTab')){
-          let name = docNum.value == 0? '正文' : '正文(有)' ;
-          dataList.value.push({label: name, name: 'word'});
-      }
       if(showOtherFlag.value.includes('showFileTab')){
         dataList.value.push({ label: fileLabel.value, name: 'attach'});
       }
@@ -355,57 +343,6 @@ const data = reactive({
       }
     }
 
-    function openWord(type){//打开正文
-      let userAgent = navigator.userAgent;
-      let rMsie = /(msie\s|trident.*rv:)([\w.]+)/;
-      let rFirefox = /(firefox)\/([\w.]+)/;
-      let rOpera = /(opera).+versi1on\/([\w.]+)/;
-      let rChrome = /(chrome)\/([\w.]+)/;
-      let rSafari = /version\/([\w.]+).*(safari)/;
-      let browser;
-      let ua = userAgent.toLowerCase();
-      let match = rMsie.exec(ua);
-      if (match != null) {
-        browser = "IE";
-      }
-      match = rFirefox.exec(ua);
-      if (match != null) {
-        browser =  match[1] || "";
-      }
-      match = rOpera.exec(ua);
-      if (match != null) {
-        browser =  match[1] || "";
-      }
-      match = rChrome.exec(ua);
-      if (match != null) {
-        browser =  match[1] || "";
-      }
-      match = rSafari.exec(ua);
-      if (match != null) {
-        browser =  match[2] || "";
-      }
-      if (match != null) {
-        browser =  "";
-      }
-      let msg = {
-        msgType:"openWord",
-        itemId:basicData.value.itemId,
-        itembox:basicData.value.itembox,
-        processSerialNumber:basicData.value.processSerialNumber,
-        processInstanceId:basicData.value.processInstanceId,
-        taskId:basicData.value.taskId,
-        browser:browser,
-        tenantId:basicData.value.tenantId,
-        userId:basicData.value.userId,
-      };
-      if(type == "print"){//打印
-        msg.msgType = "printWord";
-        msg.activitiUser = basicData.value.activitiUser;
-        msg.taskDefKey = basicData.value.taskDefKey;
-      }
-      wordIframe.value.contentWindow.postMessage(msg,wordUrl.value);
-    }
-
     function backToList(){//返回列表
       let link = currentrRute.matched[0].path;
       let path = link + '/' + listType.value; 
@@ -416,9 +353,6 @@ const data = reactive({
     }
 
     function buttonEvent(key){//按钮事件
-      if(activeName.value == "word"){
-        activeName.value = "y9form";
-      }
       if(key === "03"){//返回
         backToList();
       }else if(key === "17"){//打印
@@ -426,9 +360,7 @@ const data = reactive({
           ElMessage({ type: "error", message: t("未配置打印配置"),offset:65, appendTo: '.csDocument-container'});
           return;
         }
-        if(printFormType.value == "1"){//打印word
-          openWord("print");
-        } else if(printFormType.value == "2"){//打印表单
+       if(printFormType.value == "2"){//打印表单
           printUrl.value = import.meta.env.VUE_APP_CONTEXT + "print?formId="+basicData.value.printFormId+"&processSerialNumber="+basicData.value.processSerialNumber
                           +"&processDefinitionId="+basicData.value.processDefinitionId+"&taskDefKey="+basicData.value.taskDefKey+"&itemId="+basicData.value.itemId
                           +"&activitiUser="+basicData.value.activitiUser+"&processInstanceId="+basicData.value.processInstanceId;

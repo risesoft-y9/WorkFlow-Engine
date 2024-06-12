@@ -167,7 +167,6 @@ const data = reactive({
   routeToTask: '',
   reposition: '',
   myForm: '',
-  wordIframe: '',
   y9UserInfo: {},
   dialogVisible: false,
   loading: false,
@@ -194,8 +193,6 @@ const data = reactive({
   docNum: 0,//是否有正文
   speakInfoLabel: '沟通交流',//是否沟通交流新消息
   associatedFileLabel: '关联文件',//是否有关联文件
-  wordUrl: import.meta.env.VUE_APP_CONTEXT + 'webOfficeNTKO.html',
-  href: import.meta.env.VUE_APP_CONTEXT + 'tags/exe/risesoftNTKOWord.exe',
   fileListShow: false,//点击对应的页签才加载对应组件
   processListShow: false,
   speakInfoShow: false,
@@ -231,11 +228,11 @@ const data = reactive({
 });
 
 let {
-  processDataList, routeToTask, reposition, myForm, wordIframe, y9UserInfo, dialogVisible, loading, loadingtext, customItem, activeName, itemId,
+  processDataList, routeToTask, reposition, myForm, y9UserInfo, dialogVisible, loading, loadingtext, customItem, activeName, itemId,
   itembox, taskId, addInitData, menuMap, sendMap, formList, basicData, processSerialNumber, processInstanceId,
   printUrl, printFormType, formId, showOtherFlag, listType, follow, fileLabel, docNum, speakInfoLabel,
-  associatedFileLabel, wordUrl, fileListShow, processListShow, speakInfoShow, associatedFileListShow,
-  dataList, operationBtnList, processTimeLineList, processFlag, clickCount, isRefreshButton, href,
+  associatedFileLabel, fileListShow, processListShow, speakInfoShow, associatedFileListShow,
+  dataList, operationBtnList, processTimeLineList, processFlag, clickCount, isRefreshButton,
   repositionMap, doneManage, infoOvert, multiInstanceType, nextNode, dialogConfig, userChoiseRef, optType, fromType
 } = toRefs(data);
 
@@ -606,66 +603,6 @@ function tabClick(item) {//页签切换
   }
 }
 
-function openWord(type) {//打开word
-  let userAgent = navigator.userAgent;
-  let rMsie = /(msie\s|trident.*rv:)([\w.]+)/;
-  let rFirefox = /(firefox)\/([\w.]+)/;
-  let rOpera = /(opera).+versi1on\/([\w.]+)/;
-  let rChrome = /(chrome)\/([\w.]+)/;
-  let rSafari = /version\/([\w.]+).*(safari)/;
-  let browser;
-  let ua = userAgent.toLowerCase();
-  let match = rMsie.exec(ua);
-  if (match != null) {
-    browser = "IE";
-  }
-  match = rFirefox.exec(ua);
-  if (match != null) {
-    browser = match[1] || "";
-  }
-  match = rOpera.exec(ua);
-  if (match != null) {
-    browser = match[1] || "";
-  }
-  match = rChrome.exec(ua);
-  if (match != null) {
-    browser = match[1] || "";
-  }
-  match = rSafari.exec(ua);
-  if (match != null) {
-    browser = match[2] || "";
-  }
-  if (match != null) {
-    browser = "";
-  }
-
-  let msg = {
-    msgType: "openWord",
-    itemId: basicData.value.itemId,
-    itembox: basicData.value.itembox,
-    processSerialNumber: basicData.value.processSerialNumber,
-    processInstanceId: basicData.value.processInstanceId,
-    taskId: basicData.value.taskId,
-    browser: browser,
-    tenantId: basicData.value.tenantId,
-    userId: y9UserInfo.value.personId,
-  };
-  if (type == "print") {//打印
-    msg.msgType = "printWord";
-    msg.activitiUser = basicData.value.activitiUser;
-    msg.taskDefKey = basicData.value.taskDefKey;
-  }
-  // wordIframe.value?.contentWindow?.postMessage(msg,wordUrl.value);
-  let positionId = sessionStorage.getItem('positionId');
-  if (!ntkoBrowser.ExtensionInstalled()) {
-    document.getElementById('risesoftNTKOWord').style.display = "";
-  } else {
-    ntkoBrowser.openWindow(wordUrl.value + "?cmd=1&apiCtx=" + import.meta.env.VUE_APP_CONTEXT + "&itembox=" + basicData.value.itembox + "&processSerialNumber=" + basicData.value.processSerialNumber + "&itemId="
-        + basicData.value.itemId + "&taskId=" + basicData.value.taskId + "&processInstanceId=" + basicData.value.processInstanceId + "&browser=" + browser + "&tenantId=" + basicData.value.tenantId + "&userId=" + y9UserInfo.value.personId + "&positionId=" + positionId, false);
-  }
-
-}
-
 function backToList() {//返回列表
   let link = currentrRute.matched[0].path;
   let query = {
@@ -696,9 +633,7 @@ function customProcess() {//流程定制
 }
 
 function sendClick() {//发送点击
-  if (activeName.value == "word") {
-    activeName.value = "y9form";
-  }
+
 }
 
 function rollbackToStartor() {//退回发起人，直接退回，不用选人
@@ -926,9 +861,6 @@ function setInfoOvert() {//办结设置是否在数据中心显示
 }
 
 function buttonEvent(key) {//按钮事件
-  if (activeName.value == "word") {
-    activeName.value = "y9form";
-  }
   if (key == "01") {//保存
     myForm.value.saveForm(true);
     myForm.value.saveChangeOpinion();//保存编辑未保存的意见内容
@@ -1053,9 +985,7 @@ function buttonEvent(key) {//按钮事件
       ElMessage({type: "error", message: t("未配置打印配置"), offset: 65, appendTo: '.newDocument-container'});
       return;
     }
-    if (printFormType.value == "1") {//打印word
-      openWord("print");
-    } else if (printFormType.value == "2") {//打印表单
+    if (printFormType.value == "2") {//打印表单
       printUrl.value = import.meta.env.VUE_APP_HOST_INDEX + "print?formId=" + basicData.value.printFormId + "&processSerialNumber=" + basicData.value.processSerialNumber
           + "&processDefinitionId=" + basicData.value.processDefinitionId + "&taskDefKey=" + basicData.value.taskDefKey + "&itemId=" + basicData.value.itemId
           + "&activitiUser=" + basicData.value.activitiUser + "&processInstanceId=" + basicData.value.processInstanceId;
