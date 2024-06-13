@@ -416,7 +416,7 @@
           @focus="handleOnFocus"
           @blur="handleOnBlur"
         >
-          <el-option :style="{ fontSize: sizeObjInfo.smallFontSize }" v-for="item in (widget.options.remote ? remoteOptions : widget.options.options)" :key="item.value" :value="item.value" :label="widget.options.showLabel || widget.options.remote?item.label:item.value"></el-option>
+          <el-option v-for="item in (widget.options.remote ? remoteOptions : widget.options.options)" :key="item.value" :value="item.value" :label="widget.options.showLabel || widget.options.remote?item.label:item.value"></el-option>
         </el-select>
       </template>
     </template>
@@ -583,7 +583,7 @@ export default {
       }
     }
   },
-  inject: ['generateComponentInstance', 'deleteComponentInstance', 'eventScriptConfig','sizeObjInfo'],
+  inject: ['generateComponentInstance', 'deleteComponentInstance', 'eventScriptConfig'],
   created () {
 
     if (this.widget.options.remote 
@@ -1007,20 +1007,5 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-/* Y9  sizeObjInfo */
-:deep(.el-radio.el-radio--small .el-radio__label) {
-  font-size: v-bind('sizeObjInfo.smallFontSize');
-}
 
-:global(.el-date-range-picker .el-date-range-picker__header button) {
-  font-size: v-bind('sizeObjInfo.smallFontSize');
-}
-
-:global(.el-date-range-picker .el-date-range-picker__header div) {
-  font-size: v-bind('sizeObjInfo.mediumFontSize');
-}
-
-:global(.el-date-range-picker .el-date-table) {
-  font-size: v-bind('sizeObjInfo.smallFontSize');
-}
 </style>

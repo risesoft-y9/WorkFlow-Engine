@@ -196,6 +196,12 @@
               <el-radio v-model="data.options.remoteType" label="func" value="func">{{$t('fm.config.widget.remoteFunc')}}</el-radio>
               <el-input clearable  v-if="data.options.remoteType == 'func'" v-model="data.options.remoteFunc" style="margin-bottom: 5px;">
               </el-input>
+              <!-- Y9绑定数据字典 -->
+              <el-input v-if="data.options.remoteType == 'func'" v-model="data.options.optionData" :readonly="true" placeholder="点击绑定" size="mini" @focus="selectOption">
+                <template #prepend>
+                  <div slot="prepend" style="width: 48px;">数据字典</div>
+                </template>
+              </el-input>
               <el-input clearable  v-model="data.options.props.value">
                 <template #prepend>
                   <div style="width: 48px;">{{$t('fm.config.widget.value')}}</div>
@@ -894,6 +900,7 @@
     <selectField ref="selectField" :bindField="saveBindField"/>
     <selectOpinionFrame ref="selectOpinionFrame" :bindOpinionFrame="saveBindOpinionFrame"/>
     <selectNumber ref="selectNumber" :bindNumber="saveBindNumber"/>
+    <selectOption ref="selectOption" :bindOption="saveBindOption"/>
     <!-- Y9 -->
     <cus-dialog 
       :visible="editorVisible"
@@ -927,6 +934,7 @@ import selectChildTable from './SecondDev/selectChildTable.vue'
 import selectField from './SecondDev/selectField.vue'
 import selectOpinionFrame from './SecondDev/selectOpinionFrame.vue'
 import selectNumber from './SecondDev/selectNumber.vue'
+import selectOption from './SecondDev/selectOption.vue'
 export default {
   components: {
     Draggable,
@@ -935,6 +943,7 @@ export default {
     selectTableAndField,
     selectChildTable,
     selectField,
+    selectOption,
     selectOpinionFrame,
     selectNumber
   },
@@ -1425,6 +1434,9 @@ export default {
     saveBindTable(table) {//子表绑定
       this.data.model = "childTable@" + table.tableName;
       this.data.childTableInfo = table.tableName + "@" + table.id;
+    },
+    selectOption() {//绑定数据字典
+      this.$refs.selectOption.show();
     },
     saveBindOption(option) {//绑定数据字典
       this.data.options.optionData = option.name + "(" + option.type + ")";
