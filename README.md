@@ -62,7 +62,7 @@ webapp -- 系统公共模块
 
 ## 逻辑架构图
 
-待补充
+<div><img src="https://vue.youshengyun.com/files/img/architecture2.png"><div/>
 
 
 ## 后端技术选型
