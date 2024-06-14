@@ -1,10 +1,27 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.*;
+
+import net.risesoft.api.itemadmin.FormDataApi;
+import net.risesoft.api.itemadmin.ItemDoingApi;
+import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.RemindInstanceApi;
+import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
@@ -13,7 +30,11 @@ import net.risesoft.api.processadmin.DoingApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
-import net.risesoft.model.itemadmin.*;
+import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.ItemPage;
+import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
@@ -23,13 +44,6 @@ import net.risesoft.service.DoingService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -150,10 +164,9 @@ public class DoingServiceImpl implements DoingService {
                 // retMap = doingApi.getListByUserIdAndProcessDefinitionKey(tenantId,
                 // userId, processDefinitionKey, page, rows);
                 retMap = doingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId, processDefinitionKey, page, rows);
-                List<Map<String, Object>> list = (List<Map<String, Object>>) retMap.get("rows");
+                List<Map<String, Object>> list = (List<Map<String, Object>>)retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<Map<String, Object>> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {
-                });
+                List<Map<String, Object>> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
                 ProcessParamModel processParam;
@@ -161,8 +174,8 @@ public class DoingServiceImpl implements DoingService {
                 for (Map<String, Object> hpim : hpiModelList) {// 以办理时间排序
                     mapTemp = new HashMap<>(16);
                     try {
-                        String processInstanceId = (String) hpim.get("processInstanceId");
-                        String processDefinitionId = (String) hpim.get("processDefinitionId");
+                        String processInstanceId = (String)hpim.get("processInstanceId");
+                        String processDefinitionId = (String)hpim.get("processDefinitionId");
                         Date endTime = sdfT.parse(hpim.get("endTime").toString());
                         endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
                         String taskCreateTime = hpim.get("endTime") != null ? sdf.format(endTime) : "";
@@ -204,7 +217,7 @@ public class DoingServiceImpl implements DoingService {
                 }
             } else {
                 retMap = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey, searchTerm, page, rows);
-                List<ProcessInstanceModel> hpiModelList = (List<ProcessInstanceModel>) retMap.get("rows");
+                List<ProcessInstanceModel> hpiModelList = (List<ProcessInstanceModel>)retMap.get("rows");
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
                 ProcessParamModel processParam;
@@ -270,10 +283,9 @@ public class DoingServiceImpl implements DoingService {
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
                 retMap = doingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId, positionId, processDefinitionKey, page, rows);
-                List<Map<String, Object>> list = (List<Map<String, Object>>) retMap.get("rows");
+                List<Map<String, Object>> list = (List<Map<String, Object>>)retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<Map<String, Object>> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {
-                });
+                List<Map<String, Object>> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
                 Map<String, Object> formDataMap;
@@ -283,8 +295,8 @@ public class DoingServiceImpl implements DoingService {
                 for (Map<String, Object> hpim : hpiModelList) {// 以办理时间排序
                     mapTemp = new HashMap<>(16);
                     try {
-                        processInstanceId = (String) hpim.get("processInstanceId");
-                        String processDefinitionId = (String) hpim.get("processDefinitionId");
+                        processInstanceId = (String)hpim.get("processInstanceId");
+                        String processDefinitionId = (String)hpim.get("processDefinitionId");
                         Date endTime = sdfT.parse(hpim.get("endTime").toString());
                         endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
                         String taskCreateTime = hpim.get("endTime") != null ? sdf.format(endTime) : "";
@@ -318,7 +330,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("taskDueDate", "");
                         formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                         if (formDataMap.get("leaveType") != null) {
-                            String leaveType = (String) formDataMap.get("leaveType");
+                            String leaveType = (String)formDataMap.get("leaveType");
                             for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
                                 if (leaveType.equals(leaveTypeEnum.getValue())) {
                                     formDataMap.put("leaveType", leaveTypeEnum.getName());
@@ -348,10 +360,9 @@ public class DoingServiceImpl implements DoingService {
                 }
             } else {
                 retMap = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey, searchTerm, page, rows);
-                List<ProcessInstanceModel> list = (List<ProcessInstanceModel>) retMap.get("rows");
+                List<ProcessInstanceModel> list = (List<ProcessInstanceModel>)retMap.get("rows");
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {
-                });
+                List<ProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
                 Map<String, Object> formDataMap;
@@ -393,7 +404,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("taskDueDate", "");
                         formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                         mapTemp.putAll(formDataMap);
-
+                        mapTemp.put("processInstanceId", processInstanceId);
                         int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
                         mapTemp.put("speakInfoNum", speakInfoNum);
                     } catch (Exception e) {
@@ -427,8 +438,7 @@ public class DoingServiceImpl implements DoingService {
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {
-            });
+            List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             Map<String, Object> formDataMap;
