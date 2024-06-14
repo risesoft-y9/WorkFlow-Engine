@@ -41,11 +41,12 @@ vue -- 前端工程
 ## 逻辑架构图
 
 <div><img src="https://vue.youshengyun.com/files/img/architecture2.png"><div/>
-## 逻辑架构图
+
+## 功能架构图 ##
 
 <div><img src="https://vue.youshengyun.com/files/img/function2.png"><div/>
 
-## 逻辑架构图
+## 部署架构图
 
 <div><img src="https://vue.youshengyun.com/files/img/deploy2.png"><div/>
 
