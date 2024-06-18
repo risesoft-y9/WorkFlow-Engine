@@ -1,38 +1,38 @@
 package net.risesoft.controller;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.db.DbUtil;
-import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import y9.dbcomment.Y9CommentUtil;
-
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Validated
-@RequiredArgsConstructor
+import com.alibaba.druid.pool.DruidDataSource;
+
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.db.DbUtil;
+import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
+
+import y9.dbcomment.Y9CommentUtil;
+
 @RestController
-@Slf4j
 @RequestMapping("/admin/comment")
 public class Y9CommentController {
 
+    @Autowired
     @Qualifier("y9PublicDS")
     private DruidDataSource y9PublicDS;
 
+    @Autowired
     @Qualifier("defaultDataSource")
     private DruidDataSource y9FlowableDS;
 
+    @Autowired
     @Qualifier("y9TenantDataSource")
     private Y9TenantDataSource y9TenantDS;
 
@@ -72,9 +72,9 @@ public class Y9CommentController {
             Y9LoginUserHolder.setTenantId(tenantId);
             DataSource ds = y9TenantDS.determineTargetDataSource();
             dbType = DbUtil.getDbTypeString(ds);
-            if ("mysql".equals(dbType)) {
+            if (dbType != null && "mysql".equals(dbType)) {
                 Y9CommentUtil.scanner4Mysql(jdbcTemplate4Tenant, packageEntity.split(","));
-            } else if ("oracle".equals(dbType)) {
+            } else if (dbType != null && "oracle".equals(dbType)) {
                 Y9CommentUtil.scanner4Oracle(jdbcTemplate4Tenant, packageEntity.split(","));
             }
         }

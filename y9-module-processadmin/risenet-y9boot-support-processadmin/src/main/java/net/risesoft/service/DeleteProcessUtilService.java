@@ -1,6 +1,18 @@
 package net.risesoft.service;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Service;
+
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.datacenter.OfficeInfoApi;
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ChaoSongInfoApi;
@@ -16,16 +28,6 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.stereotype.Service;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @author qinman
@@ -37,7 +39,8 @@ import java.util.Date;
 @Service(value = "deleteProcessUtilService")
 public class DeleteProcessUtilService {
 
-    private final JdbcTemplate jdbcTemplate;
+    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
 
     private final TodoTaskApi rpcTodoTaskManager;
 
@@ -61,8 +64,8 @@ public class DeleteProcessUtilService {
 
     private final ActRuDetailApi actRuDetailApi;
 
-    public DeleteProcessUtilService(JdbcTemplate jdbcTemplate, TodoTaskApi rpcTodoTaskManager, ProcessInstanceApi processInstanceApi, ChaoSongInfoApi chaoSongInfoApi, ChaoSong4PositionApi chaoSong4PositionApi, OfficeInfoApi officeInfoApi, ProcessParamApi processParamManager, OfficeFollowApi officeFollowApi, OfficeFollow4PositionApi officeFollow4PositionApi, ErrorLogApi errorLogManager, MsgRemindInfoApi msgRemindInfoManager, ActRuDetailApi actRuDetailApi) {
-        this.jdbcTemplate = jdbcTemplate;
+    public DeleteProcessUtilService(TodoTaskApi rpcTodoTaskManager, ProcessInstanceApi processInstanceApi, ChaoSongInfoApi chaoSongInfoApi, ChaoSong4PositionApi chaoSong4PositionApi, OfficeInfoApi officeInfoApi, ProcessParamApi processParamManager, OfficeFollowApi officeFollowApi,
+        OfficeFollow4PositionApi officeFollow4PositionApi, ErrorLogApi errorLogManager, MsgRemindInfoApi msgRemindInfoManager, ActRuDetailApi actRuDetailApi) {
         this.rpcTodoTaskManager = rpcTodoTaskManager;
         this.processInstanceApi = processInstanceApi;
         this.chaoSongInfoApi = chaoSongInfoApi;
@@ -79,7 +82,7 @@ public class DeleteProcessUtilService {
     /**
      * 彻底删除流程实例相关数据，包括，流程自定义变量，统一待办，协作状态，抄送件，关注件，数据中心全文检索数据
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      */
     @Async
@@ -213,8 +216,8 @@ public class DeleteProcessUtilService {
     /**
      * 删除年度数据
      *
-     * @param tenantId          租户ID
-     * @param year              年度
+     * @param tenantId 租户ID
+     * @param year 年度
      * @param processInstanceId 流程实例ID
      */
     @Async
@@ -225,11 +228,8 @@ public class DeleteProcessUtilService {
             String sql3 = "DELETE from ACT_HI_TASKINST_" + year + " where PROC_INST_ID_ = '" + processInstanceId + "'";
             jdbcTemplate.execute(sql3);
 
-            sql3 = "DELETE" + " FROM" + "	ACT_GE_BYTEARRAY_" + year + "" + " WHERE" + "	ID_ IN (" + "		SELECT"
-                    + "			*" + "		FROM ( " + "         SELECT" + "			b.ID_" + "		  FROM"
-                    + "			 ACT_GE_BYTEARRAY_" + year + " b" + "		  LEFT JOIN ACT_HI_VARINST_" + year
-                    + " v ON v.BYTEARRAY_ID_ = b.ID_" + "		  WHERE" + "			 v.PROC_INST_ID_ = '"
-                    + processInstanceId + "'" + "		  AND v.NAME_ = 'users'" + "       ) TT" + "	)";
+            sql3 = "DELETE" + " FROM" + "	ACT_GE_BYTEARRAY_" + year + "" + " WHERE" + "	ID_ IN (" + "		SELECT" + "			*" + "		FROM ( " + "         SELECT" + "			b.ID_" + "		  FROM" + "			 ACT_GE_BYTEARRAY_" + year + " b" + "		  LEFT JOIN ACT_HI_VARINST_"
+                + year + " v ON v.BYTEARRAY_ID_ = b.ID_" + "		  WHERE" + "			 v.PROC_INST_ID_ = '" + processInstanceId + "'" + "		  AND v.NAME_ = 'users'" + "       ) TT" + "	)";
             jdbcTemplate.execute(sql3);
 
             sql3 = "DELETE from ACT_HI_VARINST_" + year + " where PROC_INST_ID_ = '" + processInstanceId + "'";

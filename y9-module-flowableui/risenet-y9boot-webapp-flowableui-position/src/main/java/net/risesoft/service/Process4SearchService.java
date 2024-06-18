@@ -1,7 +1,22 @@
 package net.risesoft.service;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
@@ -14,20 +29,6 @@ import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.stereotype.Service;
-
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 流程数据进入数据中心，用于综合搜索
@@ -43,7 +44,7 @@ public class Process4SearchService {
     private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
     @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
-    private final JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     private final PositionApi positionApi;
 
@@ -54,8 +55,8 @@ public class Process4SearchService {
     /**
      * 重定位，串行送下一人，修改办件信息
      *
-     * @param tenantId          租户id
-     * @param taskId            任务id
+     * @param tenantId 租户id
+     * @param taskId 任务id
      * @param processInstanceId 流程实例id
      */
     @Async
@@ -91,7 +92,7 @@ public class Process4SearchService {
                 String allUserId = "";
                 String deptIds = "";
                 for (Map<String, Object> m : list3) {
-                    String USER_ID_ = m.get("USER_ID_") != null ? (String) m.get("USER_ID_") : "";
+                    String USER_ID_ = m.get("USER_ID_") != null ? (String)m.get("USER_ID_") : "";
                     if (USER_ID_.contains(":")) {
                         USER_ID_ = USER_ID_.split(":")[0];
                     }
@@ -139,8 +140,8 @@ public class Process4SearchService {
     /**
      * 并行加签，修改办件信息
      *
-     * @param tenantId     租户id
-     * @param taskId       任务id
+     * @param tenantId 租户id
+     * @param taskId 任务id
      * @param processParam 流程参数
      */
     @Async
@@ -162,7 +163,7 @@ public class Process4SearchService {
                 List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
                 String entrustUserId = "";
                 for (Map<String, Object> m : list2) {
-                    String USER_ID_ = (String) m.get("OWNERID");
+                    String USER_ID_ = (String)m.get("OWNERID");
                     if (!entrustUserId.contains(USER_ID_)) {
                         entrustUserId = Y9Util.genCustomStr(entrustUserId, USER_ID_);
                     }
@@ -175,7 +176,7 @@ public class Process4SearchService {
                 String allUserId = "";
                 String deptIds = "";
                 for (Map<String, Object> m : list3) {
-                    String USER_ID_ = m.get("USER_ID_") != null ? (String) m.get("USER_ID_") : "";
+                    String USER_ID_ = m.get("USER_ID_") != null ? (String)m.get("USER_ID_") : "";
                     if (USER_ID_.contains(":")) {
                         USER_ID_ = USER_ID_.split(":")[0];
                     }
