@@ -46,7 +46,7 @@ public class Process4SearchService {
     private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
     @Resource(name = "jdbcTemplate4Tenant")
-    private final JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     private final PositionApi positionApi;
 
@@ -57,8 +57,8 @@ public class Process4SearchService {
     /**
      * 重定位，串行送下一人，修改办件信息
      *
-     * @param tenantId          租户id
-     * @param taskId            任务id
+     * @param tenantId 租户id
+     * @param taskId 任务id
      * @param processInstanceId 流程实例id
      */
     @Async
@@ -94,7 +94,7 @@ public class Process4SearchService {
                 String allUserId = "";
                 String deptIds = "";
                 for (Map<String, Object> m : list3) {
-                    String USER_ID_ = m.get("USER_ID_") != null ? (String) m.get("USER_ID_") : "";
+                    String USER_ID_ = m.get("USER_ID_") != null ? (String)m.get("USER_ID_") : "";
                     if (USER_ID_.contains(":")) {
                         USER_ID_ = USER_ID_.split(":")[0];
                     }
@@ -142,8 +142,8 @@ public class Process4SearchService {
     /**
      * 并行加签，修改办件信息
      *
-     * @param tenantId     租户id
-     * @param taskId       任务id
+     * @param tenantId 租户id
+     * @param taskId 任务id
      * @param processParam 流程参数
      */
     @Async
@@ -165,7 +165,7 @@ public class Process4SearchService {
                 List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
                 String entrustUserId = "";
                 for (Map<String, Object> m : list2) {
-                    String USER_ID_ = (String) m.get("OWNERID");
+                    String USER_ID_ = (String)m.get("OWNERID");
                     if (!entrustUserId.contains(USER_ID_)) {
                         entrustUserId = Y9Util.genCustomStr(entrustUserId, USER_ID_);
                     }
@@ -178,7 +178,7 @@ public class Process4SearchService {
                 String allUserId = "";
                 String deptIds = "";
                 for (Map<String, Object> m : list3) {
-                    String USER_ID_ = m.get("USER_ID_") != null ? (String) m.get("USER_ID_") : "";
+                    String USER_ID_ = m.get("USER_ID_") != null ? (String)m.get("USER_ID_") : "";
                     if (USER_ID_.contains(":")) {
                         USER_ID_ = USER_ID_.split(":")[0];
                     }
