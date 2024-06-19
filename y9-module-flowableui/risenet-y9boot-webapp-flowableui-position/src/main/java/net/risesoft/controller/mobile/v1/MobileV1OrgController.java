@@ -1,7 +1,21 @@
 package net.risesoft.controller.mobile.v1;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.constraints.NotBlank;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -9,22 +23,14 @@ import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.model.itemadmin.EntrustModel;
-import net.risesoft.model.platform.*;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-
-import javax.validation.constraints.NotBlank;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 组织人员接口
@@ -70,7 +76,7 @@ public class MobileV1OrgController {
      * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/getOrg")
-    public Y9Result<List<Map<String, Object>>> getOrg(String id) {
+    public Y9Result<List<Map<String, Object>>> getOrg(@RequestParam(required = false) String id) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String userId = Y9LoginUserHolder.getPersonId();
@@ -206,7 +212,7 @@ public class MobileV1OrgController {
      * @return Y9Result<Integer>
      */
     @RequestMapping(value = "/getUserCount")
-    public Y9Result<Integer> getUserCount(@NotBlank String userChoice) {
+    public Y9Result<Integer> getUserCount(@RequestParam @NotBlank String userChoice) {
         List<String> userIds = new ArrayList<>();
         String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
         for (String s : userChoices) {

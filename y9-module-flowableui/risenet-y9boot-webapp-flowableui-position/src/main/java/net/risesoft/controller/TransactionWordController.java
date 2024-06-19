@@ -1,7 +1,37 @@
 package net.risesoft.controller;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
@@ -16,26 +46,6 @@ import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotBlank;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 正文
@@ -63,72 +73,14 @@ public class TransactionWordController {
     /**
      * 删除指定类型的正文
      *
-     * @param isTaoHong           是否套红
+     * @param isTaoHong 是否套红
      * @param processSerialNumber 流程编号
      */
     @RequestMapping(value = "/deleteWordByIsTaoHong")
-    public void deleteWordByIsTaoHong(@RequestParam String isTaoHong, @RequestParam @NotBlank String processSerialNumber) {
+    public void deleteWordByIsTaoHong(@RequestParam(required = false) String isTaoHong, @RequestParam @NotBlank String processSerialNumber) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, isTaoHong);
-    }
-
-    /**
-     * 下载历史正文
-     *
-     * @param taskId              任务id
-     * @param processSerialNumber 流程编号
-     * @param processInstanceId   流程实例id
-     * @param fileType            文件类型
-     */
-    @RequestMapping(value = "/downLoadHistoryDoc")
-    @ResponseBody
-    public void downLoadHistoryDoc(@RequestParam String taskId, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String fileType, HttpServletResponse response, HttpServletRequest request) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId);
-        String fileStoreId = map.get("fileStoreId").toString();
-        ServletOutputStream out;
-        try {
-            out = response.getOutputStream();
-            // Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
-            // String fileName = y9FileStore.getFileName();
-            String userAgent = request.getHeader("User-Agent");
-            String title;
-            Object documentTitle;
-            if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-                documentTitle = retMap.get("title");
-            } else {
-                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
-                documentTitle = processModel.getTitle();
-            }
-            title = documentTitle != null ? (String) documentTitle : "正文";
-            title = ToolUtil.replaceSpecialStr(title);
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
-            } else {
-                if (userAgent.contains("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
-                } else {
-                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
-            }
-            y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
-        }
     }
 
     /**
@@ -138,7 +90,7 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/download")
     @ResponseBody
-    public void download(@RequestParam @NotBlank String id, @RequestParam String fileType, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, HttpServletResponse response, HttpServletRequest request) {
+    public void download(@RequestParam @NotBlank String id, @RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, HttpServletResponse response, HttpServletRequest request) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Object documentTitle;
@@ -149,7 +101,7 @@ public class TransactionWordController {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? (String) documentTitle : "正文";
+            String title = documentTitle != null ? (String)documentTitle : "正文";
             // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
             // String fileName = y9FileStore.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
@@ -184,13 +136,13 @@ public class TransactionWordController {
     /**
      * 下载正文（抄送）
      *
-     * @param fileType            文件类型
+     * @param fileType 文件类型
      * @param processSerialNumber 流程编号
-     * @param processInstanceId   流程实例id
+     * @param processInstanceId 流程实例id
      */
     @RequestMapping(value = "/downloadCS")
     @ResponseBody
-    public void downloadCS(@RequestParam String fileType, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, HttpServletResponse response, HttpServletRequest request) {
+    public void downloadCS(@RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, HttpServletResponse response, HttpServletRequest request) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Map<String, Object> map = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
@@ -203,7 +155,7 @@ public class TransactionWordController {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? (String) documentTitle : "正文";
+            String title = documentTitle != null ? (String)documentTitle : "正文";
             // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
             // String fileName = y9FileStore.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
@@ -227,6 +179,65 @@ public class TransactionWordController {
                 response.setContentType("application/octet-stream");
             }
             OutputStream out = response.getOutputStream();
+            y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            LOGGER.error("下载正文异常", e);
+        }
+    }
+
+    /**
+     * 下载历史正文
+     *
+     * @param taskId 任务id
+     * @param processSerialNumber 流程编号
+     * @param processInstanceId 流程实例id
+     * @param fileType 文件类型
+     */
+    @RequestMapping(value = "/downLoadHistoryDoc")
+    @ResponseBody
+    public void downLoadHistoryDoc(@RequestParam(required = false) String taskId, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String fileType, HttpServletResponse response,
+        HttpServletRequest request) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
+        Map<String, Object> map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId);
+        String fileStoreId = map.get("fileStoreId").toString();
+        ServletOutputStream out;
+        try {
+            out = response.getOutputStream();
+            // Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
+            // String fileName = y9FileStore.getFileName();
+            String userAgent = request.getHeader("User-Agent");
+            String title;
+            Object documentTitle;
+            if (StringUtils.isBlank(processInstanceId)) {
+                Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+                documentTitle = retMap.get("title");
+            } else {
+                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                documentTitle = processModel.getTitle();
+            }
+            title = documentTitle != null ? (String)documentTitle : "正文";
+            title = ToolUtil.replaceSpecialStr(title);
+            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
+                title = new String(title.getBytes("gb2312"), "ISO8859-1");
+                response.reset();
+                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
+                response.setHeader("Content-type", "text/html;charset=GBK");
+                response.setContentType("application/octet-stream");
+            } else {
+                if (userAgent.contains("Firefox")) {
+                    title = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
+                } else {
+                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
+                    title = StringUtils.replace(title, "+", "%20");// 替换空格
+                }
+                response.reset();
+                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
+                response.setHeader("Content-type", "text/html;charset=UTF-8");
+                response.setContentType("application/octet-stream");
+            }
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
             out.flush();
             out.close();
@@ -304,7 +315,7 @@ public class TransactionWordController {
      * 打开正文
      *
      * @param processSerialNumber 流程编号
-     * @param itemId              事项id
+     * @param itemId 事项id
      */
     @RequestMapping(value = "/openDocument")
     @ResponseBody
@@ -511,11 +522,11 @@ public class TransactionWordController {
      * *打开撤销PDF后的正文
      *
      * @param processSerialNumber 流程实编号
-     * @param istaohong           是否套红
+     * @param istaohong 是否套红
      */
     @RequestMapping(value = "/openRevokePDFAfterDocument")
     @ResponseBody
-    public void openRevokePDFAfterDocument(@RequestParam String processSerialNumber, @RequestParam String istaohong, HttpServletResponse response, HttpServletRequest request) {
+    public void openRevokePDFAfterDocument(@RequestParam String processSerialNumber, @RequestParam(required = false) String istaohong, HttpServletResponse response, HttpServletRequest request) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         // 删除转PDF的文件
@@ -575,7 +586,7 @@ public class TransactionWordController {
      * @return String
      */
     @RequestMapping(value = "/openTaoHong")
-    public String openTaoHong(@RequestParam String activitiUser, Model model) {
+    public String openTaoHong(@RequestParam(required = false) String activitiUser, Model model) {
         OrgUnit currentBureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), activitiUser).getData();
         model.addAttribute("currentBureauGuid", currentBureau.getId());
         model.addAttribute("tenantId", Y9LoginUserHolder.getTenantId());
@@ -586,20 +597,21 @@ public class TransactionWordController {
     /**
      * 保存word转PDF的正文
      *
-     * @param fileType            文件类型
+     * @param fileType 文件类型
      * @param processSerialNumber 流程实编号
-     * @param taskId              任务id
+     * @param taskId 任务id
      * @return String
      */
     @SuppressWarnings("unused")
     @ResponseBody
     @RequestMapping(value = "/saveAsPDFFile")
-    public String saveAsPDFFile(@RequestParam String fileType, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String isTaoHong, @RequestParam String taskId, HttpServletRequest request, HttpServletResponse response) {
+    public String saveAsPDFFile(@RequestParam(required = false) String fileType, @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String taskId,
+        HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/html; charset=utf-8");
         response.setHeader("Cache-Control", "no-cache");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
         MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
         String title;
         String result = "success:false";
@@ -612,7 +624,7 @@ public class TransactionWordController {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
-            title = documentTitle != null ? (String) documentTitle : "正文";
+            title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
             result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
@@ -628,7 +640,7 @@ public class TransactionWordController {
     }
 
     @RequestMapping(value = "/showHistoryDoc")
-    public String showHistoryDoc(@RequestParam String taskId, @RequestParam String historyFileType, ModelMap model) {
+    public String showHistoryDoc(@RequestParam String taskId, @RequestParam(required = false) String historyFileType, ModelMap model) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId);
@@ -644,7 +656,8 @@ public class TransactionWordController {
      * @return String
      */
     @RequestMapping("/showWord")
-    public String showWord(@RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String itemId, @RequestParam String itembox, @RequestParam String taskId, @RequestParam String browser, Model model) {
+    public String showWord(@RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam String itemId, @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId, @RequestParam(required = false) String browser,
+        Model model) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = transactionWordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId);
@@ -674,7 +687,7 @@ public class TransactionWordController {
      * @return List<Map < String, Object>>
      */
     @RequestMapping(value = "/list")
-    public List<Map<String, Object>> taoHongTemplateList(@RequestParam String currentBureauGuid) {
+    public List<Map<String, Object>> taoHongTemplateList(@RequestParam(required = false) String currentBureauGuid) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), choiceDeptId = Y9LoginUserHolder.getDeptId(), tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(currentBureauGuid)) {
@@ -691,13 +704,13 @@ public class TransactionWordController {
      * * 上传正文
      *
      * @param processSerialNumber 流程编号
-     * @param taskId              任务id
-     * @param file                文件
+     * @param taskId 任务id
+     * @param file 文件
      * @return Map<String, Object>
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> upload(@RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String taskId, @RequestParam MultipartFile file) {
+    public Map<String, Object> upload(@RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId, @RequestParam MultipartFile file) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "上传成功");
@@ -734,7 +747,7 @@ public class TransactionWordController {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? (String) documentTitle : "正文";
+            String title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
             String result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
@@ -754,19 +767,20 @@ public class TransactionWordController {
     /**
      * 草稿箱保存正文
      *
-     * @param fileType            文件类型
-     * @param isTaoHong           套红
+     * @param fileType 文件类型
+     * @param isTaoHong 套红
      * @param processSerialNumber 流程编号
-     * @param processInstanceId   流程实例id
-     * @param taskId              任务id
+     * @param processInstanceId 流程实例id
+     * @param taskId 任务id
      * @return String
      */
     @RequestMapping(value = "/uploadWord", method = RequestMethod.POST)
     @ResponseBody
-    public String uploadWord(@RequestParam String fileType, @RequestParam String isTaoHong, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String taskId, HttpServletRequest request) {
+    public String uploadWord(@RequestParam(required = false) String fileType, @RequestParam(required = false) String isTaoHong, @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
+        HttpServletRequest request) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
         MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
         String title;
         String result = "success:false";
@@ -780,7 +794,7 @@ public class TransactionWordController {
                 documentTitle = processModel.getTitle();
             }
 
-            title = documentTitle != null ? (String) documentTitle : "正文";
+            title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
             result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());

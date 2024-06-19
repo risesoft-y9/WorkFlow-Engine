@@ -1,16 +1,13 @@
 package net.risesoft.controller.services;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.model.itemadmin.AttachmentModel;
-import net.risesoft.model.platform.Person;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
-import net.risesoft.y9public.entity.Y9FileStore;
-import net.risesoft.y9public.service.Y9FileStoreService;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -21,14 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.model.itemadmin.AttachmentModel;
+import net.risesoft.model.platform.Person;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.Y9Properties;
+import net.risesoft.y9public.entity.Y9FileStore;
+import net.risesoft.y9public.service.Y9FileStoreService;
 
 @Validated
 @RequiredArgsConstructor
@@ -101,18 +102,18 @@ public class FileNTKOController {
      * 获取文件
      *
      * @param processSerialNumber 流程编号
-     * @param itembox             状态
-     * @param taskId              任务id
-     * @param browser             浏览器类型
-     * @param fileId              文件id
-     * @param tenantId            租户id
-     * @param userId              人员id
-     * @param positionId          岗位id
+     * @param itembox 状态
+     * @param taskId 任务id
+     * @param browser 浏览器类型
+     * @param fileId 文件id
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param positionId 岗位id
      * @return String
      */
     @RequestMapping("/showWord")
-    public String showWord(@RequestParam String processSerialNumber, @RequestParam String itembox, @RequestParam String taskId, @RequestParam String browser, @RequestParam String fileId, @RequestParam String tenantId, @RequestParam String userId,
-                           @RequestParam String positionId, Model model) {
+    public String showWord(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId, @RequestParam(required = false) String browser, @RequestParam(required = false) String fileId,
+        @RequestParam String tenantId, @RequestParam(required = false) String userId, @RequestParam(required = false) String positionId, Model model) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
             Person person = personApi.get(tenantId, userId).getData();
@@ -139,16 +140,17 @@ public class FileNTKOController {
     /**
      * 更新附件
      *
-     * @param fileId              文件id
+     * @param fileId 文件id
      * @param processSerialNumber 流程编号
-     * @param positionId          岗位id
-     * @param taskId              任务id
-     * @param tenantId            租户id
-     * @param userId              人员id
+     * @param positionId 岗位id
+     * @param taskId 任务id
+     * @param tenantId 租户id
+     * @param userId 人员id
      * @return String
      */
     @RequestMapping(value = "/uploadWord", method = RequestMethod.POST)
-    public String uploadWord(@RequestParam String fileId, @RequestParam String processSerialNumber, @RequestParam String positionId, @RequestParam String taskId, @RequestParam String tenantId, @RequestParam String userId, HttpServletRequest request) {
+    public String uploadWord(@RequestParam(required = false) String fileId, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String positionId, @RequestParam(required = false) String taskId, @RequestParam String tenantId, @RequestParam String userId,
+        HttpServletRequest request) {
         String result = "success:false";
         try {
             LOGGER.debug("*****************fileId={}", fileId);
@@ -156,7 +158,7 @@ public class FileNTKOController {
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
-            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
             MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
             String fullPath = "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, file.getName());

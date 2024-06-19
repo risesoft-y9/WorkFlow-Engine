@@ -1,7 +1,31 @@
 package net.risesoft.controller.mobile;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
@@ -21,29 +45,6 @@ import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotBlank;
-
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 办件列表相关接口
@@ -71,23 +72,22 @@ public class MobileWorkListController {
     /**
      * 获取在办件列表
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param itemId     事项id
-     * @param title      搜索标题
-     * @param page       页码
-     * @param rows       行数
+     * @param itemId 事项id
+     * @param title 搜索标题
+     * @param page 页码
+     * @param rows 行数
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/doingList")
-    public void doingList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam String title, @RequestParam Integer page, @RequestParam Integer rows,
-                          HttpServletResponse response) {
+    public void doingList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setPositionId(positionId);
             Map<String, Object> m = doingService.list(itemId, title, page, rows);
-            List<Map<String, Object>> doingList = (List<Map<String, Object>>) m.get("rows");
+            List<Map<String, Object>> doingList = (List<Map<String, Object>>)m.get("rows");
             map.put("doingList", doingList);
             map.put("currpage", page);
             map.put("totalpage", m.get("totalpages"));
@@ -102,16 +102,15 @@ public class MobileWorkListController {
     /**
      * 办结件列表
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param itemId     事项id
-     * @param title      搜索标题
-     * @param page       页码
-     * @param rows       行数
+     * @param itemId 事项id
+     * @param title 搜索标题
+     * @param page 页码
+     * @param rows 行数
      */
     @RequestMapping(value = "/doneList")
-    public void doneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam String title, @RequestParam Integer page, @RequestParam Integer rows,
-                         HttpServletResponse response) {
+    public void doneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
@@ -133,8 +132,8 @@ public class MobileWorkListController {
     /**
      * app办件计数
      *
-     * @param tenantId   租户id
-     * @param userId     人员id
+     * @param tenantId 租户id
+     * @param userId 人员id
      * @param positionId 岗位id
      */
     @SuppressWarnings("unchecked")
@@ -166,7 +165,7 @@ public class MobileWorkListController {
                     long todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
                     Map<String, Object> m = new HashMap<>(16);
                     Map<String, Object> resMap = todoService.list(item.getId(), "", 1, 1);
-                    List<Map<String, Object>> todoList = (List<Map<String, Object>>) resMap.get("rows");
+                    List<Map<String, Object>> todoList = (List<Map<String, Object>>)resMap.get("rows");
                     if (todoList != null && !todoList.isEmpty()) {
                         Map<String, Object> todo = todoList.get(0);
                         m.put("title", todo.get(SysVariables.DOCUMENTTITLE));
@@ -204,7 +203,7 @@ public class MobileWorkListController {
      * 获取日程应用
      *
      * @param tenantId 租户id
-     * @param userId   人员id
+     * @param userId 人员id
      * @return Map
      */
     public Map<String, Object> getCalendar(String tenantId, String userId) {
@@ -237,9 +236,9 @@ public class MobileWorkListController {
     /**
      * 办件计数
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param itemId     事项id
+     * @param itemId 事项id
      */
     @RequestMapping(value = "/getCount")
     public void getTodoCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, HttpServletResponse response) {
@@ -249,8 +248,8 @@ public class MobileWorkListController {
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             String processDefinitionKey = item.getWorkflowGuid();
             Map<String, Object> countMap = processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
-            int todoCount = countMap != null ? (int) countMap.get("todoCount") : 0;
-            int doingCount = countMap != null ? (int) countMap.get("doingCount") : 0;
+            int todoCount = countMap != null ? (int)countMap.get("todoCount") : 0;
+            int doingCount = countMap != null ? (int)countMap.get("doingCount") : 0;
             // int doneCount = countMap != null ? (int) countMap.get("doneCount") : 0;
             int doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, itemId);
             map.put("todoCount", todoCount);
@@ -266,8 +265,8 @@ public class MobileWorkListController {
     /**
      * 历程
      *
-     * @param tenantId          租户id
-     * @param positionId        岗位id
+     * @param tenantId 租户id
+     * @param positionId 岗位id
      * @param processInstanceId 流程实例id
      */
     @RequestMapping(value = "/history")
@@ -287,23 +286,22 @@ public class MobileWorkListController {
     /**
      * 待办件列表
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param itemId     事项id
-     * @param title      搜索标题
-     * @param page       页码
-     * @param rows       行数
+     * @param itemId 事项id
+     * @param title 搜索标题
+     * @param page 页码
+     * @param rows 行数
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/todoList")
-    public void todoList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam String title, @RequestParam Integer page, @RequestParam Integer rows,
-                         HttpServletResponse response) {
+    public void todoList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setPositionId(positionId);
             Map<String, Object> m = todoService.list(itemId, title, page, rows);
-            List<Map<String, Object>> todoList = (List<Map<String, Object>>) m.get("rows");
+            List<Map<String, Object>> todoList = (List<Map<String, Object>>)m.get("rows");
             map.put("todoList", todoList);
             map.put("currpage", page);
             map.put("totalpage", m.get("totalpages"));

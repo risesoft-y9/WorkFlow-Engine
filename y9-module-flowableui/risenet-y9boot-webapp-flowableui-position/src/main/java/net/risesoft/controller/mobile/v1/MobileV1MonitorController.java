@@ -1,7 +1,19 @@
 package net.risesoft.controller.mobile.v1;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
@@ -14,17 +26,6 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.MonitorService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-
-import javax.validation.constraints.NotBlank;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 监控列表相关接口
@@ -77,13 +78,13 @@ public class MobileV1MonitorController {
      * 监控在办件
      *
      * @param itemId 事项id
-     * @param title  标题
-     * @param page   页码
-     * @param rows   条数
+     * @param title 标题
+     * @param page 页码
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorDoingList")
-    public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam @NotBlank String itemId, @RequestParam String title, int page, int rows) {
+    public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam int page, @RequestParam int rows) {
         return monitorService.monitorDoingList(itemId, title, page, rows);
     }
 
@@ -111,13 +112,13 @@ public class MobileV1MonitorController {
      * 监控办结件
      *
      * @param itemId 事项id
-     * @param title  标题
-     * @param page   页码
-     * @param rows   条数
+     * @param title 标题
+     * @param page 页码
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorDoneList")
-    public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam @NotBlank String itemId, @RequestParam String title, int page, int rows) {
+    public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam int page, @RequestParam int rows) {
         return monitorService.monitorDoneList(itemId, title, page, rows);
     }
 

@@ -1,7 +1,22 @@
 package net.risesoft.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.constraints.NotBlank;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
@@ -19,20 +34,6 @@ import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-
-import javax.validation.constraints.NotBlank;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 我的关注
@@ -69,7 +70,7 @@ public class OfficeFollowRestController {
             Map<String, Object> map;
             String tenantId = Y9LoginUserHolder.getTenantId();
             map = officeFollow4PositionApi.delOfficeFollow(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceIds);
-            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("取消关注成功");
             }
         } catch (Exception e) {
@@ -81,18 +82,18 @@ public class OfficeFollowRestController {
     /**
      * 获取我的关注列表
      *
-     * @param page       页码
-     * @param rows       条数
+     * @param page 页码
+     * @param rows 条数
      * @param searchName 搜索词
      * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/followList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> followList(@RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows, @RequestParam String searchName) {
+    public Y9Page<Map<String, Object>> followList(@RequestParam Integer page, @RequestParam Integer rows, @RequestParam(required = false) String searchName) {
         Map<String, Object> map;
         String tenantId = Y9LoginUserHolder.getTenantId();
         map = officeFollow4PositionApi.getOfficeFollowList(tenantId, Y9LoginUserHolder.getPositionId(), searchName, page, rows);
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>) map.get("rows"), "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
     }
 
     /**
@@ -147,7 +148,7 @@ public class OfficeFollowRestController {
                 officeFollow.setUserId(positionId);
                 officeFollow.setUserName(position.getName());
                 Map<String, Object> map = officeFollow4PositionApi.saveOfficeFollow(tenantId, officeFollow);
-                if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+                if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                     return Y9Result.successMsg("关注成功");
                 }
             }

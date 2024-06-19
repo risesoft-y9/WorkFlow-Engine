@@ -1,12 +1,11 @@
 package net.risesoft.controller.mobile;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.position.Draft4PositionApi;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
-import net.risesoft.y9.util.Y9Util;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
@@ -15,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotBlank;
-
-import java.util.HashMap;
-import java.util.Map;
+import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
+import net.risesoft.y9.util.Y9Util;
 
 /**
  * 草稿相关接口
@@ -41,7 +42,7 @@ public class MobileDraftController {
      * 彻底删除草稿
      *
      * @param tenantId 租户id
-     * @param ids      草稿ids,“,”分隔
+     * @param ids 草稿ids,“,”分隔
      */
     @RequestMapping(value = "/delDraft")
     public void delDraft(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String ids, HttpServletResponse response) {
@@ -60,9 +61,9 @@ public class MobileDraftController {
     /**
      * 回收站计数
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param itemId     事项id
+     * @param itemId 事项id
      */
     @RequestMapping(value = "/getDeleteDraftCount")
     public void getDeleteDraftCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, HttpServletResponse response) {
@@ -84,9 +85,9 @@ public class MobileDraftController {
     /**
      * 草稿箱计数
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param itemId     事项id
+     * @param itemId 事项id
      */
     @RequestMapping(value = "/getDraftCount")
     public void getDraftCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, HttpServletResponse response) {
@@ -108,17 +109,17 @@ public class MobileDraftController {
     /**
      * 草稿列表
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param itemId     事项id
-     * @param title      搜索标题
-     * @param delFlag    是否删除 true为回收站列表，false为草稿列表
-     * @param page       页码
-     * @param rows       行数
+     * @param itemId 事项id
+     * @param title 搜索标题
+     * @param delFlag 是否删除 true为回收站列表，false为草稿列表
+     * @param page 页码
+     * @param rows 行数
      */
     @RequestMapping(value = "/getDraft")
-    public void getManuscript(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam String title, boolean delFlag, @RequestParam Integer page,
-                              @RequestParam Integer rows, HttpServletResponse response) {
+    public void getManuscript(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam(required = false) boolean delFlag, @RequestParam Integer page,
+        @RequestParam Integer rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -135,7 +136,7 @@ public class MobileDraftController {
      * 还原草稿
      *
      * @param tenantId 租户id
-     * @param id       草稿id
+     * @param id 草稿id
      */
     @RequestMapping(value = "/reduction")
     public void reduction(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String id, HttpServletResponse response) {
@@ -155,7 +156,7 @@ public class MobileDraftController {
      * 删除草稿
      *
      * @param tenantId 租户id
-     * @param ids      草稿ids,“,”分隔
+     * @param ids 草稿ids,“,”分隔
      */
     @RequestMapping(value = "/removeDraft")
     public void removeDraft(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String ids, HttpServletResponse response) {

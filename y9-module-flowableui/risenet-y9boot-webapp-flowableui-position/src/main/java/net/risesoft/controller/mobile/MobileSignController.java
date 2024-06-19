@@ -1,20 +1,5 @@
 package net.risesoft.controller.mobile;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.CalendarConfigApi;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.itemadmin.CalendarConfigModel;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
-import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-
-import javax.servlet.http.HttpServletResponse;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
@@ -23,6 +8,26 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.itemadmin.CalendarConfigApi;
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.itemadmin.CalendarConfigModel;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
+import net.risesoft.y9.util.Y9Util;
 
 /**
  * 请休假接口
@@ -76,9 +81,9 @@ public class MobileSignController {
     /**
      * 获取两个日期之间的天数，除去节假日
      *
-     * @param tenantId  租户id
+     * @param tenantId 租户id
      * @param startDate 开始日期
-     * @param endDate   结束日期
+     * @param endDate 结束日期
      */
     @RequestMapping(value = "/getDay")
     @ResponseBody
@@ -111,21 +116,20 @@ public class MobileSignController {
     /**
      * 有生云请假办件，计算请假天数和小时
      *
-     * @param tenantId       租户id
-     * @param type           计算类型，小时，天，半天
-     * @param leaveType      请假类型
+     * @param tenantId 租户id
+     * @param type 计算类型，小时，天，半天
+     * @param leaveType 请假类型
      * @param leaveStartTime 请假开始时间
-     * @param leaveEndTime   请假结束时间
-     * @param startSel       上午下午选择
-     * @param endSel         上午下午选择
-     * @param selStartTime   开始时间点选择
-     * @param selEndTime     结束时间点选择
+     * @param leaveEndTime 请假结束时间
+     * @param startSel 上午下午选择
+     * @param endSel 上午下午选择
+     * @param selStartTime 开始时间点选择
+     * @param selEndTime 结束时间点选择
      */
-    @SuppressWarnings("deprecation")
     @ResponseBody
     @RequestMapping("/getDayOrHour")
-    public void getDayOrHour(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String type, @RequestParam String leaveStartTime, @RequestParam String leaveEndTime, @RequestParam String startSel, @RequestParam String endSel, @RequestParam String selStartTime,
-                             @RequestParam String selEndTime, @RequestParam String leaveType, HttpServletResponse response) {
+    public void getDayOrHour(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String type, @RequestParam String leaveStartTime, @RequestParam String leaveEndTime, @RequestParam(required = false) String startSel, @RequestParam(required = false) String endSel,
+        @RequestParam(required = false) String selStartTime, @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>();
         map.put("data", "");
         map.put("msg", "获取成功");
@@ -218,7 +222,7 @@ public class MobileSignController {
                                 selEndTime = "17:30";
                             }
                             long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
-                            double hours = (double) time / (60 * 60 * 1000);
+                            double hours = (double)time / (60 * 60 * 1000);
                             BigDecimal a = BigDecimal.valueOf(hours);
                             double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
                             // 减去中间包含的1.5个小时
@@ -250,7 +254,7 @@ public class MobileSignController {
                             selEndTime = "17:30";
                         }
                         long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
-                        double hours = (double) time / (60 * 60 * 1000);
+                        double hours = (double)time / (60 * 60 * 1000);
                         BigDecimal a = BigDecimal.valueOf(hours);
                         double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
                         // 减去中间包含的1.5个小时
@@ -269,7 +273,7 @@ public class MobileSignController {
                         if (!dayStr.contains(tmp)) {
                             if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(selStartTime)) {// 开始日期选择时间
                                 long time = sdf.parse("17:30").getTime() - sdf.parse(selStartTime).getTime();
-                                double hours = (double) time / (60 * 60 * 1000);
+                                double hours = (double)time / (60 * 60 * 1000);
                                 BigDecimal a = BigDecimal.valueOf(hours);
                                 double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
                                 if (Integer.parseInt(selStartTime.split(":")[0]) < 12) {
@@ -281,7 +285,7 @@ public class MobileSignController {
                             }
                             if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(selEndTime)) {// 结束日期选择时间
                                 long time = sdf.parse(selEndTime).getTime() - sdf.parse("09:00").getTime();
-                                double hours = (double) time / (60 * 60 * 1000);
+                                double hours = (double)time / (60 * 60 * 1000);
                                 BigDecimal a = BigDecimal.valueOf(hours);
                                 double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
                                 if (Integer.parseInt(selEndTime.split(":")[0]) > 12) {
@@ -311,14 +315,14 @@ public class MobileSignController {
     /**
      * 获取两个日期之间的天数
      *
-     * @param tenantId  租户id
+     * @param tenantId 租户id
      * @param startDate 开始日期
-     * @param endDate   结束日期
-     * @param dateType  是否排除节假日和周末
+     * @param endDate 结束日期
+     * @param dateType 是否排除节假日和周末
      */
     @RequestMapping(value = "/getDays")
     @ResponseBody
-    public void getDays(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String startDate, @RequestParam String startSel, @RequestParam String endDate, @RequestParam String endSel, @RequestParam String dateType, HttpServletResponse response) {
+    public void getDays(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String startDate, @RequestParam(required = false) String startSel, @RequestParam String endDate, @RequestParam(required = false) String endSel, @RequestParam String dateType, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         map.put("day", 0);
         map.put(UtilConsts.SUCCESS, true);
@@ -403,7 +407,7 @@ public class MobileSignController {
                 if (start > 0) {
                     String day = String.valueOf(num + start);
                     LOGGER.debug("day={}", day);
-                    map.put("day", day.contains(".0") ? String.valueOf((int) (num + start)) : day);
+                    map.put("day", day.contains(".0") ? String.valueOf((int)(num + start)) : day);
                     map.put(UtilConsts.SUCCESS, true);
                     Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
                     return;

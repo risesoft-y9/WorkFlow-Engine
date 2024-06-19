@@ -1,7 +1,24 @@
 package net.risesoft.controller.services;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.PrintApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
@@ -13,22 +30,6 @@ import net.risesoft.util.ToolUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 @Validated
 @RequiredArgsConstructor
@@ -49,19 +50,19 @@ public class FormNTKOPrintController {
 
     private final TransactionWordApi transactionWordApi;
 
-
     /**
      * 下载正文
      *
-     * @param id                  正文id
-     * @param fileType            文件类型
+     * @param id 正文id
+     * @param fileType 文件类型
      * @param processSerialNumber 流程编号
-     * @param processInstanceId   流程实例id
-     * @param tenantId            租户id
-     * @param userId              人员id
+     * @param processInstanceId 流程实例id
+     * @param tenantId 租户id
+     * @param userId 人员id
      */
     @RequestMapping(value = "/downloadWord")
-    public void downloadWord(@RequestParam String id, @RequestParam String fileType, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
+    public void downloadWord(@RequestParam String id, @RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam String tenantId, @RequestParam String userId,
+        HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
@@ -108,14 +109,13 @@ public class FormNTKOPrintController {
         }
     }
 
-
     /**
      * 打开正文
      *
      * @param processSerialNumber 流程编号
-     * @param itemId              事项id
-     * @param tenantId            租户id
-     * @param userId              人员id
+     * @param itemId 事项id
+     * @param tenantId 租户id
+     * @param userId 人员id
      */
     @RequestMapping(value = "/openDoc")
     public void openDoc(@RequestParam String processSerialNumber, @RequestParam String itemId, @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
@@ -221,6 +221,5 @@ public class FormNTKOPrintController {
             }
         }
     }
-
 
 }

@@ -1,9 +1,26 @@
 package net.risesoft.service.impl;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -83,24 +100,12 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /*
  * @author qinman
+ *
  * @author zhangchongjie
+ *
  * @date 2022/12/20
  */
 @Slf4j
@@ -188,7 +193,7 @@ public class DocumentServiceImpl implements DocumentService {
             String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             if (StringUtils.isNotBlank(itemId)) {
                 returnMap = spmApproveitemService.findById(itemId, returnMap);
-                String processDefinitionKey = (String) returnMap.get("processDefinitionKey");
+                String processDefinitionKey = (String)returnMap.get("processDefinitionKey");
                 ProcessDefinitionModel pdModel = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
                 String processDefinitionId = pdModel.getId();
                 if (StringUtils.isBlank(processDefinitionKey)) {
@@ -548,7 +553,7 @@ public class DocumentServiceImpl implements DocumentService {
         return returnMap;
     }
 
-    private  void getAllPosition(List<Position> list, String deptId) {
+    private void getAllPosition(List<Position> list, String deptId) {
         List<Department> deptList = departmentManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
         List<Position> list0 = positionManager.listByParentId(Y9LoginUserHolder.getTenantId(), deptId).getData();
         if (!list0.isEmpty()) {
@@ -715,11 +720,11 @@ public class DocumentServiceImpl implements DocumentService {
         ButtonUtil buttonUtil = new ButtonUtil();
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = buttonUtil.showButton(itemId, taskId, itembox);
-        String[] buttonIds = (String[]) map.get("buttonIds");
-        String[] buttonNames = (String[]) map.get("buttonNames");
-        String sponsorHandle = (String) map.get("sponsorHandle");
-        int[] buttonOrders = (int[]) map.get("buttonOrders");
-        boolean[] isButtonShow = (boolean[]) map.get("isButtonShow");
+        String[] buttonIds = (String[])map.get("buttonIds");
+        String[] buttonNames = (String[])map.get("buttonNames");
+        String sponsorHandle = (String)map.get("sponsorHandle");
+        int[] buttonOrders = (int[])map.get("buttonOrders");
+        boolean[] isButtonShow = (boolean[])map.get("isButtonShow");
         boolean selectMenu = true;
         String menuName = "";
         String menuKey = "";
@@ -1121,7 +1126,7 @@ public class DocumentServiceImpl implements DocumentService {
             return map;
         }
         Map<String, Object> map1 = this.startProcess(itemId, processSerialNumber, processDefinitionKey);
-        String taskId = (String) map1.get("taskId");
+        String taskId = (String)map1.get("taskId");
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (!variables.isEmpty()) {
             variableManager.setVariables(tenantId, taskId, variables);
@@ -1143,7 +1148,7 @@ public class DocumentServiceImpl implements DocumentService {
             return map;
         }
         Map<String, Object> map1 = this.startProcessByTaskKey(itemId, processSerialNumber, processDefinitionKey, startRouteToTaskId);
-        String taskId = (String) map1.get("taskId");
+        String taskId = (String)map1.get("taskId");
         if (!variables.isEmpty()) {
             variableManager.setVariables(tenantId, taskId, variables);
         }
@@ -1177,7 +1182,7 @@ public class DocumentServiceImpl implements DocumentService {
                 return map;
             }
             Map<String, Object> startProcessMap = this.startProcess(itemId, processSerialNumber, processDefinitionKey);
-            String taskId = (String) startProcessMap.get("taskId"), processInstanceId = (String) startProcessMap.get("processInstanceId");
+            String taskId = (String)startProcessMap.get("taskId"), processInstanceId = (String)startProcessMap.get("processInstanceId");
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             List<String> userList = userResult.getData();
             Map<String, Object> variables = CommonOpt.setVariables(positionId, position.getName(), routeToTaskId, userList, multiInstance);
@@ -1357,6 +1362,7 @@ public class DocumentServiceImpl implements DocumentService {
             vars.put("tenantId", tenantId);
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             vars.put("routeToTaskId", startTaskDefKey);
+            vars.put("_FLOWABLE_SKIP_EXPRESSION_ENABLED", true);
             assert item != null;
             if (item.isShowSubmitButton()) {
                 ProcessDefinitionModel processDefinitionModel = repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);

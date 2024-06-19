@@ -1,7 +1,19 @@
 package net.risesoft.controller;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
@@ -10,17 +22,6 @@ import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-
-import javax.validation.constraints.NotBlank;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 历程，流程图数据
@@ -44,13 +45,13 @@ public class ProcessTrackRestController {
     /**
      * 获取流程图
      *
-     * @param resourceType        类型
-     * @param processInstanceId   流程实例id
+     * @param resourceType 类型
+     * @param processInstanceId 流程实例id
      * @param processDefinitionId 流程定义id
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/getFlowChart", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<String> getFlowChart(@RequestParam String resourceType, @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String processDefinitionId) {
+    public Y9Result<String> getFlowChart(@RequestParam(required = false) String resourceType, @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String processDefinitionId) {
         try {
             return repositoryApi.getXmlByProcessInstance(Y9LoginUserHolder.getTenantId(), resourceType, processInstanceId, processDefinitionId);
         } catch (Exception e) {
@@ -108,8 +109,8 @@ public class ProcessTrackRestController {
         List<Map<String, Object>> list;
         try {
             Map<String, Object> map = processTrack4PositionApi.processTrackList4Simple(tenantId, positionId, processInstanceId);
-            if ((boolean) map.get(UtilConsts.SUCCESS)) {
-                list = (List<Map<String, Object>>) map.get("rows");
+            if ((boolean)map.get(UtilConsts.SUCCESS)) {
+                list = (List<Map<String, Object>>)map.get("rows");
                 return Y9Result.success(list, "获取成功");
             }
         } catch (Exception e) {

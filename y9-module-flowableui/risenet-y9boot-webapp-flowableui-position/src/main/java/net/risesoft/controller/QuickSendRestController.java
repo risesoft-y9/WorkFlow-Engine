@@ -1,7 +1,20 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.constraints.NotBlank;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.QuickSendApi;
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
@@ -13,19 +26,6 @@ import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-
-import javax.validation.constraints.NotBlank;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 快捷发送
@@ -34,7 +34,6 @@ import java.util.Map;
  * @date 2024/06/05
  */
 @Validated
-@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/vue/quickSend")
@@ -51,7 +50,7 @@ public class QuickSendRestController {
     /**
      * 获取快捷发送人
      *
-     * @param itemId  事项id
+     * @param itemId 事项id
      * @param taskKey 任务key
      * @return Y9Result<List < Map < String, Object>>>
      */
@@ -94,13 +93,13 @@ public class QuickSendRestController {
     /**
      * 保存快捷发送人
      *
-     * @param itemId   事项id
-     * @param taskKey  任务key
+     * @param itemId 事项id
+     * @param taskKey 任务key
      * @param assignee 发送人
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveOrUpdate")
-    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey, @RequestParam String assignee) {
+    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey, @RequestParam(required = false) String assignee) {
         quickSendApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId, taskKey, assignee);
         return Y9Result.successMsg("保存成功");
     }

@@ -1,7 +1,25 @@
 package net.risesoft.controller.mobile;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -10,27 +28,15 @@ import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.EntrustModel;
-import net.risesoft.model.platform.*;
+import net.risesoft.model.platform.Department;
+import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.model.platform.Organization;
+import net.risesoft.model.platform.Person;
+import net.risesoft.model.platform.Position;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
-
-import javax.servlet.http.HttpServletResponse;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 人员接口
@@ -74,12 +80,12 @@ public class MobileOrgController {
      * 获取组织架构
      *
      * @param tenantId 租户id
-     * @param userId   人员id
-     * @param id       父节点id
+     * @param userId 人员id
+     * @param id 父节点id
      */
     @ResponseBody
     @RequestMapping(value = "/getOrg")
-    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, String id, HttpServletResponse response) {
+    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String id, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -166,7 +172,7 @@ public class MobileOrgController {
      * 获取人员岗位列表信息
      *
      * @param tenantId 租户id
-     * @param userId   人员id
+     * @param userId 人员id
      */
     @ResponseBody
     @RequestMapping(value = "/getPositionList")
@@ -221,12 +227,12 @@ public class MobileOrgController {
     /**
      * 获取发送人数
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param userChoice 选择人员id
      */
     @ResponseBody
     @RequestMapping(value = "/getUserCount")
-    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, String userChoice, HttpServletResponse response) {
+    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String userChoice, HttpServletResponse response) {
         List<String> userIds = new ArrayList<>();
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
@@ -258,8 +264,8 @@ public class MobileOrgController {
     /**
      * 获取人员信息
      *
-     * @param tenantId   租户id
-     * @param userId     人员id
+     * @param tenantId 租户id
+     * @param userId 人员id
      * @param positionId 岗位id
      */
     @ResponseBody

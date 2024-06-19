@@ -1,22 +1,23 @@
 package net.risesoft.controller;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.CommonSentencesApi;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-import javax.validation.constraints.NotBlank;
-
-import java.util.List;
-import java.util.Map;
+import net.risesoft.api.itemadmin.CommonSentencesApi;
+import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 常用语
@@ -59,7 +60,7 @@ public class CommonSentencesRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> remove(@RequestParam @NotBlank int tabIndex) {
+    public Y9Result<String> remove(@RequestParam int tabIndex) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             commonSentencesApi.removeCommonSentences(Y9LoginUserHolder.getTenantId(), person.getPersonId(), tabIndex);
@@ -109,7 +110,7 @@ public class CommonSentencesRestController {
     /**
      * 修改个人常用语
      *
-     * @param content  内容
+     * @param content 内容
      * @param tabIndex 序号
      * @return Y9Result<String>
      */

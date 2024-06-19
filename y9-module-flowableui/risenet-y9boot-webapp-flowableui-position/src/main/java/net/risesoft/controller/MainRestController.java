@@ -1,33 +1,47 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.constraints.NotBlank;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.*;
+import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
+import net.risesoft.api.itemadmin.position.Draft4PositionApi;
+import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
+import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.api.itemadmin.position.ItemLink4PositionApi;
+import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.todo.TodoTaskApi;
-import net.risesoft.model.itemadmin.*;
+import net.risesoft.model.itemadmin.EntrustModel;
+import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.LinkInfoModel;
+import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
+import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-
-import javax.validation.constraints.NotBlank;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 事项，统计相关
@@ -91,7 +105,7 @@ public class MainRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getCount4Item")
-    public Y9Result<Map<String, Object>> getCount4Item(@NotBlank String itemId) {
+    public Y9Result<Map<String, Object>> getCount4Item(@RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -164,7 +178,7 @@ public class MainRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getCount4SystemName")
-    public Y9Result<Map<String, Object>> getCount4SystemName(@NotBlank String systemName) {
+    public Y9Result<Map<String, Object>> getCount4SystemName(@RequestParam @NotBlank String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = new HashMap<>(16);
@@ -304,7 +318,7 @@ public class MainRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getPositionList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getPositionList(@RequestParam String count, @RequestParam String itemId, @RequestParam String systemName) {
+    public Y9Result<Map<String, Object>> getPositionList(@RequestParam(required = false) String count, @RequestParam(required = false) String itemId, @RequestParam(required = false) String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> resMap = new HashMap<>(16);
         List<Map<String, Object>> resList = new ArrayList<>();
@@ -411,13 +425,13 @@ public class MainRestController {
     /**
      * 获取流程任务信息
      *
-     * @param taskId            任务id
+     * @param taskId 任务id
      * @param processInstanceId 流程实例id
-     * @param type              类型
+     * @param type 类型
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getTaskOrProcessInfo", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getTaskOrProcessInfo(@RequestParam String taskId, @RequestParam String processInstanceId, @RequestParam @NotBlank String type) {
+    public Y9Result<Map<String, Object>> getTaskOrProcessInfo(@RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String type) {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         String processSerialNumber = "";
