@@ -145,7 +145,7 @@ public class MobileV1AttachmentController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/list")
-    public Y9Page<Map<String, Object>> list(@RequestParam @NotBlank String processSerialNumber, String fileSource, int page, int rows) throws Exception {
+    public Y9Page<Map<String, Object>> list(@RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, @RequestParam int page, @RequestParam int rows) throws Exception {
         Map<String, Object> map;
         try {
             map = attachment4PositionApi.getAttachmentList(Y9LoginUserHolder.getTenantId(), processSerialNumber, fileSource, page, rows);
@@ -171,7 +171,8 @@ public class MobileV1AttachmentController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/upload")
-    public Y9Result<String> upload(@RequestParam(required = false) MultipartFile file, @RequestParam String processInstanceId, @RequestParam String taskId, @RequestParam String describes, @RequestParam String processSerialNumber, String fileSource) throws Exception {
+    public Y9Result<String> upload(@RequestParam(required = false) MultipartFile file, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes, @RequestParam String processSerialNumber,
+        @RequestParam(required = false) String fileSource) throws Exception {
         Map<String, Object> map;
         try {
             if (StringUtils.isNotEmpty(describes)) {
@@ -205,7 +206,7 @@ public class MobileV1AttachmentController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/uploadWord")
-    public Y9Result<String> uploadWord(@RequestParam @NotBlank String processSerialNumber, String documentTitle, @RequestParam(required = false) MultipartFile file, String fileType, String taskId) {
+    public Y9Result<String> uploadWord(@RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String documentTitle, @RequestParam(required = false) MultipartFile file, @RequestParam(required = false) String fileType, @RequestParam(required = false) String taskId) {
         String result;
         try {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), Y9LoginUserHolder.getTenantId(), "word", processSerialNumber);

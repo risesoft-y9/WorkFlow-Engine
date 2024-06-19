@@ -64,12 +64,12 @@ public class MobileV1OpintionController {
     /**
      * 是否已填写意见
      *
-     * @param taskId              任务id
+     * @param taskId 任务id
      * @param processSerialNumber 流程编号
      * @return Y9Result<Boolean>
      */
     @RequestMapping(value = "/comment/checkSignOpinion")
-    public Y9Result<Boolean> checkSignOpinion(@RequestParam String taskId, @RequestParam @NotBlank String processSerialNumber) {
+    public Y9Result<Boolean> checkSignOpinion(@RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String userId = Y9LoginUserHolder.getPersonId();
@@ -100,28 +100,6 @@ public class MobileV1OpintionController {
     }
 
     /**
-     * 获取意见
-     *
-     * @param processSerialNumber 流程编号
-     * @param taskId              任务id
-     * @param itembox             办件状态，待办：todo,在办：doing,办结：done
-     * @param opinionFrameMark    意见框标识
-     * @param itemId              事项id
-     * @param taskDefinitionKey   任务key
-     * @param activitiUser        当前任务受让人
-     * @return Y9Result<List < Map < String, Object>>>
-     */
-    @RequestMapping(value = "/personCommentList")
-    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam @NotBlank String processSerialNumber, @RequestParam String taskId, @RequestParam String itembox, @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
-                                                                 @RequestParam String taskDefinitionKey, @RequestParam String activitiUser, @RequestParam String orderByUser) {
-        List<Map<String, Object>> listMap;
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPersonId();
-        listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
-        return Y9Result.success(listMap, "获取成功");
-    }
-
-    /**
      * 获取个人常用语
      *
      * @return Y9Result<List < Map < String, Object>>>
@@ -131,6 +109,28 @@ public class MobileV1OpintionController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
         List<Map<String, Object>> listMap = commonSentencesApi.listSentencesService(tenantId, userId);
+        return Y9Result.success(listMap, "获取成功");
+    }
+
+    /**
+     * 获取意见
+     *
+     * @param processSerialNumber 流程编号
+     * @param taskId 任务id
+     * @param itembox 办件状态，待办：todo,在办：doing,办结：done
+     * @param opinionFrameMark 意见框标识
+     * @param itemId 事项id
+     * @param taskDefinitionKey 任务key
+     * @param activitiUser 当前任务受让人
+     * @return Y9Result<List < Map < String, Object>>>
+     */
+    @RequestMapping(value = "/personCommentList")
+    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String taskId, @RequestParam(required = false) String itembox, @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser, @RequestParam(required = false) String orderByUser) {
+        List<Map<String, Object>> listMap;
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9LoginUserHolder.getPersonId();
+        listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
         return Y9Result.success(listMap, "获取成功");
     }
 
@@ -156,11 +156,11 @@ public class MobileV1OpintionController {
      * 保存常用语
      *
      * @param content 内容
-     * @param id      常用语id,新增id为空
+     * @param id 常用语id,新增id为空
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveCommonSentences")
-    public Y9Result<String> saveCommonSentences(@RequestParam String content, @RequestParam String id) {
+    public Y9Result<String> saveCommonSentences(@RequestParam String content, @RequestParam(required = false) String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
         try {

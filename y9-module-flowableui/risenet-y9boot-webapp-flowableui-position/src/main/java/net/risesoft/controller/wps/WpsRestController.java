@@ -57,7 +57,7 @@ public class WpsRestController {
     /**
      * 下载正文
      *
-     * @param tenantId            租户id
+     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      */
     @RequestMapping(value = "/download")
@@ -100,8 +100,8 @@ public class WpsRestController {
     /**
      * 打开套红模板
      *
-     * @param tenantId     租户id
-     * @param userId       用户id
+     * @param tenantId 租户id
+     * @param userId 用户id
      * @param templateGuid 模板id
      */
     @RequestMapping(value = "/getTaoHongTemplate")
@@ -137,8 +137,8 @@ public class WpsRestController {
     /**
      * 撤销红头
      *
-     * @param tenantId            租户id
-     * @param userId              用户id
+     * @param tenantId 租户id
+     * @param userId 用户id
      * @param processSerialNumber 流程编号
      */
     @RequestMapping(value = "/revokeRedHeader")
@@ -183,7 +183,7 @@ public class WpsRestController {
      * 获取套红模板列表
      *
      * @param tenantId 租户id
-     * @param userId   用户id
+     * @param userId 用户id
      * @return List<Map < String, Object>>
      */
     @RequestMapping(value = "/taoHongTemplateList")
@@ -201,12 +201,13 @@ public class WpsRestController {
      * 上传正文
      *
      * @param processSerialNumber 流程编号
-     * @param processInstanceId   流程实例id
-     * @param file                文件
+     * @param processInstanceId 流程实例id
+     * @param file 文件
      * @return Map<String, Object>
      */
     @RequestMapping(value = "/upload")
-    public Map<String, Object> upload(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String taskId, @RequestParam String istaohong, @RequestParam MultipartFile file) {
+    public Map<String, Object> upload(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId, @RequestParam(required = false) String istaohong,
+        @RequestParam MultipartFile file) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "上传成功");
@@ -248,7 +249,7 @@ public class WpsRestController {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? (String) documentTitle : "正文";
+            String title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
             String result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());

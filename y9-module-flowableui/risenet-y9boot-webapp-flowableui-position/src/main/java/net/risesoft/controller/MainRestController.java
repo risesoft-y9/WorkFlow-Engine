@@ -105,7 +105,7 @@ public class MainRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getCount4Item")
-    public Y9Result<Map<String, Object>> getCount4Item(@NotBlank String itemId) {
+    public Y9Result<Map<String, Object>> getCount4Item(@RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -178,7 +178,7 @@ public class MainRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getCount4SystemName")
-    public Y9Result<Map<String, Object>> getCount4SystemName(@NotBlank String systemName) {
+    public Y9Result<Map<String, Object>> getCount4SystemName(@RequestParam @NotBlank String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = new HashMap<>(16);
@@ -318,7 +318,7 @@ public class MainRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getPositionList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getPositionList(@RequestParam String count, @RequestParam String itemId, @RequestParam String systemName) {
+    public Y9Result<Map<String, Object>> getPositionList(@RequestParam(required = false) String count, @RequestParam(required = false) String itemId, @RequestParam(required = false) String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> resMap = new HashMap<>(16);
         List<Map<String, Object>> resList = new ArrayList<>();
@@ -425,13 +425,13 @@ public class MainRestController {
     /**
      * 获取流程任务信息
      *
-     * @param taskId            任务id
+     * @param taskId 任务id
      * @param processInstanceId 流程实例id
-     * @param type              类型
+     * @param type 类型
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getTaskOrProcessInfo", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getTaskOrProcessInfo(@RequestParam String taskId, @RequestParam String processInstanceId, @RequestParam @NotBlank String type) {
+    public Y9Result<Map<String, Object>> getTaskOrProcessInfo(@RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String type) {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         String processSerialNumber = "";

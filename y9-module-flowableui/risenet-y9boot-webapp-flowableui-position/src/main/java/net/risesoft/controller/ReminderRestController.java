@@ -45,7 +45,7 @@ public class ReminderRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/deleteList", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteList(@RequestParam @NotBlank String[] ids) {
+    public Y9Result<String> deleteList(@RequestParam String[] ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         reminderApi.deleteList(tenantId, ids);
         return Y9Result.successMsg("删除成功");
@@ -55,30 +55,30 @@ public class ReminderRestController {
      * 获取我的任务催办信息
      *
      * @param taskId 任务id
-     * @param rows   条数
-     * @param page   页码
+     * @param rows 条数
+     * @param page 页码
      * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/reminderMeList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getReminderList(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank int rows, @RequestParam @NotBlank int page) {
+    public Y9Page<Map<String, Object>> getReminderList(@RequestParam @NotBlank String taskId, @RequestParam int rows, @RequestParam int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = reminderApi.findByTaskId(tenantId, taskId, page, rows);
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>) map.get("rows"), "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
     }
 
     /**
      * 获取催办列表信息
      *
-     * @param type              类型
+     * @param type 类型
      * @param processInstanceId 流程实例id
-     * @param rows              条数
-     * @param page              页码
+     * @param rows 条数
+     * @param page 页码
      * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/reminderList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> myReminder(@RequestParam @NotBlank String type, @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank int rows, @RequestParam @NotBlank int page) {
+    public Y9Page<Map<String, Object>> myReminder(@RequestParam @NotBlank String type, @RequestParam @NotBlank String processInstanceId, @RequestParam int rows, @RequestParam int page) {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map;
         if ("my".equals(type)) {
@@ -86,24 +86,24 @@ public class ReminderRestController {
         } else {
             map = reminderApi.findByProcessInstanceId(tenantId, processInstanceId, page, rows);
         }
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>) map.get("rows"), "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
     }
 
     /**
      * 保存催办信息
      *
      * @param processInstanceId 流程实例id
-     * @param taskIds           催办任务ids
-     * @param msgContent        催办信息
+     * @param taskIds 催办任务ids
+     * @param msgContent 催办信息
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveReminder", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveReminder(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String[] taskIds, @RequestParam @NotBlank String msgContent) {
+    public Y9Result<String> saveReminder(@RequestParam @NotBlank String processInstanceId, @RequestParam String[] taskIds, @RequestParam @NotBlank String msgContent) {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPositionId();
         try {
             Map<String, Object> map;
             map = reminderApi.saveReminder(tenantId, userId, processInstanceId, taskIds, msgContent);
-            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("保存成功");
             }
         } catch (Exception e) {
@@ -119,7 +119,7 @@ public class ReminderRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/setReadTime", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> setReadTime(@RequestParam @NotBlank String[] ids) {
+    public Y9Result<String> setReadTime(@RequestParam String[] ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         reminderApi.setReadTime(tenantId, ids);
         return Y9Result.successMsg("操作成功");
@@ -129,19 +129,19 @@ public class ReminderRestController {
      * 获取催办任务
      *
      * @param processInstanceId 流程实例id
-     * @param page              页码
-     * @param rows              条数
+     * @param page 页码
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/taskList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> taskList(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank int page, @RequestParam @NotBlank int rows) {
+    public Y9Page<Map<String, Object>> taskList(@RequestParam @NotBlank String processInstanceId, @RequestParam int page, @RequestParam int rows) {
         return flowableReminderService.findTaskListByProcessInstanceId(processInstanceId, page, rows);
     }
 
     /**
      * 更新催办信息
      *
-     * @param id         催办is
+     * @param id 催办is
      * @param msgContent 催办信息
      * @return Y9Result<String>
      */
@@ -151,7 +151,7 @@ public class ReminderRestController {
         try {
             Map<String, Object> map;
             map = reminderApi.updateReminder(tenantId, id, msgContent);
-            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("保存成功");
             }
         } catch (Exception e) {

@@ -33,15 +33,14 @@ public class CheckUserLoginFilter4Flowable implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
-            throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest)servletRequest;
         HttpSession session = request.getSession();
         try {
             UserInfo loginPerson = Y9LoginUserHolder.getUserInfo();
             if (loginPerson != null) {
                 String positionId = request.getHeader("positionId");
-                if (StringUtils.isNotBlank(positionId)) {
+                if (StringUtils.isNotBlank(positionId) && !positionId.contains("null")) {
                     session.setAttribute("positionId", positionId);
                     Y9LoginUserHolder.setPositionId(positionId);
                     PositionApi positionApi = Y9Context.getBean(PositionApi.class);
@@ -51,8 +50,7 @@ public class CheckUserLoginFilter4Flowable implements Filter {
                     }
                 } else {
                     PersonApi personApi = Y9Context.getBean(PersonApi.class);
-                    List<Position> list = personApi
-                            .listPositionsByPersonId(loginPerson.getTenantId(), loginPerson.getPersonId()).getData();
+                    List<Position> list = personApi.listPositionsByPersonId(loginPerson.getTenantId(), loginPerson.getPersonId()).getData();
                     if (!list.isEmpty()) {
                         Y9LoginUserHolder.setPosition(list.get(0));
                     }

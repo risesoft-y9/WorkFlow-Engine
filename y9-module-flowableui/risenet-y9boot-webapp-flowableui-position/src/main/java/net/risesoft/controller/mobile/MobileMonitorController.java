@@ -45,7 +45,7 @@ public class MobileMonitorController {
     /**
      * 删除流程实例
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      */
     @RequestMapping(value = "/deleteProcessInstance")
@@ -66,7 +66,7 @@ public class MobileMonitorController {
      * 监控在办件统计
      *
      * @param tenantId 租户id
-     * @param itemId   事项id
+     * @param itemId 事项id
      */
     @RequestMapping(value = "/monitorDoingCount")
     public void monitorDoingCount(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String itemId, HttpServletResponse response) {
@@ -91,13 +91,13 @@ public class MobileMonitorController {
      * 监控在办件
      *
      * @param tenantId 租户id
-     * @param itemId   事项id
-     * @param title    标题
-     * @param page     页码
-     * @param rows     条数
+     * @param itemId 事项id
+     * @param title 标题
+     * @param page 页码
+     * @param rows 条数
      */
     @RequestMapping(value = "/monitorDoingList")
-    public void monitorDoingList(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String itemId, @RequestParam String title, int page, int rows, HttpServletResponse response) {
+    public void monitorDoingList(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam int page, @RequestParam int rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -114,8 +114,8 @@ public class MobileMonitorController {
      * 监控办结件统计
      *
      * @param tenantId 租户id
-     * @param userId   人员id
-     * @param itemId   事项id
+     * @param userId 人员id
+     * @param itemId 事项id
      */
     @RequestMapping(value = "/monitorDoneCount")
     public void monitorDoneCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam @NotBlank String itemId, HttpServletResponse response) {
@@ -139,16 +139,17 @@ public class MobileMonitorController {
     /**
      * 监控办结件
      *
-     * @param tenantId   租户id
-     * @param userId     人员id
+     * @param tenantId 租户id
+     * @param userId 人员id
      * @param positionId 岗位id
-     * @param itemId     事项id
-     * @param title      标题
-     * @param page       页码
-     * @param rows       条数
+     * @param itemId 事项id
+     * @param title 标题
+     * @param page 页码
+     * @param rows 条数
      */
     @RequestMapping(value = "/monitorDoneList")
-    public void monitorDoneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam String title, int page, int rows, HttpServletResponse response) {
+    public void monitorDoneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam int page,
+        @RequestParam int rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -164,7 +165,7 @@ public class MobileMonitorController {
     /**
      * 彻底删除流程实例
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      */
     @RequestMapping(value = "/removeProcess")

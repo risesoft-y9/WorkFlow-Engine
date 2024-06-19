@@ -3,8 +3,6 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.validation.constraints.NotBlank;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,13 +43,13 @@ public class ItemLinkApiImpl implements ItemLink4PositionApi {
     /**
      * 获取事项链接列表
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param itemId     事项id
+     * @param itemId 事项id
      * @return List<LinkInfoModel>
      */
     @Override
-    public List<LinkInfoModel> getItemLinkList(@NotBlank String tenantId, @NotBlank String positionId, @NotBlank String itemId) {
+    public List<LinkInfoModel> getItemLinkList(String tenantId, String positionId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<LinkInfoModel> res_list = new ArrayList<>();
         List<ItemLinkBind> list = itemLinkBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);

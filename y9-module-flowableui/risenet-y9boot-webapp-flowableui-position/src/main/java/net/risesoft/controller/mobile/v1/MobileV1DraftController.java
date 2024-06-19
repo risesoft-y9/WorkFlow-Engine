@@ -47,7 +47,7 @@ public class MobileV1DraftController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             map = draft4PositionApi.deleteDraft(tenantId, ids);
-            if ((boolean) map.get("success")) {
+            if ((boolean)map.get("success")) {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
@@ -78,23 +78,23 @@ public class MobileV1DraftController {
     /**
      * 草稿列表
      *
-     * @param itemId  事项id
-     * @param title   搜索标题
+     * @param itemId 事项id
+     * @param title 搜索标题
      * @param delFlag 是否删除 true为回收站列表，false为草稿列表
-     * @param page    页码
-     * @param rows    行数
+     * @param page 页码
+     * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getDraft")
-    public Y9Page<Map<String, Object>> getDraft(@RequestParam @NotBlank String itemId, @RequestParam String title, boolean delFlag, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
+    public Y9Page<Map<String, Object>> getDraft(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam(required = false) boolean delFlag, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
         Map<String, Object> map;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             map = draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, delFlag);
-            if ((boolean) map.get("success")) {
-                List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("rows");
+            if ((boolean)map.get("success")) {
+                List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
                 return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Long.parseLong(map.get("total").toString()), list, "获取成功");
             }
         } catch (Exception e) {
@@ -134,7 +134,7 @@ public class MobileV1DraftController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             map = draft4PositionApi.reduction(tenantId, id);
-            if ((boolean) map.get("success")) {
+            if ((boolean)map.get("success")) {
                 return Y9Result.successMsg("还原成功");
             }
         } catch (Exception e) {
@@ -155,7 +155,7 @@ public class MobileV1DraftController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             map = draft4PositionApi.removeDraft(tenantId, ids);
-            if ((boolean) map.get("success")) {
+            if ((boolean)map.get("success")) {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {

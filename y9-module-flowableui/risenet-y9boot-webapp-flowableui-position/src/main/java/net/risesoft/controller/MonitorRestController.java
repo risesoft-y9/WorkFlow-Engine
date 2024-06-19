@@ -57,17 +57,18 @@ public class MonitorRestController {
     /**
      * 单位所有件
      *
-     * @param itemId     事项id
+     * @param itemId 事项id
      * @param searchName 搜索词
-     * @param userName   发起人
-     * @param state      办件状态
-     * @param year       年度
-     * @param page       页码
-     * @param rows       条数
+     * @param userName 发起人
+     * @param state 办件状态
+     * @param year 年度
+     * @param page 页码
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/deptList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> deptList(@RequestParam @NotBlank String itemId, @RequestParam String searchName, @RequestParam String userName, @RequestParam String state, @RequestParam String year, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
+    public Y9Page<Map<String, Object>> deptList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String searchName, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         return monitorService.deptList(itemId, searchName, userName, state, year, page, rows);
     }
 
@@ -87,16 +88,17 @@ public class MonitorRestController {
      * 监控办件列表
      *
      * @param searchName 搜索词
-     * @param itemId     事项id
-     * @param userName   发起人
-     * @param state      办件状态
-     * @param year       年度
-     * @param page       页码
-     * @param rows       条数
+     * @param itemId 事项id
+     * @param userName 发起人
+     * @param state 办件状态
+     * @param year 年度
+     * @param page 页码
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorBanjianList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> monitorBanjianList(@RequestParam String searchName, @RequestParam String itemId, @RequestParam String userName, @RequestParam String state, @RequestParam String year, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
+    public Y9Page<Map<String, Object>> monitorBanjianList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         return monitorService.monitorBanjianList(searchName, itemId, userName, state, year, page, rows);
     }
 
@@ -104,46 +106,46 @@ public class MonitorRestController {
      * 监控阅件列表
      *
      * @param searchName 搜索词
-     * @param itemId     事项id
+     * @param itemId 事项id
      * @param senderName 发送人
-     * @param userName   收件人
-     * @param state      办件状态
-     * @param year       年度
-     * @param page       页码
-     * @param rows       条数
+     * @param userName 收件人
+     * @param state 办件状态
+     * @param year 年度
+     * @param page 页码
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorChaosongList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> monitorChaosongList(@RequestParam String searchName, @RequestParam String itemId, @RequestParam String senderName, @RequestParam String userName, @RequestParam String state, @RequestParam String year, @RequestParam @NotBlank Integer page,
-                                                           @RequestParam @NotBlank Integer rows) {
+    public Y9Page<Map<String, Object>> monitorChaosongList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String senderName, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year, @RequestParam Integer page, @RequestParam Integer rows) {
         return monitorService.monitorChaosongList(searchName, itemId, senderName, userName, state, year, page, rows);
     }
 
     /**
      * 获取监控在办列表
      *
-     * @param itemId     事项id
+     * @param itemId 事项id
      * @param searchTerm 搜索词
-     * @param page       页码
-     * @param rows       条数
+     * @param page 页码
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorDoingList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam @NotBlank String itemId, @RequestParam String searchTerm, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
+    public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         return monitorService.monitorDoingList(itemId, searchTerm, page, rows);
     }
 
     /**
      * 获取监控办结列表
      *
-     * @param itemId     事项id
+     * @param itemId 事项id
      * @param searchTerm 搜索词
-     * @param page       页码
-     * @param rows       条数
+     * @param page 页码
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorDoneList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam @NotBlank String itemId, @RequestParam String searchTerm, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
+    public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         return monitorService.monitorDoneList(itemId, searchTerm, page, rows);
     }
 

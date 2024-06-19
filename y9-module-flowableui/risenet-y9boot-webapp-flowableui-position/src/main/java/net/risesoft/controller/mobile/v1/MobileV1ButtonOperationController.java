@@ -130,7 +130,7 @@ public class MobileV1ButtonOperationController {
     /**
      * 获取办件状态
      *
-     * @param taskId            任务id
+     * @param taskId 任务id
      * @param processInstanceId 流程实例id
      * @return Y9Result<Map < String, Object>>
      */
@@ -244,11 +244,11 @@ public class MobileV1ButtonOperationController {
      * 恢复待办
      *
      * @param processInstanceId 流程实例id
-     * @param desc              描述
+     * @param desc 描述
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/multipleResumeToDo")
-    public Y9Result<String> multipleResumeToDo(@RequestParam @NotBlank String processInstanceId, @RequestParam String desc) {
+    public Y9Result<String> multipleResumeToDo(@RequestParam @NotBlank String processInstanceId, @RequestParam(required = false) String desc) {
         try {
             buttonOperationService.multipleResumeToDo(processInstanceId, desc);
             return Y9Result.successMsg("恢复待办成功");
@@ -261,13 +261,13 @@ public class MobileV1ButtonOperationController {
     /**
      * 拒签：抢占式办理时，拒签就把自己从多个抢占办理的人中排除掉
      *
-     * @param taskId                   任务id
+     * @param taskId 任务id
      * @param isLastPerson4RefuseClaim 是否最后一人拒签
      * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/refuseClaim")
-    public Y9Result<String> refuseClaim(@RequestParam @NotBlank String taskId, @RequestParam Boolean isLastPerson4RefuseClaim) {
+    public Y9Result<String> refuseClaim(@RequestParam @NotBlank String taskId, @RequestParam(required = false) Boolean isLastPerson4RefuseClaim) {
         String activitiUser = "";
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -287,7 +287,7 @@ public class MobileV1ButtonOperationController {
                     String assigneeId = task.getAssignee();
                     if (StringUtils.isBlank(assigneeId)) {
                         Map<String, Object> vars = variableApi.getVariables(tenantId, taskId);
-                        ArrayList<String> users = (ArrayList<String>) vars.get(SysVariables.USERS);
+                        ArrayList<String> users = (ArrayList<String>)vars.get(SysVariables.USERS);
                         for (Object obj : users) {
                             String user = obj.toString();
                             if (user.contains(positionId)) {
@@ -312,9 +312,9 @@ public class MobileV1ButtonOperationController {
     /**
      * 重定位
      *
-     * @param taskId             任务id
+     * @param taskId 任务id
      * @param repositionToTaskId 定位路由key
-     * @param userChoice         人员id
+     * @param userChoice 人员id
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/reposition")
@@ -335,7 +335,7 @@ public class MobileV1ButtonOperationController {
     /**
      * 重定位
      *
-     * @param taskId     任务id
+     * @param taskId 任务id
      * @param userChoice 人员id
      * @return Y9Result<String>
      */
@@ -471,7 +471,7 @@ public class MobileV1ButtonOperationController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/specialComplete")
-    public Y9Result<String> specialComplete(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
+    public Y9Result<String> specialComplete(@RequestParam @NotBlank String taskId, @RequestParam(required = false) String reason) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();

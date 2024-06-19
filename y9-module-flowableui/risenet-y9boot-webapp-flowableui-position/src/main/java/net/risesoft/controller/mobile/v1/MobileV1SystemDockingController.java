@@ -73,17 +73,17 @@ public class MobileV1SystemDockingController {
     /**
      * 对接系统提交接口
      *
-     * @param itemId         事项id
-     * @param mappingId      对接系统标识
+     * @param itemId 事项id
+     * @param mappingId 对接系统标识
      * @param positionChoice 接收岗位id，多岗位,隔开
-     * @param formJsonData   表单数据
-     * @param files          附件列表
+     * @param formJsonData 表单数据
+     * @param files 附件列表
      * @return Y9Result<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/startAndForwarding")
     public Y9Result<Map<String, Object>> startAndForwarding(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String mappingId, @RequestParam @NotBlank String routeToTaskId, @RequestParam @NotBlank String positionChoice, @RequestParam @NotBlank String formJsonData,
-                                                            @RequestParam String taskId, @RequestParam(required = false) MultipartFile[] files) {
+        @RequestParam(required = false) String taskId, @RequestParam(required = false) MultipartFile[] files) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -136,7 +136,7 @@ public class MobileV1SystemDockingController {
               3启动流程并发送
              */
             Map<String, Object> map = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, "", itemId, guid, item.getWorkflowGuid(), positionChoice, "", routeToTaskId, new HashMap<>());
-            if ((boolean) map.get(UtilConsts.SUCCESS)) {
+            if ((boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.success(map, "操作成功");
             }
             return Y9Result.failure(map.get("msg").toString());
@@ -149,11 +149,11 @@ public class MobileV1SystemDockingController {
     /**
      * 对接系统提交接口
      *
-     * @param itemId         事项id
-     * @param mappingId      对接系统标识
+     * @param itemId 事项id
+     * @param mappingId 对接系统标识
      * @param positionChoice 接收岗位id，多人,隔开
-     * @param formJsonData   表单数据
-     * @param files          附件列表
+     * @param formJsonData 表单数据
+     * @param files 附件列表
      * @return Y9Result<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
@@ -210,16 +210,16 @@ public class MobileV1SystemDockingController {
                         long fileSize = file.getSize();
                         String fileSizeString;
                         if (fileSize < 1024) {
-                            fileSizeString = df.format((double) fileSize) + "B";
+                            fileSizeString = df.format((double)fileSize) + "B";
                         } else if (fileSize < 1048576) {
-                            fileSizeString = df.format((double) fileSize / 1024) + "K";
+                            fileSizeString = df.format((double)fileSize / 1024) + "K";
                         } else if (fileSize < 1073741824) {
-                            fileSizeString = df.format((double) fileSize / 1048576) + "M";
+                            fileSizeString = df.format((double)fileSize / 1048576) + "M";
                         } else {
-                            fileSizeString = df.format((double) fileSize / 1073741824) + "G";
+                            fileSizeString = df.format((double)fileSize / 1073741824) + "G";
                         }
                         Map<String, Object> att_map = attachment4PositionApi.upload(tenantId, userId, positionId, fileName, fileSizeString, "", "", "", guid, "", y9FileStore.getId());
-                        if (!(boolean) att_map.get(UtilConsts.SUCCESS)) {
+                        if (!(boolean)att_map.get(UtilConsts.SUCCESS)) {
                             LOGGER.info("***********************" + title + "**********保存附件失败");
                             return Y9Result.failure("保存附件失败");
                         }
@@ -227,7 +227,7 @@ public class MobileV1SystemDockingController {
                 }
             }
             Map<String, Object> map = document4PositionApi.startProcess(tenantId, positionId, itemId, guid, item.getWorkflowGuid(), positionChoice);
-            if ((boolean) map.get(UtilConsts.SUCCESS)) {
+            if ((boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.success(map, "提交成功");
             }
             return Y9Result.failure(map.get("msg").toString());

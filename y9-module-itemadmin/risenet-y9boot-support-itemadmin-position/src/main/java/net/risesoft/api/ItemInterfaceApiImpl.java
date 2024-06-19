@@ -3,8 +3,6 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.validation.constraints.NotBlank;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,6 +39,7 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
 
     /**
      * 获取事项接口信息
+     *
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param taskKey 任务key
@@ -49,7 +48,7 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
      * @return Y9Result<List<InterfaceModel>>
      */
     @Override
-    public Y9Result<List<InterfaceModel>> getInterface(@NotBlank String tenantId, @NotBlank String itemId, String taskKey, String processDefinitionId, String condition) {
+    public Y9Result<List<InterfaceModel>> getInterface(String tenantId, String itemId, String taskKey, String processDefinitionId, String condition) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemInterfaceTaskBind> list = itemInterfaceTaskBindRepository.findByItemIdAndTaskDefKeyAndProcessDefinitionIdAndExecuteConditionContaining(itemId, taskKey, processDefinitionId, condition);
         List<InterfaceModel> res_list = new ArrayList<>();
@@ -72,13 +71,14 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
 
     /**
      * 获取事项接口参数信息
+     *
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param interfaceId 接口id
-     * @return  Y9Result<List<InterfaceParamsModel>>
+     * @return Y9Result<List<InterfaceParamsModel>>
      */
     @Override
-    public Y9Result<List<InterfaceParamsModel>> getInterfaceParams(@NotBlank String tenantId, @NotBlank String itemId, @NotBlank String interfaceId) {
+    public Y9Result<List<InterfaceParamsModel>> getInterfaceParams(String tenantId, String itemId, String interfaceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemInterfaceParamsBind> list = itemInterfaceParamsBindRepository.findByItemIdAndInterfaceIdOrderByCreateTimeDesc(itemId, interfaceId);
         List<InterfaceParamsModel> res_list = new ArrayList<>();

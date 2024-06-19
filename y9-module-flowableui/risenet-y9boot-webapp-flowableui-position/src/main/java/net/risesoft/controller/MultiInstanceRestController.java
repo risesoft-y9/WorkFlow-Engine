@@ -56,19 +56,19 @@ public class MultiInstanceRestController {
      * 加签
      *
      * @param processInstanceId 流程实例id
-     * @param executionId       执行实例id
-     * @param taskId            任务id
-     * @param userChoice        选择人员
-     * @param selectUserId      加签人员
-     * @param num               加签序号
-     * @param isSendSms         是否短信提醒
-     * @param isShuMing         是否署名
-     * @param smsContent        短信内容
+     * @param executionId 执行实例id
+     * @param taskId 任务id
+     * @param userChoice 选择人员
+     * @param selectUserId 加签人员
+     * @param num 加签序号
+     * @param isSendSms 是否短信提醒
+     * @param isShuMing 是否署名
+     * @param smsContent 短信内容
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/addExecutionId", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> addExecutionId(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String executionId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice, @RequestParam String selectUserId, @RequestParam int num,
-                                           @RequestParam String isSendSms, @RequestParam String isShuMing, @RequestParam String smsContent) {
+    public Y9Result<String> addExecutionId(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String executionId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice, @RequestParam(required = false) String selectUserId,
+        @RequestParam(required = false) int num, @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
         try {
             /*
               selectUserId不为空说明是从串行加签过来的
@@ -123,7 +123,7 @@ public class MultiInstanceRestController {
      * 并行减签
      *
      * @param executionId 执行实例id
-     * @param taskId      任务id
+     * @param taskId 任务id
      * @param elementUser 减签人员
      * @return Y9Result<String>
      */
@@ -142,13 +142,13 @@ public class MultiInstanceRestController {
      * 串行减签
      *
      * @param executionId 执行实例id
-     * @param taskId      任务id
+     * @param taskId 任务id
      * @param elementUser 减签人员
-     * @param num         减签序号
+     * @param num 减签序号
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/removeExecution4Sequential", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeExecution4Sequential(@RequestParam @NotBlank String executionId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String elementUser, @RequestParam @NotBlank int num) {
+    public Y9Result<String> removeExecution4Sequential(@RequestParam @NotBlank String executionId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String elementUser, @RequestParam(required = false) int num) {
         try {
             multiInstanceService.removeExecution4Sequential(executionId, taskId, elementUser, num);
             return Y9Result.successMsg("减签成功");

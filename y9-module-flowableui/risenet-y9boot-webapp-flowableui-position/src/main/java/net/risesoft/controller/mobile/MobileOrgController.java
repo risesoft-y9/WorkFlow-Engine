@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -79,12 +80,12 @@ public class MobileOrgController {
      * 获取组织架构
      *
      * @param tenantId 租户id
-     * @param userId   人员id
-     * @param id       父节点id
+     * @param userId 人员id
+     * @param id 父节点id
      */
     @ResponseBody
     @RequestMapping(value = "/getOrg")
-    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, String id, HttpServletResponse response) {
+    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String id, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -171,7 +172,7 @@ public class MobileOrgController {
      * 获取人员岗位列表信息
      *
      * @param tenantId 租户id
-     * @param userId   人员id
+     * @param userId 人员id
      */
     @ResponseBody
     @RequestMapping(value = "/getPositionList")
@@ -226,12 +227,12 @@ public class MobileOrgController {
     /**
      * 获取发送人数
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param userChoice 选择人员id
      */
     @ResponseBody
     @RequestMapping(value = "/getUserCount")
-    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, String userChoice, HttpServletResponse response) {
+    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String userChoice, HttpServletResponse response) {
         List<String> userIds = new ArrayList<>();
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
@@ -263,8 +264,8 @@ public class MobileOrgController {
     /**
      * 获取人员信息
      *
-     * @param tenantId   租户id
-     * @param userId     人员id
+     * @param tenantId 租户id
+     * @param userId 人员id
      * @param positionId 岗位id
      */
     @ResponseBody

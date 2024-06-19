@@ -128,7 +128,7 @@ public class ButtonOperationRestController {
     /**
      * 协商：协商是把任务转给其他人操作，被协商人会在待办任务列表里看到这条任务，正常处理任务后，任务会返回给原执行人，流程不会发生变化。
      *
-     * @param taskId     任务id
+     * @param taskId 任务id
      * @param userChoice 收件人
      * @return Y9Result<String>
      */
@@ -147,20 +147,20 @@ public class ButtonOperationRestController {
     /**
      * 定制流程办理
      *
-     * @param itemId               事项id
-     * @param multiInstance        节点类型
-     * @param nextNode             是否下一节点
-     * @param processSerialNumber  流程编号
+     * @param itemId 事项id
+     * @param multiInstance 节点类型
+     * @param nextNode 是否下一节点
+     * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
-     * @param processInstanceId    流程实例id
-     * @param taskId               任务id
-     * @param infoOvert            数据中心公开
+     * @param processInstanceId 流程实例id
+     * @param taskId 任务id
+     * @param infoOvert 数据中心公开
      * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/customProcessHandle", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> customProcessHandle(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String multiInstance, @RequestParam @NotBlank Boolean nextNode, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
-                                                @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String taskId, @RequestParam String infoOvert) {
+        @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String taskId, @RequestParam(required = false) String infoOvert) {
         try {
             Position position = Y9LoginUserHolder.getPosition();
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -185,7 +185,7 @@ public class ButtonOperationRestController {
                     String userChoice = customProcessInfo.getOrgId();
                     String routeToTaskId = customProcessInfo.getTaskKey();
                     map = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, "", itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
-                    if (!(boolean) map.get(UtilConsts.SUCCESS)) {
+                    if (!(boolean)map.get(UtilConsts.SUCCESS)) {
                         return Y9Result.failure("发送失败");
                     }
                     // 发送成功后更新当前运行节点
@@ -240,8 +240,8 @@ public class ButtonOperationRestController {
      * 直接发送至流程启动人
      *
      * @param processInstanceId 流程实例id
-     * @param taskId            任务id
-     * @param routeToTask       任务key
+     * @param taskId 任务id
+     * @param routeToTask 任务key
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/directSend", method = RequestMethod.POST, produces = "application/json")
@@ -314,11 +314,11 @@ public class ButtonOperationRestController {
      * 获取目标任务节点
      *
      * @param processDefinitionId 流程定义id
-     * @param taskDefKey          任务key
+     * @param taskDefKey 任务key
      * @return Y9Result<List < Map < String, String>>>
      */
     @RequestMapping(value = "/getTargetNodes", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, String>>> getTargetNodes(@RequestParam @NotBlank String processDefinitionId, @RequestParam String taskDefKey) {
+    public Y9Result<List<Map<String, String>>> getTargetNodes(@RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             List<Map<String, String>> routeToTasks;
@@ -362,7 +362,7 @@ public class ButtonOperationRestController {
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
             // 得到该节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行,COMMON表示普通单实例
             String multiInstance = processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey());
-            List<String> users = (List<String>) variables.get("users");
+            List<String> users = (List<String>)variables.get("users");
             if (multiInstance.equals(SysVariables.COMMON)) {// 普通单实例
                 for (String user : users) {
                     Map<String, Object> map = new HashMap<>(16);
@@ -521,7 +521,7 @@ public class ButtonOperationRestController {
     /**
      * 委托. 委托是把任务转给其他人操作，被委托人会在待办任务列表里看到这条任务，正常处理任务后，流程会继续向下运行。
      *
-     * @param taskId     任务id
+     * @param taskId 任务id
      * @param userChoice 收件人
      * @return Y9Result<String>
      */
@@ -557,7 +557,7 @@ public class ButtonOperationRestController {
                 }
             }
             Map<String, Object> vars = variableApi.getVariables(tenantId, taskId);
-            ArrayList<String> users = (ArrayList<String>) vars.get(SysVariables.USERS);
+            ArrayList<String> users = (ArrayList<String>)vars.get(SysVariables.USERS);
             for (Object obj : users) {
                 String user = obj.toString();
                 if (user.contains(positionId)) {
@@ -586,10 +586,10 @@ public class ButtonOperationRestController {
         try {
             Map<String, Object> map;
             map = buttonOperation4PositionApi.refuseClaimRollback(tenantId, positionId, taskId);
-            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.successMsg((String) map.get("msg"));
+            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+                return Y9Result.successMsg((String)map.get("msg"));
             } else {
-                return Y9Result.failure((String) map.get("msg"));
+                return Y9Result.failure((String)map.get("msg"));
             }
         } catch (Exception e) {
             LOGGER.error("refuseClaimRollback error", e);
@@ -600,19 +600,19 @@ public class ButtonOperationRestController {
     /**
      * 重定向(选择任意流程节点重定向)
      *
-     * @param taskId              任务Id
-     * @param routeToTaskId       流程节点Id
-     * @param userChoice          选择重定向的人员
+     * @param taskId 任务Id
+     * @param routeToTaskId 流程节点Id
+     * @param userChoice 选择重定向的人员
      * @param processSerialNumber 流程编号
-     * @param sponsorGuid         主办人id
-     * @param isSendSms           是否短信提醒
-     * @param isShuMing           是否署名
-     * @param smsContent          短信内容
+     * @param sponsorGuid 主办人id
+     * @param isSendSms 是否短信提醒
+     * @param isShuMing 是否署名
+     * @param smsContent 短信内容
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/reposition", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> reposition(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTaskId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String userChoice, @RequestParam String sponsorGuid, @RequestParam String isSendSms,
-                                       @RequestParam String isShuMing, @RequestParam String smsContent) {
+    public Y9Result<String> reposition(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTaskId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String userChoice, @RequestParam(required = false) String sponsorGuid,
+        @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -647,7 +647,7 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/rollback", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> rollback(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
+    public Y9Result<String> rollback(@RequestParam @NotBlank String taskId, @RequestParam(required = false) String reason) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -711,7 +711,7 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/rollbackToStartor", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> rollbackToStartor(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
+    public Y9Result<String> rollbackToStartor(@RequestParam @NotBlank String taskId, @RequestParam(required = false) String reason) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -726,10 +726,10 @@ public class ButtonOperationRestController {
     /**
      * 保存流程定制信息
      *
-     * @param itemId               事项id
-     * @param processSerialNumber  流程编号
+     * @param itemId 事项id
+     * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
-     * @param jsonData             数据
+     * @param jsonData 数据
      * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
@@ -746,15 +746,15 @@ public class ButtonOperationRestController {
             if (list != null) {
                 map = list.get(1);
             }
-            String routeToTaskId = (String) map.get("taskKey");
+            String routeToTaskId = (String)map.get("taskKey");
             Map<String, Object> variables = new HashMap<>(16);
-            List<Map<String, Object>> orgList = (List<Map<String, Object>>) map.get("orgList");
+            List<Map<String, Object>> orgList = (List<Map<String, Object>>)map.get("orgList");
             String userChoice = "";
             for (Map<String, Object> org : orgList) {
-                userChoice = Y9Util.genCustomStr(userChoice, (String) org.get("id"), ";");
+                userChoice = Y9Util.genCustomStr(userChoice, (String)org.get("id"), ";");
             }
             map = document4PositionApi.saveAndForwarding(tenantId, positionId, "", "", "", itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
-            if (!(boolean) map.get(UtilConsts.SUCCESS)) {
+            if (!(boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.failure("保存成功,发送失败");
             }
             // 发送成功后更新当前运行节点
@@ -827,7 +827,7 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/specialComplete", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> specialComplete(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
+    public Y9Result<String> specialComplete(@RequestParam @NotBlank String taskId, @RequestParam(required = false) String reason) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -874,7 +874,7 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/takeback", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> takeback(@RequestParam @NotBlank String taskId, @RequestParam String reason) {
+    public Y9Result<String> takeback(@RequestParam @NotBlank String taskId, @RequestParam(required = false) String reason) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {

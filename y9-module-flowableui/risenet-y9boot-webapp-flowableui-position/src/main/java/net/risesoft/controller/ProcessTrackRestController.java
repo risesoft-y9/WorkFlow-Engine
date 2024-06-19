@@ -45,13 +45,13 @@ public class ProcessTrackRestController {
     /**
      * 获取流程图
      *
-     * @param resourceType        类型
-     * @param processInstanceId   流程实例id
+     * @param resourceType 类型
+     * @param processInstanceId 流程实例id
      * @param processDefinitionId 流程定义id
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/getFlowChart", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<String> getFlowChart(@RequestParam String resourceType, @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String processDefinitionId) {
+    public Y9Result<String> getFlowChart(@RequestParam(required = false) String resourceType, @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String processDefinitionId) {
         try {
             return repositoryApi.getXmlByProcessInstance(Y9LoginUserHolder.getTenantId(), resourceType, processInstanceId, processDefinitionId);
         } catch (Exception e) {
@@ -109,8 +109,8 @@ public class ProcessTrackRestController {
         List<Map<String, Object>> list;
         try {
             Map<String, Object> map = processTrack4PositionApi.processTrackList4Simple(tenantId, positionId, processInstanceId);
-            if ((boolean) map.get(UtilConsts.SUCCESS)) {
-                list = (List<Map<String, Object>>) map.get("rows");
+            if ((boolean)map.get(UtilConsts.SUCCESS)) {
+                list = (List<Map<String, Object>>)map.get("rows");
                 return Y9Result.success(list, "获取成功");
             }
         } catch (Exception e) {

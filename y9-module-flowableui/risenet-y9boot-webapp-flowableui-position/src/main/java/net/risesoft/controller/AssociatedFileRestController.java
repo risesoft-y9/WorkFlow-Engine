@@ -42,7 +42,7 @@ public class AssociatedFileRestController {
      * 删除关联文件
      *
      * @param processSerialNumber 流程编号
-     * @param processInstanceIds  要删除的流程实例ids，逗号隔开
+     * @param processInstanceIds 要删除的流程实例ids，逗号隔开
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/delAssociatedFile", method = RequestMethod.POST, produces = "application/json")
@@ -73,8 +73,8 @@ public class AssociatedFileRestController {
         Map<String, Object> map;
         try {
             map = associatedFile4PositionApi.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
-            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.success((List<Map<String, Object>>) map.get("rows"), "获取成功");
+            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+                return Y9Result.success((List<Map<String, Object>>)map.get("rows"), "获取成功");
             }
         } catch (Exception e) {
             LOGGER.error("获取关联文件列表失败", e);
@@ -86,13 +86,13 @@ public class AssociatedFileRestController {
      * 获取历史文件
      *
      * @param itemId 事项id
-     * @param title  搜索标题
-     * @param page   页码
-     * @param rows   条数
+     * @param title 搜索标题
+     * @param page 页码
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/getDoneList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getSearchList(@RequestParam @NotBlank String itemId, @RequestParam String title, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
+    public Y9Page<Map<String, Object>> getSearchList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
         return searchService.getSearchList(title, itemId, "", "", "", "", "", page, rows);
     }
 
@@ -100,7 +100,7 @@ public class AssociatedFileRestController {
      * 保存关联文件
      *
      * @param processSerialNumber 流程编号
-     * @param processInstanceIds  流程实例ids，逗号隔开
+     * @param processInstanceIds 流程实例ids，逗号隔开
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveAssociatedFile", method = RequestMethod.POST, produces = "application/json")

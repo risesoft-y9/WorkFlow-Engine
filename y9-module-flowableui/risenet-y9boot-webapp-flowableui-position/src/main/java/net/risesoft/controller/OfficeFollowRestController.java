@@ -70,7 +70,7 @@ public class OfficeFollowRestController {
             Map<String, Object> map;
             String tenantId = Y9LoginUserHolder.getTenantId();
             map = officeFollow4PositionApi.delOfficeFollow(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceIds);
-            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("取消关注成功");
             }
         } catch (Exception e) {
@@ -82,18 +82,18 @@ public class OfficeFollowRestController {
     /**
      * 获取我的关注列表
      *
-     * @param page       页码
-     * @param rows       条数
+     * @param page 页码
+     * @param rows 条数
      * @param searchName 搜索词
      * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/followList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> followList(@RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows, @RequestParam String searchName) {
+    public Y9Page<Map<String, Object>> followList(@RequestParam Integer page, @RequestParam Integer rows, @RequestParam(required = false) String searchName) {
         Map<String, Object> map;
         String tenantId = Y9LoginUserHolder.getTenantId();
         map = officeFollow4PositionApi.getOfficeFollowList(tenantId, Y9LoginUserHolder.getPositionId(), searchName, page, rows);
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>) map.get("rows"), "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
     }
 
     /**
@@ -148,7 +148,7 @@ public class OfficeFollowRestController {
                 officeFollow.setUserId(positionId);
                 officeFollow.setUserName(position.getName());
                 Map<String, Object> map = officeFollow4PositionApi.saveOfficeFollow(tenantId, officeFollow);
-                if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+                if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                     return Y9Result.successMsg("关注成功");
                 }
             }

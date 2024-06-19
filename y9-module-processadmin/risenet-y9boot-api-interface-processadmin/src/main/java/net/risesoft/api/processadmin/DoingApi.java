@@ -41,8 +41,7 @@ public interface DoingApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
-        String processDefinitionKey, Integer page, Integer rows) throws Exception;
+    Map<String, Object> getListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, Integer page, Integer rows);
 
     /**
      * 获取已办件列表，按办理的时间排序
@@ -55,8 +54,7 @@ public interface DoingApi {
      * @return Map
      * @throws Exception Exception
      */
-    Map<String, Object> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(String tenantId, String userId,
-        String processDefinitionKey, Integer page, Integer rows) throws Exception;
+    Map<String, Object> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(String tenantId, String userId, String processDefinitionKey, Integer page, Integer rows);
 
     /**
      * 根据人员Id,系统标识获取用户的在办列表(分页,包含流程变量)
@@ -69,8 +67,7 @@ public interface DoingApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page,
-        Integer rows) throws Exception;
+    Map<String, Object> getListByUserIdAndSystemName(String tenantId, String userId, String systemName, Integer page, Integer rows) throws Exception;
 
     /**
      * 条件搜索在办件
@@ -83,8 +80,7 @@ public interface DoingApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page,
-        Integer rows) throws Exception;
+    Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page, Integer rows) throws Exception;
 
     /**
      * 条件搜索在办件
@@ -98,8 +94,7 @@ public interface DoingApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
-        String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception;
+    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception;
 
     /**
      * 条件搜索在办件
@@ -113,6 +108,5 @@ public interface DoingApi {
      * @return Map&lt;String, Object&gt;
      * @throws Exception Exception
      */
-    Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName,
-        String searchTerm, Integer page, Integer rows) throws Exception;
+    Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName, String searchTerm, Integer page, Integer rows) throws Exception;
 }

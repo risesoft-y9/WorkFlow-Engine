@@ -55,15 +55,15 @@ public class MobileAttachmentController {
      * 附件下载
      *
      * @param tenantId 租户id
-     * @param id       附件id
+     * @param id 附件id
      */
     @RequestMapping(value = "/download")
     public void attachmentDownload(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Map<String, Object> map = attachment4PositionApi.attachmentDownload(tenantId, id);
-            String filename = (String) map.get("filename");
-            String fileStoreId = (String) map.get("fileStoreId");
+            String filename = (String)map.get("filename");
+            String fileStoreId = (String)map.get("fileStoreId");
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
                 filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
             } else {
@@ -85,15 +85,14 @@ public class MobileAttachmentController {
     /**
      * 附件列表
      *
-     * @param tenantId            租户id
+     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @param fileSource          附件来源
-     * @param page                页码
-     * @param rows                行数
+     * @param fileSource 附件来源
+     * @param page 页码
+     * @param rows 行数
      */
     @RequestMapping(value = "/list")
-    public void attachmentList(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String processSerialNumber, @RequestParam String fileSource, int page, int rows,
-                               HttpServletResponse response) {
+    public void attachmentList(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, int page, int rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -108,19 +107,19 @@ public class MobileAttachmentController {
     /**
      * 附件上传
      *
-     * @param tenantId            租户id
-     * @param userId              人员id
-     * @param positionId          岗位id
-     * @param file                文件
-     * @param processInstanceId   流程实例id
-     * @param taskId              任务id
-     * @param describes           描述
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param positionId 岗位id
+     * @param file 文件
+     * @param processInstanceId 流程实例id
+     * @param taskId 任务id
+     * @param describes 描述
      * @param processSerialNumber 流程编号
-     * @param fileSource          附件来源
+     * @param fileSource 附件来源
      */
     @RequestMapping(value = "/upload")
-    public void attachmentUpload(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) MultipartFile file, @RequestParam String processInstanceId, @RequestParam String taskId,
-                                 @RequestParam String describes, @RequestParam @NotBlank String processSerialNumber, @RequestParam String fileSource, HttpServletResponse response) {
+    public void attachmentUpload(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) MultipartFile file, @RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes, @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -147,7 +146,7 @@ public class MobileAttachmentController {
      * 删除附件
      *
      * @param tenantId 租户id
-     * @param ids      附件ids
+     * @param ids 附件ids
      */
     @RequestMapping(value = "/delFile")
     public void delFile(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String ids, HttpServletResponse response) {
@@ -165,18 +164,17 @@ public class MobileAttachmentController {
     /**
      * 正文下载
      *
-     * @param tenantId            租户id
-     * @param userId              人员id
+     * @param tenantId 租户id
+     * @param userId 人员id
      * @param processSerialNumber 流程编号
-     * @param itemId              事项id
+     * @param itemId 事项id
      */
     @RequestMapping(value = "/downloadWord")
-    public void downloadWord(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam @NotBlank String processSerialNumber, @RequestParam String itemId, HttpServletResponse response,
-                             HttpServletRequest request) {
+    public void downloadWord(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String itemId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Map<String, Object> fileDocument = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-            String filename = fileDocument.get("fileName") != null ? (String) fileDocument.get("fileName") : "正文.doc";
+            String filename = fileDocument.get("fileName") != null ? (String)fileDocument.get("fileName") : "正文.doc";
             String fileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId);
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
                 filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
@@ -203,18 +201,18 @@ public class MobileAttachmentController {
     /**
      * 正文上传
      *
-     * @param tenantId            租户id
-     * @param userId              人员id
-     * @param documentTitle       文件标题
-     * @param file                文件
-     * @param fileType            文件类型
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param documentTitle 文件标题
+     * @param file 文件
+     * @param fileType 文件类型
      * @param processSerialNumber 流程编号
-     * @param taskId              任务id
+     * @param taskId 任务id
      * @return String
      */
     @RequestMapping(value = "/uploadWord")
-    public String uploadWord(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam String documentTitle, @RequestParam(required = false) MultipartFile file, @RequestParam String fileType,
-                             @RequestParam @NotBlank String processSerialNumber, @RequestParam String taskId) {
+    public String uploadWord(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String documentTitle, @RequestParam(required = false) MultipartFile file, @RequestParam(required = false) String fileType,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String taskId) {
         String result = "";
         try {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);

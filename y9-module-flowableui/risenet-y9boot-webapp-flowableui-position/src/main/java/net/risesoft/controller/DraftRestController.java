@@ -66,7 +66,7 @@ public class DraftRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map = draft4PositionApi.deleteDraft(tenantId, ids);
-            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
@@ -78,36 +78,36 @@ public class DraftRestController {
     /**
      * 获取草稿列表
      *
-     * @param page   页码
-     * @param rows   条数
+     * @param page 页码
+     * @param rows 条数
      * @param itemId 事项id
-     * @param title  搜索词
+     * @param title 搜索词
      * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/draftList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> draftList(@RequestParam @NotBlank int page, @RequestParam @NotBlank int rows, @RequestParam @NotBlank String itemId, String title) {
+    public Y9Page<Map<String, Object>> draftList(@RequestParam int page, @RequestParam int rows, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, false);
-        List<Map<String, Object>> draftList = (List<Map<String, Object>>) map.get("rows");
+        List<Map<String, Object>> draftList = (List<Map<String, Object>>)map.get("rows");
         return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), draftList, "获取列表成功");
     }
 
     /**
      * 获取草稿回收站列表
      *
-     * @param page   页码
-     * @param rows   条数
+     * @param page 页码
+     * @param rows 条数
      * @param itemId 事项id
-     * @param title  搜索词
+     * @param title 搜索词
      * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/draftRecycleList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> draftRecycleList(@RequestParam @NotBlank int page, @RequestParam @NotBlank int rows, @RequestParam @NotBlank String itemId, String title) {
+    public Y9Page<Map<String, Object>> draftRecycleList(@RequestParam int page, @RequestParam int rows, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = draft4PositionApi.getDraftList(tenantId, Y9LoginUserHolder.getPositionId(), page, rows, title, itemId, true);
-        List<Map<String, Object>> draftList = (List<Map<String, Object>>) map.get("rows");
+        List<Map<String, Object>> draftList = (List<Map<String, Object>>)map.get("rows");
         return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), draftList, "获取列表成功");
     }
 
@@ -127,12 +127,12 @@ public class DraftRestController {
      * 打开草稿,获取草稿信息
      *
      * @param processSerialNumber 流程编号
-     * @param itemId              事项id
-     * @param draftRecycle        草稿标识
+     * @param itemId 事项id
+     * @param draftRecycle 草稿标识
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping("/openDraft")
-    public Y9Result<Map<String, Object>> openDraft(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String itemId, String draftRecycle) {
+    public Y9Result<Map<String, Object>> openDraft(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String draftRecycle) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         Map<String, Object> map = new HashMap<>(16);
@@ -172,7 +172,7 @@ public class DraftRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map = draft4PositionApi.reduction(tenantId, id);
-            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("还原成功");
             }
         } catch (Exception e) {
@@ -192,7 +192,7 @@ public class DraftRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map = draft4PositionApi.removeDraft(tenantId, ids);
-            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
@@ -204,23 +204,24 @@ public class DraftRestController {
     /**
      * 保存草稿
      *
-     * @param itemId               事项id
-     * @param processSerialNumber  流程编号
+     * @param itemId 事项id
+     * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
-     * @param number               文件编号
-     * @param level                紧急程度
-     * @param title                标题
+     * @param number 文件编号
+     * @param level 紧急程度
+     * @param title 标题
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveDraft", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveDraft(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey, String number, String level, String title) {
+    public Y9Result<String> saveDraft(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey, @RequestParam(required = false) String number, @RequestParam(required = false) String level,
+        @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         if (StringUtils.isBlank(title)) {
             title = "未定义标题";
         }
         try {
             Map<String, Object> map = draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number, level, title);
-            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("保存成功");
             }
         } catch (Exception e) {

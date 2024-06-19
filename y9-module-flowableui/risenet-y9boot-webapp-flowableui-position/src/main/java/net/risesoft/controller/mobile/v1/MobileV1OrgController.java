@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -75,7 +76,7 @@ public class MobileV1OrgController {
      * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/getOrg")
-    public Y9Result<List<Map<String, Object>>> getOrg(String id) {
+    public Y9Result<List<Map<String, Object>>> getOrg(@RequestParam(required = false) String id) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String userId = Y9LoginUserHolder.getPersonId();
@@ -211,7 +212,7 @@ public class MobileV1OrgController {
      * @return Y9Result<Integer>
      */
     @RequestMapping(value = "/getUserCount")
-    public Y9Result<Integer> getUserCount(@NotBlank String userChoice) {
+    public Y9Result<Integer> getUserCount(@RequestParam @NotBlank String userChoice) {
         List<String> userIds = new ArrayList<>();
         String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
         for (String s : userChoices) {

@@ -78,13 +78,13 @@ public class MobileV1MonitorController {
      * 监控在办件
      *
      * @param itemId 事项id
-     * @param title  标题
-     * @param page   页码
-     * @param rows   条数
+     * @param title 标题
+     * @param page 页码
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorDoingList")
-    public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam @NotBlank String itemId, @RequestParam String title, int page, int rows) {
+    public Y9Page<Map<String, Object>> monitorDoingList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam int page, @RequestParam int rows) {
         return monitorService.monitorDoingList(itemId, title, page, rows);
     }
 
@@ -112,13 +112,13 @@ public class MobileV1MonitorController {
      * 监控办结件
      *
      * @param itemId 事项id
-     * @param title  标题
-     * @param page   页码
-     * @param rows   条数
+     * @param title 标题
+     * @param page 页码
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/monitorDoneList")
-    public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam @NotBlank String itemId, @RequestParam String title, int page, int rows) {
+    public Y9Page<Map<String, Object>> monitorDoneList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam int page, @RequestParam int rows) {
         return monitorService.monitorDoneList(itemId, title, page, rows);
     }
 

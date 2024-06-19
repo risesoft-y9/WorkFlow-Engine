@@ -60,7 +60,7 @@ public class CommonSentencesRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> remove(@RequestParam @NotBlank int tabIndex) {
+    public Y9Result<String> remove(@RequestParam int tabIndex) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             commonSentencesApi.removeCommonSentences(Y9LoginUserHolder.getTenantId(), person.getPersonId(), tabIndex);
@@ -110,7 +110,7 @@ public class CommonSentencesRestController {
     /**
      * 修改个人常用语
      *
-     * @param content  内容
+     * @param content 内容
      * @param tabIndex 序号
      * @return Y9Result<String>
      */

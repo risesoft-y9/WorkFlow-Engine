@@ -73,8 +73,8 @@ public class AttachmentRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map = attachment4PositionApi.attachmentDownload(tenantId, id);
-            String filename = (String) map.get("filename");
-            String filePath = (String) map.get("fileStoreId");
+            String filename = (String)map.get("filename");
+            String filePath = (String)map.get("fileStoreId");
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
                 filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
             } else {
@@ -105,7 +105,7 @@ public class AttachmentRestController {
         Map<String, Object> map;
         try {
             map = attachment4PositionApi.delFile(tenantId, ids);
-            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
@@ -118,20 +118,20 @@ public class AttachmentRestController {
      * 获取附件列表
      *
      * @param processSerialNumber 流程编号
-     * @param fileSource          文件来源
-     * @param page                页码
-     * @param rows                条数
+     * @param fileSource 文件来源
+     * @param page 页码
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getAttachmentList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getAttachmentList(@RequestParam @NotBlank String processSerialNumber, @RequestParam String fileSource, @RequestParam @NotBlank int page, @RequestParam @NotBlank int rows) {
+    public Y9Page<Map<String, Object>> getAttachmentList(@RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map;
         try {
             map = attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
-            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
-                return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>) map.get("rows"), "获取列表成功");
+            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+                return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
             }
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
@@ -143,15 +143,15 @@ public class AttachmentRestController {
      * 附加打包zip下载
      *
      * @param processSerialNumber 流程编号
-     * @param fileSource          附件来源
+     * @param fileSource 附件来源
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/packDownload", method = RequestMethod.GET, produces = "application/json")
-    public void packDownload(@RequestParam @NotBlank String processSerialNumber, String fileSource, HttpServletResponse response, HttpServletRequest request) {
+    public void packDownload(@RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, HttpServletResponse response, HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> filemap = attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, 1, 100);
-            List<Map<String, Object>> list = (List<Map<String, Object>>) filemap.get("rows");
+            List<Map<String, Object>> list = (List<Map<String, Object>>)filemap.get("rows");
             // 拼接zip文件,之后下载下来的压缩文件的名字
             String base_name = "附件" + new Date().getTime();
             String fileZip = base_name + ".zip";
@@ -165,8 +165,8 @@ public class AttachmentRestController {
             ZipOutputStream zos = new ZipOutputStream(bos);
             ZipEntry ze;
             for (Map<String, Object> file : list) {
-                String filename = (String) file.get("name");
-                String filePath = (String) file.get("filePath");
+                String filename = (String)file.get("name");
+                String filePath = (String)file.get("filePath");
                 byte[] filebyte = y9FileStoreService.downloadFileToBytes(filePath);
                 InputStream bis = new ByteArrayInputStream(filebyte);
                 ze = new ZipEntry(filename);
@@ -218,16 +218,17 @@ public class AttachmentRestController {
     /**
      * 上传附件
      *
-     * @param file                文件
-     * @param processInstanceId   流程实例id
-     * @param taskId              任务id
-     * @param describes           描述
+     * @param file 文件
+     * @param processInstanceId 流程实例id
+     * @param taskId 任务id
+     * @param describes 描述
      * @param processSerialNumber 流程编号
-     * @param fileSource          文件来源
+     * @param fileSource 文件来源
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> upload(MultipartFile file, @RequestParam String processInstanceId, @RequestParam String taskId, @RequestParam String describes, @RequestParam @NotBlank String processSerialNumber, @RequestParam String fileSource) {
+    public Y9Result<String> upload(MultipartFile file, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes, @RequestParam @NotBlank String processSerialNumber,
+        @RequestParam(required = false) String fileSource) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map;
@@ -242,7 +243,7 @@ public class AttachmentRestController {
             String storeId = y9FileStore.getId();
             String fileSize = Y9FileUtil.getDisplayFileSize(y9FileStore.getFileSize() != null ? y9FileStore.getFileSize() : 0);
             map = attachment4PositionApi.upload(tenantId, userId, Y9LoginUserHolder.getPositionId(), fileName, fileSize, processInstanceId, taskId, describes, processSerialNumber, fileSource, storeId);
-            if ((Boolean) map.get(UtilConsts.SUCCESS)) {
+            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("上传成功");
             }
         } catch (Exception e) {
