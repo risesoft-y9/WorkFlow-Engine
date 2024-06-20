@@ -161,7 +161,13 @@ vue -- 前端工程
 
 ## 在线体验
 
-待补充
+演示地址：<a href="https://test.youshengyun.com/home/" target="_blank">https://test.youshengyun.com/home/ </a>工作桌面在应用列表选择工作流程应用，点击“办件”访问。
+或者复制以下工作流程“办件”网址到浏览器地址栏访问：<a href="	https://test.youshengyun.com/flowableUI/index?itemId=11111111-1111-1111-1111-111111111111" target="_blank">	https://test.youshengyun.com/flowableUI/index?itemId=11111111-1111-1111-1111-111111111111 </a>
+> 演示账号：
+>
+> 业务用户：user  密码：Risesoft@2024
+>
+> 说明：输入登录名后，请选择"测试"租户，如：user@测试，再输入密码进行登录
 
 ## 文档专区
 
@@ -186,6 +192,10 @@ vue -- 前端工程
 | 17 | <a href="https://vue.youshengyun.com/files/国际化.pdf" target="_blank">前端国际化</a>                   |
 | 18 | <a href="https://vue.youshengyun.com/files/Icon图标.pdf" target="_blank">前端Icon图标</a>             |
 | 19 | <a href="https://vue.youshengyun.com/files/Oracle数据库适配文档.pdf" target="_blank">Oracle数据库适配文档</a>          |
+| 20 | <a href="https://vue.youshengyun.com/files/Dameng数据库适配文档.pdf" target="_blank">Dameng数据库适配文档</a>          |
+| 21 | <a href="https://vue.youshengyun.com/files/PostgreSQL数据库适配文档.pdf" target="_blank">PostgreSQL数据库适配文档</a>    |
+| 22 | <a href="https://vue.youshengyun.com/files/Kingbase数据库适配文档.pdf" target="_blank">Kingbase数据库适配文档</a>          |
+| 23 | <a href="https://vue.youshengyun.com/files/Mariadb数据库适配文档.pdf" target="_blank">Mariadb数据库适配文档</a>            |
 
 ## 工作流引擎截图
 
