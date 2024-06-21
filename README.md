@@ -1,7 +1,7 @@
 <p align="center">
  <img alt="logo" src="https://vue.youshengyun.com/files/img/qrCodeLogo.png">
 </p>
-<p align="center">基于SpringBoot+Vue前后端分离的Java快速开发框架</p>
+<p align="center">基于SpringBoot+Vue前后端分离的Java国产信创工作流引擎</p>
 <p align="center">
  <a href='https://gitee.com/risesoft-y9/y9-flowable/stargazers'><img src='https://gitee.com/risesoft-y9/y9-flowable/badge/star.svg?theme=dark' alt='star'></img></a>
     <img src="https://img.shields.io/badge/version-v9.6.6-yellow.svg">
