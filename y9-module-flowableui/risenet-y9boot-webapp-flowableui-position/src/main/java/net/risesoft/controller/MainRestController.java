@@ -9,7 +9,6 @@ import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +22,6 @@ import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.itemadmin.position.Entrust4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
-import net.risesoft.api.itemadmin.position.ItemLink4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
@@ -33,7 +31,6 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.itemadmin.ItemModel;
-import net.risesoft.model.itemadmin.LinkInfoModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.Position;
@@ -50,9 +47,9 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2024/06/05
  */
 @Validated
-@RequiredArgsConstructor
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @RequestMapping(value = "/vue/mian")
 public class MainRestController {
 
@@ -79,8 +76,6 @@ public class MainRestController {
     private final ProcessParamApi processParamApi;
 
     private final Entrust4PositionApi entrust4PositionApi;
-
-    private final ItemLink4PositionApi itemLink4PositionApi;
 
     /**
      * 获取所有事项
@@ -261,24 +256,12 @@ public class MainRestController {
         map.put("monitorManage", b);
         boolean b1 = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "重定向角色", Y9LoginUserHolder.getPositionId()).getData();
         map.put("repositionrManage", b1);
-        boolean b2 = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "收发文角色", Y9LoginUserHolder.getPositionId()).getData();
-        map.put("shoufaManage", b2);
+        boolean b2 = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "发文角色", Y9LoginUserHolder.getPositionId()).getData();
+        map.put("fawenManage", b2);
+        boolean b3 = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", "", "收文角色", Y9LoginUserHolder.getPositionId()).getData();
+        map.put("shouwenManage", b3);
         map.put("itemList", itemList);
         return Y9Result.success(map, "获取成功");
-    }
-
-    /**
-     * 获取流程绑定的链接
-     *
-     * @param itemId 事项id
-     * @return List<LinkInfoModel>
-     */
-    @GetMapping("/getItemLinkList")
-    public Y9Result<List<LinkInfoModel>> getItemLinkList(@RequestParam @NotBlank String itemId) {
-        String positionId = Y9LoginUserHolder.getPositionId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<LinkInfoModel> itemLinkList = itemLink4PositionApi.getItemLinkList(tenantId, positionId, itemId);
-        return Y9Result.success(itemLinkList);
     }
 
     /**
