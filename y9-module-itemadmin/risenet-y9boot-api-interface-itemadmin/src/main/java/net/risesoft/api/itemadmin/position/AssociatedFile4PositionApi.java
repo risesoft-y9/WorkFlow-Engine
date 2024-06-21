@@ -1,6 +1,9 @@
 package net.risesoft.api.itemadmin.position;
 
-import java.util.Map;
+import java.util.List;
+
+import net.risesoft.model.itemadmin.AssociatedFileModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * 关联文件接口
@@ -16,9 +19,9 @@ public interface AssociatedFile4PositionApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return int
+     * @return Y9Result<Integer>
      */
-    int countAssociatedFile(String tenantId, String processSerialNumber);
+    Y9Result<Integer> countAssociatedFile(String tenantId, String processSerialNumber);
 
     /**
      * 删除关联文件
@@ -26,9 +29,9 @@ public interface AssociatedFile4PositionApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param delIds 关联流程实例id(,隔开)
-     * @return boolean 是否删除成功
+     * @return Y9Result<Object>
      */
-    boolean deleteAllAssociatedFile(String tenantId, String processSerialNumber, String delIds);
+    Y9Result<Object> deleteAllAssociatedFile(String tenantId, String processSerialNumber, String delIds);
 
     /**
      * 删除关联文件
@@ -36,9 +39,9 @@ public interface AssociatedFile4PositionApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param delId 关联流程实例id
-     * @return boolean 是否删除成功
+     * @return Y9Result<Object>
      */
-    boolean deleteAssociatedFile(String tenantId, String processSerialNumber, String delId);
+    Y9Result<Object> deleteAssociatedFile(String tenantId, String processSerialNumber, String delId);
 
     /**
      * 获取关联文件列表,包括未办结件
@@ -46,18 +49,9 @@ public interface AssociatedFile4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processSerialNumber 流程编号
-     * @return Map&lt;String, Object&gt; 关联文件列表
+     * @return Y9Result<List<AssociatedFileModel>> 关联文件列表
      */
-    Map<String, Object> getAssociatedFileAllList(String tenantId, String positionId, String processSerialNumber);
-
-    /**
-     * 获取关联文件列表
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @return Map&lt;String, Object&gt; 关联文件列表
-     */
-    Map<String, Object> getAssociatedFileList(String tenantId, String processSerialNumber);
+    Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(String tenantId, String positionId, String processSerialNumber);
 
     /**
      * 保存关联文件
@@ -66,8 +60,7 @@ public interface AssociatedFile4PositionApi {
      * @param positionId 岗位id
      * @param processSerialNumber 流程编号
      * @param processInstanceIds 关联的流程实例ids
-     * @return boolean 是否保存成功
+     * @return Y9Result<Object>
      */
-    boolean saveAssociatedFile(String tenantId, String positionId, String processSerialNumber,
-        String processInstanceIds);
+    Y9Result<Object> saveAssociatedFile(String tenantId, String positionId, String processSerialNumber, String processInstanceIds);
 }

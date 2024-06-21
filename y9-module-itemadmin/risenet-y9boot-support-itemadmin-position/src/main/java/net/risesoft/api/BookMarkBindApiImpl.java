@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.BookMarkBindApi;
 import net.risesoft.entity.BookMarkBind;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.BookMarkBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 书签绑定接口
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -31,7 +32,7 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
     private final JdbcTemplate jdbcTemplate;
     private final BookMarkBindService bookMarkBindService;
 
-    public BookMarkBindApiImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,BookMarkBindService bookMarkBindService) {
+    public BookMarkBindApiImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate, BookMarkBindService bookMarkBindService) {
         this.jdbcTemplate = jdbcTemplate;
         this.bookMarkBindService = bookMarkBindService;
     }
@@ -39,14 +40,14 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
     /**
      * 根据模板和流程序列号查询模板的书签对应的值
      *
-     * @param tenantId 租户id
-     * @param wordTemplateId 模板id
+     * @param tenantId            租户id
+     * @param wordTemplateId      模板id
      * @param processSerialNumber 流程编号
-     * @return Map<String, Object>
+     * @return Y9Result<Map < String, Object>>
      */
     @Override
     @GetMapping(value = "/getBookMarkData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getBookMarkData(String tenantId, String wordTemplateId, String processSerialNumber) {
+    public Y9Result<Map<String, Object>> getBookMarkData(String tenantId, String wordTemplateId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
         List<BookMarkBind> bookMarkBindList = bookMarkBindService.findByWordTemplateId(wordTemplateId);
@@ -63,6 +64,6 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
             String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE GUID='" + processSerialNumber + "'";
             map = jdbcTemplate.queryForMap(sql);
         }
-        return map;
+        return Y9Result.success(map);
     }
 }

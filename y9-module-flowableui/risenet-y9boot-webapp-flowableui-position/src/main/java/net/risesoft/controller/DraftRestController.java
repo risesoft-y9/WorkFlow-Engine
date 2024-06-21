@@ -147,14 +147,14 @@ public class DraftRestController {
         map.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
         map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
         map.put("userName", person.getName());
-        Integer fileNum = attachment4PositionApi.fileCounts(tenantId, processSerialNumber);
+        Integer fileNum = attachment4PositionApi.fileCounts(tenantId, processSerialNumber).getData();
         int docNum = 0;
         // 是否正文正常
         Map<String, Object> wordMap = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
         if (!wordMap.isEmpty()) {
             docNum = 1;
         }
-        int associatedFileNum = associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber);
+        int associatedFileNum = associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber).getData();
         map.put("associatedFileNum", associatedFileNum);
         map.put("docNum", docNum);
         map.put("fileNum", fileNum);

@@ -152,7 +152,7 @@ public class DocumentRestController {
         try {
             Map<String, Object> map = document4PositionApi.edit(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itembox, taskId, processInstanceId, itemId, false);
             String processSerialNumber = (String)map.get("processSerialNumber");
-            Integer fileNum = attachment4PositionApi.fileCounts(tenantId, processSerialNumber);
+            Integer fileNum = attachment4PositionApi.fileCounts(tenantId, processSerialNumber).getData();
             int docNum = 0;
             // 是否正文正常
             Map<String, Object> wordMap = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
@@ -160,7 +160,7 @@ public class DocumentRestController {
                 docNum = 1;
             }
             int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, userId, processInstanceId);
-            int associatedFileNum = associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber);
+            int associatedFileNum = associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber).getData();
             map.put("speakInfoNum", speakInfoNum);
             map.put("associatedFileNum", associatedFileNum);
             map.put("docNum", docNum);
@@ -236,7 +236,7 @@ public class DocumentRestController {
             List<Map<String, Object>> listMap;
             listMap = item4PositionApi.getItemList(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId());
             map.put("itemMap", listMap);
-            map.put("notReadCount", chaoSong4PositionApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()));
+            map.put("notReadCount", chaoSong4PositionApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
             // int followCount = officeFollow4PositionApi.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId());
             // map.put("followCount", followCount);
             // 公共角色
@@ -287,7 +287,7 @@ public class DocumentRestController {
             }
 
             map.put("systemList", list);
-            map.put("notReadCount", chaoSong4PositionApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()));
+            map.put("notReadCount", chaoSong4PositionApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
             // 公共角色
             boolean b = positionRoleApi.hasRole(tenantId, "Y9OrgHierarchyManagement", null, "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
             map.put("monitorManage", b);

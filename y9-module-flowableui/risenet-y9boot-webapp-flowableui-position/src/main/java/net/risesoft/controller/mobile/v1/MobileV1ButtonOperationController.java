@@ -276,9 +276,11 @@ public class MobileV1ButtonOperationController {
             TaskModel task = taskApi.findById(tenantId, taskId);
             if (isLastPerson4RefuseClaim) {// 最后一人拒签，退回
                 try {
-                    buttonOperation4PositionApi.refuseClaimRollback(tenantId, userId, taskId);
+                    Y9Result<Object> y9Result = buttonOperation4PositionApi.refuseClaimRollback(tenantId, userId, taskId);
+                    if (!y9Result.isSuccess()) {
+                        return Y9Result.failure("拒签失败");
+                    }
                 } catch (Exception e) {
-                    taskApi.unclaim(tenantId, taskId);// 失败则撤销签收
                     LOGGER.error("退回失败", e);
                     return Y9Result.failure("拒签失败");
                 }

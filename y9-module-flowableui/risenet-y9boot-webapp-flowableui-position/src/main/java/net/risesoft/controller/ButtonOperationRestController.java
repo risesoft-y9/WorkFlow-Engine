@@ -248,8 +248,8 @@ public class ButtonOperationRestController {
     public Y9Result<String> directSend(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTask) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         try {
-            boolean b = buttonOperation4PositionApi.directSend(tenantId, positionId, taskId, routeToTask, processInstanceId);
-            if (b) {
+            Y9Result<Object> y9Result = buttonOperation4PositionApi.directSend(tenantId, positionId, taskId, routeToTask, processInstanceId);
+            if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("发送成功");
             }
         } catch (Exception e) {
@@ -584,12 +584,9 @@ public class ButtonOperationRestController {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            Map<String, Object> map;
-            map = buttonOperation4PositionApi.refuseClaimRollback(tenantId, positionId, taskId);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.successMsg((String)map.get("msg"));
-            } else {
-                return Y9Result.failure((String)map.get("msg"));
+            Y9Result<Object> y9Result = buttonOperation4PositionApi.refuseClaimRollback(tenantId, positionId, taskId);
+            if (y9Result.isSuccess()) {
+                return Y9Result.successMsg("拒签成功");
             }
         } catch (Exception e) {
             LOGGER.error("refuseClaimRollback error", e);

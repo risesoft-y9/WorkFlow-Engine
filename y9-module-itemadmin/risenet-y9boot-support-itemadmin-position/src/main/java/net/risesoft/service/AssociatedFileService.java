@@ -1,6 +1,8 @@
 package net.risesoft.service;
 
-import java.util.Map;
+import java.util.List;
+
+import net.risesoft.model.itemadmin.AssociatedFileModel;
 
 /**
  * @author qinman
@@ -41,15 +43,7 @@ public interface AssociatedFileService {
      * @param processSerialNumber
      * @return
      */
-    Map<String, Object> getAssociatedFileAllList(String processSerialNumber);
-
-    /**
-     * 获取关联文件列表
-     *
-     * @param processSerialNumber
-     * @return
-     */
-    Map<String, Object> getAssociatedFileList(String processSerialNumber);
+    List<AssociatedFileModel> getAssociatedFileAllList(String processSerialNumber);
 
     /**
      * 保存关联文件

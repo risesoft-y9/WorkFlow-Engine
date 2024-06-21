@@ -1,9 +1,21 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemDoneApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
@@ -12,21 +24,15 @@ import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
-import net.risesoft.model.itemadmin.*;
+import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.ItemPage;
+import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
+import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.DoneService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -57,10 +63,9 @@ public class DoneServiceImpl implements DoneService {
         String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
         retMap = officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();
-        List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>) retMap.get("rows");
+        List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
         ObjectMapper objectMapper = new ObjectMapper();
-        List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {
-        });
+        List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
         int serialNumber = (page - 1) * rows;
         Map<String, Object> mapTemp;
         for (OfficeDoneInfoModel hpim : hpiList) {
@@ -87,7 +92,7 @@ public class DoneServiceImpl implements DoneService {
                 mapTemp.put("itemId", itemId);
                 mapTemp.put("level", level);
                 mapTemp.put("number", number);
-                int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
+                int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
                 mapTemp.put("chaosongNum", chaosongNum);
             } catch (Exception e) {
                 LOGGER.error("获取列表失败", e);
@@ -108,10 +113,9 @@ public class DoneServiceImpl implements DoneService {
         String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
         retMap = officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();
-        List<OfficeDoneInfoModel> list = (List<OfficeDoneInfoModel>) retMap.get("rows");
+        List<OfficeDoneInfoModel> list = (List<OfficeDoneInfoModel>)retMap.get("rows");
         ObjectMapper objectMapper = new ObjectMapper();
-        List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {
-        });
+        List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
         int serialNumber = (page - 1) * rows;
         Map<String, Object> mapTemp;
         Map<String, Object> formDataMap;
@@ -140,11 +144,11 @@ public class DoneServiceImpl implements DoneService {
                 mapTemp.put("itemId", itemId);
                 mapTemp.put("level", level);
                 mapTemp.put("number", number);
-                int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
+                int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
                 mapTemp.put("chaosongNum", chaosongNum);
                 formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                 if (formDataMap.get("leaveType") != null) {
-                    String leaveType = (String) formDataMap.get("leaveType");
+                    String leaveType = (String)formDataMap.get("leaveType");
                     for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
                         if (leaveType.equals(leaveTypeEnum.getValue())) {
                             formDataMap.put("leaveType", leaveTypeEnum.getName());
@@ -183,8 +187,7 @@ public class DoneServiceImpl implements DoneService {
             List<Map<String, Object>> items = new ArrayList<>();
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {
-            });
+            List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             Map<String, Object> formDataMap;
@@ -209,7 +212,7 @@ public class DoneServiceImpl implements DoneService {
                     ProcessParamModel processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
 
                     mapTemp.put("user4Complete", processParam.getCompleter());
-                    int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId);
+                    int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
                     mapTemp.put("chaosongNum", chaosongNum);
                     formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                     /*if (formDataMap.get("leaveType") != null) {

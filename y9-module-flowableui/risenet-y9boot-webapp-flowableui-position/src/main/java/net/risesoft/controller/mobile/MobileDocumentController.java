@@ -42,6 +42,7 @@ import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
+import net.risesoft.model.itemadmin.AssociatedFileModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -174,8 +175,8 @@ public class MobileDocumentController {
     public void delAssociatedFile(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processInstanceId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
-        boolean b = associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceId);
-        map.put(UtilConsts.SUCCESS, b);
+        Y9Result<Object> y9Result = associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceId);
+        map.put(UtilConsts.SUCCESS, y9Result.isSuccess());
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
     }
 
@@ -418,11 +419,10 @@ public class MobileDocumentController {
      */
     @RequestMapping("/getAssociatedFileList")
     @ResponseBody
-    public void getAssociatedFileList(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String processSerialNumber, HttpServletResponse response) {
+    public void getAssociatedFileList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processSerialNumber, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map;
-        map = associatedFile4PositionApi.getAssociatedFileList(tenantId, processSerialNumber);
-        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+        Y9Result<List<AssociatedFileModel>> y9Result = associatedFile4PositionApi.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Result));
     }
 
     /**
@@ -575,8 +575,8 @@ public class MobileDocumentController {
     public void saveAssociatedFile(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processInstanceIds, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
-        boolean b = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
-        map.put(UtilConsts.SUCCESS, b);
+        Y9Result<Object> y9Result = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
+        map.put(UtilConsts.SUCCESS, y9Result.isSuccess());
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
     }
 

@@ -1,9 +1,21 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
@@ -13,6 +25,7 @@ import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.MonitorApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -25,16 +38,6 @@ import net.risesoft.service.MonitorService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -67,10 +70,9 @@ public class MonitorServiceImpl implements MonitorService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             retMap = officeDoneInfo4PositionApi.searchAllByDeptId(tenantId, position.getParentId(), searchName, itemId, userName, state, year, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> list = (List<OfficeDoneInfoModel>) retMap.get("rows");
+            List<OfficeDoneInfoModel> list = (List<OfficeDoneInfoModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {
-            });
+            List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
             Map<String, Object> mapTemp;
             String processInstanceId;
             for (OfficeDoneInfoModel hpim : hpiModelList) {
@@ -279,10 +281,9 @@ public class MonitorServiceImpl implements MonitorService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             retMap = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>) retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {
-            });
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             String processInstanceId;
@@ -336,14 +337,11 @@ public class MonitorServiceImpl implements MonitorService {
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Y9Page<Map<String, Object>> monitorChaosongList(String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows) {
-        Map<String, Object> retMap;
+    public Y9Page<ChaoSongModel> monitorChaosongList(String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            retMap = chaoSong4PositionApi.searchAllList(tenantId, searchName, itemId, senderName, userName, state, year, page, rows);
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), (List<Map<String, Object>>) retMap.get("rows"), "获取列表成功");
+            return chaoSong4PositionApi.searchAllList(tenantId, searchName, itemId, senderName, userName, state, year, page, rows);
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }
@@ -367,10 +365,9 @@ public class MonitorServiceImpl implements MonitorService {
             // }
             retMap = officeDoneInfo4PositionApi.searchByItemId(tenantId, searchTerm, itemId, ItemBoxTypeEnum.DOING.getValue(), "", "", page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>) retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {
-            });
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
             // List<HistoricProcessInstanceModel> list = (List<HistoricProcessInstanceModel>)retMap.get("rows");
             // ObjectMapper objectMapper = new ObjectMapper();
             // List<HistoricProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new
@@ -437,10 +434,9 @@ public class MonitorServiceImpl implements MonitorService {
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             retMap = officeDoneInfo4PositionApi.searchByItemId(tenantId, searchTerm, itemId, ItemBoxTypeEnum.DONE.getValue(), "", "", page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>) retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {
-            });
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             String processInstanceId;
@@ -498,7 +494,7 @@ public class MonitorServiceImpl implements MonitorService {
                 retMap = monitorApi.searchRecycleListByProcessDefinitionKey(tenantId, processDefinitionKey, searchTerm, page, rows);
             }
             List<Map<String, Object>> items = new ArrayList<>();
-            List<HistoricProcessInstanceModel> hpiModelList = (List<HistoricProcessInstanceModel>) retMap.get("rows");
+            List<HistoricProcessInstanceModel> hpiModelList = (List<HistoricProcessInstanceModel>)retMap.get("rows");
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             ProcessParamModel processParam;

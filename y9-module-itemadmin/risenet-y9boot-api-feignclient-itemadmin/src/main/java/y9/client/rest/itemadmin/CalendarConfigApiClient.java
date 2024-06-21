@@ -6,15 +6,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.itemadmin.CalendarConfigApi;
 import net.risesoft.model.itemadmin.CalendarConfigModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "CalendarConfigApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
-    url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/calendarConfig")
+@FeignClient(contextId = "CalendarConfigApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/calendarConfig")
 public interface CalendarConfigApiClient extends CalendarConfigApi {
 
     /**
@@ -26,6 +25,6 @@ public interface CalendarConfigApiClient extends CalendarConfigApi {
      */
     @Override
     @GetMapping("/findByYear")
-    public CalendarConfigModel findByYear(@RequestParam("tenantId") String tenantId, @RequestParam("year") String year);
+    public Y9Result<CalendarConfigModel> findByYear(@RequestParam("tenantId") String tenantId, @RequestParam("year") String year);
 
 }

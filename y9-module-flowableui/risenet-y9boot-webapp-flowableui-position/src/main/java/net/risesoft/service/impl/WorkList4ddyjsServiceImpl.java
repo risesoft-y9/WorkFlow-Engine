@@ -36,6 +36,7 @@ import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -49,6 +50,7 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.WorkList4ddyjsService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9.util.Y9Util;
 
 @Slf4j
@@ -652,36 +654,39 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> myChaoSongList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
+    public Y9Page<net.risesoft.model.ChaoSongModel> myChaoSongList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-        Y9Page<Map<String, Object>> y9page = chaoSong4PositionApi.myChaoSongList(tenantId, positionId, searchName, itemId, userName, state, year, page, rows);
-        List<Map<String, Object>> list = y9page.getRows();
-        for (Map<String, Object> map : list) {
-            String itemId1 = (String)map.get("itemId");
-            String processSerialNumber = (String)map.get("processSerialNumber");
-            String processInstanceId = (String)map.get("processInstanceId");
-            String systemName = (String)map.get("systemName");
-            boolean banjie = (boolean)map.get("banjie");
-            map.put("itembox", "done");
+        Y9Page<ChaoSongModel> y9page = chaoSong4PositionApi.myChaoSongList(tenantId, positionId, searchName, itemId, userName, state, year, page, rows);
+        List<ChaoSongModel> list = y9page.getRows();
+        List<net.risesoft.model.ChaoSongModel> list1 = new ArrayList<>();
+        for (ChaoSongModel model : list) {
+            net.risesoft.model.ChaoSongModel newmodel = new net.risesoft.model.ChaoSongModel();
+            Y9BeanUtil.copyProperties(model, newmodel);
+            String itemId1 = newmodel.getItemId();
+            String processSerialNumber = newmodel.getProcessSerialNumber();
+            String processInstanceId = newmodel.getProcessInstanceId();
+            String systemName = newmodel.getSystemName();
+            boolean banjie = newmodel.isBanjie();
+            newmodel.setItembox("done");
             String taskId = "";
             String itembox = "done";
             if (!banjie) {
                 List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                 List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
                 String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
-                map.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                map.put("taskId", listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
-                map.put("taskAssigneeId", assigneeIds);
-                map.put("taskAssignee", assigneeNames);
-                map.put("itembox", listTemp.get(3));
+                newmodel.setTaskDefinitionKey(taskList.get(0).getTaskDefinitionKey());
+                newmodel.setTaskId(listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                newmodel.setTaskAssignee(assigneeNames);
+                newmodel.setTaskAssigneeId(assigneeIds);
+                newmodel.setItembox(listTemp.get(3));
                 itembox = listTemp.get(3);
                 taskId = listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4);
             }
             String url = flowableBaseUrl + "/index/edit?itemId=" + itemId1 + "&processSerialNumber=" + processSerialNumber + "&itembox=" + itembox + "&taskId=" + taskId + "&processInstanceId=" + processInstanceId + "&listType=chuanyueList&systemName=" + systemName;
-            map.put("url", url);
+            newmodel.setUrl(url);
+            list1.add(newmodel);
         }
-        y9page.setRows(list);
-        return y9page;
+        return Y9Page.success(y9page.getCurrPage(), y9page.getTotalPages(), y9page.getTotal(), list1, "获取成功");
     }
 
     @SuppressWarnings("unchecked")

@@ -1,9 +1,19 @@
 package net.risesoft.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
@@ -11,6 +21,7 @@ import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.IdentityLinkModel;
@@ -20,14 +31,6 @@ import net.risesoft.service.SearchService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -129,10 +132,9 @@ public class SearchServiceImpl implements SearchService {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             retMap = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, searchTerm, itemId, userName, state, year, startDate, endDate, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>) retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {
-            });
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             String processInstanceId;
@@ -190,14 +192,11 @@ public class SearchServiceImpl implements SearchService {
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Y9Page<Map<String, Object>> getYuejianList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
-        Map<String, Object> retMap;
+    public Y9Page<ChaoSongModel> getYuejianList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            retMap = chaoSong4PositionApi.searchAllByUserId(tenantId, positionId, searchName, itemId, userName, state, year, page, rows);
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), (List<Map<String, Object>>) retMap.get("rows"), "获取列表成功");
+            return chaoSong4PositionApi.searchAllByUserId(tenantId, positionId, searchName, itemId, userName, state, year, page, rows);
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }

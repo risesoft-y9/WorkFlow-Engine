@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -98,10 +99,10 @@ public class SearchRestController {
      * @param year 年度
      * @param page 页码
      * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
+     * @return Y9Page<ChaoSongModel>
      */
     @RequestMapping(value = "/getYuejianList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getYuejianList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+    public Y9Page<ChaoSongModel> getYuejianList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam Integer page, @RequestParam Integer rows) {
         return searchService.getYuejianList(searchName, itemId, userName, state, year, page, rows);
     }

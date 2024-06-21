@@ -21,6 +21,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
+import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.pojo.Y9Page;
@@ -113,11 +114,11 @@ public class MonitorRestController {
      * @param year 年度
      * @param page 页码
      * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
+     * @return Y9Page<ChaoSongModel>
      */
     @RequestMapping(value = "/monitorChaosongList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> monitorChaosongList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String senderName, @RequestParam(required = false) String userName,
-        @RequestParam(required = false) String state, @RequestParam(required = false) String year, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<ChaoSongModel> monitorChaosongList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String senderName, @RequestParam(required = false) String userName, @RequestParam(required = false) String state,
+        @RequestParam(required = false) String year, @RequestParam Integer page, @RequestParam Integer rows) {
         return monitorService.monitorChaosongList(searchName, itemId, senderName, userName, state, year, page, rows);
     }
 

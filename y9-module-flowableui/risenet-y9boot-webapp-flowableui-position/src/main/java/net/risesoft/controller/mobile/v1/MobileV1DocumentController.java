@@ -37,6 +37,7 @@ import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
+import net.risesoft.model.itemadmin.AssociatedFileModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -162,8 +163,8 @@ public class MobileV1DocumentController {
     @RequestMapping("/delAssociatedFile")
     public Y9Result<String> delAssociatedFile(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        boolean b = associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceId);
-        if (b) {
+        Y9Result<Object> y9Result = associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceId);
+        if (y9Result.isSuccess()) {
             return Y9Result.successMsg("删除成功");
         }
         return Y9Result.failure("删除失败");
@@ -385,18 +386,13 @@ public class MobileV1DocumentController {
      * 获取关联文件
      *
      * @param processSerialNumber 流程编号
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List<AssociatedFileModel>>
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping("/getAssociatedFileList")
-    public Y9Result<List<Map<String, Object>>> getAssociatedFileList(@RequestParam @NotBlank String processSerialNumber) {
+    public Y9Result<List<AssociatedFileModel>> getAssociatedFileList(@RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map;
-        map = associatedFile4PositionApi.getAssociatedFileList(tenantId, processSerialNumber);
-        if ((boolean)map.get("success")) {
-            return Y9Result.success((List<Map<String, Object>>)map.get("rows"), "获取成功");
-        }
-        return Y9Result.failure("获取失败");
+        String positionId = Y9LoginUserHolder.getPositionId();
+        return associatedFile4PositionApi.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
     }
 
     /**
@@ -537,8 +533,8 @@ public class MobileV1DocumentController {
     public Y9Result<String> saveAssociatedFile(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processInstanceIds) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        boolean b = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
-        if (b) {
+        Y9Result<Object> y9Result = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
+        if (y9Result.isSuccess()) {
             return Y9Result.success("保存成功");
         }
         return Y9Result.failure("保存失败");

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.CalendarConfigApi;
 import net.risesoft.entity.CalendarConfig;
 import net.risesoft.model.itemadmin.CalendarConfigModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CalendarConfigService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 日历配置接口
- * 
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -30,15 +31,16 @@ public class CalendarConfigApiImpl implements CalendarConfigApi {
      * 获取年节假日配置信息
      *
      * @param tenantId 租户id
-     * @param year 年份
-     * @return CalendarConfigModel
+     * @param year     年份
+     * @return Y9Result<CalendarConfigModel>
      */
     @Override
     @GetMapping(value = "/findByYear", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CalendarConfigModel findByYear(String tenantId, String year) {
+    public Y9Result<CalendarConfigModel> findByYear(String tenantId, String year) {
         Y9LoginUserHolder.setTenantId(tenantId);
         CalendarConfig calendarConfig = calendarConfigService.findByYear(year);
-        return ItemAdminModelConvertUtil.calendarConfig2CalendarConfigModel(calendarConfig);
+        CalendarConfigModel calendarConfigModel = ItemAdminModelConvertUtil.calendarConfig2CalendarConfigModel(calendarConfig);
+        return Y9Result.success(calendarConfigModel);
     }
 
 }

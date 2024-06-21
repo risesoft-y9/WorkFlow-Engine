@@ -1,6 +1,6 @@
 package y9.client.rest.itemadmin.position;
 
-import java.util.Map;
+import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
+import net.risesoft.model.itemadmin.AssociatedFileModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * 关联文件接口
@@ -16,9 +18,7 @@ import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "AssociatedFile4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
-    url = "${y9.service.itemAdmin.directUrl:}",
-    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/associatedFile4Position")
+@FeignClient(contextId = "AssociatedFile4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/associatedFile4Position")
 public interface AssociatedFile4PositionApiClient extends AssociatedFile4PositionApi {
 
     /**
@@ -30,8 +30,7 @@ public interface AssociatedFile4PositionApiClient extends AssociatedFile4Positio
      */
     @Override
     @GetMapping("/countAssociatedFile")
-    int countAssociatedFile(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Integer> countAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 删除关联文件
@@ -43,8 +42,7 @@ public interface AssociatedFile4PositionApiClient extends AssociatedFile4Positio
      */
     @Override
     @PostMapping("/deleteAllAssociatedFile")
-    public boolean deleteAllAssociatedFile(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delIds") String delIds);
+    public Y9Result<Object> deleteAllAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delIds") String delIds);
 
     /**
      * 删除关联文件
@@ -56,32 +54,18 @@ public interface AssociatedFile4PositionApiClient extends AssociatedFile4Positio
      */
     @Override
     @PostMapping("/deleteAssociatedFile")
-    public boolean deleteAssociatedFile(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delId") String delId);
+    public Y9Result<Object> deleteAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("delId") String delId);
 
     /**
      * 获取关联文件列表,包括未办结件
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<List<AssociatedFileModel>>
      */
     @Override
     @GetMapping("/getAssociatedFileAllList")
-    public Map<String, Object> getAssociatedFileAllList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processSerialNumber") String processSerialNumber);
-
-    /**
-     * 获取关联文件列表
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @return Map&lt;String, Object&gt;
-     */
-    @Override
-    @GetMapping("/getAssociatedFileList")
-    public Map<String, Object> getAssociatedFileList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    public Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存关联文件
@@ -94,7 +78,5 @@ public interface AssociatedFile4PositionApiClient extends AssociatedFile4Positio
      */
     @Override
     @PostMapping("/saveAssociatedFile")
-    public boolean saveAssociatedFile(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("processInstanceIds") String processInstanceIds);
+    public Y9Result<Object> saveAssociatedFile(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("processInstanceIds") String processInstanceIds);
 }

@@ -88,8 +88,8 @@ public class ProcessTrackRestController {
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map;
         map = processTrack4PositionApi.processTrackList(tenantId, positionId, processInstanceId);
-        int mychaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
-        int otherchaosongNum = chaoSong4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
+        int mychaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+        int otherchaosongNum = chaoSong4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
         map.put("mychaosongNum", mychaosongNum);
         map.put("otherchaosongNum", otherchaosongNum);
         return Y9Result.success(map, "获取成功");
