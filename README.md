@@ -226,6 +226,10 @@ vue -- 前端工程
         <td><img src="https://vue.youshengyun.com/files/img/flowableUI7.png"></td>
     </tr>
     <tr>
+        <td><img src="https://vue.youshengyun.com/files/img/flowableUI2.png"></td>
+        <td><img src="https://vue.youshengyun.com/files/img/flowableUI3.png"></td>
+    </tr>
+    <tr>
         <td><img src="https://vue.youshengyun.com/files/img/flowableUI8.png"></td>
         <td><img src="https://vue.youshengyun.com/files/img/flowableUI9.png"></td>
     </tr>
