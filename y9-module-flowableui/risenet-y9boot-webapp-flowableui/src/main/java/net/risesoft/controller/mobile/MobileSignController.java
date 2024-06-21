@@ -129,8 +129,7 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/getAnnualLeaveDay")
     @ResponseBody
-    public void getAnnualLeaveDay(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
+    public void getAnnualLeaveDay(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -151,16 +150,14 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/getDay")
     @ResponseBody
-    public void getDay(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
-        HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public void getDay(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         Map<String, Object> map = new HashMap<String, Object>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             map.put(UtilConsts.SUCCESS, false);
             if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
                 String year = startDate.substring(0, 4);
-                CalendarConfigModel calendarConfigModel = calendarConfigManager.findByYear(tenantId, year);
+                CalendarConfigModel calendarConfigModel = calendarConfigManager.findByYear(tenantId, year).getData();
                 String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
                 if (StringUtils.isNotBlank(everyYearHoliday)) {
                     String day = daysBetween(startDate, endDate, everyYearHoliday);
@@ -192,11 +189,8 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/lyToReturn")
     @ResponseBody
-    public void lyToReturn(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestParam(required = false, name = "lysp_bianhao") String bianhao,
-        @RequestParam(required = false, name = "lysp_shifouzhanshi") String shifouzhanshi,
-        @RequestParam(required = false, name = "lysp_huifuneirong") String huifuneirong, HttpServletRequest request,
-        HttpServletResponse response) {
+    public void lyToReturn(@RequestHeader("auth-tenantId") String tenantId, @RequestParam(required = false, name = "lysp_bianhao") String bianhao, @RequestParam(required = false, name = "lysp_shifouzhanshi") String shifouzhanshi,
+        @RequestParam(required = false, name = "lysp_huifuneirong") String huifuneirong, HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String methodUrl = "http://www.caghp.org.cn/index.php/Member/returnback.html";
         HttpURLConnection connection = null;
@@ -273,10 +267,8 @@ public class MobileSignController {
      */
     @RequestMapping(value = "/saveToSign")
     @ResponseBody
-    public void saveToSign(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
-        @RequestParam(required = false) String username, @RequestParam(required = false) String startDate,
-        @RequestParam(required = false) String endDate, @RequestParam(required = false) String type,
-        @RequestParam(required = false) String leaveYear, HttpServletRequest request, HttpServletResponse response) {
+    public void saveToSign(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String username, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
+        @RequestParam(required = false) String type, @RequestParam(required = false) String leaveYear, HttpServletRequest request, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);

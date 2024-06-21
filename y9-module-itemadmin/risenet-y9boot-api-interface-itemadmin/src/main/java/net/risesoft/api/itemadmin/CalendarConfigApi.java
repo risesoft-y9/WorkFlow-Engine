@@ -1,6 +1,7 @@
 package net.risesoft.api.itemadmin;
 
 import net.risesoft.model.itemadmin.CalendarConfigModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -13,9 +14,9 @@ public interface CalendarConfigApi {
      * 获取年节假日配置信息
      *
      * @param tenantId 租户id
-     * @param year 年份
-     * @return CalendarConfigModel
+     * @param year     年份
+     * @return Y9Result<CalendarConfigModel>
      */
-    CalendarConfigModel findByYear(String tenantId, String year);
+    Y9Result<CalendarConfigModel> findByYear(String tenantId, String year);
 
 }

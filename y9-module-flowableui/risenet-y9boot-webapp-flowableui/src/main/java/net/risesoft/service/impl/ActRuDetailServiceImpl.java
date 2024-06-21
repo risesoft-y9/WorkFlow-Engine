@@ -41,8 +41,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     @Override
     public Y9Result<String> complete(String processSerialNumber) {
-        boolean b = actRuDetailManager.endByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber);
-        if (b) {
+        Y9Result<Object> y9Result = actRuDetailManager.endByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber);
+        if (y9Result.isSuccess()) {
             return Y9Result.success("办结成功", "办结成功");
         }
         return Y9Result.failure("办结失败");
@@ -54,13 +54,11 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId();
             String personId = userInfo.getPersonId(), personName = userInfo.getName();
-            List<ActRuDetailModel> ardmList =
-                actRuDetailManager.findByProcessSerialNumberAndStatus(tenantId, processSerialNumber, 0);
+            List<ActRuDetailModel> ardmList = actRuDetailManager.findByProcessSerialNumberAndStatus(tenantId, processSerialNumber, 0).getData();
             if (!ardmList.isEmpty()) {
                 return Y9Result.success("已设置办理人信息", "已设置办理人信息");
             }
-            ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel = processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
             ItemModel item = itemManager.getByItemId(tenantId, itemId);
             ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
             actRuDetailModel.setCreateTime(new Date());

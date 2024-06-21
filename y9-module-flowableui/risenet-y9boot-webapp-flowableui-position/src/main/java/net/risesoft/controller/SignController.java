@@ -85,7 +85,7 @@ public class SignController {
             String day = "";
             if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
                 String year = startDate.substring(0, 4);
-                CalendarConfigModel calendarConfigModel = calendarConfigApi.findByYear(tenantId, year);
+                CalendarConfigModel calendarConfigModel = calendarConfigApi.findByYear(tenantId, year).getData();
                 String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
                 if (StringUtils.isNotBlank(everyYearHoliday)) {
                     day = daysBetween(startDate, endDate, everyYearHoliday);
@@ -118,7 +118,7 @@ public class SignController {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr;
-            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
+            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]).getData();
             dayStr = calendarConfig.getEveryYearHoliday();
             switch (type) {
                 case "天": {

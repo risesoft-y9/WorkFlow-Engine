@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
@@ -27,6 +26,7 @@ import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -129,13 +129,13 @@ public class ChaoSongRestController {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map;
         try {
-            map = chaoSong4PositionApi.detail(person.getTenantId(), positionId, id, processInstanceId, status, false);
+            map = chaoSong4PositionApi.detail(person.getTenantId(), positionId, id, processInstanceId, status, false).getData();
             map.put("itemAdminBaseURL", y9Config.getCommon().getItemAdminBaseUrl());
             map.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
             map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
             map.put("jsVersion", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
             String processSerialNumber = (String)map.get("processSerialNumber");
-            Integer fileNum = attachment4PositionApi.fileCounts(tenantId, processSerialNumber);
+            Integer fileNum = attachment4PositionApi.fileCounts(tenantId, processSerialNumber).getData();
             int docNum = 0;
             // 是否正文正常
             Map<String, Object> wordMap = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
@@ -143,7 +143,7 @@ public class ChaoSongRestController {
                 docNum = 1;
             }
             int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, person.getPersonId(), processInstanceId);
-            int associatedFileNum = associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber);
+            int associatedFileNum = associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber).getData();
             map.put("userName", Y9LoginUserHolder.getUserInfo().getName());
             map.put("docNum", docNum);
             map.put("speakInfoNum", speakInfoNum);
@@ -168,20 +168,17 @@ public class ChaoSongRestController {
      * @param processInstanceId 流程实例id
      * @param rows 条数
      * @param page 页码
-     * @return Y9Page<Map < String, Object>>
+     * @return Y9Page<ChaoSongModel>
      */
-    @SuppressWarnings({"unchecked"})
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> list(@RequestParam @NotBlank String type, @RequestParam(required = false) String userName, @RequestParam @NotBlank String processInstanceId, @RequestParam int rows, @RequestParam int page) {
-        Map<String, Object> map;
+    public Y9Page<ChaoSongModel> list(@RequestParam @NotBlank String type, @RequestParam(required = false) String userName, @RequestParam @NotBlank String processInstanceId, @RequestParam int rows, @RequestParam int page) {
         String tenantId = Y9LoginUserHolder.getTenantId(), senderId = Y9LoginUserHolder.getPositionId();
         try {
             if (type.equals("my")) {
-                map = chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, senderId, processInstanceId, userName, rows, page);
+                return chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, senderId, processInstanceId, userName, rows, page);
             } else {
-                map = chaoSong4PositionApi.getListByProcessInstanceId(tenantId, senderId, processInstanceId, userName, rows, page);
+                return chaoSong4PositionApi.getListByProcessInstanceId(tenantId, senderId, processInstanceId, userName, rows, page);
             }
-            return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取抄送信息", e);
         }
@@ -220,8 +217,8 @@ public class ChaoSongRestController {
                     return Y9Result.failure("抄送失败，流程启动失败");
                 }
             }
-            Map<String, Object> map = chaoSong4PositionApi.save(person.getTenantId(), userId, Y9LoginUserHolder.getPositionId(), processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+            Y9Result<Object> y9Result = chaoSong4PositionApi.save(person.getTenantId(), userId, Y9LoginUserHolder.getPositionId(), processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
+            if (y9Result.isSuccess()) {
                 return Y9Result.success(resMap, "抄送成功");
             }
         } catch (Exception e) {
@@ -237,22 +234,19 @@ public class ChaoSongRestController {
      * @param status 列表类型：0为未阅件，1为已阅件，2为批阅件
      * @param rows 条数
      * @param page 页码
-     * @return Y9Page<Map < String, Object>>
+     * @return Y9Page<ChaoSongModel>
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> search(@RequestParam(required = false) String documentTitle, @RequestParam Integer status, @RequestParam int rows, @RequestParam int page) {
+    public Y9Page<ChaoSongModel> search(@RequestParam(required = false) String documentTitle, @RequestParam Integer status, @RequestParam int rows, @RequestParam int page) {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map = new HashMap<>(16);
         try {
             if (status == 0) {
-                map = chaoSong4PositionApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
+                return chaoSong4PositionApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
             } else if (status == 1) {
-                map = chaoSong4PositionApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
+                return chaoSong4PositionApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
             } else if (status == 2) {
-                map = chaoSong4PositionApi.getOpinionChaosongByUserId(tenantId, positionId, documentTitle, rows, page);
+                return chaoSong4PositionApi.getOpinionChaosongByUserId(tenantId, positionId, documentTitle, rows, page);
             }
-            return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取抄送信息", e);
         }

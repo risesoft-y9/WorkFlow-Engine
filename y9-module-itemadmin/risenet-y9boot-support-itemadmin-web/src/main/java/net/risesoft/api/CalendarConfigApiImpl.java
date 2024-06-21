@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.CalendarConfigApi;
 import net.risesoft.entity.CalendarConfig;
 import net.risesoft.model.itemadmin.CalendarConfigModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CalendarConfigService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -27,10 +28,11 @@ public class CalendarConfigApiImpl implements CalendarConfigApi {
 
     @Override
     @GetMapping(value = "/findByYear", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CalendarConfigModel findByYear(String tenantId, String year) {
+    public Y9Result<CalendarConfigModel> findByYear(String tenantId, String year) {
         Y9LoginUserHolder.setTenantId(tenantId);
         CalendarConfig calendarConfig = calendarConfigService.findByYear(year);
-        return ItemAdminModelConvertUtil.calendarConfig2CalendarConfigModel(calendarConfig);
+        CalendarConfigModel calendarConfigModel = ItemAdminModelConvertUtil.calendarConfig2CalendarConfigModel(calendarConfig);
+        return Y9Result.success(calendarConfigModel);
     }
 
 }

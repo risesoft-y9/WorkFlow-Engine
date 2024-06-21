@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.BookMarkBindApi;
 import net.risesoft.entity.BookMarkBind;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.BookMarkBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -36,7 +37,7 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
 
     @Override
     @GetMapping(value = "/getBookMarkData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getBookMarkData(String tenantId, String wordTemplateId, String processSerialNumber) {
+    public Y9Result<Map<String, Object>> getBookMarkData(String tenantId, String wordTemplateId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
         List<BookMarkBind> bookMarkBindList = bookMarkBindService.findByWordTemplateId(wordTemplateId);
@@ -53,6 +54,6 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
             String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE GUID='" + processSerialNumber + "'";
             map = jdbcTemplate.queryForMap(sql);
         }
-        return map;
+        return Y9Result.success(map);
     }
 }

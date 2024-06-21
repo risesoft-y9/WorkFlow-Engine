@@ -1,30 +1,51 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.*;
+
+import net.risesoft.api.itemadmin.FormDataApi;
+import net.risesoft.api.itemadmin.ItemTodoApi;
+import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.RemindInstanceApi;
+import net.risesoft.api.itemadmin.SpeakInfoApi;
+import net.risesoft.api.itemadmin.TaskVariableApi;
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
-import net.risesoft.api.processadmin.*;
+import net.risesoft.api.processadmin.HistoricTaskApi;
+import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.api.processadmin.ProcessTodoApi;
+import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
-import net.risesoft.model.itemadmin.*;
+import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.ItemPage;
+import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.RemindInstanceModel;
+import net.risesoft.model.itemadmin.TaskVariableModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.TodoService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -74,10 +95,9 @@ public class TodoServiceImpl implements TodoService {
             } else {
                 retMap = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey, searchTerm, page, rows);
             }
-            List<TaskModel> list = (List<TaskModel>) retMap.get("rows");
+            List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {
-            });
+            List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             Map<String, Object> vars;
@@ -100,7 +120,7 @@ public class TodoServiceImpl implements TodoService {
                     keys = new ArrayList<>();
                     keys.add(SysVariables.TASKSENDER);
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys);
-                    String taskSender = Strings.nullToEmpty((String) vars.get(SysVariables.TASKSENDER));
+                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
@@ -145,7 +165,7 @@ public class TodoServiceImpl implements TodoService {
                             mapTemp.put("isZhuBan", "");
                         }
                     }
-                    int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
+                    int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("chaosongNum", chaosongNum);
                     /*
                       红黄绿灯的情况判断，这里先不考虑
@@ -179,10 +199,9 @@ public class TodoServiceImpl implements TodoService {
             } else {
                 retMap = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey, searchTerm, page, rows);
             }
-            List<TaskModel> list = (List<TaskModel>) retMap.get("rows");
+            List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {
-            });
+            List<TaskModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             Map<String, Object> vars;
@@ -206,7 +225,7 @@ public class TodoServiceImpl implements TodoService {
                     keys = new ArrayList<>();
                     keys.add(SysVariables.TASKSENDER);
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys);
-                    String taskSender = Strings.nullToEmpty((String) vars.get(SysVariables.TASKSENDER));
+                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
@@ -254,7 +273,7 @@ public class TodoServiceImpl implements TodoService {
                     }
                     formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                     if (formDataMap.get("leaveType") != null) {
-                        String leaveType = (String) formDataMap.get("leaveType");
+                        String leaveType = (String)formDataMap.get("leaveType");
                         ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
                         for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
                             if (leaveType.equals(leaveTypeEnum.getValue())) {
@@ -321,8 +340,7 @@ public class TodoServiceImpl implements TodoService {
             }
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {
-            });
+            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             Map<String, Object> vars;
@@ -352,7 +370,7 @@ public class TodoServiceImpl implements TodoService {
                     keys = new ArrayList<>();
                     keys.add(SysVariables.TASKSENDER);
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys);
-                    String taskSender = Strings.nullToEmpty((String) vars.get(SysVariables.TASKSENDER));
+                    String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);

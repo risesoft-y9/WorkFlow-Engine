@@ -94,7 +94,7 @@ public class MobileSignController {
             map.put(UtilConsts.SUCCESS, false);
             if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
                 String year = startDate.substring(0, 4);
-                CalendarConfigModel calendarConfigModel = calendarConfigApi.findByYear(tenantId, year);
+                CalendarConfigModel calendarConfigModel = calendarConfigApi.findByYear(tenantId, year).getData();
                 String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
                 if (StringUtils.isNotBlank(everyYearHoliday)) {
                     String day = daysBetween(startDate, endDate, everyYearHoliday);
@@ -138,7 +138,7 @@ public class MobileSignController {
             Y9LoginUserHolder.setTenantId(tenantId);
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr;
-            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]);
+            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]).getData();
             dayStr = calendarConfig.getEveryYearHoliday();
             switch (type) {
                 case "天": {
@@ -329,7 +329,7 @@ public class MobileSignController {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr;
-            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(tenantId, endDate.split("-")[0]);
+            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(tenantId, endDate.split("-")[0]).getData();
             dayStr = calendarConfig != null ? calendarConfig.getEveryYearHoliday() : "";
             if (StringUtils.isBlank(startSel) && StringUtils.isBlank(endSel)) {// 按天算
                 boolean isdel = dateType.equals("1");

@@ -204,7 +204,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
+                        int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
@@ -251,7 +251,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
+                        int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
@@ -324,7 +324,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
+                        int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
@@ -398,7 +398,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
-                        int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
+                        int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
@@ -467,7 +467,7 @@ public class DoingServiceImpl implements DoingService {
                     mapTemp.put("taskAssigneeId", assigneeIds);
                     mapTemp.put("taskAssignee", assigneeNames);
                     mapTemp.put("isReminder", isReminder);
-                    int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId);
+                    int chaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("chaosongNum", chaosongNum);
                     mapTemp.put("status", 1);
                     mapTemp.put("taskDueDate", "");

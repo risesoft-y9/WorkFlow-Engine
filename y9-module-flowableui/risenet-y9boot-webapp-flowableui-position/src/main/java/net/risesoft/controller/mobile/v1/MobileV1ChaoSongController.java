@@ -1,7 +1,6 @@
 package net.risesoft.controller.mobile.v1;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.exception.GlobalErrorCodeEnum;
+import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.DocumentUtil;
@@ -75,7 +74,7 @@ public class MobileV1ChaoSongController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
-            map = chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, true);
+            map = chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, true).getData();
             String processSerialNumber = (String)map.get("processSerialNumber");
             String activitiUser = (String)map.get(SysVariables.ACTIVITIUSER);
             String processDefinitionId = (String)map.get("processDefinitionId");
@@ -149,21 +148,15 @@ public class MobileV1ChaoSongController {
      * @param page 页码
      * @return Y9Page<Map < String, Object>>
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/list")
-    public Y9Page<Map<String, Object>> list(@RequestParam(required = false) String type, @RequestParam @NotBlank String processInstanceId, @RequestParam int rows, @RequestParam int page) {
-        Map<String, Object> map;
+    public Y9Page<ChaoSongModel> list(@RequestParam(required = false) String type, @RequestParam @NotBlank String processInstanceId, @RequestParam int rows, @RequestParam int page) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             if (type.equals("my")) {
-                map = chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
+                return chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
             } else {
-                map = chaoSong4PositionApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
-            }
-            if ((boolean)map.get("success")) {
-                List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
-                return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Long.parseLong(map.get("total").toString()), list, "获取成功");
+                return chaoSong4PositionApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
             }
         } catch (Exception e) {
             LOGGER.error("手机端跟踪办件抄送列表", e);
@@ -178,22 +171,18 @@ public class MobileV1ChaoSongController {
      * @param status 状态，0为未阅件，1为已阅件
      * @param rows 行数
      * @param page 页码
-     * @return Y9Page<Map < String, Object>>
+     * @return Y9Page<ChaoSongModel>
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/search")
-    public Y9Page<Map<String, Object>> search(@RequestParam(required = false) String documentTitle, @RequestParam(required = false) Integer status, @RequestParam int rows, @RequestParam int page) {
-        Map<String, Object> map = new HashMap<>(16);
+    public Y9Page<ChaoSongModel> search(@RequestParam(required = false) String documentTitle, @RequestParam(required = false) Integer status, @RequestParam int rows, @RequestParam int page) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             if (status == 0) {
-                map = chaoSong4PositionApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
+                return chaoSong4PositionApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
             } else if (status == 1) {
-                map = chaoSong4PositionApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
+                return chaoSong4PositionApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
             }
-            List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
-            return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Long.parseLong(map.get("total").toString()), list, "获取成功");
         } catch (Exception e) {
             LOGGER.error("手机端跟踪查看抄送件列表", e);
         }
@@ -211,18 +200,13 @@ public class MobileV1ChaoSongController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/send")
-    public Y9Result<String> send(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String users, @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
-        Map<String, Object> map = new HashMap<>(1);
+    public Y9Result<Object> send(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String users, @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             String userId = Y9LoginUserHolder.getPersonId();
-            map = chaoSong4PositionApi.save(tenantId, userId, positionId, processInstanceId, users, isSendSms, isShuMing, smsContent, "");
-            if ((boolean)map.get("success")) {
-                return Y9Result.success("抄送成功");
-            }
+            return chaoSong4PositionApi.save(tenantId, userId, positionId, processInstanceId, users, isSendSms, isShuMing, smsContent, "");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
             LOGGER.error("手机端跟踪查看抄送件发送", e);
         }
         return Y9Result.failure("抄送失败");

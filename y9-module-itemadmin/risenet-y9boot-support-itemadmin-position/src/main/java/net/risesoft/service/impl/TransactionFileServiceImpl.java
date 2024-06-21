@@ -5,11 +5,14 @@ import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.TransactionFile;
+import net.risesoft.exception.GlobalErrorCodeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.repository.jpa.TransactionFileRepository;
 import net.risesoft.service.TransactionFileService;
 import net.risesoft.y9.Y9Context;
@@ -27,15 +30,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.net.URLDecoder;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author qinman
@@ -73,37 +71,14 @@ public class TransactionFileServiceImpl implements TransactionFileService {
 
     @Transactional
     @Override
-    public Map<String, Object> delFile(String ids) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        try {
-            String[] id = ids.split(",");
-            for (String str : id) {
-                try {
-                    TransactionFile file = transactionFileRepository.findById(str).orElse(null);
-                    transactionFileRepository.deleteById(str);
-                    assert file != null;
-                    y9FileStoreService.deleteFile(file.getFileStoreId());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+    public void delFile(String ids) {
+        String[] id = ids.split(",");
+        for (String str : id) {
+            TransactionFile file = transactionFileRepository.findById(str).orElse(null);
+            transactionFileRepository.deleteById(str);
+            assert file != null;
+            y9FileStoreService.deleteFile(file.getFileStoreId());
         }
-        return map;
-    }
-
-    @Override
-    @Transactional
-    public Map<String, Object> download(String id) {
-        Optional<TransactionFile> transactionFile = transactionFileRepository.findById(id);
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("fileSize", transactionFile.get().getFileSize());
-        map.put("filename", transactionFile.get().getName());
-        map.put("fileStoreId", transactionFile.get().getFileStoreId());
-        return map;
     }
 
     @Override
@@ -113,9 +88,15 @@ public class TransactionFileServiceImpl implements TransactionFileService {
 
     @Override
     @Transactional
-    public Map<String, Object> getAttachmentList(String processSerialNumber, String fileSource, int page, int rows) {
-        Map<String, Object> map = new HashMap<>(16);
-        List<Map<String, Object>> item = new ArrayList<>();
+    public TransactionFile findById(String id) {
+        TransactionFile transactionFile = transactionFileRepository.findById(id).orElse(null);
+        return transactionFile;
+    }
+
+    @Override
+    @Transactional
+    public Y9Page<AttachmentModel> getAttachmentList(String processSerialNumber, String fileSource, int page, int rows) {
+        List<AttachmentModel> item = new ArrayList<>();
         try {
             SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             SimpleDateFormat sdfymdhm = new SimpleDateFormat("yyyy/MM/dd HH:mm");
@@ -128,45 +109,38 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             }
             int number = (page - 1) * rows;
             for (TransactionFile transactionFile : transactionFileList) {
-                Map<String, Object> m = new HashMap<>(16);
-                m.put("serialNumber", number + 1);
-                m.put("name", transactionFile.getName());
-                m.put("fileSize", transactionFile.getFileSize());
-                m.put("id", transactionFile.getId());
-                m.put("personId", transactionFile.getPersonId());
-                m.put("personName", transactionFile.getPersonName());
-                m.put("positionId", transactionFile.getPositionId());
+                AttachmentModel model = new AttachmentModel();
+                model.setSerialNumber(number + 1);
+                model.setName(transactionFile.getName());
+                model.setFileSize(transactionFile.getFileSize());
+                model.setId(transactionFile.getId());
+                model.setPersonId(transactionFile.getPersonId());
+                model.setPersonName(transactionFile.getPersonName());
+                model.setPositionId(transactionFile.getPositionId());
                 Position position = positionManager.get(Y9LoginUserHolder.getTenantId(), transactionFile.getPositionId()).getData();
-                m.put("positionName", position != null ? position.getName() : "");
-                m.put("deptId", transactionFile.getDeptId());
-                m.put("deptName", transactionFile.getDeptName());
-                m.put("describes", transactionFile.getDescribes());
-                m.put("uploadTime", sdfymdhm.format(sdfymdhms.parse(transactionFile.getUploadTime())));
-                m.put("serialNumber", number + 1);
-                m.put("fileType", transactionFile.getFileType());
-                m.put("fileSource", transactionFile.getFileSource());
-                m.put("filePath", transactionFile.getFileStoreId());
+                model.setPositionName(position != null ? position.getName() : "");
+                model.setDeptId(transactionFile.getDeptId());
+                model.setDeptName(transactionFile.getDeptName());
+                model.setDescribes(transactionFile.getDescribes());
+                model.setUploadTime(sdfymdhm.format(sdfymdhms.parse(transactionFile.getUploadTime())));
+                model.setFileType(transactionFile.getFileType());
+                model.setFileSource(transactionFile.getFileSource());
+                model.setFileStoreId(transactionFile.getFileStoreId());
+                model.setFilePath(transactionFile.getFileStoreId());
                 String downloadUrl = y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + transactionFile.getFileStoreId() + "." + transactionFile.getFileType();
-                m.put("downloadUrl", downloadUrl);
-                m.put("processInstanceId", transactionFile.getProcessInstanceId());
-                m.put("processSerialNumber", transactionFile.getProcessSerialNumber());
-                m.put("taskId", transactionFile.getTaskId());
-                m.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
-                item.add(m);
+                model.setDownloadUrl(downloadUrl);
+                model.setProcessInstanceId(transactionFile.getProcessInstanceId());
+                model.setProcessSerialNumber(transactionFile.getProcessSerialNumber());
+                model.setTaskId(transactionFile.getTaskId());
+                model.setJodconverterURL(y9Config.getCommon().getJodconverterBaseUrl());
+                item.add(model);
                 number += 1;
             }
-            map.put("rows", item);
-            map.put("totalpage", transactionFileList.getTotalPages());
-            map.put("currpage", page);
-            map.put("total", transactionFileList.getTotalElements());
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "附件列表获取成功");
+            return Y9Page.success(page, transactionFileList.getTotalPages(), transactionFileList.getTotalElements(), item);
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "附件列表获取失败");
             e.printStackTrace();
         }
-        return map;
+        return Y9Page.failure(page, 0, 0, new ArrayList<>(), "获取失败", GlobalErrorCodeEnum.FAILURE.getCode());
     }
 
     @Override
@@ -313,44 +287,34 @@ public class TransactionFileServiceImpl implements TransactionFileService {
 
     @Transactional
     @Override
-    public Map<String, Object> uploadRest(String fileName, String fileSize, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource, String y9FileStoreId) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, false);
-        map.put("msg", "保存附件信息失败");
+    public void uploadRest(String fileName, String fileSize, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource, String y9FileStoreId) {
         String[] types = fileName.split("\\.");
         String type = types[types.length - 1].toLowerCase();
-        try {
-            SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            TransactionFile transactionFile = new TransactionFile();
-            transactionFile.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            transactionFile.setName(fileName);
-            transactionFile.setFileSize(fileSize);
-            transactionFile.setFileSource(fileSource);
-            transactionFile.setProcessInstanceId(processInstanceId);
-            transactionFile.setProcessSerialNumber(processSerialNumber);
-            transactionFile.setTaskId(taskId);
-            transactionFile.setUploadTime(sdfymdhms.format(new Date()));
-            transactionFile.setDescribes(describes);
-            transactionFile.setPersonName(Y9LoginUserHolder.getUserInfo().getName());
-            transactionFile.setPersonId(Y9LoginUserHolder.getPersonId());
-            transactionFile.setPositionId(Y9LoginUserHolder.getPositionId());
-            Department department = departmentManager.get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPosition().getParentId()).getData();
-            transactionFile.setDeptId(department != null ? department.getId() : "");
-            transactionFile.setDeptName(department != null ? department.getName() : "");
-            transactionFile.setFileStoreId(y9FileStoreId);
-            transactionFile.setFileType(type);
-            transactionFileRepository.save(transactionFile);
-            map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "保存附件信息成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return map;
+        SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        TransactionFile transactionFile = new TransactionFile();
+        transactionFile.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        transactionFile.setName(fileName);
+        transactionFile.setFileSize(fileSize);
+        transactionFile.setFileSource(fileSource);
+        transactionFile.setProcessInstanceId(processInstanceId);
+        transactionFile.setProcessSerialNumber(processSerialNumber);
+        transactionFile.setTaskId(taskId);
+        transactionFile.setUploadTime(sdfymdhms.format(new Date()));
+        transactionFile.setDescribes(describes);
+        transactionFile.setPersonName(Y9LoginUserHolder.getUserInfo().getName());
+        transactionFile.setPersonId(Y9LoginUserHolder.getPersonId());
+        transactionFile.setPositionId(Y9LoginUserHolder.getPositionId());
+        Department department = departmentManager.get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPosition().getParentId()).getData();
+        transactionFile.setDeptId(department != null ? department.getId() : "");
+        transactionFile.setDeptName(department != null ? department.getName() : "");
+        transactionFile.setFileStoreId(y9FileStoreId);
+        transactionFile.setFileType(type);
+        transactionFileRepository.save(transactionFile);
     }
 
     @Transactional
     @Override
-    public TransactionFile uploadRestModel(TransactionFile transactionFile) throws ParseException {
+    public TransactionFile uploadRestModel(TransactionFile transactionFile) {
         SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         transactionFile.setUploadTime(sdfymdhms.format(new Date()));
         transactionFileRepository.save(transactionFile);

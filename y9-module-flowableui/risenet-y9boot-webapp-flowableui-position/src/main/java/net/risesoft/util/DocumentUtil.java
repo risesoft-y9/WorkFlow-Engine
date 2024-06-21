@@ -1,21 +1,22 @@
 package net.risesoft.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
+import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
-
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class DocumentUtil {
 
@@ -54,8 +55,8 @@ public class DocumentUtil {
         map.put("opinioListMap", opinioListMap);
 
         // 附件
-        Map<String, Object> fileAttachment = Y9Context.getBean(Attachment4PositionApi.class).getAttachmentList(tenantId, processSerialNumber, "", 1, 100);
-        map.put("fileAttachment", fileAttachment);
+        Y9Page<AttachmentModel> y9Page = Y9Context.getBean(Attachment4PositionApi.class).getAttachmentList(tenantId, processSerialNumber, "", 1, 100);
+        map.put("fileAttachment", y9Page);
 
         // 正文
         Map<String, Object> fileDocument = Y9Context.getBean(TransactionWordApi.class).findWordByProcessSerialNumber(tenantId, processSerialNumber);

@@ -54,7 +54,7 @@ public class FileNTKOController {
     @RequestMapping(value = "/openDoc")
     public void openDoc(@RequestParam String fileId, @RequestParam String tenantId, HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
+        AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId).getData();
         ServletOutputStream out = null;
         try {
             String agent = request.getHeader("USER-AGENT");
@@ -118,7 +118,7 @@ public class FileNTKOController {
         try {
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
+            AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId).getData();
             String downloadUrl = y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + file.getFileStoreId() + "." + file.getFileType();
             model.addAttribute("fileName", file.getName());
             model.addAttribute("browser", browser);
@@ -157,12 +157,12 @@ public class FileNTKOController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
+            AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId).getData();
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
             MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
             String fullPath = "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, file.getName());
-            result = attachment4PositionApi.updateFile(tenantId, userId, positionId, fileId, y9FileStore.getDisplayFileSize(), taskId, y9FileStore.getId());
+            result = attachment4PositionApi.updateFile(tenantId, userId, positionId, fileId, y9FileStore.getDisplayFileSize(), taskId, y9FileStore.getId()).getData();
         } catch (Exception e) {
             LOGGER.error("更新附件失败", e);
         }

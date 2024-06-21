@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ActRuDetailService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -41,13 +42,14 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Boolean
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/endByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean endByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId) {
+    public Y9Result<Object> endByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return actRuDetailService.endByProcessInstanceId(processInstanceId);
+        actRuDetailService.endByProcessInstanceId(processInstanceId);
+        return Y9Result.success();
     }
 
     /**
@@ -55,13 +57,14 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return Boolean
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/endByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean endByProcessSerialNumber(@RequestParam String tenantId, @RequestParam String processSerialNumber) {
+    public Y9Result<Object> endByProcessSerialNumber(@RequestParam String tenantId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return actRuDetailService.endByProcessSerialNumber(processSerialNumber);
+        actRuDetailService.endByProcessSerialNumber(processSerialNumber);
+        return Y9Result.success();
     }
 
     /**
@@ -70,11 +73,11 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param status 0为待办，1位在办
-     * @return List<ActRuDetailModel>
+     * @return Y9Result<List < ActRuDetailModel>>
      */
     @Override
     @GetMapping(value = "/findByProcessInstanceIdAndStatus", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ActRuDetailModel> findByProcessInstanceIdAndStatus(@RequestParam String tenantId, @RequestParam String processInstanceId, int status) {
+    public Y9Result<List<ActRuDetailModel>> findByProcessInstanceIdAndStatus(@RequestParam String tenantId, @RequestParam String processInstanceId, int status) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ActRuDetail> actRuDetailList = actRuDetailService.findByProcessInstanceIdAndStatus(processInstanceId, status);
         List<ActRuDetailModel> modelList = new ArrayList<>();
@@ -84,7 +87,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
             Y9BeanUtil.copyProperties(actRuDetail, model);
             modelList.add(model);
         }
-        return modelList;
+        return Y9Result.success(modelList);
     }
 
     /**
@@ -92,11 +95,11 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return List<ActRuDetailModel>
+     * @return Y9Result<List < ActRuDetailModel>>
      */
     @Override
     @GetMapping(value = "/findByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ActRuDetailModel> findByProcessSerialNumber(@RequestParam String tenantId, @RequestParam String processSerialNumber) {
+    public Y9Result<List<ActRuDetailModel>> findByProcessSerialNumber(@RequestParam String tenantId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ActRuDetail> actRuDetailList = actRuDetailService.findByProcessSerialNumber(processSerialNumber);
         List<ActRuDetailModel> modelList = new ArrayList<>();
@@ -106,7 +109,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
             Y9BeanUtil.copyProperties(actRuDetail, model);
             modelList.add(model);
         }
-        return modelList;
+        return Y9Result.success(modelList);
     }
 
     /**
@@ -115,16 +118,16 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param assignee 办理人id
-     * @return ActRuDetailModel
+     * @return Y9Result<ActRuDetailModel>
      */
     @Override
     @GetMapping(value = "/findByProcessSerialNumberAndAssignee", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ActRuDetailModel findByProcessSerialNumberAndAssignee(@RequestParam String tenantId, @RequestParam String processSerialNumber, @RequestParam String assignee) {
+    public Y9Result<ActRuDetailModel> findByProcessSerialNumberAndAssignee(@RequestParam String tenantId, @RequestParam String processSerialNumber, @RequestParam String assignee) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ActRuDetail actRuDetail = actRuDetailService.findByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
         ActRuDetailModel model = new ActRuDetailModel();
         Y9BeanUtil.copyProperties(actRuDetail, model);
-        return model;
+        return Y9Result.success(model);
     }
 
     /**
@@ -133,11 +136,11 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param status 0为待办，1位在办
-     * @return List<ActRuDetailModel>
+     * @return Y9Result<List<ActRuDetailModel>>
      */
     @Override
     @GetMapping(value = "/findByProcessSerialNumberAndStatus", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ActRuDetailModel> findByProcessSerialNumberAndStatus(@RequestParam String tenantId, @RequestParam String processSerialNumber, @RequestParam int status) {
+    public Y9Result<List<ActRuDetailModel>> findByProcessSerialNumberAndStatus(@RequestParam String tenantId, @RequestParam String processSerialNumber, @RequestParam int status) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ActRuDetail> actRuDetailList = actRuDetailService.findByProcessSerialNumberAndStatus(processSerialNumber, status);
         List<ActRuDetailModel> modelList = new ArrayList<>();
@@ -147,7 +150,7 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
             Y9BeanUtil.copyProperties(actRuDetail, model);
             modelList.add(model);
         }
-        return modelList;
+        return Y9Result.success(modelList);
     }
 
     /**
@@ -155,13 +158,14 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return boolean
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/recoveryByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean recoveryByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId) {
+    public Y9Result<Object> recoveryByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return actRuDetailService.recoveryByProcessInstanceId(processInstanceId);
+        actRuDetailService.recoveryByProcessInstanceId(processInstanceId);
+        return Y9Result.success();
     }
 
     /**
@@ -169,13 +173,14 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return boolean
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/removeByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean removeByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId) {
+    public Y9Result<Object> removeByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return actRuDetailService.removeByProcessInstanceId(processInstanceId);
+        actRuDetailService.removeByProcessInstanceId(processInstanceId);
+        return Y9Result.success();
     }
 
     /**
@@ -183,13 +188,14 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return boolean
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/removeByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean removeByProcessSerialNumber(@RequestParam String tenantId, @RequestParam String processSerialNumber) {
+    public Y9Result<Object> removeByProcessSerialNumber(@RequestParam String tenantId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return actRuDetailService.removeByProcessSerialNumber(processSerialNumber);
+        actRuDetailService.removeByProcessSerialNumber(processSerialNumber);
+        return Y9Result.success();
     }
 
     /**
@@ -198,13 +204,14 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param assignee 办理人id
-     * @return boolean
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/removeByProcessSerialNumberAndAssignee", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean removeByProcessSerialNumberAndAssignee(@RequestParam String tenantId, @RequestParam String processSerialNumber, @RequestParam String assignee) {
+    public Y9Result<Object> removeByProcessSerialNumberAndAssignee(@RequestParam String tenantId, @RequestParam String processSerialNumber, @RequestParam String assignee) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return actRuDetailService.removeByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
+        actRuDetailService.removeByProcessSerialNumberAndAssignee(processSerialNumber, assignee);
+        return Y9Result.success();
     }
 
     /**
@@ -212,15 +219,16 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param actRuDetailModel 详情对象
-     * @return boolean
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public boolean saveOrUpdate(@RequestParam String tenantId, @RequestBody ActRuDetailModel actRuDetailModel) {
+    public Y9Result<Object> saveOrUpdate(@RequestParam String tenantId, @RequestBody ActRuDetailModel actRuDetailModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ActRuDetail actRuDetail = new ActRuDetail();
         Y9BeanUtil.copyProperties(actRuDetailModel, actRuDetail);
-        return actRuDetailService.saveOrUpdate(actRuDetail);
+        actRuDetailService.saveOrUpdate(actRuDetail);
+        return Y9Result.success();
     }
 
     /**
@@ -228,12 +236,13 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return boolean
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/syncByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean syncByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId) {
+    public Y9Result<Object> syncByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return actRuDetailService.syncByProcessInstanceId(processInstanceId);
+        actRuDetailService.syncByProcessInstanceId(processInstanceId);
+        return Y9Result.success();
     }
 }

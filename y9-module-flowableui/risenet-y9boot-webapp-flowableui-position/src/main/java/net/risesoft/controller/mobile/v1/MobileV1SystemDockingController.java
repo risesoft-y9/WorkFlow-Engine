@@ -218,8 +218,8 @@ public class MobileV1SystemDockingController {
                         } else {
                             fileSizeString = df.format((double)fileSize / 1073741824) + "G";
                         }
-                        Map<String, Object> att_map = attachment4PositionApi.upload(tenantId, userId, positionId, fileName, fileSizeString, "", "", "", guid, "", y9FileStore.getId());
-                        if (!(boolean)att_map.get(UtilConsts.SUCCESS)) {
+                        Y9Result<String> y9Result = attachment4PositionApi.upload(tenantId, userId, positionId, fileName, fileSizeString, "", "", "", guid, "", y9FileStore.getId());
+                        if (!y9Result.isSuccess()) {
                             LOGGER.info("***********************" + title + "**********保存附件失败");
                             return Y9Result.failure("保存附件失败");
                         }

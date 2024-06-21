@@ -3,6 +3,7 @@ package net.risesoft.service;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
 import net.risesoft.pojo.Y9Page;
 
@@ -140,7 +141,7 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Map<String, Object> getDoneList(String positionId, String documentTitle, int rows, int page);
+    Y9Page<ChaoSongModel> getDoneList(String positionId, String documentTitle, int rows, int page);
 
     /**
      *
@@ -152,7 +153,7 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Map<String, Object> getListByProcessInstanceId(String processInstanceId, String userName, int rows, int page);
+    Y9Page<ChaoSongModel> getListByProcessInstanceId(String processInstanceId, String userName, int rows, int page);
 
     /**
      *
@@ -165,8 +166,7 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId,
-        String userName, int rows, int page);
+    Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId, String userName, int rows, int page);
 
     /**
      * 批阅件列表
@@ -177,7 +177,7 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Map<String, Object> getOpinionChaosongByUserId(String userId, String documentTitle, int rows, int page);
+    Y9Page<ChaoSongModel> getOpinionChaosongByUserId(String userId, String documentTitle, int rows, int page);
 
     /**
      * 根据人员唯一标示查找待阅数量
@@ -196,7 +196,7 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Map<String, Object> getTodoList(String positionId, String documentTitle, int rows, int page);
+    Y9Page<ChaoSongModel> getTodoList(String positionId, String documentTitle, int rows, int page);
 
     /**
      * 我的抄送列表
@@ -210,8 +210,7 @@ public interface ChaoSongInfoService {
      * @param page
      * @return
      */
-    Y9Page<Map<String, Object>> myChaoSongList(String searchName, String itemId, String userName, String state,
-        String year, int rows, int page);
+    Y9Page<ChaoSongModel> myChaoSongList(String searchName, String itemId, String userName, String state, String year, int rows, int page);
 
     /**
      * 保存抄送
@@ -241,8 +240,7 @@ public interface ChaoSongInfoService {
      * @param smsPersonId
      * @return
      */
-    Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
-        String smsContent, String smsPersonId);
+    Map<String, Object> save(String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId);
 
     /**
      *
@@ -257,8 +255,7 @@ public interface ChaoSongInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllByUserId(String searchName, String itemId, String userName, String state, String year,
-        Integer page, Integer rows);
+    Y9Page<ChaoSongModel> searchAllByUserId(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 监控阅件列表
@@ -273,8 +270,7 @@ public interface ChaoSongInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllList(String searchName, String itemId, String senderName, String userName,
-        String state, String year, Integer page, Integer rows);
+    Y9Page<ChaoSongModel> searchAllList(String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 更新抄送件标题

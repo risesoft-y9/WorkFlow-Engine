@@ -1,7 +1,36 @@
 package net.risesoft.service.impl;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
+import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.platform.customgroup.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrganizationApi;
@@ -18,6 +47,7 @@ import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.platform.CustomGroupMember;
 import net.risesoft.model.platform.Department;
@@ -41,34 +71,7 @@ import net.risesoft.util.SysVariables;
 import net.risesoft.util.Y9EsIndexConst;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.Criteria;
-import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
-import org.springframework.data.elasticsearch.core.query.Query;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * @author qinman
@@ -193,13 +196,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     @Override
     @Transactional
     public boolean deleteByProcessInstanceId(String processInstanceId) {
-        try {
-            chaoSongInfoRepository.deleteByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("删除失败", e);
-        }
-        return false;
+        chaoSongInfoRepository.deleteByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
+        return true;
     }
 
     @Override
@@ -360,15 +358,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    public Map<String, Object> getDoneList(String positionId, String documentTitle, int rows, int page) {
+    public Y9Page<ChaoSongModel> getDoneList(String positionId, String documentTitle, int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<>(16);
         List<ChaoSongInfo> csList;
         if (page < 1) {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(positionId).and("status").is(1);
         if (StringUtils.isNotBlank(documentTitle)) {
             criteria.subCriteria(new Criteria("title").contains(documentTitle));
@@ -385,266 +381,211 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
-        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<ChaoSongModel> list = new ArrayList<>();
         for (ChaoSongInfo cs : csList) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", cs.getId());
+            ChaoSongModel model = new ChaoSongModel();
+            Y9BeanUtil.copyProperties(cs, model);
+            String processInstanceId = cs.getProcessInstanceId();
+            model.setSerialNumber(num + 1);
+            model.setId(cs.getId());
+            model.setProcessInstanceId(processInstanceId);
+            model.setSenderName(cs.getSenderName());
+            model.setSendDeptName(cs.getSendDeptName());
+            model.setTitle(cs.getTitle());
+            model.setStatus(cs.getStatus());
+            model.setItemId(cs.getItemId());
+            model.setItemName(cs.getItemName());
+            model.setBanjie(false);
             try {
-                String processInstanceId = cs.getProcessInstanceId();
-                map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
-                processParam = processParamService.findByProcessInstanceId(processInstanceId);
-                map.put("processInstanceId", processInstanceId);
-                map.put("senderName", cs.getSenderName());
-                map.put("sendDeptId", cs.getSendDeptId());
-                map.put("sendDeptName", cs.getSendDeptName());
-                map.put("readTime", sdf.format(sdf.parse(cs.getReadTime())));
-                map.put("title", processParam.getTitle());
-                map.put("status", cs.getStatus());
-                map.put("banjie", false);
-                map.put("itemId", cs.getItemId());
-                map.put("itemName", cs.getItemName());
-                map.put("processSerialNumber", processParam.getProcessSerialNumber());
-                map.put("number", processParam.getCustomNumber());
-                map.put("level", processParam.getCustomLevel());
-                int chaosongNum = chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
-                map.put("chaosongNum", chaosongNum);
+                model.setReadTime(sdf.format(sdf.parse(cs.getReadTime())));
+                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
                 hpi = historicProcessManager.getById(tenantId, processInstanceId);
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
-                    map.put("banjie", true);
+                    model.setBanjie(true);
                 }
                 OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-                map.put("processDefinitionId", officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
+                model.setProcessDefinitionId(officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
+                model.setProcessSerialNumber(officeDoneInfo.getProcessSerialNumber());
                 int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
-                map.put("follow", countFollow > 0);
+                model.setFollow(countFollow > 0);
+
+                processParam = processParamService.findByProcessInstanceId(processInstanceId);
+                model.setNumber(processParam.getCustomNumber());
+                model.setLevel(processParam.getCustomLevel());
             } catch (Exception e) {
                 LOGGER.error("获取数据失败", e);
             }
-            map.put("serialNumber", num + 1);
             num += 1;
-            listMap.add(map);
+            list.add(model);
         }
-        retMap.put("currpage", page);
-        retMap.put("totalpages", pageList.getTotalPages());
-        retMap.put("total", pageList.getTotalElements());
-        retMap.put("rows", listMap);
-        return retMap;
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
     }
 
     @Override
-    public Map<String, Object> getListByProcessInstanceId(String processInstanceId, String userName, int rows, int page) {
-        Map<String, Object> retMap = new HashMap<>(16);
+    public Y9Page<ChaoSongModel> getListByProcessInstanceId(String processInstanceId, String userName, int rows, int page) {
         String senderId = Y9LoginUserHolder.getPositionId();
         List<ChaoSongInfo> csList;
-        List<Map<String, Object>> listMap = new ArrayList<>();
-        try {
-            if (page < 1) {
-                page = 1;
-            }
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("processInstanceId").is(processInstanceId);
-            criteria.subCriteria(new Criteria("senderId").not().is(senderId));
-            if (StringUtils.isNotBlank(userName)) {
-                criteria.subCriteria(new Criteria("userName").contains(userName));
-            }
-            Query query = new CriteriaQuery(criteria).setPageable(pageable);
-            query.setTrackTotalHits(true);
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-            SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, index);
-            List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-            Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
-
-            csList = pageList.getContent();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            int startRow = (page - 1) * rows;
-            for (ChaoSongInfo info : csList) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", info.getId());
-                try {
-                    map.put("createTime", sdf.format(sdf.parse(info.getCreateTime())));
-                    map.put("processInstanceId", processInstanceId);
-                    map.put("senderName", info.getSenderName());
-                    map.put("sendDeptId", info.getSendDeptId());
-                    map.put("sendDeptName", info.getSendDeptName());
-                    if (StringUtils.isBlank(info.getReadTime())) {
-                        map.put("readTime", "");
-                    } else {
-                        map.put("readTime", sdf.format(sdf.parse(info.getReadTime())));
-                    }
-                    map.put("userName", info.getUserName());
-                    map.put("userDeptName", info.getUserDeptName());
-                    map.put("title", info.getTitle());
-                } catch (Exception e) {
-                    LOGGER.error("获取数据失败", e);
-                }
-                map.put("serialNumber", startRow + 1);
-                startRow += 1;
-                listMap.add(map);
-            }
-            // 获取总页数
-            retMap.put("currpage", page);
-            retMap.put("totalpages", pageList.getTotalPages());
-            retMap.put("total", pageList.getTotalElements());
-            retMap.put("rows", listMap);
-        } catch (Exception e) {
-            LOGGER.error("获取数据失败", e);
+        List<ChaoSongModel> list = new ArrayList<>();
+        if (page < 1) {
+            page = 1;
         }
-        // 获取总页数
-        retMap.put("currpage", page);
-        retMap.put("totalpages", 0);
-        retMap.put("total", 0);
-        retMap.put("rows", listMap);
-        return retMap;
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("processInstanceId").is(processInstanceId);
+        criteria.subCriteria(new Criteria("senderId").not().is(senderId));
+        if (StringUtils.isNotBlank(userName)) {
+            criteria.subCriteria(new Criteria("userName").contains(userName));
+        }
+        Query query = new CriteriaQuery(criteria).setPageable(pageable);
+        query.setTrackTotalHits(true);
+        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+        SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, index);
+        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        csList = pageList.getContent();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        int startRow = (page - 1) * rows;
+        for (ChaoSongInfo info : csList) {
+            ChaoSongModel model = new ChaoSongModel();
+            Y9BeanUtil.copyProperties(info, model);
+            model.setId(info.getId());
+            model.setProcessInstanceId(processInstanceId);
+            model.setSenderName(info.getSenderName());
+            model.setSendDeptName(info.getSendDeptName());
+            model.setUserName(info.getUserName());
+            model.setUserDeptName(info.getUserDeptName());
+            model.setTitle(info.getTitle());
+            model.setSerialNumber(startRow + 1);
+            try {
+                if (StringUtils.isBlank(info.getReadTime())) {
+                    model.setReadTime("");
+                } else {
+                    model.setReadTime(sdf.format(sdf.parse(info.getReadTime())));
+                }
+                model.setCreateTime(sdf.format(sdf.parse(info.getCreateTime())));
+            } catch (Exception e) {
+                LOGGER.error("获取数据失败", e);
+            }
+            startRow += 1;
+            list.add(model);
+        }
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
     }
 
     @Override
-    public Map<String, Object> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId, String userName, int rows, int page) {
-        Map<String, Object> retMap = new HashMap<>(16);
-        List<Map<String, Object>> listMap = new ArrayList<>();
-        try {
-            List<ChaoSongInfo> csList;
-            if (page < 1) {
-                page = 1;
-            }
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("senderId").is(senderId).and("processInstanceId").is(processInstanceId);
-            if (StringUtils.isNotBlank(userName)) {
-                criteria.subCriteria(new Criteria("userName").contains(userName));
-            }
-            Query query = new CriteriaQuery(criteria).setPageable(pageable);
-            query.setTrackTotalHits(true);
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-            SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, index);
-            List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-            Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
-
-            csList = pageList.getContent();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            int startRow = (page - 1) * rows;
-            for (ChaoSongInfo cs : csList) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", cs.getId());
-                try {
-                    map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
-                    map.put("processInstanceId", processInstanceId);
-                    map.put("senderName", cs.getSenderName());
-                    map.put("sendDeptId", cs.getSendDeptId());
-                    map.put("sendDeptName", cs.getSendDeptName());
-                    if (StringUtils.isBlank(cs.getReadTime())) {
-                        map.put("readTime", "");
-                    } else {
-                        map.put("readTime", sdf.format(sdf.parse(cs.getReadTime())));
-                    }
-                    map.put("userName", cs.getUserName());
-                    map.put("userDeptName", cs.getUserDeptName());
-                    map.put("title", cs.getTitle());
-                } catch (Exception e) {
-                    LOGGER.error("获取数据失败", e);
-                }
-                map.put("serialNumber", startRow + 1);
-                startRow += 1;
-                listMap.add(map);
-            }
-            // 获取总页数
-            retMap.put("currpage", page);
-            retMap.put("totalpages", pageList.getTotalPages());
-            retMap.put("total", pageList.getTotalElements());
-            retMap.put("rows", listMap);
-            retMap.put("success", true);
-            return retMap;
-        } catch (Exception e) {
-            LOGGER.error("获取数据失败", e);
-        }
-        // 获取总页数
-        retMap.put("currpage", page);
-        retMap.put("totalpages", 0);
-        retMap.put("total", 0);
-        retMap.put("rows", listMap);
-        retMap.put("success", false);
-        return retMap;
-    }
-
-    @Override
-    public Map<String, Object> getOpinionChaosongByUserId(String userId, String documentTitle, int rows, int page) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<>(16);
-
+    public Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(String senderId, String processInstanceId, String userName, int rows, int page) {
+        List<ChaoSongModel> list = new ArrayList<>();
         List<ChaoSongInfo> csList;
         if (page < 1) {
             page = 1;
         }
-        List<Map<String, Object>> listMap = new ArrayList<>();
-        try {
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
 
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId).and("opinionState").is("1");
-            if (StringUtils.isNotBlank(documentTitle)) {
-                criteria.subCriteria(new Criteria("title").contains(documentTitle));
-            }
-            Query query = new CriteriaQuery(criteria).setPageable(pageable);
-            query.setTrackTotalHits(true);
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-            SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, index);
-            List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-            Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
-
-            csList = pageList.getContent();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            HistoricProcessInstanceModel hpi;
-            ProcessParam processParam;
-            int num = (page - 1) * rows;
-            for (ChaoSongInfo cs : csList) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", cs.getId());
-                try {
-                    String processInstanceId = cs.getProcessInstanceId();
-                    map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
-                    processParam = processParamService.findByProcessInstanceId(processInstanceId);
-                    map.put("processInstanceId", processInstanceId);
-                    map.put("senderName", cs.getSenderName());
-                    map.put("sendDeptId", cs.getSendDeptId());
-                    map.put("sendDeptName", cs.getSendDeptName());
-                    map.put("readTime", sdf.format(sdf.parse(cs.getReadTime())));
-                    map.put("title", processParam.getTitle());
-                    map.put("status", cs.getStatus());
-                    map.put("banjie", false);
-                    map.put("itemId", cs.getItemId());
-                    map.put("itemName", cs.getItemName());
-                    map.put("processSerialNumber", processParam.getProcessSerialNumber());
-                    map.put("number", processParam.getCustomNumber());
-                    map.put("level", processParam.getCustomLevel());
-                    int chaosongNum = chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(userId, processInstanceId);
-                    map.put("chaosongNum", chaosongNum);
-                    hpi = historicProcessManager.getById(tenantId, processInstanceId);
-                    boolean banjie = hpi == null || hpi.getEndTime() != null;
-                    if (banjie) {
-                        map.put("banjie", true);
-                    }
-                    int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
-                    map.put("follow", countFollow > 0);
-                } catch (Exception e) {
-                    LOGGER.error("获取数据失败", e);
-                }
-                map.put("serialNumber", num + 1);
-                num += 1;
-                listMap.add(map);
-            }
-            // 获取总页数
-            retMap.put("currpage", page);
-            retMap.put("totalpages", pageList.getTotalPages());
-            retMap.put("total", pageList.getTotalElements());
-            retMap.put("rows", listMap);
-            return retMap;
-        } catch (Exception e) {
-            LOGGER.error("获取数据失败", e);
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("senderId").is(senderId).and("processInstanceId").is(processInstanceId);
+        if (StringUtils.isNotBlank(userName)) {
+            criteria.subCriteria(new Criteria("userName").contains(userName));
         }
-        // 获取总页数
-        retMap.put("currpage", page);
-        retMap.put("totalpages", 0);
-        retMap.put("total", 0);
-        retMap.put("rows", listMap);
-        return retMap;
+        Query query = new CriteriaQuery(criteria).setPageable(pageable);
+        query.setTrackTotalHits(true);
+        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+        SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, index);
+        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+
+        csList = pageList.getContent();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        int startRow = (page - 1) * rows;
+        for (ChaoSongInfo cs : csList) {
+            ChaoSongModel model = new ChaoSongModel();
+            Y9BeanUtil.copyProperties(cs, model);
+            model.setId(cs.getId());
+            model.setProcessInstanceId(processInstanceId);
+            model.setSenderName(cs.getSenderName());
+            model.setSendDeptName(cs.getSendDeptName());
+            model.setUserName(cs.getUserName());
+            model.setUserDeptName(cs.getUserDeptName());
+            model.setTitle(cs.getTitle());
+            model.setSerialNumber(startRow + 1);
+            try {
+                if (StringUtils.isBlank(cs.getReadTime())) {
+                    model.setReadTime("");
+                } else {
+                    model.setReadTime(sdf.format(sdf.parse(cs.getReadTime())));
+                }
+                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+            } catch (Exception e) {
+                LOGGER.error("获取数据失败", e);
+            }
+            startRow += 1;
+            list.add(model);
+        }
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
+    }
+
+    @Override
+    public Y9Page<ChaoSongModel> getOpinionChaosongByUserId(String userId, String documentTitle, int rows, int page) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<ChaoSongInfo> csList;
+        if (page < 1) {
+            page = 1;
+        }
+        List<ChaoSongModel> list = new ArrayList<>();
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId).and("opinionState").is("1");
+        if (StringUtils.isNotBlank(documentTitle)) {
+            criteria.subCriteria(new Criteria("title").contains(documentTitle));
+        }
+        Query query = new CriteriaQuery(criteria).setPageable(pageable);
+        query.setTrackTotalHits(true);
+        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+        SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, index);
+        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+
+        csList = pageList.getContent();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        HistoricProcessInstanceModel hpi;
+        ProcessParam processParam;
+        int num = (page - 1) * rows;
+        for (ChaoSongInfo cs : csList) {
+            ChaoSongModel model = new ChaoSongModel();
+            Y9BeanUtil.copyProperties(cs, model);
+            String processInstanceId = cs.getProcessInstanceId();
+            model.setSerialNumber(num + 1);
+            model.setId(cs.getId());
+            model.setProcessInstanceId(processInstanceId);
+            model.setSenderName(cs.getSenderName());
+            model.setSendDeptName(cs.getSendDeptName());
+            model.setTitle(cs.getTitle());
+            model.setStatus(cs.getStatus());
+            model.setItemId(cs.getItemId());
+            model.setItemName(cs.getItemName());
+            model.setBanjie(false);
+            try {
+                model.setReadTime(sdf.format(sdf.parse(cs.getReadTime())));
+                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                hpi = historicProcessManager.getById(tenantId, processInstanceId);
+                boolean banjie = hpi == null || hpi.getEndTime() != null;
+                if (banjie) {
+                    model.setBanjie(true);
+                }
+                OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                model.setProcessDefinitionId(officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
+                model.setProcessSerialNumber(officeDoneInfo.getProcessSerialNumber());
+                int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
+                model.setFollow(countFollow > 0);
+
+                processParam = processParamService.findByProcessInstanceId(processInstanceId);
+                model.setNumber(processParam.getCustomNumber());
+                model.setLevel(processParam.getCustomLevel());
+            } catch (Exception e) {
+                LOGGER.error("获取数据失败", e);
+            }
+            num += 1;
+            list.add(model);
+        }
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
     }
 
     @Override
@@ -653,11 +594,10 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    public Map<String, Object> getTodoList(String positionId, String documentTitle, int rows, int page) {
+    public Y9Page<ChaoSongModel> getTodoList(String positionId, String documentTitle, int rows, int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<>(16);
         List<ChaoSongInfo> csList;
-        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<ChaoSongModel> list = new ArrayList<>();
         if (page < 1) {
             page = 1;
         }
@@ -680,130 +620,120 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
         for (ChaoSongInfo cs : csList) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", cs.getId());
+            ChaoSongModel model = new ChaoSongModel();
+            Y9BeanUtil.copyProperties(cs, model);
+            String processInstanceId = cs.getProcessInstanceId();
+            model.setSerialNumber(num + 1);
+            model.setId(cs.getId());
+            model.setProcessInstanceId(processInstanceId);
+            model.setSenderName(cs.getSenderName());
+            model.setSendDeptName(cs.getSendDeptName());
+            model.setTitle(cs.getTitle());
+            model.setStatus(cs.getStatus());
+            model.setItemId(cs.getItemId());
+            model.setItemName(cs.getItemName());
+            model.setBanjie(false);
             try {
-                String processInstanceId = cs.getProcessInstanceId();
-                map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
-                processParam = processParamService.findByProcessInstanceId(processInstanceId);
-                map.put("processInstanceId", processInstanceId);
-                map.put("senderName", cs.getSenderName());
-                map.put("sendDeptId", cs.getSendDeptId());
-                map.put("sendDeptName", cs.getSendDeptName());
-                map.put("readTime", cs.getReadTime());
-                map.put("title", processParam.getTitle());
-                map.put("status", cs.getStatus());
-                map.put("banjie", false);
-                map.put("itemId", cs.getItemId());
-                map.put("itemName", cs.getItemName());
-                map.put("processSerialNumber", processParam.getProcessSerialNumber());
-                map.put("number", processParam.getCustomNumber());
-                map.put("level", processParam.getCustomLevel());
-                int chaosongNum = chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
-                map.put("chaosongNum", chaosongNum);
+                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
                 hpi = historicProcessManager.getById(tenantId, processInstanceId);
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
-                    map.put("banjie", true);
+                    model.setBanjie(true);
                 }
                 OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-                map.put("processDefinitionId", officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
+                model.setProcessDefinitionId(officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
+                model.setProcessSerialNumber(officeDoneInfo.getProcessSerialNumber());
                 int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
-                map.put("follow", countFollow > 0);
+                model.setFollow(countFollow > 0);
+
+                processParam = processParamService.findByProcessInstanceId(processInstanceId);
+                model.setNumber(processParam.getCustomNumber());
+                model.setLevel(processParam.getCustomLevel());
             } catch (Exception e) {
                 LOGGER.error("获取数据失败", e);
             }
-            map.put("serialNumber", num + 1);
             num += 1;
-            listMap.add(map);
+            list.add(model);
         }
-        retMap.put("currpage", page);
-        retMap.put("totalpages", pageList.getTotalPages());
-        retMap.put("total", pageList.getTotalElements());
-        retMap.put("rows", listMap);
-        return retMap;
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
     }
 
     @Override
-    public Y9Page<Map<String, Object>> myChaoSongList(String searchName, String itemId, String userName, String state, String year, int rows, int page) {
+    public Y9Page<ChaoSongModel> myChaoSongList(String searchName, String itemId, String userName, String state, String year, int rows, int page) {
         String userId = Y9LoginUserHolder.getPositionId();
-        List<Map<String, Object>> listMap = new ArrayList<>();
-        try {
-            List<ChaoSongInfo> csList;
-            if (page < 1) {
-                page = 1;
-            }
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("senderId").is(userId);
-            if (StringUtils.isNotBlank(searchName)) {
-                criteria.subCriteria(new Criteria("title").contains(searchName));
-            }
-            if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").is(itemId));
-            }
-            if (StringUtils.isNotBlank(userName)) {
-                criteria.subCriteria(new Criteria("userName").contains(userName));
-            }
-            if (StringUtils.isNotBlank(state)) {
-                criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
-            }
-            if (StringUtils.isNotBlank(year)) {
-                criteria.subCriteria(new Criteria("createTime").contains(year));
-            }
-
-            Query query = new CriteriaQuery(criteria).setPageable(pageable);
-            query.setTrackTotalHits(true);
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-            SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, index);
-            List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-            Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
-
-            csList = pageList.getContent();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            int num = (page - 1) * rows;
-            OfficeDoneInfo hpi;
-            for (ChaoSongInfo cs : csList) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", cs.getId());
-                try {
-                    String processInstanceId = cs.getProcessInstanceId();
-                    hpi = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-                    map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
-                    map.put("processInstanceId", processInstanceId);
-                    map.put("userId", cs.getUserId());
-                    map.put("userName", cs.getUserName());
-                    map.put("userDeptId", cs.getUserDeptId());
-                    map.put("userDeptName", cs.getUserDeptName());
-                    map.put("readTime", StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
-                    map.put("title", hpi.getTitle());
-                    map.put("status", cs.getStatus());
-                    map.put("banjie", false);
-                    map.put("itemId", cs.getItemId());
-                    map.put("itemName", cs.getItemName());
-                    map.put("systemName", hpi.getSystemName());
-                    map.put("processSerialNumber", hpi.getProcessSerialNumber());
-                    map.put("processDefinitionId", hpi.getProcessDefinitionId());
-                    map.put("processDefinitionKey", hpi.getProcessDefinitionKey());
-                    map.put("number", hpi.getDocNumber());
-                    map.put("level", hpi.getUrgency());
-                    boolean banjie = hpi.getEndTime() != null;
-                    map.put("meeting", hpi.getMeeting() != null && hpi.getMeeting().equals("1"));
-                    if (banjie) {
-                        map.put("banjie", true);
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("获取列表失败", e);
-                }
-                map.put("serialNumber", num + 1);
-                num += 1;
-                listMap.add(map);
-            }
-            return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取列表失败", e);
+        List<ChaoSongModel> list = new ArrayList<>();
+        List<ChaoSongInfo> csList;
+        if (page < 1) {
+            page = 1;
         }
-        return Y9Page.failure(page, 0, 0, listMap, "获取列表失败", 500);
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("senderId").is(userId);
+        if (StringUtils.isNotBlank(searchName)) {
+            criteria.subCriteria(new Criteria("title").contains(searchName));
+        }
+        if (StringUtils.isNotBlank(itemId)) {
+            criteria.subCriteria(new Criteria("itemId").is(itemId));
+        }
+        if (StringUtils.isNotBlank(userName)) {
+            criteria.subCriteria(new Criteria("userName").contains(userName));
+        }
+        if (StringUtils.isNotBlank(state)) {
+            criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
+        }
+        if (StringUtils.isNotBlank(year)) {
+            criteria.subCriteria(new Criteria("createTime").contains(year));
+        }
+
+        Query query = new CriteriaQuery(criteria).setPageable(pageable);
+        query.setTrackTotalHits(true);
+        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+        SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, index);
+        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+
+        csList = pageList.getContent();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        int num = (page - 1) * rows;
+        OfficeDoneInfo hpi;
+        for (ChaoSongInfo cs : csList) {
+            ChaoSongModel model = new ChaoSongModel();
+            Y9BeanUtil.copyProperties(cs, model);
+            String processInstanceId = cs.getProcessInstanceId();
+            model.setSerialNumber(num + 1);
+            model.setId(cs.getId());
+            model.setProcessInstanceId(processInstanceId);
+            model.setSenderName(cs.getSenderName());
+            model.setSendDeptName(cs.getSendDeptName());
+            model.setStatus(cs.getStatus());
+            model.setItemId(cs.getItemId());
+            model.setItemName(cs.getItemName());
+            model.setBanjie(false);
+
+            try {
+                hpi = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                model.setProcessSerialNumber(hpi.getProcessSerialNumber());
+                model.setTitle(hpi.getTitle());
+                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                model.setUserId(cs.getUserId());
+                model.setUserName(cs.getUserName());
+                model.setUserDeptName(cs.getUserDeptName());
+                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
+                model.setSystemName(hpi.getSystemName());
+                model.setProcessDefinitionId(hpi != null ? hpi.getProcessDefinitionId() : "");
+                boolean banjie = hpi == null || hpi.getEndTime() != null;
+                if (banjie) {
+                    model.setBanjie(true);
+                }
+                model.setNumber(hpi.getDocNumber());
+                model.setLevel(hpi.getUrgency());
+            } catch (Exception e) {
+                LOGGER.error("获取列表失败", e);
+            }
+            num += 1;
+            list.add(model);
+        }
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
     }
 
     @Override
@@ -922,188 +852,164 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    public Map<String, Object> searchAllByUserId(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
+    public Y9Page<ChaoSongModel> searchAllByUserId(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
-        Map<String, Object> retMap = new HashMap<>(16);
-        List<Map<String, Object>> listMap = new ArrayList<>();
-        try {
-            List<ChaoSongInfo> csList;
-            if (page < 1) {
-                page = 1;
-            }
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId);
-            if (StringUtils.isNotBlank(searchName)) {
-                criteria.subCriteria(new Criteria("title").contains(searchName));
-            }
-            if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").is(itemId));
-            }
-            if (StringUtils.isNotBlank(userName)) {
-                criteria.subCriteria(new Criteria("senderName").contains(userName));
-            }
-            if (StringUtils.isNotBlank(state)) {
-                criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
-            }
-            if (StringUtils.isNotBlank(year)) {
-                criteria.subCriteria(new Criteria("createTime").contains(year));
-            }
-
-            Query query = new CriteriaQuery(criteria).setPageable(pageable);
-            query.setTrackTotalHits(true);
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-            SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, index);
-            List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-            Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
-
-            csList = pageList.getContent();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            int num = (page - 1) * rows;
-            HistoricProcessInstanceModel hpi;
-            ProcessParam processParam;
-            for (ChaoSongInfo cs : csList) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", cs.getId());
-                try {
-                    String processInstanceId = cs.getProcessInstanceId();
-                    map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
-                    processParam = processParamService.findByProcessInstanceId(processInstanceId);
-                    map.put("processInstanceId", processInstanceId);
-                    map.put("senderName", cs.getSenderName());
-                    map.put("sendDeptId", cs.getSendDeptId());
-                    map.put("sendDeptName", cs.getSendDeptName());
-                    map.put("readTime", StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
-                    map.put("title", processParam.getTitle());
-                    map.put("status", cs.getStatus());
-                    map.put("banjie", false);
-                    map.put("itemId", cs.getItemId());
-                    map.put("itemName", cs.getItemName());
-                    map.put("processSerialNumber", processParam.getProcessSerialNumber());
-                    map.put("number", processParam.getCustomNumber());
-                    map.put("level", processParam.getCustomLevel());
-                    hpi = historicProcessManager.getById(tenantId, processInstanceId);
-                    boolean banjie = hpi == null || hpi.getEndTime() != null;
-                    if (banjie) {
-                        map.put("banjie", true);
-                    }
-                    OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-                    map.put("processDefinitionId", officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
-                    int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
-                    map.put("follow", countFollow > 0);
-                } catch (Exception e) {
-                    LOGGER.error("获取抄送列表失败", e);
-                }
-                map.put("serialNumber", num + 1);
-                num += 1;
-                listMap.add(map);
-            }
-            retMap.put("currpage", page);
-            retMap.put("totalpages", pageList.getTotalPages());
-            retMap.put("total", pageList.getTotalElements());
-            retMap.put("rows", listMap);
-            return retMap;
-        } catch (Exception e) {
-            LOGGER.error("获取抄送列表失败", e);
+        List<ChaoSongModel> list = new ArrayList<>();
+        List<ChaoSongInfo> csList;
+        if (page < 1) {
+            page = 1;
         }
-        retMap.put("currpage", page);
-        retMap.put("totalpages", 0);
-        retMap.put("total", 0);
-        retMap.put("rows", listMap);
-        return retMap;
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId);
+        if (StringUtils.isNotBlank(searchName)) {
+            criteria.subCriteria(new Criteria("title").contains(searchName));
+        }
+        if (StringUtils.isNotBlank(itemId)) {
+            criteria.subCriteria(new Criteria("itemId").is(itemId));
+        }
+        if (StringUtils.isNotBlank(userName)) {
+            criteria.subCriteria(new Criteria("senderName").contains(userName));
+        }
+        if (StringUtils.isNotBlank(state)) {
+            criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
+        }
+        if (StringUtils.isNotBlank(year)) {
+            criteria.subCriteria(new Criteria("createTime").contains(year));
+        }
+
+        Query query = new CriteriaQuery(criteria).setPageable(pageable);
+        query.setTrackTotalHits(true);
+        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+        SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, index);
+        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+
+        csList = pageList.getContent();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        int num = (page - 1) * rows;
+        HistoricProcessInstanceModel hpi;
+        ProcessParam processParam;
+        for (ChaoSongInfo cs : csList) {
+            ChaoSongModel model = new ChaoSongModel();
+            Y9BeanUtil.copyProperties(cs, model);
+            String processInstanceId = cs.getProcessInstanceId();
+            model.setSerialNumber(num + 1);
+            model.setId(cs.getId());
+            model.setProcessInstanceId(processInstanceId);
+            model.setSenderName(cs.getSenderName());
+            model.setSendDeptName(cs.getSendDeptName());
+            model.setTitle(cs.getTitle());
+            model.setStatus(cs.getStatus());
+            model.setItemId(cs.getItemId());
+            model.setItemName(cs.getItemName());
+            model.setBanjie(false);
+            try {
+                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
+                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                processParam = processParamService.findByProcessInstanceId(processInstanceId);
+                model.setNumber(processParam.getCustomNumber());
+                model.setLevel(processParam.getCustomLevel());
+                model.setProcessSerialNumber(processParam.getProcessSerialNumber());
+                hpi = historicProcessManager.getById(tenantId, processInstanceId);
+                boolean banjie = hpi == null || hpi.getEndTime() != null;
+                if (banjie) {
+                    model.setBanjie(true);
+                }
+                OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                model.setProcessDefinitionId(officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
+
+                int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
+                model.setFollow(countFollow > 0);
+            } catch (Exception e) {
+                LOGGER.error("获取抄送列表失败", e);
+            }
+            num += 1;
+            list.add(model);
+        }
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
     }
 
     @Override
-    public Map<String, Object> searchAllList(String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows) {
+    public Y9Page<ChaoSongModel> searchAllList(String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<>(16);
-        List<Map<String, Object>> listMap = new ArrayList<>();
-        try {
-            List<ChaoSongInfo> csList;
-            if (page < 1) {
-                page = 1;
-            }
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
-            if (StringUtils.isNotBlank(searchName)) {
-                criteria.subCriteria(new Criteria("title").contains(searchName));
-            }
-            if (StringUtils.isNotBlank(userName)) {
-                criteria.subCriteria(new Criteria("userName").contains(userName));
-            }
-            if (StringUtils.isNotBlank(senderName)) {
-                criteria.subCriteria(new Criteria("senderName").contains(senderName));
-            }
-            if (StringUtils.isNotBlank(state)) {
-                criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
-            }
-            if (StringUtils.isNotBlank(year)) {
-                criteria.subCriteria(new Criteria("createTime").contains(year));
-            }
-
-            Query query = new CriteriaQuery(criteria).setPageable(pageable);
-            query.setTrackTotalHits(true);
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
-            SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, index);
-            List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-            Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
-
-            csList = pageList.getContent();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            int num = (page - 1) * rows;
-            HistoricProcessInstanceModel hpi;
-            ProcessParam processParam;
-            for (ChaoSongInfo cs : csList) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", cs.getId());
-                try {
-                    String processInstanceId = cs.getProcessInstanceId();
-                    map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
-                    processParam = processParamService.findByProcessInstanceId(processInstanceId);
-                    map.put("processInstanceId", processInstanceId);
-                    map.put("senderName", cs.getSenderName());
-                    map.put("sendDeptId", cs.getSendDeptId());
-                    map.put("sendDeptName", cs.getSendDeptName());
-                    map.put("readTime", StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
-                    map.put("title", processParam.getTitle());
-                    map.put("status", cs.getStatus());
-                    map.put("banjie", false);
-                    map.put("itemId", cs.getItemId());
-                    map.put("itemName", cs.getItemName());
-                    map.put("userName", cs.getUserName());
-                    map.put("deptName", cs.getUserDeptName());
-                    map.put("processSerialNumber", processParam.getProcessSerialNumber());
-                    map.put("number", processParam.getCustomNumber());
-                    map.put("level", processParam.getCustomLevel());
-                    hpi = historicProcessManager.getById(tenantId, processInstanceId);
-                    boolean banjie = hpi == null || hpi.getEndTime() != null;
-                    if (banjie) {
-                        map.put("banjie", true);
-                    }
-                    OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-                    map.put("processDefinitionId", officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
-                } catch (Exception e) {
-                    LOGGER.error("获取抄送列表失败", e);
-                }
-                map.put("serialNumber", num + 1);
-                num += 1;
-                listMap.add(map);
-            }
-            retMap.put("currpage", page);
-            retMap.put("totalpages", pageList.getTotalPages());
-            retMap.put("total", pageList.getTotalElements());
-            retMap.put("rows", listMap);
-            return retMap;
-        } catch (Exception e) {
-            LOGGER.error("获取抄送列表失败", e);
+        List<ChaoSongModel> list = new ArrayList<>();
+        List<ChaoSongInfo> csList;
+        if (page < 1) {
+            page = 1;
         }
-        retMap.put("currpage", page);
-        retMap.put("totalpages", 0);
-        retMap.put("total", 0);
-        retMap.put("rows", listMap);
-        return retMap;
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
+        if (StringUtils.isNotBlank(searchName)) {
+            criteria.subCriteria(new Criteria("title").contains(searchName));
+        }
+        if (StringUtils.isNotBlank(userName)) {
+            criteria.subCriteria(new Criteria("userName").contains(userName));
+        }
+        if (StringUtils.isNotBlank(senderName)) {
+            criteria.subCriteria(new Criteria("senderName").contains(senderName));
+        }
+        if (StringUtils.isNotBlank(state)) {
+            criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
+        }
+        if (StringUtils.isNotBlank(year)) {
+            criteria.subCriteria(new Criteria("createTime").contains(year));
+        }
+
+        Query query = new CriteriaQuery(criteria).setPageable(pageable);
+        query.setTrackTotalHits(true);
+        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+        SearchHits<ChaoSongInfo> searchHits = elasticsearchTemplate.search(query, ChaoSongInfo.class, index);
+        List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+        Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+
+        csList = pageList.getContent();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        int num = (page - 1) * rows;
+        HistoricProcessInstanceModel hpi;
+        ProcessParam processParam;
+        for (ChaoSongInfo cs : csList) {
+            ChaoSongModel model = new ChaoSongModel();
+            Y9BeanUtil.copyProperties(cs, model);
+            String processInstanceId = cs.getProcessInstanceId();
+            model.setSerialNumber(num + 1);
+            model.setId(cs.getId());
+            model.setProcessInstanceId(processInstanceId);
+            model.setSenderName(cs.getSenderName());
+            model.setSendDeptName(cs.getSendDeptName());
+            model.setTitle(cs.getTitle());
+            model.setStatus(cs.getStatus());
+            model.setItemId(cs.getItemId());
+            model.setItemName(cs.getItemName());
+            model.setBanjie(false);
+            model.setUserName(cs.getUserName());
+            model.setUserDeptName(cs.getUserDeptName());
+            try {
+                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
+                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                processParam = processParamService.findByProcessInstanceId(processInstanceId);
+                model.setNumber(processParam.getCustomNumber());
+                model.setLevel(processParam.getCustomLevel());
+                model.setProcessSerialNumber(processParam.getProcessSerialNumber());
+                hpi = historicProcessManager.getById(tenantId, processInstanceId);
+                boolean banjie = hpi == null || hpi.getEndTime() != null;
+                if (banjie) {
+                    model.setBanjie(true);
+                }
+                OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+                model.setProcessDefinitionId(officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
+
+                int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
+                model.setFollow(countFollow > 0);
+            } catch (Exception e) {
+                LOGGER.error("获取抄送列表失败", e);
+            }
+            num += 1;
+            list.add(model);
+        }
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
     }
 
     @Override

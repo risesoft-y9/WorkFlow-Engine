@@ -1,12 +1,7 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.itemadmin.ChaoSongApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.entity.ChaoSong;
-import net.risesoft.model.platform.Person;
-import net.risesoft.service.ChaoSongService;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +10,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.entity.ChaoSong;
+import net.risesoft.model.platform.Person;
+import net.risesoft.service.ChaoSongService;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 抄送接口
@@ -24,6 +26,7 @@ import java.util.Map;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Deprecated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/chaoSong")
@@ -37,8 +40,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      * 改变抄送状态
      *
      * @param tenantId 租户id
-     * @param id       唯一标示
-     * @param type     类型
+     * @param id 唯一标示
+     * @param type 类型
      */
     @Override
     @PostMapping(value = "/changeChaoSongState", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,8 +54,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      * 改变抄送状态（批量）
      *
      * @param tenantId 租户id
-     * @param userId   用户id
-     * @param ids      唯一标示数组
+     * @param userId 用户id
+     * @param ids 唯一标示数组
      */
     @Override
     @PostMapping(value = "/changeStatus", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -64,7 +67,7 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 设置抄送为已阅
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param chaoSongId 抄送id
      */
     @Override
@@ -77,8 +80,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 获取抄送数量（根据流程实例id）
      *
-     * @param tenantId          租户id
-     * @param userId            用户id
+     * @param tenantId 租户id
+     * @param userId 用户id
      * @param processInstanceId 流程实例id
      * @return int
      */
@@ -92,8 +95,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 获取抄送数量（根据用户id和流程实例id）
      *
-     * @param tenantId          租户id
-     * @param userId            用户id
+     * @param tenantId 租户id
+     * @param userId 用户id
      * @param processInstanceId 流程实例id
      * @return
      */
@@ -107,9 +110,9 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 删除抄送记录（根据流程实例id）
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @param year              年份
+     * @param year 年份
      * @return
      */
     @Override
@@ -122,8 +125,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 删除抄送记录
      *
-     * @param tenantId          租户id
-     * @param ids               ids
+     * @param tenantId 租户id
+     * @param ids ids
      * @param processInstanceId 流程实例id
      */
     @Override
@@ -136,12 +139,12 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 获取抄送详情
      *
-     * @param tenantId          租户id
-     * @param userId            用户id
-     * @param id                id
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param id id
      * @param processInstanceId 流程实例id
-     * @param status            状态
-     * @param mobile            是否发送手机
+     * @param status 状态
+     * @param mobile 是否发送手机
      * @return
      */
     @Override
@@ -167,7 +170,7 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      * 获取批阅件计数
      *
      * @param tenantId 租户id
-     * @param userId   用户id
+     * @param userId 用户id
      * @return
      */
     @Override
@@ -181,7 +184,7 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      * 根据人员唯一标示查找已阅数量
      *
      * @param tenantId 租户id
-     * @param userId   用户id
+     * @param userId 用户id
      * @return
      */
     @Override
@@ -195,8 +198,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      * 根据人员唯一标示查找已阅数量
      *
      * @param tenantId 租户id
-     * @param userId   用户id
-     * @param itemId   事项id
+     * @param userId 用户id
+     * @param itemId 事项id
      * @return
      */
     @Override
@@ -209,8 +212,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 根据人员唯一标示和系统名称查找已阅数量
      *
-     * @param tenantId   租户id
-     * @param userId     用户id
+     * @param tenantId 租户id
+     * @param userId 用户id
      * @param systemName 系统名称
      * @return
      */
@@ -224,12 +227,12 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 获取已阅列表
      *
-     * @param tenantId      租户id
-     * @param userId        用户id
-     * @param year          年份
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param year 年份
      * @param documentTitle 文档标题
-     * @param rows          rows
-     * @param page          page
+     * @param rows rows
+     * @param page page
      * @return
      */
     @Override
@@ -243,10 +246,10 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      * 查找抄送目标所有的抄送已阅件
      *
      * @param tenantId 租户id
-     * @param userId   用户id
-     * @param itemId   事项id
-     * @param rows     条数
-     * @param page     页数
+     * @param userId 用户id
+     * @param itemId 事项id
+     * @param rows 条数
+     * @param page 页数
      * @return
      */
     @Override
@@ -259,11 +262,11 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 根据人员唯一标示和系统名称查找已阅数量
      *
-     * @param tenantId   租户id
-     * @param userId     用户id
+     * @param tenantId 租户id
+     * @param userId 用户id
      * @param systemName 系统名称
-     * @param rows       rows
-     * @param page       page
+     * @param rows rows
+     * @param page page
      * @return
      */
     @Override
@@ -276,11 +279,11 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 根据流程实例id获取抄送列表
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @param userName          用户名称
-     * @param rows              rows
-     * @param page              page
+     * @param userName 用户名称
+     * @param rows rows
+     * @param page page
      * @return
      */
     @Override
@@ -293,12 +296,12 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 根据发送人id和流程实例id获取抄送列表
      *
-     * @param tenantId          租户id
-     * @param senderId          发送人id
+     * @param tenantId 租户id
+     * @param senderId 发送人id
      * @param processInstanceId 流程实例id
-     * @param userName          用户名称
-     * @param rows              rows
-     * @param page              page
+     * @param userName 用户名称
+     * @param rows rows
+     * @param page page
      * @return
      */
     @Override
@@ -311,12 +314,12 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 批阅件列表
      *
-     * @param tenantId      租户id
-     * @param userId        用户id
-     * @param year          年份
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param year 年份
      * @param documentTitle 文档标题
-     * @param rows          rows
-     * @param page          page
+     * @param rows rows
+     * @param page page
      * @return
      */
     @Override
@@ -330,7 +333,7 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      * 根据人员唯一标示查找待阅数量
      *
      * @param tenantId 租户id
-     * @param userId   用户id
+     * @param userId 用户id
      * @return
      */
     @Override
@@ -344,8 +347,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      * 根据人员唯一标示查找待阅数量
      *
      * @param tenantId 租户id
-     * @param userId   用户id
-     * @param itemId   事项id
+     * @param userId 用户id
+     * @param itemId 事项id
      * @return
      */
     @Override
@@ -358,8 +361,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 根据人员唯一标示查找待阅数量
      *
-     * @param tenantId   租户id
-     * @param userId     用户id
+     * @param tenantId 租户id
+     * @param userId 用户id
      * @param systemName 系统名称
      * @return
      */
@@ -373,11 +376,11 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 查找抄送目标所有的抄送待阅件
      *
-     * @param tenantId      租户id
-     * @param userId        用户id
+     * @param tenantId 租户id
+     * @param userId 用户id
      * @param documentTitle 文档标题
-     * @param rows          rows
-     * @param page          page
+     * @param rows rows
+     * @param page page
      * @return
      */
     @Override
@@ -391,10 +394,10 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      * 根据人员唯一标示和事项id查找待阅列表
      *
      * @param tenantId 租户id
-     * @param userId   用户id
-     * @param itemId   事项id
-     * @param rows     rows
-     * @param page     page
+     * @param userId 用户id
+     * @param itemId 事项id
+     * @param rows rows
+     * @param page page
      * @return
      */
     @Override
@@ -407,12 +410,12 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 根据人员唯一标示和系统名称查找待阅
      *
-     * @param tenantId   租户id
-     * @param userId     用户id
+     * @param tenantId 租户id
+     * @param userId 用户id
      * @param systemName 系统名称
-     * @param title      标题
-     * @param rows       rows
-     * @param page       page
+     * @param title 标题
+     * @param rows rows
+     * @param page page
      * @return
      */
     @Override
@@ -431,14 +434,14 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 保存抄送
      *
-     * @param tenantId          租户id
-     * @param userId            用户id
+     * @param tenantId 租户id
+     * @param userId 用户id
      * @param processInstanceId 流程实例id
-     * @param users             users
-     * @param isSendSms         是否发生短信
-     * @param isShuMing         isShuMing
-     * @param smsContent        短信内容
-     * @param smsPersonId       发送人
+     * @param users users
+     * @param isSendSms 是否发生短信
+     * @param isShuMing isShuMing
+     * @param smsContent 短信内容
+     * @param smsPersonId 发送人
      * @return
      */
     @Override
@@ -453,9 +456,9 @@ public class ChaoSongApiImpl implements ChaoSongApi {
     /**
      * 更新抄送标题
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @param documentTitle     文档标题
+     * @param documentTitle 文档标题
      */
     @Override
     @PostMapping(value = "/updateTitle", produces = MediaType.APPLICATION_JSON_VALUE)

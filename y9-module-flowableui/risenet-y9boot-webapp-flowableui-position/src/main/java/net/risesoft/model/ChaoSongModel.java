@@ -1,4 +1,4 @@
-package net.risesoft.model.itemadmin;
+package net.risesoft.model;
 
 import java.io.Serializable;
 
@@ -140,5 +140,17 @@ public class ChaoSongModel implements Serializable {
      * 序号
      */
     private int serialNumber;
+
+    private String itembox;
+
+    private String taskDefinitionKey;
+
+    private String taskId;
+
+    private String taskAssigneeId;
+
+    private String taskAssignee;
+
+    private String url;
 
 }

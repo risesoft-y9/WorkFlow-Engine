@@ -41,6 +41,7 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ButtonOperationService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.service.Process4SearchService;
@@ -307,9 +308,12 @@ public class MobileButtonOperationController {
             map.put("msg", "拒签成功");
             if (isLastPerson4RefuseClaim) {// 最后一人拒签，退回
                 try {
-                    buttonOperation4PositionApi.refuseClaimRollback(tenantId, userId, taskId);
+                    Y9Result<Object> y9Result = buttonOperation4PositionApi.refuseClaimRollback(tenantId, userId, taskId);
+                    if (!y9Result.isSuccess()) {
+                        map.put(UtilConsts.SUCCESS, false);
+                        map.put("msg", "拒签失败");
+                    }
                 } catch (Exception e) {
-                    taskApi.unclaim(tenantId, taskId);// 失败则撤销签收
                     map.put(UtilConsts.SUCCESS, false);
                     map.put("msg", "拒签失败");
                     LOGGER.error("拒签失败", e);

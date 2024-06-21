@@ -4,7 +4,6 @@ import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
-import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.itemadmin.AttachmentModel;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -61,9 +62,9 @@ public class MobileAttachmentController {
     public void attachmentDownload(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Map<String, Object> map = attachment4PositionApi.attachmentDownload(tenantId, id);
-            String filename = (String)map.get("filename");
-            String fileStoreId = (String)map.get("fileStoreId");
+            AttachmentModel model = attachment4PositionApi.findById(tenantId, id).getData();
+            String filename = model.getName();
+            String fileStoreId = model.getFileStoreId();
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
                 filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
             } else {
@@ -93,15 +94,8 @@ public class MobileAttachmentController {
      */
     @RequestMapping(value = "/list")
     public void attachmentList(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, int page, int rows, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<>(16);
-        try {
-            Y9LoginUserHolder.setTenantId(tenantId);
-            map = attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "附件列表获取失败");
-        }
-        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+        Y9Page<AttachmentModel> y9Page = attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Page));
     }
 
     /**
@@ -120,26 +114,24 @@ public class MobileAttachmentController {
     @RequestMapping(value = "/upload")
     public void attachmentUpload(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) MultipartFile file, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes, @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<>(16);
-        try {
-            Y9LoginUserHolder.setTenantId(tenantId);
-            if (StringUtils.isNotEmpty(describes)) {
-                describes = URLDecoder.decode(describes, StandardCharsets.UTF_8);
-            }
-            String originalFilename = file.getOriginalFilename();
-            String fileName = FilenameUtils.getName(originalFilename);
-            if (fileName != null) {
-                fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
-            }
-            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
-            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
-            map = attachment4PositionApi.upload(tenantId, userId, positionId, fileName, y9FileStore.getDisplayFileSize(), processInstanceId, taskId, describes, processSerialNumber, fileSource, y9FileStore.getId());
-        } catch (Exception e) {
-            LOGGER.error("附件上传失败", e);
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "上传附件失败");
+        Y9LoginUserHolder.setTenantId(tenantId);
+        if (StringUtils.isNotEmpty(describes)) {
+            describes = URLDecoder.decode(describes, StandardCharsets.UTF_8);
         }
-        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+        String originalFilename = file.getOriginalFilename();
+        String fileName = FilenameUtils.getName(originalFilename);
+        if (fileName != null) {
+            fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+        }
+        String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
+        try {
+            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
+            Y9Result<String> y9Result = attachment4PositionApi.upload(tenantId, userId, positionId, fileName, y9FileStore.getDisplayFileSize(), processInstanceId, taskId, describes, processSerialNumber, fileSource, y9FileStore.getId());
+            Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Result));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(Y9Result.failure("上传失败")));
+        }
     }
 
     /**
@@ -150,15 +142,8 @@ public class MobileAttachmentController {
      */
     @RequestMapping(value = "/delFile")
     public void delFile(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String ids, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<>(16);
-        try {
-            Y9LoginUserHolder.setTenantId(tenantId);
-            map = attachment4PositionApi.delFile(tenantId, ids);
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "删除失败");
-        }
-        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+        Y9LoginUserHolder.setTenantId(tenantId);
+        attachment4PositionApi.delFile(tenantId, ids);
     }
 
     /**

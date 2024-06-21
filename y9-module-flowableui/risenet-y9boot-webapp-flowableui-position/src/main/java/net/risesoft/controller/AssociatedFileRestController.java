@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
-import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.itemadmin.AssociatedFileModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SearchService;
@@ -49,8 +49,8 @@ public class AssociatedFileRestController {
     public Y9Result<String> delAssociatedFile(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processInstanceIds) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            boolean b = associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceIds);
-            if (b) {
+            Y9Result<Object> y9Result = associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceIds);
+            if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
@@ -63,23 +63,13 @@ public class AssociatedFileRestController {
      * 获取关联文件列表
      *
      * @param processSerialNumber 流程编号
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List<AssociatedFileModel>>
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getAssociatedFileList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getAssociatedFileList(@RequestParam @NotBlank String processSerialNumber) {
+    public Y9Result<List<AssociatedFileModel>> getAssociatedFileList(@RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        Map<String, Object> map;
-        try {
-            map = associatedFile4PositionApi.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.success((List<Map<String, Object>>)map.get("rows"), "获取成功");
-            }
-        } catch (Exception e) {
-            LOGGER.error("获取关联文件列表失败", e);
-        }
-        return Y9Result.failure("获取失败");
+        return associatedFile4PositionApi.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
     }
 
     /**
@@ -107,8 +97,8 @@ public class AssociatedFileRestController {
     public Y9Result<String> saveAssociatedFile(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processInstanceIds) {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            boolean b = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
-            if (b) {
+            Y9Result<Object> y9Result = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
+            if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("保存成功");
             }
         } catch (Exception e) {

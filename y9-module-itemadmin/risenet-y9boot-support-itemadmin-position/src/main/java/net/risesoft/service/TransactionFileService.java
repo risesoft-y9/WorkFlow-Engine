@@ -1,12 +1,13 @@
 package net.risesoft.service;
 
-import java.text.ParseException;
-import java.util.List;
-import java.util.Map;
-
+import net.risesoft.entity.TransactionFile;
+import net.risesoft.model.itemadmin.AttachmentModel;
+import net.risesoft.pojo.Y9Page;
 import org.springframework.web.multipart.MultipartFile;
 
-import net.risesoft.entity.TransactionFile;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qinman
@@ -28,15 +29,7 @@ public interface TransactionFileService {
      * @param ids
      * @return
      */
-    public Map<String, Object> delFile(String ids);
-
-    /**
-     * Description: 附件下载
-     * 
-     * @param id
-     * @return
-     */
-    public Map<String, Object> download(String id);
+    public void delFile(String ids);
 
     /**
      * (软航附件控件) 根据流程序列号查询附件数量
@@ -47,19 +40,27 @@ public interface TransactionFileService {
     public Integer fileCounts(String processSerialNumber);
 
     /**
+     * 获取附件
+     *
+     * @param id
+     * @return
+     */
+    public TransactionFile findById(String id);
+
+    /**
      * Description: 获取附件列表
-     * 
+     *
      * @param processSerialNumber
      * @param fileSource
      * @param page
      * @param rows
      * @return
      */
-    public Map<String, Object> getAttachmentList(String processSerialNumber, String fileSource, int page, int rows);
+    public Y9Page<AttachmentModel> getAttachmentList(String processSerialNumber, String fileSource, int page, int rows);
 
     /**
      * Description: 获取附件列表
-     * 
+     *
      * @param processSerialNumber
      * @param fileSource
      * @return
@@ -90,8 +91,7 @@ public interface TransactionFileService {
      * @param fileSource
      * @return
      */
-    public List<TransactionFile> getListByProcessSerialNumberAndFileSource(String processSerialNumber,
-        String fileSource);
+    public List<TransactionFile> getListByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource);
 
     /**
      * 根据流程实例id、附件来源和文件类型获取附件数
@@ -110,20 +110,18 @@ public interface TransactionFileService {
      * @param processSerialNumber
      * @return
      */
-    public TransactionFile getUpFileInfoByTabIndexOrProcessSerialNumber(Integer nextTabIndex,
-        String processSerialNumber);
+    public TransactionFile getUpFileInfoByTabIndexOrProcessSerialNumber(Integer nextTabIndex, String processSerialNumber);
 
     /**
-     * 
      * Description: 保存附件
-     * 
+     *
      * @param file
      */
     public void save(TransactionFile file);
 
     /**
      * Description: 保存附件信息
-     * 
+     *
      * @param attachjson
      * @param processSerialNumber
      * @return
@@ -141,7 +139,7 @@ public interface TransactionFileService {
 
     /**
      * Description: 上传附件
-     * 
+     *
      * @param filename
      * @param processInstanceId
      * @param taskId
@@ -150,12 +148,11 @@ public interface TransactionFileService {
      * @param fileSource
      * @return
      */
-    public Map<String, Object> upload(MultipartFile filename, String processInstanceId, String taskId,
-        String processSerialNumber, String describes, String fileSource);
+    public Map<String, Object> upload(MultipartFile filename, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource);
 
     /**
      * Description: 上传附件
-     * 
+     *
      * @param fileName
      * @param fileSize
      * @param processInstanceId
@@ -166,15 +163,13 @@ public interface TransactionFileService {
      * @param y9FileStoreId
      * @return
      */
-    public Map<String, Object> uploadRest(String fileName, String fileSize, String processInstanceId, String taskId,
-        String processSerialNumber, String describes, String fileSource, String y9FileStoreId);
+    public void uploadRest(String fileName, String fileSize, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource, String y9FileStoreId);
 
     /**
      * Description: 上传附件
-     * 
+     *
      * @param transactionFile
      * @return
-     * @throws ParseException
      */
-    public TransactionFile uploadRestModel(TransactionFile transactionFile) throws ParseException;
+    public TransactionFile uploadRestModel(TransactionFile transactionFile);
 }

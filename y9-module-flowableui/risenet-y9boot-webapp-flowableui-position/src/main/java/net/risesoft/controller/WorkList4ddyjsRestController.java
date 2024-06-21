@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.model.ChaoSongModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.QueryListService;
@@ -52,7 +53,7 @@ public class WorkList4ddyjsRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/chuanyueList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> chuanyueList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+    public Y9Page<ChaoSongModel> chuanyueList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4ddyjsService.myChaoSongList(searchName, itemId, userName, state, year, page, rows);
     }
@@ -126,7 +127,7 @@ public class WorkList4ddyjsRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/homeChaosongList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> homeChaosongList(@RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<ChaoSongModel> homeChaosongList(@RequestParam Integer page, @RequestParam Integer rows) {
         return workList4ddyjsService.myChaoSongList("", "", "", "", "", page, rows);
     }
 

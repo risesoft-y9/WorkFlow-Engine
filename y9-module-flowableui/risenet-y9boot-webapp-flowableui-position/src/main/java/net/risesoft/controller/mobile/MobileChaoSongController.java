@@ -24,7 +24,10 @@ import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.DocumentUtil;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -92,7 +95,7 @@ public class MobileChaoSongController {
             Y9LoginUserHolder.setPositionId(positionId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            map = chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, true);
+            map = chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, true).getData();
             String processSerialNumber = (String)map.get("processSerialNumber");
             String activitiUser = (String)map.get(SysVariables.ACTIVITIUSER);
             String processDefinitionId = (String)map.get("processDefinitionId");
@@ -174,18 +177,18 @@ public class MobileChaoSongController {
     @ResponseBody
     @RequestMapping(value = "/list")
     public void list(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String type, @RequestParam String processInstanceId, @RequestParam int rows, @RequestParam int page, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<>(16);
+        Y9Page<ChaoSongModel> y9Page = null;
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             if (type.equals("my")) {
-                map = chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
+                y9Page = chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
             } else {
-                map = chaoSong4PositionApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
+                y9Page = chaoSong4PositionApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
             }
         } catch (Exception e) {
             LOGGER.error("获取抄送列表失败", e);
         }
-        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Page));
     }
 
     /**
@@ -202,19 +205,17 @@ public class MobileChaoSongController {
     @ResponseBody
     public void search(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String documentTitle, @RequestParam Integer status, @RequestParam int rows, @RequestParam int page, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<>(16);
+        Y9Page<ChaoSongModel> y9Page = null;
         try {
             if (status == 0) {
-                map = chaoSong4PositionApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
+                y9Page = chaoSong4PositionApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
             } else if (status == 1) {
-                map = chaoSong4PositionApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
+                y9Page = chaoSong4PositionApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
             }
-            map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
             LOGGER.error("获取抄送列表失败", e);
         }
-        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Page));
     }
 
     /**
@@ -234,13 +235,12 @@ public class MobileChaoSongController {
     public void send(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String users,
         @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = new HashMap<>(1);
+        Y9Result<Object> y9Result = null;
         try {
-            map = chaoSong4PositionApi.save(tenantId, userId, positionId, processInstanceId, users, isSendSms, isShuMing, smsContent, "");
+            y9Result = chaoSong4PositionApi.save(tenantId, userId, positionId, processInstanceId, users, isSendSms, isShuMing, smsContent, "");
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
             LOGGER.error("发送抄送失败", e);
         }
-        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Result));
     }
 }

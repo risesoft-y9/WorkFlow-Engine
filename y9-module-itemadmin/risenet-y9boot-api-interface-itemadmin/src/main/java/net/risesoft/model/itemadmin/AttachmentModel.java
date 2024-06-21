@@ -1,11 +1,12 @@
 package net.risesoft.model.itemadmin;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 附件模型类
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -62,6 +63,16 @@ public class AttachmentModel implements Serializable {
     private String fileStoreId;
 
     /**
+     * 文件路径
+     */
+    private String filePath;
+
+    /**
+     * 下载url
+     */
+    private String downloadUrl;
+
+    /**
      * 上传时间
      */
     private String uploadTime;
@@ -82,6 +93,11 @@ public class AttachmentModel implements Serializable {
     private String positionId;
 
     /**
+     * 上传岗位名称
+     */
+    private String positionName;
+
+    /**
      * 上传人部门id
      */
     private String deptId;
@@ -100,4 +116,9 @@ public class AttachmentModel implements Serializable {
      * 序号
      */
     private Integer serialNumber;
+
+    /**
+     * 预览地址
+     */
+    private String jodconverterURL;
 }

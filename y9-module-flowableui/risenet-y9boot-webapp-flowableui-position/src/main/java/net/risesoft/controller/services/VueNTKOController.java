@@ -74,7 +74,7 @@ public class VueNTKOController {
             Map<String, Object> map = new HashMap<>();
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId);
+            AttachmentModel file = attachment4PositionApi.getFile(tenantId, fileId).getData();
             String downloadUrl = y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + file.getFileStoreId() + "." + file.getFileType();
             map.put("fileName", file.getName());
             map.put("browser", browser);
