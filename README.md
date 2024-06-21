@@ -104,7 +104,7 @@ vue -- 前端工程
 | 2    | Redis         | 6.2+       | <a href="https://redis.io/" target="_blank">官网</a>         |
 | 3    | elasticsearch | 7.9+       | <a href="https://www.elastic.co/cn/elasticsearch/" target="_blank">官网</a> |
 
-## 信创
+## 信创兼容适配
 
 | 序号   | 类型     | 对象                       |
 |:-----| -------- | -------------------------- |
