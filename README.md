@@ -189,13 +189,23 @@ vue -- 前端工程
 
 ## 在线体验
 
-演示地址：<a href="https://test.youshengyun.com/home/" target="_blank">https://test.youshengyun.com/home/ </a>工作桌面在应用列表选择工作流程应用，点击“办件”访问。
-或者复制以下工作流程“办件”网址到浏览器地址栏访问：<a href="	https://test.youshengyun.com/flowableUI/index?itemId=11111111-1111-1111-1111-111111111111" target="_blank">	https://test.youshengyun.com/flowableUI/index?itemId=11111111-1111-1111-1111-111111111111 </a>
+### 事项管理
+
+演示地址：<a href="https://test.youshengyun.com/itemAdmin/" target="_blank">https://test.youshengyun.com/itemAdmin/</a>
+
+> 演示账号：systemManager  密码：Risesoft@2024
+>
+> **说明：输入登录名后，请选择"测试"租户，如：systemManager@测试，再输入密码进行登录**
+
+### 工作台
+
+演示地址：<a href="https://test.youshengyun.com/flowableUI/workIndex/" target="_blank">https://vue.youshengyun.com/flowableUI/workIndex/</a>
+
 > 演示账号：
 >
 > 业务用户：user  密码：Risesoft@2024
 >
-> 说明：输入登录名后，请选择"测试"租户，如：user@测试，再输入密码进行登录
+> **说明：输入登录名后，请选择"测试"租户，如：user@测试，再输入密码进行登录**
 
 ## 文档专区
 
