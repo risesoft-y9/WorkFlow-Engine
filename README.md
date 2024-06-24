@@ -43,6 +43,7 @@ vue -- 前端工程
 ## 逻辑架构图
 
 <div><img src="https://vue.youshengyun.com/files/img/architecture2.png"><div/>
+
 1. **工作流引擎主要分为事项配置和工作台，事项配置面向运维人员对工作流进行配置，工作台面向用户操作使用**
 2. **工作流引擎需要数字底座中对于岗位角色的配置，否则无法运转**
 3. **工作流引擎不仅仅支持传统OA，更面向外部业务、算法、接口、代理的接入和控制**
@@ -50,6 +51,7 @@ vue -- 前端工程
 ## 功能架构图 ##
 
 <div><img src="https://vue.youshengyun.com/files/img/function2.png"><div/>
+
 1. **工作台的功能划分重点在于不同的批办状态和事件状态**
 2. **事项管理的功能划分一方面是流程和表单相关的设计，另一方面则为其他绑定项**
 3. **表单管理不仅仅是界面设计，也映射数据库的表结构设计**
@@ -61,6 +63,7 @@ vue -- 前端工程
 ## 部署架构图
 
 <div><img src="https://vue.youshengyun.com/files/img/deploy2.png"><div/>
+
 1. **工作流引擎支持以微服务、分布式的方式进行平行扩展**
 2. **工作流引擎需要额外部署文件预览相关的服务器**
 3. **工作流引擎依赖数字底座和其单点登录服务**
@@ -283,7 +286,9 @@ vue -- 前端工程
 
 官网：<a href="https://www.risesoft.net/" target="_blank">https://www.risesoft.net/</a>
 
+### 中国城市发展研究会
 
+官网：<a href="https://www.china-cfh.com/" target="_blank">https://www.china-cfh.com/</a>
 
 ## 咨询与合作
 
