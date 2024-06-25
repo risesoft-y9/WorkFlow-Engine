@@ -157,7 +157,9 @@ public class DocumentWpsController {
                 response.setContentType("application/octet-stream");
             } else {
                 if (userAgent.contains("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
+                    title = "=?UTF-8?B?" + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
+                        + "?=";
                 } else {
                     title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
                     title = StringUtils.replace(title, "+", "%20");// 替换空格
@@ -171,12 +173,14 @@ public class DocumentWpsController {
             HttpURLConnection conn;
             try {
                 AppFilesApi
-                    apiInstance = new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
+                    apiInstance =
+                    new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
                 FileContent
-                    result = apiInstance.appGetFileContent(documentWps.getVolumeId(), documentWps.getFileId(), null);
+                    result =
+                    apiInstance.appGetFileContent(documentWps.getVolumeId(), documentWps.getFileId(), null);
                 LOGGER.debug("result:{}", result);
                 URL url = new URL(yunWpsDownloadPath + result.getUrl());
-                conn = (HttpURLConnection) url.openConnection();
+                conn = (HttpURLConnection)url.openConnection();
                 conn.setConnectTimeout(3 * 1000);
                 IOUtils.copy(conn.getInputStream(), out);
                 out.flush();
@@ -203,7 +207,8 @@ public class DocumentWpsController {
         map.put("fileUrl", "");
         map.put("y9FileStoreId", "");
         try {
-            String y9FileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId);
+            String y9FileStoreId =
+                transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId).getData();
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileUrl = y9FileStore.getUrl();
             map.put("y9FileStoreId", y9FileStoreId);
@@ -222,7 +227,8 @@ public class DocumentWpsController {
      */
     @RequestMapping(value = "/openTaoHong")
     public String openTaoHong(Model model) {
-        OrgUnit currentBureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
+        OrgUnit currentBureau = orgUnitApi
+            .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
         model.addAttribute("currentBureauGuid", currentBureau.getId());
         model.addAttribute("tenantId", Y9LoginUserHolder.getTenantId());
         model.addAttribute("userId", Y9LoginUserHolder.getUserInfo().getPersonId());
@@ -249,7 +255,8 @@ public class DocumentWpsController {
      * @return String
      */
     @RequestMapping("/showWps")
-    public String showWord(@RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam String itembox, Model model) {
+    public String showWord(@RequestParam String processSerialNumber, @RequestParam String processInstanceId,
+        @RequestParam String itembox, Model model) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         String documentTitle;
@@ -264,11 +271,13 @@ public class DocumentWpsController {
             LOGGER.debug("wpsSid:{}", wpsSid);
 
             UserOrgApi
-                apiInstance0 = new UserOrgApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsRedirectUri, yunWpsUserScope, wpsSid);
+                apiInstance0 = new UserOrgApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret,
+                yunWpsRedirectUri, yunWpsUserScope, wpsSid);
             User result0 = apiInstance0.userGetProfile();
             LOGGER.debug("User:{}", result0);
 
-            AppFilesApi apiInstance = new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
+            AppFilesApi apiInstance =
+                new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
 
             DocumentWpsModel documentWps = documentWpsApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             model.addAttribute("docUrl", "");
@@ -280,7 +289,8 @@ public class DocumentWpsController {
             model.addAttribute("userId", userId);
             model.addAttribute("tenantId", tenantId);
             if (documentWps != null) {// 获取文件编辑地址
-                if ((itembox.equals(ItemBoxTypeEnum.TODO.getValue()) || itembox.equals(ItemBoxTypeEnum.DRAFT.getValue()))) {
+                if ((itembox.equals(ItemBoxTypeEnum.TODO.getValue())
+                    || itembox.equals(ItemBoxTypeEnum.DRAFT.getValue()))) {
                     String documentChallenge = ""; // String | 文档口令
                     String expiration = ""; // String | 过期时间
                     Boolean printable = true; // Boolean | 内容可打印
@@ -290,7 +300,9 @@ public class DocumentWpsController {
                     String extCompanyid = ""; // String | 外部公司ID
                     String extUserid = ""; // String | 外部用户ID
                     try {
-                        FilePreview result = apiInstance.appGetFilePreview(documentWps.getVolumeId(), documentWps.getFileId(), documentChallenge, expiration, printable, copyable, watermarkText, watermarkImageUrl, wpsSid, extCompanyid, extUserid);
+                        FilePreview result = apiInstance.appGetFilePreview(documentWps.getVolumeId(),
+                            documentWps.getFileId(), documentChallenge, expiration, printable, copyable, watermarkText,
+                            watermarkImageUrl, wpsSid, extCompanyid, extUserid);
                         LOGGER.debug("result:{}", result);
                         model.addAttribute("docUrl", result.getUrl());
                     } catch (Exception e) {
@@ -306,7 +318,8 @@ public class DocumentWpsController {
                     body1.setAccountSync("1");
                     body1.setHistory("0");
                     try {
-                        FileEditor result1 = apiInstance.appGetFileEditor(documentWps.getVolumeId(), documentWps.getFileId(), body1);
+                        FileEditor result1 =
+                            apiInstance.appGetFileEditor(documentWps.getVolumeId(), documentWps.getFileId(), body1);
                         String docUrl = result1.getUrl();
                         model.addAttribute("docUrl", docUrl);
                     } catch (ApiException e) {
@@ -315,7 +328,8 @@ public class DocumentWpsController {
                 }
                 model.addAttribute("hasContent", documentWps.getHasContent());
                 try {
-                    FileContent result = apiInstance.appGetFileContent(documentWps.getVolumeId(), documentWps.getFileId(), null);
+                    FileContent result =
+                        apiInstance.appGetFileContent(documentWps.getVolumeId(), documentWps.getFileId(), null);
                     LOGGER.debug("result:{}", result);
                     model.addAttribute("downloadUrl", yunWpsDownloadPath + result.getUrl());
                 } catch (Exception e) {
@@ -324,10 +338,12 @@ public class DocumentWpsController {
                 model.addAttribute("id", documentWps.getId());
             } else {// 创建空文件，并获取文件编辑地址
                 if (StringUtils.isBlank(processInstanceId)) {
-                    Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-                    documentTitle = (String) retMap.get("title");
+                    Map<String, Object> retMap =
+                        draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+                    documentTitle = (String)retMap.get("title");
                 } else {
-                    ProcessParamModel processModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+                    ProcessParamModel processModel =
+                        processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
                     documentTitle = processModel.getTitle();
                     processInstanceId = processModel.getProcessInstanceId();
                 }
@@ -401,12 +417,13 @@ public class DocumentWpsController {
      * 上传正文
      *
      * @param processSerialNumber 流程编号
-     * @param processInstanceId   流程实例id
-     * @param file                文件
+     * @param processInstanceId 流程实例id
+     * @param file 文件
      * @return Map
      */
     @RequestMapping(value = "/upload")
-    public Map<String, Object> upload(@RequestParam String processSerialNumber, @RequestParam String processInstanceId, @RequestParam MultipartFile file) {
+    public Map<String, Object> upload(@RequestParam String processSerialNumber, @RequestParam String processInstanceId,
+        @RequestParam MultipartFile file) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "上传成功");
@@ -418,7 +435,8 @@ public class DocumentWpsController {
             File tempFile = new File(tmpdir, genRealFileName(file.getOriginalFilename()));
             file.transferTo(tempFile);
 
-            AppFilesApi appFilesApi = new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
+            AppFilesApi appFilesApi =
+                new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
 
             UploadTransactionCreateRequest uploadRequest = new UploadTransactionCreateRequest();
             uploadRequest.setFileName(this.genRealFileName(file.getOriginalFilename()));
@@ -427,15 +445,18 @@ public class DocumentWpsController {
             uploadRequest.setFileNameConflictBehavior(UploadConflictBehavior.RENAME);
             uploadRequest.setFilePath(tempFile.getAbsolutePath());
             UploadTransactionPatchResponse
-                uploadResponse = appFilesApi.appCreateUploadTransaction(volume, root, uploadRequest);
+                uploadResponse =
+                appFilesApi.appCreateUploadTransaction(volume, root, uploadRequest);
             tempFile.delete();
 
             String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-                documentTitle = (String) retMap.get("title");
+                Map<String, Object> retMap =
+                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+                documentTitle = (String)retMap.get("title");
             } else {
-                ProcessParamModel processModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+                ProcessParamModel processModel =
+                    processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
                 documentTitle = processModel.getTitle();
                 processInstanceId = processModel.getProcessInstanceId();
             }

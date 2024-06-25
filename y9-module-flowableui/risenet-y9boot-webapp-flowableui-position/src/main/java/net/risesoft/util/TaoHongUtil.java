@@ -29,62 +29,62 @@ public class TaoHongUtil {
     /**
      * 云文档路径
      */
-    private static String yunWpsBasePath = "http://yun.test.cn";
+    private static final String yunWpsBasePath = "http://yun.test.cn";
 
     /**
      * 云文档路径
      */
-    private static String yunWpsBasePath4Graph = "http://yun.test.cn/graph";
+    private static final String yunWpsBasePath4Graph = "http://yun.test.cn/graph";
 
     /**
      * 应用id
      */
-    private static String yunWpsAppId = "4a1291d0-b753-4c2b-0000-000000000005";
+    private static final String yunWpsAppId = "4a1291d0-b753-4c2b-0000-000000000005";
 
     /**
      * 应用密码
      */
-    private static String yunWpsAppSecret = "u5x7yWKFjsSB";
+    private static final String yunWpsAppSecret = "u5x7yWKFjsSB";
 
     /**
      * 回调地址
      */
-    private static String yunWpsRedirectUri = "https://www.risesoft.net/";
+    private static final String yunWpsRedirectUri = "https://www.risesoft.net/";
 
     /**
      * APP权限
      */
-    private static String yunWpsAppScope = "App.Files.Read App.Files.ReadWrite";
+    private static final String yunWpsAppScope = "App.Files.Read App.Files.ReadWrite";
 
     /**
      * 人员权限
      */
-    private static String yunWpsUserScope = "User.Profile.Read";
+    private static final String yunWpsUserScope = "User.Profile.Read";
 
     /**
      * 人员账号
      */
-    private static String yunWpsUserName = "test1";
+    private static final String yunWpsUserName = "test1";
 
     /**
      * 密码
      */
-    private static String yunWpsUserPassword = "Aa123456";
+    private static final String yunWpsUserPassword = "Aa123456";
 
     /**
      * 云文档下载路径
      */
-    private static String yunWpsDownloadPath = "http://yun.test.cn/minio";
+    private static final String yunWpsDownloadPath = "http://yun.test.cn/minio";
 
     /**
      * 卷标识
      */
-    private static String volume = "workspace";
+    private static final String volume = "workspace";
 
     /**
      * 文件标识，当值为\"root\"时表示根文件夹。
      */
-    private static String root = "root";
+    private static final String root = "root";
 
     public TaoHongUtil() {
 
@@ -102,7 +102,9 @@ public class TaoHongUtil {
             // 模板文件 参数填写
             // model = Y9Context.getWebRootRealPath() + "static" + File.separator +
             // "official_doc_model.docx";
-            String contentStr = Y9Context.getBean(TransactionWordApi.class).openDocumentTemplate("c425281829dc4d4496ddddf7fc0198d0", "3cfe10631fb348bfaadd21045f0f0659", "67ea3abfc53b4ca88de409d2a7744a1a");
+            String contentStr =
+                Y9Context.getBean(TransactionWordApi.class).openDocumentTemplate("c425281829dc4d4496ddddf7fc0198d0",
+                    "3cfe10631fb348bfaadd21045f0f0659", "67ea3abfc53b4ca88de409d2a7744a1a").getData();
             ByteArrayInputStream bin = null;
             BufferedOutputStream bos = null;
             FileOutputStream fos = null;
@@ -110,7 +112,8 @@ public class TaoHongUtil {
             try {
                 byte[] result = null;
                 result = jodd.util.Base64.decode(contentStr);
-                filePath = Y9Context.getWebRootRealPath() + "static" + File.separator + "word" + File.separator + "1111.docx";
+                filePath =
+                    Y9Context.getWebRootRealPath() + "static" + File.separator + "word" + File.separator + "1111.docx";
                 File file = null;
                 file = new File(filePath);
                 fos = new FileOutputStream(file);
@@ -134,11 +137,13 @@ public class TaoHongUtil {
                     }
                 }
             }
-            XWPFTemplate template = XWPFTemplate.compile("E:\\workspace-y9boot-9.4.0\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp1\\wtpwebapps\\risenet-y9boot-webapp-flowableUI\\static\\word\\1111.docx");
+            XWPFTemplate template = XWPFTemplate.compile(
+                "E:\\workspace-y9boot-9.4.0\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp1\\wtpwebapps\\risenet-y9boot-webapp-flowableUI\\static\\word\\1111.docx");
             // 获取模板文件 公文
             NiceXWPFDocument main = template.getXWPFDocument();
             String downloadUrl = "";
-            AppFilesApi apiInstance = new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
+            AppFilesApi apiInstance =
+                new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
             try {
                 FileContent result = apiInstance.appGetFileContent("6061", "305029920583589888", null);
                 LOGGER.debug("result:{}", result);

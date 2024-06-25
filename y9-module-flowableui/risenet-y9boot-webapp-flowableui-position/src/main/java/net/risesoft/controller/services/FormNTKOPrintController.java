@@ -63,8 +63,8 @@ public class FormNTKOPrintController {
     @RequestMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam(required = false) String fileType,
         @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam String tenantId, @RequestParam String userId,
-        HttpServletResponse response, HttpServletRequest request) {
+        @RequestParam(required = false) String processInstanceId, @RequestParam String tenantId,
+        @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
@@ -95,7 +95,8 @@ public class FormNTKOPrintController {
             } else {
                 if (userAgent.contains("Firefox")) {
                     title = "=?UTF-8?B?"
-                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
+                        + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
                         + "?=";
                 } else {
                     title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
@@ -125,12 +126,14 @@ public class FormNTKOPrintController {
      */
     @RequestMapping(value = "/openDoc")
     public void openDoc(@RequestParam String processSerialNumber,
-        @RequestParam String itemId, @RequestParam String tenantId,
-        @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
+        @RequestParam String itemId,
+        @RequestParam String tenantId,
+        @RequestParam String userId, HttpServletResponse response,
+        HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId);
+        String y9FileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId).getData();
 
         ServletOutputStream out = null;
         try {

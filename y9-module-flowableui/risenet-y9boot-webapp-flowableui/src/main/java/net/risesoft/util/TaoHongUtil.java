@@ -33,27 +33,27 @@ public class TaoHongUtil {
     /**
      * 云文档路径
      */
-    private static String yunWpsBasePath4Graph = "http://yun.test.cn/graph";
+    private static final String yunWpsBasePath4Graph = "http://yun.test.cn/graph";
 
     /**
      * 应用id
      */
-    private static String yunWpsAppId = "4a1291d0-b753-4c2b-0000-000000000005";
+    private static final String yunWpsAppId = "4a1291d0-b753-4c2b-0000-000000000005";
 
     /**
      * 应用密码
      */
-    private static String yunWpsAppSecret = "u5x7yWKFjsSB";
+    private static final String yunWpsAppSecret = "u5x7yWKFjsSB";
 
     /**
      * APP权限
      */
-    private static String yunWpsAppScope = "App.Files.Read App.Files.ReadWrite";
+    private static final String yunWpsAppScope = "App.Files.Read App.Files.ReadWrite";
 
     /**
      * 云文档下载路径
      */
-    private static String yunWpsDownloadPath = "http://yun.test.cn/minio";
+    private static final String yunWpsDownloadPath = "http://yun.test.cn/minio";
 
     public TaoHongUtil() {
 
@@ -72,7 +72,7 @@ public class TaoHongUtil {
             // "official_doc_model.docx";
             String contentStr =
                 Y9Context.getBean(TransactionWordApi.class).openDocumentTemplate("c425281829dc4d4496ddddf7fc0198d0",
-                    "3cfe10631fb348bfaadd21045f0f0659", "67ea3abfc53b4ca88de409d2a7744a1a");
+                    "3cfe10631fb348bfaadd21045f0f0659", "67ea3abfc53b4ca88de409d2a7744a1a").getData();
             // ByteArrayInputStream bin = null;
             BufferedOutputStream bos = null;
             FileOutputStream fos = null;
