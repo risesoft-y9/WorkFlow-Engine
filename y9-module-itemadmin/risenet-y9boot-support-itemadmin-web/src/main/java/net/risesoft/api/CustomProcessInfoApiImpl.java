@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.CustomProcessInfoApi;
 import net.risesoft.entity.CustomProcessInfo;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomProcessInfoService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -31,7 +32,7 @@ public class CustomProcessInfoApiImpl implements CustomProcessInfoApi {
 
     @Override
     @GetMapping(value = "/getCurrentTaskNextNode", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CustomProcessInfoModel getCurrentTaskNextNode(String tenantId, String processSerialNumber) {
+    public Y9Result<CustomProcessInfoModel> getCurrentTaskNextNode(String tenantId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         CustomProcessInfo info = customProcessInfoService.getCurrentTaskNextNode(processSerialNumber);
         CustomProcessInfoModel model = null;
@@ -39,22 +40,24 @@ public class CustomProcessInfoApiImpl implements CustomProcessInfoApi {
             model = new CustomProcessInfoModel();
             Y9BeanUtil.copyProperties(info, model);
         }
-        return model;
+        return Y9Result.success(model);
     }
 
     @Override
     @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean saveOrUpdate(String tenantId, String itemId, String processSerialNumber,
+    public Y9Result<Object> saveOrUpdate(String tenantId, String itemId, String processSerialNumber,
         List<Map<String, Object>> taskList) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return customProcessInfoService.saveOrUpdate(itemId, processSerialNumber, taskList);
+        customProcessInfoService.saveOrUpdate(itemId, processSerialNumber, taskList);
+        return Y9Result.success();
     }
 
     @Override
     @PostMapping(value = "/updateCurrentTask", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean updateCurrentTask(String tenantId, String processSerialNumber) {
+    public Y9Result<Object> updateCurrentTask(String tenantId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return customProcessInfoService.updateCurrentTask(processSerialNumber);
+        customProcessInfoService.updateCurrentTask(processSerialNumber);
+        return Y9Result.success();
     }
 
 }

@@ -1,9 +1,7 @@
 package net.risesoft.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,8 +57,8 @@ public class CommonSentencesService {
      * @return
      */
     @Transactional(readOnly = false)
-    public List<Map<String, Object>> listSentencesService() {
-        List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
+    public List<CommonSentences> listSentencesService() {
+        List<CommonSentences> resList = new ArrayList<>();
         String userId = Y9LoginUserHolder.getPersonId();
         List<CommonSentences> list = this.getByUserId(userId);
         List<CommonSentencesInit> listInit = commonSentencesInitRepository.findByUserId(userId);
@@ -75,20 +73,12 @@ public class CommonSentencesService {
                 int i = 0;
                 for (String option : comment) {
                     CommonSentences commonSentences = saveCommonSentences(userId, option, i);
-                    Map<String, Object> map = new HashMap<String, Object>(16);
-                    map.put("id", commonSentences.getId());
-                    map.put("content", option);
-                    map.put("tabIndex", i);
                     i = i + 1;
-                    resList.add(map);
+                    resList.add(commonSentences);
                 }
             } else {
                 for (CommonSentences commonSentences : list) {
-                    Map<String, Object> map = new HashMap<String, Object>(16);
-                    map.put("content", commonSentences.getContent());
-                    map.put("tabIndex", commonSentences.getTabIndex());
-                    map.put("id", commonSentences.getId());
-                    resList.add(map);
+                    resList.add(commonSentences);
                 }
             }
         } catch (Exception e) {

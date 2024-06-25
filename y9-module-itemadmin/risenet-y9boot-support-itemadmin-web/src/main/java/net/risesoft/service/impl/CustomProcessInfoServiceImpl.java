@@ -53,38 +53,33 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
     @Override
     @Transactional(readOnly = false)
     public boolean saveOrUpdate(String itemId, String processSerialNumber, List<Map<String, Object>> taskList) {
-        try {
-            int i = 1;
-            customProcessInfoRepository.deleteByProcessSerialNumber(processSerialNumber);
-            for (Map<String, Object> map : taskList) {
-                CustomProcessInfo info = new CustomProcessInfo();
-                info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                info.setItemId(itemId);
-                info.setProcessSerialNumber(processSerialNumber);
-                info.setTaskKey((String)map.get("taskKey"));
-                info.setTaskName((String)map.get("taskName"));
-                info.setTaskType(
-                    StringUtils.isBlank((String)map.get("type")) ? SysVariables.USERTASK : (String)map.get("type"));
-                info.setTabIndex(i);
-                List<Map<String, Object>> orgList = (List<Map<String, Object>>)map.get("orgList");
-                String orgId = "";
-                if (orgList != null) {
-                    for (Map<String, Object> org : orgList) {
-                        orgId = Y9Util.genCustomStr(orgId, (String)org.get("id"), ";");
-                    }
+        int i = 1;
+        customProcessInfoRepository.deleteByProcessSerialNumber(processSerialNumber);
+        for (Map<String, Object> map : taskList) {
+            CustomProcessInfo info = new CustomProcessInfo();
+            info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            info.setItemId(itemId);
+            info.setProcessSerialNumber(processSerialNumber);
+            info.setTaskKey((String)map.get("taskKey"));
+            info.setTaskName((String)map.get("taskName"));
+            info.setTaskType(
+                StringUtils.isBlank((String)map.get("type")) ? SysVariables.USERTASK : (String)map.get("type"));
+            info.setTabIndex(i);
+            List<Map<String, Object>> orgList = (List<Map<String, Object>>)map.get("orgList");
+            String orgId = "";
+            if (orgList != null) {
+                for (Map<String, Object> org : orgList) {
+                    orgId = Y9Util.genCustomStr(orgId, (String)org.get("id"), ";");
                 }
-                info.setOrgId(orgId);
-                if (i == 1) {
-                    // 第一个节点，设置成当前运行节点
-                    info.setCurrentTask(true);
-                    info.setOrgId((String)map.get("orgName"));
-                }
-                customProcessInfoRepository.save(info);
-                i++;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            info.setOrgId(orgId);
+            if (i == 1) {
+                // 第一个节点，设置成当前运行节点
+                info.setCurrentTask(true);
+                info.setOrgId((String)map.get("orgName"));
+            }
+            customProcessInfoRepository.save(info);
+            i++;
         }
         return true;
     }
@@ -92,26 +87,21 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
     @Override
     @Transactional(readOnly = false)
     public boolean updateCurrentTask(String processSerialNumber) {
-        try {
-            List<CustomProcessInfo> taskList =
-                customProcessInfoRepository.findByProcessSerialNumberOrderByTabIndexAsc(processSerialNumber);
-            boolean isSet = false;
-            for (CustomProcessInfo info : taskList) {
-                if (isSet) {
-                    info.setCurrentTask(true);
-                    customProcessInfoRepository.save(info);
-                    break;
-                }
-                // 找到当前运行节点,设为false,下次循环更新下一个节点结束
-                if (info.getCurrentTask()) {
-                    isSet = true;
-                    info.setCurrentTask(false);
-                    customProcessInfoRepository.save(info);
-                }
+        List<CustomProcessInfo> taskList =
+            customProcessInfoRepository.findByProcessSerialNumberOrderByTabIndexAsc(processSerialNumber);
+        boolean isSet = false;
+        for (CustomProcessInfo info : taskList) {
+            if (isSet) {
+                info.setCurrentTask(true);
+                customProcessInfoRepository.save(info);
+                break;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            // 找到当前运行节点,设为false,下次循环更新下一个节点结束
+            if (info.getCurrentTask()) {
+                isSet = true;
+                info.setCurrentTask(false);
+                customProcessInfoRepository.save(info);
+            }
         }
         return true;
     }

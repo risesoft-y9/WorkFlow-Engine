@@ -1,6 +1,5 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.CommonSentences;
 import net.risesoft.service.CommonSentencesService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -29,10 +29,8 @@ public class CommonSentencesController {
 
     @RequestMapping("/list")
     @ResponseBody
-    public List<Map<String, Object>> listSentencesService() {
-        List<Map<String, Object>> resList = new ArrayList<>();
-        resList = commonSentencesService.listSentencesService();
-        return resList;
+    public List<CommonSentences> listSentencesService() {
+        return commonSentencesService.listSentencesService();
     }
 
     @RequestMapping("/remove")
