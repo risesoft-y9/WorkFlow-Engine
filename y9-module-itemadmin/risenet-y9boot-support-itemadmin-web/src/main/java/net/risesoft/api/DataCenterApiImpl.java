@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.DataCenterApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DataCenterService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -29,12 +30,15 @@ public class DataCenterApiImpl implements DataCenterApi {
 
     @Override
     @PostMapping(value = "/saveToDateCenter", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean saveToDateCenter(String processInstanceId, String tenantId, String userId) {
+    public Y9Result<Object> saveToDateCenter(String processInstanceId, String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         boolean b = dataCenterService.saveToDateCenter(processInstanceId);
-        return b;
+        if (b) {
+            return Y9Result.success();
+        }
+        return Y9Result.failure("保存办结数据到数据中心失败");
     }
 
 }

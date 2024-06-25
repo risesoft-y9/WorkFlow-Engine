@@ -240,106 +240,101 @@ public class DataCenterService {
         OfficeInfo officeInfo = new OfficeInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        try {
-            HistoricProcessInstanceModel processInstance =
-                historicProcessManagerClient.getById(Y9LoginUserHolder.getTenantId(), processInstanceId);
-            Collection<String> keys = new ArrayList<String>();
-            keys.add("infoOvert");
-            Map<String, Object> vmap = historicVariableManagerClient.getVariables(tenantId, processInstanceId, keys);
+        HistoricProcessInstanceModel processInstance =
+            historicProcessManagerClient.getById(Y9LoginUserHolder.getTenantId(), processInstanceId);
+        Collection<String> keys = new ArrayList<String>();
+        keys.add("infoOvert");
+        Map<String, Object> vmap = historicVariableManagerClient.getVariables(tenantId, processInstanceId, keys);
 
-            ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-            String itemId = processParam.getItemId();
-            String documentTitle = processParam.getTitle();
-            String level = processParam.getCustomLevel();
-            String number = processParam.getCustomNumber();
-            String processSerialNumber = processParam.getProcessSerialNumber();
-            String systemCnName = processParam.getSystemCnName();
-            String systemName = processParam.getSystemName();
-            // 信息是否在数据中心公开
-            String infoOvert = (String)vmap.get("infoOvert") == null ? "" : (String)vmap.get("infoOvert");
+        ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+        String itemId = processParam.getItemId();
+        String documentTitle = processParam.getTitle();
+        String level = processParam.getCustomLevel();
+        String number = processParam.getCustomNumber();
+        String processSerialNumber = processParam.getProcessSerialNumber();
+        String systemCnName = processParam.getSystemCnName();
+        String systemName = processParam.getSystemName();
+        // 信息是否在数据中心公开
+        String infoOvert = vmap.get("infoOvert") == null ? "" : (String)vmap.get("infoOvert");
 
-            SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
-            String startProUserId = processInstance.getStartUserId();
-            String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
-            Person startProUser = personManager.get(tenantId, startUserId).getData();
-            OrgUnit dept = orgUnitApi.getBureau(tenantId, startProUser.getId()).getData();
+        SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
+        String startProUserId = processInstance.getStartUserId();
+        String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
+        Person startProUser = personManager.get(tenantId, startUserId).getData();
+        OrgUnit dept = orgUnitApi.getBureau(tenantId, startProUser.getId()).getData();
 
-            // 获取历程
-            Map<String, Object> map = this.historyExcel(processSerialNumber, processInstanceId);
-            String userId = (String)map.get("userId");
-            List<HistoryInfo> hisList = (List<HistoryInfo>)map.get("list");
+        // 获取历程
+        Map<String, Object> map = this.historyExcel(processSerialNumber, processInstanceId);
+        String userId = (String)map.get("userId");
+        List<HistoryInfo> hisList = (List<HistoryInfo>)map.get("list");
 
-            // 获取正文
-            TransactionWord word = transactionWordService.getByProcessSerialNumber(processSerialNumber);
-            String textUrl = "";
-            if (word != null && StringUtils.isNotBlank(word.getFileStoreId())) {
-                textUrl = word.getFileStoreId();
-            }
-
-            // 获取附件
-            List<TransactionFile> fileList = transactionFileService.getListByProcessSerialNumber(processSerialNumber);
-            List<AttachmentInfo> aList = new ArrayList<AttachmentInfo>();
-            for (TransactionFile file : fileList) {
-                AttachmentInfo info = new AttachmentInfo();
-                info.setFileContent(null);
-                info.setFileId(file.getFileStoreId());
-                info.setFileName(file.getName());
-                info.setFileType(file.getFileType());
-                info.setFileUrl(null);
-                aList.add(info);
-            }
-
-            AssociatedFile associatedFile = associatedFileRepository.findByProcessSerialNumber(processSerialNumber);
-            String associatedId = "";
-            if (associatedFile != null) {
-                associatedId = associatedFile.getAssociatedId();
-            }
-
-            officeInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            officeInfo.setTenantId(tenantId);
-            officeInfo.setCompleteUserName(userInfo.getName());
-            officeInfo.setCreatDeptName(dept.getName());
-            officeInfo.setCreatUserName(startProUser.getName());
-            officeInfo.setEndTime(processInstance.getEndTime());
-            officeInfo.setStartTime(processInstance.getStartTime());
-            officeInfo.setAppCnName(spmApproveItem != null ? spmApproveItem.getName() : "");
-            officeInfo.setSystemCnName(systemCnName);
-            officeInfo.setSystemName(systemName);
-            officeInfo.setDocNature("");
-            officeInfo.setFilingDept(dept.getName());
-            officeInfo.setFilingMan(userInfo.getName());
-            officeInfo.setProcessInstanceId(processInstanceId);
-            officeInfo.setProcessSerialNumber(processSerialNumber);
-            officeInfo.setSecurityLevel("一般");
-            officeInfo.setSerialNumber(number);
-            officeInfo.setText("");
-            officeInfo.setTextUrl(textUrl);
-            officeInfo.setTitle(documentTitle);
-            officeInfo.setUndertaker(userId);
-            officeInfo.setUrgency(level);
-            officeInfo.setAssociatedId(associatedId);
-            officeInfo.setDisabled("0".equals(infoOvert) ? "0" : "1");
-
-            officeInfo.setHistorys(hisList);
-            officeInfo.setAttachments(aList);
-
-            String processDefinitionId = processInstance.getProcessDefinitionId();
-            List<EformInfo> elist =
-                this.getEformInfo(processInstanceId, processDefinitionId.split(":")[0], processDefinitionId);
-            officeInfo.setEforms(elist);
-
-            boolean b = officeInfoManagerClient.saveOfficeInfo(tenantId, officeInfo);
-            LOGGER.info(
-                "************************************officeInfo数保存到数据中心{}***********************************************",
-                b);
-            LOGGER.info("---------------------------------办结数据：{}------------------------------------",
-                Y9JsonUtil.writeValueAsString(officeInfo));
-
-            return b;
-        } catch (Exception e) {
-            e.printStackTrace();
+        // 获取正文
+        TransactionWord word = transactionWordService.getByProcessSerialNumber(processSerialNumber);
+        String textUrl = "";
+        if (word != null && StringUtils.isNotBlank(word.getFileStoreId())) {
+            textUrl = word.getFileStoreId();
         }
-        return false;
+
+        // 获取附件
+        List<TransactionFile> fileList = transactionFileService.getListByProcessSerialNumber(processSerialNumber);
+        List<AttachmentInfo> aList = new ArrayList<AttachmentInfo>();
+        for (TransactionFile file : fileList) {
+            AttachmentInfo info = new AttachmentInfo();
+            info.setFileContent(null);
+            info.setFileId(file.getFileStoreId());
+            info.setFileName(file.getName());
+            info.setFileType(file.getFileType());
+            info.setFileUrl(null);
+            aList.add(info);
+        }
+
+        AssociatedFile associatedFile = associatedFileRepository.findByProcessSerialNumber(processSerialNumber);
+        String associatedId = "";
+        if (associatedFile != null) {
+            associatedId = associatedFile.getAssociatedId();
+        }
+
+        officeInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        officeInfo.setTenantId(tenantId);
+        officeInfo.setCompleteUserName(userInfo.getName());
+        officeInfo.setCreatDeptName(dept.getName());
+        officeInfo.setCreatUserName(startProUser.getName());
+        officeInfo.setEndTime(processInstance.getEndTime());
+        officeInfo.setStartTime(processInstance.getStartTime());
+        officeInfo.setAppCnName(spmApproveItem != null ? spmApproveItem.getName() : "");
+        officeInfo.setSystemCnName(systemCnName);
+        officeInfo.setSystemName(systemName);
+        officeInfo.setDocNature("");
+        officeInfo.setFilingDept(dept.getName());
+        officeInfo.setFilingMan(userInfo.getName());
+        officeInfo.setProcessInstanceId(processInstanceId);
+        officeInfo.setProcessSerialNumber(processSerialNumber);
+        officeInfo.setSecurityLevel("一般");
+        officeInfo.setSerialNumber(number);
+        officeInfo.setText("");
+        officeInfo.setTextUrl(textUrl);
+        officeInfo.setTitle(documentTitle);
+        officeInfo.setUndertaker(userId);
+        officeInfo.setUrgency(level);
+        officeInfo.setAssociatedId(associatedId);
+        officeInfo.setDisabled("0".equals(infoOvert) ? "0" : "1");
+
+        officeInfo.setHistorys(hisList);
+        officeInfo.setAttachments(aList);
+
+        String processDefinitionId = processInstance.getProcessDefinitionId();
+        List<EformInfo> elist =
+            this.getEformInfo(processInstanceId, processDefinitionId.split(":")[0], processDefinitionId);
+        officeInfo.setEforms(elist);
+
+        boolean b = officeInfoManagerClient.saveOfficeInfo(tenantId, officeInfo);
+        LOGGER.info(
+            "************************************officeInfo数保存到数据中心{}***********************************************",
+            b);
+        LOGGER.info("---------------------------------办结数据：{}------------------------------------",
+            Y9JsonUtil.writeValueAsString(officeInfo));
+
+        return b;
     }
 
     @SuppressWarnings("unchecked")
