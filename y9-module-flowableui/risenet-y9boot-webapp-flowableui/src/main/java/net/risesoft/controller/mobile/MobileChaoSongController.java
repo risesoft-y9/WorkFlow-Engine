@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import net.risesoft.api.itemadmin.ItemRoleApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -78,7 +80,6 @@ public class MobileChaoSongController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -106,9 +107,9 @@ public class MobileChaoSongController {
             Integer fileNum = attachmentManager.fileCounts(tenantId, userId, processSerialNumber);
             int docNum = 0;
             // 是否正文正常
-            Map<String, Object> wordMap =
-                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-            if (!wordMap.isEmpty() && wordMap.size() > 0) {
+            TransactionWordModel wordMap =
+                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            if (wordMap != null && StringUtils.isNotBlank(wordMap.getProcessSerialNumber())) {
                 docNum = 1;
             }
             map.put("docNum", docNum);
@@ -120,7 +121,6 @@ public class MobileChaoSongController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -151,7 +151,6 @@ public class MobileChaoSongController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
-        return;
     }
 
     /**
@@ -181,7 +180,6 @@ public class MobileChaoSongController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
-        return;
     }
 
     /**
@@ -217,7 +215,6 @@ public class MobileChaoSongController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -253,7 +250,6 @@ public class MobileChaoSongController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -287,6 +283,5 @@ public class MobileChaoSongController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 }

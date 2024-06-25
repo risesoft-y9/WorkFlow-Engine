@@ -3,6 +3,7 @@ package net.risesoft.controller.mobile;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.BrowserTypeEnum;
+import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -40,6 +42,8 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @RequestMapping("/mobile/attachment")
 public class MobileAttachmentController {
 
+    private static final String USERAGENT = "User-Agent";
+
     @Autowired
     private Y9FileStoreService y9FileStoreService;
 
@@ -51,8 +55,6 @@ public class MobileAttachmentController {
 
     @Autowired
     private TransactionWordApi transactionWordManager;
-
-    private static String USERAGENT = "User-Agent";
 
     /**
      * 附件下载
@@ -76,9 +78,9 @@ public class MobileAttachmentController {
             String filename = (String)map.get("filename");
             String fileStoreId = (String)map.get("fileStoreId");
             if (request.getHeader(USERAGENT).indexOf(BrowserTypeEnum.FIREFOX.getValue()) > 0) {
-                filename = new String(filename.getBytes("UTF-8"), "ISO8859-1");
+                filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");
             } else {
-                filename = URLEncoder.encode(filename, "UTF-8");
+                filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
             }
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=\"" + filename + "\"");
@@ -119,7 +121,6 @@ public class MobileAttachmentController {
             map.put("msg", "附件列表获取失败");
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -148,11 +149,11 @@ public class MobileAttachmentController {
             Person person = personApi.get(Y9LoginUserHolder.getTenantId(), userId).getData();
             Y9LoginUserHolder.setPerson(person);
             if (StringUtils.isNotEmpty(describes)) {
-                describes = URLDecoder.decode(describes, "UTF-8");
+                describes = URLDecoder.decode(describes, StandardCharsets.UTF_8);
             }
             String originalFilename = file.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);
-            fileName = URLDecoder.decode(fileName, "UTF-8");
+            fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
             String fullPath =
                 Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
@@ -164,7 +165,6 @@ public class MobileAttachmentController {
             map.put("msg", "上传附件失败");
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -189,7 +189,6 @@ public class MobileAttachmentController {
             map.put("msg", "删除失败");
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -211,16 +210,17 @@ public class MobileAttachmentController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            Map<String, Object> fileDocument =
-                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-            String filename = fileDocument.get("fileName") != null ? (String)fileDocument.get("fileName") : "正文.doc";
-            String fileStoreId = transactionWordManager.openDocument(tenantId, userId, processSerialNumber, itemId);
+            TransactionWordModel fileDocument =
+                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            String filename = fileDocument.getFileName() != null ? fileDocument.getFileName() : "正文.doc";
+            String fileStoreId =
+                transactionWordManager.openDocument(tenantId, userId, processSerialNumber, itemId).getData();
             if (request.getHeader(USERAGENT).indexOf(BrowserTypeEnum.FIREFOX.getValue()) > 0) {
-                filename = new String(filename.getBytes("UTF-8"), "ISO8859-1");
+                filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");
             } else if (request.getHeader(USERAGENT).toUpperCase().indexOf(BrowserTypeEnum.IE.getValue()) > 0) {
-                filename = URLEncoder.encode(filename, "UTF-8");
+                filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
             } else {
-                filename = URLEncoder.encode(filename, "UTF-8");
+                filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
             }
             if (StringUtils.isNotBlank(fileStoreId)) {
                 response.reset();
@@ -254,16 +254,17 @@ public class MobileAttachmentController {
         @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String documentTitle,
         @RequestParam(required = false) MultipartFile file, @RequestParam(required = false) String fileType,
         @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String taskId) {
-        String result = "";
         try {
-            String fullPath =
-                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
+            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, "正文.doc");
-            result = transactionWordManager.uploadWord(tenantId, userId, documentTitle, fileType, processSerialNumber,
-                "0", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
+            Boolean result = transactionWordManager.uploadWord(tenantId, userId, documentTitle, fileType,
+                processSerialNumber, "0", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            if (Boolean.TRUE.equals(result)) {
+                return "上传成功";
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+        return "正文上传失败";
     }
 }

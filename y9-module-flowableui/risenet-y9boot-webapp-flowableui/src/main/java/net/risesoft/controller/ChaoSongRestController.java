@@ -24,6 +24,7 @@ import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemChaoSongStatusEnum;
+import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -151,9 +152,9 @@ public class ChaoSongRestController {
             Integer fileNum = attachmentManager.fileCounts(tenantId, userId, processSerialNumber);
             int docNum = 0;
             // 是否正文正常
-            Map<String, Object> wordMap =
-                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-            if (!wordMap.isEmpty() && wordMap.size() > 0) {
+            TransactionWordModel wordMap =
+                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            if (wordMap != null && wordMap.getId() != null) {
                 docNum = 1;
             }
             int speakInfoNum = speakInfoManager.getNotReadCount(tenantId, userId, processInstanceId);
@@ -166,7 +167,7 @@ public class ChaoSongRestController {
             map.put("tenantId", tenantId);
             map.put("userId", userId);
             int follow = officeFollowManager.countByProcessInstanceId(tenantId, userId, processInstanceId);
-            map.put("follow", follow > 0 ? true : false);
+            map.put("follow", follow > 0);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
             e.printStackTrace();

@@ -11,6 +11,7 @@ import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
 import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
+import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -28,13 +29,13 @@ public class DocumentUtil {
         String formIds, String formNames) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId();
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         // 表单数据
         List<String> formIdList = Y9Util.stringToList(formIds, SysVariables.COMMA);
         List<String> formNameList = Y9Util.stringToList(formNames, SysVariables.COMMA);
-        List<Map<String, Object>> formListMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> formListMap = new ArrayList<>();
         for (int i = 0; i < formIdList.size(); i++) {
-            Map<String, Object> formMap = new HashMap<String, Object>(16);
+            Map<String, Object> formMap = new HashMap<>(16);
             formMap.put("formId", formIdList.get(i));
             formMap.put("formName", formNameList.get(i));
             Map<String, Object> dataMap =
@@ -45,13 +46,13 @@ public class DocumentUtil {
         map.put("formDataListMap", formListMap);
 
         // 意见框
-        List<Map<String, Object>> opinioListMap = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> opinioListMap = new ArrayList<>();
         List<ItemOpinionFrameBindModel> opinionFrameList =
             Y9Context.getBean(ItemOpinionFrameBindApi.class).findByItemId(tenantId, itemId);
         for (ItemOpinionFrameBindModel opinionFrame : opinionFrameList) {
-            Map<String, Object> opinionMap = new HashMap<String, Object>(16);
+            Map<String, Object> opinionMap = new HashMap<>(16);
             String opinionFrameMark = opinionFrame.getOpinionFrameMark();
-            List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> listMap = new ArrayList<>();
             listMap = Y9Context.getBean(OpinionApi.class).personCommentList(tenantId, userId, processSerialNumber,
                 taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
             opinionMap.put("opinionFrameMark", opinionFrameMark);
@@ -69,8 +70,8 @@ public class DocumentUtil {
         map.put("fileAttachment", fileAttachment);
 
         // 正文
-        Map<String, Object> fileDocument =
-            Y9Context.getBean(TransactionWordApi.class).findWordByProcessSerialNumber(tenantId, processSerialNumber);
+        TransactionWordModel fileDocument = Y9Context.getBean(TransactionWordApi.class)
+            .findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
         map.put("fileDocument", fileDocument);
         return map;
     }

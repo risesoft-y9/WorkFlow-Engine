@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +36,13 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.BrowserTypeEnum;
 import net.risesoft.enums.FileTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.TaoHongTemplateModel;
+import net.risesoft.model.itemadmin.TransactionHistoryWordModel;
+import net.risesoft.model.itemadmin.TransactionWordModel;
+import net.risesoft.model.itemadmin.Y9WordInfo;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.ToolUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -76,7 +82,8 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/deleteWordByIsTaoHong")
     @ResponseBody
-    public void deleteWordByIsTaoHong(@RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
+    public void deleteWordByIsTaoHong(@RequestParam(required = false) String isTaoHong,
+        @RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         transactionWordManager.deleteByIsTaoHong(tenantId, userId, processSerialNumber, isTaoHong);
@@ -90,22 +97,29 @@ public class TransactionWordController {
      * @param request
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam(required = false) String id, @RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, HttpServletResponse response, HttpServletRequest request) {
+    public void download(@RequestParam(required = false) String id, @RequestParam(required = false) String fileType,
+        @RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String processInstanceId, HttpServletResponse response,
+        HttpServletRequest request) {
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
+                Map<String, Object> retMap =
+                    draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
                 documentTitle = retMap.get("title");
             } else {
-                ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
-            if (-1 < userAgent.indexOf(BrowserTypeEnum.IE8.getValue()) || -1 < userAgent.indexOf(BrowserTypeEnum.IE6.getValue()) || -1 < userAgent.indexOf(BrowserTypeEnum.IE7.getValue())) {
+            if (-1 < userAgent.indexOf(BrowserTypeEnum.IE8.getValue())
+                || -1 < userAgent.indexOf(BrowserTypeEnum.IE6.getValue())
+                || -1 < userAgent.indexOf(BrowserTypeEnum.IE7.getValue())) {
                 title = new String(title.getBytes("gb2312"), "ISO8859-1");
                 response.reset();
                 response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
@@ -113,9 +127,11 @@ public class TransactionWordController {
                 response.setContentType("application/octet-stream");
             } else {
                 if (-1 != userAgent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
-                    title = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes("UTF-8")))) + "?=";
+                    title = "=?UTF-8?B?" + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
+                        + "?=";
                 } else {
-                    title = java.net.URLEncoder.encode(title, "UTF-8");
+                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
                     title = StringUtils.replace(title, "+", "%20");
                 }
                 response.reset();
@@ -142,24 +158,33 @@ public class TransactionWordController {
      * @param request
      */
     @RequestMapping(value = "/downloadCS")
-    public void downloadcs(@RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, HttpServletResponse response, HttpServletRequest request) {
+    public void downloadcs(@RequestParam(required = false) String fileType,
+        @RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String processInstanceId, HttpServletResponse response,
+        HttpServletRequest request) {
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-            String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-            Map<String, Object> map = transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-            String fileStoreId = map.get("fileStoreId").toString();
+            String userId = userInfo.getPersonId();
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            TransactionWordModel map =
+                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            String fileStoreId = map.getFileStoreId();
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
+                Map<String, Object> retMap =
+                    draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
                 documentTitle = retMap.get("title");
             } else {
-                ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
-            if (-1 < userAgent.indexOf(BrowserTypeEnum.IE8.getValue()) || -1 < userAgent.indexOf(BrowserTypeEnum.IE6.getValue()) || -1 < userAgent.indexOf(BrowserTypeEnum.IE7.getValue())) {
+            if (-1 < userAgent.indexOf(BrowserTypeEnum.IE8.getValue())
+                || -1 < userAgent.indexOf(BrowserTypeEnum.IE6.getValue())
+                || -1 < userAgent.indexOf(BrowserTypeEnum.IE7.getValue())) {
                 title = new String(title.getBytes("gb2312"), "ISO8859-1");
                 response.reset();
                 response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
@@ -167,9 +192,11 @@ public class TransactionWordController {
                 response.setContentType("application/octet-stream");
             } else {
                 if (-1 != userAgent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
-                    title = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes("UTF-8")))) + "?=";
+                    title = "=?UTF-8?B?" + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
+                        + "?=";
                 } else {
-                    title = java.net.URLEncoder.encode(title, "UTF-8");
+                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
                     title = StringUtils.replace(title, "+", "%20");
                 }
                 response.reset();
@@ -188,12 +215,15 @@ public class TransactionWordController {
 
     @RequestMapping(value = "/downLoadHistoryDoc")
     @ResponseBody
-    public void downLoadHistoryDoc(@RequestParam(required = false) String taskId, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String fileType, HttpServletResponse response,
-        HttpServletRequest request) {
+    public void downLoadHistoryDoc(@RequestParam(required = false) String taskId,
+        @RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String fileType,
+        HttpServletResponse response, HttpServletRequest request) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map = transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId);
-        String fileStoreId = map.get("fileStoreId").toString();
+        TransactionHistoryWordModel map =
+            transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId).getData();
+        String fileStoreId = map.getFileStoreId();
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();
@@ -201,15 +231,19 @@ public class TransactionWordController {
             String title = "";
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
+                Map<String, Object> retMap =
+                    draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
                 documentTitle = retMap.get("title");
             } else {
-                ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
             title = documentTitle != null ? (String)documentTitle : "正文";
             title = ToolUtil.replaceSpecialStr(title);
-            if (-1 < userAgent.indexOf(BrowserTypeEnum.IE8.getValue()) || -1 < userAgent.indexOf(BrowserTypeEnum.IE6.getValue()) || -1 < userAgent.indexOf(BrowserTypeEnum.IE7.getValue())) {
+            if (-1 < userAgent.indexOf(BrowserTypeEnum.IE8.getValue())
+                || -1 < userAgent.indexOf(BrowserTypeEnum.IE6.getValue())
+                || -1 < userAgent.indexOf(BrowserTypeEnum.IE7.getValue())) {
                 title = new String(title.getBytes("gb2312"), "ISO8859-1");
                 response.reset();
                 response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
@@ -217,9 +251,11 @@ public class TransactionWordController {
                 response.setContentType("application/octet-stream");
             } else {
                 if (-1 != userAgent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
-                    title = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes("UTF-8")))) + "?=";
+                    title = "=?UTF-8?B?" + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
+                        + "?=";
                 } else {
-                    title = java.net.URLEncoder.encode(title, "UTF-8");
+                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
                     title = StringUtils.replace(title, "+", "%20");
                 }
                 response.reset();
@@ -237,16 +273,9 @@ public class TransactionWordController {
 
     @RequestMapping(value = "/getUpdateWord")
     @ResponseBody
-    public Map<String, Object> getUpdateWord(@RequestParam(required = false) String processSerialNumber) {
-        Map<String, Object> map = new HashMap<>(16);
+    public Y9Result<TransactionWordModel> getUpdateWord(@RequestParam(required = false) String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            map = transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
-        }
-        return map;
+        return transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
     }
 
     /**
@@ -255,7 +284,8 @@ public class TransactionWordController {
     @RequestMapping("/openBlankWordTemplate")
     @ResponseBody
     public void openBlankWordTemplate(HttpServletRequest request, HttpServletResponse response) {
-        String filePath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "tags" + File.separator + "template" + File.separator + "blankTemplate.doc";
+        String filePath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "tags"
+            + File.separator + "template" + File.separator + "blankTemplate.doc";
         ServletOutputStream out = null;
         BufferedInputStream bi = null;
         try {
@@ -263,9 +293,12 @@ public class TransactionWordController {
             String fileName = file.getName();
             String agent = request.getHeader("USER-AGENT");
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
-                fileName = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8")))) + "?=";
+                fileName = "=?UTF-8?B?"
+                    + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
+                    + "?=";
             } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 fileName = StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
@@ -299,10 +332,12 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/openDocument")
     @ResponseBody
-    public void openDocument(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String itemId, HttpServletResponse response, HttpServletRequest request) {
+    public void openDocument(@RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String itemId, HttpServletResponse response, HttpServletRequest request) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-        String y9FileStoreId = transactionWordManager.openDocument(tenantId, userId, processSerialNumber, itemId);
+        String y9FileStoreId =
+            transactionWordManager.openDocument(tenantId, userId, processSerialNumber, itemId).getData();
 
         ServletOutputStream out = null;
         try {
@@ -310,9 +345,12 @@ public class TransactionWordController {
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileName = y9FileStore.getFileName();
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
-                fileName = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8")))) + "?=";
+                fileName = "=?UTF-8?B?"
+                    + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
+                    + "?=";
             } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 fileName = StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
@@ -348,11 +386,12 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/openTaohongTemplate")
     @ResponseBody
-    public void openDocumentTemplate(@RequestParam(required = false, name = "templateGUID") String templateGuid, @RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
+    public void openDocumentTemplate(@RequestParam(required = false, name = "templateGUID") String templateGuid,
+        @RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         transactionWordManager.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "0");
-        String content = transactionWordManager.openDocumentTemplate(tenantId, userId, templateGuid);
+        String content = transactionWordManager.openDocumentTemplate(tenantId, userId, templateGuid).getData();
         ServletOutputStream out = null;
         try {
             byte[] result = null;
@@ -380,20 +419,25 @@ public class TransactionWordController {
 
     @RequestMapping(value = "/openHistoryVersionDoc")
     @ResponseBody
-    public void openHistoryVersionDoc(@RequestParam(required = false) String taskId, @RequestParam(required = false) String itemId, HttpServletResponse response, HttpServletRequest request) {
+    public void openHistoryVersionDoc(@RequestParam(required = false) String taskId,
+        @RequestParam(required = false) String itemId, HttpServletResponse response, HttpServletRequest request) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map = transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId);
-        String fileStoreId = map.get("fileStoreId").toString();
+        TransactionHistoryWordModel map =
+            transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId).getData();
+        String fileStoreId = map.getFileStoreId();
         ServletOutputStream out = null;
         try {
             String agent = request.getHeader("USER-AGENT");
             Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
             String fileName = y9FileStore.getFileName();
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
-                fileName = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8")))) + "?=";
+                fileName = "=?UTF-8?B?"
+                    + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
+                    + "?=";
             } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 fileName = StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
@@ -433,7 +477,7 @@ public class TransactionWordController {
     public void openPdf(@RequestParam(required = false) String processSerialNumber, HttpServletResponse response) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-        String y9FileStoreId = transactionWordManager.openPdf(tenantId, userId, processSerialNumber);
+        String y9FileStoreId = transactionWordManager.openPdf(tenantId, userId, processSerialNumber).getData();
 
         ServletOutputStream out = null;
         try {
@@ -472,11 +516,13 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/openRevokePDFAfterDocument")
     @ResponseBody
-    public void openRevokePdfAfterDocument(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String istaohong, HttpServletResponse response, HttpServletRequest request) {
+    public void openRevokePdfAfterDocument(@RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String istaohong, HttpServletResponse response, HttpServletRequest request) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         transactionWordManager.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "3");
-        String y9FileStoreId = transactionWordManager.openRevokePdfAfterDocument(tenantId, userId, processSerialNumber, istaohong);
+        String y9FileStoreId = transactionWordManager
+            .openRevokePdfAfterDocument(tenantId, userId, processSerialNumber, istaohong).getData();
 
         ServletOutputStream out = null;
         try {
@@ -484,9 +530,12 @@ public class TransactionWordController {
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileName = y9FileStore.getFileName();
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
-                fileName = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8")))) + "?=";
+                fileName = "=?UTF-8?B?"
+                    + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
+                    + "?=";
             } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 fileName = StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
@@ -542,8 +591,10 @@ public class TransactionWordController {
     @SuppressWarnings("unused")
     @ResponseBody
     @RequestMapping(value = "/saveAsPDFFile")
-    public void saveAsPdfFile(@RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String taskId,
-        HttpServletRequest request, HttpServletResponse response) {
+    public void saveAsPdfFile(@RequestParam(required = false) String fileType,
+        @RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String isTaoHong,
+        @RequestParam(required = false) String taskId, HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/html; charset=utf-8");
         response.setHeader("Cache-Control", "no-cache");
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
@@ -555,16 +606,22 @@ public class TransactionWordController {
         try {
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
+                Map<String, Object> retMap =
+                    draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
                 documentTitle = retMap.get("title");
             } else {
-                ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
             title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
-            result = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
+            Boolean result2 = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
+                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            if (Boolean.TRUE.equals(result2)) {
+                result = "success:true";
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -576,11 +633,13 @@ public class TransactionWordController {
     }
 
     @RequestMapping(value = "/showHistoryDoc")
-    public String showHistoryDoc(@RequestParam(required = false) String taskId, @RequestParam(required = false) String historyFileType, ModelMap model) {
+    public String showHistoryDoc(@RequestParam(required = false) String taskId,
+        @RequestParam(required = false) String historyFileType, ModelMap model) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map = transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId);
-        model.putAll(map);
+        TransactionHistoryWordModel map =
+            transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId).getData();
+        model.addAttribute("history", map);
         model.addAttribute("taskId", taskId);
         model.addAttribute("historyFileType", historyFileType);
         return "history/openHistoryDoc";
@@ -592,15 +651,18 @@ public class TransactionWordController {
      * @return
      */
     @RequestMapping("/showWord")
-    public String showWord(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String itemId, @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
+    public String showWord(@RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String itemId,
+        @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
         @RequestParam(required = false) String browser, Model model) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map = transactionWordManager.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId);
-        model.addAllAttributes(map);
+        Y9WordInfo map =
+            transactionWordManager.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId).getData();
         Object documentTitle = null;
         if (StringUtils.isBlank(processInstanceId)) {
-            Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
+            Map<String, Object> retMap =
+                draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
             documentTitle = retMap.get("title");
         } else {
             String[] pInstanceId = processInstanceId.split(",");
@@ -608,6 +670,12 @@ public class TransactionWordController {
             documentTitle = processModel.getTitle();
             processInstanceId = pInstanceId[0];
         }
+        map.setDocumentTitle((documentTitle != null ? documentTitle.toString() : "正文"));
+        map.setBrowser(browser);
+        map.setProcessInstanceId(processInstanceId);
+        map.setTenantId(tenantId);
+        map.setUserId(userId);
+        model.addAttribute("word", map);
         model.addAttribute("documentTitle", documentTitle != null ? documentTitle : "正文");
         model.addAttribute("browser", browser);
         model.addAttribute("processInstanceId", processInstanceId);
@@ -624,9 +692,10 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/list")
     @ResponseBody
-    public List<Map<String, Object>> taoHongTemplateList(@RequestParam String currentBureauGuid) {
+    public List<TaoHongTemplateModel> taoHongTemplateList(@RequestParam String currentBureauGuid) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        String userId = userInfo.getPersonId(), choiceDeptId = Y9LoginUserHolder.getDeptId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = userInfo.getPersonId(), choiceDeptId = Y9LoginUserHolder.getDeptId(),
+            tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(currentBureauGuid)) {
             if (StringUtils.isNotBlank(currentBureauGuid)) {
                 currentBureauGuid = userInfo.getParentId();
@@ -634,7 +703,7 @@ public class TransactionWordController {
                 currentBureauGuid = choiceDeptId;
             }
         }
-        return transactionWordManager.taoHongTemplateList(tenantId, userId, currentBureauGuid);
+        return transactionWordManager.taoHongTemplateList(tenantId, userId, currentBureauGuid).getData();
     }
 
     /**
@@ -647,7 +716,9 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> upload(@RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId, @RequestParam(required = false) MultipartFile file) {
+    public Map<String, Object> upload(@RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
+        @RequestParam(required = false) MultipartFile file) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "上传成功");
@@ -663,7 +734,8 @@ public class TransactionWordController {
                 fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
             }
             String fileType = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
-            if (!(FileTypeEnum.DOC.getName().equals(fileType) || FileTypeEnum.DOCX.getName().equals(fileType) || FileTypeEnum.PDF.getName().equals(fileType) || FileTypeEnum.TIF.getName().equals(fileType))) {
+            if (!(FileTypeEnum.DOC.getName().equals(fileType) || FileTypeEnum.DOCX.getName().equals(fileType)
+                || FileTypeEnum.PDF.getName().equals(fileType) || FileTypeEnum.TIF.getName().equals(fileType))) {
                 map.put(UtilConsts.SUCCESS, false);
                 map.put("msg", "请上传后缀名为.doc,.docx,.pdf,.tif文件");
                 return map;
@@ -676,17 +748,20 @@ public class TransactionWordController {
             }
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
+                Map<String, Object> retMap =
+                    draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
                 documentTitle = retMap.get("title");
             } else {
-                ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
-            String result = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
-            if (result.contains(UtilConsts.TRUE)) {
+            Boolean result = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
+                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            if (Boolean.TRUE.equals(result)) {
                 map.put(UtilConsts.SUCCESS, true);
                 if (fileType.equals(FileTypeEnum.PDF.getName()) || fileType.equals(FileTypeEnum.TIF.getName())) {
                     map.put("isPdf", true);
@@ -713,7 +788,9 @@ public class TransactionWordController {
      */
     @RequestMapping(value = "/uploadWord", method = RequestMethod.POST)
     @ResponseBody
-    public String uploadWord(@RequestParam(required = false) String fileType, @RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
+    public String uploadWord(@RequestParam(required = false) String fileType,
+        @RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
         HttpServletRequest request, HttpServletResponse response) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -724,17 +801,23 @@ public class TransactionWordController {
         try {
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
+                Map<String, Object> retMap =
+                    draftManager.getDraftByProcessSerialNumber(tenantId, userId, processSerialNumber);
                 documentTitle = retMap.get("title");
             } else {
-                ProcessParamModel processModel = processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
             }
 
             title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
-            result = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
+            Boolean result2 = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
+                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            if (Boolean.TRUE.equals(result2)) {
+                result = "success:true";
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

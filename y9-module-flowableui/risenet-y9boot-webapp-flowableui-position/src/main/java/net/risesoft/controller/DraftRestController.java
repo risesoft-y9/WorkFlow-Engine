@@ -7,7 +7,10 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,6 +27,7 @@ import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
+import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -40,7 +44,7 @@ import net.risesoft.y9.configuration.Y9Properties;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/draft")
+@RequestMapping(value = "/vue/draft", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DraftRestController {
 
     private final Draft4PositionApi draft4PositionApi;
@@ -61,7 +65,7 @@ public class DraftRestController {
      * @param ids 草稿ids，逗号隔开
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/deleteDraft", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/deleteDraft")
     public Y9Result<String> deleteDraft(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -85,12 +89,15 @@ public class DraftRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/draftList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> draftList(@RequestParam int page, @RequestParam int rows, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
+    @GetMapping(value = "/draftList")
+    public Y9Page<Map<String, Object>> draftList(@RequestParam int page, @RequestParam int rows,
+        @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-        Map<String, Object> map = draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, false);
+        Map<String, Object> map =
+            draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, false);
         List<Map<String, Object>> draftList = (List<Map<String, Object>>)map.get("rows");
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), draftList, "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()),
+            Integer.parseInt(map.get("total").toString()), draftList, "获取列表成功");
     }
 
     /**
@@ -103,12 +110,15 @@ public class DraftRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/draftRecycleList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> draftRecycleList(@RequestParam int page, @RequestParam int rows, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
+    @GetMapping(value = "/draftRecycleList")
+    public Y9Page<Map<String, Object>> draftRecycleList(@RequestParam int page, @RequestParam int rows,
+        @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map = draft4PositionApi.getDraftList(tenantId, Y9LoginUserHolder.getPositionId(), page, rows, title, itemId, true);
+        Map<String, Object> map = draft4PositionApi.getDraftList(tenantId, Y9LoginUserHolder.getPositionId(), page,
+            rows, title, itemId, true);
         List<Map<String, Object>> draftList = (List<Map<String, Object>>)map.get("rows");
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), draftList, "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()),
+            Integer.parseInt(map.get("total").toString()), draftList, "获取列表成功");
     }
 
     /**
@@ -117,9 +127,10 @@ public class DraftRestController {
      * @param itemId 事项id
      * @return Y9Result<List < ItemViewConfModel>>
      */
-    @RequestMapping(value = "/draftViewConf", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/draftViewConf")
     public Y9Result<List<ItemViewConfModel>> draftViewConf(@RequestParam @NotBlank String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DRAFT.getValue());
+        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
+            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DRAFT.getValue());
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 
@@ -132,7 +143,8 @@ public class DraftRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping("/openDraft")
-    public Y9Result<Map<String, Object>> openDraft(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String draftRecycle) {
+    public Y9Result<Map<String, Object>> openDraft(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String itemId, @RequestParam(required = false) String draftRecycle) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         Map<String, Object> map = new HashMap<>(16);
@@ -150,8 +162,9 @@ public class DraftRestController {
         Integer fileNum = attachment4PositionApi.fileCounts(tenantId, processSerialNumber).getData();
         int docNum = 0;
         // 是否正文正常
-        Map<String, Object> wordMap = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-        if (!wordMap.isEmpty()) {
+        TransactionWordModel wordMap =
+            transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
+        if (wordMap != null && wordMap.getId() != null) {
             docNum = 1;
         }
         int associatedFileNum = associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber).getData();
@@ -167,7 +180,7 @@ public class DraftRestController {
      * @param id 草稿id
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/reduction", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/reduction", method = RequestMethod.POST)
     public Y9Result<String> reduction(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -187,7 +200,7 @@ public class DraftRestController {
      * @param ids 草稿ids，逗号隔开
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/removeDraft", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/removeDraft", method = RequestMethod.POST)
     public Y9Result<String> removeDraft(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -212,15 +225,18 @@ public class DraftRestController {
      * @param title 标题
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveDraft", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveDraft(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey, @RequestParam(required = false) String number, @RequestParam(required = false) String level,
+    @RequestMapping(value = "/saveDraft", method = RequestMethod.POST)
+    public Y9Result<String> saveDraft(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
+        @RequestParam(required = false) String number, @RequestParam(required = false) String level,
         @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         if (StringUtils.isBlank(title)) {
             title = "未定义标题";
         }
         try {
-            Map<String, Object> map = draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number, level, title);
+            Map<String, Object> map = draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber,
+                processDefinitionKey, number, level, title);
             if ((Boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.successMsg("保存成功");
             }

@@ -21,6 +21,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
+import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -165,9 +166,9 @@ public class DraftRestController {
         Integer fileNum = attachmentManager.fileCounts(tenantId, userId, processSerialNumber);
         int docNum = 0;
         // 是否正文正常
-        Map<String, Object> wordMap =
-            transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-        if (!wordMap.isEmpty() && wordMap.size() > 0) {
+        TransactionWordModel wordMap =
+            transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
+        if (wordMap != null && wordMap.getId() != null) {
             docNum = 1;
         }
         int associatedFileNum = associatedFileManager.countAssociatedFile(tenantId, processSerialNumber);

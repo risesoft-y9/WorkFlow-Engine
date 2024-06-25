@@ -4,7 +4,6 @@ import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.model.itemadmin.AttachmentModel;
+import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
@@ -59,7 +59,8 @@ public class MobileAttachmentController {
      * @param id 附件id
      */
     @RequestMapping(value = "/download")
-    public void attachmentDownload(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
+    public void attachmentDownload(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String id,
+        HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             AttachmentModel model = attachment4PositionApi.findById(tenantId, id).getData();
@@ -93,8 +94,11 @@ public class MobileAttachmentController {
      * @param rows 行数
      */
     @RequestMapping(value = "/list")
-    public void attachmentList(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, int page, int rows, HttpServletResponse response) {
-        Y9Page<AttachmentModel> y9Page = attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
+    public void attachmentList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, int page,
+        int rows, HttpServletResponse response) {
+        Y9Page<AttachmentModel> y9Page =
+            attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Page));
     }
 
@@ -112,8 +116,12 @@ public class MobileAttachmentController {
      * @param fileSource 附件来源
      */
     @RequestMapping(value = "/upload")
-    public void attachmentUpload(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam(required = false) MultipartFile file, @RequestParam(required = false) String processInstanceId,
-        @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes, @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, HttpServletResponse response) {
+    public void attachmentUpload(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam(required = false) MultipartFile file, @RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource,
+        HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         if (StringUtils.isNotEmpty(describes)) {
             describes = URLDecoder.decode(describes, StandardCharsets.UTF_8);
@@ -123,10 +131,13 @@ public class MobileAttachmentController {
         if (fileName != null) {
             fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
         }
-        String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
+        String fullPath =
+            Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
         try {
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
-            Y9Result<String> y9Result = attachment4PositionApi.upload(tenantId, userId, positionId, fileName, y9FileStore.getDisplayFileSize(), processInstanceId, taskId, describes, processSerialNumber, fileSource, y9FileStore.getId());
+            Y9Result<String> y9Result =
+                attachment4PositionApi.upload(tenantId, userId, positionId, fileName, y9FileStore.getDisplayFileSize(),
+                    processInstanceId, taskId, describes, processSerialNumber, fileSource, y9FileStore.getId());
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Result));
         } catch (Exception e) {
             e.printStackTrace();
@@ -141,7 +152,8 @@ public class MobileAttachmentController {
      * @param ids 附件ids
      */
     @RequestMapping(value = "/delFile")
-    public void delFile(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String ids, HttpServletResponse response) {
+    public void delFile(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String ids,
+        HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         attachment4PositionApi.delFile(tenantId, ids);
     }
@@ -155,12 +167,16 @@ public class MobileAttachmentController {
      * @param itemId 事项id
      */
     @RequestMapping(value = "/downloadWord")
-    public void downloadWord(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String itemId, HttpServletResponse response, HttpServletRequest request) {
+    public void downloadWord(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestParam @NotBlank String processSerialNumber,
+        @RequestParam(required = false) String itemId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Map<String, Object> fileDocument = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-            String filename = fileDocument.get("fileName") != null ? (String)fileDocument.get("fileName") : "正文.doc";
-            String fileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId);
+            TransactionWordModel fileDocument =
+                transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            String filename = fileDocument.getFileName() != null ? fileDocument.getFileName() : "正文.doc";
+            String fileStoreId =
+                transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId).getData();
             if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
                 filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
             } else if (request.getHeader("User-Agent").toUpperCase().indexOf("MSIE") > 0) {
@@ -196,16 +212,21 @@ public class MobileAttachmentController {
      * @return String
      */
     @RequestMapping(value = "/uploadWord")
-    public String uploadWord(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String documentTitle, @RequestParam(required = false) MultipartFile file, @RequestParam(required = false) String fileType,
+    public String uploadWord(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String documentTitle,
+        @RequestParam(required = false) MultipartFile file, @RequestParam(required = false) String fileType,
         @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String taskId) {
-        String result = "";
         try {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, "正文.doc");
-            result = transactionWordApi.uploadWord(tenantId, userId, documentTitle, fileType, processSerialNumber, "0", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
+            Boolean result = transactionWordApi.uploadWord(tenantId, userId, documentTitle, fileType,
+                processSerialNumber, "0", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            if (Boolean.TRUE.equals(result)) {
+                return "上传成功";
+            }
         } catch (Exception e) {
             LOGGER.error("正文上传失败", e);
         }
-        return result;
+        return "正文上传失败";
     }
 }

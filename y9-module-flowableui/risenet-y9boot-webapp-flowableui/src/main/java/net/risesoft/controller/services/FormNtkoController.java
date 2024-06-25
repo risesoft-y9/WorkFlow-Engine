@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.risesoft.api.platform.org.OrgUnitApi;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +31,19 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import net.risesoft.api.itemadmin.DraftApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.BrowserTypeEnum;
 import net.risesoft.enums.FileTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.TaoHongTemplateModel;
+import net.risesoft.model.itemadmin.TransactionHistoryWordModel;
+import net.risesoft.model.itemadmin.TransactionWordModel;
+import net.risesoft.model.itemadmin.Y9WordInfo;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.ToolUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -129,10 +135,10 @@ public class FormNtkoController {
             } else {
                 if (-1 != userAgent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                     title = "=?UTF-8?B?"
-                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes("UTF-8"))))
+                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
                         + "?=";
                 } else {
-                    title = java.net.URLEncoder.encode(title, "UTF-8");
+                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
                     title = StringUtils.replace(title, "+", "%20");
                 }
                 response.reset();
@@ -169,9 +175,9 @@ public class FormNtkoController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            Map<String, Object> map =
-                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-            String fileStoreId = map.get("fileStoreId").toString();
+            TransactionWordModel map =
+                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            String fileStoreId = map.getFileStoreId();
             Object documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
                 Map<String, Object> retMap =
@@ -196,10 +202,10 @@ public class FormNtkoController {
             } else {
                 if (-1 != userAgent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                     title = "=?UTF-8?B?"
-                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes("UTF-8"))))
+                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
                         + "?=";
                 } else {
-                    title = java.net.URLEncoder.encode(title, "UTF-8");
+                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
                     title = StringUtils.replace(title, "+", "%20");
                 }
                 response.reset();
@@ -226,8 +232,9 @@ public class FormNtkoController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> map = transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId);
-        String fileStoreId = map.get("fileStoreId").toString();
+        TransactionHistoryWordModel history =
+            transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId).getData();
+        String fileStoreId = history.getFileStoreId();
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();
@@ -256,10 +263,10 @@ public class FormNtkoController {
             } else {
                 if (-1 != userAgent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                     title = "=?UTF-8?B?"
-                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes("UTF-8"))))
+                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
                         + "?=";
                 } else {
-                    title = java.net.URLEncoder.encode(title, "UTF-8");
+                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
                     title = StringUtils.replace(title, "+", "%20");
                 }
                 response.reset();
@@ -317,10 +324,10 @@ public class FormNtkoController {
             } else {
                 if (-1 != userAgent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                     title = "=?UTF-8?B?"
-                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes("UTF-8"))))
+                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
                         + "?=";
                 } else {
-                    title = java.net.URLEncoder.encode(title, "UTF-8");
+                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
                     title = StringUtils.replace(title, "+", "%20");
                 }
                 response.reset();
@@ -339,19 +346,12 @@ public class FormNtkoController {
 
     @RequestMapping(value = "/getUpdateWord")
     @ResponseBody
-    public Map<String, Object> getUpdateWord(@RequestParam(required = false) String tenantId,
+    public Y9Result<TransactionWordModel> getUpdateWord(@RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, @RequestParam(required = false) String processSerialNumber) {
-        Map<String, Object> map = new HashMap<>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        try {
-            map = transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
-        }
-        return map;
+        return transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
     }
 
     /**
@@ -370,10 +370,10 @@ public class FormNtkoController {
             String agent = request.getHeader("USER-AGENT");
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                 fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8"))))
+                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
                     + "?=";
             } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 fileName = StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
@@ -413,7 +413,8 @@ public class FormNtkoController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId = transactionWordManager.openDocument(tenantId, userId, processSerialNumber, itemId);
+        String y9FileStoreId =
+            transactionWordManager.openDocument(tenantId, userId, processSerialNumber, itemId).getData();
 
         ServletOutputStream out = null;
         try {
@@ -422,10 +423,10 @@ public class FormNtkoController {
             String fileName = y9FileStore.getFileName();
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                 fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8"))))
+                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
                     + "?=";
             } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 fileName = StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
@@ -468,7 +469,7 @@ public class FormNtkoController {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         transactionWordManager.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "0");
-        String content = transactionWordManager.openDocumentTemplate(tenantId, userId, templateGuid);
+        String content = transactionWordManager.openDocumentTemplate(tenantId, userId, templateGuid).getData();
         ServletOutputStream out = null;
         try {
             byte[] result = null;
@@ -502,8 +503,9 @@ public class FormNtkoController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> map = transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId);
-        String fileStoreId = map.get("fileStoreId").toString();
+        TransactionHistoryWordModel history =
+            transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId).getData();
+        String fileStoreId = history.getFileStoreId();
         ServletOutputStream out = null;
         try {
             String agent = request.getHeader("USER-AGENT");
@@ -511,10 +513,10 @@ public class FormNtkoController {
             String fileName = y9FileStore.getFileName();
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                 fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8"))))
+                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
                     + "?=";
             } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 fileName = StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
@@ -557,7 +559,7 @@ public class FormNtkoController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId = transactionWordManager.openPdf(tenantId, userId, processSerialNumber);
+        String y9FileStoreId = transactionWordManager.openPdf(tenantId, userId, processSerialNumber).getData();
 
         ServletOutputStream out = null;
         try {
@@ -604,8 +606,8 @@ public class FormNtkoController {
         Y9LoginUserHolder.setPerson(person);
         // 删除转PDF的文件
         transactionWordManager.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "3");
-        String y9FileStoreId =
-            transactionWordManager.openRevokePdfAfterDocument(tenantId, userId, processSerialNumber, istaohong);
+        String y9FileStoreId = transactionWordManager
+            .openRevokePdfAfterDocument(tenantId, userId, processSerialNumber, istaohong).getData();
 
         ServletOutputStream out = null;
         try {
@@ -614,10 +616,10 @@ public class FormNtkoController {
             String fileName = y9FileStore.getFileName();
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                 fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8"))))
+                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
                     + "?=";
             } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 fileName = StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
@@ -703,11 +705,13 @@ public class FormNtkoController {
                 documentTitle = processModel.getTitle();
             }
             title = documentTitle != null ? (String)documentTitle : "正文";
-            String fullPath =
-                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
+            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
-            result = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
+            Boolean result2 = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
+                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            if (Boolean.TRUE.equals(result2)) {
+                result = "success:true";
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -720,8 +724,9 @@ public class FormNtkoController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> map = transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId);
-        model.putAll(map);
+        TransactionHistoryWordModel map =
+            transactionWordManager.findHistoryVersionDoc(tenantId, userId, taskId).getData();
+        model.addAttribute("history", map);
         model.addAttribute("taskId", taskId);
         model.addAttribute("historyFileType", historyFileType);
         return "history/openHistoryDoc";
@@ -738,9 +743,8 @@ public class FormNtkoController {
         @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
         @RequestParam(required = false) String browser, @RequestParam(required = false) String tenantId,
         @RequestParam(required = false) String userId, Model model) {
-        Map<String, Object> map =
-            transactionWordManager.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId);
-        model.addAllAttributes(map);
+        Y9WordInfo map =
+            transactionWordManager.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId).getData();
         Object documentTitle = null;
         if (StringUtils.isBlank(processInstanceId)) {
             Map<String, Object> retMap =
@@ -752,6 +756,12 @@ public class FormNtkoController {
             documentTitle = processModel.getTitle();
             processInstanceId = pInstanceId[0];
         }
+        map.setDocumentTitle((documentTitle != null ? documentTitle.toString() : "正文"));
+        map.setBrowser(browser);
+        map.setProcessInstanceId(processInstanceId);
+        map.setTenantId(tenantId);
+        map.setUserId(userId);
+        model.addAttribute("wordInfo", map);
         model.addAttribute("documentTitle", documentTitle != null ? documentTitle : "正文");
         model.addAttribute("browser", browser);
         model.addAttribute("processInstanceId", processInstanceId);
@@ -768,7 +778,7 @@ public class FormNtkoController {
      */
     @RequestMapping(value = "/list")
     @ResponseBody
-    public List<Map<String, Object>> taoHongTemplateList(@RequestParam String currentBureauGuid,
+    public List<TaoHongTemplateModel> taoHongTemplateList(@RequestParam String currentBureauGuid,
         @RequestParam(required = false) String tenantId, @RequestParam(required = false) String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
@@ -776,7 +786,7 @@ public class FormNtkoController {
         if (StringUtils.isBlank(currentBureauGuid)) {
             currentBureauGuid = person.getParentId();
         }
-        return transactionWordManager.taoHongTemplateList(tenantId, userId, currentBureauGuid);
+        return transactionWordManager.taoHongTemplateList(tenantId, userId, currentBureauGuid).getData();
     }
 
     /**
@@ -832,12 +842,11 @@ public class FormNtkoController {
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";
-            String fullPath =
-                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
+            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
-            String result = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
-            if (result.contains(UtilConsts.TRUE)) {
+            Boolean result = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
+                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            if (Boolean.TRUE.equals(result)) {
                 map.put(UtilConsts.SUCCESS, true);
                 if (fileType.equals(FileTypeEnum.PDF.getName()) || fileType.equals(FileTypeEnum.TIF.getName())) {
                     map.put("isPdf", true);
@@ -891,11 +900,13 @@ public class FormNtkoController {
             }
 
             title = documentTitle != null ? (String)documentTitle : "正文";
-            String fullPath =
-                Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
+            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
-            result = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId());
+            Boolean result2 = transactionWordManager.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
+                isTaoHong, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            if (Boolean.TRUE.equals(result2)) {
+                result = "success:true";
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

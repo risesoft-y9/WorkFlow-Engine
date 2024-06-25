@@ -30,6 +30,7 @@ import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
@@ -171,9 +172,9 @@ public class DocumentRestController {
             Integer fileNum = attachmentManager.fileCounts(tenantId, userId, processSerialNumber);
             int docNum = 0;
             // 是否正文正常
-            Map<String, Object> wordMap =
-                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-            if (!wordMap.isEmpty() && wordMap.size() > 0) {
+            TransactionWordModel wordMap =
+                transactionWordManager.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            if (wordMap != null && wordMap.getId() != null) {
                 docNum = 1;
             }
             int speakInfoNum = speakInfoManager.getNotReadCount(tenantId, userId, processInstanceId);
@@ -190,7 +191,7 @@ public class DocumentRestController {
             map.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
             map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
             int follow = officeFollowManager.countByProcessInstanceId(tenantId, userId, processInstanceId);
-            map.put("follow", follow > 0 ? true : false);
+            map.put("follow", follow > 0);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
             e.printStackTrace();

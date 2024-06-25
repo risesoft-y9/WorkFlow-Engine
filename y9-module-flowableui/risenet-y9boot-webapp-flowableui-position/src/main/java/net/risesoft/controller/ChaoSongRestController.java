@@ -27,6 +27,7 @@ import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.ChaoSongModel;
+import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -70,7 +71,8 @@ public class ChaoSongRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/changeChaoSongState", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> changeChaoSongState(@RequestParam @NotBlank String id, @RequestParam @NotBlank String type) {
+    public Y9Result<String> changeChaoSongState(@RequestParam @NotBlank String id,
+        @RequestParam @NotBlank String type) {
         try {
             chaoSong4PositionApi.changeChaoSongState(Y9LoginUserHolder.getTenantId(), id, type);
             return Y9Result.successMsg("操作成功");
@@ -124,12 +126,14 @@ public class ChaoSongRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/detail", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> detail(@RequestParam @NotBlank String id, @RequestParam @NotBlank String processInstanceId, @RequestParam Integer status) {
+    public Y9Result<Map<String, Object>> detail(@RequestParam @NotBlank String id,
+        @RequestParam @NotBlank String processInstanceId, @RequestParam Integer status) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map;
         try {
-            map = chaoSong4PositionApi.detail(person.getTenantId(), positionId, id, processInstanceId, status, false).getData();
+            map = chaoSong4PositionApi.detail(person.getTenantId(), positionId, id, processInstanceId, status, false)
+                .getData();
             map.put("itemAdminBaseURL", y9Config.getCommon().getItemAdminBaseUrl());
             map.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
             map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
@@ -138,12 +142,14 @@ public class ChaoSongRestController {
             Integer fileNum = attachment4PositionApi.fileCounts(tenantId, processSerialNumber).getData();
             int docNum = 0;
             // 是否正文正常
-            Map<String, Object> wordMap = transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber);
-            if (!wordMap.isEmpty()) {
+            TransactionWordModel wordMap =
+                transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            if (wordMap != null && wordMap.getId() != null) {
                 docNum = 1;
             }
             int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, person.getPersonId(), processInstanceId);
-            int associatedFileNum = associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber).getData();
+            int associatedFileNum =
+                associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber).getData();
             map.put("userName", Y9LoginUserHolder.getUserInfo().getName());
             map.put("docNum", docNum);
             map.put("speakInfoNum", speakInfoNum);
@@ -171,13 +177,17 @@ public class ChaoSongRestController {
      * @return Y9Page<ChaoSongModel>
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<ChaoSongModel> list(@RequestParam @NotBlank String type, @RequestParam(required = false) String userName, @RequestParam @NotBlank String processInstanceId, @RequestParam int rows, @RequestParam int page) {
+    public Y9Page<ChaoSongModel> list(@RequestParam @NotBlank String type,
+        @RequestParam(required = false) String userName, @RequestParam @NotBlank String processInstanceId,
+        @RequestParam int rows, @RequestParam int page) {
         String tenantId = Y9LoginUserHolder.getTenantId(), senderId = Y9LoginUserHolder.getPositionId();
         try {
             if (type.equals("my")) {
-                return chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, senderId, processInstanceId, userName, rows, page);
+                return chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, senderId, processInstanceId,
+                    userName, rows, page);
             } else {
-                return chaoSong4PositionApi.getListByProcessInstanceId(tenantId, senderId, processInstanceId, userName, rows, page);
+                return chaoSong4PositionApi.getListByProcessInstanceId(tenantId, senderId, processInstanceId, userName,
+                    rows, page);
             }
         } catch (Exception e) {
             LOGGER.error("获取抄送信息", e);
@@ -200,14 +210,19 @@ public class ChaoSongRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<Map<String, Object>> save(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String users, @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent,
-        @RequestParam(required = false) String smsPersonId, @RequestParam(required = false) String itemId, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processDefinitionKey) {
+    public Y9Result<Map<String, Object>> save(@RequestParam @NotBlank String processInstanceId,
+        @RequestParam @NotBlank String users, @RequestParam(required = false) String isSendSms,
+        @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent,
+        @RequestParam(required = false) String smsPersonId, @RequestParam(required = false) String itemId,
+        @RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String processDefinitionKey) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         try {
             Map<String, Object> resMap = new HashMap<>(16);
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> map1 = document4PositionApi.startProcess(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId, processSerialNumber, processDefinitionKey);
+                Map<String, Object> map1 = document4PositionApi.startProcess(Y9LoginUserHolder.getTenantId(),
+                    Y9LoginUserHolder.getPositionId(), itemId, processSerialNumber, processDefinitionKey);
                 if ((boolean)map1.get(UtilConsts.SUCCESS)) {
                     processInstanceId = (String)map1.get("processInstanceId");
                     String taskId = (String)map1.get("taskId");
@@ -217,7 +232,9 @@ public class ChaoSongRestController {
                     return Y9Result.failure("抄送失败，流程启动失败");
                 }
             }
-            Y9Result<Object> y9Result = chaoSong4PositionApi.save(person.getTenantId(), userId, Y9LoginUserHolder.getPositionId(), processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
+            Y9Result<Object> y9Result =
+                chaoSong4PositionApi.save(person.getTenantId(), userId, Y9LoginUserHolder.getPositionId(),
+                    processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
             if (y9Result.isSuccess()) {
                 return Y9Result.success(resMap, "抄送成功");
             }
@@ -237,7 +254,8 @@ public class ChaoSongRestController {
      * @return Y9Page<ChaoSongModel>
      */
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<ChaoSongModel> search(@RequestParam(required = false) String documentTitle, @RequestParam Integer status, @RequestParam int rows, @RequestParam int page) {
+    public Y9Page<ChaoSongModel> search(@RequestParam(required = false) String documentTitle,
+        @RequestParam Integer status, @RequestParam int rows, @RequestParam int page) {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             if (status == 0) {

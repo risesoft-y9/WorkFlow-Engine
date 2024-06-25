@@ -61,8 +61,10 @@ public class FormNTKOPrintController {
      * @param userId 人员id
      */
     @RequestMapping(value = "/downloadWord")
-    public void downloadWord(@RequestParam String id, @RequestParam(required = false) String fileType, @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam String tenantId, @RequestParam String userId,
-        HttpServletResponse response, HttpServletRequest request) {
+    public void downloadWord(@RequestParam String id, @RequestParam(required = false) String fileType,
+        @RequestParam(required = false) String processSerialNumber,
+        @RequestParam(required = false) String processInstanceId, @RequestParam String tenantId,
+        @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
@@ -71,7 +73,8 @@ public class FormNTKOPrintController {
             String[] pId = processInstanceId.split(",");
             processInstanceId = pId[0];
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
+                Map<String, Object> retMap =
+                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
                 documentTitle = retMap.get("title").toString();
             } else {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
@@ -90,7 +93,9 @@ public class FormNTKOPrintController {
                 response.setContentType("application/octet-stream");
             } else {
                 if (userAgent.contains("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
+                    title = "=?UTF-8?B?" + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
+                        + "?=";
                 } else {
                     title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
                     title = StringUtils.replace(title, "+", "%20");// 替换空格
@@ -118,11 +123,13 @@ public class FormNTKOPrintController {
      * @param userId 人员id
      */
     @RequestMapping(value = "/openDoc")
-    public void openDoc(@RequestParam String processSerialNumber, @RequestParam String itemId, @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
+    public void openDoc(@RequestParam String processSerialNumber, @RequestParam String itemId,
+        @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response,
+        HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId);
+        String y9FileStoreId = transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId).getData();
 
         ServletOutputStream out = null;
         try {
@@ -171,7 +178,8 @@ public class FormNTKOPrintController {
     }
 
     @RequestMapping(value = "/openDocument")
-    public void openDocument(String itemId, String tenantId, String userId, HttpServletResponse response, HttpServletRequest request) {
+    public void openDocument(String itemId, String tenantId, String userId, HttpServletResponse response,
+        HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);

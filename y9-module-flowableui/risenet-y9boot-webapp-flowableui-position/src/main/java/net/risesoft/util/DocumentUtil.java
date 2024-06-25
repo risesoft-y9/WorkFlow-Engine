@@ -12,6 +12,7 @@ import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
+import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.y9.Y9Context;
@@ -20,7 +21,9 @@ import net.risesoft.y9.util.Y9Util;
 
 public class DocumentUtil {
 
-    public Map<String, Object> documentDetail(String itemId, String processDefinitionId, String processSerialNumber, String processInstanceId, String taskDefinitionKey, String taskId, String itembox, String activitiUser, String formIds, String formNames) {
+    public Map<String, Object> documentDetail(String itemId, String processDefinitionId, String processSerialNumber,
+        String processInstanceId, String taskDefinitionKey, String taskId, String itembox, String activitiUser,
+        String formIds, String formNames) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
         Map<String, Object> map = new HashMap<>(16);
@@ -32,7 +35,8 @@ public class DocumentUtil {
             Map<String, Object> formMap = new HashMap<>(16);
             formMap.put("formId", formIdList.get(i));
             formMap.put("formName", formNameList.get(i));
-            Map<String, Object> dataMap = Y9Context.getBean(FormDataApi.class).getFromData(tenantId, formIdList.get(i), processSerialNumber);
+            Map<String, Object> dataMap =
+                Y9Context.getBean(FormDataApi.class).getFromData(tenantId, formIdList.get(i), processSerialNumber);
             formMap.putAll(dataMap);
             formListMap.add(formMap);
         }
@@ -40,11 +44,14 @@ public class DocumentUtil {
 
         // 意见框
         List<Map<String, Object>> opinioListMap = new ArrayList<>();
-        List<ItemOpinionFrameBindModel> opinionFrameList = Y9Context.getBean(ItemOpinionFrameBindApi.class).findByItemIdAndProcessDefinitionId(tenantId, itemId, processDefinitionId);
+        List<ItemOpinionFrameBindModel> opinionFrameList = Y9Context.getBean(ItemOpinionFrameBindApi.class)
+            .findByItemIdAndProcessDefinitionId(tenantId, itemId, processDefinitionId);
         for (ItemOpinionFrameBindModel opinionFrame : opinionFrameList) {
             Map<String, Object> opinionMap = new HashMap<>(16);
             String opinionFrameMark = opinionFrame.getOpinionFrameMark();
-            List<Map<String, Object>> listMap = Y9Context.getBean(Opinion4PositionApi.class).personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser, "");
+            List<Map<String, Object>> listMap =
+                Y9Context.getBean(Opinion4PositionApi.class).personCommentList(tenantId, userId, processSerialNumber,
+                    taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser, "");
             opinionMap.put("opinionFrameMark", opinionFrameMark);
             opinionMap.put("opinionFrameName", opinionFrame.getOpinionFrameName());
             opinionMap.put("opinionList", listMap);
@@ -55,13 +62,14 @@ public class DocumentUtil {
         map.put("opinioListMap", opinioListMap);
 
         // 附件
-        Y9Page<AttachmentModel> y9Page = Y9Context.getBean(Attachment4PositionApi.class).getAttachmentList(tenantId, processSerialNumber, "", 1, 100);
+        Y9Page<AttachmentModel> y9Page = Y9Context.getBean(Attachment4PositionApi.class).getAttachmentList(tenantId,
+            processSerialNumber, "", 1, 100);
         map.put("fileAttachment", y9Page);
 
         // 正文
-        Map<String, Object> fileDocument = Y9Context.getBean(TransactionWordApi.class).findWordByProcessSerialNumber(tenantId, processSerialNumber);
+        TransactionWordModel fileDocument = Y9Context.getBean(TransactionWordApi.class)
+            .findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
         map.put("fileDocument", fileDocument);
-
         return map;
     }
 

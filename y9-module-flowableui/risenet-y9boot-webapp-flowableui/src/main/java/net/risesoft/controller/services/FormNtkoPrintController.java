@@ -3,6 +3,7 @@ package net.risesoft.controller.services;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -122,11 +123,11 @@ public class FormNtkoPrintController {
                 response.setContentType("application/octet-stream");
             } else {
                 if (-1 != userAgent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
-                    title = "=?UTF-8?B?"
-                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes("UTF-8"))))
+                    title = "=?UTF-8?B?" + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
                         + "?=";
                 } else {
-                    title = java.net.URLEncoder.encode(title, "UTF-8");
+                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
                     title = StringUtils.replace(title, "+", "%20");
                 }
                 response.reset();
@@ -243,7 +244,8 @@ public class FormNtkoPrintController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId = transactionWordManager.openDocument(tenantId, userId, processSerialNumber, itemId);
+        String y9FileStoreId =
+            transactionWordManager.openDocument(tenantId, userId, processSerialNumber, itemId).getData();
 
         ServletOutputStream out = null;
         try {
@@ -252,10 +254,11 @@ public class FormNtkoPrintController {
             String fileName = y9FileStore.getFileName();
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                 fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8"))))
+                    + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
                     + "?=";
             } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 fileName = StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
@@ -300,10 +303,11 @@ public class FormNtkoPrintController {
             String fileName = y9FileStore.getFileName();
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                 fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes("UTF-8"))))
+                    + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
                     + "?=";
             } else {
-                fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 fileName = StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
