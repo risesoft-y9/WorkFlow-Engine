@@ -1,6 +1,18 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.entity.SpmApproveItem;
@@ -16,16 +28,6 @@ import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.service.form.Y9FormFieldService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -141,8 +143,7 @@ public class ItemMappingConfRestController {
      * @return
      */
     @RequestMapping(value = "/getList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemMappingConf>> getList(@RequestParam String itemId,
-        @RequestParam String mappingId) {
+    public Y9Result<List<ItemMappingConf>> getList(@RequestParam String itemId, @RequestParam String mappingId) {
         List<ItemMappingConf> list = itemMappingConfService.getList(itemId, mappingId);
         return Y9Result.success(list, "获取成功");
     }

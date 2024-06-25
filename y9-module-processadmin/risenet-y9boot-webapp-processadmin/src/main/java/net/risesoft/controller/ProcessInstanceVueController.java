@@ -1,9 +1,28 @@
 package net.risesoft.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.engine.HistoryService;
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.task.api.Task;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
@@ -24,22 +43,6 @@ import net.risesoft.service.CustomTaskService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.engine.HistoryService;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.identitylink.api.IdentityLink;
-import org.flowable.task.api.Task;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -108,27 +111,29 @@ public class ProcessInstanceVueController {
      * 获取流程实例列表（包括办结，未办结）
      *
      * @param searchName 标题，编号
-     * @param itemId     事项id
-     * @param userName   发起人
-     * @param state      状态
-     * @param year       年度
-     * @param page       页面
-     * @param rows       条数
+     * @param itemId 事项id
+     * @param userName 发起人
+     * @param state 状态
+     * @param year 年度
+     * @param page 页面
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getAllProcessList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getAllProcessList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
-                                                         @RequestParam int page, @RequestParam int rows) {
+    public Y9Page<Map<String, Object>> getAllProcessList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+        @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> retMap;
         try {
-            retMap = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page, rows);
+            retMap = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page,
+                rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>) retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {
-            });
+            List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             for (OfficeDoneInfoModel officeDoneInfoModel : hpiList) {
@@ -138,7 +143,8 @@ public class ProcessInstanceVueController {
                     String processDefinitionId = officeDoneInfoModel.getProcessDefinitionId();
                     String startTime = officeDoneInfoModel.getStartTime().substring(0, 16);
                     String processSerialNumber = officeDoneInfoModel.getProcessSerialNumber();
-                    String documentTitle = StringUtils.isBlank(officeDoneInfoModel.getTitle()) ? "无标题" : officeDoneInfoModel.getTitle();
+                    String documentTitle =
+                        StringUtils.isBlank(officeDoneInfoModel.getTitle()) ? "无标题" : officeDoneInfoModel.getTitle();
                     String level = officeDoneInfoModel.getUrgency();
                     String number = officeDoneInfoModel.getDocNumber();
                     String completer = officeDoneInfoModel.getUserComplete();
@@ -149,7 +155,8 @@ public class ProcessInstanceVueController {
                     mapTemp.put("processDefinitionId", processDefinitionId);
                     mapTemp.put("processDefinitionKey", officeDoneInfoModel.getProcessDefinitionKey());
                     mapTemp.put("startTime", startTime);
-                    mapTemp.put("endTime", StringUtils.isBlank(officeDoneInfoModel.getEndTime()) ? "--" : officeDoneInfoModel.getEndTime().substring(0, 16));
+                    mapTemp.put("endTime", StringUtils.isBlank(officeDoneInfoModel.getEndTime()) ? "--"
+                        : officeDoneInfoModel.getEndTime().substring(0, 16));
                     mapTemp.put("taskDefinitionKey", "");
                     mapTemp.put("taskAssignee", completer);
                     mapTemp.put("creatUserName", officeDoneInfoModel.getCreatUserName());
@@ -160,15 +167,18 @@ public class ProcessInstanceVueController {
                     if (StringUtils.isBlank(officeDoneInfoModel.getEndTime())) {
                         List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
+                            assigneeNames = listTemp.get(2);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                        mapTemp.put("taskId", listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                        mapTemp.put("taskId",
+                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
                         mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("itembox", listTemp.get(3));
                     }
                     mapTemp.put("suspended", "--");
-                    ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+                    ProcessInstance processInstance =
+                        runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
                     if (processInstance != null) {
                         mapTemp.put("suspended", processInstance.isSuspended());
                     }
@@ -179,7 +189,8 @@ public class ProcessInstanceVueController {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
+                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取流程实例列表失败", e);
         }
@@ -189,7 +200,8 @@ public class ProcessInstanceVueController {
     private List<String> getAssigneeIdsAndAssigneeNames1(List<Task> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "", itemBox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
+        String taskIds = "", assigneeIds = "", assigneeNames = "", itemBox = ItemBoxTypeEnum.DOING.getValue(),
+            taskId = "";
         List<String> list = new ArrayList<>();
         int i = 0;
         if (!taskList.isEmpty()) {
@@ -214,7 +226,8 @@ public class ProcessInstanceVueController {
                             int j = 0;
                             for (IdentityLink identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser = positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                Position ownerUser =
+                                    positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -260,22 +273,25 @@ public class ProcessInstanceVueController {
      * 获取流程实例列表
      *
      * @param processInstanceId 流程实例id
-     * @param page              页码
-     * @param rows              条数
+     * @param page 页码
+     * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/runningList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> runningList(@RequestParam(required = false) String processInstanceId, @RequestParam int page, @RequestParam int rows) {
+    public Y9Page<Map<String, Object>> runningList(@RequestParam(required = false) String processInstanceId,
+        @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<>();
         long totalCount;
         List<ProcessInstance> processInstanceList;
         if (StringUtils.isBlank(processInstanceId)) {
             totalCount = runtimeService.createProcessInstanceQuery().count();
-            processInstanceList = runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
+            processInstanceList =
+                runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
         } else {
             totalCount = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).count();
-            processInstanceList = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).orderByStartTime().desc().listPage((page - 1) * rows, rows);
+            processInstanceList = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId)
+                .orderByStartTime().desc().listPage((page - 1) * rows, rows);
         }
         Position position;
         OrgUnit orgUnit;
@@ -287,9 +303,12 @@ public class ProcessInstanceVueController {
             map.put("processInstanceId", processInstanceId);
             map.put("processDefinitionId", processInstance.getProcessDefinitionId());
             map.put("processDefinitionName", processInstance.getProcessDefinitionName());
-            map.put("startTime", processInstance.getStartTime() == null ? "" : sdf.format(processInstance.getStartTime()));
+            map.put("startTime",
+                processInstance.getStartTime() == null ? "" : sdf.format(processInstance.getStartTime()));
             try {
-                map.put("activityName", runtimeService.createActivityInstanceQuery().processInstanceId(processInstanceId).orderByActivityInstanceStartTime().desc().list().get(0).getActivityName());
+                map.put("activityName",
+                    runtimeService.createActivityInstanceQuery().processInstanceId(processInstanceId)
+                        .orderByActivityInstanceStartTime().desc().list().get(0).getActivityName());
                 map.put("suspended", processInstance.isSuspended());
                 map.put("startUserName", "无");
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
@@ -301,7 +320,8 @@ public class ProcessInstanceVueController {
                     } else {
                         position = positionApi.get(tenantId, userIdAndDeptId[0]).getData();
                         if (null != position) {
-                            orgUnit = orgUnitApi.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1]).getData();
+                            orgUnit = orgUnitApi.getOrgUnit(tenantId, processInstance.getStartUserId().split(":")[1])
+                                .getData();
                             if (null == orgUnit) {
                                 map.put("startUserName", position.getName());
                             } else {
@@ -315,14 +335,14 @@ public class ProcessInstanceVueController {
             }
             items.add(map);
         }
-        int totalPages = (int) totalCount / rows + 1;
+        int totalPages = (int)totalCount / rows + 1;
         return Y9Page.success(page, totalPages, totalCount, items, "获取列表成功");
     }
 
     /**
      * 挂起、激活流程实例
      *
-     * @param state             状态
+     * @param state 状态
      * @param processInstanceId 流程实例
      * @return Y9Result<String>
      */

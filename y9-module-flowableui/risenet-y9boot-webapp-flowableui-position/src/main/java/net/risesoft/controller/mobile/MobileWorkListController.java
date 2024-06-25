@@ -81,7 +81,10 @@ public class MobileWorkListController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/doingList")
-    public void doingList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows, HttpServletResponse response) {
+    public void doingList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -110,7 +113,10 @@ public class MobileWorkListController {
      * @param rows 行数
      */
     @RequestMapping(value = "/doneList")
-    public void doneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows, HttpServletResponse response) {
+    public void doneList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
@@ -138,7 +144,9 @@ public class MobileWorkListController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getAppCount")
-    public void getAppCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletResponse response) {
+    public void getAppCount(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
@@ -148,7 +156,8 @@ public class MobileWorkListController {
             List<Map<String, Object>> list = new ArrayList<>();
             if (null != resource && null != resource.getId()) {
                 String resourceId = resource.getId();
-                List<Resource> list0 = positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
+                List<Resource> list0 = positionResourceApi
+                    .listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
                 String url;
                 for (Resource r : list0) {
                     map = new HashMap<>(16);
@@ -162,7 +171,8 @@ public class MobileWorkListController {
                     String itemId = url.split("itemId=")[1];
                     ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
                     String processDefinitionKey = item.getWorkflowGuid();
-                    long todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
+                    long todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                        processDefinitionKey);
                     Map<String, Object> m = new HashMap<>(16);
                     Map<String, Object> resMap = todoService.list(item.getId(), "", 1, 1);
                     List<Map<String, Object>> todoList = (List<Map<String, Object>>)resMap.get("rows");
@@ -224,7 +234,8 @@ public class MobileWorkListController {
             method.addRequestHeader("auth-userId", userId);
             int code = client.executeMethod(method);
             if (code == HttpStatus.SC_OK) {
-                String msg = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+                String msg = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8),
+                    StandardCharsets.UTF_8);
                 map = Y9JsonUtil.readHashMap(msg);
             }
         } catch (Exception e) {
@@ -241,13 +252,16 @@ public class MobileWorkListController {
      * @param itemId 事项id
      */
     @RequestMapping(value = "/getCount")
-    public void getTodoCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, HttpServletResponse response) {
+    public void getTodoCount(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             String processDefinitionKey = item.getWorkflowGuid();
-            Map<String, Object> countMap = processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
+            Map<String, Object> countMap =
+                processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
             int todoCount = countMap != null ? (int)countMap.get("todoCount") : 0;
             int doingCount = countMap != null ? (int)countMap.get("doingCount") : 0;
             // int doneCount = countMap != null ? (int) countMap.get("doneCount") : 0;
@@ -270,7 +284,9 @@ public class MobileWorkListController {
      * @param processInstanceId 流程实例id
      */
     @RequestMapping(value = "/history")
-    public void history(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processInstanceId, HttpServletResponse response) {
+    public void history(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String processInstanceId,
+        HttpServletResponse response) {
         Map<String, Object> retMap = new HashMap<>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
@@ -295,7 +311,10 @@ public class MobileWorkListController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/todoList")
-    public void todoList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows, HttpServletResponse response) {
+    public void todoList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);

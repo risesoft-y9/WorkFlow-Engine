@@ -1,11 +1,12 @@
 package net.risesoft.model.itemadmin;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 发言信息模型
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20

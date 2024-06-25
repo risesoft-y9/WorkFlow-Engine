@@ -31,7 +31,8 @@ public class CalendarConfigApiImpl implements CalendarConfigApi {
     public Y9Result<CalendarConfigModel> findByYear(String tenantId, String year) {
         Y9LoginUserHolder.setTenantId(tenantId);
         CalendarConfig calendarConfig = calendarConfigService.findByYear(year);
-        CalendarConfigModel calendarConfigModel = ItemAdminModelConvertUtil.calendarConfig2CalendarConfigModel(calendarConfig);
+        CalendarConfigModel calendarConfigModel =
+            ItemAdminModelConvertUtil.calendarConfig2CalendarConfigModel(calendarConfig);
         return Y9Result.success(calendarConfigModel);
     }
 

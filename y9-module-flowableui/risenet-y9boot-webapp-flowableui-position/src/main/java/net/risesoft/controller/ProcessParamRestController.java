@@ -40,8 +40,11 @@ public class ProcessParamRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String documentTitle, @RequestParam(required = false) String number,
+    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String processInstanceId,
+        @RequestParam @NotBlank String documentTitle, @RequestParam(required = false) String number,
         @RequestParam(required = false) String level, @RequestParam(required = false) Boolean customItem) {
-        return processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, documentTitle, number, level, customItem);
+        return processParamService.saveOrUpdate(itemId, processSerialNumber, processInstanceId, documentTitle, number,
+            level, customItem);
     }
 }

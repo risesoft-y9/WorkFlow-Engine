@@ -1,13 +1,15 @@
 package net.risesoft.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.entity.DocumentNumberDetail;
-import net.risesoft.repository.jpa.DocumentNumberDetailRepository;
-import net.risesoft.service.DocumentNumberDetailService;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.entity.DocumentNumberDetail;
+import net.risesoft.repository.jpa.DocumentNumberDetailRepository;
+import net.risesoft.service.DocumentNumberDetailService;
 
 /**
  * @author qinman

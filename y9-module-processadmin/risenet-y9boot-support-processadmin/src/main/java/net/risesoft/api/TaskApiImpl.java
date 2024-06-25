@@ -1,15 +1,11 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.model.platform.Position;
-import net.risesoft.model.processadmin.TaskModel;
-import net.risesoft.service.CustomTaskService;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.util.FlowableModelConvertUtil;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.task.api.DelegationState;
 import org.flowable.task.api.Task;
@@ -22,11 +18,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.model.platform.Position;
+import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.service.CustomTaskService;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.util.FlowableModelConvertUtil;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 正在运行任务相关接口
@@ -50,8 +52,8 @@ public class TaskApiImpl implements TaskApi {
      * 签收任务
      *
      * @param tenantId 租户id
-     * @param userId   人员id
-     * @param taskId   任务id
+     * @param userId 人员id
+     * @param taskId 任务id
      */
     @Override
     @PostMapping(value = "/claim", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -64,7 +66,7 @@ public class TaskApiImpl implements TaskApi {
      * 完成任务（不设置流程变量）
      *
      * @param tenantId 租户id
-     * @param taskId   任务id
+     * @param taskId 任务id
      * @throws Exception Exception
      */
     @Override
@@ -79,7 +81,7 @@ public class TaskApiImpl implements TaskApi {
      * 完成按钮的任务完结
      *
      * @param tenantId 租户id
-     * @param taskId   任务id
+     * @param taskId 任务id
      */
     @Override
     @PostMapping(value = "/completeTask", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -96,14 +98,14 @@ public class TaskApiImpl implements TaskApi {
     /**
      * 完成按钮的任务完结/岗位
      *
-     * @param tenantId          租户id
-     * @param positionId        岗位Id
+     * @param tenantId 租户id
+     * @param positionId 岗位Id
      * @param processInstanceId 流程实例id
      */
     @Override
     @PostMapping(value = "/completeTaskWithoutAssignee", produces = MediaType.APPLICATION_JSON_VALUE)
     public void completeTaskWithoutAssignee(@RequestParam String tenantId, @RequestParam String positionId,
-                                            @RequestParam String processInstanceId) {
+        @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -115,14 +117,14 @@ public class TaskApiImpl implements TaskApi {
      * 完成任务（设置流程变量）
      *
      * @param tenantId 租户id
-     * @param taskId   任务id
-     * @param map      变量map
+     * @param taskId 任务id
+     * @param map 变量map
      */
     @Override
     @PostMapping(value = "/completeWithVariables", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void completeWithVariables(@RequestParam String tenantId, @RequestParam String taskId,
-                                      @RequestBody Map<String, Object> map) {
+        @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         customTaskService.completeWithVariables(taskId, map);
@@ -131,17 +133,17 @@ public class TaskApiImpl implements TaskApi {
     /**
      * 完成任务（设置流程变量）岗位
      *
-     * @param tenantId   租户id
-     * @param userId     人员id
+     * @param tenantId 租户id
+     * @param userId 人员id
      * @param positionId 岗位id
-     * @param taskId     任务id
-     * @param vars       变量map
+     * @param taskId 任务id
+     * @param vars 变量map
      */
     @Override
     @PostMapping(value = "/completeWithVariables4Position", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void completeWithVariables4Position(@RequestParam String tenantId, @RequestParam String userId,
-                                               @RequestParam String positionId, @RequestParam String taskId, @RequestBody Map<String, Object> vars) {
+        @RequestParam String positionId, @RequestParam String taskId, @RequestBody Map<String, Object> vars) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -154,19 +156,19 @@ public class TaskApiImpl implements TaskApi {
     /**
      * 创建变量
      *
-     * @param tenantId       租户id
-     * @param personId       人员id
-     * @param routeToTaskId  任务id
-     * @param vars           变量map
+     * @param tenantId 租户id
+     * @param personId 人员id
+     * @param routeToTaskId 任务id
+     * @param vars 变量map
      * @param positionIdList 岗位ids
      * @return TaskModel
      */
     @Override
     @PostMapping(value = "/createWithVariables", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public TaskModel createWithVariables(@RequestParam String tenantId, @RequestParam String personId,
-                                         @RequestParam String routeToTaskId, @SpringQueryMap Map<String, Object> vars,
-                                         @RequestBody List<String> positionIdList) {
+        @RequestParam String routeToTaskId, @SpringQueryMap Map<String, Object> vars,
+        @RequestBody List<String> positionIdList) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(personManager.get(tenantId, personId).getData());
@@ -176,20 +178,20 @@ public class TaskApiImpl implements TaskApi {
     /**
      * 创建变量/岗位
      *
-     * @param tenantId       租户id
-     * @param positionId     岗位id
-     * @param personId       人员id
-     * @param routeToTaskId  任务id
-     * @param vars           变量map
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param personId 人员id
+     * @param routeToTaskId 任务id
+     * @param vars 变量map
      * @param positionIdList 岗位ids
      * @return TaskModel
      */
     @Override
     @PostMapping(value = "/createWithVariables1", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public TaskModel createWithVariables(@RequestParam String tenantId, @RequestParam String positionId,
-                                         @RequestParam String personId, @RequestParam String routeToTaskId, @SpringQueryMap Map<String, Object> vars,
-                                         @RequestBody List<String> positionIdList) {
+        @RequestParam String personId, @RequestParam String routeToTaskId, @SpringQueryMap Map<String, Object> vars,
+        @RequestBody List<String> positionIdList) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -202,13 +204,13 @@ public class TaskApiImpl implements TaskApi {
      * 设置任务代理
      *
      * @param tenantId 租户id
-     * @param taskId   任务id
+     * @param taskId 任务id
      * @param assignee 受让人
      */
     @Override
     @PostMapping(value = "/delegateTask", produces = MediaType.APPLICATION_JSON_VALUE)
     public void delegateTask(@RequestParam String tenantId, @RequestParam String taskId,
-                             @RequestParam String assignee) {
+        @RequestParam String assignee) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customTaskService.delegateTask(taskId, assignee);
     }
@@ -217,13 +219,13 @@ public class TaskApiImpl implements TaskApi {
      * 删除任务的候选人
      *
      * @param tenantId 租户id
-     * @param taskId   任务id
+     * @param taskId 任务id
      * @param assignee 受让人
      */
     @Override
     @PostMapping(value = "/deleteCandidateUser", produces = MediaType.APPLICATION_JSON_VALUE)
     public void deleteCandidateUser(@RequestParam String tenantId, @RequestParam String taskId,
-                                    @RequestParam String assignee) {
+        @RequestParam String assignee) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customTaskService.deleteCandidateUser(taskId, URLDecoder.decode(assignee, StandardCharsets.UTF_8));
     }
@@ -246,7 +248,7 @@ public class TaskApiImpl implements TaskApi {
      * 根据任务id查找任务
      *
      * @param tenantId 租户id
-     * @param taskId   任务id
+     * @param taskId 任务id
      * @return TaskModel
      */
     @Override
@@ -260,14 +262,14 @@ public class TaskApiImpl implements TaskApi {
     /**
      * 根据流程实例Id查找任务
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return List<TaskModel>
      */
     @Override
     @GetMapping(value = "/findByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TaskModel> findByProcessInstanceId(@RequestParam String tenantId,
-                                                   @RequestParam String processInstanceId) {
+        @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId);
         return FlowableModelConvertUtil.taskList2TaskModelList(taskList);
@@ -276,15 +278,15 @@ public class TaskApiImpl implements TaskApi {
     /**
      * 根据流程实例Id和是否激活状态查找任务
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例Id
-     * @param active            是否存活
+     * @param active 是否存活
      * @return List<TaskModel>
      */
     @Override
     @GetMapping(value = "/findByProcessInstanceId1", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TaskModel> findByProcessInstanceId(@RequestParam String tenantId,
-                                                   @RequestParam String processInstanceId, @RequestParam boolean active) {
+        @RequestParam String processInstanceId, @RequestParam boolean active) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<Task> taskList = customTaskService.findByProcessInstanceId(processInstanceId, active);
         return FlowableModelConvertUtil.taskList2TaskModelList(taskList);
@@ -293,18 +295,18 @@ public class TaskApiImpl implements TaskApi {
     /**
      * 根据人员Id，流程实例id获取用户的待办任务(分页)
      *
-     * @param tenantId          租户Id
+     * @param tenantId 租户Id
      * @param processInstanceId 流程实例Id
-     * @param page              页码
-     * @param rows              行数
+     * @param page 页码
+     * @param rows 行数
      * @return Map<String, Object>
      * @throws Exception Exception
      */
     @Override
     @GetMapping(value = "/findListByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> findListByProcessInstanceId(@RequestParam String tenantId,
-                                                           @RequestParam String processInstanceId, @RequestParam Integer page, @RequestParam Integer rows)
-            throws Exception {
+        @RequestParam String processInstanceId, @RequestParam Integer page, @RequestParam Integer rows)
+        throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(processInstanceId)) {
             throw new Exception("tenantId or processInstanceId is null !");
         }
@@ -315,12 +317,12 @@ public class TaskApiImpl implements TaskApi {
     /**
      * 保存任务
      *
-     * @param tenantId  租户id
+     * @param tenantId 租户id
      * @param taskModel 任务实体
      */
     @Override
     @PostMapping(value = "/saveTask", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveTask(@RequestParam String tenantId, @RequestBody TaskModel taskModel) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Task task = customTaskService.findById(taskModel.getId());
@@ -332,7 +334,7 @@ public class TaskApiImpl implements TaskApi {
      * 设置任务委托人
      *
      * @param tenantId 租户id
-     * @param taskId   任务id
+     * @param taskId 任务id
      * @param assignee 受让人
      */
     @Override
@@ -346,8 +348,8 @@ public class TaskApiImpl implements TaskApi {
      * 设置任务的过期时间
      *
      * @param tenantId 租户id
-     * @param taskId   任务id
-     * @param date     日期
+     * @param taskId 任务id
+     * @param date 日期
      */
     @Override
     @PostMapping(value = "/setDueDate", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -360,13 +362,13 @@ public class TaskApiImpl implements TaskApi {
      * 设置任务的优先级
      *
      * @param tenantId 租户id
-     * @param taskId   任务id
+     * @param taskId 任务id
      * @param priority 优先级
      */
     @Override
     @PostMapping(value = "/setPriority", produces = MediaType.APPLICATION_JSON_VALUE)
     public void setPriority(@RequestParam String tenantId, @RequestParam String taskId,
-                            @RequestParam Integer priority) {
+        @RequestParam Integer priority) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customTaskService.setPriority(taskId, priority);
     }
@@ -375,7 +377,7 @@ public class TaskApiImpl implements TaskApi {
      * 撤销签收任务
      *
      * @param tenantId 租户id
-     * @param taskId   任务id
+     * @param taskId 任务id
      */
     @Override
     @PostMapping(value = "/unclaim", produces = MediaType.APPLICATION_JSON_VALUE)

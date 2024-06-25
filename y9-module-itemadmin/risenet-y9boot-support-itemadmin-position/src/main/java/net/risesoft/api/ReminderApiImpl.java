@@ -1,7 +1,19 @@
 package net.risesoft.api;
 
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ReminderApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -13,16 +25,6 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.ReminderService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 催办提醒接口
@@ -264,7 +266,7 @@ public class ReminderApiImpl implements ReminderApi {
                 map.put("msg", errMsg);
             }
         } catch (Exception e) {
-           LOGGER.error("sendReminderMessage error", e);
+            LOGGER.error("sendReminderMessage error", e);
         }
         return map;
     }

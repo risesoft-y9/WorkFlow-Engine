@@ -1,7 +1,15 @@
 package net.risesoft.service.impl;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.entity.CustomProcessInfo;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -9,12 +17,6 @@ import net.risesoft.repository.jpa.CustomProcessInfoRepository;
 import net.risesoft.service.CustomProcessInfoService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman

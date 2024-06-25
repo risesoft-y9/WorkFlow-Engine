@@ -1,18 +1,20 @@
 package net.risesoft.controller;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.entity.DynamicRole;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.DynamicRoleService;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.entity.DynamicRole;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.DynamicRoleService;
 
 /**
  * @author qinman

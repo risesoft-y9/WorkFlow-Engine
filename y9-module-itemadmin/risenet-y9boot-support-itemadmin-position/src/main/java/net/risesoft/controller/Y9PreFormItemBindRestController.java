@@ -1,21 +1,23 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Y9PreFormItemBind;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.service.Y9PreFormItemBindService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -71,7 +73,8 @@ public class Y9PreFormItemBindRestController {
      * @return
      */
     @RequestMapping(value = "/getFormList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getFormList(@RequestParam String itemId, @RequestParam String systemName, @RequestParam(required = false) String formName) {
+    public Y9Result<List<Map<String, Object>>> getFormList(@RequestParam String itemId, @RequestParam String systemName,
+        @RequestParam(required = false) String formName) {
         List<Map<String, Object>> listmap = new ArrayList<>();
         List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(systemName, "%" + formName + "%");
         Y9PreFormItemBind bind = y9PreFormItemBindService.findByItemId(itemId);

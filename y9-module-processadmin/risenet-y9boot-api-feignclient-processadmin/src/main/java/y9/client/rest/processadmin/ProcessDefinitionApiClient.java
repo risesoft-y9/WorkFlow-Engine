@@ -14,7 +14,9 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "ProcessDefinitionApiClient", name = "${y9.service.processAdmin.name:processAdmin}", url = "${y9.service.processAdmin.directUrl:}", path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/processDefinition")
+@FeignClient(contextId = "ProcessDefinitionApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
+    url = "${y9.service.processAdmin.directUrl:}",
+    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/processDefinition")
 public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
 
     /**
@@ -26,7 +28,8 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/getContainEndEvent4UserTask")
-    List<Map<String, String>> getContainEndEvent4UserTask(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId);
+    List<Map<String, String>> getContainEndEvent4UserTask(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 获取某一任务所在节点的目标是结束节点的目标节点Key
@@ -41,7 +44,9 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
 
     @Override
     @GetMapping("/getFlowElement")
-    List<Map<String, Object>> getFlowElement(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("isContainStartNode") Boolean isContainStartNode);
+    List<Map<String, Object>> getFlowElement(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId,
+        @RequestParam("isContainStartNode") Boolean isContainStartNode);
 
     /**
      * 根据流程定义Id获取节点信息 isContainStartNode为true时，不包含开始节点
@@ -53,7 +58,9 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/getNodes")
-    List<Map<String, Object>> getNodes(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("isContainStartNode") Boolean isContainStartNode);
+    List<Map<String, Object>> getNodes(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId,
+        @RequestParam("isContainStartNode") Boolean isContainStartNode);
 
     /**
      * 获取具体流程的某个节点类型
@@ -65,7 +72,8 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/getNodeType")
-    String getNodeType(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
+    String getNodeType(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
      * 根据taskId获取某个节点除去end节点和默认路由节点的所有的输出线路的个数
@@ -88,7 +96,8 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/getParallelGatewayList")
-    List<Map<String, String>> getParallelGatewayList(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
+    List<Map<String, String>> getParallelGatewayList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
      * 根据流程定义id获取开始节点
@@ -99,7 +108,8 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/getStartNodeKeyByProcessDefinitionId")
-    String getStartNodeKeyByProcessDefinitionId(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId);
+    String getStartNodeKeyByProcessDefinitionId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 根据流程定义key获取最新版本的流程定义的启动节点的taskdefineKey
@@ -110,7 +120,8 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/getStartNodeKeyByProcessDefinitionKey")
-    String getStartNodeKeyByProcessDefinitionKey(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionKey") String processDefinitionKey);
+    String getStartNodeKeyByProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
@@ -122,7 +133,8 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/getTargetNodes")
-    List<Map<String, String>> getTargetNodes(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
+    List<Map<String, String>> getTargetNodes(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合,去除名称相等的节点，并且加上结束节点
@@ -134,7 +146,8 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/getTargetNodes1")
-    List<Map<String, String>> getTargetNodes1(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
+    List<Map<String, String>> getTargetNodes1(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
@@ -146,7 +159,8 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/getTargetNodes4ParallelGateway")
-    List<Map<String, String>> getTargetNodes4ParallelGateway(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
+    List<Map<String, String>> getTargetNodes4ParallelGateway(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
@@ -159,7 +173,9 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/getTargetNodes4UserTask")
-    List<Map<String, String>> getTargetNodes4UserTask(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey, @RequestParam("isContainEndNode") Boolean isContainEndNode);
+    List<Map<String, String>> getTargetNodes4UserTask(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey,
+        @RequestParam("isContainEndNode") Boolean isContainEndNode);
 
     /**
      * 判断流程定义的节点是否是callActivity节点
@@ -171,7 +187,8 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/isCallActivity")
-    Boolean isCallActivity(@RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
+    Boolean isCallActivity(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 
     /**
      * 查找当前任务节点的输出目标节点中是否包含某一类型的特定节点
@@ -183,5 +200,6 @@ public interface ProcessDefinitionApiClient extends ProcessDefinitionApi {
      */
     @Override
     @GetMapping("/isContainNodeType")
-    Boolean isContainNodeType(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId, @RequestParam("nodeType") String nodeType);
+    Boolean isContainNodeType(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+        @RequestParam("nodeType") String nodeType);
 }

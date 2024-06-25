@@ -17,7 +17,9 @@ import net.risesoft.pojo.Y9Result;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "BpmnModelApiClient", name = "${y9.service.processAdmin.name:processAdmin}", url = "${y9.service.processAdmin.directUrl:}", path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/bpmnModel")
+@FeignClient(contextId = "BpmnModelApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
+    url = "${y9.service.processAdmin.directUrl:}",
+    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/bpmnModel")
 public interface BpmnModelApiClient extends BpmnModelApi {
 
     /**
@@ -28,7 +30,8 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @PostMapping(value = "/deleteModel")
-    public Y9Result<String> deleteModel(@RequestParam("tenantId") String tenantId, @RequestParam("modelId") String modelId);
+    public Y9Result<String> deleteModel(@RequestParam("tenantId") String tenantId,
+        @RequestParam("modelId") String modelId);
 
     /**
      * 根据Model部署流程
@@ -38,7 +41,8 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @PostMapping(value = "/deployModel")
-    public Y9Result<String> deployModel(@RequestParam("tenantId") String tenantId, @RequestParam("modelId") String modelId);
+    public Y9Result<String> deployModel(@RequestParam("tenantId") String tenantId,
+        @RequestParam("modelId") String modelId);
 
     /**
      * 生成流程图
@@ -50,7 +54,8 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @PostMapping("/genProcessDiagram")
-    byte[] genProcessDiagram(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+    byte[] genProcessDiagram(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
 
     /**
      * 获取流程图模型
@@ -62,7 +67,8 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @GetMapping("/getBpmnModel")
-    Map<String, Object> getBpmnModel(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+    Map<String, Object> getBpmnModel(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
 
     /**
      * 获取流程图数据
@@ -74,7 +80,8 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @GetMapping("/getFlowChart")
-    Map<String, Object> getFlowChart(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+    Map<String, Object> getFlowChart(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
 
     /**
      * 获取模型列表
@@ -93,7 +100,8 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @GetMapping(value = "/getModelXml")
-    public Y9Result<Map<String, Object>> getModelXml(@RequestParam("tenantId") String tenantId, @RequestParam("modelId") String modelId);
+    public Y9Result<Map<String, Object>> getModelXml(@RequestParam("tenantId") String tenantId,
+        @RequestParam("modelId") String modelId);
 
     /**
      * 导入流程模板
@@ -105,7 +113,8 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @PostMapping(value = "/import")
-    Map<String, Object> importProcessModel(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("file") MultipartFile file);
+    Map<String, Object> importProcessModel(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("file") MultipartFile file);
 
     /**
      * 保存设计模型xml
@@ -116,6 +125,8 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @PostMapping(value = "/saveModelXml")
-    public Y9Result<String> saveModelXml(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("modelId") String modelId, @RequestParam("file") MultipartFile file);
+    public Y9Result<String> saveModelXml(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("modelId") String modelId,
+        @RequestParam("file") MultipartFile file);
 
 }

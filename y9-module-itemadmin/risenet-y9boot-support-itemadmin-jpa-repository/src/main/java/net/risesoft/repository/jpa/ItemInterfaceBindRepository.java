@@ -14,7 +14,8 @@ import net.risesoft.entity.ItemInterfaceBind;
  * @date 2024/05/24
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemInterfaceBindRepository extends JpaRepository<ItemInterfaceBind, String>, JpaSpecificationExecutor<ItemInterfaceBind> {
+public interface ItemInterfaceBindRepository
+    extends JpaRepository<ItemInterfaceBind, String>, JpaSpecificationExecutor<ItemInterfaceBind> {
 
     ItemInterfaceBind findByInterfaceIdAndItemId(String interfaceId, String itemId);
 

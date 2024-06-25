@@ -1,13 +1,14 @@
 package net.risesoft.service;
 
-import com.deepoove.poi.XWPFTemplate;
-import com.deepoove.poi.xwpf.NiceXWPFDocument;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+
+import org.springframework.stereotype.Service;
+
+import com.deepoove.poi.XWPFTemplate;
+import com.deepoove.poi.xwpf.NiceXWPFDocument;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service(value = "taoHongService")

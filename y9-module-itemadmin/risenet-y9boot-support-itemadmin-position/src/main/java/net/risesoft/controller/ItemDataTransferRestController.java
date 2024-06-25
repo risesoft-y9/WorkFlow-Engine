@@ -1,15 +1,17 @@
 package net.risesoft.controller;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.pojo.Y9Page;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ItemDataTransferService;
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.ItemDataTransferService;
 
 /**
  * @author qinman
@@ -47,8 +49,7 @@ public class ItemDataTransferRestController {
      */
     @RequestMapping(value = "/getProcessInstanceList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> getProcessInstanceList(@RequestParam String itemId,
-        @RequestParam String processDefinitionId, @RequestParam Integer page,
-        @RequestParam Integer rows) {
+        @RequestParam String processDefinitionId, @RequestParam Integer page, @RequestParam Integer rows) {
         return itemDataTransferService.getProcessInstanceList(itemId, processDefinitionId, page, rows);
     }
 }

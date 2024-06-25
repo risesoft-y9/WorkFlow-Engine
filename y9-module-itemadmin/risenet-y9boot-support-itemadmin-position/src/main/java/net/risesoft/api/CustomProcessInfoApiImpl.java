@@ -1,12 +1,8 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.itemadmin.CustomProcessInfoApi;
-import net.risesoft.entity.CustomProcessInfo;
-import net.risesoft.model.itemadmin.CustomProcessInfoModel;
-import net.risesoft.service.CustomProcessInfoService;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9BeanUtil;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,8 +10,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.itemadmin.CustomProcessInfoApi;
+import net.risesoft.entity.CustomProcessInfo;
+import net.risesoft.model.itemadmin.CustomProcessInfoModel;
+import net.risesoft.service.CustomProcessInfoService;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 定制流程接口

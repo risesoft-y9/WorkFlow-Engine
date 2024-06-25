@@ -1,21 +1,23 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.QueryListApi;
-import net.risesoft.model.itemadmin.ActRuDetailModel;
-import net.risesoft.model.itemadmin.ItemPage;
-import net.risesoft.service.ItemPageService;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.itemadmin.QueryListApi;
+import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.model.itemadmin.ItemPage;
+import net.risesoft.service.ItemPageService;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * 综合查询接口
@@ -33,6 +35,7 @@ public class QueryListApiImpl implements QueryListApi {
 
     /**
      * 综合搜索
+     * 
      * @param tenantId 租户id
      * @param userId 岗位id
      * @param systemName 系统名称
@@ -66,19 +69,23 @@ public class QueryListApiImpl implements QueryListApi {
                         switch (queryType) {
                             case "select":
                             case "radio":
-                                sql1.append(" AND F.").append(columnName.toUpperCase()).append(" = '").append(value).append("' ");
+                                sql1.append(" AND F.").append(columnName.toUpperCase()).append(" = '").append(value)
+                                    .append("' ");
                                 break;
                             case "checkbox": {// 多选框搜索
                                 String[] values = value.split(",");
                                 if (values.length == 1) {// 单个值
-                                    sql1.append(" AND INSTR(F.").append(columnName.toUpperCase()).append(",'").append(values[0]).append("') > 0 ");
+                                    sql1.append(" AND INSTR(F.").append(columnName.toUpperCase()).append(",'")
+                                        .append(values[0]).append("') > 0 ");
                                 } else {
                                     StringBuilder sql2 = new StringBuilder();
                                     for (String val : values) {// 多个值
                                         if (sql2.toString().isEmpty()) {
-                                            sql2.append(" AND ( INSTR(F.").append(columnName.toUpperCase()).append(",'").append(val).append("') > 0 ");
+                                            sql2.append(" AND ( INSTR(F.").append(columnName.toUpperCase()).append(",'")
+                                                .append(val).append("') > 0 ");
                                         } else {
-                                            sql2.append(" OR INSTR(F.").append(columnName.toUpperCase()).append(",'").append(val).append("') > 0 ");
+                                            sql2.append(" OR INSTR(F.").append(columnName.toUpperCase()).append(",'")
+                                                .append(val).append("') > 0 ");
                                         }
                                     }
                                     sql2.append(" ) ");
@@ -88,12 +95,15 @@ public class QueryListApiImpl implements QueryListApi {
                             }
                             case "date": {// 日期搜索
                                 String[] values = value.split(",");
-                                sql1.append(" AND F.").append(columnName.toUpperCase()).append(" >= '").append(values[0]).append("' ");
-                                sql1.append(" AND F.").append(columnName.toUpperCase()).append(" < '").append(values[1]).append(" 23:59:59' ");
+                                sql1.append(" AND F.").append(columnName.toUpperCase()).append(" >= '")
+                                    .append(values[0]).append("' ");
+                                sql1.append(" AND F.").append(columnName.toUpperCase()).append(" < '").append(values[1])
+                                    .append(" 23:59:59' ");
                                 break;
                             }
                             default:
-                                sql1.append(" AND INSTR(F.").append(columnName.toUpperCase()).append(",'").append(value).append("') > 0 ");
+                                sql1.append(" AND INSTR(F.").append(columnName.toUpperCase()).append(",'").append(value)
+                                    .append("') > 0 ");
                                 break;
                         }
                     }
@@ -134,8 +144,8 @@ public class QueryListApiImpl implements QueryListApi {
             Object[] args = new Object[2];
             args[0] = systemName;
             args[1] = userId;
-            return itemPageService.page(sql, args,
-                new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+            return itemPageService.page(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args,
+                page, rows);
         } catch (Exception e) {
             LOGGER.error("查询列表失败", e);
         }

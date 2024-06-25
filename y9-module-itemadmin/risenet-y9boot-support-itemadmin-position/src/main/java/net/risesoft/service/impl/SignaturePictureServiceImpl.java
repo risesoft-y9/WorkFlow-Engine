@@ -1,6 +1,13 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.entity.SignaturePicture;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -8,11 +15,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.SignaturePictureRepository;
 import net.risesoft.service.SignaturePictureService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @author qinman

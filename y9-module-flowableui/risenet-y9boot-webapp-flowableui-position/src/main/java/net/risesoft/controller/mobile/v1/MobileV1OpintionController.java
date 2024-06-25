@@ -69,7 +69,8 @@ public class MobileV1OpintionController {
      * @return Y9Result<Boolean>
      */
     @RequestMapping(value = "/comment/checkSignOpinion")
-    public Y9Result<Boolean> checkSignOpinion(@RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
+    public Y9Result<Boolean> checkSignOpinion(@RequestParam(required = false) String taskId,
+        @RequestParam @NotBlank String processSerialNumber) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String userId = Y9LoginUserHolder.getPersonId();
@@ -125,12 +126,16 @@ public class MobileV1OpintionController {
      * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/personCommentList")
-    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String taskId, @RequestParam(required = false) String itembox, @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
-        @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser, @RequestParam(required = false) String orderByUser) {
+    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam(required = false) String taskId, @RequestParam(required = false) String itembox,
+        @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser,
+        @RequestParam(required = false) String orderByUser) {
         List<Map<String, Object>> listMap;
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
+        listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
+            opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
         return Y9Result.success(listMap, "获取成功");
     }
 
@@ -160,7 +165,8 @@ public class MobileV1OpintionController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveCommonSentences")
-    public Y9Result<String> saveCommonSentences(@RequestParam String content, @RequestParam(required = false) String id) {
+    public Y9Result<String> saveCommonSentences(@RequestParam String content,
+        @RequestParam(required = false) String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
         try {

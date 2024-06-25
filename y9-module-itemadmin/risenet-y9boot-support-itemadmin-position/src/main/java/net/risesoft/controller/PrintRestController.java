@@ -1,6 +1,23 @@
 package net.risesoft.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ItemPrintTemplateBind;
 import net.risesoft.entity.PrintTemplate;
@@ -9,21 +26,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.repository.jpa.PrintTemplateRepository;
 import net.risesoft.service.PrintTemplateService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -50,10 +52,10 @@ public class PrintRestController {
     @RequestMapping(value = "/deleteBindPrintTemplate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> deleteBindPrintTemplate(@RequestParam String id) {
         Map<String, Object> map = printTemplateService.deleteBindPrintTemplate(id);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("msg"));
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
         }
-        return Y9Result.failure((String) map.get("msg"));
+        return Y9Result.failure((String)map.get("msg"));
     }
 
     /**
@@ -65,18 +67,18 @@ public class PrintRestController {
     @RequestMapping(value = "/deletePrintTemplate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> deletePrintTemplate(@RequestParam String id) {
         Map<String, Object> map = printTemplateService.deletePrintTemplate(id);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("msg"));
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
         }
-        return Y9Result.failure((String) map.get("msg"));
+        return Y9Result.failure((String)map.get("msg"));
     }
 
     /**
      * 下载模板
      *
-     * @param id       模板id
+     * @param id 模板id
      * @param response 响应
-     * @param request  请求
+     * @param request 请求
      */
     @RequestMapping(value = "/download")
     public void download(@RequestParam String id, HttpServletResponse response, HttpServletRequest request) {
@@ -133,20 +135,23 @@ public class PrintRestController {
     /**
      * 保存绑定模板
      *
-     * @param itemId       事项id
-     * @param templateId   模板id
+     * @param itemId 事项id
+     * @param templateId 模板id
      * @param templateName 模板名称
-     * @param templateUrl  模板url
+     * @param templateUrl 模板url
      * @param templateType 模板类型
      * @return
      */
     @RequestMapping(value = "/saveBindTemplate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveBindTemplate(@RequestParam String itemId, @RequestParam String templateId, @RequestParam String templateName, @RequestParam(required = false) String templateUrl, @RequestParam String templateType) {
-        Map<String, Object> map = printTemplateService.saveBindTemplate(itemId, templateId, templateName, templateUrl, templateType);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("msg"));
+    public Y9Result<String> saveBindTemplate(@RequestParam String itemId, @RequestParam String templateId,
+        @RequestParam String templateName, @RequestParam(required = false) String templateUrl,
+        @RequestParam String templateType) {
+        Map<String, Object> map =
+            printTemplateService.saveBindTemplate(itemId, templateId, templateName, templateUrl, templateType);
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
         }
-        return Y9Result.failure((String) map.get("msg"));
+        return Y9Result.failure((String)map.get("msg"));
     }
 
     /**
@@ -158,10 +163,10 @@ public class PrintRestController {
     @RequestMapping(value = "/uploadTemplate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> upload(@RequestParam MultipartFile files) {
         Map<String, Object> map = printTemplateService.uploadTemplate(files);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("msg"));
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
         }
-        return Y9Result.failure((String) map.get("msg"));
+        return Y9Result.failure((String)map.get("msg"));
     }
 
 }

@@ -1,6 +1,17 @@
 package net.risesoft.api;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -14,15 +25,6 @@ import net.risesoft.service.OpinionService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 意见接口
@@ -133,7 +135,8 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      */
     @Override
     @GetMapping(value = "/opinionHistoryList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<OpinionHistoryModel> opinionHistoryList(String tenantId, String processSerialNumber, String opinionFrameMark) {
+    public List<OpinionHistoryModel> opinionHistoryList(String tenantId, String processSerialNumber,
+        String opinionFrameMark) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return opinionService.opinionHistoryList(processSerialNumber, opinionFrameMark);
     }
@@ -154,11 +157,14 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      */
     @Override
     @GetMapping(value = "/personCommentList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber, String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser, String orderByUser) {
+    public List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber,
+        String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey,
+        String activitiUser, String orderByUser) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-        return opinionService.personCommentList(processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
+        return opinionService.personCommentList(processSerialNumber, taskId, itembox, opinionFrameMark, itemId,
+            taskDefinitionKey, activitiUser, orderByUser);
     }
 
     /**
@@ -169,7 +175,8 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void save(String tenantId, @RequestBody OpinionModel opinionModel) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         Opinion opinion = ItemAdminModelConvertUtil.opinionModel2Opinion(opinionModel);
@@ -187,8 +194,10 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public OpinionModel saveOrUpdate(String tenantId, String userId, String positionId, @RequestBody OpinionModel opinionModel) throws Exception {
+    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public OpinionModel saveOrUpdate(String tenantId, String userId, String positionId,
+        @RequestBody OpinionModel opinionModel) throws Exception {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);

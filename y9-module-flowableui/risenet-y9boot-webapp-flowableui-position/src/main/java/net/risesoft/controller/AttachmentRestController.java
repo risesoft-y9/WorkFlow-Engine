@@ -67,7 +67,8 @@ public class AttachmentRestController {
      * @param id 附件id
      */
     @RequestMapping(value = "/attachmentDownload", method = RequestMethod.GET, produces = "application/json")
-    public void attachmentDownload(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
+    public void attachmentDownload(@RequestParam @NotBlank String id, HttpServletResponse response,
+        HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             AttachmentModel model = attachment4PositionApi.findById(tenantId, id).getData();
@@ -114,7 +115,8 @@ public class AttachmentRestController {
      * @return Y9Page<AttachmentModel>
      */
     @RequestMapping(value = "/getAttachmentList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<AttachmentModel> getAttachmentList(@RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, @RequestParam int page, @RequestParam int rows) {
+    public Y9Page<AttachmentModel> getAttachmentList(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam(required = false) String fileSource, @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
     }
@@ -126,10 +128,12 @@ public class AttachmentRestController {
      * @param fileSource 附件来源
      */
     @RequestMapping(value = "/packDownload", method = RequestMethod.GET, produces = "application/json")
-    public void packDownload(@RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource, HttpServletResponse response, HttpServletRequest request) {
+    public void packDownload(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam(required = false) String fileSource, HttpServletResponse response, HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            Y9Page<AttachmentModel> y9Page = attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, 1, 100);
+            Y9Page<AttachmentModel> y9Page =
+                attachment4PositionApi.getAttachmentList(tenantId, processSerialNumber, fileSource, 1, 100);
             List<AttachmentModel> list = y9Page.getRows();
             // 拼接zip文件,之后下载下来的压缩文件的名字
             String base_name = "附件" + new Date().getTime();
@@ -206,8 +210,9 @@ public class AttachmentRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> upload(MultipartFile file, @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes, @RequestParam @NotBlank String processSerialNumber,
-        @RequestParam(required = false) String fileSource) {
+    public Y9Result<String> upload(MultipartFile file, @RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -216,11 +221,14 @@ public class AttachmentRestController {
             }
             String originalFilename = file.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);
-            String fullPath = "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
+            String fullPath =
+                "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             String storeId = y9FileStore.getId();
-            String fileSize = Y9FileUtil.getDisplayFileSize(y9FileStore.getFileSize() != null ? y9FileStore.getFileSize() : 0);
-            return attachment4PositionApi.upload(tenantId, userId, Y9LoginUserHolder.getPositionId(), fileName, fileSize, processInstanceId, taskId, describes, processSerialNumber, fileSource, storeId);
+            String fileSize =
+                Y9FileUtil.getDisplayFileSize(y9FileStore.getFileSize() != null ? y9FileStore.getFileSize() : 0);
+            return attachment4PositionApi.upload(tenantId, userId, Y9LoginUserHolder.getPositionId(), fileName,
+                fileSize, processInstanceId, taskId, describes, processSerialNumber, fileSource, storeId);
         } catch (Exception e) {
             LOGGER.error("上传失败", e);
         }

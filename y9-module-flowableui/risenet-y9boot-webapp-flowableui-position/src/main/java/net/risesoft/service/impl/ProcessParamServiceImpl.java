@@ -1,7 +1,12 @@
 package net.risesoft.service.impl;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.model.itemadmin.ItemModel;
@@ -10,9 +15,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,13 +29,16 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     private final AsyncUtilService asyncUtilService;
 
     @Override
-    public Y9Result<String> saveOrUpdate(String itemId, String processSerialNumber, String processInstanceId, String documentTitle, String number, String level, Boolean customItem) {
+    public Y9Result<String> saveOrUpdate(String itemId, String processSerialNumber, String processInstanceId,
+        String documentTitle, String number, String level, Boolean customItem) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
-            ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             if (StringUtils.isNotBlank(processInstanceId)) {
-                if (StringUtils.isNotBlank(documentTitle) && (StringUtils.isBlank(processParamModel.getTitle()) || !processParamModel.getTitle().equals(documentTitle))) {
+                if (StringUtils.isNotBlank(documentTitle) && (StringUtils.isBlank(processParamModel.getTitle())
+                    || !processParamModel.getTitle().equals(documentTitle))) {
                     asyncUtilService.updateTitle(tenantId, processInstanceId, documentTitle);
                 }
             }

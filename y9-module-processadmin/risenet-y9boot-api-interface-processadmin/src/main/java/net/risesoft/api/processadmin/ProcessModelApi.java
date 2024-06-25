@@ -70,7 +70,8 @@ public interface ProcessModelApi {
      * @return
      */
     @GetMapping(value = "/getModelXml")
-    public Y9Result<String> getModelXml(@RequestParam String tenantId, @RequestParam String modelId, HttpServletResponse response);
+    public Y9Result<String> getModelXml(@RequestParam String tenantId, @RequestParam String modelId,
+        HttpServletResponse response);
 
     /**
      * 保存，导入模型文件
@@ -81,6 +82,7 @@ public interface ProcessModelApi {
      * @return
      */
     @PostMapping(value = "/saveModelXml")
-    public Y9Result<String> saveModelXml(@RequestParam String tenantId, @RequestParam String userId, MultipartFile file);
+    public Y9Result<String> saveModelXml(@RequestParam String tenantId, @RequestParam String userId,
+        MultipartFile file);
 
 }

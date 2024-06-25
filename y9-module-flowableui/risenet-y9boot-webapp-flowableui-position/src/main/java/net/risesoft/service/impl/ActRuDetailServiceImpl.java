@@ -37,7 +37,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     @Override
     public Y9Result<String> complete(String processSerialNumber) {
-        Y9Result<Object> y9Result = actRuDetailApi.endByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber);
+        Y9Result<Object> y9Result =
+            actRuDetailApi.endByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber);
         if (y9Result.isSuccess()) {
             return Y9Result.successMsg("办结成功");
         }
@@ -48,12 +49,15 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     public Y9Result<String> saveOrUpdate(String itemId, String processSerialNumber) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(), personName = person.getName();
-            List<ActRuDetailModel> ardmList = actRuDetailApi.findByProcessSerialNumberAndStatus(tenantId, processSerialNumber, 0).getData();
+            String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(),
+                personName = person.getName();
+            List<ActRuDetailModel> ardmList =
+                actRuDetailApi.findByProcessSerialNumberAndStatus(tenantId, processSerialNumber, 0).getData();
             if (!ardmList.isEmpty()) {
                 return Y9Result.successMsg("已设置办理人信息");
             }
-            ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
             actRuDetailModel.setCreateTime(new Date());

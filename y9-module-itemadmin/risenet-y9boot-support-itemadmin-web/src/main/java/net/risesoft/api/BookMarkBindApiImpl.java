@@ -37,7 +37,8 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
 
     @Override
     @GetMapping(value = "/getBookMarkData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Map<String, Object>> getBookMarkData(String tenantId, String wordTemplateId, String processSerialNumber) {
+    public Y9Result<Map<String, Object>> getBookMarkData(String tenantId, String wordTemplateId,
+        String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
         List<BookMarkBind> bookMarkBindList = bookMarkBindService.findByWordTemplateId(wordTemplateId);

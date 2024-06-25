@@ -1,8 +1,8 @@
 package net.risesoft.model.itemadmin;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 接口信息
@@ -16,7 +16,7 @@ public class InterfaceModel implements Serializable {
     private static final long serialVersionUID = 6910113392196268569L;
 
     /**
-     *  主键
+     * 主键
      */
     private String id;
 

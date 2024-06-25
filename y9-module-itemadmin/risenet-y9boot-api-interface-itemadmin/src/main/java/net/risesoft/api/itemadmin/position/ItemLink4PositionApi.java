@@ -27,6 +27,7 @@ public interface ItemLink4PositionApi {
      * @return
      */
     @GetMapping("/getItemLinkList")
-    List<LinkInfoModel> getItemLinkList(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId);
+    List<LinkInfoModel> getItemLinkList(@RequestParam("tenantId") @NotBlank String tenantId,
+        @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId);
 
 }

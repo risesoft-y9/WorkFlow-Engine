@@ -15,7 +15,7 @@ public interface ActRuDetailService {
     /**
      * 保存流程参与人信息
      *
-     * @param itemId              事项id
+     * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @return Y9Result<String>
      */

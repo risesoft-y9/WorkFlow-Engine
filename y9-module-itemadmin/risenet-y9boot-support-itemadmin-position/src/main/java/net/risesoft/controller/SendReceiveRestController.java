@@ -1,6 +1,18 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
@@ -17,16 +29,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ReceiveDepartmentRepository;
 import net.risesoft.service.ReceiveDeptAndPersonService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -75,22 +77,22 @@ public class SendReceiveRestController {
     @RequestMapping(value = "/delPerson", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> delPerson(@RequestParam String id) {
         Map<String, Object> map = receiveDeptAndPersonService.delPerson(id);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("msg"));
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
         }
-        return Y9Result.failure((String) map.get("msg"));
+        return Y9Result.failure((String)map.get("msg"));
     }
 
     /**
      * 搜索部门树
      *
-     * @param name   搜索词
+     * @param name 搜索词
      * @param deptId 部门id
      * @return
      */
     @RequestMapping(value = "/deptTreeSearch", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = false) String name,
-                                                              @RequestParam String deptId) {
+        @RequestParam String deptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> item = new ArrayList<>();
         List<Person> personList = personManager.listRecursivelyByParentIdAndName(tenantId, deptId, name).getData();
@@ -121,13 +123,13 @@ public class SendReceiveRestController {
     /**
      * 获取部门树（收发人员）
      *
-     * @param id     展开部门id
+     * @param id 展开部门id
      * @param deptId 部门id
      * @return
      */
     @RequestMapping(value = "/getDeptTree", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getDeptTrees(@RequestParam(required = false) String id,
-                                                            @RequestParam(required = false) String deptId) {
+        @RequestParam(required = false) String deptId) {
         List<Map<String, Object>> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(deptId)) {
@@ -185,7 +187,7 @@ public class SendReceiveRestController {
      */
     @RequestMapping(value = "/getOrgChildTree", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getOrgChildTree(@RequestParam(required = false) String id,
-                                                               OrgTreeTypeEnum treeType) {
+        OrgTreeTypeEnum treeType) {
         List<Map<String, Object>> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(id)) {
@@ -218,13 +220,12 @@ public class SendReceiveRestController {
     /**
      * 获取组织机构子节点(收发单位)
      *
-     * @param id       id
+     * @param id id
      * @param treeType 树类型
      * @return
      */
     @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> getOrgTree(@RequestParam String id,
-                                              @RequestParam OrgTreeTypeEnum treeType) {
+    public Y9Result<List<OrgUnit>> getOrgTree(@RequestParam String id, @RequestParam OrgTreeTypeEnum treeType) {
         List<OrgUnit> newOrgUnitList = new ArrayList<>();
         List<OrgUnit> orgUnitList = orgUnitManager.getSubTree(Y9LoginUserHolder.getTenantId(), id, treeType).getData();
         for (OrgUnit orgUnit : orgUnitList) {
@@ -232,7 +233,7 @@ public class SendReceiveRestController {
                 orgUnit.setDn("false");
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
                 List<Department> deptList = departmentManager
-                        .listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                    .listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                 orgUnit.setGuidPath("false");
                 for (Department dept : deptList) {
                     orgUnit.setGuidPath("true");
@@ -257,7 +258,7 @@ public class SendReceiveRestController {
         return Y9Result.success(newOrgUnitList, "获取成功");
     }
 
-    public OrgUnit getParent(String tenantId,String parentId) {
+    public OrgUnit getParent(String tenantId, String parentId) {
         Organization parent = organizationManager.get(tenantId, parentId).getData();
         return parent.getId() != null ? parent : departmentManager.get(tenantId, parentId).getData();
     }
@@ -268,7 +269,7 @@ public class SendReceiveRestController {
         List<ReceiveDepartment> list = receiveDepartmentRepository.findAllOrderByTabIndex();
         for (ReceiveDepartment receiveDeptAndPerson : list) {
             Department department =
-                    departmentManager.get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
+                departmentManager.get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
             receiveDeptAndPerson.setDeptName(department.getName());
         }
         map.put("rows", list);
@@ -279,21 +280,20 @@ public class SendReceiveRestController {
      * 查询组织架构人员
      *
      * @param treeType 树类型
-     * @param name     搜索词
+     * @param name 搜索词
      * @return
      */
     @RequestMapping(value = "/orgTreeSearch", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> orgTreeSearch(@RequestParam OrgTreeTypeEnum treeType,
-                                                 @RequestParam String name) {
+    public Y9Result<List<OrgUnit>> orgTreeSearch(@RequestParam OrgTreeTypeEnum treeType, @RequestParam String name) {
         List<OrgUnit> newOrgUnitList = new ArrayList<>();
         List<OrgUnit> orgUnitList =
-                orgUnitManager.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
+            orgUnitManager.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
         for (OrgUnit orgUnit : orgUnitList) {
             if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                 orgUnit.setDn("false");
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
                 List<Department> deptList = departmentManager
-                        .listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                    .listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                 orgUnit.setGuidPath("false");
                 for (Department dept : deptList) {
                     orgUnit.setGuidPath("true");
@@ -332,14 +332,14 @@ public class SendReceiveRestController {
     @RequestMapping(value = "/personList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> personList(@RequestParam String deptId) {
         Map<String, Object> map = receiveDeptAndPersonService.personList(deptId);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.success((List<Map<String, Object>>) map.get("rows"), "获取成功");
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.success((List<Map<String, Object>>)map.get("rows"), "获取成功");
         }
         return Y9Result.failure("获取失败");
     }
 
     public void recursionUpToOrg(String tenantId, String nodeId, String parentId, List<OrgUnit> orgUnitList,
-                                 boolean isParent) {
+        boolean isParent) {
         OrgUnit parent = getParent(tenantId, parentId);
         if (isParent) {
             parent.setDescription("parent");
@@ -369,13 +369,12 @@ public class SendReceiveRestController {
     /**
      * 设置或取消收发部门
      *
-     * @param id   部门id
+     * @param id 部门id
      * @param type 类型
      * @return
      */
     @RequestMapping(value = "/saveOrCancelDept", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrCancelDept(@RequestParam String id,
-                                             @RequestParam String type) {
+    public Y9Result<String> saveOrCancelDept(@RequestParam String id, @RequestParam String type) {
         Map<String, Object> map;
         String save = "save";
         if (type.equals(save)) {
@@ -383,16 +382,16 @@ public class SendReceiveRestController {
         } else {
             map = receiveDeptAndPersonService.delDepartment(id);
         }
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("msg"));
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
         }
-        return Y9Result.failure((String) map.get("msg"));
+        return Y9Result.failure((String)map.get("msg"));
     }
 
     /**
      * 保存排序
      *
-     * @param ids  部门id
+     * @param ids 部门id
      * @return
      */
     @RequestMapping(value = "/saveOrder")
@@ -404,46 +403,43 @@ public class SendReceiveRestController {
      * 设置收发员
      *
      * @param deptId 部门id
-     * @param ids    人员ids
+     * @param ids 人员ids
      * @return
      */
     @RequestMapping(value = "/savePerson", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> savePerson(@RequestParam String deptId,
-                                       @RequestParam String ids) {
+    public Y9Result<String> savePerson(@RequestParam String deptId, @RequestParam String ids) {
         Map<String, Object> map = receiveDeptAndPersonService.savePosition(deptId, ids);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("msg"));
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
         }
-        return Y9Result.failure((String) map.get("msg"));
+        return Y9Result.failure((String)map.get("msg"));
     }
 
     /**
      * 查询组织架构人员
      *
      * @param treeType 树类型
-     * @param name     搜索词
+     * @param name 搜索词
      * @return
      */
     @RequestMapping(value = "/searchOrgTree", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OrgUnit>> searchOrgTree(@RequestParam OrgTreeTypeEnum treeType,
-                                                 @RequestParam String name) {
+    public Y9Result<List<OrgUnit>> searchOrgTree(@RequestParam OrgTreeTypeEnum treeType, @RequestParam String name) {
         List<OrgUnit> orgUnitList =
-                orgUnitManager.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
+            orgUnitManager.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
         return Y9Result.success(orgUnitList, "获取成功");
     }
 
     /**
      * 保存是否可以收文
      *
-     * @param ids     人员ids
+     * @param ids 人员ids
      * @param receive 是否收文
      * @return
      */
     @RequestMapping(value = "/setReceive", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> setReceive(@RequestParam boolean receive,
-                                       @RequestParam String ids) {
+    public Y9Result<String> setReceive(@RequestParam boolean receive, @RequestParam String ids) {
         Map<String, Object> map = receiveDeptAndPersonService.setReceive(receive, ids);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg("保存成功");
         }
         return Y9Result.failure("保存失败");
@@ -452,15 +448,14 @@ public class SendReceiveRestController {
     /**
      * 保存是否可以发文
      *
-     * @param ids  人员ids
+     * @param ids 人员ids
      * @param send 是否发文
      * @return
      */
     @RequestMapping(value = "/setSend", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> setSend(@RequestParam boolean send,
-                                    @RequestParam String ids) {
+    public Y9Result<String> setSend(@RequestParam boolean send, @RequestParam String ids) {
         Map<String, Object> map = receiveDeptAndPersonService.setSend(send, ids);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.successMsg("保存成功");
         }
         return Y9Result.failure("保存失败");

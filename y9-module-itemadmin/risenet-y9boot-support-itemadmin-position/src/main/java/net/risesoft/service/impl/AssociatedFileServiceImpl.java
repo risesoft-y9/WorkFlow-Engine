@@ -103,7 +103,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
+        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
+            taskId = "";
         List<String> list = new ArrayList<>();
         int i = 0;
         if (!taskList.isEmpty()) {
@@ -128,7 +129,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser = positionManager.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                Position ownerUser =
+                                    positionManager.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -198,7 +200,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                         model.setProcessDefinitionId(processDefinitionId);
                         model.setProcessDefinitionKey(hpim.getProcessDefinitionKey());
                         model.setStartTime(startTime);
-                        model.setEndTime(StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
+                        model.setEndTime(
+                            StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
                         model.setTaskDefinitionKey("");
                         model.setTaskAssignee(completer);
                         model.setCreatUserName(hpim.getCreatUserName());
@@ -210,10 +213,12 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                         if (StringUtils.isBlank(hpim.getEndTime())) {
                             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                             List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                            String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
+                            String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
+                                assigneeNames = listTemp.get(2);
 
                             model.setTaskDefinitionKey(taskList.get(0).getTaskDefinitionKey());
-                            model.setTaskId(listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                            model.setTaskId(
+                                listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
                             model.setTaskAssigneeId(assigneeIds);
                             model.setTaskAssignee(assigneeNames);
                             model.setItembox(listTemp.get(3));

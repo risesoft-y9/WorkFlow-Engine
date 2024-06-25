@@ -64,8 +64,11 @@ public class DeleteProcessUtilService {
 
     private final ActRuDetailApi actRuDetailApi;
 
-    public DeleteProcessUtilService(TodoTaskApi rpcTodoTaskManager, ProcessInstanceApi processInstanceApi, ChaoSongInfoApi chaoSongInfoApi, ChaoSong4PositionApi chaoSong4PositionApi, OfficeInfoApi officeInfoApi, ProcessParamApi processParamManager, OfficeFollowApi officeFollowApi,
-        OfficeFollow4PositionApi officeFollow4PositionApi, ErrorLogApi errorLogManager, MsgRemindInfoApi msgRemindInfoManager, ActRuDetailApi actRuDetailApi) {
+    public DeleteProcessUtilService(TodoTaskApi rpcTodoTaskManager, ProcessInstanceApi processInstanceApi,
+        ChaoSongInfoApi chaoSongInfoApi, ChaoSong4PositionApi chaoSong4PositionApi, OfficeInfoApi officeInfoApi,
+        ProcessParamApi processParamManager, OfficeFollowApi officeFollowApi,
+        OfficeFollow4PositionApi officeFollow4PositionApi, ErrorLogApi errorLogManager,
+        MsgRemindInfoApi msgRemindInfoManager, ActRuDetailApi actRuDetailApi) {
         this.rpcTodoTaskManager = rpcTodoTaskManager;
         this.processInstanceApi = processInstanceApi;
         this.chaoSongInfoApi = chaoSongInfoApi;
@@ -228,8 +231,11 @@ public class DeleteProcessUtilService {
             String sql3 = "DELETE from ACT_HI_TASKINST_" + year + " where PROC_INST_ID_ = '" + processInstanceId + "'";
             jdbcTemplate.execute(sql3);
 
-            sql3 = "DELETE" + " FROM" + "	ACT_GE_BYTEARRAY_" + year + "" + " WHERE" + "	ID_ IN (" + "		SELECT" + "			*" + "		FROM ( " + "         SELECT" + "			b.ID_" + "		  FROM" + "			 ACT_GE_BYTEARRAY_" + year + " b" + "		  LEFT JOIN ACT_HI_VARINST_"
-                + year + " v ON v.BYTEARRAY_ID_ = b.ID_" + "		  WHERE" + "			 v.PROC_INST_ID_ = '" + processInstanceId + "'" + "		  AND v.NAME_ = 'users'" + "       ) TT" + "	)";
+            sql3 = "DELETE" + " FROM" + "	ACT_GE_BYTEARRAY_" + year + "" + " WHERE" + "	ID_ IN (" + "		SELECT"
+                + "			*" + "		FROM ( " + "         SELECT" + "			b.ID_" + "		  FROM"
+                + "			 ACT_GE_BYTEARRAY_" + year + " b" + "		  LEFT JOIN ACT_HI_VARINST_" + year
+                + " v ON v.BYTEARRAY_ID_ = b.ID_" + "		  WHERE" + "			 v.PROC_INST_ID_ = '"
+                + processInstanceId + "'" + "		  AND v.NAME_ = 'users'" + "       ) TT" + "	)";
             jdbcTemplate.execute(sql3);
 
             sql3 = "DELETE from ACT_HI_VARINST_" + year + " where PROC_INST_ID_ = '" + processInstanceId + "'";

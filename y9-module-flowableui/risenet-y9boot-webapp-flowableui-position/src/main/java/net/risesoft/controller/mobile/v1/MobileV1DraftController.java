@@ -87,7 +87,9 @@ public class MobileV1DraftController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getDraft")
-    public Y9Page<Map<String, Object>> getDraft(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam(required = false) boolean delFlag, @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
+    public Y9Page<Map<String, Object>> getDraft(@RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String title, @RequestParam(required = false) boolean delFlag,
+        @RequestParam @NotBlank Integer page, @RequestParam @NotBlank Integer rows) {
         Map<String, Object> map;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -95,7 +97,8 @@ public class MobileV1DraftController {
             map = draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, delFlag);
             if ((boolean)map.get("success")) {
                 List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
-                return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Long.parseLong(map.get("total").toString()), list, "获取成功");
+                return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()),
+                    Long.parseLong(map.get("total").toString()), list, "获取成功");
             }
         } catch (Exception e) {
             LOGGER.error("草稿箱列表异常：", e);

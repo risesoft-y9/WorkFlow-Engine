@@ -1,18 +1,21 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.itemadmin.RejectReasonApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.model.platform.Person;
-import net.risesoft.service.RejectReasonService;
-import net.risesoft.y9.Y9LoginUserHolder;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.itemadmin.RejectReasonApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.model.platform.Person;
+import net.risesoft.service.RejectReasonService;
+import net.risesoft.y9.Y9LoginUserHolder;
+
 /**
  * 驳回原因接口
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -28,6 +31,7 @@ public class RejectReasonApiImpl implements RejectReasonApi {
 
     /**
      * 保存驳回原因
+     * 
      * @param tenantId 租户id
      * @param userId 人员id
      * @param action action

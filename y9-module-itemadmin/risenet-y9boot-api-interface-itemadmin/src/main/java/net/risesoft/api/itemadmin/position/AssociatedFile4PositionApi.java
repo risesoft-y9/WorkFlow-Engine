@@ -51,7 +51,8 @@ public interface AssociatedFile4PositionApi {
      * @param processSerialNumber 流程编号
      * @return Y9Result<List<AssociatedFileModel>> 关联文件列表
      */
-    Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(String tenantId, String positionId, String processSerialNumber);
+    Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(String tenantId, String positionId,
+        String processSerialNumber);
 
     /**
      * 保存关联文件
@@ -62,5 +63,6 @@ public interface AssociatedFile4PositionApi {
      * @param processInstanceIds 关联的流程实例ids
      * @return Y9Result<Object>
      */
-    Y9Result<Object> saveAssociatedFile(String tenantId, String positionId, String processSerialNumber, String processInstanceIds);
+    Y9Result<Object> saveAssociatedFile(String tenantId, String positionId, String processSerialNumber,
+        String processInstanceIds);
 }

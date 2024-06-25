@@ -1,7 +1,19 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
@@ -18,16 +30,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.EntrustService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -66,7 +68,7 @@ public class EntrustController {
         OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
         if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
             List<Person> personList =
-                    personManager.listRecursivelyByParentIdAndName(tenantId, orgUnit.getId(), name).getData();
+                personManager.listRecursivelyByParentIdAndName(tenantId, orgUnit.getId(), name).getData();
             for (Person person : personList) {
                 orgUnitList.add(person);
                 Person p = personManager.get(tenantId, person.getId()).getData();
@@ -197,7 +199,7 @@ public class EntrustController {
     }
 
     public void recursionUpToOrg(String tenantId, String nodeId, String parentId, List<OrgUnit> orgUnitList,
-                                 boolean isParent) {
+        boolean isParent) {
         OrgUnit parent = getParent(tenantId, parentId);
         if (isParent) {
             parent.setDescription("parent");

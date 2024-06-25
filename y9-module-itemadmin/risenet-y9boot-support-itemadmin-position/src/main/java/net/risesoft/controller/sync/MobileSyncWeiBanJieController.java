@@ -1,6 +1,26 @@
 package net.risesoft.controller.sync;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.DialectEnum;
@@ -15,23 +35,6 @@ import net.risesoft.util.form.DbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.sql.Connection;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 同步未办结件到数据中心
@@ -53,7 +56,9 @@ public class MobileSyncWeiBanJieController {
 
     private final ProcessParamRepository processParamRepository;
 
-    public MobileSyncWeiBanJieController(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate, OfficeDoneInfoService officeDoneInfoService, ErrorLogService errorLogService, ProcessParamRepository processParamRepository) {
+    public MobileSyncWeiBanJieController(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
+        OfficeDoneInfoService officeDoneInfoService, ErrorLogService errorLogService,
+        ProcessParamRepository processParamRepository) {
         this.jdbcTemplate = jdbcTemplate;
         this.officeDoneInfoService = officeDoneInfoService;
         this.errorLogService = errorLogService;
@@ -61,16 +66,16 @@ public class MobileSyncWeiBanJieController {
     }
 
     @RequestMapping(value = "/tongbu2DataCenter")
-    public void tongbu2DataCenter(String tenantId,HttpServletResponse response) {
+    public void tongbu2DataCenter(String tenantId, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<>(16);
         Connection connection = null;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
             String sql =
-                    "SELECT" + "	P .PROC_INST_ID_," + "	TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
-                            + "	P .PROC_DEF_ID_" + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + "	P .END_TIME_ IS NULL"
-                            + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "	P .START_TIME_ DESC";
+                "SELECT" + "	P .PROC_INST_ID_," + "	TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
+                    + "	P .PROC_DEF_ID_" + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + "	P .END_TIME_ IS NULL"
+                    + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "	P .START_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             assert dataSource != null;
@@ -78,8 +83,8 @@ public class MobileSyncWeiBanJieController {
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql = "SELECT" + "	P .PROC_INST_ID_," + "	SUBSTRING(P.START_TIME_,1,19) as START_TIME_,"
-                        + "	P .PROC_DEF_ID_" + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + "	P .END_TIME_ IS NULL"
-                        + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "	P .START_TIME_ DESC";
+                    + "	P .PROC_DEF_ID_" + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + "	P .END_TIME_ IS NULL"
+                    + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "	P .START_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
@@ -87,9 +92,9 @@ public class MobileSyncWeiBanJieController {
             String processInstanceId = "";
             for (Map<String, Object> map : list) {
                 try {
-                    processInstanceId = (String) map.get("PROC_INST_ID_");
-                    String processDefinitionId = (String) map.get("PROC_DEF_ID_");
-                    String startTime = (String) map.get("START_TIME_");
+                    processInstanceId = (String)map.get("PROC_INST_ID_");
+                    String processDefinitionId = (String)map.get("PROC_DEF_ID_");
+                    String startTime = (String)map.get("START_TIME_");
                     /*
                      * 保存办结数据到数据中心，用于办结件列表查询
                      */
@@ -99,32 +104,32 @@ public class MobileSyncWeiBanJieController {
                     if (processParamModel != null && StringUtils.isNotBlank(processParamModel.getId())) {
                         // ----------------------------------------------------数据中心办结信息
                         officeDoneInfo.setBureauId(StringUtils.isNotBlank(processParamModel.getBureauIds())
-                                ? processParamModel.getBureauIds() : "");
+                            ? processParamModel.getBureauIds() : "");
                         officeDoneInfo.setDeptId(StringUtils.isNotBlank(processParamModel.getDeptIds())
-                                ? processParamModel.getDeptIds() : "");
+                            ? processParamModel.getDeptIds() : "");
 
                         officeDoneInfo.setDocNumber(StringUtils.isNotBlank(processParamModel.getCustomNumber())
-                                ? processParamModel.getCustomNumber() : "");
+                            ? processParamModel.getCustomNumber() : "");
                         officeDoneInfo.setItemId(
-                                StringUtils.isNotBlank(processParamModel.getItemId()) ? processParamModel.getItemId() : "");
+                            StringUtils.isNotBlank(processParamModel.getItemId()) ? processParamModel.getItemId() : "");
                         officeDoneInfo.setItemName(StringUtils.isNotBlank(processParamModel.getItemName())
-                                ? processParamModel.getItemName() : "");
+                            ? processParamModel.getItemName() : "");
                         officeDoneInfo
-                                .setProcessSerialNumber(StringUtils.isNotBlank(processParamModel.getProcessSerialNumber())
-                                        ? processParamModel.getProcessSerialNumber() : "");
+                            .setProcessSerialNumber(StringUtils.isNotBlank(processParamModel.getProcessSerialNumber())
+                                ? processParamModel.getProcessSerialNumber() : "");
                         officeDoneInfo.setSystemCnName(StringUtils.isNotBlank(processParamModel.getSystemCnName())
-                                ? processParamModel.getSystemCnName() : "");
+                            ? processParamModel.getSystemCnName() : "");
                         officeDoneInfo.setSystemName(StringUtils.isNotBlank(processParamModel.getSystemName())
-                                ? processParamModel.getSystemName() : "");
+                            ? processParamModel.getSystemName() : "");
                         officeDoneInfo.setTitle(
-                                StringUtils.isNotBlank(processParamModel.getTitle()) ? processParamModel.getTitle() : "");
+                            StringUtils.isNotBlank(processParamModel.getTitle()) ? processParamModel.getTitle() : "");
                         officeDoneInfo.setUrgency(StringUtils.isNotBlank(processParamModel.getCustomLevel())
-                                ? processParamModel.getCustomLevel() : "");
+                            ? processParamModel.getCustomLevel() : "");
                         officeDoneInfo.setUserComplete("");
                         officeDoneInfo.setCreatUserId(StringUtils.isNotBlank(processParamModel.getStartor())
-                                ? processParamModel.getStartor() : "");
+                            ? processParamModel.getStartor() : "");
                         officeDoneInfo.setCreatUserName(StringUtils.isNotBlank(processParamModel.getStartorName())
-                                ? processParamModel.getStartorName() : "");
+                            ? processParamModel.getStartorName() : "");
                     }
 
                     // 处理委托人
@@ -143,11 +148,11 @@ public class MobileSyncWeiBanJieController {
 
                     // 处理参与人
                     sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId
-                            + "'";
+                        + "'";
                     List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql);
                     String allUserId = "";
                     for (Map<String, Object> m : list3) {
-                        String userId = m.get("USER_ID_") != null ? (String) m.get("USER_ID_") : "";
+                        String userId = m.get("USER_ID_") != null ? (String)m.get("USER_ID_") : "";
                         if (!"".equals(userId) && !allUserId.contains(userId)) {
                             allUserId = Y9Util.genCustomStr(allUserId, userId);
                         }
@@ -210,9 +215,9 @@ public class MobileSyncWeiBanJieController {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
             String sql =
-                    "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
-                            + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
-                            + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
+                "SELECT" + "   P .PROC_INST_ID_," + "  TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
+                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST P" + " WHERE" + "   P .END_TIME_ IS NULL"
+                    + " AND P .DELETE_REASON_ IS NULL" + " ORDER BY" + "  P .START_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil();
             assert dataSource != null;
@@ -220,9 +225,9 @@ public class MobileSyncWeiBanJieController {
             String dialectName = dbMetaDataUtil.getDatabaseDialectName(connection);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)) {
                 sql = "SELECT" + "  P .PROC_INST_ID_,"
-                        + "  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P.END_TIME_,1,19) as END_TIME_,"
-                        + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST_2023 P" + " WHERE P .DELETE_REASON_ IS NULL"
-                        + " ORDER BY" + "  P .START_TIME_ DESC";
+                    + "  SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P.END_TIME_,1,19) as END_TIME_,"
+                    + "  P .PROC_DEF_ID_" + " FROM" + "  ACT_HI_PROCINST_2023 P" + " WHERE P .DELETE_REASON_ IS NULL"
+                    + " ORDER BY" + "  P .START_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
@@ -230,10 +235,10 @@ public class MobileSyncWeiBanJieController {
             String processInstanceId = "";
             for (Map<String, Object> map : list) {
                 try {
-                    processInstanceId = (String) map.get("PROC_INST_ID_");
-                    String processDefinitionId = (String) map.get("PROC_DEF_ID_");
-                    String startTime = (String) map.get("START_TIME_");
-                    String endTime = (String) map.get("END_TIME_");
+                    processInstanceId = (String)map.get("PROC_INST_ID_");
+                    String processDefinitionId = (String)map.get("PROC_DEF_ID_");
+                    String startTime = (String)map.get("START_TIME_");
+                    String endTime = (String)map.get("END_TIME_");
                     /**********************************
                      * 保存办结数据到数据中心，用于办结件列表查询
                      *********************************************/
@@ -243,31 +248,31 @@ public class MobileSyncWeiBanJieController {
                     if (processParamModel != null && StringUtils.isNotBlank(processParamModel.getId())) {
                         // ----------------------------------------------------数据中心办结信息
                         officeDoneInfo.setBureauId(StringUtils.isNotBlank(processParamModel.getBureauIds())
-                                ? processParamModel.getBureauIds() : "");
+                            ? processParamModel.getBureauIds() : "");
                         officeDoneInfo.setDeptId(StringUtils.isNotBlank(processParamModel.getDeptIds())
-                                ? processParamModel.getDeptIds() : "");
+                            ? processParamModel.getDeptIds() : "");
                         officeDoneInfo.setDocNumber(StringUtils.isNotBlank(processParamModel.getCustomNumber())
-                                ? processParamModel.getCustomNumber() : "");
+                            ? processParamModel.getCustomNumber() : "");
                         officeDoneInfo.setItemId(
-                                StringUtils.isNotBlank(processParamModel.getItemId()) ? processParamModel.getItemId() : "");
+                            StringUtils.isNotBlank(processParamModel.getItemId()) ? processParamModel.getItemId() : "");
                         officeDoneInfo.setItemName(StringUtils.isNotBlank(processParamModel.getItemName())
-                                ? processParamModel.getItemName() : "");
+                            ? processParamModel.getItemName() : "");
                         officeDoneInfo
-                                .setProcessSerialNumber(StringUtils.isNotBlank(processParamModel.getProcessSerialNumber())
-                                        ? processParamModel.getProcessSerialNumber() : "");
+                            .setProcessSerialNumber(StringUtils.isNotBlank(processParamModel.getProcessSerialNumber())
+                                ? processParamModel.getProcessSerialNumber() : "");
                         officeDoneInfo.setSystemCnName(StringUtils.isNotBlank(processParamModel.getSystemCnName())
-                                ? processParamModel.getSystemCnName() : "");
+                            ? processParamModel.getSystemCnName() : "");
                         officeDoneInfo.setSystemName(StringUtils.isNotBlank(processParamModel.getSystemName())
-                                ? processParamModel.getSystemName() : "");
+                            ? processParamModel.getSystemName() : "");
                         officeDoneInfo.setTitle(
-                                StringUtils.isNotBlank(processParamModel.getTitle()) ? processParamModel.getTitle() : "");
+                            StringUtils.isNotBlank(processParamModel.getTitle()) ? processParamModel.getTitle() : "");
                         officeDoneInfo.setUrgency(StringUtils.isNotBlank(processParamModel.getCustomLevel())
-                                ? processParamModel.getCustomLevel() : "");
+                            ? processParamModel.getCustomLevel() : "");
                         officeDoneInfo.setUserComplete(processParamModel.getCompleter());
                         officeDoneInfo.setCreatUserId(StringUtils.isNotBlank(processParamModel.getStartor())
-                                ? processParamModel.getStartor() : "");
+                            ? processParamModel.getStartor() : "");
                         officeDoneInfo.setCreatUserName(StringUtils.isNotBlank(processParamModel.getStartorName())
-                                ? processParamModel.getStartorName() : "");
+                            ? processParamModel.getStartorName() : "");
                     }
 
                     // 处理委托人
@@ -285,11 +290,11 @@ public class MobileSyncWeiBanJieController {
 
                     // 处理参与人
                     sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK_2023 i where i.PROC_INST_ID_ = '"
-                            + processInstanceId + "'";
+                        + processInstanceId + "'";
                     List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql);
                     String allUserId = "";
                     for (Map<String, Object> m : list3) {
-                        String userId = m.get("USER_ID_") != null ? (String) m.get("USER_ID_") : "";
+                        String userId = m.get("USER_ID_") != null ? (String)m.get("USER_ID_") : "";
                         if (!"".equals(userId) && !allUserId.contains(userId)) {
                             allUserId = Y9Util.genCustomStr(allUserId, userId);
                         }

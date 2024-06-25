@@ -1,6 +1,16 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.entity.TransactionHistoryWord;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -9,14 +19,6 @@ import net.risesoft.repository.jpa.TransactionHistoryWordRepository;
 import net.risesoft.service.TransactionHistoryWordService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.service.Y9FileStoreService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author qinman
@@ -155,7 +157,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
         SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
             transactionHistoryWordRepository.updateTransactionHistoryWordById(fileStoreId, fileSize, isTaoHong,
-                    sdfymdhms.format(new Date()), userId, id);
+                sdfymdhms.format(new Date()), userId, id);
         }
     }
 

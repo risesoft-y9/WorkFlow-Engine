@@ -1,12 +1,13 @@
 package net.risesoft.service;
 
-import lombok.RequiredArgsConstructor;
+import java.util.Map;
+
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
  * @author qinman
@@ -35,7 +36,7 @@ public class Task4ListenerService {
     /**
      * 异步处理,自定义变量科室id保存
      *
-     * @param task      任务
+     * @param task 任务
      * @param variables 变量
      */
     @Async
@@ -50,19 +51,19 @@ public class Task4ListenerService {
     /**
      * 异步处理,统一待办，微信提醒，消息推送提醒，短信提醒，协作状态
      *
-     * @param task           任务
-     * @param variables      流程变量
+     * @param task 任务
+     * @param variables 流程变量
      * @param localVariables 任务变量
      */
     @Async
     public void task4CreateListener(final DelegateTask task, final Map<String, Object> variables,
-                                    final Map<String, Object> localVariables) {
+        final Map<String, Object> localVariables) {
 
         /*
          * 统一待办
          */
         boolean b = !"xinjian".equals(task.getTaskDefinitionKey()) && !"faqiren".equals(task.getTaskDefinitionKey())
-                && !"qicao".equals(task.getTaskDefinitionKey()) && !"fenpei".equals(task.getTaskDefinitionKey());
+            && !"qicao".equals(task.getTaskDefinitionKey()) && !"fenpei".equals(task.getTaskDefinitionKey());
         if (b) {
             // 新建这一步不使用异步方式保存
             todoTaskService.saveTodoTask(task, variables);
@@ -91,7 +92,7 @@ public class Task4ListenerService {
     /**
      * 异步处理,删除统一待办，更新协作状态,消息提醒
      *
-     * @param task      任务
+     * @param task 任务
      * @param variables 变量
      */
     @Async

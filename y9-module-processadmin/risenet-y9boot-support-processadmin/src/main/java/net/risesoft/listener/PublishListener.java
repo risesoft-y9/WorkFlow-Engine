@@ -29,7 +29,8 @@ public class PublishListener implements ExecutionListener {
     @Transactional(rollbackFor = Exception.class)
     public void notify(DelegateExecution execution) {
         try {
-            String requestUrl = Y9Context.getProperty("y9.app.processAdmin.imageCountUrl") + "/service/rest/imageCount/publish";
+            String requestUrl =
+                Y9Context.getProperty("y9.app.processAdmin.imageCountUrl") + "/service/rest/imageCount/publish";
             String tenantId = FlowableTenantInfoHolder.getTenantId();
             String processSerialNumber = execution.getVariable("processSerialNumber").toString();
             List<NameValuePair> params = new ArrayList<>();

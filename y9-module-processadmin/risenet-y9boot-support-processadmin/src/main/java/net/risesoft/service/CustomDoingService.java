@@ -20,7 +20,7 @@ public interface CustomDoingService {
     /**
      * 根据人员id和事项id统计
      *
-     * @param userId               用户id
+     * @param userId 用户id
      * @param processDefinitionKey 流程定义key
      * @return long
      */
@@ -39,8 +39,8 @@ public interface CustomDoingService {
      * 根据人员Id获取用户的在办任务(分页,包含流程变量)
      *
      * @param userId 用户id
-     * @param page   页码
-     * @param rows   行数
+     * @param page 页码
+     * @param rows 行数
      * @return Map<String, Object>
      */
     Map<String, Object> getListByUserId(String userId, Integer page, Integer rows);
@@ -55,7 +55,7 @@ public interface CustomDoingService {
      * @return
      */
     Map<String, Object> getListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey, Integer page,
-                                                               Integer rows);
+        Integer rows);
 
     /**
      * Description:
@@ -90,7 +90,7 @@ public interface CustomDoingService {
      * @return
      */
     Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey,
-                                                                  String searchTerm, Integer page, Integer rows);
+        String searchTerm, Integer page, Integer rows);
 
     /**
      * 条件搜索在办件
@@ -103,6 +103,6 @@ public interface CustomDoingService {
      * @return
      */
     Map<String, Object> searchListByUserIdAndSystemName(String userId, String systemName, String searchTerm,
-                                                        Integer page, Integer rows);
+        Integer page, Integer rows);
 
 }

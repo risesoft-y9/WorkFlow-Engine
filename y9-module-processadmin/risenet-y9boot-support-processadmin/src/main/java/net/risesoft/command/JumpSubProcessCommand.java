@@ -1,5 +1,8 @@
 package net.risesoft.command;
 
+import java.util.List;
+import java.util.Map;
+
 import org.flowable.bpmn.model.FlowElement;
 import org.flowable.bpmn.model.Process;
 import org.flowable.common.engine.impl.interceptor.Command;
@@ -11,9 +14,6 @@ import org.flowable.engine.impl.util.CommandContextUtil;
 import org.flowable.engine.impl.util.ProcessDefinitionUtil;
 import org.flowable.task.service.TaskService;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman

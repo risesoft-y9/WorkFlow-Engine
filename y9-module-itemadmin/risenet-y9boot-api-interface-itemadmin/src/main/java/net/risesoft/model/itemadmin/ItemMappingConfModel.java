@@ -1,8 +1,8 @@
 package net.risesoft.model.itemadmin;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 事项映射配置
@@ -25,8 +25,7 @@ public class ItemMappingConfModel implements Serializable {
      */
     private String itemId;
     /**
-     * 对接系统类型
-     * 1为内部系统，2为外部系统
+     * 对接系统类型 1为内部系统，2为外部系统
      */
     private String sysType = "2";
     /**
@@ -38,8 +37,7 @@ public class ItemMappingConfModel implements Serializable {
      */
     private String columnName;
     /**
-     * 映射系统标识
-     * 内部系统为事项id，外部系统为自定义标识
+     * 映射系统标识 内部系统为事项id，外部系统为自定义标识
      */
     private String mappingId;
     /**

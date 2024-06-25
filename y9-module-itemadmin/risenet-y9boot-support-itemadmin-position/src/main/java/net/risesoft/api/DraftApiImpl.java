@@ -1,6 +1,22 @@
 package net.risesoft.api;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.DraftEntity;
@@ -11,20 +27,6 @@ import net.risesoft.repository.jpa.SpmApproveItemRepository;
 import net.risesoft.service.DraftEntityService;
 import net.risesoft.service.FormDataService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * 草稿列表接口
@@ -49,7 +51,7 @@ public class DraftApiImpl implements Draft4PositionApi {
     /**
      * 根据系统名称计数
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
      * @param systemName 系统id
      * @return int
@@ -66,7 +68,7 @@ public class DraftApiImpl implements Draft4PositionApi {
      * 彻底删除草稿
      *
      * @param tenantId 租户id
-     * @param ids      草稿ids
+     * @param ids 草稿ids
      * @return Map&lt;String, Object&gt;
      */
     @Override
@@ -79,9 +81,9 @@ public class DraftApiImpl implements Draft4PositionApi {
     /**
      * 根据岗位id和事项id获取删除草稿统计
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param itemId     事项id
+     * @param itemId 事项id
      * @return int
      */
     @Override
@@ -100,7 +102,7 @@ public class DraftApiImpl implements Draft4PositionApi {
     /**
      * 根据流程序列号获取草稿
      *
-     * @param tenantId            租户id
+     * @param tenantId 租户id
      * @param processSerialNumber 流程序列号
      * @return Map
      */
@@ -130,9 +132,9 @@ public class DraftApiImpl implements Draft4PositionApi {
     /**
      * 根据岗位id和事项id获取草稿统计
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param itemId     事项id
+     * @param itemId 事项id
      * @return int
      */
     @Override
@@ -152,19 +154,19 @@ public class DraftApiImpl implements Draft4PositionApi {
     /**
      * 获取草稿列表
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
-     * @param page       页码
-     * @param rows       条数
-     * @param title      标题
-     * @param itemId     事项id
-     * @param delFlag    是否删除
+     * @param page 页码
+     * @param rows 条数
+     * @param title 标题
+     * @param itemId 事项id
+     * @param delFlag 是否删除
      * @return Map&lt;String, Object&gt;
      */
     @Override
     @GetMapping(value = "/getDraftList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getDraftList(String tenantId, String positionId, int page, int rows, String title,
-                                            String itemId, boolean delFlag) {
+        String itemId, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         Map<String, Object> map = new HashMap<>(16);
@@ -175,7 +177,7 @@ public class DraftApiImpl implements Draft4PositionApi {
                 title = "";
             }
             Page<DraftEntity> pageList =
-                    draftEntityService.getDraftList(itemId, positionId, page, rows, title, delFlag);
+                draftEntityService.getDraftList(itemId, positionId, page, rows, title, delFlag);
             List<Map<String, Object>> draftList = new ArrayList<>();
             Map<String, Object> formDataMap = null;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -205,7 +207,7 @@ public class DraftApiImpl implements Draft4PositionApi {
 
                 formDataMap = formDataService.getData(tenantId, itemId, draftEntity.getProcessSerialNumber());
                 if (formDataMap.get("leaveType") != null) {
-                    String leaveType = (String) formDataMap.get("leaveType");
+                    String leaveType = (String)formDataMap.get("leaveType");
                     for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
                         if (leaveType.equals(leaveTypeEnum.getValue())) {
                             formDataMap.put("leaveType", leaveTypeEnum.getName());
@@ -232,6 +234,7 @@ public class DraftApiImpl implements Draft4PositionApi {
 
     /**
      * 获取系统名称对应的草稿列表
+     * 
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param page page
@@ -244,7 +247,7 @@ public class DraftApiImpl implements Draft4PositionApi {
     @Override
     @GetMapping(value = "/getDraftListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getDraftListBySystemName(String tenantId, String positionId, int page, int rows,
-                                                        String title, String systemName, boolean delFlag) {
+        String title, String systemName, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         Map<String, Object> map = new HashMap<>(16);
@@ -255,7 +258,7 @@ public class DraftApiImpl implements Draft4PositionApi {
                 title = "";
             }
             Page<DraftEntity> pageList =
-                    draftEntityService.getDraftListBySystemName(systemName, positionId, page, rows, title, delFlag);
+                draftEntityService.getDraftListBySystemName(systemName, positionId, page, rows, title, delFlag);
             List<Map<String, Object>> draftList = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             int number = (page - 1) * rows;
@@ -298,17 +301,17 @@ public class DraftApiImpl implements Draft4PositionApi {
     /**
      * 编辑草稿
      *
-     * @param tenantId            租户id
-     * @param positionId          岗位id
-     * @param itemId              事项id
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param itemId 事项id
      * @param processSerialNumber 流程编号
-     * @param mobile              是否手机端
+     * @param mobile 是否手机端
      * @return Map<String, Object>
      */
     @Override
     @GetMapping(value = "/openDraft4Position", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> openDraft4Position(String tenantId, String positionId, String itemId,
-                                                  String processSerialNumber, boolean mobile) {
+        String processSerialNumber, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         Map<String, Object> map = new HashMap<>(16);
@@ -322,7 +325,7 @@ public class DraftApiImpl implements Draft4PositionApi {
      * 还原草稿
      *
      * @param tenantId 租户id
-     * @param ids      草稿ids
+     * @param ids 草稿ids
      * @return Map&lt;String, Object&gt;
      */
     @Override
@@ -338,7 +341,7 @@ public class DraftApiImpl implements Draft4PositionApi {
      * 删除草稿
      *
      * @param tenantId 租户id
-     * @param ids      草稿ids
+     * @param ids 草稿ids
      * @return Map&lt;String, Object&gt;
      */
     @Override
@@ -353,20 +356,20 @@ public class DraftApiImpl implements Draft4PositionApi {
     /**
      * 保存草稿
      *
-     * @param tenantId             租户id
-     * @param positionId           岗位id
-     * @param itemId               事项id
-     * @param processSerialNumber  流程编号
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param itemId 事项id
+     * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
-     * @param number               编号
-     * @param level                紧急程度
-     * @param title                标题
+     * @param number 编号
+     * @param level 紧急程度
+     * @param title 标题
      * @return Map&lt;String, Object&gt;
      */
     @Override
     @PostMapping(value = "/saveDraft", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber,
-                                         String processDefinitionKey, String number, String level, String title) {
+        String processDefinitionKey, String number, String level, String title) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         Map<String, Object> map = new HashMap<>(16);

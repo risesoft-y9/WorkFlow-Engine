@@ -69,7 +69,8 @@ public class MobileV1ChaoSongController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/detail")
-    public Y9Result<Map<String, Object>> detail(@RequestParam @NotBlank String id, @RequestParam @NotBlank String processInstanceId, @RequestParam(required = false) Integer status) {
+    public Y9Result<Map<String, Object>> detail(@RequestParam @NotBlank String id,
+        @RequestParam @NotBlank String processInstanceId, @RequestParam(required = false) Integer status) {
         Map<String, Object> map;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -85,7 +86,8 @@ public class MobileV1ChaoSongController {
             String itemId = (String)map.get("itemId");
             String itembox = (String)map.get("itembox");
             DocumentUtil documentUtil = new DocumentUtil();
-            Map<String, Object> dataMap = documentUtil.documentDetail(itemId, processDefinitionId, processSerialNumber, processInstanceId, taskDefKey, taskId, itembox, activitiUser, formIds, formNames);
+            Map<String, Object> dataMap = documentUtil.documentDetail(itemId, processDefinitionId, processSerialNumber,
+                processInstanceId, taskDefKey, taskId, itembox, activitiUser, formIds, formNames);
             map.putAll(dataMap);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
@@ -103,12 +105,15 @@ public class MobileV1ChaoSongController {
      * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/findCsUser")
-    public Y9Result<List<Map<String, Object>>> findCsUser(@RequestParam(required = false) String id, @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId) {
+    public Y9Result<List<Map<String, Object>>> findCsUser(@RequestParam(required = false) String id,
+        @RequestParam(required = false) Integer principalType,
+        @RequestParam(required = false) String processInstanceId) {
         List<Map<String, Object>> item;
         try {
             String positionId = Y9LoginUserHolder.getPositionId();
             String userId = Y9LoginUserHolder.getPersonId();
-            item = itemRole4PositionApi.findCsUser(Y9LoginUserHolder.getTenantId(), userId, positionId, id, principalType, processInstanceId);
+            item = itemRole4PositionApi.findCsUser(Y9LoginUserHolder.getTenantId(), userId, positionId, id,
+                principalType, processInstanceId);
             return Y9Result.success(item, "获取成功");
         } catch (Exception e) {
             LOGGER.error("手机端跟踪获取抄送选人", e);
@@ -125,13 +130,16 @@ public class MobileV1ChaoSongController {
      * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/findCsUserSearch")
-    public Y9Result<List<Map<String, Object>>> findCsUserSearch(@RequestParam(required = false) String name, @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId) {
+    public Y9Result<List<Map<String, Object>>> findCsUserSearch(@RequestParam(required = false) String name,
+        @RequestParam(required = false) Integer principalType,
+        @RequestParam(required = false) String processInstanceId) {
         List<Map<String, Object>> item;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             String userId = Y9LoginUserHolder.getPersonId();
-            item = itemRole4PositionApi.findCsUserSearch(tenantId, userId, positionId, name, principalType, processInstanceId);
+            item = itemRole4PositionApi.findCsUserSearch(tenantId, userId, positionId, name, principalType,
+                processInstanceId);
             return Y9Result.success(item, "获取成功");
         } catch (Exception e) {
             LOGGER.error("手机端跟踪选人搜索", e);
@@ -149,14 +157,17 @@ public class MobileV1ChaoSongController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/list")
-    public Y9Page<ChaoSongModel> list(@RequestParam(required = false) String type, @RequestParam @NotBlank String processInstanceId, @RequestParam int rows, @RequestParam int page) {
+    public Y9Page<ChaoSongModel> list(@RequestParam(required = false) String type,
+        @RequestParam @NotBlank String processInstanceId, @RequestParam int rows, @RequestParam int page) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             if (type.equals("my")) {
-                return chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
+                return chaoSong4PositionApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId,
+                    processInstanceId, "", rows, page);
             } else {
-                return chaoSong4PositionApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "", rows, page);
+                return chaoSong4PositionApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, "",
+                    rows, page);
             }
         } catch (Exception e) {
             LOGGER.error("手机端跟踪办件抄送列表", e);
@@ -174,7 +185,8 @@ public class MobileV1ChaoSongController {
      * @return Y9Page<ChaoSongModel>
      */
     @RequestMapping(value = "/search")
-    public Y9Page<ChaoSongModel> search(@RequestParam(required = false) String documentTitle, @RequestParam(required = false) Integer status, @RequestParam int rows, @RequestParam int page) {
+    public Y9Page<ChaoSongModel> search(@RequestParam(required = false) String documentTitle,
+        @RequestParam(required = false) Integer status, @RequestParam int rows, @RequestParam int page) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -200,12 +212,15 @@ public class MobileV1ChaoSongController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/send")
-    public Y9Result<Object> send(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String users, @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
+    public Y9Result<Object> send(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String users,
+        @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing,
+        @RequestParam(required = false) String smsContent) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
             String userId = Y9LoginUserHolder.getPersonId();
-            return chaoSong4PositionApi.save(tenantId, userId, positionId, processInstanceId, users, isSendSms, isShuMing, smsContent, "");
+            return chaoSong4PositionApi.save(tenantId, userId, positionId, processInstanceId, users, isSendSms,
+                isShuMing, smsContent, "");
         } catch (Exception e) {
             LOGGER.error("手机端跟踪查看抄送件发送", e);
         }

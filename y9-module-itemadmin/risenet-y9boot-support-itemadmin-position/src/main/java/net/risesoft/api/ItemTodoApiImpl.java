@@ -51,7 +51,8 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      */
     @Override
     @GetMapping(value = "/countByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public int countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String systemName) {
+    public int countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName, userId, 0);
     }
@@ -68,10 +69,13 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      */
     @Override
     @GetMapping(value = "/findByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ItemPage<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows) {
+    public ItemPage<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page,
+        @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        Page<ActRuDetail> ardPage = actRuDetailService.findBySystemNameAndAssigneeAndStatus(systemName, userId, 0, rows, page, sort);
+        Page<ActRuDetail> ardPage =
+            actRuDetailService.findBySystemNameAndAssigneeAndStatus(systemName, userId, 0, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();
         ActRuDetailModel actRuDetailModel;
         List<ActRuDetailModel> modelList = new ArrayList<>();
@@ -80,7 +84,8 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             Y9BeanUtil.copyProperties(actRuDetail, actRuDetailModel);
             modelList.add(actRuDetailModel);
         }
-        return ItemPage.<ActRuDetailModel>builder().rows(modelList).currpage(page).size(rows).totalpages(ardPage.getTotalPages()).total(ardPage.getTotalElements()).build();
+        return ItemPage.<ActRuDetailModel>builder().rows(modelList).currpage(page).size(rows)
+            .totalpages(ardPage.getTotalPages()).total(ardPage.getTotalElements()).build();
     }
 
     /**
@@ -97,22 +102,28 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      */
     @Override
     @GetMapping(value = "/searchByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String systemName, @RequestParam String tableName, @RequestParam String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+    public ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String systemName, @RequestParam String tableName,
+        @RequestParam String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String sql0 = "LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
         StringBuilder sql1 = new StringBuilder();
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
         for (String columnName : searchMap.keySet()) {
-            sql1.append("AND INSTR(F.").append(columnName.toUpperCase()).append(",'").append(searchMap.get(columnName).toString()).append("') > 0 ");
+            sql1.append("AND INSTR(F.").append(columnName.toUpperCase()).append(",'")
+                .append(searchMap.get(columnName).toString()).append("') > 0 ");
         }
         String orderBy = "T.CREATETIME DESC";
-        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + sql1 + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? ORDER BY " + orderBy;
-        String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.SYSTEMNAME= ? AND T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1;
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + sql1
+            + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? ORDER BY " + orderBy;
+        String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + sql0
+            + " WHERE T.SYSTEMNAME= ? AND T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1;
         Object[] args = new Object[2];
         args[0] = systemName;
         args[1] = userId;
-        return itemPageService.page(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        return itemPageService.page(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args,
+            page, rows);
     }
 
 }

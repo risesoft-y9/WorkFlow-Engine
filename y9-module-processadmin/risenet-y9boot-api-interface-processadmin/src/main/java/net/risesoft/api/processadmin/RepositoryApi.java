@@ -88,7 +88,8 @@ public interface RepositoryApi {
      * @return Y9Result<String>
      * @throws Exception
      */
-    Y9Result<String> getXmlByProcessInstance(String tenantId, String resourceType, String processInstanceId, String processDefinitionId) throws Exception;
+    Y9Result<String> getXmlByProcessInstance(String tenantId, String resourceType, String processInstanceId,
+        String processDefinitionId) throws Exception;
 
     /**
      * 获取已部署流程定义列表

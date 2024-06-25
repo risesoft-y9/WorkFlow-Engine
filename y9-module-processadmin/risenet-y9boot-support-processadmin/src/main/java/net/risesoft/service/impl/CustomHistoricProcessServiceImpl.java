@@ -1,14 +1,8 @@
 package net.risesoft.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
-import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
-import net.risesoft.service.CustomHistoricProcessService;
-import net.risesoft.service.DeleteProcessUtilService;
-import net.risesoft.util.SysVariables;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.text.SimpleDateFormat;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.RuntimeService;
@@ -17,8 +11,16 @@ import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
+import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
+import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
+import net.risesoft.service.CustomHistoricProcessService;
+import net.risesoft.service.DeleteProcessUtilService;
+import net.risesoft.util.SysVariables;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -31,15 +33,15 @@ import java.util.List;
 @Service(value = "customHistoricProcessService")
 public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessService {
 
-    private final  RuntimeService runtimeService;
+    private final RuntimeService runtimeService;
 
-    private final  HistoryService historyService;
+    private final HistoryService historyService;
 
-    private final  OfficeDoneInfoApi officeDoneInfoApi;
+    private final OfficeDoneInfoApi officeDoneInfoApi;
 
-    private final  OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
+    private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
-    private final  DeleteProcessUtilService deleteProcessUtilService;
+    private final DeleteProcessUtilService deleteProcessUtilService;
 
     @Override
     public boolean deleteProcessInstance(String processInstanceId) {

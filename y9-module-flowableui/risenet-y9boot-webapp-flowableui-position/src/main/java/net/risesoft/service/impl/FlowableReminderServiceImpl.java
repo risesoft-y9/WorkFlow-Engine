@@ -1,9 +1,21 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.model.platform.OrgUnit;
@@ -11,12 +23,6 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.FlowableReminderService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
-
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,10 +40,9 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             retMap = taskApi.findListByProcessInstanceId(tenantId, processInstanceId, page, rows);
-            List<TaskModel> list = (List<TaskModel>) retMap.get("rows");
+            List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
-            List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<>() {
-            });
+            List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<>() {});
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
@@ -57,7 +62,8 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
+                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }
@@ -70,10 +76,10 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
         } else {
             long time = endTime.getTime() - startTime.getTime();
             time = time / 1000;
-            int s = (int) (time % 60);
-            int m = (int) (time / 60 % 60);
-            int h = (int) (time / 3600 % 24);
-            int d = (int) (time / 86400);
+            int s = (int)(time % 60);
+            int m = (int)(time / 60 % 60);
+            int h = (int)(time / 3600 % 24);
+            int d = (int)(time / 86400);
             return d + " 天  " + h + " 小时 " + m + " 分 " + s + " 秒 ";
         }
     }

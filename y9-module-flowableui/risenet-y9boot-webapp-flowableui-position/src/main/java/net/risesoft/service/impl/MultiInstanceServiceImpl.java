@@ -1,7 +1,17 @@
 package net.risesoft.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
@@ -18,11 +28,6 @@ import net.risesoft.service.Process4SearchService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
-
-import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -46,7 +51,8 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     private final Process4SearchService process4SearchService;
 
     @Override
-    public void addExecutionId(String processInstanceId, String taskId, String userChoice, String isSendSms, String isShuMing, String smsContent) throws Exception {
+    public void addExecutionId(String processInstanceId, String taskId, String userChoice, String isSendSms,
+        String isShuMing, String smsContent) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel task = taskApi.findById(tenantId, taskId);
         String activityId = task.getTaskDefinitionKey();
@@ -64,7 +70,8 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
             LOGGER.error("保存流程参数失败", e);
         }
         for (String user : users) {
-            buttonOperation4PositionApi.addMultiInstanceExecution(tenantId, activityId, processInstanceId, taskId, user);
+            buttonOperation4PositionApi.addMultiInstanceExecution(tenantId, activityId, processInstanceId, taskId,
+                user);
         }
         if (processParamModel != null) {
             process4SearchService.saveToDataCenter1(tenantId, taskId, processParamModel);
@@ -73,7 +80,8 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void addExecutionId4Sequential(String executionId, String taskId, String userChoice, String selectUserId, int num) throws Exception {
+    public void addExecutionId4Sequential(String executionId, String taskId, String userChoice, String selectUserId,
+        int num) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String[] userChoiceArr = userChoice.split(";");
         String usersObj = variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.USERS);
@@ -104,7 +112,8 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         variableApi.setVariableLocal(tenantId, taskId, SysVariables.USERS, val);
 
         // 改变多实例的标量
-        int nrOfInstances = Integer.parseInt(variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES));
+        int nrOfInstances = Integer
+            .parseInt(variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES));
         Map<String, Object> val1 = new HashMap<>();
         val1.put("val", nrOfInstances + userChoiceArr.length);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.NROFINSTANCES, val1);
@@ -192,10 +201,12 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         if (!taskList.isEmpty()) {
             ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
             TaskModel task = taskList.get(0);
-            String taskId = task.getId(), processDefinitionId = task.getProcessDefinitionId(), processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
+            String taskId = task.getId(), processDefinitionId = task.getProcessDefinitionId(),
+                processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
             String routeToTask = task.getTaskDefinitionKey();
             String itemId = processParamModel.getItemId();
-            map = document4PositionApi.docUserChoise(tenantId, personId, Y9LoginUserHolder.getPositionId(), itemId, processDefinitionKey, processDefinitionId, taskId, routeToTask, processInstanceId);
+            map = document4PositionApi.docUserChoise(tenantId, personId, Y9LoginUserHolder.getPositionId(), itemId,
+                processDefinitionKey, processDefinitionId, taskId, routeToTask, processInstanceId);
             map.put("taskId", taskId);
             map.put("processInstanceId", processInstanceId);
         }
@@ -210,7 +221,8 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void removeExecution4Sequential(String executionId, String taskId, String elementUser, int num) throws Exception {
+    public void removeExecution4Sequential(String executionId, String taskId, String elementUser, int num)
+        throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String usersObj = variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.USERS);
         // 计算删除后的users
@@ -240,7 +252,8 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         // 改变任务变量中的users
         variableApi.setVariableLocal(tenantId, taskId, SysVariables.USERS, val);
         // 改变多实例的标量
-        int nrOfInstances = Integer.parseInt(variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES));
+        int nrOfInstances = Integer
+            .parseInt(variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NROFINSTANCES));
         Map<String, Object> val1 = new HashMap<>();
         val1.put("val", nrOfInstances - 1);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.NROFINSTANCES, val1);

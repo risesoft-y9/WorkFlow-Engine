@@ -1,7 +1,16 @@
 package net.risesoft.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.task.service.delegate.DelegateTask;
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.Y9Push;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -12,13 +21,6 @@ import net.risesoft.model.platform.Person;
 import net.risesoft.service.PushNormalToAndroidService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.configuration.Y9Properties;
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -30,13 +32,13 @@ import java.util.Map;
 @Service(value = "pushNormalToAndroidService")
 public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidService {
 
-    private final  ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamManager;
 
-    private final  Y9Properties y9Conf;
+    private final Y9Properties y9Conf;
 
-    private final  PersonApi personManager;
+    private final PersonApi personManager;
 
-    private final  PositionApi positionApi;
+    private final PositionApi positionApi;
 
     /**
      * 消息提醒

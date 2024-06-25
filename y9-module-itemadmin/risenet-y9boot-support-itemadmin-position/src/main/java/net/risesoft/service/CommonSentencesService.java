@@ -1,6 +1,17 @@
 package net.risesoft.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.entity.CommonSentences;
 import net.risesoft.entity.CommonSentencesInit;
 import net.risesoft.id.IdType;
@@ -9,15 +20,6 @@ import net.risesoft.repository.jpa.CommonSentencesInitRepository;
 import net.risesoft.repository.jpa.CommonSentencesRepository;
 import net.risesoft.util.CommentUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author qinman

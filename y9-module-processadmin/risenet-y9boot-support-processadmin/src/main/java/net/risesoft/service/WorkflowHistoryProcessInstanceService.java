@@ -1,6 +1,8 @@
 package net.risesoft.service;
 
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.history.HistoricProcessInstance;
@@ -8,8 +10,7 @@ import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 /**
  * @author qinman
@@ -20,7 +21,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @DependsOn({"runtimeService", "repositoryService", "historyService", "taskService"})
 public class WorkflowHistoryProcessInstanceService {
-
 
     private final HistoryService historyService;
 
@@ -34,7 +34,7 @@ public class WorkflowHistoryProcessInstanceService {
         HistoricProcessInstance historicProcessInstance = null;
         if (StringUtils.isNotBlank(processInstanceId)) {
             historicProcessInstance =
-                    historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+                historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
         }
         return historicProcessInstance;
     }
@@ -86,7 +86,7 @@ public class WorkflowHistoryProcessInstanceService {
         HistoricProcessInstance historicProcessInstance;
         if (StringUtils.isNotBlank(processInstanceId)) {
             historicProcessInstance =
-                    historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+                historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             if (historicProcessInstance != null) {
                 String superProcessInstanceId = historicProcessInstance.getId();
                 list.addAll(getHierarchySuperProcessInstance(superProcessInstanceId));
@@ -152,7 +152,7 @@ public class WorkflowHistoryProcessInstanceService {
         HistoricProcessInstance historicProcessInstance = null;
         if (StringUtils.isNotBlank(processInstanceId)) {
             historicProcessInstance =
-                    historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+                historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
         }
         return historicProcessInstance;
     }

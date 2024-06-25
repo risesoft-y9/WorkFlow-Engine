@@ -60,12 +60,14 @@ public class OpinionRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/checkSignOpinion")
-    public Y9Result<Map<String, Object>> checkSignOpinion(@RequestParam(required = false) String taskId, @RequestParam String processSerialNumber) {
+    public Y9Result<Map<String, Object>> checkSignOpinion(@RequestParam(required = false) String taskId,
+        @RequestParam String processSerialNumber) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String userId = person.getPersonId(), tenantId = person.getTenantId();
-            Boolean checkSignOpinion = opinion4PositionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId);
+            Boolean checkSignOpinion =
+                opinion4PositionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId);
             map.put("checkSignOpinion", checkSignOpinion);
         } catch (Exception e) {
             LOGGER.error("查询" + taskId + "是否签写意见失败！", e);
@@ -81,7 +83,8 @@ public class OpinionRestController {
      * @return Y9Result<Integer>
      */
     @RequestMapping(value = "/countOpinionHistory", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Integer> countOpinionHistory(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String opinionFrameMark) {
+    public Y9Result<Integer> countOpinionHistory(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String opinionFrameMark) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Integer num = opinion4PositionApi.countOpinionHistory(tenantId, processSerialNumber, opinionFrameMark);
         return Y9Result.success(num, "获取成功");
@@ -117,7 +120,8 @@ public class OpinionRestController {
         List<Map<String, Object>> item = new ArrayList<>();
         OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
         if (bureau != null) {
-            List<OrgUnit> orgUnitList = orgUnitApi.treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON, bureau.getDn()).getData();
+            List<OrgUnit> orgUnitList =
+                orgUnitApi.treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON, bureau.getDn()).getData();
             for (OrgUnit orgUnit : orgUnitList) {
                 Map<String, Object> map = new HashMap<>(16);
                 map.put("id", orgUnit.getId());
@@ -149,7 +153,8 @@ public class OpinionRestController {
      * @return Y9Result<List < String>>
      */
     @RequestMapping(value = "/getBindOpinionFrame", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<String>> getBindOpinionFrame(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processDefinitionId) {
+    public Y9Result<List<String>> getBindOpinionFrame(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<String> list = opinion4PositionApi.getBindOpinionFrame(tenantId, itemId, processDefinitionId);
         return Y9Result.success(list, "获取成功");
@@ -193,7 +198,8 @@ public class OpinionRestController {
                     }
                     m.put("sex", person.getSex());
                 }
-                if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON) || orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
+                if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON)
+                    || orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                     item.add(m);
                 }
             }
@@ -209,7 +215,8 @@ public class OpinionRestController {
      * @return Y9Result<List < OpinionHistoryModel>>
      */
     @RequestMapping(value = "/opinionHistoryList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String opinionFrameMark) {
+    public Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String opinionFrameMark) {
         List<OpinionHistoryModel> list;
         String tenantId = Y9LoginUserHolder.getTenantId();
         list = opinion4PositionApi.opinionHistoryList(tenantId, processSerialNumber, opinionFrameMark);
@@ -249,12 +256,16 @@ public class OpinionRestController {
      * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/personCommentList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String taskId, @RequestParam @NotBlank String itembox, @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
-        @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser, @RequestParam(required = false) String orderByUser) {
+    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam(required = false) String taskId, @RequestParam @NotBlank String itembox,
+        @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser,
+        @RequestParam(required = false) String orderByUser) {
         List<Map<String, Object>> listMap;
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
-        listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
+        listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
+            opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
         return Y9Result.success(listMap, "获取成功");
     }
 

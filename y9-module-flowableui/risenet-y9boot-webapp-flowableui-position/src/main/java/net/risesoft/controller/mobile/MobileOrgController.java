@@ -85,7 +85,8 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getOrg")
-    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam(required = false) String id, HttpServletResponse response) {
+    public void getOrg(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
+        @RequestParam(required = false) String id, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -176,7 +177,8 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getPositionList")
-    public void getPositionList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
+    public void getPositionList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             List<Map<String, Object>> resList = new ArrayList<>();
@@ -232,7 +234,8 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getUserCount")
-    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String userChoice, HttpServletResponse response) {
+    public void getUserCount(@RequestHeader("auth-tenantId") String tenantId, @RequestParam String userChoice,
+        HttpServletResponse response) {
         List<String> userIds = new ArrayList<>();
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
@@ -270,7 +273,9 @@ public class MobileOrgController {
      */
     @ResponseBody
     @RequestMapping(value = "/getUserInfo")
-    public void getUserInfo(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, HttpServletResponse response) {
+    public void getUserInfo(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);

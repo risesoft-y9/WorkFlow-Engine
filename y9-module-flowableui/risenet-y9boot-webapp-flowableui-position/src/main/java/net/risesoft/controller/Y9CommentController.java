@@ -53,8 +53,10 @@ public class Y9CommentController {
     public String refreshComment() {
         String dbType = DbUtil.getDbTypeString(y9FlowableDS);
 
-        String y9publicPackageEntity = Y9Context.getProperty("y9.feature.comment.packagesToScanEntityPublic", "net.risesoft.y9public.entity");// 自定义公共表路径
-        String packageEntity = Y9Context.getProperty("y9.app.itemAdmin.jpa.packagesToScanEntity", "net.risesoft.entity");// 自定义租户表路径
+        String y9publicPackageEntity =
+            Y9Context.getProperty("y9.feature.comment.packagesToScanEntityPublic", "net.risesoft.y9public.entity");// 自定义公共表路径
+        String packageEntity =
+            Y9Context.getProperty("y9.app.itemAdmin.jpa.packagesToScanEntity", "net.risesoft.entity");// 自定义租户表路径
         /*
           默认库
          */

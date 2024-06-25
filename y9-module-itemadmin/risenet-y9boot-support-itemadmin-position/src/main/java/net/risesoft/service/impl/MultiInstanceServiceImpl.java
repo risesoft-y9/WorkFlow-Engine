@@ -1,22 +1,26 @@
 package net.risesoft.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /*
  * @author qinman
+ * 
  * @author zhangchongjie
+ * 
  * @date 2022/12/20
  */
 @Service

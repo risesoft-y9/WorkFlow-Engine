@@ -1,16 +1,17 @@
 package net.risesoft.controller;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.entity.ItemInterfaceBind;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ItemInterfaceBindService;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.entity.ItemInterfaceBind;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.ItemInterfaceBindService;
 
 /**
  *

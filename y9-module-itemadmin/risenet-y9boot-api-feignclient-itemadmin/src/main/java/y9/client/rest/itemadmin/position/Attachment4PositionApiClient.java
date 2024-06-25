@@ -19,7 +19,9 @@ import net.risesoft.pojo.Y9Result;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "Attachment4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/attachment4Position")
+@FeignClient(contextId = "Attachment4PositionApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
+    url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/attachment4Position")
 public interface Attachment4PositionApiClient extends Attachment4PositionApi {
 
     /**
@@ -31,7 +33,8 @@ public interface Attachment4PositionApiClient extends Attachment4PositionApi {
      */
     @Override
     @PostMapping(value = "/delByProcessSerialNumbers", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Object> delBatchByProcessSerialNumbers(@RequestParam("tenantId") String tenantId, @RequestBody List<String> processSerialNumbers);
+    public Y9Result<Object> delBatchByProcessSerialNumbers(@RequestParam("tenantId") String tenantId,
+        @RequestBody List<String> processSerialNumbers);
 
     /**
      * 删除附件
@@ -53,7 +56,8 @@ public interface Attachment4PositionApiClient extends Attachment4PositionApi {
      */
     @Override
     @GetMapping("/fileCounts")
-    public Y9Result<Integer> fileCounts(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber);
+    public Y9Result<Integer> fileCounts(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 获取附件信息
@@ -77,7 +81,9 @@ public interface Attachment4PositionApiClient extends Attachment4PositionApi {
      */
     @Override
     @GetMapping("/getAttachmentCount")
-    public Y9Result<Integer> getAttachmentCount(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("fileSource") String fileSource, @RequestParam("fileType") String fileType);
+    public Y9Result<Integer> getAttachmentCount(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("fileSource") String fileSource,
+        @RequestParam("fileType") String fileType);
 
     /**
      * 获取附件列表
@@ -91,7 +97,9 @@ public interface Attachment4PositionApiClient extends Attachment4PositionApi {
      */
     @Override
     @GetMapping("/getAttachmentList")
-    public Y9Page<AttachmentModel> getAttachmentList(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("fileSource") String fileSource, @RequestParam("page") int page, @RequestParam("rows") int rows);
+    public Y9Page<AttachmentModel> getAttachmentList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("fileSource") String fileSource,
+        @RequestParam("page") int page, @RequestParam("rows") int rows);
 
     /**
      * 获取附件列表(model)
@@ -103,14 +111,16 @@ public interface Attachment4PositionApiClient extends Attachment4PositionApi {
      */
     @Override
     @GetMapping("/getAttachmentModelList")
-    public Y9Result<List<AttachmentModel>> getAttachmentModelList(@RequestParam("tenantId") String tenantId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("fileSource") String fileSource);
+    public Y9Result<List<AttachmentModel>> getAttachmentModelList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("fileSource") String fileSource);
 
     /**
      *
      */
     @Override
     @GetMapping("/getFile")
-    public Y9Result<AttachmentModel> getFile(@RequestParam("tenantId") String tenantId, @RequestParam("fileId") String fileId);
+    public Y9Result<AttachmentModel> getFile(@RequestParam("tenantId") String tenantId,
+        @RequestParam("fileId") String fileId);
 
     /**
      * 保存附件信息
@@ -123,7 +133,9 @@ public interface Attachment4PositionApiClient extends Attachment4PositionApi {
      */
     @Override
     @PostMapping("/saveAttachment")
-    public Y9Result<Object> saveAttachment(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("attachjson") String attachjson, @RequestParam("processSerialNumber") String processSerialNumber);
+    public Y9Result<Object> saveAttachment(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("attachjson") String attachjson,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存附件信息
@@ -142,15 +154,21 @@ public interface Attachment4PositionApiClient extends Attachment4PositionApi {
      */
     @Override
     @PostMapping("/saveOrUpdateUploadInfo")
-    public Y9Result<String> saveOrUpdateUploadInfo(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("fileName") String fileName, @RequestParam("fileType") String fileType, @RequestParam("fileSizeString") String fileSizeString,
-        @RequestParam("fileSource") String fileSource, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("taskId") String taskId, @RequestParam("y9FileStoreId") String y9FileStoreId);
+    public Y9Result<String> saveOrUpdateUploadInfo(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("fileName") String fileName,
+        @RequestParam("fileType") String fileType, @RequestParam("fileSizeString") String fileSizeString,
+        @RequestParam("fileSource") String fileSource, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("taskId") String taskId,
+        @RequestParam("y9FileStoreId") String y9FileStoreId);
 
     /**
      *
      */
     @Override
     @PostMapping("/updateFile")
-    public Y9Result<String> updateFile(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("positionId") String positionId, @RequestParam("fileId") String fileId, @RequestParam("fileSize") String fileSize, @RequestParam("taskId") String taskId,
+    public Y9Result<String> updateFile(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("positionId") String positionId, @RequestParam("fileId") String fileId,
+        @RequestParam("fileSize") String fileSize, @RequestParam("taskId") String taskId,
         @RequestParam("y9FileStoreId") String y9FileStoreId);
 
     /**
@@ -171,8 +189,11 @@ public interface Attachment4PositionApiClient extends Attachment4PositionApi {
      */
     @Override
     @PostMapping("/upload")
-    public Y9Result<String> upload(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("positionId") String positionId, @RequestParam("fileName") String fileName, @RequestParam("fileSize") String fileSize,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId, @RequestParam("describes") String describes, @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("fileSource") String fileSource,
+    public Y9Result<String> upload(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("positionId") String positionId, @RequestParam("fileName") String fileName,
+        @RequestParam("fileSize") String fileSize, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("taskId") String taskId, @RequestParam("describes") String describes,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("fileSource") String fileSource,
         @RequestParam("y9FileStoreId") String y9FileStoreId);
 
     /**
@@ -186,5 +207,6 @@ public interface Attachment4PositionApiClient extends Attachment4PositionApi {
      */
     @Override
     @PostMapping("/uploadModel")
-    public Y9Result<Object> uploadModel(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestBody AttachmentModel attachmentModel) throws Exception;
+    public Y9Result<Object> uploadModel(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestBody AttachmentModel attachmentModel) throws Exception;
 }

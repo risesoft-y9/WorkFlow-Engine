@@ -1,16 +1,18 @@
 package net.risesoft.controller;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.entity.ItemOrganWordRole;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ItemOrganWordRoleService;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.entity.ItemOrganWordRole;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.ItemOrganWordRoleService;
 
 /**
  * @author qinman
@@ -27,7 +29,7 @@ public class ItemOrganWordRoleController {
     /**
      * 将意见框绑定到角色上
      *
-     * @param roleIds             角色id
+     * @param roleIds 角色id
      * @param itemOrganWordBindId 绑定id
      * @return
      */
@@ -45,7 +47,7 @@ public class ItemOrganWordRoleController {
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemOrganWordRole>> list(@RequestParam String itemOrganWordBindId) {
         List<ItemOrganWordRole> list =
-                itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(itemOrganWordBindId);
+            itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(itemOrganWordBindId);
         return Y9Result.success(list, "获取成功");
     }
 

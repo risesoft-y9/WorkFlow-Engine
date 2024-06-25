@@ -1,13 +1,15 @@
 package net.risesoft.controller;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.entity.BookMarkBind;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.BookMarkBindService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.entity.BookMarkBind;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.BookMarkBindService;
 
 /**
  * @author qinman
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/vue/bookMarkBind")
 public class BookMarkBindRestController {
 
-    
     private final BookMarkBindService bookMarkBindService;
 
     /**
@@ -27,11 +28,10 @@ public class BookMarkBindRestController {
      *
      * @param wordTemplateId 模板id
      * @param bookMarkName 书签名称
-     * @return  Y9Result<String>
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/deleteBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteBind(@RequestParam String wordTemplateId,
-        @RequestParam String bookMarkName) {
+    public Y9Result<String> deleteBind(@RequestParam String wordTemplateId, @RequestParam String bookMarkName) {
         bookMarkBindService.deleteBind(wordTemplateId, bookMarkName);
         return Y9Result.successMsg("删除成功");
     }

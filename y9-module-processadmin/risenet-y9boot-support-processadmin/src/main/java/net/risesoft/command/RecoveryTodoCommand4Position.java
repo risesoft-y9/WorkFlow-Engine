@@ -1,7 +1,9 @@
 package net.risesoft.command;
 
-import net.risesoft.model.platform.Position;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.impl.interceptor.Command;
 import org.flowable.common.engine.impl.interceptor.CommandContext;
@@ -17,9 +19,8 @@ import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.service.TaskService;
 import org.flowable.task.service.impl.persistence.entity.TaskEntityImpl;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import net.risesoft.model.platform.Position;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman

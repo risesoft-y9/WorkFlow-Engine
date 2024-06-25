@@ -86,7 +86,8 @@ public interface ChaoSong4PositionApi {
      * @param mobile 是否发送手机端
      * @return Map&lt;String, Object&gt;
      */
-    Y9Result<Map<String, Object>> detail(String tenantId, String positionId, String id, String processInstanceId, Integer status, boolean mobile);
+    Y9Result<Map<String, Object>> detail(String tenantId, String positionId, String id, String processInstanceId,
+        Integer status, boolean mobile);
 
     /**
      * 获取批阅件计数
@@ -129,7 +130,8 @@ public interface ChaoSong4PositionApi {
      * @param page page
      * @return Y9Page<ChaoSongModel>;
      */
-    Y9Page<ChaoSongModel> getListByProcessInstanceId(String tenantId, String positionId, String processInstanceId, String userName, int rows, int page);
+    Y9Page<ChaoSongModel> getListByProcessInstanceId(String tenantId, String positionId, String processInstanceId,
+        String userName, int rows, int page);
 
     /**
      * Description: 根据流程实例获取当前人的抄送件
@@ -142,7 +144,8 @@ public interface ChaoSong4PositionApi {
      * @param page page
      * @return Y9Page<ChaoSongModel>
      */
-    Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId, String processInstanceId, String userName, int rows, int page);
+    Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId,
+        String processInstanceId, String userName, int rows, int page);
 
     /**
      * 批阅件
@@ -154,7 +157,8 @@ public interface ChaoSong4PositionApi {
      * @param page page
      * @return Y9Page<ChaoSongModel>
      */
-    Y9Page<ChaoSongModel> getOpinionChaosongByUserId(String tenantId, String positionId, String documentTitle, int rows, int page);
+    Y9Page<ChaoSongModel> getOpinionChaosongByUserId(String tenantId, String positionId, String documentTitle, int rows,
+        int page);
 
     /**
      * 根据人员id获取抄送已阅件统计
@@ -191,7 +195,8 @@ public interface ChaoSong4PositionApi {
      * @param rows 条数
      * @return Y9Page&lt;Map&lt;String, Object&gt;&gt;
      */
-    Y9Page<ChaoSongModel> myChaoSongList(String tenantId, String positionId, String searchName, String itemId, String userName, String state, String year, int page, int rows);
+    Y9Page<ChaoSongModel> myChaoSongList(String tenantId, String positionId, String searchName, String itemId,
+        String userName, String state, String year, int page, int rows);
 
     /**
      * Description: 点击抄送按钮之后保存
@@ -207,7 +212,8 @@ public interface ChaoSong4PositionApi {
      * @param smsPersonId 短信人员id
      * @return Y9Result<Object>
      */
-    Y9Result<Object> save(String tenantId, String userId, String positionId, String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId);
+    Y9Result<Object> save(String tenantId, String userId, String positionId, String processInstanceId, String users,
+        String isSendSms, String isShuMing, String smsContent, String smsPersonId);
 
     /**
      * Description: 个人阅件搜索
@@ -223,7 +229,8 @@ public interface ChaoSong4PositionApi {
      * @param rows rows
      * @return Y9Page<ChaoSongModel>
      */
-    Y9Page<ChaoSongModel> searchAllByUserId(String tenantId, String positionId, String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Y9Page<ChaoSongModel> searchAllByUserId(String tenantId, String positionId, String searchName, String itemId,
+        String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 监控阅件列表
@@ -239,7 +246,8 @@ public interface ChaoSong4PositionApi {
      * @param rows rows
      * @return Y9Page<ChaoSongModel>
      */
-    Y9Page<ChaoSongModel> searchAllList(String tenantId, String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows);
+    Y9Page<ChaoSongModel> searchAllList(String tenantId, String searchName, String itemId, String senderName,
+        String userName, String state, String year, Integer page, Integer rows);
 
     /**
      * 更新抄送件标题

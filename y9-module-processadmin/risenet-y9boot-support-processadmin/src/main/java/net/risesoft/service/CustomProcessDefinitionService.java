@@ -121,7 +121,8 @@ public interface CustomProcessDefinitionService {
      * @param isContainEndNode
      * @return
      */
-    List<Map<String, String>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey, Boolean isContainEndNode);
+    List<Map<String, String>> getTargetNodes4UserTask(String processDefinitionId, String taskDefKey,
+        Boolean isContainEndNode);
 
     /**
      * 根据任务Id获取流程的结束节点信息

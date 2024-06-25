@@ -1,16 +1,17 @@
 package net.risesoft.controller;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.entity.ItemOpinionFrameRole;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ItemOpinionFrameRoleService;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.entity.ItemOpinionFrameRole;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.ItemOpinionFrameRoleService;
 
 /**
  * @author qinman
@@ -48,7 +49,8 @@ public class ItemOpinionFrameRoleRestController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemOpinionFrameRole>> list(@RequestParam String itemOpinionFrameId) {
-        List<ItemOpinionFrameRole> list = itemOpinionFrameRoleService.findByItemOpinionFrameIdContainRoleName(itemOpinionFrameId);
+        List<ItemOpinionFrameRole> list =
+            itemOpinionFrameRoleService.findByItemOpinionFrameIdContainRoleName(itemOpinionFrameId);
         return Y9Result.success(list, "获取成功");
     }
 

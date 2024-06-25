@@ -1,19 +1,21 @@
 package net.risesoft.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.itemadmin.ItemOpinionFrameRoleApi;
 import net.risesoft.entity.ItemOpinionFrameRole;
 import net.risesoft.model.itemadmin.ItemOpinionFrameRoleModel;
 import net.risesoft.service.ItemOpinionFrameRoleService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 意见框绑定角色接口

@@ -1,15 +1,17 @@
 package net.risesoft.controller;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.entity.CommonButton;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.CommonButtonService;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.entity.CommonButton;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.CommonButtonService;
 
 /**
  * @author qinman
@@ -21,7 +23,6 @@ import java.util.List;
 @RequestMapping(value = "/vue/commonButton")
 public class CommonButtonRestController {
 
-    
     private final CommonButtonService commonButtonService;
 
     /**
@@ -75,7 +76,7 @@ public class CommonButtonRestController {
      * 保存普通按钮
      *
      * @param commonButton 按钮信息
-     * @return  Y9Result<String>
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(CommonButton commonButton) {

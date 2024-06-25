@@ -1,14 +1,19 @@
 package net.risesoft.api;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.processadmin.ProcessModelApi;
-import net.risesoft.model.platform.Person;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.BpmnAutoLayout;
@@ -34,18 +39,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.processadmin.ProcessModelApi;
+import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 流程设计相关接口
@@ -72,7 +76,7 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      * 删除模型
      *
      * @param tenantId 租户id
-     * @param modelId  模型id
+     * @param modelId 模型id
      * @return Y9Result<String>
      */
     @Override
@@ -87,7 +91,7 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      * 根据modelId部署流程
      *
      * @param tenantId 租户id
-     * @param modelId  模型id
+     * @param modelId 模型id
      * @return Y9Result<String>
      */
     @Override
@@ -109,7 +113,7 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      * 导出model的xml文件
      *
      * @param tenantId 租户id
-     * @param modelId  模型id
+     * @param modelId 模型id
      * @param response response
      */
     @Override
@@ -151,7 +155,8 @@ public class ProcessModelApiImpl implements ProcessModelApi {
             mapTemp.put("key", model.getKey());
             mapTemp.put("name", model.getName());
             mapTemp.put("version", 0);
-            processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey()).latestVersion().singleResult();
+            processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey())
+                .latestVersion().singleResult();
             if (null != processDefinition) {
                 mapTemp.put("version", processDefinition.getVersion());
             }
@@ -166,13 +171,14 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      * 获取模型xml
      *
      * @param tenantId 租户id
-     * @param modelId  模型id
+     * @param modelId 模型id
      * @param response response
      * @return Y9Result<String>
      */
     @Override
     @GetMapping(value = "/getModelXml", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<String> getModelXml(@RequestParam String tenantId, @RequestParam String modelId, HttpServletResponse response) {
+    public Y9Result<String> getModelXml(@RequestParam String tenantId, @RequestParam String modelId,
+        HttpServletResponse response) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         byte[] bpmnBytes;
         Model model = modelService.getModel(modelId);
@@ -184,13 +190,14 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      * 导入模型文件
      *
      * @param tenantId 租户id
-     * @param userId   用户id
-     * @param file     文件
+     * @param userId 用户id
+     * @param file 文件
      * @return Y9Result<String>
      */
     @PostMapping(value = "/saveModelXml", produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
-    public Y9Result<String> saveModelXml(@RequestParam String tenantId, @RequestParam String userId, MultipartFile file) {
+    public Y9Result<String> saveModelXml(@RequestParam String tenantId, @RequestParam String userId,
+        MultipartFile file) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
             Person person = personApi.get(tenantId, userId).getData();

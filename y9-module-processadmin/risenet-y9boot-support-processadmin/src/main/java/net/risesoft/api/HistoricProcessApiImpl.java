@@ -1,7 +1,18 @@
 package net.risesoft.api;
 
+import java.util.List;
+
+import org.flowable.engine.history.HistoricProcessInstance;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ChaoSongInfoApi;
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
@@ -12,15 +23,6 @@ import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.flowable.engine.history.HistoricProcessInstance;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * 流程实例相关接口
@@ -48,7 +50,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 删除流程实例，在办件设为暂停，办结件加删除标识
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return boolean
      */
@@ -89,7 +91,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 根据流程实例id获取实例
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return HistoricProcessInstanceModel
      */
@@ -105,14 +107,15 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 根据流程实例id和年度获取实例
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @param year              年份
+     * @param year 年份
      * @return HistoricProcessInstanceModel
      */
     @Override
     @GetMapping(value = "/getByIdAndYear", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HistoricProcessInstanceModel getByIdAndYear(@RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String year) {
+    public HistoricProcessInstanceModel getByIdAndYear(@RequestParam String tenantId,
+        @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         HistoricProcessInstance hpi = customHistoricProcessService.getById(processInstanceId, year);
@@ -126,29 +129,32 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 根据父流程实例获取所有历史子流程实例
      *
-     * @param tenantId               租户id
+     * @param tenantId 租户id
      * @param superProcessInstanceId 父流程实例id
      * @return List<HistoricProcessInstanceModel>
      */
     @Override
     @GetMapping(value = "/getBySuperProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoricProcessInstanceModel> getBySuperProcessInstanceId(@RequestParam String tenantId, @RequestParam String superProcessInstanceId) {
+    public List<HistoricProcessInstanceModel> getBySuperProcessInstanceId(@RequestParam String tenantId,
+        @RequestParam String superProcessInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<HistoricProcessInstance> hpiList = customHistoricProcessService.getBySuperProcessInstanceId(superProcessInstanceId);
+        List<HistoricProcessInstance> hpiList =
+            customHistoricProcessService.getBySuperProcessInstanceId(superProcessInstanceId);
         return FlowableModelConvertUtil.historicProcessInstanceList2ModelList(hpiList);
     }
 
     /**
      * 根据流程实例获取父流程实例
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 父流程实例id
      * @return HistoricProcessInstanceModel
      */
     @Override
     @GetMapping(value = "/getSuperProcessInstanceById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HistoricProcessInstanceModel getSuperProcessInstanceById(@RequestParam String tenantId, @RequestParam String processInstanceId) {
+    public HistoricProcessInstanceModel getSuperProcessInstanceById(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         HistoricProcessInstance hpi = customHistoricProcessService.getSuperProcessInstanceById(processInstanceId);
@@ -158,14 +164,15 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 恢复流程实例
      *
-     * @param tenantId          租户id
-     * @param userId            人员id
+     * @param tenantId 租户id
+     * @param userId 人员id
      * @param processInstanceId 流程实例id
      * @return boolean
      */
     @Override
     @PostMapping(value = "/recoveryProcess", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean recoveryProcess(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processInstanceId) {
+    public boolean recoveryProcess(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         boolean b = customHistoricProcessService.recoveryProcessInstance(processInstanceId);
@@ -188,7 +195,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 彻底删除流程实例
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return boolean
      */
@@ -203,7 +210,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 彻底删除流程实例,岗位
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return boolean
      */
@@ -218,14 +225,15 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
     /**
      * 设置流程优先级
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @param priority          优先级
+     * @param priority 优先级
      * @throws Exception Exception
      */
     @Override
     @PostMapping(value = "/setPriority", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void setPriority(@RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String priority) throws Exception {
+    public void setPriority(@RequestParam String tenantId, @RequestParam String processInstanceId,
+        @RequestParam String priority) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customHistoricProcessService.setPriority(processInstanceId, priority);
     }

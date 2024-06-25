@@ -1,12 +1,13 @@
 package net.risesoft.model.itemadmin;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Date;
 
+import lombok.Data;
+
 /**
  * 历史活动实例
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -41,7 +42,7 @@ public class HistoricActivityInstanceModel implements Serializable {
      */
     private String processInstanceId;
     /**
-     *  执行id
+     * 执行id
      */
     private String executionId;
     /**

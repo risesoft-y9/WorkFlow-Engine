@@ -84,8 +84,11 @@ public class SearchRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/getSearchList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
-        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         return searchService.getSearchList(searchName, itemId, userName, state, year, startDate, endDate, page, rows);
     }
 
@@ -102,7 +105,9 @@ public class SearchRestController {
      * @return Y9Page<ChaoSongModel>
      */
     @RequestMapping(value = "/getYuejianList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<ChaoSongModel> getYuejianList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+    public Y9Page<ChaoSongModel> getYuejianList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam Integer page, @RequestParam Integer rows) {
         return searchService.getYuejianList(searchName, itemId, userName, state, year, page, rows);
     }

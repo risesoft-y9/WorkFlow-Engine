@@ -37,7 +37,8 @@ public class TableRestController {
     private Y9TableService y9TableService;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate4Tenant;
 
     /**
      * 添加数据库表
