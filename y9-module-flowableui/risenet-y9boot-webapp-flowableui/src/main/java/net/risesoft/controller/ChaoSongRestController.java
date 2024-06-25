@@ -157,7 +157,7 @@ public class ChaoSongRestController {
             if (wordMap != null && wordMap.getId() != null) {
                 docNum = 1;
             }
-            int speakInfoNum = speakInfoManager.getNotReadCount(tenantId, userId, processInstanceId);
+            int speakInfoNum = speakInfoManager.getNotReadCount(tenantId, userId, processInstanceId).getData();
             int associatedFileNum = associatedFileManager.countAssociatedFile(tenantId, processSerialNumber);
             map.put("userName", Y9LoginUserHolder.getUserInfo().getName());
             map.put("docNum", docNum);

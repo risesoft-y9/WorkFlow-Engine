@@ -1,11 +1,8 @@
 package y9.client.rest.itemadmin;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.itemadmin.TaskVariableApi;
-import net.risesoft.model.itemadmin.TaskVariableModel;
 
 /**
  * @author qinman
@@ -17,16 +14,4 @@ import net.risesoft.model.itemadmin.TaskVariableModel;
     path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/taskVariable")
 public interface TaskVariableApiClient extends TaskVariableApi {
 
-    /**
-     * 根据任务id,变量名获取变量值
-     *
-     * @param tenantId
-     * @param taskId
-     * @param keyName
-     * @return
-     */
-    @Override
-    @GetMapping("/findByTaskIdAndKeyName")
-    TaskVariableModel findByTaskIdAndKeyName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("taskId") String taskId, @RequestParam("keyName") String keyName);
 }

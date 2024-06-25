@@ -1,9 +1,9 @@
 package net.risesoft.service;
 
 import java.util.List;
-import java.util.Map;
 
 import net.risesoft.entity.SpeakInfo;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -14,11 +14,11 @@ public interface SpeakInfoService {
 
     /**
      * Description: 逻辑删除发言信息
-     * 
+     *
      * @param id
      * @return
      */
-    Map<String, Object> deleteById(String id);
+    Y9Result<Object> deleteById(String id);
 
     /**
      * 根据唯一标示超找发言信息

@@ -165,7 +165,7 @@ public class DocumentRestController {
             if (wordMap != null && wordMap.getId() != null) {
                 docNum = 1;
             }
-            int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, userId, processInstanceId);
+            int speakInfoNum = speakInfoApi.getNotReadCount(tenantId, userId, processInstanceId).getData();
             int associatedFileNum =
                 associatedFile4PositionApi.countAssociatedFile(tenantId, processSerialNumber).getData();
             map.put("speakInfoNum", speakInfoNum);

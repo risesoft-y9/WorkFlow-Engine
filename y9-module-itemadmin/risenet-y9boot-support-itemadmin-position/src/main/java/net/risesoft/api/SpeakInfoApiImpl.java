@@ -1,23 +1,24 @@
 package net.risesoft.api;
 
+import java.util.List;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.SpeakInfo;
 import net.risesoft.model.itemadmin.SpeakInfoModel;
 import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SpeakInfoService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 沟通交流接口
@@ -28,7 +29,7 @@ import java.util.Map;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/speakInfo")
+@RequestMapping(value = "/services/rest/speakInfo", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SpeakInfoApiImpl implements SpeakInfoApi {
 
     private final SpeakInfoService speakInfoService;
@@ -41,11 +42,10 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param id 主键id
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @Override
-    @PostMapping(value = "/deleteById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> deleteById(String tenantId, String userId, String id) {
+    public Y9Result<Object> deleteById(String tenantId, String userId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return speakInfoService.deleteById(id);
     }
@@ -56,14 +56,14 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param id 主键id
-     * @return SpeakInfoModel
+     * @return {@code Y9Result<SpeakInfoModel>} 通用请求返回对象 - data 是发言信息
      */
     @Override
-    @GetMapping(value = "/findById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SpeakInfoModel findById(String tenantId, String userId, String id) {
+    @GetMapping(value = "/findById")
+    public Y9Result<SpeakInfoModel> findById(String tenantId, String userId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         SpeakInfo speakInfo = speakInfoService.findById(id);
-        return ItemAdminModelConvertUtil.speakInfo2Model(speakInfo);
+        return Y9Result.success(ItemAdminModelConvertUtil.speakInfo2Model(speakInfo));
     }
 
     /**
@@ -72,17 +72,17 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processInstanceId 流程实例id
-     * @return List<SpeakInfoModel>
+     * @return {@code Y9Result<List<SpeakInfoModel>>} 通用请求返回对象 - data 是发言信息列表
      */
     @Override
-    @GetMapping(value = "/findByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<SpeakInfoModel> findByProcessInstanceId(String tenantId, String userId, String processInstanceId) {
+    public Y9Result<List<SpeakInfoModel>> findByProcessInstanceId(String tenantId, String userId,
+        String processInstanceId) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
 
         List<SpeakInfo> siList = speakInfoService.findByProcessInstanceId(processInstanceId);
-        return ItemAdminModelConvertUtil.speakInfoList2ModelList(siList);
+        return Y9Result.success(ItemAdminModelConvertUtil.speakInfoList2ModelList(siList));
     }
 
     /**
@@ -91,13 +91,12 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processInstanceId 流程实例id
-     * @return int
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是未读消息计数
      */
     @Override
-    @GetMapping(value = "/getNotReadCount", produces = MediaType.APPLICATION_JSON_VALUE)
-    public int getNotReadCount(String tenantId, String userId, String processInstanceId) {
+    public Y9Result<Integer> getNotReadCount(String tenantId, String userId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return speakInfoService.getNotReadCount(processInstanceId, userId);
+        return Y9Result.success(speakInfoService.getNotReadCount(processInstanceId, userId));
     }
 
     /**
@@ -109,14 +108,12 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * @return String
      */
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
-    public String saveOrUpdate(String tenantId, String userId, @RequestBody SpeakInfoModel speakInfoModel) {
+    public Y9Result<String> saveOrUpdate(String tenantId, String userId, @RequestBody SpeakInfoModel speakInfoModel) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
 
         SpeakInfo speakInfo = ItemAdminModelConvertUtil.speakInfoModel2SpeakInfo(speakInfoModel);
-        return speakInfoService.saveOrUpdate(speakInfo);
+        return Y9Result.success(speakInfoService.saveOrUpdate(speakInfo));
     }
 }

@@ -282,10 +282,10 @@ public class TodoServiceImpl implements TodoService {
                     }
                     mapTemp.put("isForwarding", false);
                     TaskVariableModel taskVariableModel =
-                        taskVariableManager.findByTaskIdAndKeyName(tenantId, taskId, "isForwarding");
+                        taskVariableManager.findByTaskIdAndKeyName(tenantId, taskId, "isForwarding").getData();
                     // 是否正在发送标识
                     if (taskVariableModel != null) {
-                        mapTemp.put("isForwarding", taskVariableModel.getText().contains("true") ? true : false);
+                        mapTemp.put("isForwarding", taskVariableModel.getText().contains("true"));
                     }
                     formDataMap = formDataManager.getData(tenantId, itemId, processSerialNumber);
                     if (formDataMap.get("leaveType") != null) {
@@ -300,7 +300,7 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put(SysVariables.LEVEL, level);
                     mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
-                    int speakInfoNum = speakInfoManager.getNotReadCount(tenantId, userId, processInstanceId);
+                    int speakInfoNum = speakInfoManager.getNotReadCount(tenantId, userId, processInstanceId).getData();
                     mapTemp.put("speakInfoNum", speakInfoNum);
                     mapTemp.put("remindSetting", false);
                     RemindInstanceModel remindInstanceModel =
@@ -311,7 +311,7 @@ public class TodoServiceImpl implements TodoService {
                     }
 
                     int countFollow = officeFollowManager.countByProcessInstanceId(tenantId, userId, processInstanceId);
-                    mapTemp.put("follow", countFollow > 0 ? true : false);
+                    mapTemp.put("follow", countFollow > 0);
 
                     String rollBack = variableManager.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK);
                     if (rollBack != null && Boolean.valueOf(rollBack)) {

@@ -112,8 +112,7 @@ public class DoingServiceImpl implements DoingService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Person ownerUser =
-                                    personApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                Person ownerUser = personApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames,
                                         ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : ""), "、");
@@ -355,7 +354,8 @@ public class DoingServiceImpl implements DoingService {
                         }
                         mapTemp.putAll(formDataMap);
                         mapTemp.put("processInstanceId", processInstanceId);
-                        int speakInfoNum = speakInfoManager.getNotReadCount(tenantId, userId, processInstanceId);
+                        int speakInfoNum =
+                            speakInfoManager.getNotReadCount(tenantId, userId, processInstanceId).getData();
                         mapTemp.put("speakInfoNum", speakInfoNum);
 
                         mapTemp.put("remindSetting", false);
@@ -367,7 +367,7 @@ public class DoingServiceImpl implements DoingService {
 
                         int countFollow =
                             officeFollowManager.countByProcessInstanceId(tenantId, userId, processInstanceId);
-                        mapTemp.put("follow", countFollow > 0 ? true : false);
+                        mapTemp.put("follow", countFollow > 0);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -426,7 +426,8 @@ public class DoingServiceImpl implements DoingService {
                         formDataMap = formDataManager.getData(tenantId, itemId, processSerialNumber);
                         mapTemp.putAll(formDataMap);
 
-                        int speakInfoNum = speakInfoManager.getNotReadCount(tenantId, userId, processInstanceId);
+                        int speakInfoNum =
+                            speakInfoManager.getNotReadCount(tenantId, userId, processInstanceId).getData();
                         mapTemp.put("speakInfoNum", speakInfoNum);
                     } catch (Exception e) {
                         e.printStackTrace();
