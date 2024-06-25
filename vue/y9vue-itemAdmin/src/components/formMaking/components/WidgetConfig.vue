@@ -197,7 +197,7 @@
               <el-input clearable  v-if="data.options.remoteType == 'func'" v-model="data.options.remoteFunc" style="margin-bottom: 5px;">
               </el-input>
               <!-- Y9绑定数据字典 -->
-              <el-input v-if="data.options.remoteType == 'func'" v-model="data.options.optionData" :readonly="true" placeholder="点击绑定" size="mini">
+              <el-input v-if="data.options.remoteType == 'func'" v-model="data.options.optionData" :readonly="true" placeholder="点击绑定" size="mini" @focus="selectOption">
                 <template #prepend>
                   <div slot="prepend" style="width: 48px;">数据字典</div>
                 </template>
@@ -943,6 +943,7 @@ export default {
     selectTableAndField,
     selectChildTable,
     selectField,
+    selectOption,
     selectOpinionFrame,
     selectNumber
   },
@@ -1433,6 +1434,9 @@ export default {
     saveBindTable(table) {//子表绑定
       this.data.model = "childTable@" + table.tableName;
       this.data.childTableInfo = table.tableName + "@" + table.id;
+    },
+    selectOption() {//绑定数据字典
+      this.$refs.selectOption.show();
     },
     saveBindOption(option) {//绑定数据字典
       this.data.options.optionData = option.name + "(" + option.type + ")";
