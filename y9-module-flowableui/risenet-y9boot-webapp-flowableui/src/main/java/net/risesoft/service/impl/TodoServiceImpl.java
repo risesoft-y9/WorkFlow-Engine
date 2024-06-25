@@ -304,7 +304,7 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put("speakInfoNum", speakInfoNum);
                     mapTemp.put("remindSetting", false);
                     RemindInstanceModel remindInstanceModel =
-                        remindInstanceManager.getRemindInstance(tenantId, userId, processInstanceId);
+                        remindInstanceManager.getRemindInstance(tenantId, userId, processInstanceId).getData();
                     // 流程实例是否设置消息提醒
                     if (remindInstanceModel != null) {
                         mapTemp.put("remindSetting", true);

@@ -73,7 +73,7 @@ public class Process4MsgRemindService {
         Date date = new Date();
         String allUserId = "";
         List<RemindInstanceModel> list = remindInstanceManager.findRemindInstanceByProcessInstanceIdAndRemindType(
-            tenantId, processInstanceId, RemindInstanceModel.processComplete);
+            tenantId, processInstanceId, RemindInstanceModel.processComplete).getData();
         if (!list.isEmpty()) {
             for (RemindInstanceModel remind : list) {
                 if (!allUserId.contains(remind.getUserId())) {
@@ -140,7 +140,7 @@ public class Process4MsgRemindService {
             // 节点到达
             List<RemindInstanceModel> list =
                 remindInstanceManager.findRemindInstanceByProcessInstanceIdAndArriveTaskKey(tenantId, processInstanceId,
-                    taskKey + ":" + taskName);
+                    taskKey + ":" + taskName).getData();
             if (!list.isEmpty()) {
                 for (RemindInstanceModel remind : list) {
                     if (!allUserId.contains(remind.getUserId())) {
@@ -215,7 +215,7 @@ public class Process4MsgRemindService {
 
             // 任务完成，针对任务设置
             List<RemindInstanceModel> list = remindInstanceManager
-                .findRemindInstanceByProcessInstanceIdAndTaskId(tenantId, processInstanceId, taskId);
+                .findRemindInstanceByProcessInstanceIdAndTaskId(tenantId, processInstanceId, taskId).getData();
             if (!list.isEmpty()) {
                 for (RemindInstanceModel remind : list) {
                     if (!allUserId.contains(remind.getUserId())) {
@@ -279,7 +279,7 @@ public class Process4MsgRemindService {
 
             // 节点完成
             list = remindInstanceManager.findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(tenantId,
-                processInstanceId, taskKey + ":" + taskName);
+                processInstanceId, taskKey + ":" + taskName).getData();
             if (!list.isEmpty()) {
                 for (RemindInstanceModel remind : list) {
                     if (!allUserId.contains(remind.getUserId())) {

@@ -1,9 +1,9 @@
 package net.risesoft.service;
 
 import java.util.List;
-import java.util.Map;
 
 import net.risesoft.entity.RemindInstance;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -77,7 +77,7 @@ public interface RemindInstanceService {
      * @param completeTaskKey
      * @return
      */
-    Map<String, Object> saveRemindInstance(String processInstanceId, String taskIds, Boolean process,
-        String arriveTaskKey, String completeTaskKey);
+    Y9Result<String> saveRemindInstance(String processInstanceId, String taskIds, Boolean process, String arriveTaskKey,
+        String completeTaskKey);
 
 }

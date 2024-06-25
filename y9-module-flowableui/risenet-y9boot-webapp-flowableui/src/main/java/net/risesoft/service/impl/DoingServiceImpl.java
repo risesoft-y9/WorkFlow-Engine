@@ -360,7 +360,7 @@ public class DoingServiceImpl implements DoingService {
 
                         mapTemp.put("remindSetting", false);
                         RemindInstanceModel remindInstanceModel =
-                            remindInstanceManager.getRemindInstance(tenantId, userId, processInstanceId);
+                            remindInstanceManager.getRemindInstance(tenantId, userId, processInstanceId).getData();
                         if (remindInstanceModel != null) {
                             mapTemp.put("remindSetting", true);
                         }

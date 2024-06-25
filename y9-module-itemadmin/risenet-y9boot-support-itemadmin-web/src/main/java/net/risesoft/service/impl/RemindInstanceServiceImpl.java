@@ -2,20 +2,18 @@ package net.risesoft.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.RemindInstance;
 import net.risesoft.enums.ItemRemindTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.RemindInstanceRepository;
 import net.risesoft.service.RemindInstanceService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -73,11 +71,8 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
 
     @Override
     @Transactional(readOnly = false)
-    public Map<String, Object> saveRemindInstance(String processInstanceId, String taskIds, Boolean process,
+    public Y9Result<String> saveRemindInstance(String processInstanceId, String taskIds, Boolean process,
         String arriveTaskKey, String completeTaskKey) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
-        retMap.put("msg", "保存失败");
-        retMap.put(UtilConsts.SUCCESS, false);
         try {
             String userId = Y9LoginUserHolder.getPersonId();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -88,9 +83,7 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
                 if (remindInstance != null) {
                     remindInstanceRepository.delete(remindInstance);
                 }
-                retMap.put("msg", "保存成功");
-                retMap.put(UtilConsts.SUCCESS, true);
-                return retMap;
+                return Y9Result.successMsg("保存成功");
             }
             String remindType = "";
             if (StringUtils.isNotBlank(taskIds)) {
@@ -112,9 +105,7 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
                 remindInstance.setCompleteTaskKey(completeTaskKey);
                 remindInstance.setCreateTime(sdf.format(new Date()));
                 remindInstanceRepository.save(remindInstance);
-                retMap.put("msg", "保存成功");
-                retMap.put(UtilConsts.SUCCESS, true);
-                return retMap;
+                return Y9Result.successMsg("保存成功");
             }
             remindInstance = new RemindInstance();
             remindInstance.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -127,12 +118,11 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
             remindInstance.setCompleteTaskKey(completeTaskKey);
             remindInstance.setCreateTime(sdf.format(new Date()));
             remindInstanceRepository.save(remindInstance);
-            retMap.put("msg", "保存成功");
-            retMap.put(UtilConsts.SUCCESS, true);
+            return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return retMap;
+        return Y9Result.failure("保存失败");
     }
 
 }

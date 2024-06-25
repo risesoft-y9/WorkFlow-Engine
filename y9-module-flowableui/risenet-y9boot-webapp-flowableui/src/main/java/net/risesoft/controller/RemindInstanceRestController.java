@@ -9,10 +9,11 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,7 +24,6 @@ import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -37,7 +37,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2023/01/03
  */
 @RestController
-@RequestMapping(value = "/vue/remindInstance")
+@RequestMapping(value = "/vue/remindInstance", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RemindInstanceRestController {
 
     @Autowired
@@ -61,17 +61,16 @@ public class RemindInstanceRestController {
      * @param processInstanceId 流程实例id
      * @return
      */
-    @ResponseBody
-    @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/getBpmList")
     public Y9Result<Map<String, Object>> getBpmList(@RequestParam(required = true) String processInstanceId) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> retMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         HistoricProcessInstanceModel his = historicProcessManager.getById(tenantId, processInstanceId);
         List<Map<String, Object>> list0 =
             processDefinitionManager.getNodes(tenantId, his.getProcessDefinitionId(), false);
-        RemindInstanceModel remindInstance =
-            remindInstanceManager.getRemindInstance(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
+        RemindInstanceModel remindInstance = remindInstanceManager
+            .getRemindInstance(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId).getData();
         retMap.put("remindType", "");
         retMap.put("completeTaskKey", "");
         retMap.put("arriveTaskKey", "");
@@ -117,24 +116,14 @@ public class RemindInstanceRestController {
      * @param completeTaskKey 节点完成任务key
      * @return
      */
-    @ResponseBody
-    @RequestMapping(value = "/saveRemindInstance", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveRemindInstance", produces = "application/json")
     public Y9Result<String> saveRemindInstance(@RequestParam(required = true) String processInstanceId,
         @RequestParam(required = false) String taskIds, @RequestParam(required = true) Boolean process,
         @RequestParam(required = false) String arriveTaskKey, @RequestParam(required = false) String completeTaskKey) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = userInfo.getPersonId();
-        Map<String, Object> map = new HashMap<String, Object>(16);
-        try {
-            map = remindInstanceManager.saveRemindInstance(tenantId, userId, processInstanceId, taskIds, process,
-                arriveTaskKey, completeTaskKey);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.successMsg("保存成功");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Y9Result.failure("保存失败");
+        return remindInstanceManager.saveRemindInstance(tenantId, userId, processInstanceId, taskIds, process,
+            arriveTaskKey, completeTaskKey);
     }
 
     /**
@@ -144,8 +133,7 @@ public class RemindInstanceRestController {
      * @return
      */
     @SuppressWarnings("unchecked")
-    @ResponseBody
-    @RequestMapping(value = "/taskList", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/taskList")
     public Y9Result<Map<String, Object>> taskList(@RequestParam(required = true) String processInstanceId) {
         Map<String, Object> retMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -154,13 +142,13 @@ public class RemindInstanceRestController {
             List<TaskModel> list = (List<TaskModel>)retMap.get("rows");
             ObjectMapper objectMapper = new ObjectMapper();
             List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<List<TaskModel>>() {});
-            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = 0;
             Map<String, Object> mapTemp = null;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date currentTime = new Date();
-            RemindInstanceModel remindInstance =
-                remindInstanceManager.getRemindInstance(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId);
+            RemindInstanceModel remindInstance = remindInstanceManager
+                .getRemindInstance(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId).getData();
             retMap.put("remindType", "");
             retMap.put("taskIds", "");
             if (remindInstance != null) {
@@ -168,7 +156,7 @@ public class RemindInstanceRestController {
                 retMap.put("taskIds", remindInstance.getTaskId());
             }
             for (TaskModel task : taskList) {
-                mapTemp = new HashMap<String, Object>(16);
+                mapTemp = new HashMap<>(16);
                 String taskId = task.getId();
                 String taskName = task.getName();
                 mapTemp.put("taskId", taskId);
