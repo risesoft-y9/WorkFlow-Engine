@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.risesoft.model.itemadmin.ChaoSongModel;
+import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
 import net.risesoft.pojo.Y9Page;
 
@@ -86,7 +87,7 @@ public interface ChaoSongInfoService {
      * @param mobile
      * @return
      */
-    Map<String, Object> detail(String processInstanceId, Integer status, boolean mobile);
+    OpenDataModel detail(String processInstanceId, Integer status, boolean mobile);
 
     /**
      * 根据id查找抄送件

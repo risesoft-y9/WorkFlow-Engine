@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.DataCenterApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.platform.Position;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DataCenterService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -35,15 +36,16 @@ public class DataCenterApiImpl implements DataCenterApi {
      * @param processInstanceId 流程实例id
      * @param tenantId 租户id
      * @param userId 人员id
-     * @return boolean
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/saveToDateCenter", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean saveToDateCenter(String processInstanceId, String tenantId, String userId) {
+    public Y9Result<Object> saveToDateCenter(String processInstanceId, String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPosition(position);
-        return dataCenterService.saveToDateCenter(processInstanceId);
+        dataCenterService.saveToDateCenter(processInstanceId);
+        return Y9Result.success();
     }
 
 }

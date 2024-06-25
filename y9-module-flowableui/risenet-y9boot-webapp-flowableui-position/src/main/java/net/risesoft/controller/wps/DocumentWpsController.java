@@ -36,6 +36,7 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocumentWpsModel;
+import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.user.UserInfo;
@@ -122,12 +123,6 @@ public class DocumentWpsController {
      * 云文档路径
      */
     private static final String yunWpsBasePath4Graph = "http://yun.test.cn/graph";
-    private final Draft4PositionApi draft4PositionApi;
-    private final OrgUnitApi orgUnitApi;
-    private final ProcessParamApi processParamApi;
-    private final DocumentWpsApi documentWpsApi;
-    private final Y9FileStoreService y9FileStoreService;
-    private final TransactionWordApi transactionWordApi;
 
     public static void main(String[] args) throws Exception {
         String destDocx = "C:\\Users\\10858\\Desktop\\套红.docx";
@@ -135,6 +130,14 @@ public class DocumentWpsController {
         TaoHongService taoHongService = new TaoHongService();
         taoHongService.word2RedDocument(content, destDocx);
     }
+
+    private final Draft4PositionApi draft4PositionApi;
+    private final OrgUnitApi orgUnitApi;
+    private final ProcessParamApi processParamApi;
+    private final DocumentWpsApi documentWpsApi;
+    private final Y9FileStoreService y9FileStoreService;
+
+    private final TransactionWordApi transactionWordApi;
 
     /**
      * 下载正文
@@ -145,7 +148,7 @@ public class DocumentWpsController {
     public void download(@RequestParam String id, HttpServletResponse response, HttpServletRequest request) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            DocumentWpsModel documentWps = documentWpsApi.findById(tenantId, id);
+            DocumentWpsModel documentWps = documentWpsApi.findById(tenantId, id).getData();
             String title = documentWps.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
@@ -276,7 +279,8 @@ public class DocumentWpsController {
             AppFilesApi apiInstance =
                 new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
 
-            DocumentWpsModel documentWps = documentWpsApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+            DocumentWpsModel documentWps =
+                documentWpsApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             model.addAttribute("docUrl", "");
             model.addAttribute("itembox", itembox);
             model.addAttribute("hasContent", "0");
@@ -335,9 +339,9 @@ public class DocumentWpsController {
                 model.addAttribute("id", documentWps.getId());
             } else {// 创建空文件，并获取文件编辑地址
                 if (StringUtils.isBlank(processInstanceId)) {
-                    Map<String, Object> retMap =
-                        draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-                    documentTitle = (String)retMap.get("title");
+                    DraftModel model1 =
+                        draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    documentTitle = model1.getTitle();
                 } else {
                     ProcessParamModel processModel =
                         processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
@@ -447,9 +451,9 @@ public class DocumentWpsController {
 
             String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-                documentTitle = (String)retMap.get("title");
+                DraftModel model =
+                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel =
                     processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);

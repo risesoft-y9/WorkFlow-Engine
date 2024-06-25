@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.itemadmin.CommonSentencesModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -130,7 +131,7 @@ public class MobileOpintionController {
         @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            List<Map<String, Object>> listMap = commonSentencesApi.listSentencesService(tenantId, userId);
+            List<CommonSentencesModel> listMap = commonSentencesApi.listSentencesService(tenantId, userId).getData();
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(listMap));
         } catch (Exception e) {
             LOGGER.error("获取常用语失败", e);
@@ -234,7 +235,7 @@ public class MobileOpintionController {
         @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            List<Map<String, Object>> listMap = commonSentencesApi.listSentencesService(tenantId, userId);
+            List<CommonSentencesModel> listMap = commonSentencesApi.listSentencesService(tenantId, userId).getData();
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(listMap));
         } catch (Exception e) {
             LOGGER.error("获取常用语失败", e);

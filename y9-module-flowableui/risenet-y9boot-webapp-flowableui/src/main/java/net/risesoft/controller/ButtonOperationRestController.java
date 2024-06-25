@@ -197,7 +197,7 @@ public class ButtonOperationRestController {
             // 需要发送下一个节点
             if (nextNode) {
                 CustomProcessInfoModel customProcessInfo =
-                    customProcessInfoManager.getCurrentTaskNextNode(tenantId, processSerialNumber);
+                    customProcessInfoManager.getCurrentTaskNextNode(tenantId, processSerialNumber).getData();
                 if (customProcessInfo != null) {
                     if (customProcessInfo.getTaskType().equals(SysVariables.ENDEVENT)) {
                         try {
@@ -822,7 +822,8 @@ public class ButtonOperationRestController {
         try {
             String userId = Y9LoginUserHolder.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
             List<Map<String, Object>> list = Y9JsonUtil.readValue(jsonData, List.class);
-            boolean msg = customProcessInfoManager.saveOrUpdate(tenantId, itemId, processSerialNumber, list);
+            boolean msg =
+                customProcessInfoManager.saveOrUpdate(tenantId, itemId, processSerialNumber, list).isSuccess();
             if (!msg) {
                 return Y9Result.failure("保存失败");
             }

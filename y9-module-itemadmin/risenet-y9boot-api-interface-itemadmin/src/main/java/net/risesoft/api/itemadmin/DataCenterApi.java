@@ -1,5 +1,10 @@
 package net.risesoft.api.itemadmin;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import net.risesoft.pojo.Y9Result;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -13,7 +18,8 @@ public interface DataCenterApi {
      * @param processInstanceId 流程实例id
      * @param tenantId 租户id
      * @param userId 人员id
-     * @return boolean
+     * @return Y9Result<Object>
      */
-    boolean saveToDateCenter(String processInstanceId, String tenantId, String userId);
+    @PostMapping("/saveToDateCenter")
+    public Y9Result<Object> saveToDateCenter(@RequestParam("processInstanceId") String processInstanceId, @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
 }

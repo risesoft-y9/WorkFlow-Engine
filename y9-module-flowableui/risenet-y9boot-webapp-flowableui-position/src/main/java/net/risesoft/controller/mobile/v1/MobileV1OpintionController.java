@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
+import net.risesoft.model.itemadmin.CommonSentencesModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -103,14 +104,13 @@ public class MobileV1OpintionController {
     /**
      * 获取个人常用语
      *
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List < CommonSentencesModel>>
      */
     @RequestMapping(value = "/personalSetup")
-    public Y9Result<List<Map<String, Object>>> personalSetup() {
+    public Y9Result<List<CommonSentencesModel>> personalSetup() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        List<Map<String, Object>> listMap = commonSentencesApi.listSentencesService(tenantId, userId);
-        return Y9Result.success(listMap, "获取成功");
+        return commonSentencesApi.listSentencesService(tenantId, userId);
     }
 
     /**
@@ -181,13 +181,12 @@ public class MobileV1OpintionController {
     /**
      * 获取个人常用语
      *
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List < CommonSentencesModel>>
      */
     @RequestMapping(value = "/systemSetup")
-    public Y9Result<List<Map<String, Object>>> systemSetup() {
+    public Y9Result<List<CommonSentencesModel>> systemSetup() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        List<Map<String, Object>> listMap = commonSentencesApi.listSentencesService(tenantId, userId);
-        return Y9Result.success(listMap, "获取成功");
+        return commonSentencesApi.listSentencesService(tenantId, userId);
     }
 }

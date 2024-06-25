@@ -2,6 +2,15 @@ package net.risesoft.api.itemadmin.position;
 
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import net.risesoft.model.itemadmin.DraftModel;
+import net.risesoft.model.itemadmin.OpenDataModel;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -15,18 +24,21 @@ public interface Draft4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param systemName 系统id
-     * @return int
+     * @return Y9Result<Integer>
      */
-    int countBySystemName(String tenantId, String positionId, String systemName);
+    @GetMapping("/countBySystemName")
+    public Y9Result<Integer> countBySystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("systemName") String systemName);
 
     /**
      * 彻底删除草稿
      *
      * @param tenantId 租户id
      * @param ids ids
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<Object>
      */
-    Map<String, Object> deleteDraft(String tenantId, String ids);
+    @PostMapping("/deleteDraft")
+    public Y9Result<Object> deleteDraft(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String ids);
 
     /**
      * 根据岗位id和事项id获取删除草稿统计
@@ -34,18 +46,22 @@ public interface Draft4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @return int
+     * @return Y9Result<Integer>
      */
-    int getDeleteDraftCount(String tenantId, String positionId, String itemId);
+    @GetMapping("/getDeleteDraftCount")
+    public Y9Result<Integer> getDeleteDraftCount(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId);
 
     /**
      * 根据流程序列号获取草稿
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程序列号
-     * @return Map
+     * @return Y9Result<DraftModel>
      */
-    Map<String, Object> getDraftByProcessSerialNumber(String tenantId, String processSerialNumber);
+    @GetMapping("/getDraftByProcessSerialNumber")
+    public Y9Result<DraftModel> getDraftByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 根据岗位id和事项id获取草稿统计
@@ -53,9 +69,11 @@ public interface Draft4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @return int
+     * @return Y9Result<Integer>
      */
-    int getDraftCount(String tenantId, String positionId, String itemId);
+    @GetMapping("/getDraftCount")
+    public Y9Result<Integer> getDraftCount(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId);
 
     /**
      * 获取草稿列表
@@ -67,10 +85,13 @@ public interface Draft4PositionApi {
      * @param title 标题
      * @param itemId 事项id
      * @param delFlag 是否删除
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<Map<String, Object>>
      */
-    Map<String, Object> getDraftList(String tenantId, String positionId, int page, int rows, String title,
-        String itemId, boolean delFlag);
+    @GetMapping("/getDraftList")
+    public Y9Page<Map<String, Object>> getDraftList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("page") int page, @RequestParam("rows") int rows,
+        @RequestParam("title") String title, @RequestParam("itemId") String itemId,
+        @RequestParam("delFlag") boolean delFlag);
 
     /**
      * 根据系统获取草稿
@@ -82,10 +103,13 @@ public interface Draft4PositionApi {
      * @param title 标题
      * @param systemName 系统名称
      * @param delFlag 是否删除
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<DraftModel>
      */
-    Map<String, Object> getDraftListBySystemName(String tenantId, String positionId, int page, int rows, String title,
-        String systemName, boolean delFlag);
+    @GetMapping("/getDraftListBySystemName")
+    public Y9Page<DraftModel> getDraftListBySystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("page") int page, @RequestParam("rows") int rows,
+        @RequestParam("title") String title, @RequestParam("systemName") String systemName,
+        @RequestParam("delFlag") boolean delFlag);
 
     /**
      * 编辑草稿
@@ -95,28 +119,32 @@ public interface Draft4PositionApi {
      * @param itemId 事项id
      * @param processSerialNumber 流程序列号
      * @param mobile 是否发送手机端
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<OpenDataModel>
      */
-    Map<String, Object> openDraft4Position(String tenantId, String positionId, String itemId,
-        String processSerialNumber, boolean mobile);
+    @GetMapping("/openDraft4Position")
+    public Y9Result<OpenDataModel> openDraft4Position(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("mobile") boolean mobile);
 
     /**
      * 还原草稿
      *
      * @param tenantId 租户id
      * @param ids ids
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<Object>
      */
-    Map<String, Object> reduction(String tenantId, String ids);
+    @PostMapping("/reduction")
+    public Y9Result<Object> reduction(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String ids);
 
     /**
      * 删除草稿
      *
      * @param tenantId 租户id
      * @param ids ids
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<Object>
      */
-    Map<String, Object> removeDraft(String tenantId, String ids);
+    @PostMapping("/removeDraft")
+    public Y9Result<Object> removeDraft(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String ids);
 
     /**
      * 保存草稿
@@ -129,9 +157,13 @@ public interface Draft4PositionApi {
      * @param number 编号
      * @param level 紧急程度
      * @param title 标题
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<Object>
      */
-    Map<String, Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber,
-        String processDefinitionKey, String number, String level, String title);
+    @PostMapping("/saveDraft")
+    public Y9Result<Object> saveDraft(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("number") String number,
+        @RequestParam("level") String level, @RequestParam("title") String title);
 
 }

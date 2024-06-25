@@ -1,5 +1,8 @@
 package net.risesoft.api.itemadmin;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import net.risesoft.model.itemadmin.CalendarConfigModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -17,6 +20,6 @@ public interface CalendarConfigApi {
      * @param year 年份
      * @return Y9Result<CalendarConfigModel>
      */
-    Y9Result<CalendarConfigModel> findByYear(String tenantId, String year);
-
+    @GetMapping("/findByYear")
+    Y9Result<CalendarConfigModel> findByYear(@RequestParam("tenantId") String tenantId, @RequestParam("year") String year);
 }

@@ -137,6 +137,14 @@ public class DocumentWpsController {
      * 文件标识，当值为\"root\"时表示根文件夹。
      */
     private static final String root = "root";
+
+    public static void main(String[] args) throws Exception {
+        String destDocx = "C:\\Users\\10858\\Desktop\\套红.docx";
+        String content = "C:\\Users\\10858\\Desktop\\工作流相关文档.docx";
+        TaoHongService taoHongService = new TaoHongService();
+        taoHongService.word2RedDocument(content, destDocx);
+    }
+
     @Autowired
     private DraftApi draftManager;
     @Autowired
@@ -147,15 +155,9 @@ public class DocumentWpsController {
     private DocumentWpsApi documentWpsManager;
     @Autowired
     private Y9FileStoreService y9FileStoreService;
+
     @Autowired
     private TransactionWordApi transactionWordManager;
-
-    public static void main(String[] args) throws Exception {
-        String destDocx = "C:\\Users\\10858\\Desktop\\套红.docx";
-        String content = "C:\\Users\\10858\\Desktop\\工作流相关文档.docx";
-        TaoHongService taoHongService = new TaoHongService();
-        taoHongService.word2RedDocument(content, destDocx);
-    }
 
     /**
      * 下载正文
@@ -169,7 +171,7 @@ public class DocumentWpsController {
         HttpServletRequest request) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            DocumentWpsModel documentWps = documentWpsManager.findById(tenantId, id);
+            DocumentWpsModel documentWps = documentWpsManager.findById(tenantId, id).getData();
             String title = documentWps.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
@@ -302,7 +304,8 @@ public class DocumentWpsController {
             AppFilesApi apiInstance =
                 new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
 
-            DocumentWpsModel documentWps = documentWpsManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+            DocumentWpsModel documentWps =
+                documentWpsManager.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             model.addAttribute("docUrl", "");
             model.addAttribute("itembox", itembox);
             model.addAttribute("hasContent", "0");

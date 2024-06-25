@@ -1,9 +1,11 @@
 package net.risesoft.service;
 
-import net.risesoft.entity.DraftEntity;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 
-import java.util.Map;
+import net.risesoft.entity.DraftEntity;
+import net.risesoft.model.itemadmin.OpenDataModel;
 
 /**
  * @author qinman
@@ -25,7 +27,7 @@ public interface DraftEntityService {
      * @param ids
      * @return
      */
-    Map<String, Object> deleteDraft(String ids);
+    void deleteDraft(String ids);
 
     /**
      * 获取草稿列表
@@ -41,9 +43,9 @@ public interface DraftEntityService {
     Page<DraftEntity> getDraftList(String itemId, String userid, int page, int rows, String title, boolean delFlag);
 
     /**
-     * 
+     *
      * Description: 获取草稿列表
-     * 
+     *
      * @param systemName
      * @param userId
      * @param page
@@ -56,15 +58,15 @@ public interface DraftEntityService {
         boolean delFlag);
 
     /**
-     * 
+     *
      * Description: 打开草稿
-     * 
+     *
      * @param processSerialNumber
      * @param itemId
      * @param mobile
      * @return
      */
-    Map<String, Object> openDraft(String processSerialNumber, String itemId, boolean mobile);
+    OpenDataModel openDraft(String processSerialNumber, String itemId, boolean mobile);
 
     /**
      * 还原草稿
@@ -72,7 +74,7 @@ public interface DraftEntityService {
      * @param ids
      * @return
      */
-    Map<String, Object> reduction(String ids);
+    void reduction(String ids);
 
     /**
      * 删除草稿
@@ -80,12 +82,12 @@ public interface DraftEntityService {
      * @param ids
      * @return
      */
-    Map<String, Object> removeDraft(String ids);
+    void removeDraft(String ids);
 
     /**
-     * 
+     *
      * Description: 保存草稿
-     * 
+     *
      * @param itemId
      * @param processSerialNumber
      * @param processDefinitionKey
@@ -95,13 +97,14 @@ public interface DraftEntityService {
      * @param type
      * @return
      */
-    Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number,
-        String level, String title, String type);
+    void saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number,
+        String level,
+        String title, String type);
 
     /**
-     * 
+     *
      * Description: 保存草稿
-     * 
+     *
      * @param itemId
      * @param processSerialNumber
      * @param processDefinitionKey

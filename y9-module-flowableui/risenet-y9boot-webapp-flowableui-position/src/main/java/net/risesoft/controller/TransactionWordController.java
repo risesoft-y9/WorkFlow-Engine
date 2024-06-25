@@ -36,6 +36,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.itemadmin.TransactionHistoryWordModel;
@@ -101,9 +102,9 @@ public class TransactionWordController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-                documentTitle = retMap.get("title");
+                DraftModel model =
+                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
@@ -161,9 +162,9 @@ public class TransactionWordController {
             String fileStoreId = map.getFileStoreId();
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-                documentTitle = retMap.get("title");
+                DraftModel model =
+                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
@@ -228,9 +229,9 @@ public class TransactionWordController {
             String title;
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-                documentTitle = retMap.get("title");
+                DraftModel model =
+                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
@@ -624,9 +625,9 @@ public class TransactionWordController {
         try {
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-                documentTitle = retMap.get("title");
+                DraftModel model =
+                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
@@ -681,8 +682,9 @@ public class TransactionWordController {
         model.addAttribute("word", map);
         Object documentTitle;
         if (StringUtils.isBlank(processInstanceId)) {
-            Map<String, Object> retMap = draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-            documentTitle = retMap.get("title");
+            DraftModel model1 =
+                draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            documentTitle = model1.getTitle();
         } else {
             String[] pInstanceId = processInstanceId.split(",");
             ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, pInstanceId[0]);
@@ -763,9 +765,9 @@ public class TransactionWordController {
             }
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-                documentTitle = retMap.get("title");
+                DraftModel model =
+                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();
@@ -813,9 +815,9 @@ public class TransactionWordController {
         try {
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-                documentTitle = retMap.get("title");
+                DraftModel model =
+                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();

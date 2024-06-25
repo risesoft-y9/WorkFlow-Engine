@@ -25,14 +25,16 @@ import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.ChaoSongModel;
+import net.risesoft.model.itemadmin.OpenDataModel;
+import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
+import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * 抄送
@@ -132,13 +134,15 @@ public class ChaoSongRestController {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map;
         try {
-            map = chaoSong4PositionApi.detail(person.getTenantId(), positionId, id, processInstanceId, status, false)
-                .getData();
+            OpenDataModel model = chaoSong4PositionApi
+                .detail(person.getTenantId(), positionId, id, processInstanceId, status, false).getData();
+            String str = Y9JsonUtil.writeValueAsString(model);
+            map = Y9JsonUtil.readHashMap(str);
             map.put("itemAdminBaseURL", y9Config.getCommon().getItemAdminBaseUrl());
             map.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
             map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
             map.put("jsVersion", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
-            String processSerialNumber = (String)map.get("processSerialNumber");
+            String processSerialNumber = model.getProcessSerialNumber();
             Integer fileNum = attachment4PositionApi.fileCounts(tenantId, processSerialNumber).getData();
             int docNum = 0;
             // 是否正文正常
@@ -222,11 +226,12 @@ public class ChaoSongRestController {
         try {
             Map<String, Object> resMap = new HashMap<>(16);
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> map1 = document4PositionApi.startProcess(Y9LoginUserHolder.getTenantId(),
-                    Y9LoginUserHolder.getPositionId(), itemId, processSerialNumber, processDefinitionKey);
-                if ((boolean)map1.get(UtilConsts.SUCCESS)) {
-                    processInstanceId = (String)map1.get("processInstanceId");
-                    String taskId = (String)map1.get("taskId");
+                Y9Result<StartProcessResultModel> y9Result =
+                    document4PositionApi.startProcess(Y9LoginUserHolder.getTenantId(),
+                        Y9LoginUserHolder.getPositionId(), itemId, processSerialNumber, processDefinitionKey);
+                if (y9Result.isSuccess()) {
+                    processInstanceId = y9Result.getData().getProcessInstanceId();
+                    String taskId = y9Result.getData().getTaskId();
                     resMap.put("processInstanceId", processInstanceId);
                     resMap.put("taskId", taskId);
                 } else {

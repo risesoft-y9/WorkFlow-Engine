@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ButtonOperation4PositionApi;
-import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -22,7 +21,6 @@ import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.TaskModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.service.Process4SearchService;
 import net.risesoft.util.SysVariables;
@@ -41,8 +39,6 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     private final PositionApi positionApi;
 
     private final ButtonOperation4PositionApi buttonOperation4PositionApi;
-
-    private final Document4PositionApi document4PositionApi;
 
     private final RuntimeApi runtimeApi;
 
@@ -190,27 +186,6 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
             }
         }
         return listMap;
-    }
-
-    @Override
-    public Map<String, Object> docUserChoise(String processInstanceId) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        Map<String, Object> map = new HashMap<>(16);
-        String personId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
-        if (!taskList.isEmpty()) {
-            ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
-            TaskModel task = taskList.get(0);
-            String taskId = task.getId(), processDefinitionId = task.getProcessDefinitionId(),
-                processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
-            String routeToTask = task.getTaskDefinitionKey();
-            String itemId = processParamModel.getItemId();
-            map = document4PositionApi.docUserChoise(tenantId, personId, Y9LoginUserHolder.getPositionId(), itemId,
-                processDefinitionKey, processDefinitionId, taskId, routeToTask, processInstanceId);
-            map.put("taskId", taskId);
-            map.put("processInstanceId", processInstanceId);
-        }
-        return map;
     }
 
     @Override

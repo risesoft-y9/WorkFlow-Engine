@@ -47,14 +47,6 @@ public interface MultiInstanceService {
     List<Map<String, Object>> assigneeList4Sequential(String taskId);
 
     /**
-     * 获取人员树信息
-     *
-     * @param processInstanceId 流程实例id
-     * @return Map<String, Object>
-     */
-    Map<String, Object> docUserChoise(String processInstanceId);
-
-    /**
      * 减签
      *
      * @param executionId 执行实例id

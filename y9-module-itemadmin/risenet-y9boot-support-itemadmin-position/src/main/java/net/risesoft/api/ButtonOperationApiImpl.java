@@ -22,7 +22,6 @@ import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.SpecialOperationApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
@@ -123,11 +122,11 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
         Y9LoginUserHolder.setPosition(position);
         ProcessInstanceModel processInstance = runtimeManager.getProcessInstance(tenantId, processInstanceId);
         String startUserId = "6" + SysVariables.COLON + processInstance.getStartUserId();
-        Map<String, Object> map = documentService.forwarding(taskId, "true", startUserId, routeToTask, "");
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+        Y9Result<String> y9Result = documentService.forwarding(taskId, "true", startUserId, routeToTask, "");
+        if (y9Result.isSuccess()) {
             return Y9Result.success();
         }
-        return Y9Result.failure((String)map.get("msg"));
+        return Y9Result.failure(y9Result.getMsg());
     }
 
     /**

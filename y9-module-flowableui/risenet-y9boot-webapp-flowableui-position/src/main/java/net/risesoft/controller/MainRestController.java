@@ -131,8 +131,8 @@ public class MainRestController {
             String processDefinitionKey = itemModel.getWorkflowGuid();
             if (itemModel.getId() != null) {
                 map.put("processDefinitionKey", processDefinitionKey);
-                draftCount = draft4PositionApi.getDraftCount(tenantId, positionId, itemId);
-                draftRecycleCount = draft4PositionApi.getDeleteDraftCount(tenantId, positionId, itemId);
+                draftCount = draft4PositionApi.getDraftCount(tenantId, positionId, itemId).getData();
+                draftRecycleCount = draft4PositionApi.getDeleteDraftCount(tenantId, positionId, itemId).getData();
                 Map<String, Object> countMap =
                     processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
                 todoCount = countMap != null ? Long.parseLong(countMap.get("todoCount").toString()) : 0;
@@ -198,7 +198,7 @@ public class MainRestController {
         map.put("monitorDoing", monitorDoing);
         map.put("monitorDone", monitorDone);
         try {
-            draftCount = draft4PositionApi.countBySystemName(tenantId, positionId, systemName);
+            draftCount = draft4PositionApi.countBySystemName(tenantId, positionId, systemName).getData();
             // draftRecycleCount = draft4PositionApi.getDeleteDraftCount(tenantId, positionId, systemName);
             Map<String, Object> countMap =
                 processTodoApi.getCountByUserIdAndSystemName(tenantId, positionId, systemName);

@@ -33,7 +33,6 @@ import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
@@ -167,10 +166,9 @@ public class ButtonOperationRestController {
         try {
             Position position = Y9LoginUserHolder.getPosition();
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            Map<String, Object> map;
             if (nextNode) {// 需要发送下一个节点
                 CustomProcessInfoModel customProcessInfo =
-                    customProcessInfoApi.getCurrentTaskNextNode(tenantId, processSerialNumber);
+                    customProcessInfoApi.getCurrentTaskNextNode(tenantId, processSerialNumber).getData();
                 if (customProcessInfo != null) {
                     if (customProcessInfo.getTaskType().equals(SysVariables.ENDEVENT)) {// 办结
                         try {
@@ -188,9 +186,11 @@ public class ButtonOperationRestController {
                     Map<String, Object> variables = new HashMap<>(16);
                     String userChoice = customProcessInfo.getOrgId();
                     String routeToTaskId = customProcessInfo.getTaskKey();
-                    map = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, "",
-                        itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
-                    if (!(boolean)map.get(UtilConsts.SUCCESS)) {
+                    Y9Result<String> y9Result = document4PositionApi.saveAndForwarding(tenantId, positionId,
+                        processInstanceId, taskId, "",
+                        itemId, processSerialNumber, processDefinitionKey, userChoice,
+                        "", routeToTaskId, variables);
+                    if (!y9Result.isSuccess()) {
                         return Y9Result.failure("发送失败");
                     }
                     // 发送成功后更新当前运行节点
@@ -767,7 +767,7 @@ public class ButtonOperationRestController {
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             List<Map<String, Object>> list = Y9JsonUtil.readValue(jsonData, List.class);
-            boolean msg = customProcessInfoApi.saveOrUpdate(tenantId, itemId, processSerialNumber, list);
+            boolean msg = customProcessInfoApi.saveOrUpdate(tenantId, itemId, processSerialNumber, list).isSuccess();
             if (!msg) {
                 return Y9Result.failure("保存失败");
             }
@@ -782,9 +782,10 @@ public class ButtonOperationRestController {
             for (Map<String, Object> org : orgList) {
                 userChoice = Y9Util.genCustomStr(userChoice, (String)org.get("id"), ";");
             }
-            map = document4PositionApi.saveAndForwarding(tenantId, positionId, "", "", "", itemId, processSerialNumber,
+            Y9Result<String> y9Result = document4PositionApi.saveAndForwarding(tenantId, positionId, "", "", "", itemId,
+                processSerialNumber,
                 processDefinitionKey, userChoice, "", routeToTaskId, variables);
-            if (!(boolean)map.get(UtilConsts.SUCCESS)) {
+            if (!y9Result.isSuccess()) {
                 return Y9Result.failure("保存成功,发送失败");
             }
             // 发送成功后更新当前运行节点

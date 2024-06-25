@@ -34,6 +34,7 @@ import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.DbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -135,8 +136,8 @@ public class Process4CompleteUtilService {
     private final String getActHiIdentiyLinkSql(String year, String processInstanceId) {
         String sql3 = "INSERT INTO ACT_HI_IDENTITYLINK_" + year + " (" + "	ID_," + "	GROUP_ID_," + "	TYPE_,"
             + "	USER_ID_," + "	TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_,"
-            + "	SCOPE_DEFINITION_ID_" + " ) SELECT" + "	ID_," + "	GROUP_ID_," + "	TYPE_," + "	USER_ID_,"
-            + "	TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_,"
+            + "	SCOPE_DEFINITION_ID_" + " ) SELECT" + "	ID_," + "	GROUP_ID_," + "	TYPE_," 
+            + "	USER_ID_," + "TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_,"
             + "	SCOPE_DEFINITION_ID_" + " FROM" + "	ACT_HI_IDENTITYLINK i" + " WHERE" + "	i.PROC_INST_ID_ = '"
             + processInstanceId + "'";
         return sql3;
@@ -158,8 +159,8 @@ public class Process4CompleteUtilService {
     private final String getActHiTaskinstSql(String year, String processInstanceId) {
         String sql = "INSERT INTO ACT_HI_TASKINST_" + year + " (" + "	ID_," + "	REV_," + "	PROC_DEF_ID_,"
             + "	TASK_DEF_ID_," + "	TASK_DEF_KEY_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	SCOPE_ID_,"
-            + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_," + "	PARENT_TASK_ID_," + "	NAME_,"
-            + "	DESCRIPTION_," + "	OWNER_," + "	ASSIGNEE_," + "	START_TIME_," + "	CLAIM_TIME_," + "	END_TIME_,"
+            + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_," + "	PARENT_TASK_ID_," 
+            + "	NAME_," + "DESCRIPTION_," + "	OWNER_," + "	ASSIGNEE_," + "	START_TIME_," + "	CLAIM_TIME_," + "	END_TIME_,"
             + "	DURATION_," + "	DELETE_REASON_," + "	PRIORITY_," + "	DUE_DATE_," + "	FORM_KEY_," + "	CATEGORY_,"
             + "	TENANT_ID_," + "	LAST_UPDATED_TIME_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_DEF_ID_,"
             + "	TASK_DEF_ID_," + "	TASK_DEF_KEY_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	SCOPE_ID_,"
@@ -186,7 +187,7 @@ public class Process4CompleteUtilService {
 
     /**
      * 保存数据到数据中心，截转年度数据
-     * 
+     *
      * @param tenantId
      * @param year
      * @param userId
@@ -233,8 +234,8 @@ public class Process4CompleteUtilService {
             try {
                 Boolean dataCenterSwitch = y9Conf.getApp().getProcessAdmin().getDataCenterSwitch();
                 if (dataCenterSwitch != null && dataCenterSwitch) {
-                    boolean b = dataCenterManager.saveToDateCenter(processInstanceId, tenantId, userId);
-                    if (b) {
+                    Y9Result<Object> y9Result = dataCenterManager.saveToDateCenter(processInstanceId, tenantId, userId);
+                    if (y9Result.isSuccess()) {
                         LOGGER
                             .info("#################保存办结数据到数据中心成功：2-HISTORIC_PROCESS_INSTANCE_ENDED#################");
                     } else {
@@ -346,7 +347,7 @@ public class Process4CompleteUtilService {
 
     /**
      * 办结保存年度历史数据
-     * 
+     *
      * @param year 年度
      * @param processInstanceId 流程实例ID
      */

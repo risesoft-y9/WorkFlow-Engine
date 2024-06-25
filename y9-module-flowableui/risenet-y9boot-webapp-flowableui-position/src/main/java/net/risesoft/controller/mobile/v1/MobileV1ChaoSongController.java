@@ -1,6 +1,7 @@
 package net.risesoft.controller.mobile.v1;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +19,12 @@ import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
 import net.risesoft.exception.GlobalErrorCodeEnum;
 import net.risesoft.model.itemadmin.ChaoSongModel;
+import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.DocumentUtil;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * 抄送阅件相关接口
@@ -71,20 +73,24 @@ public class MobileV1ChaoSongController {
     @RequestMapping(value = "/detail")
     public Y9Result<Map<String, Object>> detail(@RequestParam @NotBlank String id,
         @RequestParam @NotBlank String processInstanceId, @RequestParam(required = false) Integer status) {
-        Map<String, Object> map;
+        Map<String, Object> map = new HashMap<>();
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
-            map = chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, true).getData();
-            String processSerialNumber = (String)map.get("processSerialNumber");
-            String activitiUser = (String)map.get(SysVariables.ACTIVITIUSER);
-            String processDefinitionId = (String)map.get("processDefinitionId");
-            String taskDefKey = (String)map.get("taskDefKey");
-            String formIds = (String)map.get("formId");
-            String formNames = (String)map.get("formName");
-            String taskId = (String)map.get("taskId");
-            String itemId = (String)map.get("itemId");
-            String itembox = (String)map.get("itembox");
+            OpenDataModel model =
+                chaoSong4PositionApi.detail(tenantId, positionId, id, processInstanceId, status, true).getData();
+            String processSerialNumber = model.getProcessSerialNumber();
+            String activitiUser = model.getActivitiUser();
+            String processDefinitionId = model.getProcessDefinitionId();
+            String taskDefKey = model.getTaskDefKey();
+            String formIds = model.getFormId();
+            String formNames = model.getFormName();
+            String taskId = model.getTaskId();
+            String itemId = model.getItemId();
+            String itembox = model.getItembox();
+
+            String str = Y9JsonUtil.writeValueAsString(model);
+            map = Y9JsonUtil.readHashMap(str);
             DocumentUtil documentUtil = new DocumentUtil();
             Map<String, Object> dataMap = documentUtil.documentDetail(itemId, processDefinitionId, processSerialNumber,
                 processInstanceId, taskDefKey, taskId, itembox, activitiUser, formIds, formNames);
