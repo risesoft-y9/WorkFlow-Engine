@@ -1,25 +1,25 @@
 package net.risesoft.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.SpeakInfo;
-import net.risesoft.id.IdType;
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.jpa.SpeakInfoRepository;
-import net.risesoft.service.SpeakInfoService;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9Util;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.entity.SpeakInfo;
+import net.risesoft.id.IdType;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.repository.jpa.SpeakInfoRepository;
+import net.risesoft.service.SpeakInfoService;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9Util;
 
 /**
  * @author qinman
@@ -35,10 +35,7 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
 
     @Override
     @Transactional
-    public Map<String, Object> deleteById(String id) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, false);
-        map.put("msg", "删除失败");
+    public Y9Result<Object> deleteById(String id) {
         SpeakInfo speakInfo = this.findById(id);
         Date createDate;
         Date dateAfterCreateDate5Minute;
@@ -49,17 +46,15 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
             dateAfterCreateDate5Minute = new Date(createDate.getTime() + 300000);
             currentDate = sdf.parse(sdf.format(new Date()));
             if (currentDate.after(dateAfterCreateDate5Minute)) {
-                map.put("msg", "该信息已提交超过5分钟,不可删除!");
-                map.put(UtilConsts.SUCCESS, false);
+                return Y9Result.failure("该信息已提交超过5分钟,不可删除!");
             } else {
                 speakInfoRepository.deleteById(id);
-                map.put(UtilConsts.SUCCESS, true);
-                map.put("msg", "删除成功");
+                return Y9Result.successMsg("删除成功");
             }
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return map;
+        return Y9Result.failure("删除失败!");
     }
 
     @Override

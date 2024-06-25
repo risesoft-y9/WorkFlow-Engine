@@ -1,6 +1,7 @@
 package net.risesoft.api.itemadmin;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.pojo.Y9Result;
 
@@ -20,5 +21,5 @@ public interface WordTemplateApi {
      * @return String
      */
     @GetMapping(value = "/getFilePathById")
-    Y9Result<String> getFilePathById(String id);
+    Y9Result<String> getFilePathById(@RequestParam("id") String id);
 }

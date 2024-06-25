@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.SpeakInfoApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.SpeakInfoModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -38,20 +37,10 @@ public class SpeakInfoRsetController {
      */
     @ResponseBody
     @RequestMapping(value = "/deleteById", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteById(@RequestParam(required = true) String id) {
+    public Y9Result<Object> deleteById(@RequestParam(required = true) String id) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), tenantId = userInfo.getTenantId();
-        try {
-            Map<String, Object> map = speakInfoManager.deleteById(tenantId, userId, id);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.successMsg((String)map.get("msg"));
-            } else {
-                return Y9Result.failure((String)map.get("msg"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Y9Result.failure("删除失败");
+        return speakInfoManager.deleteById(tenantId, userId, id);
     }
 
     /**
@@ -86,7 +75,7 @@ public class SpeakInfoRsetController {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String userId = userInfo.getPersonId(), userName = userInfo.getName(), tenantId = userInfo.getTenantId();
         List<SpeakInfoModel> siModelList =
-            speakInfoManager.findByProcessInstanceId(tenantId, userId, processInstanceId);
+            speakInfoManager.findByProcessInstanceId(tenantId, userId, processInstanceId).getData();
         Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("rows", siModelList);
         map.put("processInstanceId", processInstanceId);
