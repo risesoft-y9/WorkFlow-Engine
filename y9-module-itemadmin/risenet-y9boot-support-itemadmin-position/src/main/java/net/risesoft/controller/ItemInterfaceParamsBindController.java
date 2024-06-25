@@ -54,18 +54,21 @@ public class ItemInterfaceParamsBindController {
     /**
      * 获取绑定信息
      *
-     * @param id     绑定id
+     * @param id 绑定id
      * @param itemId 事项id
      * @return
      */
     @RequestMapping(value = "/getBindInfo", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBindInfo(@RequestParam(required = false) String id, @RequestParam String itemId) {
+    public Y9Result<Map<String, Object>> getBindInfo(@RequestParam(required = false) String id,
+        @RequestParam String itemId) {
         Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
-        ProcessDefinitionModel processDefinition = repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey);
-        List<Y9FormItemBind> formList = y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+        ProcessDefinitionModel processDefinition =
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey);
+        List<Y9FormItemBind> formList =
+            y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         List<String> tableNameList = new ArrayList<>();
         List<Y9Table> tableList = new ArrayList<>();
         List<Map<String, Object>> tableField = new ArrayList<>();
@@ -102,13 +105,14 @@ public class ItemInterfaceParamsBindController {
     /**
      * 获取绑定列表
      *
-     * @param itemId      事项id
+     * @param itemId 事项id
      * @param interfaceId 接口id
-     * @param type        参数类型
+     * @param type 参数类型
      * @return
      */
     @RequestMapping(value = "/getBindList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemInterfaceParamsBind>> getBindList(@RequestParam String itemId, @RequestParam String interfaceId, @RequestParam String type) {
+    public Y9Result<List<ItemInterfaceParamsBind>> getBindList(@RequestParam String itemId,
+        @RequestParam String interfaceId, @RequestParam String type) {
         List<ItemInterfaceParamsBind> list = itemInterfaceParamsBindService.getBindList(itemId, interfaceId, type);
         return Y9Result.success(list, "获取成功");
     }

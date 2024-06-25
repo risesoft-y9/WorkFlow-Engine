@@ -1,11 +1,8 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.processadmin.VariableApi;
-import net.risesoft.service.CustomVariableService;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
+import java.util.Collection;
+import java.util.Map;
+
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.springframework.http.MediaType;
@@ -16,8 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.service.CustomVariableService;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * 正在运行变量相关接口
@@ -60,7 +62,8 @@ public class VariableApiImpl implements VariableApi {
      */
     @Override
     @PostMapping(value = "/deleteVariableLocal", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteVariableLocal(@RequestParam String tenantId, @RequestParam String taskId, @RequestParam String key) {
+    public void deleteVariableLocal(@RequestParam String tenantId, @RequestParam String taskId,
+        @RequestParam String key) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customVariableService.removeVariableLocal(taskId, key);
     }
@@ -91,7 +94,8 @@ public class VariableApiImpl implements VariableApi {
      */
     @Override
     @GetMapping(value = "/getVariableByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getVariableByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String key) {
+    public String getVariableByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId,
+        @RequestParam String key) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Object o = runtimeService.getVariable(processInstanceId, key);
         return o != null ? Y9JsonUtil.writeValueAsString(o) : null;
@@ -107,7 +111,8 @@ public class VariableApiImpl implements VariableApi {
      */
     @Override
     @GetMapping(value = "/getVariableLocal", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getVariableLocal(@RequestParam String tenantId, @RequestParam String taskId, @RequestParam String key) {
+    public String getVariableLocal(@RequestParam String tenantId, @RequestParam String taskId,
+        @RequestParam String key) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Object o = taskService.getVariableLocal(taskId, key);
         return o != null ? Y9JsonUtil.writeValueAsString(o) : null;
@@ -136,8 +141,10 @@ public class VariableApiImpl implements VariableApi {
      * @return Map
      */
     @Override
-    @RequestMapping(value = "/getVariablesByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getVariablesByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId, @RequestBody Collection<String> keys) {
+    @RequestMapping(value = "/getVariablesByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getVariablesByProcessInstanceId(@RequestParam String tenantId,
+        @RequestParam String processInstanceId, @RequestBody Collection<String> keys) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         return runtimeService.getVariables(processInstanceId, keys);
@@ -166,8 +173,10 @@ public class VariableApiImpl implements VariableApi {
      * @param map 变量值
      */
     @Override
-    @PostMapping(value = "/setVariable", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void setVariable(@RequestParam String tenantId, @RequestParam String taskId, @RequestParam String key, @RequestBody Map<String, Object> map) {
+    @PostMapping(value = "/setVariable", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void setVariable(@RequestParam String tenantId, @RequestParam String taskId, @RequestParam String key,
+        @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customVariableService.setVariable(taskId, key, map.get("val"));
     }
@@ -181,8 +190,10 @@ public class VariableApiImpl implements VariableApi {
      * @param map 变量值
      */
     @Override
-    @PostMapping(value = "/setVariableByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void setVariableByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String key, @RequestBody Map<String, Object> map) {
+    @PostMapping(value = "/setVariableByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void setVariableByProcessInstanceId(@RequestParam String tenantId, @RequestParam String processInstanceId,
+        @RequestParam String key, @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         runtimeService.setVariable(processInstanceId, key, map.get("val"));
     }
@@ -196,8 +207,10 @@ public class VariableApiImpl implements VariableApi {
      * @param map 变量值
      */
     @Override
-    @PostMapping(value = "/setVariableLocal", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void setVariableLocal(@RequestParam String tenantId, @RequestParam String taskId, @RequestParam String key, @RequestBody Map<String, Object> map) {
+    @PostMapping(value = "/setVariableLocal", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void setVariableLocal(@RequestParam String tenantId, @RequestParam String taskId, @RequestParam String key,
+        @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customVariableService.setVariableLocal(taskId, key, map.get("val"));
     }
@@ -210,8 +223,10 @@ public class VariableApiImpl implements VariableApi {
      * @param map 变量map
      */
     @Override
-    @PostMapping(value = "/setVariables", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void setVariables(@RequestParam String tenantId, @RequestParam String taskId, @RequestBody Map<String, Object> map) {
+    @PostMapping(value = "/setVariables", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void setVariables(@RequestParam String tenantId, @RequestParam String taskId,
+        @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customVariableService.setVariables(taskId, map);
     }
@@ -224,8 +239,10 @@ public class VariableApiImpl implements VariableApi {
      * @param map 变量map
      */
     @Override
-    @PostMapping(value = "/setVariablesLocal", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void setVariablesLocal(@RequestParam String tenantId, @RequestParam String taskId, @RequestBody Map<String, Object> map) {
+    @PostMapping(value = "/setVariablesLocal", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void setVariablesLocal(@RequestParam String tenantId, @RequestParam String taskId,
+        @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customVariableService.setVariablesLocal(taskId, map);
     }

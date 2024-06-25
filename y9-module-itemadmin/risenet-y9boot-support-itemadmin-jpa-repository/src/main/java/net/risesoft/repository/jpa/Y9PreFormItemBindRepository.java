@@ -10,7 +10,8 @@ import net.risesoft.entity.Y9PreFormItemBind;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-public interface Y9PreFormItemBindRepository extends JpaRepository<Y9PreFormItemBind, String>, JpaSpecificationExecutor<Y9PreFormItemBind> {
+public interface Y9PreFormItemBindRepository
+    extends JpaRepository<Y9PreFormItemBind, String>, JpaSpecificationExecutor<Y9PreFormItemBind> {
 
     public Y9PreFormItemBind findByItemId(String itemId);
 

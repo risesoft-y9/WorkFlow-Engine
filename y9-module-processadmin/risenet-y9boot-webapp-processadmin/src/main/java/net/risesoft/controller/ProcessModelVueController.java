@@ -1,12 +1,10 @@
 package net.risesoft.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 
@@ -32,6 +30,7 @@ import net.risesoft.y9.configuration.Y9Properties;
 
 /**
  * 流程模型控制器
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2023/01/03
@@ -109,7 +108,7 @@ public class ProcessModelVueController {
 
             response.flushBuffer();
         } catch (Exception e) {
-            LOGGER.error("导出模型失败,modelId:{} 异常：{}" , modelId,e.getMessage());
+            LOGGER.error("导出模型失败,modelId:{} 异常：{}", modelId, e.getMessage());
         }
     }
 
@@ -129,7 +128,7 @@ public class ProcessModelVueController {
      * 获取流程设计模型xml
      *
      * @param modelId 模型id
-     * @return  Y9Result<Map<String, Object>>
+     * @return Y9Result<Map<String, Object>>
      */
     @RequestMapping(value = "/getModelXml")
     public Y9Result<Map<String, Object>> getModelXml(@RequestParam @NotBlank String modelId) {
@@ -137,12 +136,13 @@ public class ProcessModelVueController {
         Map<String, Object> map = new HashMap<>();
         return Y9Result.success(map, "获取成功");
     }
+
     /**
      * 导入流程模板
      *
-     * @param file  上传的文件
+     * @param file 上传的文件
      * @param model 模型信息
-     * @return  Map<String, Object>
+     * @return Map<String, Object>
      */
     @RequestMapping(value = "/import")
     public Map<String, Object> importProcessModel(MultipartFile file) {
@@ -156,7 +156,7 @@ public class ProcessModelVueController {
     /**
      * 保存设计模型xml
      *
-     * @param file  上传的文件
+     * @param file 上传的文件
      * @param model 模型信息
      * @return Y9Result<String>
      */
@@ -165,7 +165,7 @@ public class ProcessModelVueController {
         try {
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            LOGGER.error("保存模型xml失败,异常：{}" , e.getMessage());
+            LOGGER.error("保存模型xml失败,异常：{}", e.getMessage());
         }
         return Y9Result.failure("保存失败");
     }

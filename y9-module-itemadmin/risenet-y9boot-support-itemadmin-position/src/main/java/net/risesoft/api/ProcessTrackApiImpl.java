@@ -1,7 +1,21 @@
 package net.risesoft.api;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
@@ -13,18 +27,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessTrackService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 历程接口
@@ -47,7 +49,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * 根据唯一标示删除历程数据
      *
      * @param tenantId 租户id
-     * @param id       唯一标识
+     * @param id 唯一标识
      * @throws Exception Exception
      */
     @Override
@@ -61,7 +63,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * 根据任务id获取自定义历程
      *
      * @param tenantId 租户id
-     * @param taskId   任务id
+     * @param taskId 任务id
      * @return List<ProcessTrackModel>
      */
     @Override
@@ -84,7 +86,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * 根据任务id获取自定义历程
      *
      * @param tenantId 租户id
-     * @param taskId   任务id
+     * @param taskId 任务id
      * @return List<ProcessTrackModel>
      */
     @Override
@@ -106,7 +108,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
     /**
      * 获取流程图任务节点信息
      *
-     * @param tenantId          租户id
+     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return Y9Result<List < HistoricActivityInstanceModel>>
      */
@@ -120,8 +122,8 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
     /**
      * 获取历程列表(包含每个任务节点的特殊操作的历程)
      *
-     * @param tenantId          租户id
-     * @param positionId        岗位id
+     * @param tenantId 租户id
+     * @param positionId 岗位id
      * @param processInstanceId 流程实例id
      * @return Map&lt;String, Object&gt;
      */
@@ -150,8 +152,8 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
     /**
      * 获取历程信息
      *
-     * @param tenantId          租户id
-     * @param positionId        岗位id
+     * @param tenantId 租户id
+     * @param positionId 岗位id
      * @param processInstanceId 流程实例id
      * @return Map&lt;String, Object&gt;
      */
@@ -185,8 +187,10 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ProcessTrackModel saveOrUpdate(String tenantId, @RequestBody ProcessTrackModel processTrackModel) throws Exception {
+    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ProcessTrackModel saveOrUpdate(String tenantId, @RequestBody ProcessTrackModel processTrackModel)
+        throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         ProcessTrack processTrack = ItemAdminModelConvertUtil.processTrackModel2ProcessTrack(processTrackModel);
         ProcessTrack ptTemp = processTrackService.saveOrUpdate(processTrack);

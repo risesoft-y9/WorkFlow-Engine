@@ -53,7 +53,8 @@ public class MobileV1SearchListController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getLastFormData")
-    public Y9Result<Map<String, Object>> getLastFormData(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String tableName) {
+    public Y9Result<Map<String, Object>> getLastFormData(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String tableName) {
         Map<String, Object> map = new HashMap<>();
         Y9Page<Map<String, Object>> y9Page = this.searchService.getSearchList("", itemId, "", "", "", "", "", 1, 1);
         if ((y9Page.getRows() != null) && (!y9Page.getRows().isEmpty())) {
@@ -85,7 +86,8 @@ public class MobileV1SearchListController {
             // 统计统一待办
             todoCount = todotaskApi.countByReceiverId(tenantId, positionId);
             // 统计流程在办件
-            Map<String, Object> m = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
+            Map<String, Object> m = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, "", "", "",
+                "todo", "", "", "", 1, 1);
             doingCount = Long.parseLong(m.get("total").toString());
             // 统计历史办结件
             doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, "");
@@ -114,8 +116,11 @@ public class MobileV1SearchListController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/getSearchList")
-    public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
-        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> getSearchList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         return searchService.getSearchList(searchName, itemId, userName, state, year, startDate, endDate, page, rows);
     }
 

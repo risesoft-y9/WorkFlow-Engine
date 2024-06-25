@@ -40,7 +40,8 @@ public interface ActRuDetailApi {
      * @param status 0为待办，1位在办
      * @return Y9Result<List < ActRuDetailModel>>
      */
-    Y9Result<List<ActRuDetailModel>> findByProcessInstanceIdAndStatus(String tenantId, String processInstanceId, int status);
+    Y9Result<List<ActRuDetailModel>> findByProcessInstanceIdAndStatus(String tenantId, String processInstanceId,
+        int status);
 
     /**
      * 根据流程序列号查找正在办理的人员信息
@@ -59,7 +60,8 @@ public interface ActRuDetailApi {
      * @param assignee 办理人Id
      * @return Y9Result<ActRuDetailModel>
      */
-    Y9Result<ActRuDetailModel> findByProcessSerialNumberAndAssignee(String tenantId, String processSerialNumber, String assignee);
+    Y9Result<ActRuDetailModel> findByProcessSerialNumberAndAssignee(String tenantId, String processSerialNumber,
+        String assignee);
 
     /**
      * 根据流程序列号查找正在办理的人员信息
@@ -69,7 +71,8 @@ public interface ActRuDetailApi {
      * @param status 0为待办，1位在办
      * @return Y9Result<List<ActRuDetailModel>>
      */
-    Y9Result<List<ActRuDetailModel>> findByProcessSerialNumberAndStatus(String tenantId, String processSerialNumber, int status);
+    Y9Result<List<ActRuDetailModel>> findByProcessSerialNumberAndStatus(String tenantId, String processSerialNumber,
+        int status);
 
     /**
      * 恢复整个流程的办件详情
@@ -106,7 +109,8 @@ public interface ActRuDetailApi {
      * @param assignee 办理人Id
      * @return Y9Result<Object>
      */
-    Y9Result<Object> removeByProcessSerialNumberAndAssignee(String tenantId, String processSerialNumber, String assignee);
+    Y9Result<Object> removeByProcessSerialNumberAndAssignee(String tenantId, String processSerialNumber,
+        String assignee);
 
     /**
      * 保存或者更新

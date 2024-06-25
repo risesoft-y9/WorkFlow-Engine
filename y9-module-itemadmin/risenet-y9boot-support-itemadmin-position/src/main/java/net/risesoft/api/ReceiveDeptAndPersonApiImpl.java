@@ -50,7 +50,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      * 根据name模糊搜索收发单位
      *
      * @param tenantId 租户id
-     * @param name     搜索名称
+     * @param name 搜索名称
      * @return Map&lt;String, Object&gt;
      */
     @Override
@@ -114,9 +114,9 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
     /**
      * 获取所有收发单位
      *
-     * @param tenantId  租户id
+     * @param tenantId 租户id
      * @param orgUnitId 单位Id
-     * @param name      名称
+     * @param name 名称
      * @return List<Map < String, Object>>
      */
     @Override
@@ -199,7 +199,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      * 根据收发单位id,获取人员集合
      *
      * @param tenantId 租户id
-     * @param deptId   部门id
+     * @param deptId 部门id
      * @return List<Person>
      */
     @Override
@@ -221,7 +221,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      * 根据人员id,获取对应的收发单位
      *
      * @param tenantId 租户id
-     * @param userId   人员id
+     * @param userId 人员id
      * @return List<Map < String, Object>>
      */
     @Override

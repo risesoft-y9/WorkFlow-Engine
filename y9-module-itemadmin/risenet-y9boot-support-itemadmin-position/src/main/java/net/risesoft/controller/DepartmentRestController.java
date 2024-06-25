@@ -134,8 +134,10 @@ public class DepartmentRestController {
         }
         return items;
     }
+
     /**
      * 查找部门及部门下的人员
+     * 
      * @return Y9Result<List<Organization>>
      */
     @RequestMapping(value = "/getOrgList", method = RequestMethod.GET, produces = "application/json")

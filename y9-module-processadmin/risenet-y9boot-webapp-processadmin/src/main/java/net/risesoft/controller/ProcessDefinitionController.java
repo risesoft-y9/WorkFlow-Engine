@@ -1,8 +1,11 @@
 package net.risesoft.controller;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.service.WorkflowProcessDefinitionService;
-import net.risesoft.util.SysVariables;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.FlowElement;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,11 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.service.WorkflowProcessDefinitionService;
+import net.risesoft.util.SysVariables;
 
 /**
  * @author qinman
@@ -66,7 +68,7 @@ public class ProcessDefinitionController {
      * 获取指定流程定义的所有版本号
      *
      * @param processDefinitionKey 流程定义Key
-     * @return  List<Integer>
+     * @return List<Integer>
      */
     @RequestMapping(value = "/getProcDefVersions", method = RequestMethod.GET)
     public List<Integer> getProcDefVersions(@RequestParam(required = false) String processDefinitionKey) {
@@ -120,6 +122,7 @@ public class ProcessDefinitionController {
 
     /**
      * 查询流程定义，获取map，其key为流程定义对象ID，其value为流程定义对象名称
+     * 
      * @return Map<String, String>
      */
     @RequestMapping(value = "/map", method = RequestMethod.GET)

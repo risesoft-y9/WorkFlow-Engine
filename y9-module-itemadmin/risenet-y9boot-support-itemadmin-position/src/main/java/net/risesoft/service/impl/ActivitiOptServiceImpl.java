@@ -1,7 +1,13 @@
 package net.risesoft.service.impl;
 
+import java.util.Collections;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
@@ -9,10 +15,6 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.ActivitiOptService;
 import net.risesoft.util.CommonOpt;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -34,8 +36,8 @@ public class ActivitiOptServiceImpl implements ActivitiOptService {
         TaskModel task = new TaskModel();
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPositionId();
-            map = CommonOpt.setVariables(userId, Y9LoginUserHolder.getPosition().getName(), "", Collections.singletonList(userId),
-                processSerialNumber, "", map);
+            map = CommonOpt.setVariables(userId, Y9LoginUserHolder.getPosition().getName(), "",
+                Collections.singletonList(userId), processSerialNumber, "", map);
             ProcessInstanceModel piModel =
                 runtimeManager.startProcessInstanceByKey(tenantId, userId, processDefinitionKey, systemName, map);
             // 获取运行的任务节点,这里没有考虑启动节点下一个用户任务节点是多实例的情况

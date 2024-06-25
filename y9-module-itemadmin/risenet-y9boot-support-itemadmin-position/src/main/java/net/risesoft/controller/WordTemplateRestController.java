@@ -60,7 +60,8 @@ public class WordTemplateRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/bookMarKList")
-    public Y9Result<List<Map<String, Object>>> bookMarkList(String wordTemplateId, @RequestParam String wordTemplateType) {
+    public Y9Result<List<Map<String, Object>>> bookMarkList(String wordTemplateId,
+        @RequestParam String wordTemplateType) {
         Map<String, Object> map = wordTemplateService.getBookMarkList(wordTemplateId, wordTemplateType);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.success((List<Map<String, Object>>)map.get("rows"), (String)map.get("msg"));
@@ -104,11 +105,13 @@ public class WordTemplateRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getBookMarkBind", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBookMarkBind(@RequestParam String bookMarkName, @RequestParam String wordTemplateId) {
+    public Y9Result<Map<String, Object>> getBookMarkBind(@RequestParam String bookMarkName,
+        @RequestParam String wordTemplateId) {
         Map<String, Object> resMap = new HashMap<>(16);
         List<Y9Table> tableList = y9TableService.getAllTable();
         List<String> columnList = new ArrayList<>();
-        BookMarkBind bookMarkBind = bookMarkBindService.findByWordTemplateIdAndBookMarkName(wordTemplateId, bookMarkName);
+        BookMarkBind bookMarkBind =
+            bookMarkBindService.findByWordTemplateIdAndBookMarkName(wordTemplateId, bookMarkName);
         if (null != bookMarkBind) {
             String tableId = "";
             for (Y9Table table : tableList) {
@@ -177,7 +180,8 @@ public class WordTemplateRestController {
         if (person.isGlobalManager()) {
             list = wordTemplateService.findAll();
         } else {
-            list = wordTemplateService.findByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
+            list = wordTemplateService
+                .findByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
         }
         List<Map<String, Object>> items = new ArrayList<>();
         for (WordTemplate wordTemplate : list) {

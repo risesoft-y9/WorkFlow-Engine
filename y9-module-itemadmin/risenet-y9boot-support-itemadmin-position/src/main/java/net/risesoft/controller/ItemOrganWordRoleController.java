@@ -27,7 +27,7 @@ public class ItemOrganWordRoleController {
     /**
      * 将意见框绑定到角色上
      *
-     * @param roleIds             角色id
+     * @param roleIds 角色id
      * @param itemOrganWordBindId 绑定id
      * @return
      */
@@ -45,7 +45,7 @@ public class ItemOrganWordRoleController {
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemOrganWordRole>> list(@RequestParam String itemOrganWordBindId) {
         List<ItemOrganWordRole> list =
-                itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(itemOrganWordBindId);
+            itemOrganWordRoleService.findByItemOrganWordBindIdContainRoleName(itemOrganWordBindId);
         return Y9Result.success(list, "获取成功");
     }
 

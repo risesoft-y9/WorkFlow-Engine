@@ -72,7 +72,9 @@ public class TaoHongTemplateRestContronller {
     public Y9Result<List<Map<String, Object>>> bureauTree(@RequestParam(required = false) String name) {
         List<Map<String, Object>> listMap = new ArrayList<>();
         name = StringUtils.isBlank(name) ? "" : name;
-        List<Map<String, Object>> orgUnitList = jdbcTemplate.queryForList(" SELECT ID,NAME,PARENT_ID FROM Y9_ORG_DEPARTMENT where bureau = 1 and deleted = 0 and name like '%" + name + "%' and disabled = 0 order by tab_Index asc");
+        List<Map<String, Object>> orgUnitList = jdbcTemplate.queryForList(
+            " SELECT ID,NAME,PARENT_ID FROM Y9_ORG_DEPARTMENT where bureau = 1 and deleted = 0 and name like '%" + name
+                + "%' and disabled = 0 order by tab_Index asc");
         for (Map<String, Object> dept : orgUnitList) {
             Map<String, Object> map = new HashMap<>(16);
             map.put("id", dept.get("ID").toString());
@@ -92,7 +94,8 @@ public class TaoHongTemplateRestContronller {
      * @throws Exception
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam String templateGuid, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void download(@RequestParam String templateGuid, HttpServletRequest request, HttpServletResponse response)
+        throws Exception {
         try {
             TaoHongTemplate taoHongTemplate = taoHongTemplateService.findOne(templateGuid);
             byte[] b = taoHongTemplate.getTemplateContent();
@@ -129,7 +132,8 @@ public class TaoHongTemplateRestContronller {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<TaoHongTemplate> list = new ArrayList<>();
         if (userInfo.isGlobalManager()) {
-            list = taoHongTemplateService.findByTenantId(Y9LoginUserHolder.getTenantId(), StringUtils.isBlank(name) ? "%%" : "%" + name + "%");
+            list = taoHongTemplateService.findByTenantId(Y9LoginUserHolder.getTenantId(),
+                StringUtils.isBlank(name) ? "%%" : "%" + name + "%");
         } else {
             OrgUnit orgUnit = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), userInfo.getPersonId()).getData();
             list = taoHongTemplateService.findByBureauGuid(orgUnit.getId());
@@ -203,14 +207,17 @@ public class TaoHongTemplateRestContronller {
      */
     @ResponseBody
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrUpdate(@RequestParam(required = false) String templateGuid, @RequestParam String bureauGuid, @RequestParam String bureauName, @RequestParam String templateType, MultipartFile file) {
+    public Y9Result<String> saveOrUpdate(@RequestParam(required = false) String templateGuid,
+        @RequestParam String bureauGuid, @RequestParam String bureauName, @RequestParam String templateType,
+        MultipartFile file) {
         try {
             TaoHongTemplate taoHong = new TaoHongTemplate();
             taoHong.setBureauGuid(bureauGuid);
             taoHong.setBureauName(bureauName);
             taoHong.setTemplateGuid(templateGuid);
             taoHong.setTemplateType(templateType);
-            LOGGER.debug("###################### bureauGuid:{},bureauName:{}", taoHong.getBureauGuid(), taoHong.getBureauName());
+            LOGGER.debug("###################### bureauGuid:{},bureauName:{}", taoHong.getBureauGuid(),
+                taoHong.getBureauName());
             if (file != null) {
                 String[] fileName = file.getOriginalFilename().split("\\\\");
                 taoHong.setTemplateContent(file.getBytes());

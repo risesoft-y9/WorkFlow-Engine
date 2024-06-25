@@ -32,9 +32,9 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class ProcessAdminCheckUserLoginFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         try {
-            HttpServletRequest req = (HttpServletRequest) request;
+            HttpServletRequest req = (HttpServletRequest)request;
             StringBuffer path = req.getRequestURL();
             HttpSession session = req.getSession();
             UserInfo loginUser = Y9LoginUserHolder.getUserInfo();
@@ -52,7 +52,7 @@ public class ProcessAdminCheckUserLoginFilter implements Filter {
                 }
             }
             if (loginUser == null) {
-                loginUser = (UserInfo) session.getAttribute("loginUser");
+                loginUser = (UserInfo)session.getAttribute("loginUser");
             }
             if (loginUser != null) {
                 Y9LoginUserHolder.setUserInfo(loginUser);

@@ -116,17 +116,22 @@ public class MobileV1SignController {
      * @return Y9Result<String>
      */
     @RequestMapping("/getDayOrHour")
-    public Y9Result<String> getDayOrHour(@RequestParam(required = false) String type, @RequestParam String leaveStartTime, @RequestParam String leaveEndTime, @RequestParam(required = false) String startSel, @RequestParam(required = false) String endSel,
-        @RequestParam(required = false) String selStartTime, @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType) {
+    public Y9Result<String> getDayOrHour(@RequestParam(required = false) String type,
+        @RequestParam String leaveStartTime, @RequestParam String leaveEndTime,
+        @RequestParam(required = false) String startSel, @RequestParam(required = false) String endSel,
+        @RequestParam(required = false) String selStartTime, @RequestParam(required = false) String selEndTime,
+        @RequestParam(required = false) String leaveType) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr;
-            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]).getData();
+            CalendarConfigModel calendarConfig =
+                calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]).getData();
             dayStr = calendarConfig.getEveryYearHoliday();
             switch (type) {
                 case "天": {
                     boolean isdel = true;
-                    if (StringUtils.isNotBlank(leaveType) && (leaveType.equals("离京报备") || leaveType.equals("产假") || leaveType.equals("婚假") || leaveType.equals("陪产假"))) {// 产假不排除节假日，直接算天数
+                    if (StringUtils.isNotBlank(leaveType) && (leaveType.equals("离京报备") || leaveType.equals("产假")
+                        || leaveType.equals("婚假") || leaveType.equals("陪产假"))) {// 产假不排除节假日，直接算天数
                         isdel = false;
                     }
                     if (leaveStartTime.equals(leaveEndTime)) {
@@ -161,7 +166,8 @@ public class MobileV1SignController {
                     while (tmp.compareTo(leaveEndTime) <= 0) {
                         LOGGER.debug("tmp={}", tmp);
                         if (!dayStr.contains(tmp)) {
-                            if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(startSel) && startSel.equals("下午")) {// 开始日期选择下午，算半天
+                            if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(startSel)
+                                && startSel.equals("下午")) {// 开始日期选择下午，算半天
                                 start += 0.5;
                                 tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
                                 continue;
@@ -197,7 +203,8 @@ public class MobileV1SignController {
                             BigDecimal a = BigDecimal.valueOf(hours);
                             double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
                             // 减去中间包含的1.5个小时
-                            if (Integer.parseInt(selStartTime.split(":")[0]) < 12 && Integer.parseInt(selEndTime.split(":")[0]) > 12) {
+                            if (Integer.parseInt(selStartTime.split(":")[0]) < 12
+                                && Integer.parseInt(selEndTime.split(":")[0]) > 12) {
                                 waitTime = waitTime - 1.5;
                             }
                             return Y9Result.success(String.valueOf(waitTime), "获取成功");
@@ -227,7 +234,8 @@ public class MobileV1SignController {
                         BigDecimal a = BigDecimal.valueOf(hours);
                         double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
                         // 减去中间包含的1.5个小时
-                        if (Integer.parseInt(selStartTime.split(":")[0]) < 12 && Integer.parseInt(selEndTime.split(":")[0]) > 12) {
+                        if (Integer.parseInt(selStartTime.split(":")[0]) < 12
+                            && Integer.parseInt(selEndTime.split(":")[0]) > 12) {
                             waitTime = waitTime - 1.5;
                         }
                         return Y9Result.success(String.valueOf(num * waitTime), "获取成功");
@@ -284,12 +292,14 @@ public class MobileV1SignController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/getDays")
-    public Y9Result<String> getDays(@RequestParam String startDate, @RequestParam(required = false) String startSel, @RequestParam String endDate, @RequestParam(required = false) String endSel, @RequestParam String dateType) {
+    public Y9Result<String> getDays(@RequestParam String startDate, @RequestParam(required = false) String startSel,
+        @RequestParam String endDate, @RequestParam(required = false) String endSel, @RequestParam String dateType) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr;
-            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(tenantId, endDate.split("-")[0]).getData();
+            CalendarConfigModel calendarConfig =
+                calendarConfigApi.findByYear(tenantId, endDate.split("-")[0]).getData();
             dayStr = calendarConfig != null ? calendarConfig.getEveryYearHoliday() : "";
             if (StringUtils.isBlank(startSel) && StringUtils.isBlank(endSel)) {// 按天算
                 boolean isdel = dateType.equals("1");

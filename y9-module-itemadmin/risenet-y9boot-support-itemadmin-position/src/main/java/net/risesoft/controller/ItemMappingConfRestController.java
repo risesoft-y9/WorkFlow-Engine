@@ -141,8 +141,7 @@ public class ItemMappingConfRestController {
      * @return
      */
     @RequestMapping(value = "/getList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemMappingConf>> getList(@RequestParam String itemId,
-        @RequestParam String mappingId) {
+    public Y9Result<List<ItemMappingConf>> getList(@RequestParam String itemId, @RequestParam String mappingId) {
         List<ItemMappingConf> list = itemMappingConfService.getList(itemId, mappingId);
         return Y9Result.success(list, "获取成功");
     }

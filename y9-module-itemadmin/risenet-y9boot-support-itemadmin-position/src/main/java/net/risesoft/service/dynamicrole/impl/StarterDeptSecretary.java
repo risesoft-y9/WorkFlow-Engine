@@ -43,13 +43,15 @@ public class StarterDeptSecretary extends AbstractDynamicRoleMember {
             if (StringUtils.isNotEmpty(userIdAndDeptId)) {
                 String userId = userIdAndDeptId.split(":")[0];
                 OrgUnit orgUnit = positionManager.get(tenantId, userId).getData();
-                List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(), DepartmentPropCategoryEnum.SECRETARY.getValue()).getData();
+                List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(),
+                    DepartmentPropCategoryEnum.SECRETARY.getValue()).getData();
                 orgUnitList.addAll(leaders);
             }
         } else {
             String positionId = Y9LoginUserHolder.getPositionId();
             Position position = positionManager.get(tenantId, positionId).getData();
-            List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, position.getParentId(), DepartmentPropCategoryEnum.SECRETARY.getValue()).getData();
+            List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, position.getParentId(),
+                DepartmentPropCategoryEnum.SECRETARY.getValue()).getData();
             orgUnitList.addAll(leaders);
         }
         return orgUnitList;

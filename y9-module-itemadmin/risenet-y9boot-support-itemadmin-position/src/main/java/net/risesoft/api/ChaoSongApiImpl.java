@@ -58,7 +58,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      * @param ids 唯一标示数组
      */
     @Override
-    @PostMapping(value = "/changeStatus", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/changeStatus", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void changeStatus(String tenantId, String userId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongService.changeStatus(ids, 1);
@@ -130,7 +131,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      * @param processInstanceId 流程实例id
      */
     @Override
-    @PostMapping(value = "/deleteList", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/deleteList", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void deleteList(String tenantId, @RequestBody String[] ids, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongService.deleteList(ids, processInstanceId);
@@ -149,7 +151,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      */
     @Override
     @GetMapping(value = "/detail", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> detail(String tenantId, String userId, String id, String processInstanceId, Integer status, boolean mobile) {
+    public Map<String, Object> detail(String tenantId, String userId, String id, String processInstanceId,
+        Integer status, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
@@ -237,7 +240,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      */
     @Override
     @GetMapping(value = "/getDoneListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getDoneListByUserId(String tenantId, String userId, String year, String documentTitle, int rows, int page) {
+    public Map<String, Object> getDoneListByUserId(String tenantId, String userId, String year, String documentTitle,
+        int rows, int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongService.getDoneListByUserId(userId, year, documentTitle, rows, page);
     }
@@ -254,7 +258,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      */
     @Override
     @GetMapping(value = "/getDoneListByUserIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getDoneListByUserIdAndItemId(String tenantId, String userId, String itemId, int rows, int page) {
+    public Map<String, Object> getDoneListByUserIdAndItemId(String tenantId, String userId, String itemId, int rows,
+        int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongService.getDoneListByUserIdAndItemId(userId, itemId, rows, page);
     }
@@ -271,7 +276,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      */
     @Override
     @GetMapping(value = "/getDoneListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getDoneListByUserIdAndSystemName(String tenantId, String userId, String systemName, int rows, int page) {
+    public Map<String, Object> getDoneListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        int rows, int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongService.getDoneListByUserIdAndSystemName(userId, systemName, rows, page);
     }
@@ -288,7 +294,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      */
     @Override
     @GetMapping(value = "/getListByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByProcessInstanceId(String tenantId, String processInstanceId, String userName, int rows, int page) {
+    public Map<String, Object> getListByProcessInstanceId(String tenantId, String processInstanceId, String userName,
+        int rows, int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongService.getListByProcessInstanceId(processInstanceId, userName, rows, page);
     }
@@ -306,7 +313,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      */
     @Override
     @GetMapping(value = "/getListBySenderIdAndProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId, String processInstanceId, String userName, int rows, int page) {
+    public Map<String, Object> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId,
+        String processInstanceId, String userName, int rows, int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongService.getListBySenderIdAndProcessInstanceId(senderId, processInstanceId, userName, rows, page);
     }
@@ -324,7 +332,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      */
     @Override
     @GetMapping(value = "/getOpinionChaosongByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getOpinionChaosongByUserId(String tenantId, String userId, String year, String documentTitle, int rows, int page) {
+    public Map<String, Object> getOpinionChaosongByUserId(String tenantId, String userId, String year,
+        String documentTitle, int rows, int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongService.getOpinionChaosongByUserId(userId, year, documentTitle, rows, page);
     }
@@ -385,7 +394,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      */
     @Override
     @GetMapping(value = "/getTodoListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getTodoListByUserId(String tenantId, String userId, String documentTitle, int rows, int page) {
+    public Map<String, Object> getTodoListByUserId(String tenantId, String userId, String documentTitle, int rows,
+        int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongService.getTodoListByUserId(userId, documentTitle, rows, page);
     }
@@ -402,7 +412,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      */
     @Override
     @GetMapping(value = "/getTodoListByUserIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getTodoListByUserIdAndItemId(String tenantId, String userId, String itemId, int rows, int page) {
+    public Map<String, Object> getTodoListByUserIdAndItemId(String tenantId, String userId, String itemId, int rows,
+        int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongService.getTodoListByUserIdAndItemId(userId, itemId, rows, page);
     }
@@ -420,7 +431,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      */
     @Override
     @GetMapping(value = "/getTodoListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getTodoListByUserIdAndSystemName(String tenantId, String userId, String systemName, String title, int rows, int page) {
+    public Map<String, Object> getTodoListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        String title, int rows, int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map;
         if (StringUtils.isNotBlank(title)) {
@@ -446,7 +458,8 @@ public class ChaoSongApiImpl implements ChaoSongApi {
      */
     @Override
     @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> save(String tenantId, String userId, String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
+    public Map<String, Object> save(String tenantId, String userId, String processInstanceId, String users,
+        String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);

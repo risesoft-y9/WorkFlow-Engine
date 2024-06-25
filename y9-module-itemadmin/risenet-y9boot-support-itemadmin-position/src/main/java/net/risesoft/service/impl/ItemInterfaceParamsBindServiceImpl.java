@@ -28,7 +28,8 @@ public class ItemInterfaceParamsBindServiceImpl implements ItemInterfaceParamsBi
 
     @Override
     public List<ItemInterfaceParamsBind> getBindList(String itemId, String interfaceId, String type) {
-        List<ItemInterfaceParamsBind> bindList = itemInterfaceParamsBindRepository.findByItemIdAndInterfaceIdAndBindTypeOrderByCreateTimeDesc(itemId, interfaceId, type);
+        List<ItemInterfaceParamsBind> bindList = itemInterfaceParamsBindRepository
+            .findByItemIdAndInterfaceIdAndBindTypeOrderByCreateTimeDesc(itemId, interfaceId, type);
         return bindList;
     }
 

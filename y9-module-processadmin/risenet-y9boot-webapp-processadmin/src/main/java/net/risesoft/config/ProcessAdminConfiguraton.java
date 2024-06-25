@@ -45,7 +45,7 @@ import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
 @ImportResource({"classpath:/springconfigs/flowable.cfg.xml"})
 @ComponentScan(basePackages = {"net.risesoft"})
 public class ProcessAdminConfiguraton implements WebMvcConfigurer {
-    
+
     @Bean
     public static RequestContextFilter requestContextFilter() {
         return new OrderedRequestContextFilter();
@@ -91,8 +91,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
 
     @Bean
     public FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> processAdminCheckUserLoginFilter() {
-        final FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> filterBean =
-                new FilterRegistrationBean<>();
+        final FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> filterBean = new FilterRegistrationBean<>();
         filterBean.setFilter(new ProcessAdminCheckUserLoginFilter());
         filterBean.setAsyncSupported(false);
         filterBean.setOrder(50);
@@ -123,7 +122,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
 
     @Bean("y9TenantDataSource")
     public DataSource y9TenantDataSource(@Qualifier("y9FlowableDS") HikariDataSource y9FlowableDs,
-                                         @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
+        @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
         return new Y9TenantDataSource(y9FlowableDs, y9TenantDataSourceLookup);
     }
 

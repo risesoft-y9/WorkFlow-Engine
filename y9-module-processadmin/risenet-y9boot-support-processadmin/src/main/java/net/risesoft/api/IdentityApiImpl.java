@@ -1,11 +1,7 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.processadmin.IdentityApi;
-import net.risesoft.model.processadmin.IdentityLinkModel;
-import net.risesoft.service.CustomIdentityService;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.util.FlowableModelConvertUtil;
+import java.util.List;
+
 import org.flowable.identitylink.api.IdentityLink;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.processadmin.IdentityApi;
+import net.risesoft.model.processadmin.IdentityLinkModel;
+import net.risesoft.service.CustomIdentityService;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.util.FlowableModelConvertUtil;
 
 /**
  * 流转用户信息接口

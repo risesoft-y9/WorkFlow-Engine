@@ -51,9 +51,11 @@ public class ProcessTrackRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/getFlowChart", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<String> getFlowChart(@RequestParam(required = false) String resourceType, @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String processDefinitionId) {
+    public Y9Result<String> getFlowChart(@RequestParam(required = false) String resourceType,
+        @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String processDefinitionId) {
         try {
-            return repositoryApi.getXmlByProcessInstance(Y9LoginUserHolder.getTenantId(), resourceType, processInstanceId, processDefinitionId);
+            return repositoryApi.getXmlByProcessInstance(Y9LoginUserHolder.getTenantId(), resourceType,
+                processInstanceId, processDefinitionId);
         } catch (Exception e) {
             LOGGER.error("获取流程图失败", e);
         }
@@ -88,8 +90,10 @@ public class ProcessTrackRestController {
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map;
         map = processTrack4PositionApi.processTrackList(tenantId, positionId, processInstanceId);
-        int mychaosongNum = chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
-        int otherchaosongNum = chaoSong4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+        int mychaosongNum =
+            chaoSong4PositionApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+        int otherchaosongNum =
+            chaoSong4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
         map.put("mychaosongNum", mychaosongNum);
         map.put("otherchaosongNum", otherchaosongNum);
         return Y9Result.success(map, "获取成功");
@@ -108,7 +112,8 @@ public class ProcessTrackRestController {
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> list;
         try {
-            Map<String, Object> map = processTrack4PositionApi.processTrackList4Simple(tenantId, positionId, processInstanceId);
+            Map<String, Object> map =
+                processTrack4PositionApi.processTrackList4Simple(tenantId, positionId, processInstanceId);
             if ((boolean)map.get(UtilConsts.SUCCESS)) {
                 list = (List<Map<String, Object>>)map.get("rows");
                 return Y9Result.success(list, "获取成功");

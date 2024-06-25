@@ -1,11 +1,13 @@
 package net.risesoft.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.service.CustomVariableService;
+import java.util.Map;
+
 import org.flowable.engine.TaskService;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.service.CustomVariableService;
 
 /**
  * @author qinman

@@ -55,7 +55,8 @@ public class QuickSendRestController {
      * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/getAssignee")
-    public Y9Result<List<Map<String, Object>>> getAssignee(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey) {
+    public Y9Result<List<Map<String, Object>>> getAssignee(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String taskKey) {
         List<Map<String, Object>> list = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String assignee = quickSendApi.getAssignee(tenantId, Y9LoginUserHolder.getPositionId(), itemId, taskKey);
@@ -79,7 +80,8 @@ public class QuickSendRestController {
                     map.put("orgType", OrgTypeEnum.DEPARTMENT.getEnName());
                     list.add(map);
                 } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
-                    CustomGroup customGroup = customGroupApi.findCustomGroupById(tenantId, Y9LoginUserHolder.getPersonId(), orgId).getData();
+                    CustomGroup customGroup =
+                        customGroupApi.findCustomGroupById(tenantId, Y9LoginUserHolder.getPersonId(), orgId).getData();
                     map.put("id", customGroup.getId());
                     map.put("name", customGroup.getGroupName());
                     map.put("orgType", "customGroup");
@@ -99,8 +101,10 @@ public class QuickSendRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveOrUpdate")
-    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey, @RequestParam(required = false) String assignee) {
-        quickSendApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId, taskKey, assignee);
+    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey,
+        @RequestParam(required = false) String assignee) {
+        quickSendApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId, taskKey,
+            assignee);
         return Y9Result.successMsg("保存成功");
     }
 }

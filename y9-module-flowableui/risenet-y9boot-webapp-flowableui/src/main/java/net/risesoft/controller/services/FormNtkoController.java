@@ -134,8 +134,8 @@ public class FormNtkoController {
                 response.setContentType("application/octet-stream");
             } else {
                 if (-1 != userAgent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
-                    title = "=?UTF-8?B?"
-                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
+                    title = "=?UTF-8?B?" + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
                         + "?=";
                 } else {
                     title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
@@ -201,8 +201,8 @@ public class FormNtkoController {
                 response.setContentType("application/octet-stream");
             } else {
                 if (-1 != userAgent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
-                    title = "=?UTF-8?B?"
-                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
+                    title = "=?UTF-8?B?" + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
                         + "?=";
                 } else {
                     title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
@@ -262,8 +262,8 @@ public class FormNtkoController {
                 response.setContentType("application/octet-stream");
             } else {
                 if (-1 != userAgent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
-                    title = "=?UTF-8?B?"
-                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
+                    title = "=?UTF-8?B?" + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
                         + "?=";
                 } else {
                     title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
@@ -323,8 +323,8 @@ public class FormNtkoController {
                 response.setContentType("application/octet-stream");
             } else {
                 if (-1 != userAgent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
-                    title = "=?UTF-8?B?"
-                        + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
+                    title = "=?UTF-8?B?" + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
                         + "?=";
                 } else {
                     title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
@@ -370,7 +370,8 @@ public class FormNtkoController {
             String agent = request.getHeader("USER-AGENT");
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                 fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
+                    + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
                     + "?=";
             } else {
                 fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
@@ -423,7 +424,8 @@ public class FormNtkoController {
             String fileName = y9FileStore.getFileName();
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                 fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
+                    + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
                     + "?=";
             } else {
                 fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
@@ -513,7 +515,8 @@ public class FormNtkoController {
             String fileName = y9FileStore.getFileName();
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                 fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
+                    + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
                     + "?=";
             } else {
                 fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
@@ -616,7 +619,8 @@ public class FormNtkoController {
             String fileName = y9FileStore.getFileName();
             if (-1 != agent.indexOf(BrowserTypeEnum.FIREFOX.getValue())) {
                 fileName = "=?UTF-8?B?"
-                    + (new String(org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
+                    + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
                     + "?=";
             } else {
                 fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);

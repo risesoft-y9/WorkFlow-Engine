@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/vue/bookMarkBind")
 public class BookMarkBindRestController {
 
-    
     private final BookMarkBindService bookMarkBindService;
 
     /**
@@ -27,11 +26,10 @@ public class BookMarkBindRestController {
      *
      * @param wordTemplateId 模板id
      * @param bookMarkName 书签名称
-     * @return  Y9Result<String>
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/deleteBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteBind(@RequestParam String wordTemplateId,
-        @RequestParam String bookMarkName) {
+    public Y9Result<String> deleteBind(@RequestParam String wordTemplateId, @RequestParam String bookMarkName) {
         bookMarkBindService.deleteBind(wordTemplateId, bookMarkName);
         return Y9Result.successMsg("删除成功");
     }

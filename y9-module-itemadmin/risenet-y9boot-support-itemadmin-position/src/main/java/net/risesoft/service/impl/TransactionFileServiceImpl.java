@@ -1,6 +1,24 @@
 package net.risesoft.service.impl;
 
+import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
@@ -21,19 +39,6 @@ import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-
-import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * @author qinman
@@ -95,17 +100,20 @@ public class TransactionFileServiceImpl implements TransactionFileService {
 
     @Override
     @Transactional
-    public Y9Page<AttachmentModel> getAttachmentList(String processSerialNumber, String fileSource, int page, int rows) {
+    public Y9Page<AttachmentModel> getAttachmentList(String processSerialNumber, String fileSource, int page,
+        int rows) {
         List<AttachmentModel> item = new ArrayList<>();
         try {
             SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             SimpleDateFormat sdfymdhm = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-            PageRequest pageable = PageRequest.of(page < 1 ? 0 : page - 1, rows, Sort.by(Sort.Direction.DESC, "uploadTime"));
+            PageRequest pageable =
+                PageRequest.of(page < 1 ? 0 : page - 1, rows, Sort.by(Sort.Direction.DESC, "uploadTime"));
             Page<TransactionFile> transactionFileList = null;
             if (StringUtils.isBlank(fileSource)) {
                 transactionFileList = transactionFileRepository.getAttachmentList(processSerialNumber, pageable);
             } else {
-                transactionFileList = transactionFileRepository.getAttachmentList(processSerialNumber, fileSource, pageable);
+                transactionFileList =
+                    transactionFileRepository.getAttachmentList(processSerialNumber, fileSource, pageable);
             }
             int number = (page - 1) * rows;
             for (TransactionFile transactionFile : transactionFileList) {
@@ -117,7 +125,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 model.setPersonId(transactionFile.getPersonId());
                 model.setPersonName(transactionFile.getPersonName());
                 model.setPositionId(transactionFile.getPositionId());
-                Position position = positionManager.get(Y9LoginUserHolder.getTenantId(), transactionFile.getPositionId()).getData();
+                Position position =
+                    positionManager.get(Y9LoginUserHolder.getTenantId(), transactionFile.getPositionId()).getData();
                 model.setPositionName(position != null ? position.getName() : "");
                 model.setDeptId(transactionFile.getDeptId());
                 model.setDeptName(transactionFile.getDeptName());
@@ -127,7 +136,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 model.setFileSource(transactionFile.getFileSource());
                 model.setFileStoreId(transactionFile.getFileStoreId());
                 model.setFilePath(transactionFile.getFileStoreId());
-                String downloadUrl = y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + transactionFile.getFileStoreId() + "." + transactionFile.getFileType();
+                String downloadUrl = y9Config.getCommon().getItemAdminBaseUrl() + "/s/"
+                    + transactionFile.getFileStoreId() + "." + transactionFile.getFileType();
                 model.setDownloadUrl(downloadUrl);
                 model.setProcessInstanceId(transactionFile.getProcessInstanceId());
                 model.setProcessSerialNumber(transactionFile.getProcessSerialNumber());
@@ -136,7 +146,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 item.add(model);
                 number += 1;
             }
-            return Y9Page.success(page, transactionFileList.getTotalPages(), transactionFileList.getTotalElements(), item);
+            return Y9Page.success(page, transactionFileList.getTotalPages(), transactionFileList.getTotalElements(),
+                item);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -165,7 +176,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
     }
 
     @Override
-    public List<TransactionFile> getListByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource) {
+    public List<TransactionFile> getListByProcessSerialNumberAndFileSource(String processSerialNumber,
+        String fileSource) {
         return transactionFileRepository.findByProcessSerialNumberAndFileSource(processSerialNumber, fileSource);
     }
 
@@ -174,7 +186,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         if (StringUtils.isBlank(fileType)) {
             return transactionFileRepository.getTransactionFileCount(processSerialNumber, fileSource);
         } else {
-            return transactionFileRepository.getTransactionFileCountByFileType(processSerialNumber, fileSource, fileType);
+            return transactionFileRepository.getTransactionFileCountByFileType(processSerialNumber, fileSource,
+                fileType);
         }
     }
 
@@ -197,7 +210,7 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         try {
             SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Map<String, Object> attachmentjson = Y9JsonUtil.readValue(attachjson, Map.class);
-            List<Map<String, Object>> attachmentList = (List<Map<String, Object>>) attachmentjson.get("attachment");
+            List<Map<String, Object>> attachmentList = (List<Map<String, Object>>)attachmentjson.get("attachment");
             for (Map<String, Object> map : attachmentList) {
                 TransactionFile file = new TransactionFile();
                 file.setDescribes(map.get("describes") == null ? "" : map.get("describes").toString());
@@ -209,7 +222,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
                 file.setName(map.get("fileName").toString());
                 file.setPersonId(map.get("personId") == null ? "" : map.get("personId").toString());
                 file.setPersonName(map.get("personName") == null ? "" : map.get("personName").toString());
-                Department department = departmentManager.get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
+                Department department =
+                    departmentManager.get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
                 file.setDeptId(Y9LoginUserHolder.getDeptId());
                 file.setDeptName(department != null ? department.getName() : "");
                 file.setProcessSerialNumber(processSerialNumber);
@@ -236,7 +250,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
 
     @Transactional
     @Override
-    public Map<String, Object> upload(MultipartFile multipartFile, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource) {
+    public Map<String, Object> upload(MultipartFile multipartFile, String processInstanceId, String taskId,
+        String processSerialNumber, String describes, String fileSource) {
         Map<String, Object> map = new HashMap<>(16);
         TransactionFile transactionFile = new TransactionFile();
         try {
@@ -251,7 +266,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             String fileType = FilenameUtils.getExtension(fileName);
 
             Date nowDate = new Date();
-            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), "transaction", sdfymd.format(nowDate), sdfhms.format(nowDate), processSerialNumber);
+            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), "transaction", sdfymd.format(nowDate),
+                sdfhms.format(nowDate), processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, fileName);
 
             UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -271,7 +287,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
             transactionFile.setPersonId(person.getPersonId());
             transactionFile.setFileStoreId(y9FileStore.getId());
             transactionFile.setFileType(fileType);
-            Department department = departmentManager.get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
+            Department department =
+                departmentManager.get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getDeptId()).getData();
             transactionFile.setDeptId(Y9LoginUserHolder.getDeptId());
             transactionFile.setDeptName(department != null ? department.getName() : "");
             transactionFileRepository.save(transactionFile);
@@ -287,7 +304,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
 
     @Transactional
     @Override
-    public void uploadRest(String fileName, String fileSize, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource, String y9FileStoreId) {
+    public void uploadRest(String fileName, String fileSize, String processInstanceId, String taskId,
+        String processSerialNumber, String describes, String fileSource, String y9FileStoreId) {
         String[] types = fileName.split("\\.");
         String type = types[types.length - 1].toLowerCase();
         SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -304,7 +322,8 @@ public class TransactionFileServiceImpl implements TransactionFileService {
         transactionFile.setPersonName(Y9LoginUserHolder.getUserInfo().getName());
         transactionFile.setPersonId(Y9LoginUserHolder.getPersonId());
         transactionFile.setPositionId(Y9LoginUserHolder.getPositionId());
-        Department department = departmentManager.get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPosition().getParentId()).getData();
+        Department department = departmentManager
+            .get(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPosition().getParentId()).getData();
         transactionFile.setDeptId(department != null ? department.getId() : "");
         transactionFile.setDeptName(department != null ? department.getName() : "");
         transactionFile.setFileStoreId(y9FileStoreId);

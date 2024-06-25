@@ -61,10 +61,12 @@ public class ReminderRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/reminderMeList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getReminderList(@RequestParam @NotBlank String taskId, @RequestParam int rows, @RequestParam int page) {
+    public Y9Page<Map<String, Object>> getReminderList(@RequestParam @NotBlank String taskId, @RequestParam int rows,
+        @RequestParam int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = reminderApi.findByTaskId(tenantId, taskId, page, rows);
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
+            Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
     }
 
     /**
@@ -78,15 +80,18 @@ public class ReminderRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/reminderList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> myReminder(@RequestParam @NotBlank String type, @RequestParam @NotBlank String processInstanceId, @RequestParam int rows, @RequestParam int page) {
+    public Y9Page<Map<String, Object>> myReminder(@RequestParam @NotBlank String type,
+        @RequestParam @NotBlank String processInstanceId, @RequestParam int rows, @RequestParam int page) {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map;
         if ("my".equals(type)) {
-            map = reminderApi.findBySenderIdAndProcessInstanceIdAndActive(tenantId, userId, processInstanceId, page, rows);
+            map = reminderApi.findBySenderIdAndProcessInstanceIdAndActive(tenantId, userId, processInstanceId, page,
+                rows);
         } else {
             map = reminderApi.findByProcessInstanceId(tenantId, processInstanceId, page, rows);
         }
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
+            Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
     }
 
     /**
@@ -98,7 +103,8 @@ public class ReminderRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveReminder", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveReminder(@RequestParam @NotBlank String processInstanceId, @RequestParam String[] taskIds, @RequestParam @NotBlank String msgContent) {
+    public Y9Result<String> saveReminder(@RequestParam @NotBlank String processInstanceId,
+        @RequestParam String[] taskIds, @RequestParam @NotBlank String msgContent) {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPositionId();
         try {
             Map<String, Object> map;
@@ -134,7 +140,8 @@ public class ReminderRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/taskList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> taskList(@RequestParam @NotBlank String processInstanceId, @RequestParam int page, @RequestParam int rows) {
+    public Y9Page<Map<String, Object>> taskList(@RequestParam @NotBlank String processInstanceId,
+        @RequestParam int page, @RequestParam int rows) {
         return flowableReminderService.findTaskListByProcessInstanceId(processInstanceId, page, rows);
     }
 
@@ -146,7 +153,8 @@ public class ReminderRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/updateReminder", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> updateReminder(@RequestParam @NotBlank String id, @RequestParam @NotBlank String msgContent) {
+    public Y9Result<String> updateReminder(@RequestParam @NotBlank String id,
+        @RequestParam @NotBlank String msgContent) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Map<String, Object> map;

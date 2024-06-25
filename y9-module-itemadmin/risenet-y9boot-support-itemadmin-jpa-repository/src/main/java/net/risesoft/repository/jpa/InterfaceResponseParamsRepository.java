@@ -15,7 +15,8 @@ import net.risesoft.entity.InterfaceResponseParams;
  * @date 2024/05/23
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface InterfaceResponseParamsRepository extends JpaRepository<InterfaceResponseParams, String>, JpaSpecificationExecutor<InterfaceResponseParams> {
+public interface InterfaceResponseParamsRepository
+    extends JpaRepository<InterfaceResponseParams, String>, JpaSpecificationExecutor<InterfaceResponseParams> {
 
     @Modifying
     @Transactional(readOnly = false)

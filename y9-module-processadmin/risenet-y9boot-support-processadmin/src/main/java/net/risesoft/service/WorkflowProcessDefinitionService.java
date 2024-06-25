@@ -1,9 +1,16 @@
 package net.risesoft.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.util.SysVariables;
-import net.risesoft.util.WorkflowUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipInputStream;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.BpmnModel;
@@ -28,16 +35,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipInputStream;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.util.SysVariables;
+import net.risesoft.util.WorkflowUtils;
 
 /**
  * @author qinman
@@ -50,9 +52,9 @@ import java.util.zip.ZipInputStream;
 @DependsOn({"repositoryService"})
 public class WorkflowProcessDefinitionService {
 
-    private final  RepositoryService repositoryService;
+    private final RepositoryService repositoryService;
 
-    private final  WorkflowHistoryProcessInstanceService workflowHistoryProcessInstanceService;
+    private final WorkflowHistoryProcessInstanceService workflowHistoryProcessInstanceService;
 
     /**
      * 部署单个流程定义
@@ -120,6 +122,7 @@ public class WorkflowProcessDefinitionService {
 
     /**
      * 获取ActivityImpl的list
+     * 
      * @param bpmnModel
      * @return
      */
@@ -136,6 +139,7 @@ public class WorkflowProcessDefinitionService {
 
     /**
      * 获取ActivityImpl的list
+     * 
      * @param processDefinitionId 流程定义Id
      * @return
      */
@@ -306,6 +310,7 @@ public class WorkflowProcessDefinitionService {
 
     /**
      * 获取过滤过的ActivityImpl的list，过滤掉GateWay类型节点
+     * 
      * @param bpmnModel
      * @return
      */

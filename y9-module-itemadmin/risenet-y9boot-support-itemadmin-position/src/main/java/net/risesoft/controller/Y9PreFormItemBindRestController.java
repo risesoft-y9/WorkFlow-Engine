@@ -71,7 +71,8 @@ public class Y9PreFormItemBindRestController {
      * @return
      */
     @RequestMapping(value = "/getFormList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getFormList(@RequestParam String itemId, @RequestParam String systemName, @RequestParam(required = false) String formName) {
+    public Y9Result<List<Map<String, Object>>> getFormList(@RequestParam String itemId, @RequestParam String systemName,
+        @RequestParam(required = false) String formName) {
         List<Map<String, Object>> listmap = new ArrayList<>();
         List<Y9Form> list = y9FormRepository.findBySystemNameAndFormNameLike(systemName, "%" + formName + "%");
         Y9PreFormItemBind bind = y9PreFormItemBindService.findByItemId(itemId);

@@ -32,7 +32,8 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
     private final JdbcTemplate jdbcTemplate;
     private final BookMarkBindService bookMarkBindService;
 
-    public BookMarkBindApiImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate, BookMarkBindService bookMarkBindService) {
+    public BookMarkBindApiImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
+        BookMarkBindService bookMarkBindService) {
         this.jdbcTemplate = jdbcTemplate;
         this.bookMarkBindService = bookMarkBindService;
     }
@@ -40,14 +41,15 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
     /**
      * 根据模板和流程序列号查询模板的书签对应的值
      *
-     * @param tenantId            租户id
-     * @param wordTemplateId      模板id
+     * @param tenantId 租户id
+     * @param wordTemplateId 模板id
      * @param processSerialNumber 流程编号
      * @return Y9Result<Map < String, Object>>
      */
     @Override
     @GetMapping(value = "/getBookMarkData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Map<String, Object>> getBookMarkData(String tenantId, String wordTemplateId, String processSerialNumber) {
+    public Y9Result<Map<String, Object>> getBookMarkData(String tenantId, String wordTemplateId,
+        String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>(16);
         List<BookMarkBind> bookMarkBindList = bookMarkBindService.findByWordTemplateId(wordTemplateId);

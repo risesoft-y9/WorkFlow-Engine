@@ -33,8 +33,7 @@ public class ItemStartNodeRoleController {
     private final ProcessDefinitionApi processDefinitionApi;
 
     @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyBind(@RequestParam String itemId,
-        @RequestParam String processDefinitionId) {
+    public Y9Result<String> copyBind(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         itemStartNodeRoleService.copyBind(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }
@@ -115,20 +114,22 @@ public class ItemStartNodeRoleController {
 
     /**
      * 获取按钮绑定角色列表
+     * 
      * @param itemId 事项id
      * @param processDefinitionId 流程定义ID
-     * @param taskDefKey    任务节点key
+     * @param taskDefKey 任务节点key
      * @return
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Role>> list(@RequestParam String itemId,
-        @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
+    public Y9Result<List<Role>> list(@RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey) {
         List<Role> roleList = itemStartNodeRoleService.getRoleList(itemId, processDefinitionId, taskDefKey);
         return Y9Result.success(roleList, "获取成功");
     }
 
     /**
      * 移除按钮与角色的绑定
+     * 
      * @param itemId 事项id
      * @param processDefinitionId 流程定义ID
      * @param taskDefKey 任务节点key
@@ -136,9 +137,8 @@ public class ItemStartNodeRoleController {
      * @return
      */
     @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> remove(@RequestParam String itemId,
-        @RequestParam String processDefinitionId, @RequestParam String taskDefKey,
-        @RequestParam String roleIds) {
+    public Y9Result<String> remove(@RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey, @RequestParam String roleIds) {
         itemStartNodeRoleService.removeRole(itemId, processDefinitionId, taskDefKey, roleIds);
         return Y9Result.successMsg("删除成功");
     }
@@ -151,16 +151,16 @@ public class ItemStartNodeRoleController {
 
     /**
      * 保存按钮角色
-     * @param itemId  事项id
+     * 
+     * @param itemId 事项id
      * @param processDefinitionId 流程定义ID
      * @param taskDefKey 任务节点key
-     * @param roleIds    角色id
+     * @param roleIds 角色id
      * @return
      */
     @RequestMapping(value = "/saveRole", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveRole(@RequestParam String itemId,
-        @RequestParam String processDefinitionId, @RequestParam String taskDefKey,
-        @RequestParam String roleIds) {
+    public Y9Result<String> saveRole(@RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey, @RequestParam String roleIds) {
         itemStartNodeRoleService.saveRole(itemId, processDefinitionId, taskDefKey, roleIds);
         return Y9Result.successMsg("保存成功");
     }

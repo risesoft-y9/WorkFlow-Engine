@@ -215,8 +215,7 @@ public class OpinionRestController {
      * @return Y9Result<List < OpinionHistoryModel>>
      */
     @RequestMapping(value = "/opinionHistoryList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<OpinionHistoryModel>> opinionHistoryList(
-        @RequestParam @NotBlank String processSerialNumber,
+    public Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String opinionFrameMark) {
         List<OpinionHistoryModel> list;
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -257,8 +256,11 @@ public class OpinionRestController {
      * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/personCommentList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String taskId, @RequestParam @NotBlank String itembox, @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
-        @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser, @RequestParam(required = false) String orderByUser) {
+    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam(required = false) String taskId, @RequestParam @NotBlank String itembox,
+        @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser,
+        @RequestParam(required = false) String orderByUser) {
         List<Map<String, Object>> listMap;
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();

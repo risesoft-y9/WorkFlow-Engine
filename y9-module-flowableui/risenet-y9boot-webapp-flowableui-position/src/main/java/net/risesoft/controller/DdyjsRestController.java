@@ -64,8 +64,9 @@ public class DdyjsRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/getMeetingList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getMeetingList(@RequestParam(required = false) String meetingType, @RequestParam(required = false) String userName, @RequestParam(required = false) String deptName, @RequestParam(required = false) String title, @RequestParam Integer page,
-        @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> getMeetingList(@RequestParam(required = false) String meetingType,
+        @RequestParam(required = false) String userName, @RequestParam(required = false) String deptName,
+        @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4ddyjsService.getMeetingList(userName, deptName, title, meetingType, page, rows);
     }
 
@@ -77,7 +78,8 @@ public class DdyjsRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/setMeeting", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> setMeeting(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String meetingType) {
+    public Y9Result<String> setMeeting(@RequestParam @NotBlank String processInstanceId,
+        @RequestParam @NotBlank String meetingType) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             officeDoneInfo4PositionApi.setMeeting(tenantId, processInstanceId, meetingType);

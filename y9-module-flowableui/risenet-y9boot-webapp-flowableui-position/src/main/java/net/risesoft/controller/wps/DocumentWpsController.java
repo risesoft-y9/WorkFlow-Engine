@@ -172,11 +172,9 @@ public class DocumentWpsController {
             OutputStream out = response.getOutputStream();
             HttpURLConnection conn;
             try {
-                AppFilesApi
-                    apiInstance =
+                AppFilesApi apiInstance =
                     new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
-                FileContent
-                    result =
+                FileContent result =
                     apiInstance.appGetFileContent(documentWps.getVolumeId(), documentWps.getFileId(), null);
                 LOGGER.debug("result:{}", result);
                 URL url = new URL(yunWpsDownloadPath + result.getUrl());
@@ -270,8 +268,7 @@ public class DocumentWpsController {
             String wpsSid = new YunApi(yunWpsBasePath).yunLogin(yunWpsUserName, yunWpsUserPassword);
             LOGGER.debug("wpsSid:{}", wpsSid);
 
-            UserOrgApi
-                apiInstance0 = new UserOrgApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret,
+            UserOrgApi apiInstance0 = new UserOrgApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret,
                 yunWpsRedirectUri, yunWpsUserScope, wpsSid);
             User result0 = apiInstance0.userGetProfile();
             LOGGER.debug("User:{}", result0);
@@ -444,8 +441,7 @@ public class DocumentWpsController {
             uploadRequest.setUploadMethod(UploadMethod.POST);
             uploadRequest.setFileNameConflictBehavior(UploadConflictBehavior.RENAME);
             uploadRequest.setFilePath(tempFile.getAbsolutePath());
-            UploadTransactionPatchResponse
-                uploadResponse =
+            UploadTransactionPatchResponse uploadResponse =
                 appFilesApi.appCreateUploadTransaction(volume, root, uploadRequest);
             tempFile.delete();
 

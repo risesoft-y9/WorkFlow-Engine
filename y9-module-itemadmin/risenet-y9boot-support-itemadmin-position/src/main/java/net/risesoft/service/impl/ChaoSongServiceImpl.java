@@ -92,7 +92,12 @@ public class ChaoSongServiceImpl implements ChaoSongService {
 
     private final AsyncHandleService asyncHandleService;
 
-    public ChaoSongServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate, ChaoSongRepository chaoSongRepository, DocumentService documentService, SpmApproveItemService spmApproveitemService, ProcessParamService processParamService, TaskApi taskManager, HistoricProcessApi historicProcessManager, DepartmentApi departmentManager, OrganizationApi organizationManager, PersonApi personManager, SmsHttpApi smsHttpManager, OfficeDoneInfoService officeDoneInfoService, Y9Properties y9Conf, AsyncHandleService asyncHandleService) {
+    public ChaoSongServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
+        ChaoSongRepository chaoSongRepository, DocumentService documentService,
+        SpmApproveItemService spmApproveitemService, ProcessParamService processParamService, TaskApi taskManager,
+        HistoricProcessApi historicProcessManager, DepartmentApi departmentManager, OrganizationApi organizationManager,
+        PersonApi personManager, SmsHttpApi smsHttpManager, OfficeDoneInfoService officeDoneInfoService,
+        Y9Properties y9Conf, AsyncHandleService asyncHandleService) {
         this.jdbcTemplate = jdbcTemplate;
         this.chaoSongRepository = chaoSongRepository;
         this.documentService = documentService;

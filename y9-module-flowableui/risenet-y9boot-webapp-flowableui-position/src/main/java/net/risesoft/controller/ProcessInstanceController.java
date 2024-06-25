@@ -39,10 +39,12 @@ public class ProcessInstanceController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/processInstanceList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> processInstanceList(@RequestParam int page, @RequestParam int rows, @RequestParam(required = false) String title) {
+    public Y9Page<Map<String, Object>> processInstanceList(@RequestParam int page, @RequestParam int rows,
+        @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         Map<String, Object> map = processInstanceApi.processInstanceList(tenantId, positionId, title, page, rows);
         List<Map<String, Object>> list = (List<Map<String, Object>>)map.get("rows");
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()), Integer.parseInt(map.get("total").toString()), list, "获取列表成功");
+        return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
+            Integer.parseInt(map.get("total").toString()), list, "获取列表成功");
     }
 }

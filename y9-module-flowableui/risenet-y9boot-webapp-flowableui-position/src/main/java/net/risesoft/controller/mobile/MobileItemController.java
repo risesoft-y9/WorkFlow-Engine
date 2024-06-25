@@ -40,12 +40,13 @@ public class MobileItemController {
     /**
      * 获取事项列表
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
      */
     @ResponseBody
     @RequestMapping(value = "/getItemList")
-    public void getItemList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, HttpServletResponse response) {
+    public void getItemList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-positionId") String positionId, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -53,7 +54,7 @@ public class MobileItemController {
             for (Map<String, Object> app : listMap) {
                 app.put("itemId", app.get("url"));
                 app.put("itemName", app.get("name"));
-                ItemModel itemModel = item4PositionApi.getByItemId(tenantId, (String) app.get("url"));
+                ItemModel itemModel = item4PositionApi.getByItemId(tenantId, (String)app.get("url"));
                 app.put("appIcon", StringUtils.isBlank(itemModel.getIconData()) ? "" : itemModel.getIconData());
                 app.put("processDefinitionKey", itemModel.getWorkflowGuid());
             }

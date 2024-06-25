@@ -1,6 +1,15 @@
 package net.risesoft.listener;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
+import org.flowable.engine.RepositoryService;
+import org.flowable.engine.repository.ProcessDefinition;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.init.TenantDataInitializer;
 import net.risesoft.model.platform.Tenant;
@@ -8,13 +17,6 @@ import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.service.MultiTenantProcessEngineConfiguration;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.flowable.engine.RepositoryService;
-import org.flowable.engine.repository.ProcessDefinition;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 
 /**
  * @author qinman
@@ -37,10 +39,10 @@ public class FlowableMultiTenantListener implements TenantDataInitializer {
             Y9LoginUserHolder.setTenantId(tenantId);
             FlowableTenantInfoHolder.setTenantId(tenantId);
             ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
-                    .processDefinitionKey("ziyouliucheng").latestVersion().singleResult();
+                .processDefinitionKey("ziyouliucheng").latestVersion().singleResult();
             if (null == processDefinition) {
                 String xmlPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "processXml"
-                        + File.separator + "ziyouliucheng.bpmn";
+                    + File.separator + "ziyouliucheng.bpmn";
                 File file = new File(xmlPath);
                 InputStream fileInputStream = new FileInputStream(file);
                 repositoryService.createDeployment().addInputStream("ziyouliucheng.bpmn", fileInputStream).deploy();

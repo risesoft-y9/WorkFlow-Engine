@@ -66,7 +66,7 @@ public class EntrustController {
         OrgUnit orgUnit = orgUnitManager.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
         if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
             List<Person> personList =
-                    personManager.listRecursivelyByParentIdAndName(tenantId, orgUnit.getId(), name).getData();
+                personManager.listRecursivelyByParentIdAndName(tenantId, orgUnit.getId(), name).getData();
             for (Person person : personList) {
                 orgUnitList.add(person);
                 Person p = personManager.get(tenantId, person.getId()).getData();
@@ -197,7 +197,7 @@ public class EntrustController {
     }
 
     public void recursionUpToOrg(String tenantId, String nodeId, String parentId, List<OrgUnit> orgUnitList,
-                                 boolean isParent) {
+        boolean isParent) {
         OrgUnit parent = getParent(tenantId, parentId);
         if (isParent) {
             parent.setDescription("parent");

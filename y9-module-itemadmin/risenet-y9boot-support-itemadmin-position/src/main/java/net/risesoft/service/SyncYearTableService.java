@@ -46,7 +46,8 @@ public class SyncYearTableService {
 
     private final JdbcTemplate jdbcTemplate4Public;
 
-    public SyncYearTableService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,@Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public) {
+    public SyncYearTableService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
+        @Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcTemplate4Public = jdbcTemplate4Public;
     }

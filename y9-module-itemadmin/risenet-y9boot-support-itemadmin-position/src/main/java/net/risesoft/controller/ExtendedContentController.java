@@ -30,12 +30,12 @@ public class ExtendedContentController {
      * 是否填写内容
      *
      * @param processSerialNumber 流程序列号
-     * @param category            分类
+     * @param category 分类
      * @return Map<String, Object>
      */
     @RequestMapping(value = "/checkSignContent")
-    public Map<String, Object> checkSignContent(
-            @RequestParam(required = false) String category, @RequestParam(required = false) String processSerialNumber) {
+    public Map<String, Object> checkSignContent(@RequestParam(required = false) String category,
+        @RequestParam(required = false) String processSerialNumber) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             int count = extendedContentService.findByProcSerialNumberAndCategory(processSerialNumber, category);
@@ -54,14 +54,14 @@ public class ExtendedContentController {
      * 获取内容列表
      *
      * @param processSerialNumber 流程序列号
-     * @param itembox             列表类型
-     * @param taskId              任务ID
-     * @param category            分类
+     * @param itembox 列表类型
+     * @param taskId 任务ID
+     * @param category 分类
      * @return List<Map < String, Object>>
      */
     @RequestMapping(value = "/contentList")
     public List<Map<String, Object>> contentList(@RequestParam String processSerialNumber, @RequestParam String itembox,
-                                                 @RequestParam String taskId, @RequestParam String category) {
+        @RequestParam String taskId, @RequestParam String category) {
         return extendedContentService.contentList(processSerialNumber, taskId, itembox, category);
     }
 

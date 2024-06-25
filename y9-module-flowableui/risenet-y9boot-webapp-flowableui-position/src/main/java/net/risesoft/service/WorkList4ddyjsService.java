@@ -16,7 +16,8 @@ public interface WorkList4ddyjsService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> doingList(String itemId, String searchItemId, String searchTerm, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> doingList(String itemId, String searchItemId, String searchTerm, Integer page,
+        Integer rows);
 
     /**
      * 获取办结列表
@@ -27,7 +28,8 @@ public interface WorkList4ddyjsService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> doneList(String itemId, String searchItemId, String searchTerm, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> doneList(String itemId, String searchItemId, String searchTerm, Integer page,
+        Integer rows);
 
     /**
      * 关注列表
@@ -51,7 +53,8 @@ public interface WorkList4ddyjsService {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> getMeetingList(String userName, String deptName, String title, String meetingType, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> getMeetingList(String userName, String deptName, String title, String meetingType,
+        Integer page, Integer rows);
 
     /**
      * 我的在办事项
@@ -83,7 +86,8 @@ public interface WorkList4ddyjsService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<ChaoSongModel> myChaoSongList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Y9Page<ChaoSongModel> myChaoSongList(String searchName, String itemId, String userName, String state, String year,
+        Integer page, Integer rows);
 
     /**
      * 获取待办列表
@@ -94,5 +98,6 @@ public interface WorkList4ddyjsService {
      * @param rows 行数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> todoList(String itemId, String searchItemId, String searchTerm, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> todoList(String itemId, String searchItemId, String searchTerm, Integer page,
+        Integer rows);
 }

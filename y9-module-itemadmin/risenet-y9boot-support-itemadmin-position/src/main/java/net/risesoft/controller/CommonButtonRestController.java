@@ -21,7 +21,6 @@ import java.util.List;
 @RequestMapping(value = "/vue/commonButton")
 public class CommonButtonRestController {
 
-    
     private final CommonButtonService commonButtonService;
 
     /**
@@ -75,7 +74,7 @@ public class CommonButtonRestController {
      * 保存普通按钮
      *
      * @param commonButton 按钮信息
-     * @return  Y9Result<String>
+     * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveOrUpdate(CommonButton commonButton) {

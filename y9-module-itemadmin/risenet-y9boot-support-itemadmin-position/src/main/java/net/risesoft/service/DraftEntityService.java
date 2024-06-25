@@ -38,8 +38,7 @@ public interface DraftEntityService {
      * @param delFlag
      * @return
      */
-    Page<DraftEntity> getDraftList(String itemId, String userid, int page, int rows, String title,
-        boolean delFlag);
+    Page<DraftEntity> getDraftList(String itemId, String userid, int page, int rows, String title, boolean delFlag);
 
     /**
      * 
@@ -53,8 +52,8 @@ public interface DraftEntityService {
      * @param delFlag
      * @return
      */
-    Page<DraftEntity> getDraftListBySystemName(String systemName, String userId, int page, int rows,
-        String title, boolean delFlag);
+    Page<DraftEntity> getDraftListBySystemName(String systemName, String userId, int page, int rows, String title,
+        boolean delFlag);
 
     /**
      * 
@@ -96,8 +95,8 @@ public interface DraftEntityService {
      * @param type
      * @return
      */
-    Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
-        String number, String level, String title, String type);
+    Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number,
+        String level, String title, String type);
 
     /**
      * 
@@ -113,6 +112,6 @@ public interface DraftEntityService {
      * @param type
      * @return
      */
-    Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
-        String number, String level, String jijian, String title, String type);
+    Map<String, Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number,
+        String level, String jijian, String title, String type);
 }

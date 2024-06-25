@@ -39,8 +39,7 @@ public class ItemTaskConfRestController {
      * @return
      */
     @RequestMapping(value = "/copyTaskConfig", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyTaskConfig(@RequestParam String itemId,
-        @RequestParam String processDefinitionId) {
+    public Y9Result<String> copyTaskConfig(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         taskConfService.copyTaskConf(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }

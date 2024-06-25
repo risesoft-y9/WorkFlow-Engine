@@ -47,8 +47,7 @@ public class ItemDataTransferRestController {
      */
     @RequestMapping(value = "/getProcessInstanceList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<Map<String, Object>> getProcessInstanceList(@RequestParam String itemId,
-        @RequestParam String processDefinitionId, @RequestParam Integer page,
-        @RequestParam Integer rows) {
+        @RequestParam String processDefinitionId, @RequestParam Integer page, @RequestParam Integer rows) {
         return itemDataTransferService.getProcessInstanceList(itemId, processDefinitionId, page, rows);
     }
 }

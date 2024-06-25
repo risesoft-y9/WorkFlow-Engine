@@ -155,7 +155,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
         SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
             transactionHistoryWordRepository.updateTransactionHistoryWordById(fileStoreId, fileSize, isTaoHong,
-                    sdfymdhms.format(new Date()), userId, id);
+                sdfymdhms.format(new Date()), userId, id);
         }
     }
 

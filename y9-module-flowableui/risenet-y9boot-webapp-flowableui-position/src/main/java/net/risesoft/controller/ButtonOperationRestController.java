@@ -159,14 +159,18 @@ public class ButtonOperationRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/customProcessHandle", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> customProcessHandle(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String multiInstance, @RequestParam @NotBlank Boolean nextNode, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
-        @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String taskId, @RequestParam(required = false) String infoOvert) {
+    public Y9Result<String> customProcessHandle(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String multiInstance, @RequestParam @NotBlank Boolean nextNode,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
+        @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String taskId,
+        @RequestParam(required = false) String infoOvert) {
         try {
             Position position = Y9LoginUserHolder.getPosition();
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             Map<String, Object> map;
             if (nextNode) {// 需要发送下一个节点
-                CustomProcessInfoModel customProcessInfo = customProcessInfoApi.getCurrentTaskNextNode(tenantId, processSerialNumber);
+                CustomProcessInfoModel customProcessInfo =
+                    customProcessInfoApi.getCurrentTaskNextNode(tenantId, processSerialNumber);
                 if (customProcessInfo != null) {
                     if (customProcessInfo.getTaskType().equals(SysVariables.ENDEVENT)) {// 办结
                         try {
@@ -184,7 +188,8 @@ public class ButtonOperationRestController {
                     Map<String, Object> variables = new HashMap<>(16);
                     String userChoice = customProcessInfo.getOrgId();
                     String routeToTaskId = customProcessInfo.getTaskKey();
-                    map = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, "", itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
+                    map = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, "",
+                        itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
                     if (!(boolean)map.get(UtilConsts.SUCCESS)) {
                         return Y9Result.failure("发送失败");
                     }
@@ -199,7 +204,8 @@ public class ButtonOperationRestController {
                      */
                     try {
                         String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS);
-                        List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
+                        List<String> users =
+                            userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
                         if (users != null && users.isEmpty()) {
                             List<String> usersTemp = new ArrayList<>();
                             for (TaskModel t : list) {
@@ -219,7 +225,8 @@ public class ButtonOperationRestController {
                     vars.put(SysVariables.TASKSENDER, position.getName());
                     vars.put(SysVariables.TASKSENDERID, position.getId());
                     taskApi.completeWithVariables(tenantId, taskId, vars);
-                    List<TaskModel> taskNextList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId());
+                    List<TaskModel> taskNextList =
+                        taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId());
                     for (TaskModel taskNext : taskNextList) {
                         Map<String, Object> mapTemp = new HashMap<>(16);
                         mapTemp.put(SysVariables.TASKSENDER, position.getName());
@@ -245,10 +252,12 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/directSend", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> directSend(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTask) {
+    public Y9Result<String> directSend(@RequestParam @NotBlank String processInstanceId,
+        @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTask) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         try {
-            Y9Result<Object> y9Result = buttonOperation4PositionApi.directSend(tenantId, positionId, taskId, routeToTask, processInstanceId);
+            Y9Result<Object> y9Result =
+                buttonOperation4PositionApi.directSend(tenantId, positionId, taskId, routeToTask, processInstanceId);
             if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("发送成功");
             }
@@ -265,10 +274,12 @@ public class ButtonOperationRestController {
      * @return Y9Result<List < Map < String, String>>>
      */
     @RequestMapping(value = "/getContainEndEvent4UserTask", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, String>>> getContainEndEvent4UserTask(@RequestParam @NotBlank String processDefinitionId) {
+    public Y9Result<List<Map<String, String>>>
+        getContainEndEvent4UserTask(@RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            List<Map<String, String>> routeToTasks = processDefinitionApi.getContainEndEvent4UserTask(tenantId, processDefinitionId);
+            List<Map<String, String>> routeToTasks =
+                processDefinitionApi.getContainEndEvent4UserTask(tenantId, processDefinitionId);
             return Y9Result.success(routeToTasks, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取失败", e);
@@ -289,7 +300,8 @@ public class ButtonOperationRestController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
-            String str = variableApi.getVariableByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), SysVariables.USERS);
+            String str = variableApi.getVariableByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(),
+                SysVariables.USERS);
             List<String> users = Y9JsonUtil.readValue(str, List.class);
             StringBuilder userNames = new StringBuilder();
             if (users != null) {
@@ -318,19 +330,23 @@ public class ButtonOperationRestController {
      * @return Y9Result<List < Map < String, String>>>
      */
     @RequestMapping(value = "/getTargetNodes", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, String>>> getTargetNodes(@RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
+    public Y9Result<List<Map<String, String>>> getTargetNodes(@RequestParam @NotBlank String processDefinitionId,
+        @RequestParam(required = false) String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             List<Map<String, String>> routeToTasks;
             if (StringUtils.isBlank(taskDefKey)) {
-                String startNodeKey = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
+                String startNodeKey =
+                    processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId);
                 // 获取起草节点
                 routeToTasks = processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNodeKey);
                 Map<String, String> startNode = routeToTasks.get(0);
-                routeToTasks = processDefinitionApi.getTargetNodes4UserTask(tenantId, processDefinitionId, startNode.get("taskDefKey"), true);
+                routeToTasks = processDefinitionApi.getTargetNodes4UserTask(tenantId, processDefinitionId,
+                    startNode.get("taskDefKey"), true);
                 routeToTasks.add(0, startNode);
             } else {
-                routeToTasks = processDefinitionApi.getTargetNodes4UserTask(tenantId, processDefinitionId, taskDefKey, true);
+                routeToTasks =
+                    processDefinitionApi.getTargetNodes4UserTask(tenantId, processDefinitionId, taskDefKey, true);
             }
             return Y9Result.success(routeToTasks, "获取成功");
         } catch (Exception e) {
@@ -361,7 +377,8 @@ public class ButtonOperationRestController {
             Map<String, Object> variables = variableApi.getVariables(tenantId, taskId);
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
             // 得到该节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行,COMMON表示普通单实例
-            String multiInstance = processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey());
+            String multiInstance = processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(),
+                taskModel.getTaskDefinitionKey());
             List<String> users = (List<String>)variables.get("users");
             if (multiInstance.equals(SysVariables.COMMON)) {// 普通单实例
                 for (String user : users) {
@@ -393,7 +410,8 @@ public class ButtonOperationRestController {
                         isEnd = false;
                     } else if (isEnd) {
                         map.put("status", "完成");
-                        List<HistoricTaskInstanceModel> htims = historictaskApi.getByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), "");
+                        List<HistoricTaskInstanceModel> htims =
+                            historictaskApi.getByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), "");
                         for (HistoricTaskInstanceModel hai : htims) {
                             if (hai.getAssignee().equals(users.get(i))) {// 获取串行多人处理的完成时间
                                 map.put("endTime", sdf.format(hai.getEndTime()));
@@ -409,13 +427,15 @@ public class ButtonOperationRestController {
                 retMap.put("multiInstance", "串行");
             }
             if (multiInstance.equals(SysVariables.PARALLEL)) {
-                List<HistoricTaskInstanceModel> htims = historictaskApi.getByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), "");
+                List<HistoricTaskInstanceModel> htims =
+                    historictaskApi.getByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), "");
                 for (HistoricTaskInstanceModel hai : htims) {
                     if (hai == null) {
                         continue;
                     }
                     long timediff = taskModel.getCreateTime().getTime() - hai.getStartTime().getTime();
-                    if (((timediff >= -3000 && timediff <= 3000) && taskModel.getName().equals(hai.getName())) || hai.getEndTime() == null) {
+                    if (((timediff >= -3000 && timediff <= 3000) && taskModel.getName().equals(hai.getName()))
+                        || hai.getEndTime() == null) {
                         Map<String, Object> map = new HashMap<>(16);
                         Position employee = positionApi.get(tenantId, hai.getAssignee()).getData();
                         map.put("user", employee.getName());
@@ -424,8 +444,10 @@ public class ButtonOperationRestController {
                         if (null == endTime) {
                             parallelSponsorObj = variableApi.getVariableLocal(tenantId, hai.getId(), "parallelSponsor");
                         } else {
-                            HistoricVariableInstanceModel parallelSponsorObj1 = historicvariableApi.getByTaskIdAndVariableName(tenantId, hai.getId(), "parallelSponsor", "");
-                            parallelSponsorObj = parallelSponsorObj1 != null ? parallelSponsorObj1.getValue().toString() : "";
+                            HistoricVariableInstanceModel parallelSponsorObj1 = historicvariableApi
+                                .getByTaskIdAndVariableName(tenantId, hai.getId(), "parallelSponsor", "");
+                            parallelSponsorObj =
+                                parallelSponsorObj1 != null ? parallelSponsorObj1.getValue().toString() : "";
                         }
                         map.put("endTime", endTime == null ? "" : sdf.format(endTime));
                         if (parallelSponsorObj != null) {
@@ -608,8 +630,11 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/reposition", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> reposition(@RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTaskId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String userChoice, @RequestParam(required = false) String sponsorGuid,
-        @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
+    public Y9Result<String> reposition(@RequestParam @NotBlank String taskId,
+        @RequestParam @NotBlank String routeToTaskId, @RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String userChoice, @RequestParam(required = false) String sponsorGuid,
+        @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing,
+        @RequestParam(required = false) String smsContent) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -620,14 +645,16 @@ public class ButtonOperationRestController {
                 String[] arr = user.split(":");
                 users.add(arr[1]);
             }
-            ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processParamModel =
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             processParamModel.setIsSendSms(isSendSms);
             processParamModel.setIsShuMing(isShuMing);
             processParamModel.setSmsContent(smsContent);
             processParamModel.setSmsPersonId("");
             processParamApi.saveOrUpdate(tenantId, processParamModel);
 
-            buttonOperation4PositionApi.reposition(tenantId, positionId, taskId, routeToTaskId, users, "", StringUtils.isBlank(sponsorGuid) ? "" : sponsorGuid);
+            buttonOperation4PositionApi.reposition(tenantId, positionId, taskId, routeToTaskId, users, "",
+                StringUtils.isBlank(sponsorGuid) ? "" : sponsorGuid);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             return Y9Result.successMsg("重定向成功");
         } catch (Exception e) {
@@ -644,13 +671,15 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/rollback", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> rollback(@RequestParam @NotBlank String taskId, @RequestParam(required = false) String reason) {
+    public Y9Result<String> rollback(@RequestParam @NotBlank String taskId,
+        @RequestParam(required = false) String reason) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             TaskModel task = taskApi.findById(tenantId, taskId);
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId());
-            String type = processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+            String type =
+                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey());
             if (SysVariables.PARALLEL.equals(type) && taskList.size() > 1) {// 并行退回，并行多于2人时，退回使用减签方式
                 if (StringUtils.isEmpty(reason)) {
                     reason = "未填写。";
@@ -708,7 +737,8 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/rollbackToStartor", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> rollbackToStartor(@RequestParam @NotBlank String taskId, @RequestParam(required = false) String reason) {
+    public Y9Result<String> rollbackToStartor(@RequestParam @NotBlank String taskId,
+        @RequestParam(required = false) String reason) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -731,7 +761,9 @@ public class ButtonOperationRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/saveCustomProcess", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveCustomProcess(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey, @RequestParam @NotBlank String jsonData) {
+    public Y9Result<String> saveCustomProcess(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
+        @RequestParam @NotBlank String jsonData) {
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             List<Map<String, Object>> list = Y9JsonUtil.readValue(jsonData, List.class);
@@ -750,7 +782,8 @@ public class ButtonOperationRestController {
             for (Map<String, Object> org : orgList) {
                 userChoice = Y9Util.genCustomStr(userChoice, (String)org.get("id"), ";");
             }
-            map = document4PositionApi.saveAndForwarding(tenantId, positionId, "", "", "", itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
+            map = document4PositionApi.saveAndForwarding(tenantId, positionId, "", "", "", itemId, processSerialNumber,
+                processDefinitionKey, userChoice, "", routeToTaskId, variables);
             if (!(boolean)map.get(UtilConsts.SUCCESS)) {
                 return Y9Result.failure("保存成功,发送失败");
             }
@@ -803,12 +836,14 @@ public class ButtonOperationRestController {
             String user = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TASKSENDERID);
             String userChoice = "6:" + user;
 
-            String multiInstance = processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(), routeToTaskId);
+            String multiInstance =
+                processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(), routeToTaskId);
             String sponsorHandle = "";
             if (multiInstance.equals(SysVariables.PARALLEL)) {
                 sponsorHandle = "true";
             }
-            document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
+            document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle,
+                itemId, processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
             return Y9Result.successMsg("发送拟稿人成功");
         } catch (Exception e) {
             LOGGER.error("sendToStartor error", e);
@@ -824,7 +859,8 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/specialComplete", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> specialComplete(@RequestParam @NotBlank String taskId, @RequestParam(required = false) String reason) {
+    public Y9Result<String> specialComplete(@RequestParam @NotBlank String taskId,
+        @RequestParam(required = false) String reason) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -871,7 +907,8 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/takeback", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> takeback(@RequestParam @NotBlank String taskId, @RequestParam(required = false) String reason) {
+    public Y9Result<String> takeback(@RequestParam @NotBlank String taskId,
+        @RequestParam(required = false) String reason) {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {

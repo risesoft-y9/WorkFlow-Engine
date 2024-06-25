@@ -42,13 +42,14 @@ public class ActRuDetailRestController {
     /**
      * 保存流程当前用户的参与人信息
      *
-     * @param itemId              事项唯一标示
+     * @param itemId 事项唯一标示
      * @param processSerialNumber 流程序列号
      * @return Y9Result<String>
      */
     @ResponseBody
     @RequestMapping(value = "/saveOrUpdate")
-    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processSerialNumber) {
+    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String processSerialNumber) {
         return actRuDetailService.saveOrUpdate(itemId, processSerialNumber);
     }
 }

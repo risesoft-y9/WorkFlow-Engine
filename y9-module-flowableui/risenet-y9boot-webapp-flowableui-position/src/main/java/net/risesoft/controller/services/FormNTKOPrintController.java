@@ -85,8 +85,7 @@ public class FormNTKOPrintController {
             // String fileName = y9FileStore.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0")
-                || userAgent.contains("MSIE 7.0")) {
+            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
                 title = new String(title.getBytes("gb2312"), "ISO8859-1");
                 response.reset();
                 response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
@@ -94,8 +93,7 @@ public class FormNTKOPrintController {
                 response.setContentType("application/octet-stream");
             } else {
                 if (userAgent.contains("Firefox")) {
-                    title = "=?UTF-8?B?"
-                        + (new String(
+                    title = "=?UTF-8?B?" + (new String(
                         org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
                         + "?=";
                 } else {
@@ -125,10 +123,8 @@ public class FormNTKOPrintController {
      * @param userId 人员id
      */
     @RequestMapping(value = "/openDoc")
-    public void openDoc(@RequestParam String processSerialNumber,
-        @RequestParam String itemId,
-        @RequestParam String tenantId,
-        @RequestParam String userId, HttpServletResponse response,
+    public void openDoc(@RequestParam String processSerialNumber, @RequestParam String itemId,
+        @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response,
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();

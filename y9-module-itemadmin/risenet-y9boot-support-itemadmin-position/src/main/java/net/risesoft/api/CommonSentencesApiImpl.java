@@ -1,20 +1,22 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.itemadmin.CommonSentencesApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.model.platform.Person;
-import net.risesoft.service.CommonSentencesService;
-import net.risesoft.util.CommentUtil;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.itemadmin.CommonSentencesApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.model.platform.Person;
+import net.risesoft.service.CommonSentencesService;
+import net.risesoft.util.CommentUtil;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 常用语接口
@@ -59,7 +61,8 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
         StringBuilder commentStr = new StringBuilder();
         int length = comment.length;
         for (int i = 0; i < length - 1; i++) {
-            commentStr.append("<option value=\"").append(comment[length - 1 - i]).append("\">").append(comment[length - 1 - i]).append("</option>");
+            commentStr.append("<option value=\"").append(comment[length - 1 - i]).append("\">")
+                .append(comment[length - 1 - i]).append("</option>");
         }
         return commentStr.toString();
     }
@@ -96,9 +99,9 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
         commonSentencesService.removeCommonSentences(tabIndex);
     }
 
-
     /**
      * 清空常用语使用次数
+     * 
      * @param tenantId 租户id
      * @param userId 人员id
      */
@@ -146,6 +149,7 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
 
     /**
      * 更新常用语使用次数
+     * 
      * @param tenantId 租户id
      * @param id 常用语id
      */

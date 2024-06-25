@@ -50,8 +50,7 @@ public class DocumentUtil {
             Map<String, Object> opinionMap = new HashMap<>(16);
             String opinionFrameMark = opinionFrame.getOpinionFrameMark();
             List<Map<String, Object>> listMap =
-                Y9Context.getBean(Opinion4PositionApi.class).personCommentList(tenantId, userId,
-                processSerialNumber,
+                Y9Context.getBean(Opinion4PositionApi.class).personCommentList(tenantId, userId, processSerialNumber,
                     taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser);
             opinionMap.put("opinionFrameMark", opinionFrameMark);
             opinionMap.put("opinionFrameName", opinionFrame.getOpinionFrameName());
@@ -68,8 +67,7 @@ public class DocumentUtil {
         map.put("fileAttachment", y9Page);
 
         // 正文
-        TransactionWordModel fileDocument =
-            Y9Context.getBean(TransactionWordApi.class)
+        TransactionWordModel fileDocument = Y9Context.getBean(TransactionWordApi.class)
             .findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
         map.put("fileDocument", fileDocument);
         return map;

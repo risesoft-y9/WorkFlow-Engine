@@ -69,7 +69,7 @@ public class ItemRestController {
     }
 
     @SuppressWarnings("unused")
-    private  boolean deleteDirectory(String sPath) {
+    private boolean deleteDirectory(String sPath) {
         if (!sPath.endsWith(File.separator)) {
             sPath = sPath + File.separator;
         }
@@ -96,7 +96,7 @@ public class ItemRestController {
         return dirFile.delete();
     }
 
-    private  boolean deleteFile(String sPath) {
+    private boolean deleteFile(String sPath) {
         boolean flag = false;
         File file = new File(sPath);
         if (file.isFile() && file.exists()) {
@@ -128,7 +128,9 @@ public class ItemRestController {
                 for (Department dept : deptList) {
                     List<Department> subDeptList = departmentManager.listByParentId(tenantId, dept.getId()).getData();
                     boolean isParent = subDeptList != null && !subDeptList.isEmpty();
-                    sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(orgList.get(0).getId()).append("', name:'").append(dept.getName()).append("', isParent: ").append(isParent).append("},");
+                    sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(orgList.get(0).getId())
+                        .append("', name:'").append(dept.getName()).append("', isParent: ").append(isParent)
+                        .append("},");
                 }
             }
         } else {
@@ -136,7 +138,8 @@ public class ItemRestController {
             for (Department dept : deptList) {
                 List<Department> subDeptList = departmentManager.listByParentId(tenantId, dept.getId()).getData();
                 boolean isParent = subDeptList != null && !subDeptList.isEmpty();
-                sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(deptId).append("', name:'").append(dept.getName()).append("', isParent: ").append(isParent).append("},");
+                sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(deptId).append("', name:'")
+                    .append(dept.getName()).append("', isParent: ").append(isParent).append("},");
             }
         }
     }

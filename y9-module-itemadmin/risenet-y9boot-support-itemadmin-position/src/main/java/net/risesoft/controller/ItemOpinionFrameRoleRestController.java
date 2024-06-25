@@ -48,7 +48,8 @@ public class ItemOpinionFrameRoleRestController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemOpinionFrameRole>> list(@RequestParam String itemOpinionFrameId) {
-        List<ItemOpinionFrameRole> list = itemOpinionFrameRoleService.findByItemOpinionFrameIdContainRoleName(itemOpinionFrameId);
+        List<ItemOpinionFrameRole> list =
+            itemOpinionFrameRoleService.findByItemOpinionFrameIdContainRoleName(itemOpinionFrameId);
         return Y9Result.success(list, "获取成功");
     }
 

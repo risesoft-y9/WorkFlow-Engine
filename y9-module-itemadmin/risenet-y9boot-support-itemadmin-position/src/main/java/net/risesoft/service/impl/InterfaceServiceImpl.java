@@ -59,7 +59,8 @@ public class InterfaceServiceImpl implements InterfaceService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         List<ItemInterfaceBind> list = itemInterfaceBindRepository.findAll(new Specification<ItemInterfaceBind>() {
             @Override
-            public Predicate toPredicate(Root<ItemInterfaceBind> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+            public Predicate toPredicate(Root<ItemInterfaceBind> root, CriteriaQuery<?> query,
+                CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<Predicate>();
                 list.add(builder.equal(root.get("interfaceId"), id));
                 Predicate[] predicates = new Predicate[list.size()];
@@ -104,7 +105,8 @@ public class InterfaceServiceImpl implements InterfaceService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         return interfaceRequestParamsRepository.findAll(new Specification<InterfaceRequestParams>() {
             @Override
-            public Predicate toPredicate(Root<InterfaceRequestParams> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+            public Predicate toPredicate(Root<InterfaceRequestParams> root, CriteriaQuery<?> query,
+                CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<Predicate>();
                 if (StringUtils.isNotBlank(name)) {
                     list.add(builder.like(root.get("parameterName"), "%" + name + "%"));
@@ -128,7 +130,8 @@ public class InterfaceServiceImpl implements InterfaceService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         return interfaceResponseParamsRepository.findAll(new Specification<InterfaceResponseParams>() {
             @Override
-            public Predicate toPredicate(Root<InterfaceResponseParams> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+            public Predicate toPredicate(Root<InterfaceResponseParams> root, CriteriaQuery<?> query,
+                CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<Predicate>();
                 if (StringUtils.isNotBlank(name)) {
                     list.add(builder.like(root.get("parameterName"), "%" + name + "%"));

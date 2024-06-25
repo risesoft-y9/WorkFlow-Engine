@@ -54,8 +54,7 @@ public class ViewTypeRestController {
      * @return
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<ViewType> list(@RequestParam Integer page,
-        @RequestParam Integer rows) {
+    public Y9Page<ViewType> list(@RequestParam Integer page, @RequestParam Integer rows) {
         Page<ViewType> pageList = viewTypeService.findAll(page, rows);
         List<ViewType> list = pageList.getContent();
         for (ViewType viewType : list) {
@@ -127,8 +126,8 @@ public class ViewTypeRestController {
      * @return
      */
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<ViewType> search(@RequestParam Integer page,
-        @RequestParam Integer rows, @RequestParam(required = false) String keyword) {
+    public Y9Page<ViewType> search(@RequestParam Integer page, @RequestParam Integer rows,
+        @RequestParam(required = false) String keyword) {
         Page<ViewType> pageList = viewTypeService.search(page, rows, keyword);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
             "获取列表成功");

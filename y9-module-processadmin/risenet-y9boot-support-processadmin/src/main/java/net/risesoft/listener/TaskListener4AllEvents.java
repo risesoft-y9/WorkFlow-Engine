@@ -1,17 +1,18 @@
 package net.risesoft.listener;
 
-import net.risesoft.service.InterfaceUtilService;
-import net.risesoft.service.Task4ActRuDetaillService;
-import net.risesoft.service.Task4ListenerService;
-import net.risesoft.service.TodoTaskService;
-import net.risesoft.y9.Y9Context;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.FlowableListener;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
+import net.risesoft.service.InterfaceUtilService;
+import net.risesoft.service.Task4ActRuDetaillService;
+import net.risesoft.service.Task4ListenerService;
+import net.risesoft.service.TodoTaskService;
+import net.risesoft.y9.Y9Context;
 
 /**
  * @author qinman
@@ -76,7 +77,8 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             /*
              * 统一待办-新建这一步不使用异步方式保存
              */
-            boolean b = "xinjian".equals(task.getTaskDefinitionKey()) || "faqiren".equals(task.getTaskDefinitionKey()) || "qicao".equals(task.getTaskDefinitionKey()) || "fenpei".equals(task.getTaskDefinitionKey());
+            boolean b = "xinjian".equals(task.getTaskDefinitionKey()) || "faqiren".equals(task.getTaskDefinitionKey())
+                || "qicao".equals(task.getTaskDefinitionKey()) || "fenpei".equals(task.getTaskDefinitionKey());
             if (b) {
                 TodoTaskService todoTaskService = Y9Context.getBean(TodoTaskService.class);
                 todoTaskService.saveTodoTask(task, variables);

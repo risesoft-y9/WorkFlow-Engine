@@ -49,7 +49,8 @@ public class MobileMonitorController {
      * @param processInstanceId 流程实例id
      */
     @RequestMapping(value = "/deleteProcessInstance")
-    public void deleteProcessInstance(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String processInstanceId, HttpServletResponse response) {
+    public void deleteProcessInstance(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestParam @NotBlank String processInstanceId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             boolean b = historicProcessApi.deleteProcessInstance(tenantId, processInstanceId);
@@ -69,7 +70,8 @@ public class MobileMonitorController {
      * @param itemId 事项id
      */
     @RequestMapping(value = "/monitorDoingCount")
-    public void monitorDoingCount(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String itemId, HttpServletResponse response) {
+    public void monitorDoingCount(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestParam @NotBlank String itemId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -97,7 +99,9 @@ public class MobileMonitorController {
      * @param rows 条数
      */
     @RequestMapping(value = "/monitorDoingList")
-    public void monitorDoingList(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam int page, @RequestParam int rows, HttpServletResponse response) {
+    public void monitorDoingList(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String title, @RequestParam int page, @RequestParam int rows,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -118,7 +122,9 @@ public class MobileMonitorController {
      * @param itemId 事项id
      */
     @RequestMapping(value = "/monitorDoneCount")
-    public void monitorDoneCount(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestParam @NotBlank String itemId, HttpServletResponse response) {
+    public void monitorDoneCount(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestParam @NotBlank String itemId,
+        HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -148,7 +154,9 @@ public class MobileMonitorController {
      * @param rows 条数
      */
     @RequestMapping(value = "/monitorDoneList")
-    public void monitorDoneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam int page,
+    public void monitorDoneList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, @RequestHeader("auth-positionId") String positionId,
+        @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam int page,
         @RequestParam int rows, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
@@ -169,7 +177,8 @@ public class MobileMonitorController {
      * @param processInstanceId 流程实例id
      */
     @RequestMapping(value = "/removeProcess")
-    public void removeProcess(@RequestHeader("auth-tenantId") String tenantId, @RequestParam @NotBlank String processInstanceId, HttpServletResponse response) {
+    public void removeProcess(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestParam @NotBlank String processInstanceId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
             boolean b = historicProcessApi.removeProcess4Position(tenantId, processInstanceId);

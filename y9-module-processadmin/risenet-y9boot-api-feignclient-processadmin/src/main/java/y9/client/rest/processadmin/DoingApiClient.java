@@ -13,7 +13,9 @@ import net.risesoft.api.processadmin.DoingApi;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "DoingApiClient", name = "${y9.service.processAdmin.name:processAdmin}", url = "${y9.service.processAdmin.directUrl:}", path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/doing")
+@FeignClient(contextId = "DoingApiClient", name = "${y9.service.processAdmin.name:processAdmin}",
+    url = "${y9.service.processAdmin.directUrl:}",
+    path = "/${y9.service.processAdmin.name:processAdmin}/services/rest/doing")
 public interface DoingApiClient extends DoingApi {
 
     /**
@@ -39,7 +41,9 @@ public interface DoingApiClient extends DoingApi {
      */
     @Override
     @GetMapping("/getListByUserId")
-    Map<String, Object> getListByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+    Map<String, Object> getListByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows)
+        throws Exception;
 
     /**
      * 根据人员Id,事项ID获取用户的在办列表(分页,包含流程变量)
@@ -54,7 +58,9 @@ public interface DoingApiClient extends DoingApi {
      */
     @Override
     @GetMapping("/getListByUserIdAndProcessDefinitionKey")
-    Map<String, Object> getListByUserIdAndProcessDefinitionKey(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Map<String, Object> getListByUserIdAndProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      *
@@ -70,7 +76,9 @@ public interface DoingApiClient extends DoingApi {
      */
     @Override
     @GetMapping("/getListByUserIdAndProcessDefinitionKeyOrderBySendTime")
-    Map<String, Object> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Map<String, Object> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      * 根据人员Id,系统标识获取用户的在办列表(分页,包含流程变量)
@@ -85,7 +93,9 @@ public interface DoingApiClient extends DoingApi {
      */
     @Override
     @GetMapping("/getListByUserIdAndSystemName")
-    Map<String, Object> getListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+    Map<String, Object> getListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
     /**
      *
@@ -101,7 +111,9 @@ public interface DoingApiClient extends DoingApi {
      */
     @Override
     @GetMapping("/searchListByUserId")
-    Map<String, Object> searchListByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+    Map<String, Object> searchListByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("searchTerm") String searchTerm,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
     /**
      *
@@ -118,7 +130,9 @@ public interface DoingApiClient extends DoingApi {
      */
     @Override
     @GetMapping("/searchListByUserIdAndProcessDefinitionKey")
-    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
+    Map<String, Object> searchListByUserIdAndProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows) throws Exception;
 
     /**
@@ -136,6 +150,8 @@ public interface DoingApiClient extends DoingApi {
      */
     @Override
     @GetMapping("/searchListByUserIdAndSystemName")
-    Map<String, Object> searchListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("systemName") String systemName, @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
+    Map<String, Object> searchListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows) throws Exception;
 }

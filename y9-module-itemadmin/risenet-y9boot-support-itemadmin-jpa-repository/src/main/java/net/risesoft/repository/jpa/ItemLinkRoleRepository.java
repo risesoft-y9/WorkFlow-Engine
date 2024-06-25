@@ -15,7 +15,8 @@ import net.risesoft.entity.ItemLinkRole;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemLinkRoleRepository extends JpaRepository<ItemLinkRole, String>, JpaSpecificationExecutor<ItemLinkRole> {
+public interface ItemLinkRoleRepository
+    extends JpaRepository<ItemLinkRole, String>, JpaSpecificationExecutor<ItemLinkRole> {
 
     @Modifying
     @Transactional(readOnly = false)

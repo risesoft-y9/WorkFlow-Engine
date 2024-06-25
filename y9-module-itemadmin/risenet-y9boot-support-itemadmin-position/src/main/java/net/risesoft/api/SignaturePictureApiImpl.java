@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 签名图片接口
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -38,6 +39,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
 
     /**
      * 删除签名图片
+     * 
      * @param tenantId 租户id
      * @param id id
      */
@@ -50,6 +52,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
 
     /**
      * 根据id获取签名图片
+     * 
      * @param tenantId 租户id
      * @param id id
      * @return SignaturePictureModel
@@ -68,6 +71,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
 
     /**
      * 根据人员id获取签名图片
+     * 
      * @param tenantId 租户id
      * @param userId 人员id
      * @return SignaturePictureModel
@@ -87,6 +91,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
 
     /**
      * 保存或更新签名图片
+     * 
      * @param tenantId 租户id
      * @param userId 人员id
      * @param spJson spJson

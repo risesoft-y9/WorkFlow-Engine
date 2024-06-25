@@ -1,18 +1,20 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.entity.ProcessParam;
-import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.service.ProcessParamService;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9BeanUtil;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.entity.ProcessParam;
+import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.service.ProcessParamService;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 流程变量接口

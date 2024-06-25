@@ -196,8 +196,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     @Override
     @Transactional
     public boolean deleteByProcessInstanceId(String processInstanceId) {
-        chaoSongInfoRepository.deleteByProcessInstanceIdAndTenantId(processInstanceId,
-                Y9LoginUserHolder.getTenantId());
+        chaoSongInfoRepository.deleteByProcessInstanceIdAndTenantId(processInstanceId, Y9LoginUserHolder.getTenantId());
         return true;
     }
 
@@ -439,8 +438,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("processInstanceId")
-                .is(processInstanceId);
+        Criteria criteria =
+            new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("processInstanceId").is(processInstanceId);
         criteria.subCriteria(new Criteria("senderId").not().is(senderId));
         if (StringUtils.isNotBlank(userName)) {
             criteria.subCriteria(new Criteria("userName").contains(userName));
@@ -491,8 +490,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
 
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("senderId")
-                .is(senderId).and("processInstanceId").is(processInstanceId);
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("senderId").is(senderId)
+            .and("processInstanceId").is(processInstanceId);
         if (StringUtils.isNotBlank(userName)) {
             criteria.subCriteria(new Criteria("userName").contains(userName));
         }
@@ -544,7 +543,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
 
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId)
-                .and("opinionState").is("1");
+            .and("opinionState").is("1");
         if (StringUtils.isNotBlank(documentTitle)) {
             criteria.subCriteria(new Criteria("title").contains(documentTitle));
         }
@@ -733,8 +732,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 model.setUserName(cs.getUserName());
                 model.setUserDeptName(cs.getUserDeptName());
                 model.setReadTime(
-                        StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
-                    model.setSystemName(hpi.getSystemName());
+                    StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
+                model.setSystemName(hpi.getSystemName());
                 model.setProcessDefinitionId(hpi != null ? hpi.getProcessDefinitionId() : "");
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
@@ -929,8 +928,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setBanjie(false);
             try {
                 model.setReadTime(
-                        StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
-                    model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                    StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
+                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
@@ -941,10 +940,9 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     model.setBanjie(true);
                 }
                 OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-                model.setProcessDefinitionId(
-                        officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
-                    int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
-                    model.setFollow(countFollow > 0);
+                model.setProcessDefinitionId(officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
+                int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
+                model.setFollow(countFollow > 0);
             } catch (Exception e) {
                 LOGGER.error("获取抄送列表失败", e);
             }
@@ -1011,7 +1009,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setUserName(cs.getUserName());
             model.setUserDeptName(cs.getUserDeptName());
             try {
-                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
+                model.setReadTime(
+                    StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
                 model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 model.setNumber(processParam.getCustomNumber());
@@ -1023,8 +1022,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     model.setBanjie(true);
                 }
                 OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-                model.setProcessDefinitionId(
-                        officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
+                model.setProcessDefinitionId(officeDoneInfo != null ? officeDoneInfo.getProcessDefinitionId() : "");
+                int countFollow = officeFollowService.countByProcessInstanceId(processInstanceId);
                 model.setFollow(countFollow > 0);
             } catch (Exception e) {
                 LOGGER.error("获取抄送列表失败", e);

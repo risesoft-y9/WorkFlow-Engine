@@ -58,6 +58,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
 
     /**
      * 根据事项id和流程定义id获取所有绑定意见框
+     * 
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id

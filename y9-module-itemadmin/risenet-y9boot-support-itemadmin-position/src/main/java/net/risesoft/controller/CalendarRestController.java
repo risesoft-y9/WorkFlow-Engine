@@ -22,7 +22,6 @@ import java.util.Map;
 @RequestMapping(value = "/vue/calendar")
 public class CalendarRestController {
 
-
     private final CalendarConfigService calendarConfigService;
 
     /**
@@ -34,10 +33,10 @@ public class CalendarRestController {
     @RequestMapping(value = "/delCalendar", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> delCalendar(@RequestParam String startDate) {
         Map<String, Object> map = calendarConfigService.delCalendar(startDate);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("message"));
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("message"));
         }
-        return Y9Result.failure((String) map.get("message"));
+        return Y9Result.failure((String)map.get("message"));
     }
 
     /**
@@ -56,16 +55,15 @@ public class CalendarRestController {
      * 保存日历配置
      *
      * @param startDate 日期
-     * @param type      类型
+     * @param type 类型
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveCalendar", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveCalendar(@RequestParam String startDate,
-                                         @RequestParam Integer type) {
+    public Y9Result<String> saveCalendar(@RequestParam String startDate, @RequestParam Integer type) {
         Map<String, Object> map = calendarConfigService.saveCalendar(startDate, type);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("message"));
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("message"));
         }
-        return Y9Result.failure((String) map.get("message"));
+        return Y9Result.failure((String)map.get("message"));
     }
 }

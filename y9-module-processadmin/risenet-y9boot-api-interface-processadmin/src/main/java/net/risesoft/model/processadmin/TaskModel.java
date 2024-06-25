@@ -1,12 +1,12 @@
 package net.risesoft.model.processadmin;
 
-import lombok.Data;
-import org.flowable.task.api.DelegationState;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
+import org.flowable.task.api.DelegationState;
+
+import lombok.Data;
 
 @Data
 public class TaskModel implements Serializable {

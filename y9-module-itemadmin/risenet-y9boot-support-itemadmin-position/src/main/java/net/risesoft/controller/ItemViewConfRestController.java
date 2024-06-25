@@ -51,6 +51,7 @@ public class ItemViewConfRestController {
 
     /**
      * 保存或者修改
+     * 
      * @param ids 视图id
      * @param viewType 视图类型
      * @return
@@ -69,8 +70,7 @@ public class ItemViewConfRestController {
      * @return
      */
     @RequestMapping(value = "/findByItemId", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam String itemId,
-        @RequestParam String viewType) {
+    public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam String itemId, @RequestParam String viewType) {
         List<ItemViewConf> list = itemViewConfService.findByItemIdAndViewType(itemId, viewType);
         return Y9Result.success(list, "获取成功");
     }
@@ -82,8 +82,7 @@ public class ItemViewConfRestController {
      * @return
      */
     @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Y9FormField>> getColumns(@RequestParam String tableName,
-        @RequestParam String itemId) {
+    public Y9Result<List<Y9FormField>> getColumns(@RequestParam String tableName, @RequestParam String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Y9FormField> list = new ArrayList<>();
         List<String> fieldNameList = new ArrayList<>();

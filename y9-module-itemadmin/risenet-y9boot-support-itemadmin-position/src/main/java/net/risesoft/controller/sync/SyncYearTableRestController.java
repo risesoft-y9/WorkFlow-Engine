@@ -27,12 +27,12 @@ import net.risesoft.y9.util.Y9Util;
 @RequestMapping("/services/rest/yearTable")
 public class SyncYearTableRestController {
 
-
     private final JdbcTemplate jdbcTemplate4Public;
 
     private final SyncYearTableService syncYearTableService;
 
-    public SyncYearTableRestController(@Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public, SyncYearTableService syncYearTableService) {
+    public SyncYearTableRestController(@Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public,
+        SyncYearTableService syncYearTableService) {
         this.jdbcTemplate4Public = jdbcTemplate4Public;
         this.syncYearTableService = syncYearTableService;
     }
@@ -41,7 +41,7 @@ public class SyncYearTableRestController {
      * 生成所有租户年度表结构（租用了事项管理的租户）
      *
      * @param year 年度
-     * @param response   响应
+     * @param response 响应
      */
     @RequestMapping(value = "/syncYearTable4AllTenant")
     public void syncYearTable4AllTenant(String year, HttpServletResponse response) {
@@ -50,11 +50,11 @@ public class SyncYearTableRestController {
         for (String tenantId : list) {
             Y9LoginUserHolder.setTenantId(tenantId);
             String sql = "SELECT" + "	count(t.ID)" + " FROM" + "	rs_common_tenant_system t"
-                    + " LEFT JOIN rs_common_system s on t.SYSTEMID = s.ID" + " WHERE" + "	t.TENANTID = '" + tenantId + "'"
-                    + " and s.SYSTEMNAME = 'itemAdmin'";
-            Object obj= jdbcTemplate4Public.queryForObject(sql, Object.class);
+                + " LEFT JOIN rs_common_system s on t.SYSTEMID = s.ID" + " WHERE" + "	t.TENANTID = '" + tenantId + "'"
+                + " and s.SYSTEMNAME = 'itemAdmin'";
+            Object obj = jdbcTemplate4Public.queryForObject(sql, Object.class);
             int count = 0;
-            if(obj!= null){
+            if (obj != null) {
                 count = Integer.parseInt(obj.toString());
             }
             Map<String, Object> m;

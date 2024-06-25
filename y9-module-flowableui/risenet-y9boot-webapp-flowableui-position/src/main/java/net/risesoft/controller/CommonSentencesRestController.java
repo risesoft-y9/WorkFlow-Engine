@@ -119,7 +119,8 @@ public class CommonSentencesRestController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         try {
-            commonSentencesApi.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content, Integer.parseInt(tabIndex));
+            commonSentencesApi.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content,
+                Integer.parseInt(tabIndex));
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             LOGGER.error("修改常用语失败", e);

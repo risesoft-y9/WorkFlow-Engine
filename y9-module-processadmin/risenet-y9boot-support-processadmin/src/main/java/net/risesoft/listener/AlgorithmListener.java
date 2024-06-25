@@ -30,7 +30,8 @@ public class AlgorithmListener implements ExecutionListener {
     @Transactional(rollbackFor = Exception.class)
     public void notify(DelegateExecution execution) {
         try {
-            String requestUrl = Y9Context.getProperty("y9.app.processAdmin.imageCountUrl") + "/service/rest/imageCount/monoLocate";
+            String requestUrl =
+                Y9Context.getProperty("y9.app.processAdmin.imageCountUrl") + "/service/rest/imageCount/monoLocate";
             String tenantId = FlowableTenantInfoHolder.getTenantId();
             String processSerialNumber = execution.getVariable("processSerialNumber").toString();
             String processInstanceId = execution.getProcessInstanceId();

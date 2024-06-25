@@ -45,8 +45,9 @@ public class MobileV1ItemController {
             for (Map<String, Object> app : listMap) {
                 app.put("itemId", app.get("url"));
                 app.put("itemName", app.get("name"));
-                ItemModel itemModel = item4PositionApi.getByItemId(tenantId, (String) app.get("url"));
-                app.put("appIcon", itemModel != null && StringUtils.isNotBlank(itemModel.getIconData()) ? itemModel.getIconData() : "");
+                ItemModel itemModel = item4PositionApi.getByItemId(tenantId, (String)app.get("url"));
+                app.put("appIcon", itemModel != null && StringUtils.isNotBlank(itemModel.getIconData())
+                    ? itemModel.getIconData() : "");
                 app.put("processDefinitionKey", itemModel != null ? itemModel.getWorkflowGuid() : "");
             }
             return Y9Result.success(listMap, "获取数据成功");

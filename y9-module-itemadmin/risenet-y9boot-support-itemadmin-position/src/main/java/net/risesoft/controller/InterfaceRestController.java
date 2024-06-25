@@ -48,7 +48,8 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/findInterfaceList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<InterfaceInfo>> findInterfaceList(@RequestParam(required = false) String name, @RequestParam(required = false) String type, @RequestParam(required = false) String address) {
+    public Y9Result<List<InterfaceInfo>> findInterfaceList(@RequestParam(required = false) String name,
+        @RequestParam(required = false) String type, @RequestParam(required = false) String address) {
         List<InterfaceInfo> list = interfaceService.findInterfaceList(name, type, address);
         return Y9Result.success(list, "获取列表成功");
     }
@@ -62,7 +63,8 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/findRequestParamsList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<InterfaceRequestParams>> findRequestParamsList(@RequestParam(required = false) String name, @RequestParam(required = false) String type, @RequestParam String id) {
+    public Y9Result<List<InterfaceRequestParams>> findRequestParamsList(@RequestParam(required = false) String name,
+        @RequestParam(required = false) String type, @RequestParam String id) {
         List<InterfaceRequestParams> list = interfaceService.findRequestParamsList(name, type, id);
         return Y9Result.success(list, "获取列表成功");
     }
@@ -75,7 +77,8 @@ public class InterfaceRestController {
      * @return
      */
     @RequestMapping(value = "/findResponseParamsList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<InterfaceResponseParams>> findResponseParamsList(@RequestParam(required = false) String name, @RequestParam String id) {
+    public Y9Result<List<InterfaceResponseParams>> findResponseParamsList(@RequestParam(required = false) String name,
+        @RequestParam String id) {
         List<InterfaceResponseParams> list = interfaceService.findResponseParamsList(name, id);
         return Y9Result.success(list, "获取列表成功");
     }

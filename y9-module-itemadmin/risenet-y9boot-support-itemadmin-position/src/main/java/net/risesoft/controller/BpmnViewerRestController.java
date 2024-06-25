@@ -71,14 +71,16 @@ public class BpmnViewerRestController {
                 task.setExecutionId("");
                 if (assignee != null) {
                     // 意见
-                    List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(task.getTaskId(), StringUtils.isBlank(assignee) ? "" : assignee);
+                    List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(
+                        task.getTaskId(), StringUtils.isBlank(assignee) ? "" : assignee);
                     task.setTenantId(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
                     Position employee = positionApi.get(Y9LoginUserHolder.getTenantId(), assignee).getData();
                     if (employee != null) {
                         String employeeName = employee.getName();
                         HistoricVariableInstanceModel zhuBan = null;
                         try {
-                            zhuBan = historicVariableApi.getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLELSPONSOR, year);
+                            zhuBan = historicVariableApi.getByTaskIdAndVariableName(tenantId, task.getTaskId(),
+                                SysVariables.PARALLELSPONSOR, year);
                         } catch (Exception e) {
                             LOGGER.error("获取主办人失败", e);
                         }
@@ -99,16 +101,16 @@ public class BpmnViewerRestController {
         return Y9Result.success(list, "获取成功");
     }
 
-    private  String longTime(Date startTime, Date endTime) {
+    private String longTime(Date startTime, Date endTime) {
         if (endTime == null) {
             return "";
         } else {
             long time = endTime.getTime() - startTime.getTime();
             time = time / 1000;
-            int s = (int) (time % 60);
-            int m = (int) (time / 60 % 60);
-            int h = (int) (time / 3600 % 24);
-            int d = (int) (time / 86400);
+            int s = (int)(time % 60);
+            int m = (int)(time / 60 % 60);
+            int h = (int)(time / 3600 % 24);
+            int d = (int)(time / 86400);
             return d + "天" + h + "小时" + m + "分" + s + "秒";
         }
     }

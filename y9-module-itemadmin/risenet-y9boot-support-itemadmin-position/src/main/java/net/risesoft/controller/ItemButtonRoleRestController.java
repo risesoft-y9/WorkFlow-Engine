@@ -56,8 +56,7 @@ public class ItemButtonRoleRestController {
      * @return
      */
     @RequestMapping(value = "/saveRole", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveRole(@RequestParam String itemButtonId,
-        @RequestParam String roleIds) {
+    public Y9Result<String> saveRole(@RequestParam String itemButtonId, @RequestParam String roleIds) {
         if (StringUtils.isNotEmpty(roleIds)) {
             String[] roleIdArr = roleIds.split(";");
             for (String roleId : roleIdArr) {
