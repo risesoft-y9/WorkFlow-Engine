@@ -1,17 +1,19 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.processadmin.ProcessDefinitionApi;
-import net.risesoft.service.CustomProcessDefinitionService;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.service.CustomProcessDefinitionService;
+import net.risesoft.service.FlowableTenantInfoHolder;
 
 /**
  * 流程定义相关接口
@@ -36,7 +38,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getContainEndEvent4UserTask", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getContainEndEvent4UserTask(@RequestParam String tenantId, @RequestParam String processDefinitionId) {
+    public List<Map<String, String>> getContainEndEvent4UserTask(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getContainEndEvent4UserTask(processDefinitionId);
     }
@@ -65,7 +68,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getFlowElement", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getFlowElement(@RequestParam String tenantId, @RequestParam String processDefinitionId, @RequestParam Boolean isContainStartNode) {
+    public List<Map<String, Object>> getFlowElement(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId, @RequestParam Boolean isContainStartNode) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getFlowElement(processDefinitionId, isContainStartNode);
     }
@@ -80,7 +84,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getNodes", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getNodes(@RequestParam String tenantId, @RequestParam String processDefinitionId, @RequestParam Boolean isContainStartNode) {
+    public List<Map<String, Object>> getNodes(@RequestParam String tenantId, @RequestParam String processDefinitionId,
+        @RequestParam Boolean isContainStartNode) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getNodes(processDefinitionId, isContainStartNode);
     }
@@ -95,7 +100,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getNodeType", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getNodeType(@RequestParam String tenantId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
+    public String getNodeType(@RequestParam String tenantId, @RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getNodeType(processDefinitionId, taskDefKey);
     }
@@ -124,7 +130,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getParallelGatewayList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getParallelGatewayList(@RequestParam String tenantId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
+    public List<Map<String, String>> getParallelGatewayList(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getParallelGatewayList(processDefinitionId, taskDefKey);
     }
@@ -138,7 +145,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getStartNodeKeyByProcessDefinitionId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getStartNodeKeyByProcessDefinitionId(@RequestParam String tenantId, @RequestParam String processDefinitionId) {
+    public String getStartNodeKeyByProcessDefinitionId(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getStartNodeKeyByProcessDefinitionId(processDefinitionId);
     }
@@ -152,7 +160,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getStartNodeKeyByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getStartNodeKeyByProcessDefinitionKey(@RequestParam String tenantId, @RequestParam String processDefinitionKey) {
+    public String getStartNodeKeyByProcessDefinitionKey(@RequestParam String tenantId,
+        @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getStartNodeKeyByProcessDefinitionKey(processDefinitionKey);
     }
@@ -167,7 +176,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getTargetNodes", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getTargetNodes(@RequestParam String tenantId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
+    public List<Map<String, String>> getTargetNodes(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getTargetNodes(processDefinitionId, taskDefKey);
     }
@@ -182,7 +192,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getTargetNodes1", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getTargetNodes1(@RequestParam String tenantId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
+    public List<Map<String, String>> getTargetNodes1(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getTargetNodes1(processDefinitionId, taskDefKey);
     }
@@ -197,7 +208,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getTargetNodes4ParallelGateway", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getTargetNodes4ParallelGateway(@RequestParam String tenantId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
+    public List<Map<String, String>> getTargetNodes4ParallelGateway(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.getTargetNodes4ParallelGateway(processDefinitionId, taskDefKey);
     }
@@ -213,9 +225,12 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/getTargetNodes4UserTask", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getTargetNodes4UserTask(@RequestParam String tenantId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey, @RequestParam Boolean isContainEndNode) {
+    public List<Map<String, String>> getTargetNodes4UserTask(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId, @RequestParam String taskDefKey,
+        @RequestParam Boolean isContainEndNode) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customProcessDefinitionService.getTargetNodes4UserTask(processDefinitionId, taskDefKey, isContainEndNode);
+        return customProcessDefinitionService.getTargetNodes4UserTask(processDefinitionId, taskDefKey,
+            isContainEndNode);
     }
 
     /**
@@ -228,7 +243,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/isCallActivity", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Boolean isCallActivity(@RequestParam String tenantId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
+    public Boolean isCallActivity(@RequestParam String tenantId, @RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.isCallActivity(processDefinitionId, taskDefKey);
     }
@@ -243,7 +259,8 @@ public class ProcessDefinitionApiImpl implements ProcessDefinitionApi {
      */
     @Override
     @GetMapping(value = "/isContainNodeType", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Boolean isContainNodeType(@RequestParam String tenantId, @RequestParam String taskId, @RequestParam String nodeType) {
+    public Boolean isContainNodeType(@RequestParam String tenantId, @RequestParam String taskId,
+        @RequestParam String nodeType) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customProcessDefinitionService.isContainNodeType(taskId, nodeType);
     }

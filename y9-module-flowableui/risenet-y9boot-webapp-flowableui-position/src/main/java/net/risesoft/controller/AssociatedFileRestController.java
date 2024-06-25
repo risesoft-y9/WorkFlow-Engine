@@ -46,10 +46,12 @@ public class AssociatedFileRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/delAssociatedFile", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> delAssociatedFile(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processInstanceIds) {
+    public Y9Result<String> delAssociatedFile(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String processInstanceIds) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            Y9Result<Object> y9Result = associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceIds);
+            Y9Result<Object> y9Result =
+                associatedFile4PositionApi.deleteAssociatedFile(tenantId, processSerialNumber, processInstanceIds);
             if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("删除成功");
             }
@@ -66,7 +68,8 @@ public class AssociatedFileRestController {
      * @return Y9Result<List<AssociatedFileModel>>
      */
     @RequestMapping(value = "/getAssociatedFileList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<AssociatedFileModel>> getAssociatedFileList(@RequestParam @NotBlank String processSerialNumber) {
+    public Y9Result<List<AssociatedFileModel>>
+        getAssociatedFileList(@RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         return associatedFile4PositionApi.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
@@ -82,7 +85,8 @@ public class AssociatedFileRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/getDoneList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> getSearchList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> getSearchList(@RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
         return searchService.getSearchList(title, itemId, "", "", "", "", "", page, rows);
     }
 
@@ -94,10 +98,12 @@ public class AssociatedFileRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/saveAssociatedFile", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveAssociatedFile(@RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processInstanceIds) {
+    public Y9Result<String> saveAssociatedFile(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String processInstanceIds) {
         String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            Y9Result<Object> y9Result = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
+            Y9Result<Object> y9Result = associatedFile4PositionApi.saveAssociatedFile(tenantId, positionId,
+                processSerialNumber, processInstanceIds);
             if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("保存成功");
             }

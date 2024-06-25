@@ -1,13 +1,12 @@
 package net.risesoft.controller.form;
 
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.form.Y9Table;
-import net.risesoft.pojo.Y9Page;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.form.Y9TableService;
-import net.risesoft.util.form.DbMetaDataUtil;
-import net.risesoft.y9.json.Y9JsonUtil;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,12 +15,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.form.Y9Table;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.form.Y9TableService;
+import net.risesoft.util.form.DbMetaDataUtil;
+import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * @author qinman
@@ -36,7 +38,8 @@ public class TableRestController {
 
     private final Y9TableService y9TableService;
 
-    public TableRestController(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant, Y9TableService y9TableService) {
+    public TableRestController(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
+        Y9TableService y9TableService) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.y9TableService = y9TableService;
     }
@@ -44,19 +47,19 @@ public class TableRestController {
     /**
      * 添加数据库表
      *
-     * @param tableName    表名称
-     * @param systemName   系统名称
+     * @param tableName 表名称
+     * @param systemName 系统名称
      * @param systemCnName 系统中文名称
      * @return
      */
     @RequestMapping(value = "/addDataBaseTable", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> addDataBaseTable(@RequestParam String tableName,
-                                             @RequestParam String systemName, @RequestParam String systemCnName) {
+    public Y9Result<String> addDataBaseTable(@RequestParam String tableName, @RequestParam String systemName,
+        @RequestParam String systemCnName) {
         Map<String, Object> map = y9TableService.addDataBaseTable(tableName, systemName, systemCnName);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("msg"));
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
         }
-        return Y9Result.failure((String) map.get("msg"));
+        return Y9Result.failure((String)map.get("msg"));
     }
 
     /**
@@ -67,16 +70,15 @@ public class TableRestController {
      * @return
      */
     @RequestMapping(value = "/buildTable", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> buildTable(@RequestParam String tables,
-                                       @RequestParam String fields) {
+    public Y9Result<String> buildTable(@RequestParam String tables, @RequestParam String fields) {
         Map<String, Object> map;
         Y9Table table = Y9JsonUtil.readValue(tables, Y9Table.class);
         List<Map<String, Object>> listMap = Y9JsonUtil.readListOfMap(fields, String.class, Object.class);
         map = y9TableService.buildTable(table, listMap);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("msg"));
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
         }
-        return Y9Result.failure((String) map.get("msg"));
+        return Y9Result.failure((String)map.get("msg"));
     }
 
     /**
@@ -136,18 +138,18 @@ public class TableRestController {
      * 获取业务表列表
      *
      * @param systemName 应用名称
-     * @param page       页码
-     * @param rows       条数
+     * @param page 页码
+     * @param rows 条数
      * @return
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getTables", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Y9Table> getTables(@RequestParam(required = false) String systemName,
-                                     @RequestParam int page, @RequestParam int rows) {
+    public Y9Page<Y9Table> getTables(@RequestParam(required = false) String systemName, @RequestParam int page,
+        @RequestParam int rows) {
         Map<String, Object> map = y9TableService.getTables(systemName, page, rows);
-        List<Y9Table> list = (List<Y9Table>) map.get("rows");
+        List<Y9Table> list = (List<Y9Table>)map.get("rows");
         return Y9Page.success(page, Integer.parseInt(map.get("totalpages").toString()),
-                Integer.parseInt(map.get("total").toString()), list, "获取列表成功");
+            Integer.parseInt(map.get("total").toString()), list, "获取列表成功");
     }
 
     /**
@@ -195,10 +197,10 @@ public class TableRestController {
     @RequestMapping(value = "/removeTable", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> removeTable(@RequestParam String ids) {
         Map<String, Object> map = y9TableService.delete(ids);
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("msg"));
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
         }
-        return Y9Result.failure((String) map.get("msg"));
+        return Y9Result.failure((String)map.get("msg"));
     }
 
     /**
@@ -210,14 +212,14 @@ public class TableRestController {
      */
     @RequestMapping(value = "/saveTable", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> saveTable(@RequestParam(required = false) String tables,
-                                      @RequestParam(required = false) String fields) {
+        @RequestParam(required = false) String fields) {
         List<Map<String, Object>> listMap = Y9JsonUtil.readListOfMap(fields, String.class, Object.class);
         Y9Table table = Y9JsonUtil.readValue(tables, Y9Table.class);
         Map<String, Object> map = y9TableService.updateTable(table, listMap, "save");
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("msg"));
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
         }
-        return Y9Result.failure((String) map.get("msg"));
+        return Y9Result.failure((String)map.get("msg"));
     }
 
     /**
@@ -228,15 +230,14 @@ public class TableRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/updateTable", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> updateTable(@RequestParam String tables,
-                                        @RequestParam String fields) {
+    public Y9Result<String> updateTable(@RequestParam String tables, @RequestParam String fields) {
         Y9Table table = Y9JsonUtil.readValue(tables, Y9Table.class);
         List<Map<String, Object>> listMap = Y9JsonUtil.readListOfMap(fields, String.class, Object.class);
         Map<String, Object> map = y9TableService.updateTable(table, listMap, "");
-        if ((boolean) map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String) map.get("msg"));
+        if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg((String)map.get("msg"));
         }
-        return Y9Result.failure((String) map.get("msg"));
+        return Y9Result.failure((String)map.get("msg"));
     }
 
 }

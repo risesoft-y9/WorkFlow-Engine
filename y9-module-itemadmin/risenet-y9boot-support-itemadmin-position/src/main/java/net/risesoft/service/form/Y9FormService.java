@@ -73,7 +73,8 @@ public interface Y9FormService {
      * @return
      * @throws Exception
      */
-    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber) throws Exception;
+    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber)
+        throws Exception;
 
     /**
      * 获取表单是否有数据
@@ -138,7 +139,8 @@ public interface Y9FormService {
      * @param jsonData
      * @return
      */
-    public Map<String, Object> saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData);
+    public Map<String, Object> saveChildTableData(String formId, String tableId, String processSerialNumber,
+        String jsonData);
 
     /**
      * 保存表单数据

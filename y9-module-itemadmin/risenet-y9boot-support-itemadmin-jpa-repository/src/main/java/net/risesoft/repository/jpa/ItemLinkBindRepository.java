@@ -14,7 +14,8 @@ import net.risesoft.entity.ItemLinkBind;
  * @date 2022/12/20
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemLinkBindRepository extends JpaRepository<ItemLinkBind, String>, JpaSpecificationExecutor<ItemLinkBind> {
+public interface ItemLinkBindRepository
+    extends JpaRepository<ItemLinkBind, String>, JpaSpecificationExecutor<ItemLinkBind> {
 
     List<ItemLinkBind> findByItemIdOrderByCreateTimeDesc(String itemId);
 

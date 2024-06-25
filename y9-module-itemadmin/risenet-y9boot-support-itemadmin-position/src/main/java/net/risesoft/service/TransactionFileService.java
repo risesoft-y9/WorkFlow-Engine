@@ -1,13 +1,13 @@
 package net.risesoft.service;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import net.risesoft.entity.TransactionFile;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.pojo.Y9Page;
-import org.springframework.web.multipart.MultipartFile;
-
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -91,7 +91,8 @@ public interface TransactionFileService {
      * @param fileSource
      * @return
      */
-    public List<TransactionFile> getListByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource);
+    public List<TransactionFile> getListByProcessSerialNumberAndFileSource(String processSerialNumber,
+        String fileSource);
 
     /**
      * 根据流程实例id、附件来源和文件类型获取附件数
@@ -110,7 +111,8 @@ public interface TransactionFileService {
      * @param processSerialNumber
      * @return
      */
-    public TransactionFile getUpFileInfoByTabIndexOrProcessSerialNumber(Integer nextTabIndex, String processSerialNumber);
+    public TransactionFile getUpFileInfoByTabIndexOrProcessSerialNumber(Integer nextTabIndex,
+        String processSerialNumber);
 
     /**
      * Description: 保存附件
@@ -148,7 +150,8 @@ public interface TransactionFileService {
      * @param fileSource
      * @return
      */
-    public Map<String, Object> upload(MultipartFile filename, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource);
+    public Map<String, Object> upload(MultipartFile filename, String processInstanceId, String taskId,
+        String processSerialNumber, String describes, String fileSource);
 
     /**
      * Description: 上传附件
@@ -163,7 +166,8 @@ public interface TransactionFileService {
      * @param y9FileStoreId
      * @return
      */
-    public void uploadRest(String fileName, String fileSize, String processInstanceId, String taskId, String processSerialNumber, String describes, String fileSource, String y9FileStoreId);
+    public void uploadRest(String fileName, String fileSize, String processInstanceId, String taskId,
+        String processSerialNumber, String describes, String fileSource, String y9FileStoreId);
 
     /**
      * Description: 上传附件

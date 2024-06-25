@@ -1,6 +1,27 @@
 package net.risesoft.service.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.BookMarkBind;
@@ -17,24 +38,6 @@ import net.risesoft.y9.util.word.Y9WordTool4Doc;
 import net.risesoft.y9.util.word.Y9WordTool4Docx;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author qinman
@@ -161,7 +164,8 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     @Transactional
     public void saveOrUpdate(WordTemplate wordTemplate) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(), personName = person.getName();
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(),
+            personName = person.getName();
         String id = wordTemplate.getId();
         if (StringUtils.isNotEmpty(id)) {
             WordTemplate oldWord = this.findById(id);

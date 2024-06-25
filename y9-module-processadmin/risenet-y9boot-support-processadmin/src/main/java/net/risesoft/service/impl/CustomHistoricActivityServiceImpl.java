@@ -1,14 +1,16 @@
 package net.risesoft.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.service.CustomHistoricActivityService;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.service.CustomHistoricActivityService;
 
 /**
  * @author qinman

@@ -1,17 +1,19 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.processadmin.WorkflowApi;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.service.WorkflowProcessInstanceService;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.processadmin.WorkflowApi;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.service.WorkflowProcessInstanceService;
 
 /**
  * 获取当前任务节点的目标节点
@@ -37,7 +39,8 @@ public class WorkflowApiImpl implements WorkflowApi {
      */
     @Override
     @GetMapping(value = "/getCurrentTaskTargets", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getCurrentTaskTargets(@RequestParam String tenantId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
+    public List<Map<String, String>> getCurrentTaskTargets(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return workflowProcessInstanceService.getCurrentTaskTargets(processDefinitionId, taskDefKey);
     }

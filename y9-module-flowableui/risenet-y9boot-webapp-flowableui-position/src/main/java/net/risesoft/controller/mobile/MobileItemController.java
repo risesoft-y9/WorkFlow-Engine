@@ -1,13 +1,11 @@
 package net.risesoft.controller.mobile;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.position.Item4PositionApi;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.itemadmin.ItemModel;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
-import net.risesoft.y9.util.Y9Util;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -15,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.http.HttpServletResponse;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import net.risesoft.api.itemadmin.position.Item4PositionApi;
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.json.Y9JsonUtil;
+import net.risesoft.y9.util.Y9Util;
 
 /**
  * 获取app应用接口
@@ -39,12 +40,13 @@ public class MobileItemController {
     /**
      * 获取事项列表
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
      */
     @ResponseBody
     @RequestMapping(value = "/getItemList")
-    public void getItemList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-positionId") String positionId, HttpServletResponse response) {
+    public void getItemList(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-positionId") String positionId, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -52,7 +54,7 @@ public class MobileItemController {
             for (Map<String, Object> app : listMap) {
                 app.put("itemId", app.get("url"));
                 app.put("itemName", app.get("name"));
-                ItemModel itemModel = item4PositionApi.getByItemId(tenantId, (String) app.get("url"));
+                ItemModel itemModel = item4PositionApi.getByItemId(tenantId, (String)app.get("url"));
                 app.put("appIcon", StringUtils.isBlank(itemModel.getIconData()) ? "" : itemModel.getIconData());
                 app.put("processDefinitionKey", itemModel.getWorkflowGuid());
             }

@@ -1,6 +1,16 @@
 package net.risesoft.controller;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.entity.ItemViewConf;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.ViewType;
@@ -9,14 +19,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemViewConfService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.service.ViewTypeService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * @author qinman
@@ -54,8 +56,7 @@ public class ViewTypeRestController {
      * @return
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<ViewType> list(@RequestParam Integer page,
-        @RequestParam Integer rows) {
+    public Y9Page<ViewType> list(@RequestParam Integer page, @RequestParam Integer rows) {
         Page<ViewType> pageList = viewTypeService.findAll(page, rows);
         List<ViewType> list = pageList.getContent();
         for (ViewType viewType : list) {
@@ -127,8 +128,8 @@ public class ViewTypeRestController {
      * @return
      */
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<ViewType> search(@RequestParam Integer page,
-        @RequestParam Integer rows, @RequestParam(required = false) String keyword) {
+    public Y9Page<ViewType> search(@RequestParam Integer page, @RequestParam Integer rows,
+        @RequestParam(required = false) String keyword) {
         Page<ViewType> pageList = viewTypeService.search(page, rows, keyword);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
             "获取列表成功");

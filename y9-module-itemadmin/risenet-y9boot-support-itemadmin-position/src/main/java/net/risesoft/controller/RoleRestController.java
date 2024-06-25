@@ -1,6 +1,18 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
@@ -10,16 +22,6 @@ import net.risesoft.model.platform.Role;
 import net.risesoft.model.platform.System;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman

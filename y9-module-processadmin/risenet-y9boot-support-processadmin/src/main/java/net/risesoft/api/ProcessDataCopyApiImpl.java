@@ -1,9 +1,7 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.processadmin.ProcessDataCopyApi;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import java.util.List;
+
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.engine.RepositoryService;
@@ -16,7 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.processadmin.ProcessDataCopyApi;
+import net.risesoft.service.FlowableTenantInfoHolder;
 
 /**
  * 流程定义数据复制接口
@@ -40,11 +42,12 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
      *
      * @param sourceTenantId 源租户id
      * @param targetTenantId 目标租户id
-     * @param modelKey       定义key
+     * @param modelKey 定义key
      */
     @Override
     @PostMapping(value = "/copyModel", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void copyModel(@RequestParam String sourceTenantId, @RequestParam String targetTenantId, @RequestParam String modelKey) {
+    public void copyModel(@RequestParam String sourceTenantId, @RequestParam String targetTenantId,
+        @RequestParam String modelKey) {
         try {
             /*
              * 查找原租户中的模型
@@ -88,7 +91,8 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
                 BpmnModel bpmnModel = modelService.getBpmnModel(modelData);
                 byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(bpmnModel);
                 String processName = modelData.getName() + ".bpmn20.xml";
-                repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes).deploy();
+                repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes)
+                    .deploy();
             }
         } catch (Exception e) {
             LOGGER.error("exception message", e);

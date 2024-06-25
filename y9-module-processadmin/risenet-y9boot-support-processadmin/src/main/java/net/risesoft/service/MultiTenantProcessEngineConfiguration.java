@@ -75,11 +75,13 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
         /*
          * 系统存在的话查看租户租用系统的数据源
          */
-        List<Map<String, Object>> systems = jdbcTemplate4Public.queryForList("SELECT ID FROM Y9_COMMON_SYSTEM T WHERE T.NAME=?", y9Config.getApp().getProcessAdmin().getSystemName());
+        List<Map<String, Object>> systems = jdbcTemplate4Public.queryForList(
+            "SELECT ID FROM Y9_COMMON_SYSTEM T WHERE T.NAME=?", y9Config.getApp().getProcessAdmin().getSystemName());
         if (!systems.isEmpty()) {
             Map<String, Object> map = systems.get(0);
             String systemId = (String)map.get("ID");
-            List<Map<String, Object>> tenantSystems = jdbcTemplate4Public.queryForList("SELECT TENANT_ID, TENANT_DATA_SOURCE FROM Y9_COMMON_TENANT_SYSTEM T WHERE T.SYSTEM_ID = ?", systemId);
+            List<Map<String, Object>> tenantSystems = jdbcTemplate4Public.queryForList(
+                "SELECT TENANT_ID, TENANT_DATA_SOURCE FROM Y9_COMMON_TENANT_SYSTEM T WHERE T.SYSTEM_ID = ?", systemId);
             if (tenantSystems.isEmpty()) {
                 createDefaultTenantDataSource();
             } else {
@@ -87,7 +89,8 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
                 for (Map<String, Object> tenantSystem : tenantSystems) {
                     String tenantId = (String)tenantSystem.get("TENANT_ID");
                     String dataSourceId = (String)tenantSystem.get("TENANT_DATA_SOURCE");
-                    List<Map<String, Object>> list3 = jdbcTemplate4Public.queryForList("select * from Y9_COMMON_DATASOURCE t where t.id = ?", dataSourceId);
+                    List<Map<String, Object>> list3 = jdbcTemplate4Public
+                        .queryForList("select * from Y9_COMMON_DATASOURCE t where t.id = ?", dataSourceId);
                     if (!list3.isEmpty()) {
                         registerTenant(tenantId, list3.get(0));
                         if (tenantId.equals(InitDataConsts.TENANT_ID)) {
@@ -109,8 +112,10 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
      * 初始化默认租户数据源
      */
     private void createDefaultTenantDataSource() {
-        List<Map<String, Object>> defaultTenant = jdbcTemplate4Public.queryForList("SELECT ID, DEFAULT_DATA_SOURCE_ID FROM Y9_COMMON_TENANT WHERE ID=?", InitDataConsts.TENANT_ID);
-        List<Map<String, Object>> defaultDataSource = jdbcTemplate4Public.queryForList("SELECT * FROM Y9_COMMON_DATASOURCE T WHERE T.ID = ?", InitDataConsts.DATASOURCE_ID);
+        List<Map<String, Object>> defaultTenant = jdbcTemplate4Public.queryForList(
+            "SELECT ID, DEFAULT_DATA_SOURCE_ID FROM Y9_COMMON_TENANT WHERE ID=?", InitDataConsts.TENANT_ID);
+        List<Map<String, Object>> defaultDataSource = jdbcTemplate4Public
+            .queryForList("SELECT * FROM Y9_COMMON_DATASOURCE T WHERE T.ID = ?", InitDataConsts.DATASOURCE_ID);
         if (!defaultTenant.isEmpty() && !defaultDataSource.isEmpty()) {
             String defaultTenantId = defaultTenant.get(0).get("ID").toString();
             registerTenant(defaultTenantId, defaultDataSource.get(0));
@@ -123,7 +128,10 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
             String sql = "select * from y9_common_system where NAME = '" + systemName + "'";
             List<Map<String, Object>> list = jdbcTemplate4Public.queryForList(sql);
             if (list.isEmpty()) {
-                sql = "INSERT INTO y9_common_system (ID, CONTEXT_PATH, NAME, CN_NAME, TAB_INDEX,ENABLED,AUTO_INIT,CREATE_TIME) VALUES ('" + SYSTEM_ID + "', 'processAdmin', '" + systemName + "', '流程管理', 100,1,1,'" + sdf.format(new Date()) + "')";
+                sql =
+                    "INSERT INTO y9_common_system (ID, CONTEXT_PATH, NAME, CN_NAME, TAB_INDEX,ENABLED,AUTO_INIT,CREATE_TIME) VALUES ('"
+                        + SYSTEM_ID + "', 'processAdmin', '" + systemName + "', '流程管理', 100,1,1,'"
+                        + sdf.format(new Date()) + "')";
                 jdbcTemplate4Public.execute(sql);
             }
         } catch (Exception e) {
@@ -141,12 +149,15 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
                 sql = "select * from Y9_COMMON_TENANT where TENANT_TYPE = 3";
                 List<Map<String, Object>> tlist = jdbcTemplate4Public.queryForList(sql);
                 for (Map<String, Object> map : tlist) {
-                    sql = "select * from y9_common_tenant_system where TENANT_ID = '" + map.get("ID").toString() + "' and SYSTEM_ID = '" + smap.get("ID").toString() + "'";
+                    sql = "select * from y9_common_tenant_system where TENANT_ID = '" + map.get("ID").toString()
+                        + "' and SYSTEM_ID = '" + smap.get("ID").toString() + "'";
                     List<Map<String, Object>> qlist = jdbcTemplate4Public.queryForList(sql);
                     if (qlist.isEmpty()) {
                         long id = System.currentTimeMillis();
-                        String sql1 = "INSERT INTO y9_common_tenant_system (ID, SYSTEM_ID, TENANT_ID, TENANT_DATA_SOURCE, CREATE_TIME) VALUES ('" + id + "', '" + smap.get("ID").toString() + "', '" + map.get("ID").toString() + "', '" + map.get("DEFAULT_DATA_SOURCE_ID").toString() + "','"
-                            + sdf.format(new Date()) + "')";
+                        String sql1 =
+                            "INSERT INTO y9_common_tenant_system (ID, SYSTEM_ID, TENANT_ID, TENANT_DATA_SOURCE, CREATE_TIME) VALUES ('"
+                                + id + "', '" + smap.get("ID").toString() + "', '" + map.get("ID").toString() + "', '"
+                                + map.get("DEFAULT_DATA_SOURCE_ID").toString() + "','" + sdf.format(new Date()) + "')";
                         jdbcTemplate4Public.execute(sql1);
                     }
                 }

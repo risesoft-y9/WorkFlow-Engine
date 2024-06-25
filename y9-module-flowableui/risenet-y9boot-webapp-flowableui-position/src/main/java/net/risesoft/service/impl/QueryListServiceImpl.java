@@ -1,9 +1,20 @@
 package net.risesoft.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.QueryListApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
@@ -25,15 +36,6 @@ import net.risesoft.service.QueryListService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -60,7 +62,8 @@ public class QueryListServiceImpl implements QueryListService {
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
+        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
+            taskId = "";
         List<String> list = new ArrayList<>();
         int i = 0;
         if (!taskList.isEmpty()) {
@@ -85,7 +88,8 @@ public class QueryListServiceImpl implements QueryListService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Position ownerUser = positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                Position ownerUser =
+                                    positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -128,17 +132,18 @@ public class QueryListServiceImpl implements QueryListService {
     }
 
     @Override
-    public Y9Page<Map<String, Object>> queryList(String itemId, String state, String createDate, String tableName, String searchMapStr, Integer page, Integer rows) {
+    public Y9Page<Map<String, Object>> queryList(String itemId, String state, String createDate, String tableName,
+        String searchMapStr, Integer page, Integer rows) {
         ItemPage<ActRuDetailModel> itemPage;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
-            itemPage = queryListApi.getQueryList(tenantId, userId, item.getSystemName(), state, createDate, tableName, searchMapStr, page, rows);
+            itemPage = queryListApi.getQueryList(tenantId, userId, item.getSystemName(), state, createDate, tableName,
+                searchMapStr, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {
-            });
+            List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             Map<String, Object> formDataMap;
@@ -148,13 +153,15 @@ public class QueryListServiceImpl implements QueryListService {
                 processInstanceId = hpim.getProcessInstanceId();
                 String processSerialNumber = hpim.getProcessSerialNumber();
                 try {
-                    OfficeDoneInfoModel officeDoneInfo = officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    OfficeDoneInfoModel officeDoneInfo =
+                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId);
                     String startTime = officeDoneInfo.getStartTime().substring(0, 16);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
                     mapTemp.put("startTime", startTime);
-                    mapTemp.put("endTime", StringUtils.isBlank(officeDoneInfo.getEndTime()) ? "--" : officeDoneInfo.getEndTime().substring(0, 16));
+                    mapTemp.put("endTime", StringUtils.isBlank(officeDoneInfo.getEndTime()) ? "--"
+                        : officeDoneInfo.getEndTime().substring(0, 16));
                     mapTemp.put("taskDefinitionKey", "");
                     mapTemp.put("taskAssignee", officeDoneInfo.getUserComplete());
                     mapTemp.put("creatUserName", officeDoneInfo.getCreatUserName());
@@ -167,9 +174,11 @@ public class QueryListServiceImpl implements QueryListService {
                     if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
                         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId);
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
+                            assigneeNames = listTemp.get(2);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                        mapTemp.put("taskId", listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                        mapTemp.put("taskId",
+                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
                         mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("itembox", listTemp.get(3));
@@ -177,7 +186,8 @@ public class QueryListServiceImpl implements QueryListService {
                     formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                     mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
-                    int countFollow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId, processInstanceId);
+                    int countFollow =
+                        officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId, processInstanceId);
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
                     LOGGER.error("获取流程实例信息失败" + processInstanceId, e);

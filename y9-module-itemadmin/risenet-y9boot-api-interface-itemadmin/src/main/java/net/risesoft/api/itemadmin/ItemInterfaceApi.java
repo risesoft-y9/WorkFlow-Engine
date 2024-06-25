@@ -32,8 +32,9 @@ public interface ItemInterfaceApi {
      * @return
      */
     @GetMapping("/getInterface")
-    Y9Result<List<InterfaceModel>> getInterface(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("itemId") @NotBlank String itemId, @RequestParam("taskKey") String taskKey, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("condition") String condition);
+    Y9Result<List<InterfaceModel>> getInterface(@RequestParam("tenantId") @NotBlank String tenantId,
+        @RequestParam("itemId") @NotBlank String itemId, @RequestParam("taskKey") String taskKey,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("condition") String condition);
 
     /**
      * 获取接口绑定参数，包括请求参数和响应参数
@@ -44,5 +45,6 @@ public interface ItemInterfaceApi {
      * @return
      */
     @GetMapping("/getInterfaceParams")
-    Y9Result<List<InterfaceParamsModel>> getInterfaceParams(@RequestParam("tenantId") @NotBlank String tenantId, @RequestParam("itemId") @NotBlank String itemId, @RequestParam("interfaceId") @NotBlank String interfaceId);
+    Y9Result<List<InterfaceParamsModel>> getInterfaceParams(@RequestParam("tenantId") @NotBlank String tenantId,
+        @RequestParam("itemId") @NotBlank String itemId, @RequestParam("interfaceId") @NotBlank String interfaceId);
 }

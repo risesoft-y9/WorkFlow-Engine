@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import net.risesoft.model.processadmin.TaskModel;
-
 import java.util.Map;
+
+import net.risesoft.model.processadmin.TaskModel;
 
 /**
  * @author qinman
@@ -14,12 +14,12 @@ public interface ActivitiOptService {
     /**
      * 启动流程,用户任务基于人员时
      *
-     * @param processSerialNumber  流程序列号
-     * @param processDefinitionKey  流程定义key
-     * @param systemName            系统名称
-     * @param map                   流程变量
+     * @param processSerialNumber 流程序列号
+     * @param processDefinitionKey 流程定义key
+     * @param systemName 系统名称
+     * @param map 流程变量
      * @return
      */
     TaskModel startProcess(String processSerialNumber, String processDefinitionKey, String systemName,
-                           Map<String, Object> map);
+        Map<String, Object> map);
 }

@@ -48,9 +48,12 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
      * @return Y9Result<List<InterfaceModel>>
      */
     @Override
-    public Y9Result<List<InterfaceModel>> getInterface(String tenantId, String itemId, String taskKey, String processDefinitionId, String condition) {
+    public Y9Result<List<InterfaceModel>> getInterface(String tenantId, String itemId, String taskKey,
+        String processDefinitionId, String condition) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ItemInterfaceTaskBind> list = itemInterfaceTaskBindRepository.findByItemIdAndTaskDefKeyAndProcessDefinitionIdAndExecuteConditionContaining(itemId, taskKey, processDefinitionId, condition);
+        List<ItemInterfaceTaskBind> list = itemInterfaceTaskBindRepository
+            .findByItemIdAndTaskDefKeyAndProcessDefinitionIdAndExecuteConditionContaining(itemId, taskKey,
+                processDefinitionId, condition);
         List<InterfaceModel> res_list = new ArrayList<>();
         for (ItemInterfaceTaskBind bind : list) {
             InterfaceModel model = new InterfaceModel();
@@ -80,7 +83,8 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
     @Override
     public Y9Result<List<InterfaceParamsModel>> getInterfaceParams(String tenantId, String itemId, String interfaceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ItemInterfaceParamsBind> list = itemInterfaceParamsBindRepository.findByItemIdAndInterfaceIdOrderByCreateTimeDesc(itemId, interfaceId);
+        List<ItemInterfaceParamsBind> list =
+            itemInterfaceParamsBindRepository.findByItemIdAndInterfaceIdOrderByCreateTimeDesc(itemId, interfaceId);
         List<InterfaceParamsModel> res_list = new ArrayList<>();
         for (ItemInterfaceParamsBind bind : list) {
             InterfaceParamsModel model = new InterfaceParamsModel();

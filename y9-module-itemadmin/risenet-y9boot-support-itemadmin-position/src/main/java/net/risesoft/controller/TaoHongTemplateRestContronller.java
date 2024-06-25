@@ -1,6 +1,29 @@
 package net.risesoft.controller;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.platform.org.ManagerApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.TaoHongTemplate;
@@ -12,27 +35,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.TaoHongTemplateService;
 import net.risesoft.service.TaoHongTemplateTypeService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author qinman
@@ -54,7 +56,9 @@ public class TaoHongTemplateRestContronller {
 
     private final ManagerApi managerApi;
 
-    public TaoHongTemplateRestContronller(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate, TaoHongTemplateService taoHongTemplateService, TaoHongTemplateTypeService taoHongTemplateTypeService, OrgUnitApi orgUnitApi, ManagerApi managerApi) {
+    public TaoHongTemplateRestContronller(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
+        TaoHongTemplateService taoHongTemplateService, TaoHongTemplateTypeService taoHongTemplateTypeService,
+        OrgUnitApi orgUnitApi, ManagerApi managerApi) {
         this.jdbcTemplate = jdbcTemplate;
         this.taoHongTemplateService = taoHongTemplateService;
         this.taoHongTemplateTypeService = taoHongTemplateTypeService;
@@ -72,7 +76,9 @@ public class TaoHongTemplateRestContronller {
     public Y9Result<List<Map<String, Object>>> bureauTree(@RequestParam(required = false) String name) {
         List<Map<String, Object>> listMap = new ArrayList<>();
         name = StringUtils.isBlank(name) ? "" : name;
-        List<Map<String, Object>> orgUnitList = jdbcTemplate.queryForList(" SELECT ID,NAME,PARENT_ID FROM Y9_ORG_DEPARTMENT where bureau = 1 and deleted = 0 and name like '%" + name + "%' and disabled = 0 order by GUID_PATH asc");
+        List<Map<String, Object>> orgUnitList = jdbcTemplate.queryForList(
+            " SELECT ID,NAME,PARENT_ID FROM Y9_ORG_DEPARTMENT where bureau = 1 and deleted = 0 and name like '%" + name
+                + "%' and disabled = 0 order by GUID_PATH asc");
         for (Map<String, Object> dept : orgUnitList) {
             Map<String, Object> map = new HashMap<>(16);
             map.put("id", dept.get("ID").toString());
@@ -88,10 +94,10 @@ public class TaoHongTemplateRestContronller {
      *
      * @param templateGuid 模板id
      * @param request HttpServletRequest
-     * @param response  HttpServletResponse
+     * @param response HttpServletResponse
      */
     @RequestMapping(value = "/download")
-    public void download(@RequestParam String templateGuid, HttpServletRequest request, HttpServletResponse response){
+    public void download(@RequestParam String templateGuid, HttpServletRequest request, HttpServletResponse response) {
         try {
             TaoHongTemplate taoHongTemplate = taoHongTemplateService.findOne(templateGuid);
             byte[] b = taoHongTemplate.getTemplateContent();
@@ -127,7 +133,8 @@ public class TaoHongTemplateRestContronller {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<TaoHongTemplate> list;
         if (person.isGlobalManager()) {
-            list = taoHongTemplateService.findByTenantId(Y9LoginUserHolder.getTenantId(), StringUtils.isBlank(name) ? "%%" : "%" + name + "%");
+            list = taoHongTemplateService.findByTenantId(Y9LoginUserHolder.getTenantId(),
+                StringUtils.isBlank(name) ? "%%" : "%" + name + "%");
         } else {
             OrgUnit orgUnit = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), person.getPersonId()).getData();
             list = taoHongTemplateService.findByBureauGuid(orgUnit.getId());
@@ -202,7 +209,9 @@ public class TaoHongTemplateRestContronller {
      * @return
      */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveOrUpdate(@RequestParam(required = false) String templateGuid, @RequestParam String bureauGuid, @RequestParam String bureauName, @RequestParam String templateType, MultipartFile file) {
+    public Y9Result<String> saveOrUpdate(@RequestParam(required = false) String templateGuid,
+        @RequestParam String bureauGuid, @RequestParam String bureauName, @RequestParam String templateType,
+        MultipartFile file) {
         try {
             TaoHongTemplate taoHong = new TaoHongTemplate();
             taoHong.setBureauGuid(bureauGuid);

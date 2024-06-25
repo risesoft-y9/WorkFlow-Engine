@@ -1,8 +1,8 @@
 package net.risesoft.model.processadmin;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 流程定义模型类

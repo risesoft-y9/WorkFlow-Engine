@@ -21,7 +21,8 @@ public interface SearchService {
      * @param rows 每页条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> getSearchList(String searchTerm, String itemId, String userName, String state, String year, String startDate, String endDate, Integer page, Integer rows);
+    Y9Page<Map<String, Object>> getSearchList(String searchTerm, String itemId, String userName, String state,
+        String year, String startDate, String endDate, Integer page, Integer rows);
 
     /**
      * 阅件搜索
@@ -34,6 +35,7 @@ public interface SearchService {
      * @param rows 每页条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<ChaoSongModel> getYuejianList(String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows);
+    Y9Page<ChaoSongModel> getYuejianList(String searchName, String itemId, String userName, String state, String year,
+        Integer page, Integer rows);
 
 }

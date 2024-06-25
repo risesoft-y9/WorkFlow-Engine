@@ -44,7 +44,8 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      */
     @Override
     @GetMapping(value = "/countAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Integer> countAssociatedFile(@RequestParam String tenantId, @RequestParam String processSerialNumber) {
+    public Y9Result<Integer> countAssociatedFile(@RequestParam String tenantId,
+        @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int num = associatedFileService.countAssociatedFile(processSerialNumber);
         return Y9Result.success(num);
@@ -60,7 +61,8 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      */
     @Override
     @PostMapping(value = "/deleteAllAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Object> deleteAllAssociatedFile(@RequestParam String tenantId, @RequestParam String processSerialNumber, @RequestParam String delIds) {
+    public Y9Result<Object> deleteAllAssociatedFile(@RequestParam String tenantId,
+        @RequestParam String processSerialNumber, @RequestParam String delIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
         associatedFileService.deleteAllAssociatedFile(processSerialNumber, delIds);
         return Y9Result.success();
@@ -76,7 +78,8 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      */
     @Override
     @PostMapping(value = "/deleteAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Object> deleteAssociatedFile(@RequestParam String tenantId, @RequestParam String processSerialNumber, @RequestParam String delId) {
+    public Y9Result<Object> deleteAssociatedFile(@RequestParam String tenantId,
+        @RequestParam String processSerialNumber, @RequestParam String delId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         associatedFileService.deleteAssociatedFile(processSerialNumber, delId);
         return Y9Result.success();
@@ -92,7 +95,8 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      */
     @Override
     @GetMapping(value = "/getAssociatedFileAllList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam String tenantId, @RequestParam String positionId, @RequestParam String processSerialNumber) {
+    public Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam String tenantId,
+        @RequestParam String positionId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -111,7 +115,8 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      */
     @Override
     @PostMapping(value = "/saveAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Object> saveAssociatedFile(@RequestParam String tenantId, @RequestParam String positionId, @RequestParam String processSerialNumber, @RequestParam String processInstanceIds) {
+    public Y9Result<Object> saveAssociatedFile(@RequestParam String tenantId, @RequestParam String positionId,
+        @RequestParam String processSerialNumber, @RequestParam String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);

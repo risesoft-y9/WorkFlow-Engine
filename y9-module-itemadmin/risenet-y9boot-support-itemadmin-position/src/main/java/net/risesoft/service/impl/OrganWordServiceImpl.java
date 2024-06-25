@@ -1,6 +1,21 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.PersonRoleApi;
 import net.risesoft.api.platform.permission.PositionRoleApi;
@@ -27,19 +42,6 @@ import net.risesoft.service.OrganWordService;
 import net.risesoft.service.OrganWordUseHistoryService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -87,7 +89,8 @@ public class OrganWordServiceImpl implements OrganWordService {
 
     @Override
     @Transactional
-    public Integer checkNumberStr(String characterValue, String custom, Integer year, Integer numberTemp, String itemId, Integer common, String processSerialNumber) {
+    public Integer checkNumberStr(String characterValue, String custom, Integer year, Integer numberTemp, String itemId,
+        Integer common, String processSerialNumber) {
         int status = 3;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -97,12 +100,14 @@ public class OrganWordServiceImpl implements OrganWordService {
                 if (1 == common) {
                     itemId = "common";
                 }
-                OrganWordDetail owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year, itemId);
+                OrganWordDetail owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom,
+                    characterValue, year, itemId);
                 /**
                  * 1.使用详情存在
                  */
                 if (null != owd) {
-                    status = checkOrganWordUseHistory(characterValue, custom, year, numberTemp, itemId, processSerialNumber);
+                    status =
+                        checkOrganWordUseHistory(characterValue, custom, year, numberTemp, itemId, processSerialNumber);
                     /**
                      * 传入的数值等于使用详情的当前值+1时，保存使用详情，为的是下次正常编号的时候，会从编号的当前值+1开始
                      */
@@ -113,7 +118,8 @@ public class OrganWordServiceImpl implements OrganWordService {
                         organWordDetailService.save(owd);
                     }
                 } else {
-                    OrganWordProperty property = organWordPropertyService.findByOrganWordIdAndName(organWord.getId(), characterValue);
+                    OrganWordProperty property =
+                        organWordPropertyService.findByOrganWordIdAndName(organWord.getId(), characterValue);
                     Integer num = property.getInitNumber();
                     OrganWordUseHistory owuh = new OrganWordUseHistory();
                     owuh.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -150,7 +156,8 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    public Integer checkNumberStr4DeptName(String custom, Integer year, Integer numberTemp, String itemId, Integer common, String processSerialNumber) {
+    public Integer checkNumberStr4DeptName(String custom, Integer year, Integer numberTemp, String itemId,
+        Integer common, String processSerialNumber) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -159,7 +166,8 @@ public class OrganWordServiceImpl implements OrganWordService {
             if (1 == common) {
                 itemId = "common";
             }
-            OrganWordDetail owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, deptName, year, itemId);
+            OrganWordDetail owd =
+                organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, deptName, year, itemId);
             if (null != owd) {
                 Integer number = owd.getNumber();
                 if (numberTemp <= number) {
@@ -216,27 +224,33 @@ public class OrganWordServiceImpl implements OrganWordService {
         }
     }
 
-    private  Integer checkOrganWordUseHistory(String characterValue, String custom, Integer year, Integer numberTemp, String itemId, String processSerialNumber) {
+    private Integer checkOrganWordUseHistory(String characterValue, String custom, Integer year, Integer numberTemp,
+        String itemId, String processSerialNumber) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         /**
          * 1、检查当前的编号有没有被使用
          */
-        OrganWordUseHistory owuh = organWordUseHistoryService.findByItemIdAndNumberString(itemId, characterValue + "〔" + year + "〕" + numberTemp);
+        OrganWordUseHistory owuh = organWordUseHistoryService.findByItemIdAndNumberString(itemId,
+            characterValue + "〔" + year + "〕" + numberTemp);
         /**
          * 2当前号没有被使用，则检查当前文之前有没有编过号
          */
         if (null == owuh) {
-            OrganWordUseHistory oldowuh = organWordUseHistoryService.findByProcessSerialNumberAndCustom(processSerialNumber, custom);
+            OrganWordUseHistory oldowuh =
+                organWordUseHistoryService.findByProcessSerialNumberAndCustom(processSerialNumber, custom);
             /**
              * 3如果当前processSerialNumber对应的文已经编号（先编号，再修改编号保存）
              */
             if (null != oldowuh) {
-                OrganWordDetail organWordDetail = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year, itemId);
+                OrganWordDetail organWordDetail = organWordDetailService
+                    .findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year, itemId);
                 /**
                  * 4如果之前的编号的数字等于使用详情的最大使用数字，则把使用详情的数字减一（因为会使用最新的编号，需要把之前占的号释放）
                  */
-                if (null != organWordDetail && oldowuh.getNumberString().equals(characterValue + PunctuationConsts.LEFTHEXBRACKETS + year + PunctuationConsts.RIGHTHEXBRACKETS + organWordDetail.getNumber())) {
+                if (null != organWordDetail
+                    && oldowuh.getNumberString().equals(characterValue + PunctuationConsts.LEFTHEXBRACKETS + year
+                        + PunctuationConsts.RIGHTHEXBRACKETS + organWordDetail.getNumber())) {
                     organWordDetail.setNumber(organWordDetail.getNumber() - 1);
                     organWordDetailService.save(organWordDetail);
                 }
@@ -277,12 +291,14 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    public Map<String, Object> exist(String custom, String processSerialNumber, String processInstanceId, String itembox) {
+    public Map<String, Object> exist(String custom, String processSerialNumber, String processInstanceId,
+        String itembox) {
         Map<String, Object> retMap = new HashMap<>(16);
         List<Map<String, Object>> listMap = new ArrayList<>();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        OrganWordUseHistory owuh = organWordUseHistoryService.findByProcessSerialNumberAndCustom(processSerialNumber, custom);
+        OrganWordUseHistory owuh =
+            organWordUseHistoryService.findByProcessSerialNumberAndCustom(processSerialNumber, custom);
         if (null != owuh) {
             retMap.put("exist", true);
             retMap.put("numberString", owuh.getNumberString());
@@ -303,7 +319,9 @@ public class OrganWordServiceImpl implements OrganWordService {
         OrganWord organWord = this.findByCustom(custom);
         if (organWord != null) {
             boolean hasPermission = false;
-            ItemOrganWordBind bind = itemOrganWordBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId, processDefinitionId, taskDefKey, custom);
+            ItemOrganWordBind bind =
+                itemOrganWordBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId,
+                    processDefinitionId, taskDefKey, custom);
             if (null != bind) {
                 List<String> roleIds = bind.getRoleIds();
                 for (String roleId : roleIds) {
@@ -343,20 +361,24 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    public List<Map<String, Object>> findByCustom(String itemId, String processDefinitionId, String taskDefKey, String custom) {
+    public List<Map<String, Object>> findByCustom(String itemId, String processDefinitionId, String taskDefKey,
+        String custom) {
         List<Map<String, Object>> retList = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         OrganWord organWord = this.findByCustom(custom);
         if (organWord != null) {
             boolean hasPermission = false;
-            ItemOrganWordBind bind = itemOrganWordBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId, processDefinitionId, taskDefKey, custom);
+            ItemOrganWordBind bind =
+                itemOrganWordBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId,
+                    processDefinitionId, taskDefKey, custom);
             if (null != bind) {
                 List<String> roleIds = bind.getRoleIds();
                 if (roleIds.isEmpty()) {
                     hasPermission = true;
                 } else {
                     for (String roleId : roleIds) {
-                        hasPermission = positionRoleApi.hasRole(tenantId, roleId, Y9LoginUserHolder.getPositionId()).getData();
+                        hasPermission =
+                            positionRoleApi.hasRole(tenantId, roleId, Y9LoginUserHolder.getPositionId()).getData();
                         if (hasPermission) {
                             break;
                         }
@@ -391,7 +413,8 @@ public class OrganWordServiceImpl implements OrganWordService {
 
     @Override
     @Transactional
-    public Map<String, Object> getNumber(String custom, String characterValue, Integer year, Integer common, String itemId) {
+    public Map<String, Object> getNumber(String custom, String characterValue, Integer year, Integer common,
+        String itemId) {
         Map<String, Object> map = new HashMap<>(16);
         Integer number = 0;
         OrganWordDetail owd = null;
@@ -401,11 +424,13 @@ public class OrganWordServiceImpl implements OrganWordService {
                 if (1 == common) {
                     itemId = "common";
                 }
-                owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year, itemId);
+                owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year,
+                    itemId);
                 if (null != owd) {
                     number = owd.getNumber() + 1;
                 } else {
-                    OrganWordProperty property = organWordPropertyService.findByOrganWordIdAndName(organWord.getId(), characterValue);
+                    OrganWordProperty property =
+                        organWordPropertyService.findByOrganWordIdAndName(organWord.getId(), characterValue);
                     if (null != property) {
                         number = property.getInitNumber();
                     } else {
@@ -452,7 +477,8 @@ public class OrganWordServiceImpl implements OrganWordService {
             OrganWordUseHistory owuh = null;
             boolean isChange = false;
             do {
-                owuh = organWordUseHistoryService.findByItemIdAndNumberString(itemId, characterValue + "〔" + year + "〕" + number);
+                owuh = organWordUseHistoryService.findByItemIdAndNumberString(itemId,
+                    characterValue + "〔" + year + "〕" + number);
                 if (null != owuh) {
                     number++;
                     isChange = true;
@@ -483,7 +509,8 @@ public class OrganWordServiceImpl implements OrganWordService {
             if (1 == common) {
                 itemId = "common";
             }
-            OrganWordDetail owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, deptName, year, itemId);
+            OrganWordDetail owd =
+                organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, deptName, year, itemId);
             if (null != owd) {
                 number = owd.getNumber();
                 numberTemp = number + 1;
@@ -519,11 +546,13 @@ public class OrganWordServiceImpl implements OrganWordService {
                 if (1 == common) {
                     itemId = "common";
                 }
-                owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year, itemId);
+                owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year,
+                    itemId);
                 if (null != owd) {
                     number = owd.getNumber() + 1;
                 } else {
-                    OrganWordProperty property = organWordPropertyService.findByOrganWordIdAndName(organWord.getId(), characterValue);
+                    OrganWordProperty property =
+                        organWordPropertyService.findByOrganWordIdAndName(organWord.getId(), characterValue);
                     if (null != property) {
                         number = property.getInitNumber();
                     } else {
@@ -571,7 +600,8 @@ public class OrganWordServiceImpl implements OrganWordService {
             OrganWordUseHistory owuh = null;
             boolean isChange = false;
             do {
-                owuh = organWordUseHistoryService.findByItemIdAndNumberString(itemId, characterValue + "〔" + year + "〕" + number);
+                owuh = organWordUseHistoryService.findByItemIdAndNumberString(itemId,
+                    characterValue + "〔" + year + "〕" + number);
                 if (null != owuh) {
                     number++;
                     isChange = true;

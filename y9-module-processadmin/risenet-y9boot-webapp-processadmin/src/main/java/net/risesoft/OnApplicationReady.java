@@ -1,23 +1,25 @@
 package net.risesoft;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.platform.tenant.TenantApi;
-import net.risesoft.enums.platform.TenantTypeEnum;
-import net.risesoft.model.platform.Tenant;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.List;
+
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.platform.tenant.TenantApi;
+import net.risesoft.enums.platform.TenantTypeEnum;
+import net.risesoft.model.platform.Tenant;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author dingzhaojun
@@ -52,7 +54,7 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
                             .deploy();
                     }
                 } catch (Exception e) {
-                    LOGGER.error("租户：{}，创建流程定义失败",tenant.getName(), e);
+                    LOGGER.error("租户：{}，创建流程定义失败", tenant.getName(), e);
                 }
             }
         } catch (Exception e) {

@@ -1,13 +1,15 @@
 package net.risesoft.service.impl;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.entity.EntrustDetail;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.EntrustDetailRepository;
 import net.risesoft.service.EntrustDetailService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author qinman

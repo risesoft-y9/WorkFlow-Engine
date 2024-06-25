@@ -12,6 +12,7 @@ import net.risesoft.entity.InterfaceInfo;
  * @date 2024/05/23
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface InterfaceInfoRepository extends JpaRepository<InterfaceInfo, String>, JpaSpecificationExecutor<InterfaceInfo> {
+public interface InterfaceInfoRepository
+    extends JpaRepository<InterfaceInfo, String>, JpaSpecificationExecutor<InterfaceInfo> {
 
 }

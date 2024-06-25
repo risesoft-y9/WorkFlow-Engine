@@ -1,6 +1,16 @@
 package net.risesoft.api;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ItemMappingConf;
@@ -14,14 +24,6 @@ import net.risesoft.service.DocumentService;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 事项接口
@@ -48,7 +50,7 @@ public class ItemApiImpl implements Item4PositionApi {
     /**
      * 根据系统名称获取事项
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param systemName 系统名称
      * @return List<ItemModel>
      */
@@ -69,7 +71,7 @@ public class ItemApiImpl implements Item4PositionApi {
     /**
      * 根据流程的定义Key查找对应的事项
      *
-     * @param tenantId             租户Id
+     * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
      * @return ItemModel
      */
@@ -112,7 +114,7 @@ public class ItemApiImpl implements Item4PositionApi {
     public List<ItemModel> getAllItemList(String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = spmApproveItemService.list();
-        List<SpmApproveItem> list = (List<SpmApproveItem>) map.get("rows");
+        List<SpmApproveItem> list = (List<SpmApproveItem>)map.get("rows");
         List<ItemModel> itemList = new ArrayList<>();
         for (SpmApproveItem item : list) {
             ItemModel itemModel = new ItemModel();
@@ -126,7 +128,7 @@ public class ItemApiImpl implements Item4PositionApi {
      * 根据事项id获取事项
      *
      * @param tenantId 租户id
-     * @param itemId   事项id
+     * @param itemId 事项id
      * @return ItemModel
      */
     @Override
@@ -144,7 +146,7 @@ public class ItemApiImpl implements Item4PositionApi {
     /**
      * 获取有权限的首个事项id
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
      * @return String
      */
@@ -160,8 +162,8 @@ public class ItemApiImpl implements Item4PositionApi {
     /**
      * 根据事项id获取绑定的表单id
      *
-     * @param tenantId             租户Id
-     * @param itemId               事项id
+     * @param tenantId 租户Id
+     * @param itemId 事项id
      * @param processDefinitionKey 流程定义Key
      * @return String
      */
@@ -175,7 +177,7 @@ public class ItemApiImpl implements Item4PositionApi {
     /**
      * 获取新建事项列表
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
      * @return List<Map < String, Object>>
      */
@@ -191,8 +193,8 @@ public class ItemApiImpl implements Item4PositionApi {
     /**
      * 获取事项系统字段映射配置
      *
-     * @param tenantId  租户Id
-     * @param itemId    事项id
+     * @param tenantId 租户Id
+     * @param itemId 事项id
      * @param mappingId 系统标识
      * @return List<ItemMappingConfModel>
      */
@@ -201,7 +203,7 @@ public class ItemApiImpl implements Item4PositionApi {
     public List<ItemMappingConfModel> getItemMappingConf(String tenantId, String itemId, String mappingId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemMappingConf> list =
-                itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
+            itemMappingConfRepository.findByItemIdAndMappingIdOrderByCreateTimeDesc(itemId, mappingId);
         List<ItemMappingConfModel> itemList = new ArrayList<>();
         for (ItemMappingConf item : list) {
             ItemMappingConfModel itemModel = new ItemMappingConfModel();
@@ -227,7 +229,7 @@ public class ItemApiImpl implements Item4PositionApi {
     /**
      * 获取个人有权限事项列表
      *
-     * @param tenantId   租户id
+     * @param tenantId 租户id
      * @param positionId 岗位id
      * @return List<Map < String, Object>>
      */
@@ -243,7 +245,7 @@ public class ItemApiImpl implements Item4PositionApi {
     /**
      * 判断该租户是否有流程定义
      *
-     * @param tenantId             租户Id
+     * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
      * @return Boolean
      */

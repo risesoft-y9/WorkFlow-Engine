@@ -1,7 +1,16 @@
 package net.risesoft.service.impl;
 
+import java.util.Date;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.task.service.delegate.DelegateTask;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -14,13 +23,6 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.service.ProcessInstanceDetailsService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.configuration.Y9Properties;
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -32,15 +34,15 @@ import java.util.Map;
 @Service(value = "processInstanceDetailsService")
 public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetailsService {
 
-    private final  PersonApi personManager;
+    private final PersonApi personManager;
 
-    private final  PositionApi positionApi;
+    private final PositionApi positionApi;
 
-    private final  ProcessParamApi processParamManager;
+    private final ProcessParamApi processParamManager;
 
-    private final  ProcessInstanceApi processInstanceApi;
+    private final ProcessInstanceApi processInstanceApi;
 
-    private final  Y9Properties y9Conf;
+    private final Y9Properties y9Conf;
 
     @Override
     public void saveProcessInstanceDetails(final DelegateTask task, final Map<String, Object> map) {
@@ -65,7 +67,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             String todoTaskUrlPrefix = processParamModel.getTodoTaskUrlPrefix();
 
             String userId = map.get(SysVariables.TASKSENDERID).toString();
-            String assigneeName,senderName;
+            String assigneeName, senderName;
             Person person = personManager.get(tenantId, assigneeId).getData();
             if (person == null || StringUtils.isBlank(person.getId())) {
                 Position position = positionApi.get(tenantId, assigneeId).getData();
@@ -108,11 +110,12 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
                 LOGGER.info("#################协作状态保存成功-TASK_ASSIGNED####任务id:{}{}#################", task.getAssignee(),
                     task.getId());
             } else {
-                LOGGER.error("#################协作状态保存失败-TASK_ASSIGNED####任务id:{}{}#################", task.getAssignee(),
-                    task.getId());
+                LOGGER.error("#################协作状态保存失败-TASK_ASSIGNED####任务id:{}{}#################",
+                    task.getAssignee(), task.getId());
             }
         } catch (Exception e) {
-            LOGGER.error("#################保存事件办理情况失败:1-TASK_ASSIGNED：{} 错误信息：{}#################",task.getAssignee(), e.getMessage());
+            LOGGER.error("#################保存事件办理情况失败:1-TASK_ASSIGNED：{} 错误信息：{}#################", task.getAssignee(),
+                e.getMessage());
         }
     }
 

@@ -1,19 +1,21 @@
 package net.risesoft.controller;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemInterfaceTaskBind;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemInterfaceTaskBindRepository;
 import net.risesoft.service.ItemInterfaceTaskBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -40,7 +42,8 @@ public class ItemInterfaceTaskBindController {
      * @return
      */
     @RequestMapping(value = "/copyBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyBind(@RequestParam String interfaceId, @RequestParam String itemId, @RequestParam String processDefinitionId) {
+    public Y9Result<String> copyBind(@RequestParam String interfaceId, @RequestParam String itemId,
+        @RequestParam String processDefinitionId) {
         itemInterfaceTaskBindService.copyBind(itemId, interfaceId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }
@@ -54,12 +57,15 @@ public class ItemInterfaceTaskBindController {
      * @return
      */
     @RequestMapping(value = "/getBpmList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam String itemId, @RequestParam String interfaceId, @RequestParam String processDefinitionId) {
+    public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam String itemId, @RequestParam String interfaceId,
+        @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> list = processDefinitionApi.getFlowElement(tenantId, processDefinitionId, false);
         for (Map<String, Object> map : list) {
             String elementKey = (String)map.get("elementKey");
-            ItemInterfaceTaskBind bind = itemInterfaceTaskBindRepository.findByTaskDefKeyAndItemIdAndProcessDefinitionIdAndInterfaceId(elementKey, itemId, processDefinitionId, interfaceId);
+            ItemInterfaceTaskBind bind =
+                itemInterfaceTaskBindRepository.findByTaskDefKeyAndItemIdAndProcessDefinitionIdAndInterfaceId(
+                    elementKey, itemId, processDefinitionId, interfaceId);
             map.put("bind", false);
             if (bind != null) {
                 map.put("bind", true);
@@ -80,7 +86,8 @@ public class ItemInterfaceTaskBindController {
      * @return
      */
     @RequestMapping(value = "/saveBind", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> saveBind(@RequestParam String interfaceId, @RequestParam String itemId, @RequestParam String processDefinitionId, String elementKey, @RequestParam String condition) {
+    public Y9Result<String> saveBind(@RequestParam String interfaceId, @RequestParam String itemId,
+        @RequestParam String processDefinitionId, String elementKey, @RequestParam String condition) {
         itemInterfaceTaskBindService.saveBind(itemId, interfaceId, processDefinitionId, elementKey, condition);
         return Y9Result.successMsg("保存成功");
     }

@@ -1,6 +1,15 @@
 package net.risesoft.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
 import net.risesoft.entity.ItemOpinionFrameBind;
 import net.risesoft.entity.OpinionFrame;
@@ -9,13 +18,6 @@ import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.OpinionFrameService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 意见框绑定接口
@@ -58,6 +60,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
 
     /**
      * 根据事项id和流程定义id获取所有绑定意见框
+     * 
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id

@@ -1,11 +1,13 @@
 package net.risesoft.service.impl;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.entity.OrganWordUseHistory;
 import net.risesoft.repository.jpa.OrganWordUseHistoryRepository;
 import net.risesoft.service.OrganWordUseHistoryService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author qinman

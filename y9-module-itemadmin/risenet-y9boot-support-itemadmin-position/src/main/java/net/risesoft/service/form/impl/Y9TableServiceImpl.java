@@ -1,6 +1,27 @@
 package net.risesoft.service.form.impl;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.entity.form.Y9Table;
@@ -16,25 +37,6 @@ import net.risesoft.service.form.TableManagerService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.util.form.DbMetaDataUtil;
 import net.risesoft.y9.sqlddl.DbColumn;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author qinman
@@ -45,7 +47,6 @@ import java.util.Objects;
 @Service
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9TableServiceImpl implements Y9TableService {
-
 
     private final JdbcTemplate jdbcTemplate4Tenant;
 
@@ -59,7 +60,10 @@ public class Y9TableServiceImpl implements Y9TableService {
 
     private final SpmApproveItemRepository approveItemRepository;
 
-    public Y9TableServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant, Y9TableRepository y9TableRepository, Y9TableFieldRepository y9TableFieldRepository, Y9FormFieldRepository y9FormFieldRepository, TableManagerService tableManagerService, SpmApproveItemRepository approveItemRepository) {
+    public Y9TableServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
+        Y9TableRepository y9TableRepository, Y9TableFieldRepository y9TableFieldRepository,
+        Y9FormFieldRepository y9FormFieldRepository, TableManagerService tableManagerService,
+        SpmApproveItemRepository approveItemRepository) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.y9TableRepository = y9TableRepository;
         this.y9TableFieldRepository = y9TableFieldRepository;
@@ -93,7 +97,8 @@ public class Y9TableServiceImpl implements Y9TableService {
             for (DbColumn dbColumn : list) {
                 Y9TableField y9TableField = new Y9TableField();
                 y9TableField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                y9TableField.setFieldCnName(StringUtils.isNotBlank(dbColumn.getComment()) ? dbColumn.getComment() : dbColumn.getColumnName());
+                y9TableField.setFieldCnName(
+                    StringUtils.isNotBlank(dbColumn.getComment()) ? dbColumn.getComment() : dbColumn.getColumnName());
                 y9TableField.setFieldLength(dbColumn.getDataLength());
                 y9TableField.setFieldType(dbColumn.getTypeName() + "(" + dbColumn.getDataLength() + ")");
                 y9TableField.setIsMayNull(dbColumn.getNullable() ? 1 : 0);
@@ -221,7 +226,7 @@ public class Y9TableServiceImpl implements Y9TableService {
                 }
             }
         } catch (Exception e) {
-           LOGGER.error("获取所有表名失败", e);
+            LOGGER.error("获取所有表名失败", e);
         }
         return tableNames.toString();
     }
@@ -352,19 +357,20 @@ public class Y9TableServiceImpl implements Y9TableService {
      * @return
      */
     @Transactional
-    public List<DbColumn> saveField(String tableId, String tableName, List<Map<String, Object>> listMap, List<String> ids) {
+    public List<DbColumn> saveField(String tableId, String tableName, List<Map<String, Object>> listMap,
+        List<String> ids) {
         List<DbColumn> dbcs = new ArrayList<DbColumn>();
         int order = 1;
         Y9TableField fieldTemp = null;
         for (Map<String, Object> m : listMap) {
-            String id = (String) m.get("id");
-            Integer isSystemField = (Integer) m.get("isSystemField");
-            String fieldCnName = (String) m.get("fieldCnName");
-            String fieldName = (String) m.get("fieldName");
-            Integer fieldLength = (Integer) m.get("fieldLength");
-            String fieldType = (String) m.get("fieldType");
-            Integer isMayNull = (Integer) m.get("isMayNull");
-            String oldFieldName = (String) m.get("oldFieldName");
+            String id = (String)m.get("id");
+            Integer isSystemField = (Integer)m.get("isSystemField");
+            String fieldCnName = (String)m.get("fieldCnName");
+            String fieldName = (String)m.get("fieldName");
+            Integer fieldLength = (Integer)m.get("fieldLength");
+            String fieldType = (String)m.get("fieldType");
+            Integer isMayNull = (Integer)m.get("isMayNull");
+            String oldFieldName = (String)m.get("oldFieldName");
             if (StringUtils.isEmpty(id)) {
                 fieldTemp = new Y9TableField();
                 fieldTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));

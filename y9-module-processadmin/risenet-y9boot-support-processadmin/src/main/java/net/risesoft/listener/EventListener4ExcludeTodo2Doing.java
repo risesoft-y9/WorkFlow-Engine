@@ -1,10 +1,9 @@
 package net.risesoft.listener;
 
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.service.CustomHistoricProcessService;
-import net.risesoft.service.InterfaceUtilService;
-import net.risesoft.util.SysVariables;
-import net.risesoft.y9.Y9Context;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.api.delegate.event.AbstractFlowableEventListener;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEventType;
@@ -13,9 +12,12 @@ import org.flowable.engine.delegate.event.impl.FlowableSequenceFlowTakenEventImp
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.task.service.impl.persistence.entity.TaskEntityImpl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.service.CustomHistoricProcessService;
+import net.risesoft.service.InterfaceUtilService;
+import net.risesoft.util.SysVariables;
+import net.risesoft.y9.Y9Context;
 
 /**
  * @author qinman
@@ -37,7 +39,8 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
         FlowableEngineEventType type = (FlowableEngineEventType)event.getType();
         switch (type) {
             case TASK_CREATED:
-                org.flowable.common.engine.impl.event.FlowableEntityEventImpl entity = (org.flowable.common.engine.impl.event.FlowableEntityEventImpl)event;
+                org.flowable.common.engine.impl.event.FlowableEntityEventImpl entity =
+                    (org.flowable.common.engine.impl.event.FlowableEntityEventImpl)event;
                 TaskEntityImpl taskEntity = (TaskEntityImpl)entity.getEntity();
                 String assignee = taskEntity.getAssignee();
                 if (StringUtils.isNotBlank(assignee)) {
@@ -71,7 +74,8 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                     if (!p.equals(priority)) {
                         taskEntity.setPriority(priority);
                         try {
-                            Y9Context.getBean(CustomHistoricProcessService.class).setPriority(taskEntity.getProcessInstanceId(), priority.toString());
+                            Y9Context.getBean(CustomHistoricProcessService.class)
+                                .setPriority(taskEntity.getProcessInstanceId(), priority.toString());
                         } catch (Exception e) {
                             LOGGER.error("设置优先级失败", e);
                         }
@@ -79,7 +83,8 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                 }
                 taskEntity.setVariablesLocal(mapTemp);
 
-                HistoricProcessInstance historicProcessInstance = Y9Context.getBean(CustomHistoricProcessService.class).getById(taskEntity.getProcessInstanceId());
+                HistoricProcessInstance historicProcessInstance =
+                    Y9Context.getBean(CustomHistoricProcessService.class).getById(taskEntity.getProcessInstanceId());
                 if (null != historicProcessInstance) {
                     String businessKey = historicProcessInstance.getBusinessKey();
                     taskEntity.setCategory(businessKey);

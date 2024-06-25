@@ -1,6 +1,14 @@
 package net.risesoft.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.TaoHongTemplateType;
 import net.risesoft.model.platform.OrgUnit;
@@ -8,12 +16,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.TaoHongTemplateTypeService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * @author qinman

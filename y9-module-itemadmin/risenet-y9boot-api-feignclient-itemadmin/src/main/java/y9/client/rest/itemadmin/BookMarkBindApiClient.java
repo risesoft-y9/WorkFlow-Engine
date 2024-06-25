@@ -14,7 +14,9 @@ import net.risesoft.pojo.Y9Result;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-@FeignClient(contextId = "BookMarkBindApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}", url = "${y9.service.itemAdmin.directUrl:}", path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/bookMarkBind")
+@FeignClient(contextId = "BookMarkBindApiClient", name = "${y9.service.itemAdmin.name:itemAdmin}",
+    url = "${y9.service.itemAdmin.directUrl:}",
+    path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/bookMarkBind")
 public interface BookMarkBindApiClient extends BookMarkBindApi {
 
     /**
@@ -27,5 +29,7 @@ public interface BookMarkBindApiClient extends BookMarkBindApi {
      */
     @Override
     @GetMapping("/getBookMarkData")
-    Y9Result<Map<String, Object>> getBookMarkData(@RequestParam("tenantId") String tenantId, @RequestParam("wordTemplateId") String wordTemplateId, @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Map<String, Object>> getBookMarkData(@RequestParam("tenantId") String tenantId,
+        @RequestParam("wordTemplateId") String wordTemplateId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 }

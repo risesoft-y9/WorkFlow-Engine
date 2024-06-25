@@ -1,17 +1,19 @@
 package net.risesoft.controller;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.entity.ItemLinkBind;
-import net.risesoft.entity.LinkInfo;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.ItemLinkBindService;
-import net.risesoft.service.LinkInfoService;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.entity.ItemLinkBind;
+import net.risesoft.entity.LinkInfo;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.ItemLinkBindService;
+import net.risesoft.service.LinkInfoService;
 
 /**
  * @author qinman
@@ -35,7 +37,8 @@ public class LinkInfoRestController {
      * @return
      */
     @RequestMapping(value = "/findAll", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<LinkInfo>> findAll(@RequestParam(required = false) String linkName, @RequestParam(required = false) String linkUrl) {
+    public Y9Result<List<LinkInfo>> findAll(@RequestParam(required = false) String linkName,
+        @RequestParam(required = false) String linkUrl) {
         List<LinkInfo> list = linkInfoService.findAll(linkName, linkUrl);
         return Y9Result.success(list, "获取列表成功");
     }

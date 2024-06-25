@@ -90,8 +90,7 @@ public class SearchServiceImpl implements SearchService {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                Person ownerUser =
-                                    personApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                Person ownerUser = personApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames,
                                         ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : ""), "、");

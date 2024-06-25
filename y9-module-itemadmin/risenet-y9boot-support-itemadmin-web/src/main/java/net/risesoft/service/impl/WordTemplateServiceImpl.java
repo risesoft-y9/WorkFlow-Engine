@@ -171,7 +171,8 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     @Transactional(readOnly = false)
     public void saveOrUpdate(WordTemplate wordTemplate) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = userInfo.getPersonId(), personName = userInfo.getName();
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = userInfo.getPersonId(),
+            personName = userInfo.getName();
         String id = wordTemplate.getId();
         if (StringUtils.isNotEmpty(id)) {
             WordTemplate oldWord = this.findById(id);

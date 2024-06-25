@@ -1,9 +1,7 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.processadmin.DoneApi;
-import net.risesoft.service.CustomDoneService;
-import net.risesoft.service.FlowableTenantInfoHolder;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.processadmin.DoneApi;
+import net.risesoft.service.CustomDoneService;
+import net.risesoft.service.FlowableTenantInfoHolder;
 
 /**
  * 办结件列表
@@ -39,7 +41,8 @@ public class DoneApiImpl implements DoneApi {
      */
     @Override
     @GetMapping(value = "/getListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserId(@RequestParam String tenantId, @RequestParam String userId, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
+    public Map<String, Object> getListByUserId(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId is null !");
         }
@@ -60,7 +63,9 @@ public class DoneApiImpl implements DoneApi {
      */
     @Override
     @GetMapping(value = "/getListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserIdAndProcessDefinitionKey(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String processDefinitionKey, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
+    public Map<String, Object> getListByUserIdAndProcessDefinitionKey(@RequestParam String tenantId,
+        @RequestParam String userId, @RequestParam String processDefinitionKey, @RequestParam Integer page,
+        @RequestParam Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId or processDefinitionKey is null !");
         }
@@ -81,7 +86,8 @@ public class DoneApiImpl implements DoneApi {
      */
     @Override
     @GetMapping(value = "/getListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getListByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
+    public Map<String, Object> getListByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId or systemName is null !");
         }
@@ -102,7 +108,8 @@ public class DoneApiImpl implements DoneApi {
      */
     @Override
     @GetMapping(value = "/searchListByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchListByUserId(String tenantId, String userId, String searchTerm, Integer page,
+        Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId is null !");
         }
@@ -124,12 +131,14 @@ public class DoneApiImpl implements DoneApi {
      */
     @Override
     @GetMapping(value = "/searchListByUserIdAndProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId, String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchListByUserIdAndProcessDefinitionKey(String tenantId, String userId,
+        String processDefinitionKey, String searchTerm, Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId or processDefinitionKey is null !");
         }
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customDoneService.searchListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, searchTerm, page, rows);
+        return customDoneService.searchListByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, searchTerm,
+            page, rows);
     }
 
     /**
@@ -146,7 +155,8 @@ public class DoneApiImpl implements DoneApi {
      */
     @Override
     @GetMapping(value = "/searchListByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName, String searchTerm, Integer page, Integer rows) throws Exception {
+    public Map<String, Object> searchListByUserIdAndSystemName(String tenantId, String userId, String systemName,
+        String searchTerm, Integer page, Integer rows) throws Exception {
         if (StringUtils.isEmpty(tenantId) || StringUtils.isEmpty(userId)) {
             throw new Exception("tenantId or userId or processDefinitionKey is null !");
         }

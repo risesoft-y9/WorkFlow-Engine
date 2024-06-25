@@ -1,6 +1,22 @@
 package net.risesoft.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.BookMarkBind;
@@ -14,19 +30,6 @@ import net.risesoft.service.WordTemplateService;
 import net.risesoft.service.form.Y9TableFieldService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -57,7 +60,8 @@ public class WordTemplateRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/bookMarKList")
-    public Y9Result<List<Map<String, Object>>> bookMarkList(String wordTemplateId, @RequestParam String wordTemplateType) {
+    public Y9Result<List<Map<String, Object>>> bookMarkList(String wordTemplateId,
+        @RequestParam String wordTemplateType) {
         Map<String, Object> map = wordTemplateService.getBookMarkList(wordTemplateId, wordTemplateType);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.success((List<Map<String, Object>>)map.get("rows"), (String)map.get("msg"));
@@ -101,11 +105,13 @@ public class WordTemplateRestController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getBookMarkBind", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBookMarkBind(@RequestParam String bookMarkName, @RequestParam String wordTemplateId) {
+    public Y9Result<Map<String, Object>> getBookMarkBind(@RequestParam String bookMarkName,
+        @RequestParam String wordTemplateId) {
         Map<String, Object> resMap = new HashMap<>(16);
         List<Y9Table> tableList = y9TableService.getAllTable();
         List<String> columnList = new ArrayList<>();
-        BookMarkBind bookMarkBind = bookMarkBindService.findByWordTemplateIdAndBookMarkName(wordTemplateId, bookMarkName);
+        BookMarkBind bookMarkBind =
+            bookMarkBindService.findByWordTemplateIdAndBookMarkName(wordTemplateId, bookMarkName);
         if (null != bookMarkBind) {
             String tableId = "";
             for (Y9Table table : tableList) {
@@ -174,7 +180,8 @@ public class WordTemplateRestController {
         if (person.isGlobalManager()) {
             list = wordTemplateService.findAll();
         } else {
-            list = wordTemplateService.findByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
+            list = wordTemplateService
+                .findByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
         }
         List<Map<String, Object>> items = new ArrayList<>();
         for (WordTemplate wordTemplate : list) {

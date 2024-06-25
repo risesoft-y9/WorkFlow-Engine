@@ -55,7 +55,8 @@ public class Y9TableServiceImpl implements Y9TableService {
     private Y9FormFieldRepository y9FormFieldRepository;
 
     @Autowired
-    @Qualifier("jdbcTemplate4Tenant") private JdbcTemplate jdbcTemplate4Tenant;
+    @Qualifier("jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate4Tenant;
 
     @Autowired
     private TableManagerService tableManagerService;

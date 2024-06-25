@@ -1,16 +1,8 @@
 package net.risesoft.config;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
-import lombok.RequiredArgsConstructor;
-import net.risesoft.filter.ProcessAdminCheckUserLoginFilter;
-import net.risesoft.filter.RemoveUrlJsessionIdFilter;
-import net.risesoft.listener.FlowableMultiTenantListener;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.configuration.Y9Properties;
-import net.risesoft.y9.configuration.feature.sso.Y9SsoClientProperties;
-import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
-import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.flowable.ui.modeler.properties.FlowableModelerAppProperties;
 import org.flowable.ui.modeler.service.FlowableModelQueryService;
@@ -39,8 +31,19 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
+import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
+
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.filter.ProcessAdminCheckUserLoginFilter;
+import net.risesoft.filter.RemoveUrlJsessionIdFilter;
+import net.risesoft.listener.FlowableMultiTenantListener;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.configuration.Y9Properties;
+import net.risesoft.y9.configuration.feature.sso.Y9SsoClientProperties;
+import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
+import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
 
 /**
  * @author qinman
@@ -118,8 +121,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
 
     @Bean
     public FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> processAdminCheckUserLoginFilter() {
-        final FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> filterBean =
-                new FilterRegistrationBean<>();
+        final FilterRegistrationBean<ProcessAdminCheckUserLoginFilter> filterBean = new FilterRegistrationBean<>();
         filterBean.setFilter(new ProcessAdminCheckUserLoginFilter());
         filterBean.setAsyncSupported(false);
         filterBean.setOrder(50);
@@ -129,8 +131,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
 
     @Bean
     public FilterRegistrationBean<RemoveUrlJsessionIdFilter> removeUrlJsessionIdFilter() {
-        final FilterRegistrationBean<RemoveUrlJsessionIdFilter> filterBean =
-                new FilterRegistrationBean<>();
+        final FilterRegistrationBean<RemoveUrlJsessionIdFilter> filterBean = new FilterRegistrationBean<>();
         filterBean.setFilter(new RemoveUrlJsessionIdFilter());
         filterBean.setAsyncSupported(false);
         filterBean.addUrlPatterns("/*");
@@ -148,7 +149,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
         bean.setDataSource(dataSource);
 
         Resource resource =
-                new PathMatchingResourcePatternResolver().getResource("classpath:mybatis/mybatis-config.xml");
+            new PathMatchingResourcePatternResolver().getResource("classpath:mybatis/mybatis-config.xml");
         bean.setConfigLocation(resource);
         return bean.getObject();
     }
@@ -179,7 +180,7 @@ public class ProcessAdminConfiguraton implements WebMvcConfigurer {
 
     @Bean("y9TenantDataSource")
     public DataSource y9TenantDataSource(@Qualifier("y9FlowableDS") DruidDataSource y9FlowableDs,
-                                         @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
+        @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
         return new Y9TenantDataSource(y9FlowableDs, y9TenantDataSourceLookup);
     }
 

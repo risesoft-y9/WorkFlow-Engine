@@ -1,9 +1,9 @@
 package net.risesoft.model.processadmin;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import lombok.Data;
 
 /**
  * 历史活动实例模型

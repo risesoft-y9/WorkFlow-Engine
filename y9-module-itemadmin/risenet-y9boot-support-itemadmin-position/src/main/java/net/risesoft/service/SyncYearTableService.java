@@ -1,20 +1,5 @@
 package net.risesoft.service;
 
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.enums.DialectEnum;
-import net.risesoft.util.form.DbMetaDataUtil;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9FileUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,6 +13,24 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.enums.DialectEnum;
+import net.risesoft.util.form.DbMetaDataUtil;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9FileUtil;
 
 /**
  * @author qinman
@@ -43,7 +46,8 @@ public class SyncYearTableService {
 
     private final JdbcTemplate jdbcTemplate4Public;
 
-    public SyncYearTableService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,@Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public) {
+    public SyncYearTableService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
+        @Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcTemplate4Public = jdbcTemplate4Public;
     }

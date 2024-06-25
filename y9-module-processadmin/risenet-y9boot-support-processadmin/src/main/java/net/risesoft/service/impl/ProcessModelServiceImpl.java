@@ -1,8 +1,7 @@
 package net.risesoft.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.service.ProcessModelService;
+import java.util.List;
+
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.engine.RepositoryService;
@@ -11,7 +10,10 @@ import org.flowable.ui.modeler.domain.Model;
 import org.flowable.ui.modeler.serviceapi.ModelService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.service.ProcessModelService;
 
 /**
  * @author qinman
@@ -27,7 +29,7 @@ public class ProcessModelServiceImpl implements ProcessModelService {
     private final RepositoryService repositoryService;
 
     @Override
-    public void copyModel(String sourceTenantId, String targetTenantId, String modelKey){
+    public void copyModel(String sourceTenantId, String targetTenantId, String modelKey) {
         /*
          * 查找原租户中的模型
          */

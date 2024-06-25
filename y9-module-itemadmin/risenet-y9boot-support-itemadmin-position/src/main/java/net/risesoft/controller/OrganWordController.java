@@ -1,17 +1,20 @@
 package net.risesoft.controller;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.OrganWord;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.OrganWordService;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.OrganWord;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.OrganWordService;
 
 /**
  * @author qinman

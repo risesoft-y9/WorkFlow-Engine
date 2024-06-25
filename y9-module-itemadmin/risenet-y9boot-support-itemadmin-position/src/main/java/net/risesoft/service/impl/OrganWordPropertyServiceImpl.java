@@ -1,7 +1,17 @@
 package net.risesoft.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Lists;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.OrganWordProperty;
 import net.risesoft.id.IdType;
@@ -9,13 +19,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.OrganWordPropertyRepository;
 import net.risesoft.service.OrganWordPropertyService;
 import net.risesoft.util.SysVariables;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman

@@ -1,6 +1,18 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.entity.ItemViewConf;
 import net.risesoft.entity.SpmApproveItem;
@@ -15,17 +27,6 @@ import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.service.form.Y9FormFieldService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -51,6 +52,7 @@ public class ItemViewConfRestController {
 
     /**
      * 保存或者修改
+     * 
      * @param ids 视图id
      * @param viewType 视图类型
      * @return
@@ -69,8 +71,7 @@ public class ItemViewConfRestController {
      * @return
      */
     @RequestMapping(value = "/findByItemId", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam String itemId,
-        @RequestParam String viewType) {
+    public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam String itemId, @RequestParam String viewType) {
         List<ItemViewConf> list = itemViewConfService.findByItemIdAndViewType(itemId, viewType);
         return Y9Result.success(list, "获取成功");
     }
@@ -82,8 +83,7 @@ public class ItemViewConfRestController {
      * @return
      */
     @RequestMapping(value = "/getColumns", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Y9FormField>> getColumns(@RequestParam String tableName,
-        @RequestParam String itemId) {
+    public Y9Result<List<Y9FormField>> getColumns(@RequestParam String tableName, @RequestParam String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Y9FormField> list = new ArrayList<>();
         List<String> fieldNameList = new ArrayList<>();

@@ -201,8 +201,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     int j = 0;
                     for (IdentityLinkModel identityLink : iList) {
                         String assigneeId = identityLink.getUserId();
-                        Person ownerUser =
-                            personManager.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                        Person ownerUser = personManager.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                         if (j < 5) {
                             assignees = Y9Util.genCustomStr(assignees,
                                 ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : ""), "、");
@@ -431,8 +430,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     int j = 0;
                     for (IdentityLinkModel identityLink : iList) {
                         String assigneeId = identityLink.getUserId();
-                        Person ownerUser =
-                            personManager.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                        Person ownerUser = personManager.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                         if (j < 5) {
                             assignees = Y9Util.genCustomStr(assignees,
                                 ownerUser.getName() + (ownerUser.getDisabled() ? "(已禁用)" : ""), "、");

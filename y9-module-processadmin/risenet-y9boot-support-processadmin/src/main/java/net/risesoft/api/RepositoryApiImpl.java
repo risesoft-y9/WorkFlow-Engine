@@ -1,14 +1,11 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.processadmin.RepositoryApi;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.processadmin.ProcessDefinitionModel;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.CustomRepositoryService;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.util.FlowableModelConvertUtil;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.io.IOUtils;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.http.MediaType;
@@ -19,11 +16,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.processadmin.ProcessDefinitionModel;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.CustomRepositoryService;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.util.FlowableModelConvertUtil;
 
 /**
  * 部署流程相关接口
@@ -38,7 +40,7 @@ import java.util.Map;
 @RequestMapping(value = "/services/rest/repository")
 public class RepositoryApiImpl implements RepositoryApi {
 
-    private final  CustomRepositoryService customRepositoryService;
+    private final CustomRepositoryService customRepositoryService;
 
     /**
      * 删除部署的流程
@@ -81,7 +83,8 @@ public class RepositoryApiImpl implements RepositoryApi {
      */
     @Override
     @GetMapping(value = "/getLatestProcessDefinitionByKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ProcessDefinitionModel getLatestProcessDefinitionByKey(@RequestParam String tenantId, @RequestParam String processDefinitionKey) {
+    public ProcessDefinitionModel getLatestProcessDefinitionByKey(@RequestParam String tenantId,
+        @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         ProcessDefinition pd = customRepositoryService.getLatestProcessDefinitionByKey(processDefinitionKey);
         return FlowableModelConvertUtil.processDefinition2Model(pd);
@@ -110,7 +113,8 @@ public class RepositoryApiImpl implements RepositoryApi {
      */
     @Override
     @GetMapping(value = "/getPreviousProcessDefinitionById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ProcessDefinitionModel getPreviousProcessDefinitionById(@RequestParam String tenantId, @RequestParam String processDefinitionId) {
+    public ProcessDefinitionModel getPreviousProcessDefinitionById(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         ProcessDefinition pd = customRepositoryService.getPreviousProcessDefinitionById(processDefinitionId);
         return FlowableModelConvertUtil.processDefinition2Model(pd);
@@ -125,7 +129,8 @@ public class RepositoryApiImpl implements RepositoryApi {
      */
     @Override
     @GetMapping(value = "/getProcessDefinitionById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ProcessDefinitionModel getProcessDefinitionById(@RequestParam String tenantId, @RequestParam String processDefinitionId) {
+    public ProcessDefinitionModel getProcessDefinitionById(@RequestParam String tenantId,
+        @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         ProcessDefinition pd = customRepositoryService.getProcessDefinitionById(processDefinitionId);
         return FlowableModelConvertUtil.processDefinition2Model(pd);
@@ -140,7 +145,8 @@ public class RepositoryApiImpl implements RepositoryApi {
      */
     @Override
     @GetMapping(value = "/getProcessDefinitionListByKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ProcessDefinitionModel> getProcessDefinitionListByKey(@RequestParam String tenantId, @RequestParam String processDefinitionKey) {
+    public List<ProcessDefinitionModel> getProcessDefinitionListByKey(@RequestParam String tenantId,
+        @RequestParam String processDefinitionKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<ProcessDefinition> pdList = customRepositoryService.getProcessDefinitionListByKey(processDefinitionKey);
         return FlowableModelConvertUtil.processDefinitionList2ModelList(pdList);
@@ -148,6 +154,7 @@ public class RepositoryApiImpl implements RepositoryApi {
 
     /**
      * 获取流程定义xml
+     * 
      * @param tenantId 租户id
      * @param resourceType xml
      * @param processInstanceId 流程实例id
@@ -156,9 +163,11 @@ public class RepositoryApiImpl implements RepositoryApi {
      */
     @Override
     @GetMapping(value = "/getXmlByProcessInstance", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<String> getXmlByProcessInstance(@RequestParam String tenantId, @RequestParam String resourceType, @RequestParam String processInstanceId, @RequestParam String processDefinitionId){
+    public Y9Result<String> getXmlByProcessInstance(@RequestParam String tenantId, @RequestParam String resourceType,
+        @RequestParam String processInstanceId, @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        InputStream resourceAsStream = customRepositoryService.getProcessInstance(resourceType, processInstanceId, processDefinitionId);
+        InputStream resourceAsStream =
+            customRepositoryService.getProcessInstance(resourceType, processInstanceId, processDefinitionId);
         try {
             String xmlStr = IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8);
             return Y9Result.success(xmlStr);
@@ -196,7 +205,8 @@ public class RepositoryApiImpl implements RepositoryApi {
      */
     @Override
     @PostMapping(value = "/switchSuspendOrActive", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> switchSuspendOrActive(@RequestParam String tenantId, @RequestParam String state, @RequestParam String processDefinitionId) {
+    public Map<String, Object> switchSuspendOrActive(@RequestParam String tenantId, @RequestParam String state,
+        @RequestParam String processDefinitionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return customRepositoryService.switchSuspendOrActive(state, processDefinitionId);
     }

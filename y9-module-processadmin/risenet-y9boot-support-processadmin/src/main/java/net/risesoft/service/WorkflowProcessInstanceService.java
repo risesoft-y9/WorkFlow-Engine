@@ -1,8 +1,11 @@
 package net.risesoft.service;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.util.MapUtil;
-import net.risesoft.util.SysVariables;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.EndEvent;
@@ -25,11 +28,10 @@ import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.util.MapUtil;
+import net.risesoft.util.SysVariables;
 
 /**
  * @author qinman

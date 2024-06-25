@@ -1,11 +1,12 @@
 package net.risesoft.model.itemadmin;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 消息提醒实例
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -24,47 +25,47 @@ public class RemindInstanceModel implements Serializable {
     public static String nodeComplete = "nodeComplete";// 节点完成提醒
 
     /**
-     *主键
+     * 主键
      */
     private String id;
 
     /**
-     *租户Id
+     * 租户Id
      */
     private String tenantId;
 
     /**
-     *消息提醒类型
+     * 消息提醒类型
      */
     private String remindType;
 
     /**
-     *流程实例id
+     * 流程实例id
      */
     private String processInstanceId;
 
     /**
-     *任务id
+     * 任务id
      */
     private String taskId;
 
     /**
-     *节点到达任务key
+     * 节点到达任务key
      */
     private String arriveTaskKey;
 
     /**
-     *节点完成任务key
+     * 节点完成任务key
      */
     private String completeTaskKey;
 
     /**
-     *人员id
+     * 人员id
      */
     private String userId;
 
     /**
-     *创建时间
+     * 创建时间
      */
     private String createTime;
 }

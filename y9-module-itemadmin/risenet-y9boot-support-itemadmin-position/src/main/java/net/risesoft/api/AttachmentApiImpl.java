@@ -1,7 +1,20 @@
 package net.risesoft.api;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -19,14 +32,6 @@ import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 附件接口
@@ -52,13 +57,15 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
     /**
      * 根据流程编号删除附件
      *
-     * @param tenantId             租户id
+     * @param tenantId 租户id
      * @param processSerialNumbers 流程编号
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/delByProcessSerialNumbers", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Object> delBatchByProcessSerialNumbers(String tenantId, @RequestBody List<String> processSerialNumbers) {
+    @PostMapping(value = "/delByProcessSerialNumbers", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Y9Result<Object> delBatchByProcessSerialNumbers(String tenantId,
+        @RequestBody List<String> processSerialNumbers) {
         Y9LoginUserHolder.setTenantId(tenantId);
         transactionFileService.delBatchByProcessSerialNumbers(processSerialNumbers);
         return Y9Result.success();
@@ -68,7 +75,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * 删除附件
      *
      * @param tenantId 租户id
-     * @param ids      附件ids
+     * @param ids 附件ids
      * @return Y9Result<Object>
      */
     @Override
@@ -82,7 +89,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
     /**
      * 获取附件数
      *
-     * @param tenantId            租户id
+     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @return Y9Result<Integer>
      */
@@ -98,7 +105,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * 获取附件信息
      *
      * @param tenantId 租户id
-     * @param id       附件id
+     * @param id 附件id
      * @return Y9Result<AttachmentModel>
      */
     @Override
@@ -117,15 +124,16 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
     /**
      * 获取附件数
      *
-     * @param tenantId            租户id
+     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @param fileSource          附件来源
-     * @param fileType            文件类型
+     * @param fileSource 附件来源
+     * @param fileType 文件类型
      * @return Y9Result<Integer>
      */
     @Override
     @GetMapping(value = "/getAttachmentCount", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Integer> getAttachmentCount(String tenantId, String processSerialNumber, String fileSource, String fileType) {
+    public Y9Result<Integer> getAttachmentCount(String tenantId, String processSerialNumber, String fileSource,
+        String fileType) {
         Y9LoginUserHolder.setTenantId(tenantId);
         fileType = fileType.toLowerCase();
         int num = transactionFileService.getTransactionFileCount(processSerialNumber, fileSource, fileType);
@@ -135,16 +143,17 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
     /**
      * 获取附件列表
      *
-     * @param tenantId            租户id
+     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @param fileSource          附件来源
-     * @param page                页码
-     * @param rows                行数
+     * @param fileSource 附件来源
+     * @param page 页码
+     * @param rows 行数
      * @return Y9Page<AttachmentModel>
      */
     @Override
     @GetMapping(value = "/getAttachmentList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Page<AttachmentModel> getAttachmentList(String tenantId, String processSerialNumber, String fileSource, int page, int rows) {
+    public Y9Page<AttachmentModel> getAttachmentList(String tenantId, String processSerialNumber, String fileSource,
+        int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return transactionFileService.getAttachmentList(processSerialNumber, fileSource, page, rows);
     }
@@ -152,16 +161,18 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
     /**
      * 获取附件列表(model)
      *
-     * @param tenantId            租户id
+     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @param fileSource          附件来源
+     * @param fileSource 附件来源
      * @return Y9Result<List < AttachmentModel>>
      */
     @Override
     @GetMapping(value = "/getAttachmentModelList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<List<AttachmentModel>> getAttachmentModelList(String tenantId, String processSerialNumber, String fileSource) {
+    public Y9Result<List<AttachmentModel>> getAttachmentModelList(String tenantId, String processSerialNumber,
+        String fileSource) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<TransactionFile> transactionFileList = transactionFileService.getAttachmentModelList(processSerialNumber, fileSource);
+        List<TransactionFile> transactionFileList =
+            transactionFileService.getAttachmentModelList(processSerialNumber, fileSource);
         List<AttachmentModel> list = ItemAdminModelConvertUtil.attachmentList2ModelList(transactionFileList);
         return Y9Result.success(list);
     }
@@ -170,7 +181,7 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * 获取附件信息
      *
      * @param tenantId 租户id
-     * @param fileId   附件id
+     * @param fileId 附件id
      * @return Y9Result<AttachmentModel>
      */
     @Override
@@ -189,23 +200,24 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
     /**
      * 保存附件信息
      *
-     * @param tenantId            租户id
-     * @param positionId          岗位id
-     * @param attachjson          附件信息
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param attachjson 附件信息
      * @param processSerialNumber 流程编号
      * @return Y9Result<Object>
      */
     @SuppressWarnings("unchecked")
     @Override
     @PostMapping(value = "/saveAttachment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Object> saveAttachment(String tenantId, String positionId, String attachjson, String processSerialNumber) {
+    public Y9Result<Object> saveAttachment(String tenantId, String positionId, String attachjson,
+        String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Map<String, Object> attachmentJson = Y9JsonUtil.readValue(attachjson, Map.class);
         assert attachmentJson != null;
-        List<Map<String, Object>> attachmentList = (List<Map<String, Object>>) attachmentJson.get("attachment");
+        List<Map<String, Object>> attachmentList = (List<Map<String, Object>>)attachmentJson.get("attachment");
         for (Map<String, Object> map : attachmentList) {
             TransactionFile file = new TransactionFile();
             file.setDescribes(map.get("describes") == null ? "" : map.get("describes").toString());
@@ -227,21 +239,23 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
     /**
      * 保存附件信息
      *
-     * @param tenantId            租户id
-     * @param positionId          岗位id
-     * @param fileName            文件名称
-     * @param fileType            文件类型
-     * @param fileSizeString      文件大小
-     * @param fileSource          附件来源
-     * @param processInstanceId   流程实例id
+     * @param tenantId 租户id
+     * @param positionId 岗位id
+     * @param fileName 文件名称
+     * @param fileType 文件类型
+     * @param fileSizeString 文件大小
+     * @param fileSource 附件来源
+     * @param processInstanceId 流程实例id
      * @param processSerialNumber 流程编号
-     * @param taskId              任务id
-     * @param y9FileStoreId       附件上传id
+     * @param taskId 任务id
+     * @param y9FileStoreId 附件上传id
      * @return Y9Result<String>
      */
     @Override
     @PostMapping(value = "/saveOrUpdateUploadInfo", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<String> saveOrUpdateUploadInfo(String tenantId, String positionId, String fileName, String fileType, String fileSizeString, String fileSource, String processInstanceId, String processSerialNumber, String taskId, String y9FileStoreId) {
+    public Y9Result<String> saveOrUpdateUploadInfo(String tenantId, String positionId, String fileName, String fileType,
+        String fileSizeString, String fileSource, String processInstanceId, String processSerialNumber, String taskId,
+        String y9FileStoreId) {
         String msg;
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -286,18 +300,19 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
     /**
      * 更新附件信息
      *
-     * @param tenantId       租户id
-     * @param userId         人员id
-     * @param positionId     岗位id
-     * @param fileId         文件id
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param positionId 岗位id
+     * @param fileId 文件id
      * @param fileSizeString 文件大小
-     * @param taskId         任务id
-     * @param y9FileStoreId  附件上传id
+     * @param taskId 任务id
+     * @param y9FileStoreId 附件上传id
      * @return Y9Result<String>
      */
     @Override
     @PostMapping(value = "/updateFile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<String> updateFile(String tenantId, String userId, String positionId, String fileId, String fileSizeString, String taskId, String y9FileStoreId) {
+    public Y9Result<String> updateFile(String tenantId, String userId, String positionId, String fileId,
+        String fileSizeString, String taskId, String y9FileStoreId) {
         String msg;
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -324,42 +339,47 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
     /**
      * 上传附件
      *
-     * @param tenantId            租户id
-     * @param userId              人员id
-     * @param positionId          岗位id
-     * @param fileName            文件名
-     * @param fileSize            文件大小
-     * @param processInstanceId   流程实例id
-     * @param taskId              任务id
-     * @param describes           描述
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param positionId 岗位id
+     * @param fileName 文件名
+     * @param fileSize 文件大小
+     * @param processInstanceId 流程实例id
+     * @param taskId 任务id
+     * @param describes 描述
      * @param processSerialNumber 流程编号
-     * @param fileSource          附件来源
-     * @param y9FileStoreId       附件上传id
+     * @param fileSource 附件来源
+     * @param y9FileStoreId 附件上传id
      * @return Y9Result<String>
      */
     @Override
     @PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<String> upload(String tenantId, String userId, String positionId, String fileName, String fileSize, String processInstanceId, String taskId, String describes, String processSerialNumber, String fileSource, String y9FileStoreId) {
+    public Y9Result<String> upload(String tenantId, String userId, String positionId, String fileName, String fileSize,
+        String processInstanceId, String taskId, String describes, String processSerialNumber, String fileSource,
+        String y9FileStoreId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        transactionFileService.uploadRest(fileName, fileSize, processInstanceId, taskId, processSerialNumber, describes, fileSource, y9FileStoreId);
+        transactionFileService.uploadRest(fileName, fileSize, processInstanceId, taskId, processSerialNumber, describes,
+            fileSource, y9FileStoreId);
         return Y9Result.successMsg("上传成功");
     }
 
     /**
      * 上传附件(model)
      *
-     * @param tenantId        租户id
-     * @param positionId      岗位id
+     * @param tenantId 租户id
+     * @param positionId 岗位id
      * @param attachmentModel 附件实体信息
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/uploadModel", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Object> uploadModel(String tenantId, String positionId, @RequestBody AttachmentModel attachmentModel) {
+    @PostMapping(value = "/uploadModel", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Y9Result<Object> uploadModel(String tenantId, String positionId,
+        @RequestBody AttachmentModel attachmentModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);

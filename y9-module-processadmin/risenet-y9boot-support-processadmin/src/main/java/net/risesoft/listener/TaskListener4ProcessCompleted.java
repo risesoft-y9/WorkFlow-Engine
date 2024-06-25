@@ -43,7 +43,8 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                     throw new RuntimeException("调用接口失败 TaskListener4ProcessCompleted_PROCESS_COMPLETED");
                 }
 
-                Y9Context.getBean(ActRuDetailApi.class).endByProcessInstanceId(tenantId, executionEntity.getProcessInstanceId());
+                Y9Context.getBean(ActRuDetailApi.class).endByProcessInstanceId(tenantId,
+                    executionEntity.getProcessInstanceId());
                 break;
             case PROCESS_STARTED:
                 FlowableEntityEventImpl entityEvent1 = (FlowableEntityEventImpl)event;
@@ -51,7 +52,8 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 // 接口调用
                 InterfaceUtilService interfaceUtilService1 = Y9Context.getBean(InterfaceUtilService.class);
                 try {
-                    interfaceUtilService1.interfaceCallByProcess(executionEntity1, executionEntity1.getVariables(), "启动");
+                    interfaceUtilService1.interfaceCallByProcess(executionEntity1, executionEntity1.getVariables(),
+                        "启动");
                 } catch (Exception e) {
                     throw new RuntimeException("调用接口失败 TaskListener4ProcessCompleted_PROCESS_STARTED");
                 }

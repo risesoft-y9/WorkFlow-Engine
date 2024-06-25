@@ -15,13 +15,15 @@ import net.risesoft.entity.ItemInterfaceParamsBind;
  * @date 2024/05/24
  */
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public interface ItemInterfaceParamsBindRepository extends JpaRepository<ItemInterfaceParamsBind, String>, JpaSpecificationExecutor<ItemInterfaceParamsBind> {
+public interface ItemInterfaceParamsBindRepository
+    extends JpaRepository<ItemInterfaceParamsBind, String>, JpaSpecificationExecutor<ItemInterfaceParamsBind> {
 
     @Modifying
     @Transactional(readOnly = false)
     void deleteByItemIdAndInterfaceId(String itemId, String interfaceId);
 
-    List<ItemInterfaceParamsBind> findByItemIdAndInterfaceIdAndBindTypeOrderByCreateTimeDesc(String itemId, String interfaceId, String type);
+    List<ItemInterfaceParamsBind> findByItemIdAndInterfaceIdAndBindTypeOrderByCreateTimeDesc(String itemId,
+        String interfaceId, String type);
 
     List<ItemInterfaceParamsBind> findByItemIdAndInterfaceIdOrderByCreateTimeDesc(String itemId, String interfaceId);
 

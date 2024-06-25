@@ -1,21 +1,26 @@
 package net.risesoft.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.RowSetDynaClass;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.sql.DataSource;
-
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class DbMetaDataUtil {
@@ -204,7 +209,7 @@ public class DbMetaDataUtil {
     }
 
     public static List<DynaBean> listAllTables(DataSource dataSource, String catalog, String schemaPattern,
-                                               String tableNamePattern, String[] types) throws Exception {
+        String tableNamePattern, String[] types) throws Exception {
         Connection connection = null;
         ResultSet rs = null;
         try {
@@ -265,18 +270,18 @@ public class DbMetaDataUtil {
             DatabaseMetaData dbmd = connection.getMetaData();
             String dialect = getDatabaseDialectName(dataSource);
             if ("mysql".equals(dialect)) {
-                rs = dbmd.getTables(null, databaseName, tableName, new String[]{"TABLE"});
+                rs = dbmd.getTables(null, databaseName, tableName, new String[] {"TABLE"});
             } else if ("mssql".equals(dialect)) {
-                rs = dbmd.getTables(databaseName, null, tableName, new String[]{"TABLE"});
+                rs = dbmd.getTables(databaseName, null, tableName, new String[] {"TABLE"});
             } else if ("oracle".equals(dialect)) {
                 tableSchema = dbmd.getUserName().toUpperCase();
-                rs = dbmd.getTables(null, tableSchema, tableName, new String[]{"TABLE"});
+                rs = dbmd.getTables(null, tableSchema, tableName, new String[] {"TABLE"});
             } else if ("dm".equals(dialect)) {
                 tableSchema = dbmd.getUserName().toUpperCase();
-                rs = dbmd.getTables(null, tableSchema, tableName, new String[]{"TABLE"});
+                rs = dbmd.getTables(null, tableSchema, tableName, new String[] {"TABLE"});
             } else if ("kingbase".equals(dialect)) {
                 tableSchema = connection.getSchema();
-                rs = dbmd.getTables(null, tableSchema, tableName, new String[]{"TABLE"});
+                rs = dbmd.getTables(null, tableSchema, tableName, new String[] {"TABLE"});
             }
 
             return rs != null && rs.next();
@@ -301,7 +306,6 @@ public class DbMetaDataUtil {
             throw new RuntimeException(e);
         }
 
-
         if (databaseName.contains("mysql")) {
             return "mysql";
         } else if (databaseName.contains("kingbasees")) {
@@ -317,7 +321,7 @@ public class DbMetaDataUtil {
 
     @SuppressWarnings({"resource"})
     public List<DbColumn> listAllColumns(DataSource dataSource, String tableName, String columnNamePatten)
-            throws Exception {
+        throws Exception {
         Connection connection = null;
         String tableSchema;
         String databaseName;
@@ -484,11 +488,11 @@ public class DbMetaDataUtil {
             String username = dbmd.getUserName().toUpperCase();
             String dialect = getDatabaseDialectName(dataSource);
             if ("mysql".equals(dialect)) {
-                rs = dbmd.getTables(null, connection.getCatalog(), tableNamePattern, new String[]{"TABLE"});
+                rs = dbmd.getTables(null, connection.getCatalog(), tableNamePattern, new String[] {"TABLE"});
             } else if ("mssql".equals(dialect)) {
-                rs = dbmd.getTables(connection.getCatalog(), null, tableNamePattern, new String[]{"TABLE"});
+                rs = dbmd.getTables(connection.getCatalog(), null, tableNamePattern, new String[] {"TABLE"});
             } else if ("oracle".equals(dialect)) {
-                rs = dbmd.getTables(null, username, tableNamePattern, new String[]{"TABLE"});
+                rs = dbmd.getTables(null, username, tableNamePattern, new String[] {"TABLE"});
             }
 
             if (rs != null) {
@@ -533,11 +537,11 @@ public class DbMetaDataUtil {
             String username = dbmd.getUserName().toUpperCase();
             String dialect = getDatabaseDialectName(dataSource);
             if ("mysql".equals(dialect)) {
-                rs = dbmd.getTables(null, connection.getCatalog(), tableNamePattern, new String[]{"TABLE"});
+                rs = dbmd.getTables(null, connection.getCatalog(), tableNamePattern, new String[] {"TABLE"});
             } else if ("mssql".equals(dialect)) {
-                rs = dbmd.getTables(connection.getCatalog(), null, tableNamePattern, new String[]{"TABLE"});
+                rs = dbmd.getTables(connection.getCatalog(), null, tableNamePattern, new String[] {"TABLE"});
             } else if ("oracle".equals(dialect)) {
-                rs = dbmd.getTables(null, username, tableNamePattern, new String[]{"TABLE"});
+                rs = dbmd.getTables(null, username, tableNamePattern, new String[] {"TABLE"});
             }
             String dbName = "";
             if (rs != null) {

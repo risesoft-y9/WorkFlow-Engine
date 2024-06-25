@@ -1,15 +1,16 @@
 package net.risesoft;
 
+import java.util.Collections;
+
+import javax.servlet.ServletContext;
+import javax.servlet.SessionCookieConfig;
+import javax.servlet.SessionTrackingMode;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.WebApplicationContext;
-
-import javax.servlet.ServletContext;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
-import java.util.Collections;
 
 /**
  * @author qinman

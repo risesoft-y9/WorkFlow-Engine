@@ -1,6 +1,19 @@
 package net.risesoft.controller;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -19,17 +32,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -69,7 +71,7 @@ public class ItemRestController {
     }
 
     @SuppressWarnings("unused")
-    private  boolean deleteDirectory(String sPath) {
+    private boolean deleteDirectory(String sPath) {
         if (!sPath.endsWith(File.separator)) {
             sPath = sPath + File.separator;
         }
@@ -96,7 +98,7 @@ public class ItemRestController {
         return dirFile.delete();
     }
 
-    private  boolean deleteFile(String sPath) {
+    private boolean deleteFile(String sPath) {
         boolean flag = false;
         File file = new File(sPath);
         if (file.isFile() && file.exists()) {
@@ -128,7 +130,9 @@ public class ItemRestController {
                 for (Department dept : deptList) {
                     List<Department> subDeptList = departmentManager.listByParentId(tenantId, dept.getId()).getData();
                     boolean isParent = subDeptList != null && !subDeptList.isEmpty();
-                    sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(orgList.get(0).getId()).append("', name:'").append(dept.getName()).append("', isParent: ").append(isParent).append("},");
+                    sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(orgList.get(0).getId())
+                        .append("', name:'").append(dept.getName()).append("', isParent: ").append(isParent)
+                        .append("},");
                 }
             }
         } else {
@@ -136,7 +140,8 @@ public class ItemRestController {
             for (Department dept : deptList) {
                 List<Department> subDeptList = departmentManager.listByParentId(tenantId, dept.getId()).getData();
                 boolean isParent = subDeptList != null && !subDeptList.isEmpty();
-                sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(deptId).append("', name:'").append(dept.getName()).append("', isParent: ").append(isParent).append("},");
+                sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(deptId).append("', name:'")
+                    .append(dept.getName()).append("', isParent: ").append(isParent).append("},");
             }
         }
     }

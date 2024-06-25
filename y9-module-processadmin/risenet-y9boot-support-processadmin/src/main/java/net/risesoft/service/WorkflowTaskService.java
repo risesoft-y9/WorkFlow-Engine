@@ -1,7 +1,10 @@
 package net.risesoft.service;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.util.SysVariables;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.RepositoryService;
@@ -15,10 +18,9 @@ import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.util.SysVariables;
 
 /**
  * @author qinman
@@ -30,13 +32,13 @@ import java.util.Map;
 @DependsOn({"runtimeService", "repositoryService", "historyService", "taskService"})
 public class WorkflowTaskService {
 
-    private final  RuntimeService runtimeService;
+    private final RuntimeService runtimeService;
 
-    private final  RepositoryService repositoryService;
+    private final RepositoryService repositoryService;
 
-    private final  HistoryService historyService;
+    private final HistoryService historyService;
 
-    private final  TaskService taskService;
+    private final TaskService taskService;
 
     private final WorkflowProcessDefinitionService workflowProcessDefinitionService;
 

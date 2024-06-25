@@ -75,11 +75,13 @@ public class MobileV1WorkListController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/doingList")
-    public Y9Page<Map<String, Object>> doingList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> doingList(@RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
         try {
             Map<String, Object> retMap = doingService.list(itemId, title, page, rows);
             List<Map<String, Object>> doingList = (List<Map<String, Object>>)retMap.get("rows");
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), doingList, "获取列表成功");
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
+                Integer.parseInt(retMap.get("total").toString()), doingList, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取在办件列表异常：");
         }
@@ -96,7 +98,8 @@ public class MobileV1WorkListController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/doneList")
-    public Y9Page<Map<String, Object>> doneList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> doneList(@RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
         try {
             return doneService.list(itemId, title, page, rows);
         } catch (Exception e) {
@@ -120,7 +123,8 @@ public class MobileV1WorkListController {
             List<Map<String, Object>> list = new ArrayList<>();
             if (null != resource && null != resource.getId()) {
                 String resourceId = resource.getId();
-                List<Resource> list0 = positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
+                List<Resource> list0 = positionResourceApi
+                    .listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
                 String url;
                 for (Resource r : list0) {
                     url = r.getUrl();
@@ -133,7 +137,8 @@ public class MobileV1WorkListController {
                     String itemId = url.split("itemId=")[1];
                     ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
                     String processDefinitionKey = item.getWorkflowGuid();
-                    long todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
+                    long todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                        processDefinitionKey);
                     Map<String, Object> m = new HashMap<>(16);
                     Map<String, Object> resMap = todoService.list(item.getId(), "", 1, 1);
                     List<Map<String, Object>> todoList = (List<Map<String, Object>>)resMap.get("rows");
@@ -169,7 +174,8 @@ public class MobileV1WorkListController {
             String positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
             String processDefinitionKey = item.getWorkflowGuid();
-            Map<String, Object> countMap = processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
+            Map<String, Object> countMap =
+                processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);
             int todoCount = countMap != null ? (int)countMap.get("todoCount") : 0;
             int doingCount = countMap != null ? (int)countMap.get("doingCount") : 0;
             // int doneCount = countMap != null ? (int) countMap.get("doneCount") : 0;
@@ -218,11 +224,13 @@ public class MobileV1WorkListController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/todoList")
-    public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId, @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
+        @RequestParam(required = false) String title, @RequestParam Integer page, @RequestParam Integer rows) {
         try {
             Map<String, Object> retMap = todoService.list(itemId, title, page, rows);
             List<Map<String, Object>> todoList = (List<Map<String, Object>>)retMap.get("rows");
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()), Integer.parseInt(retMap.get("total").toString()), todoList, "获取列表成功");
+            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
+                Integer.parseInt(retMap.get("total").toString()), todoList, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("手机端待办件列表异常", e);
 

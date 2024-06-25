@@ -1,13 +1,20 @@
 package net.risesoft.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.BpmnAutoLayout;
@@ -33,22 +40,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotBlank;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.configuration.Y9Properties;
 
 /**
  * 流程模型控制器
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2023/01/03
@@ -76,7 +81,8 @@ public class ProcessModelVueController {
      * @param description 描述
      */
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> create(@RequestParam @NotBlank String name, @RequestParam @NotBlank String key, @RequestParam(required = false) String description) {
+    public Y9Result<String> create(@RequestParam @NotBlank String name, @RequestParam @NotBlank String key,
+        @RequestParam(required = false) String description) {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         String personName = userInfo.getName();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -154,7 +160,7 @@ public class ProcessModelVueController {
             IOUtils.copy(in, response.getOutputStream());
             response.flushBuffer();
         } catch (Exception e) {
-            LOGGER.error("导出模型失败,modelId:{} 异常：{}" , modelId,e.getMessage());
+            LOGGER.error("导出模型失败,modelId:{} 异常：{}", modelId, e.getMessage());
         }
     }
 
@@ -177,7 +183,8 @@ public class ProcessModelVueController {
             mapTemp.put("key", model.getKey());
             mapTemp.put("name", model.getName());
             mapTemp.put("version", 0);
-            processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey()).latestVersion().singleResult();
+            processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey())
+                .latestVersion().singleResult();
             if (null != processDefinition) {
                 mapTemp.put("version", processDefinition.getVersion());
             }
@@ -187,8 +194,8 @@ public class ProcessModelVueController {
             items.add(mapTemp);
         }
         items.sort((o1, o2) -> {
-            long startTime1 = (long) o1.get("sortTime");
-            long startTime2 = (long) o2.get("sortTime");
+            long startTime1 = (long)o1.get("sortTime");
+            long startTime2 = (long)o2.get("sortTime");
             return Long.compare(startTime2, startTime1);
         });
         return Y9Result.success(items, "获取成功");
@@ -198,7 +205,7 @@ public class ProcessModelVueController {
      * 获取流程设计模型xml
      *
      * @param modelId 模型id
-     * @return  Y9Result<Map<String, Object>>
+     * @return Y9Result<Map<String, Object>>
      */
     @RequestMapping(value = "/getModelXml")
     public Y9Result<Map<String, Object>> getModelXml(@RequestParam @NotBlank String modelId) {
@@ -210,17 +217,18 @@ public class ProcessModelVueController {
             map.put("name", model.getName());
             bpmnBytes = modelService.getBpmnXML(model);
         } catch (Exception e) {
-            LOGGER.error("获取模型xml失败,modelId:{} 异常：{}" , modelId,e.getMessage());
+            LOGGER.error("获取模型xml失败,modelId:{} 异常：{}", modelId, e.getMessage());
         }
         map.put("xml", bpmnBytes == null ? "" : new String(bpmnBytes, StandardCharsets.UTF_8));
         return Y9Result.success(map, "获取成功");
     }
+
     /**
      * 导入流程模板
      *
-     * @param file  上传的文件
+     * @param file 上传的文件
      * @param model 模型信息
-     * @return  Map<String, Object>
+     * @return Map<String, Object>
      */
     @RequestMapping(value = "/import")
     public Map<String, Object> importProcessModel(MultipartFile file, ModelRepresentation model) {
@@ -288,7 +296,7 @@ public class ProcessModelVueController {
             map.put("msg", "导入成功");
             return map;
         } catch (Exception e) {
-            LOGGER.error("导入流程模板失败,异常：{}" , e.getMessage());
+            LOGGER.error("导入流程模板失败,异常：{}", e.getMessage());
         }
         return map;
     }
@@ -296,7 +304,7 @@ public class ProcessModelVueController {
     /**
      * 保存设计模型xml
      *
-     * @param file  上传的文件
+     * @param file 上传的文件
      * @param model 模型信息
      * @return Y9Result<String>
      */
@@ -359,7 +367,7 @@ public class ProcessModelVueController {
             modelService.createModel(newModel, createdBy);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            LOGGER.error("保存模型xml失败,异常：{}" , e.getMessage());
+            LOGGER.error("保存模型xml失败,异常：{}", e.getMessage());
         }
         return Y9Result.failure("保存失败");
     }

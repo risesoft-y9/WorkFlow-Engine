@@ -54,7 +54,8 @@ public class WorkListRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/doingList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> doingList(@RequestParam String itemId, @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> doingList(@RequestParam String itemId,
+        @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         return doingService.listNew(itemId, searchTerm, page, rows);
     }
 
@@ -66,7 +67,8 @@ public class WorkListRestController {
      */
     @RequestMapping(value = "/doingViewConf", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemViewConfModel>> doingViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DOING.getValue());
+        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
+            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DOING.getValue());
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 
@@ -80,7 +82,8 @@ public class WorkListRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/doneList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId, @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId,
+        @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         return doneService.listNew(itemId, searchTerm, page, rows);
     }
 
@@ -92,7 +95,8 @@ public class WorkListRestController {
      */
     @RequestMapping(value = "/doneViewConf", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemViewConfModel>> doneViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DONE.getValue());
+        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
+            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DONE.getValue());
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 
@@ -109,7 +113,9 @@ public class WorkListRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/queryList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> queryList(@RequestParam String itemId, @RequestParam(required = false) String state, @RequestParam(required = false) String createDate, @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
+    public Y9Page<Map<String, Object>> queryList(@RequestParam String itemId,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String createDate,
+        @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
         return queryListService.queryList(itemId, state, createDate, tableName, searchMapStr, page, rows);
     }
@@ -125,7 +131,9 @@ public class WorkListRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/searchDoingList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> searchDoingList(@RequestParam String itemId, @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> searchDoingList(@RequestParam String itemId,
+        @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         return doingService.searchList(itemId, tableName, searchMapStr, page, rows);
     }
 
@@ -140,7 +148,9 @@ public class WorkListRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/searchDoneList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> searchDoneList(@RequestParam String itemId, @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> searchDoneList(@RequestParam String itemId,
+        @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         return doneService.searchList(itemId, tableName, searchMapStr, page, rows);
     }
 
@@ -155,7 +165,9 @@ public class WorkListRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/searchTodoList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> searchTodoList(@RequestParam String itemId, @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> searchTodoList(@RequestParam String itemId,
+        @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         return todoService.searchList(itemId, tableName, searchMapStr, page, rows);
     }
 
@@ -169,7 +181,8 @@ public class WorkListRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/todoList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId, @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
+        @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         return todoService.listNew(itemId, searchTerm, page, rows);
     }
 
@@ -181,7 +194,8 @@ public class WorkListRestController {
      */
     @RequestMapping(value = "/todoViewConf", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemViewConfModel>> todoViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.TODO.getValue());
+        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
+            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.TODO.getValue());
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 
@@ -193,8 +207,10 @@ public class WorkListRestController {
      * @return Y9Result<List < ItemViewConfModel>>
      */
     @RequestMapping(value = "/viewConf", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<ItemViewConfModel>> viewConf(@RequestParam String itemId, @RequestParam(required = false) String viewType) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, viewType);
+    public Y9Result<List<ItemViewConfModel>> viewConf(@RequestParam String itemId,
+        @RequestParam(required = false) String viewType) {
+        List<ItemViewConfModel> itemViewConfList =
+            itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, viewType);
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 }

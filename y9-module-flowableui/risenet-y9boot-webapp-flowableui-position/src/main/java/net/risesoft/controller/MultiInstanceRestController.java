@@ -67,14 +67,18 @@ public class MultiInstanceRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/addExecutionId", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> addExecutionId(@RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String executionId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String userChoice, @RequestParam(required = false) String selectUserId,
-        @RequestParam(required = false) int num, @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
+    public Y9Result<String> addExecutionId(@RequestParam @NotBlank String processInstanceId,
+        @RequestParam @NotBlank String executionId, @RequestParam @NotBlank String taskId,
+        @RequestParam @NotBlank String userChoice, @RequestParam(required = false) String selectUserId,
+        @RequestParam(required = false) int num, @RequestParam(required = false) String isSendSms,
+        @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
         try {
             /*
               selectUserId不为空说明是从串行加签过来的
              */
             if (StringUtils.isBlank(selectUserId)) {
-                multiInstanceService.addExecutionId(processInstanceId, taskId, userChoice, isSendSms, isShuMing, smsContent);
+                multiInstanceService.addExecutionId(processInstanceId, taskId, userChoice, isSendSms, isShuMing,
+                    smsContent);
             } else {
                 multiInstanceService.addExecutionId4Sequential(executionId, taskId, userChoice, selectUserId, num);
             }
@@ -103,7 +107,8 @@ public class MultiInstanceRestController {
         }
         List<Map<String, Object>> listMap = new ArrayList<>();
         if (task != null) {
-            String type = processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+            String type =
+                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey());
             if (SysVariables.PARALLEL.equals(type)) {
                 listMap = multiInstanceService.assigneeList4Parallel(processInstanceId);
             } else if (SysVariables.SEQUENTIAL.equals(type)) {
@@ -128,7 +133,8 @@ public class MultiInstanceRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/removeExecution", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeExecution(@RequestParam @NotBlank String executionId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String elementUser) {
+    public Y9Result<String> removeExecution(@RequestParam @NotBlank String executionId,
+        @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String elementUser) {
         try {
             multiInstanceService.removeExecution(executionId, taskId, elementUser);
             return Y9Result.successMsg("减签成功");
@@ -148,7 +154,9 @@ public class MultiInstanceRestController {
      * @return Y9Result<String>
      */
     @RequestMapping(value = "/removeExecution4Sequential", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> removeExecution4Sequential(@RequestParam @NotBlank String executionId, @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String elementUser, @RequestParam(required = false) int num) {
+    public Y9Result<String> removeExecution4Sequential(@RequestParam @NotBlank String executionId,
+        @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String elementUser,
+        @RequestParam(required = false) int num) {
         try {
             multiInstanceService.removeExecution4Sequential(executionId, taskId, elementUser, num);
             return Y9Result.successMsg("减签成功");
@@ -188,7 +196,8 @@ public class MultiInstanceRestController {
         variableApi.setVariableLocal(tenantId, taskId, SysVariables.PARALLELSPONSOR, val);
 
         // 修改自定义变量主办人字段
-        ProcessParamModel processParam = processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId());
+        ProcessParamModel processParam =
+            processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId());
         processParam.setSponsorGuid(taskModel.getAssignee());
         processParamApi.saveOrUpdate(tenantId, processParam);
         return Y9Result.successMsg("设置成功");

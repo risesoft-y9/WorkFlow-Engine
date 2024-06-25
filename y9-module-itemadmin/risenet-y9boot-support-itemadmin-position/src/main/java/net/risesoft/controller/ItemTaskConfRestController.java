@@ -1,21 +1,23 @@
 package net.risesoft.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemTaskConfService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -39,8 +41,7 @@ public class ItemTaskConfRestController {
      * @return
      */
     @RequestMapping(value = "/copyTaskConfig", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> copyTaskConfig(@RequestParam String itemId,
-        @RequestParam String processDefinitionId) {
+    public Y9Result<String> copyTaskConfig(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         taskConfService.copyTaskConf(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }

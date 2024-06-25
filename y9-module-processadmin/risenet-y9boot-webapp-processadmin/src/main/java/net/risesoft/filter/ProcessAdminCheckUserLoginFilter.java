@@ -1,14 +1,6 @@
 package net.risesoft.filter;
 
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.platform.org.ManagerApi;
-import net.risesoft.model.platform.Manager;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeansException;
+import java.io.IOException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -18,7 +10,18 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeansException;
+
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.platform.org.ManagerApi;
+import net.risesoft.model.platform.Manager;
+import net.risesoft.model.user.UserInfo;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -29,9 +32,9 @@ import java.io.IOException;
 public class ProcessAdminCheckUserLoginFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         try {
-            HttpServletRequest req = (HttpServletRequest) request;
+            HttpServletRequest req = (HttpServletRequest)request;
             StringBuffer path = req.getRequestURL();
             HttpSession session = req.getSession();
             UserInfo loginUser = Y9LoginUserHolder.getUserInfo();
@@ -49,7 +52,7 @@ public class ProcessAdminCheckUserLoginFilter implements Filter {
                 }
             }
             if (loginUser == null) {
-                loginUser = (UserInfo) session.getAttribute("loginUser");
+                loginUser = (UserInfo)session.getAttribute("loginUser");
             }
             if (loginUser != null) {
                 Y9LoginUserHolder.setUserInfo(loginUser);

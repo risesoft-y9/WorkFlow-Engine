@@ -1,8 +1,8 @@
 package net.risesoft.exception;
 
-import lombok.AllArgsConstructor;
-
 import static net.risesoft.exception.FlowableUIErrorCodeConsts.PARAM_MODULE_CODE;
+
+import lombok.AllArgsConstructor;
 
 /**
  * 全局的错误代码

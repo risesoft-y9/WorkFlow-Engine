@@ -1,22 +1,24 @@
 package net.risesoft.service.form.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.consts.UtilConsts;
-import net.risesoft.entity.form.Y9FormField;
-import net.risesoft.id.IdType;
-import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.repository.form.Y9FormFieldRepository;
-import net.risesoft.service.form.Y9FormFieldService;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.consts.UtilConsts;
+import net.risesoft.entity.form.Y9FormField;
+import net.risesoft.id.IdType;
+import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.repository.form.Y9FormFieldRepository;
+import net.risesoft.service.form.Y9FormFieldService;
 
 /**
  * @author qinman
