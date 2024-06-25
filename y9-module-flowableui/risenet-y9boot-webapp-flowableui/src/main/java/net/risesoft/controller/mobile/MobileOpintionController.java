@@ -17,6 +17,7 @@ import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.api.itemadmin.OpinionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.itemadmin.CommonSentencesModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -141,7 +142,8 @@ public class MobileOpintionController {
         try {
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            List<Map<String, Object>> listMap = commonSentencesManager.listSentencesService(tenantId, userId);
+            List<CommonSentencesModel> listMap =
+                commonSentencesManager.listSentencesService(tenantId, userId).getData();
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(listMap));
         } catch (Exception e) {
             e.printStackTrace();
@@ -262,7 +264,8 @@ public class MobileOpintionController {
         try {
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            List<Map<String, Object>> listMap = commonSentencesManager.listSentencesService(tenantId, userId);
+            List<CommonSentencesModel> listMap =
+                commonSentencesManager.listSentencesService(tenantId, userId).getData();
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(listMap));
         } catch (Exception e) {
             e.printStackTrace();

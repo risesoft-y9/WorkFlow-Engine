@@ -1,6 +1,21 @@
 package net.risesoft.service;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+
 import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.datacenter.OfficeInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -29,19 +44,6 @@ import net.risesoft.repository.jpa.AssociatedFileRepository;
 import net.risesoft.util.form.DbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author qinman
@@ -82,7 +84,9 @@ public class DataCenterService {
 
     private final HistoricVariableApi historicVariableManager;
 
-    public DataCenterService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant, SpmApproveItemService spmApproveitemService, TransactionWordService transactionWordService, TransactionFileService transactionFileService, ProcessTrackService processTrackService, Y9FormItemBindService y9FormItemBindService, AssociatedFileRepository associatedFileRepository, ProcessParamService processParamService, Y9FormRepository y9FormRepository, PositionApi positionApi, OrgUnitApi orgUnitApi, Y9FormFieldRepository y9FormFieldRepository, OfficeInfoApi officeInfoManager, HistoricProcessApi historicProcessManager, HistoricVariableApi historicVariableManager) {
+    public DataCenterService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant, SpmApproveItemService spmApproveitemService, TransactionWordService transactionWordService, TransactionFileService transactionFileService, ProcessTrackService processTrackService,
+        Y9FormItemBindService y9FormItemBindService, AssociatedFileRepository associatedFileRepository, ProcessParamService processParamService, Y9FormRepository y9FormRepository, PositionApi positionApi, OrgUnitApi orgUnitApi, Y9FormFieldRepository y9FormFieldRepository,
+        OfficeInfoApi officeInfoManager, HistoricProcessApi historicProcessManager, HistoricVariableApi historicVariableManager) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.spmApproveitemService = spmApproveitemService;
         this.transactionWordService = transactionWordService;
@@ -228,97 +232,92 @@ public class DataCenterService {
         OfficeInfo officeInfo = new OfficeInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
         Position position = Y9LoginUserHolder.getPosition();
-        try {
-            HistoricProcessInstanceModel processInstance = historicProcessManager.getById(Y9LoginUserHolder.getTenantId(), processInstanceId);
-            HistoricVariableInstanceModel vmap = historicVariableManager.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, "infoOvert", "");
+        HistoricProcessInstanceModel processInstance = historicProcessManager.getById(Y9LoginUserHolder.getTenantId(), processInstanceId);
+        HistoricVariableInstanceModel vmap = historicVariableManager.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, "infoOvert", "");
 
-            ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-            String itemId = processParam.getItemId();
-            String documentTitle = processParam.getTitle();
-            String level = processParam.getCustomLevel();
-            String number = processParam.getCustomNumber();
-            String processSerialNumber = processParam.getProcessSerialNumber();
-            String systemCnName = processParam.getSystemCnName();
-            String systemName = processParam.getSystemName();
-            String infoOvert = ((vmap == null || vmap.getValue() == null) ? "" : vmap.getValue().toString());
+        ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+        String itemId = processParam.getItemId();
+        String documentTitle = processParam.getTitle();
+        String level = processParam.getCustomLevel();
+        String number = processParam.getCustomNumber();
+        String processSerialNumber = processParam.getProcessSerialNumber();
+        String systemCnName = processParam.getSystemCnName();
+        String systemName = processParam.getSystemName();
+        String infoOvert = ((vmap == null || vmap.getValue() == null) ? "" : vmap.getValue().toString());
 
-            SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
-            String startProUserId = processInstance.getStartUserId();
-            String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
-            Position startProUser = positionApi.get(tenantId, startUserId).getData();
-            OrgUnit dept = orgUnitApi.getBureau(tenantId, startProUser.getParentId()).getData();
+        SpmApproveItem spmApproveItem = spmApproveitemService.findById(itemId);
+        String startProUserId = processInstance.getStartUserId();
+        String startUserId = startProUserId.contains(":") ? startProUserId.split(":")[0] : startProUserId;
+        Position startProUser = positionApi.get(tenantId, startUserId).getData();
+        OrgUnit dept = orgUnitApi.getBureau(tenantId, startProUser.getParentId()).getData();
 
-            // 获取历程
-            Map<String, Object> map = this.historyExcel(processSerialNumber, processInstanceId);
-            String userId = (String)map.get("userId");
-            List<HistoryInfo> hisList = (List<HistoryInfo>)map.get("list");
+        // 获取历程
+        Map<String, Object> map = this.historyExcel(processSerialNumber, processInstanceId);
+        String userId = (String)map.get("userId");
+        List<HistoryInfo> hisList = (List<HistoryInfo>)map.get("list");
 
-            // 获取正文
-            TransactionWord word = transactionWordService.getByProcessSerialNumber(processSerialNumber);
-            String textUrl = "";
-            if (word != null && StringUtils.isNotBlank(word.getFileStoreId())) {
-                textUrl = word.getFileStoreId();
-            }
-
-            // 获取附件
-            List<TransactionFile> fileList = transactionFileService.getListByProcessSerialNumber(processSerialNumber);
-            List<AttachmentInfo> aList = new ArrayList<AttachmentInfo>();
-            for (TransactionFile file : fileList) {
-                AttachmentInfo info = new AttachmentInfo();
-                info.setFileContent(null);
-                info.setFileId(file.getFileStoreId());
-                info.setFileName(file.getName());
-                info.setFileType(file.getFileType());
-                info.setFileUrl(null);
-                aList.add(info);
-            }
-
-            AssociatedFile associatedFile = associatedFileRepository.findByProcessSerialNumber(processSerialNumber);
-            String associatedId = "";
-            if (associatedFile != null) {
-                associatedId = associatedFile.getAssociatedId();
-            }
-
-            officeInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            officeInfo.setTenantId(tenantId);
-            officeInfo.setCompleteUserName(position.getName());
-            officeInfo.setCreatDeptName(dept.getName());
-            officeInfo.setCreatUserName(startProUser.getName());
-            officeInfo.setEndTime(processInstance.getEndTime());
-            officeInfo.setStartTime(processInstance.getStartTime());
-            officeInfo.setAppCnName(spmApproveItem != null ? spmApproveItem.getName() : "");
-            officeInfo.setSystemCnName(systemCnName);
-            officeInfo.setSystemName(systemName);
-            officeInfo.setDocNature("");
-            officeInfo.setFilingDept(dept.getName());
-            officeInfo.setFilingMan(position.getName());
-            officeInfo.setProcessInstanceId(processInstanceId);
-            officeInfo.setProcessSerialNumber(processSerialNumber);
-            officeInfo.setSecurityLevel("一般");
-            officeInfo.setSerialNumber(number);
-            officeInfo.setText("");
-            officeInfo.setTextUrl(textUrl);
-            officeInfo.setTitle(documentTitle);
-            officeInfo.setUndertaker(userId);
-            officeInfo.setUrgency(level);
-            officeInfo.setAssociatedId(associatedId);
-            officeInfo.setDisabled(infoOvert.equals("0") ? "0" : "1");
-
-            officeInfo.setHistorys(hisList);
-            officeInfo.setAttachments(aList);
-
-            String processDefinitionId = processInstance.getProcessDefinitionId();
-            List<EformInfo> elist = this.getEformInfo(processInstanceId, processDefinitionId.split(":")[0], processDefinitionId);
-            officeInfo.setEforms(elist);
-
-            boolean b = officeInfoManager.saveOfficeInfo(tenantId, officeInfo);
-            LOGGER.info("*****officeInfo数保存到数据中心 {} *****", b);
-            LOGGER.info("-----办结数据：{}", officeInfo);
-            return b;
-        } catch (Exception e) {
-            e.printStackTrace();
+        // 获取正文
+        TransactionWord word = transactionWordService.getByProcessSerialNumber(processSerialNumber);
+        String textUrl = "";
+        if (word != null && StringUtils.isNotBlank(word.getFileStoreId())) {
+            textUrl = word.getFileStoreId();
         }
-        return false;
+
+        // 获取附件
+        List<TransactionFile> fileList = transactionFileService.getListByProcessSerialNumber(processSerialNumber);
+        List<AttachmentInfo> aList = new ArrayList<AttachmentInfo>();
+        for (TransactionFile file : fileList) {
+            AttachmentInfo info = new AttachmentInfo();
+            info.setFileContent(null);
+            info.setFileId(file.getFileStoreId());
+            info.setFileName(file.getName());
+            info.setFileType(file.getFileType());
+            info.setFileUrl(null);
+            aList.add(info);
+        }
+
+        AssociatedFile associatedFile = associatedFileRepository.findByProcessSerialNumber(processSerialNumber);
+        String associatedId = "";
+        if (associatedFile != null) {
+            associatedId = associatedFile.getAssociatedId();
+        }
+
+        officeInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        officeInfo.setTenantId(tenantId);
+        officeInfo.setCompleteUserName(position.getName());
+        officeInfo.setCreatDeptName(dept.getName());
+        officeInfo.setCreatUserName(startProUser.getName());
+        officeInfo.setEndTime(processInstance.getEndTime());
+        officeInfo.setStartTime(processInstance.getStartTime());
+        officeInfo.setAppCnName(spmApproveItem != null ? spmApproveItem.getName() : "");
+        officeInfo.setSystemCnName(systemCnName);
+        officeInfo.setSystemName(systemName);
+        officeInfo.setDocNature("");
+        officeInfo.setFilingDept(dept.getName());
+        officeInfo.setFilingMan(position.getName());
+        officeInfo.setProcessInstanceId(processInstanceId);
+        officeInfo.setProcessSerialNumber(processSerialNumber);
+        officeInfo.setSecurityLevel("一般");
+        officeInfo.setSerialNumber(number);
+        officeInfo.setText("");
+        officeInfo.setTextUrl(textUrl);
+        officeInfo.setTitle(documentTitle);
+        officeInfo.setUndertaker(userId);
+        officeInfo.setUrgency(level);
+        officeInfo.setAssociatedId(associatedId);
+        officeInfo.setDisabled(infoOvert.equals("0") ? "0" : "1");
+
+        officeInfo.setHistorys(hisList);
+        officeInfo.setAttachments(aList);
+
+        String processDefinitionId = processInstance.getProcessDefinitionId();
+        List<EformInfo> elist = this.getEformInfo(processInstanceId, processDefinitionId.split(":")[0], processDefinitionId);
+        officeInfo.setEforms(elist);
+
+        boolean b = officeInfoManager.saveOfficeInfo(tenantId, officeInfo);
+        LOGGER.info("*****officeInfo数保存到数据中心 {} *****", b);
+        LOGGER.info("-----办结数据：{}", officeInfo);
+        return b;
     }
 
     @SuppressWarnings("unchecked")

@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +23,7 @@ import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.util.ToolUtil;
@@ -73,9 +73,9 @@ public class FormNTKOPrintController {
             String[] pId = processInstanceId.split(",");
             processInstanceId = pId[0];
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-                documentTitle = retMap.get("title").toString();
+                DraftModel model =
+                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();

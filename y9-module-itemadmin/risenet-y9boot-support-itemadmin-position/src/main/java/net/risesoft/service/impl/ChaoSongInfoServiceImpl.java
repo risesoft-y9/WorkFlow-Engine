@@ -49,6 +49,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.ErrorLogModel;
+import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.platform.CustomGroupMember;
 import net.risesoft.model.platform.Department;
 import net.risesoft.model.platform.OrgUnit;
@@ -66,7 +67,6 @@ import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.OfficeFollowService;
 import net.risesoft.service.ProcessParamService;
-import net.risesoft.service.SpmApproveItemService;
 import net.risesoft.util.SysVariables;
 import net.risesoft.util.Y9EsIndexConst;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -86,8 +86,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     private final ChaoSongInfoRepository chaoSongInfoRepository;
 
     private final DocumentService documentService;
-
-    private final SpmApproveItemService spmApproveitemService;
 
     private final ProcessParamService processParamService;
 
@@ -201,8 +199,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
-    public Map<String, Object> detail(String processInstanceId, Integer status, boolean mobile) {
-        Map<String, Object> returnMap = new HashMap<>(16);
+    public OpenDataModel detail(String processInstanceId, Integer status, boolean mobile) {
+        OpenDataModel model = new OpenDataModel();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
         List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
@@ -215,7 +213,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             processInstanceId = task.getProcessInstanceId();
         }
         String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey, activitiUser = "", startor;
-        String itemboxStr = itembox;
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         HistoricProcessInstanceModel hpi = historicProcessManager.getById(tenantId, processInstanceId);
         if (hpi == null) {
@@ -243,29 +240,28 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             taskDefinitionKey = taskTemp.getTaskDefinitionKey();
         }
         Position position = positionManager.get(tenantId, Y9LoginUserHolder.getPositionId()).getData();
-        returnMap.put("title", processParam.getTitle());
-        returnMap.put("startor", startor);
-        returnMap.put("itembox", itembox);
-        returnMap.put("control", itemboxStr);
-        returnMap.put("currentUser", position.getName());
-        returnMap.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
-        returnMap.put("processDefinitionKey", processDefinitionKey);
-        returnMap.put("processDefinitionId", processDefinitionId);
-        returnMap.put("processInstanceId", processInstanceId);
-        returnMap.put("taskDefKey", taskDefinitionKey);
-        returnMap.put("taskId", taskId);
-        returnMap.put(SysVariables.ACTIVITIUSER, activitiUser);
-        returnMap = spmApproveitemService.findById(processParam.getItemId(), returnMap);
-        returnMap = documentService.genDocumentModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, returnMap);
+        model.setTitle(processParam.getTitle());
+        model.setStartor(startor);
+        model.setItembox(itembox);
+        model.setCurrentUser(position.getName());
+        model.setProcessDefinitionKey(processDefinitionKey);
+        model.setProcessSerialNumber(processSerialNumber);
+        model.setProcessDefinitionId(processDefinitionId);
+        model.setProcessInstanceId(processInstanceId);
+        model.setTaskDefKey(taskDefinitionKey);
+        model.setTaskId(taskId);
+        model.setActivitiUser(activitiUser);
+
+        model = documentService.genDocumentModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
         String menuName = "打印,抄送,关注,返回";
         String menuKey = "17,18,follow,03";
         if (status == 1) {
             menuName = "打印,抄送,关注,返回";
             menuKey = "17,18,follow,03";
         }
-        returnMap.put("menuName", menuName);
-        returnMap.put("menuKey", menuKey);
-        return returnMap;
+        model.setMenuName(menuName);
+        model.setMenuKey(menuKey);
+        return model;
     }
 
     @Override

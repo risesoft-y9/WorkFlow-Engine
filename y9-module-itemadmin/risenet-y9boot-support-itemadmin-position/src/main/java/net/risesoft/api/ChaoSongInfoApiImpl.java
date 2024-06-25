@@ -16,6 +16,7 @@ import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.ChaoSongModel;
+import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
 import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
@@ -159,21 +160,21 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param processInstanceId 抄送的流程实例ID
      * @param status 传阅的状态,0未阅,1已阅,2新件
      * @param mobile 是否为移动端
-     * @return Map
+     * @return Y9Result<OpenDataModeld>
      */
     @Override
     @GetMapping(value = "/detail", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Map<String, Object>> detail(String tenantId, String positionId, String id, String processInstanceId, Integer status, boolean mobile) {
+    public Y9Result<OpenDataModel> detail(String tenantId, String positionId, String id, String processInstanceId, Integer status, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        Map<String, Object> map = chaoSongInfoService.detail(processInstanceId, status, mobile);
-        map.put("id", id);
-        map.put("status", status);
+        OpenDataModel model = chaoSongInfoService.detail(processInstanceId, status, mobile);
+        model.setId(id);
+        model.setStatus(status);
         ChaoSongInfo chaoSong = chaoSongInfoService.findOne(id);
         if (null != chaoSong && chaoSong.getStatus() != 1) {
             chaoSongInfoService.changeStatus(id);
         }
-        return Y9Result.success(map);
+        return Y9Result.success(model);
     }
 
     /**
@@ -214,7 +215,7 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param documentTitle 标题
      * @param rows 条数
      * @param page 页码
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<ChaoSongModel>
      */
     @Override
     @GetMapping(value = "/getDoneList", produces = MediaType.APPLICATION_JSON_VALUE)

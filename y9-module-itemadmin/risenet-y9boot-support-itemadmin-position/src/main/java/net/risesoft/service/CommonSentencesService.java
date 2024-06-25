@@ -1,6 +1,15 @@
 package net.risesoft.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.entity.CommonSentences;
 import net.risesoft.entity.CommonSentencesInit;
 import net.risesoft.id.IdType;
@@ -9,15 +18,6 @@ import net.risesoft.repository.jpa.CommonSentencesInitRepository;
 import net.risesoft.repository.jpa.CommonSentencesRepository;
 import net.risesoft.util.CommentUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author qinman
@@ -57,40 +57,26 @@ public class CommonSentencesService {
      * @return
      */
     @Transactional
-    public List<Map<String, Object>> listSentencesService() {
-        List<Map<String, Object>> resList = new ArrayList<>();
+    public List<CommonSentences> listSentencesService() {
+        List<CommonSentences> resList = new ArrayList<>();
         String userId = Y9LoginUserHolder.getPersonId();
         List<CommonSentences> list = commonSentencesRepository.findAllByUserId(userId);
         List<CommonSentencesInit> listInit = commonSentencesInitRepository.findByUserId(userId);
-        try {
-            if (list.isEmpty() && listInit.isEmpty()) {
-                String[] comment = CommentUtil.getComment();
-                // 保存初始化记录，用户已经初始化过常用语
-                CommonSentencesInit commonSentencesInit = new CommonSentencesInit();
-                commonSentencesInit.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                commonSentencesInit.setUserId(userId);
-                commonSentencesInitRepository.save(commonSentencesInit);
-                int i = 0;
-                for (String option : comment) {
-                    CommonSentences commonSentences = saveCommonSentences(userId, option, i);
-                    Map<String, Object> map = new HashMap<>(16);
-                    map.put("id", commonSentences.getId());
-                    map.put("content", option);
-                    map.put("tabIndex", i);
-                    i = i + 1;
-                    resList.add(map);
-                }
-            } else {
-                for (CommonSentences commonSentences : list) {
-                    Map<String, Object> map = new HashMap<>(16);
-                    map.put("content", commonSentences.getContent());
-                    map.put("tabIndex", commonSentences.getTabIndex());
-                    map.put("id", commonSentences.getId());
-                    resList.add(map);
-                }
+        if (list.isEmpty() && listInit.isEmpty()) {
+            String[] comment = CommentUtil.getComment();
+            // 保存初始化记录，用户已经初始化过常用语
+            CommonSentencesInit commonSentencesInit = new CommonSentencesInit();
+            commonSentencesInit.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            commonSentencesInit.setUserId(userId);
+            commonSentencesInitRepository.save(commonSentencesInit);
+            int i = 0;
+            for (String option : comment) {
+                CommonSentences commonSentences = saveCommonSentences(userId, option, i);
+                i = i + 1;
+                resList.add(commonSentences);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
+            resList.addAll(list);
         }
         return resList;
     }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.model.itemadmin.SpeakInfoModel;
@@ -30,7 +29,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@Slf4j
 @RequestMapping(value = "/vue/speakInfo")
 public class SpeakInfoRestController {
 

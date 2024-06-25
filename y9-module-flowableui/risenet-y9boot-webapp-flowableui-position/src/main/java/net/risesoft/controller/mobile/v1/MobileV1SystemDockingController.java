@@ -26,11 +26,11 @@ import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.itemadmin.position.Document4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessParamService;
@@ -82,7 +82,9 @@ public class MobileV1SystemDockingController {
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/startAndForwarding")
-    public Y9Result<Map<String, Object>> startAndForwarding(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String mappingId, @RequestParam @NotBlank String routeToTaskId, @RequestParam @NotBlank String positionChoice, @RequestParam @NotBlank String formJsonData,
+    public Y9Result<Object> startAndForwarding(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String mappingId, @RequestParam @NotBlank String routeToTaskId,
+        @RequestParam @NotBlank String positionChoice, @RequestParam @NotBlank String formJsonData,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) MultipartFile[] files) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -118,7 +120,8 @@ public class MobileV1SystemDockingController {
                     processInstanceId = taskModel.getProcessInstanceId();
                 }
             }
-            Y9Result<String> map1 = processParamService.saveOrUpdate(itemId, guid, processInstanceId, title, number, level, false);
+            Y9Result<String> map1 =
+                processParamService.saveOrUpdate(itemId, guid, processInstanceId, title, number, level, false);
             if (!map1.isSuccess()) {
                 return Y9Result.failure("发生异常");
             }
@@ -135,11 +138,12 @@ public class MobileV1SystemDockingController {
             /*
               3启动流程并发送
              */
-            Map<String, Object> map = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, "", itemId, guid, item.getWorkflowGuid(), positionChoice, "", routeToTaskId, new HashMap<>());
-            if ((boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.success(map, "操作成功");
+            Y9Result<String> y9Result = document4PositionApi.saveAndForwarding(tenantId, positionId, processInstanceId,
+                taskId, "", itemId, guid, item.getWorkflowGuid(), positionChoice, "", routeToTaskId, new HashMap<>());
+            if (y9Result.isSuccess()) {
+                return Y9Result.success("操作成功");
             }
-            return Y9Result.failure(map.get("msg").toString());
+            return Y9Result.failure(y9Result.getMsg());
         } catch (Exception e) {
             LOGGER.error("startAndForwarding error", e);
             return Y9Result.failure("操作失败");
@@ -154,11 +158,13 @@ public class MobileV1SystemDockingController {
      * @param positionChoice 接收岗位id，多人,隔开
      * @param formJsonData 表单数据
      * @param files 附件列表
-     * @return Y9Result<Map < String, Object>>
+     * @return Y9Result<StartProcessResultModel>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/startProcess")
-    public Y9Result<Map<String, Object>> startProcess(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String mappingId, @RequestParam @NotBlank String positionChoice, @RequestParam @NotBlank String formJsonData, @RequestParam(required = false) MultipartFile[] files) {
+    public Y9Result<StartProcessResultModel> startProcess(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String mappingId, @RequestParam @NotBlank String positionChoice,
+        @RequestParam @NotBlank String formJsonData, @RequestParam(required = false) MultipartFile[] files) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -204,7 +210,8 @@ public class MobileV1SystemDockingController {
                         if (fileName != null) {
                             fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
                         }
-                        String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", guid);
+                        String fullPath =
+                            Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", guid);
                         Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
                         DecimalFormat df = new DecimalFormat("#.00");
                         long fileSize = file.getSize();
@@ -218,7 +225,8 @@ public class MobileV1SystemDockingController {
                         } else {
                             fileSizeString = df.format((double)fileSize / 1073741824) + "G";
                         }
-                        Y9Result<String> y9Result = attachment4PositionApi.upload(tenantId, userId, positionId, fileName, fileSizeString, "", "", "", guid, "", y9FileStore.getId());
+                        Y9Result<String> y9Result = attachment4PositionApi.upload(tenantId, userId, positionId,
+                            fileName, fileSizeString, "", "", "", guid, "", y9FileStore.getId());
                         if (!y9Result.isSuccess()) {
                             LOGGER.info("***********************" + title + "**********保存附件失败");
                             return Y9Result.failure("保存附件失败");
@@ -226,11 +234,12 @@ public class MobileV1SystemDockingController {
                     }
                 }
             }
-            Map<String, Object> map = document4PositionApi.startProcess(tenantId, positionId, itemId, guid, item.getWorkflowGuid(), positionChoice);
-            if ((boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.success(map, "提交成功");
+            Y9Result<StartProcessResultModel> y9Result = document4PositionApi.startProcess(tenantId, positionId, itemId,
+                guid, item.getWorkflowGuid(), positionChoice);
+            if (y9Result.isSuccess()) {
+                return Y9Result.success(y9Result.getData(), "提交成功");
             }
-            return Y9Result.failure(map.get("msg").toString());
+            return Y9Result.failure(y9Result.getMsg());
         } catch (Exception e) {
             LOGGER.error("提交失败", e);
             return Y9Result.failure("提交失败");

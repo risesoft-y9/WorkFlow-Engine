@@ -1,6 +1,13 @@
 package net.risesoft.api.itemadmin;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import net.risesoft.model.itemadmin.DocumentWpsModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -14,26 +21,32 @@ public interface DocumentWpsApi {
      *
      * @param tenantId 租户id
      * @param id id
-     * @return DocumentWpsModel
+     * @return Y9Result<DocumentWpsModel>
      */
-    DocumentWpsModel findById(String tenantId, String id);
+    @GetMapping("/findById")
+    Y9Result<DocumentWpsModel> findById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
 
     /**
      * 根据流程编号获取正文
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程序列号
-     * @return DocumentWpsModel
+     * @return Y9Result<DocumentWpsModel>
      */
-    DocumentWpsModel findByProcessSerialNumber(String tenantId, String processSerialNumber);
+    @GetMapping("/findByProcessSerialNumber")
+    Y9Result<DocumentWpsModel> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存正文信息
      *
      * @param tenantId 租户id
      * @param documentWps wps文档对象
+     * @return Y9Result<Object>
      */
-    void saveDocumentWps(String tenantId, DocumentWpsModel documentWps);
+    @PostMapping(value = "/saveDocumentWps", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Y9Result<Object> saveDocumentWps(@RequestParam("tenantId") String tenantId,
+        @RequestBody DocumentWpsModel documentWps);
 
     /**
      * 保存正文内容状态
@@ -41,6 +54,10 @@ public interface DocumentWpsApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程序列号
      * @param hasContent 是否有内容
+     * @return Y9Result<Object>
      */
-    void saveWpsContent(String tenantId, String processSerialNumber, String hasContent);
+    @PostMapping("/saveWpsContent")
+    Y9Result<Object> saveWpsContent(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("hasContent") String hasContent);
+
 }

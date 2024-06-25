@@ -28,6 +28,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -257,9 +258,9 @@ public class WpsRestController {
             }
             Object documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                Map<String, Object> retMap =
-                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber);
-                documentTitle = retMap.get("title");
+                DraftModel model =
+                    draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                 documentTitle = processModel.getTitle();

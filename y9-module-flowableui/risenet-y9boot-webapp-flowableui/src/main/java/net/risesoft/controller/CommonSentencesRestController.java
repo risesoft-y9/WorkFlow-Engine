@@ -1,8 +1,6 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.CommonSentencesApi;
+import net.risesoft.model.itemadmin.CommonSentencesModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -35,18 +34,10 @@ public class CommonSentencesRestController {
      */
     @ResponseBody
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> listSentencesService() {
-        List<Map<String, Object>> resList = new ArrayList<Map<String, Object>>();
-        try {
-            UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-            String userId = userInfo.getPersonId(), tenantId = userInfo.getTenantId();
-            resList = new ArrayList<Map<String, Object>>();
-            resList = commonSentencesManager.listSentencesService(tenantId, userId);
-            return Y9Result.success(resList, "获取成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Y9Result.failure("获取失败");
+    public Y9Result<List<CommonSentencesModel>> listSentencesService() {
+        UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
+        String userId = userInfo.getPersonId(), tenantId = userInfo.getTenantId();
+        return commonSentencesManager.listSentencesService(tenantId, userId);
     }
 
     /**

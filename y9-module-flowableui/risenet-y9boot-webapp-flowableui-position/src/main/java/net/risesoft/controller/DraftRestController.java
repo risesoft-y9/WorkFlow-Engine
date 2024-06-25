@@ -17,22 +17,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ItemViewConfApi;
 import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
 import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
+import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
+import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * 草稿
@@ -40,7 +40,6 @@ import net.risesoft.y9.configuration.Y9Properties;
  * @author zhangchongjie
  * @date 2024/06/05
  */
-@Slf4j
 @Validated
 @RequiredArgsConstructor
 @RestController
@@ -66,17 +65,9 @@ public class DraftRestController {
      * @return Y9Result<String>
      */
     @PostMapping(value = "/deleteDraft")
-    public Y9Result<String> deleteDraft(@RequestParam @NotBlank String ids) {
+    public Y9Result<Object> deleteDraft(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            Map<String, Object> map = draft4PositionApi.deleteDraft(tenantId, ids);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.successMsg("删除成功");
-            }
-        } catch (Exception e) {
-            LOGGER.error("彻底删除草稿失败", e);
-        }
-        return Y9Result.failure("删除失败");
+        return draft4PositionApi.deleteDraft(tenantId, ids);
     }
 
     /**
@@ -88,16 +79,11 @@ public class DraftRestController {
      * @param title 搜索词
      * @return Y9Page<Map < String, Object>>
      */
-    @SuppressWarnings("unchecked")
     @GetMapping(value = "/draftList")
     public Y9Page<Map<String, Object>> draftList(@RequestParam int page, @RequestParam int rows,
         @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-        Map<String, Object> map =
-            draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, false);
-        List<Map<String, Object>> draftList = (List<Map<String, Object>>)map.get("rows");
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()),
-            Integer.parseInt(map.get("total").toString()), draftList, "获取列表成功");
+        return draft4PositionApi.getDraftList(tenantId, positionId, page, rows, title, itemId, false);
     }
 
     /**
@@ -109,16 +95,12 @@ public class DraftRestController {
      * @param title 搜索词
      * @return Y9Page<Map < String, Object>>
      */
-    @SuppressWarnings("unchecked")
     @GetMapping(value = "/draftRecycleList")
     public Y9Page<Map<String, Object>> draftRecycleList(@RequestParam int page, @RequestParam int rows,
         @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map = draft4PositionApi.getDraftList(tenantId, Y9LoginUserHolder.getPositionId(), page,
-            rows, title, itemId, true);
-        List<Map<String, Object>> draftList = (List<Map<String, Object>>)map.get("rows");
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()),
-            Integer.parseInt(map.get("total").toString()), draftList, "获取列表成功");
+        return draft4PositionApi.getDraftList(tenantId, Y9LoginUserHolder.getPositionId(), page, rows, title, itemId,
+            true);
     }
 
     /**
@@ -148,9 +130,13 @@ public class DraftRestController {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         Map<String, Object> map = new HashMap<>(16);
+        OpenDataModel model = null;
         if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(processSerialNumber)) {
-            map = draft4PositionApi.openDraft4Position(tenantId, positionId, itemId, processSerialNumber, false);
+            model = draft4PositionApi.openDraft4Position(tenantId, positionId, itemId, processSerialNumber, false)
+                .getData();
         }
+        String str = Y9JsonUtil.writeValueAsString(model);
+        map = Y9JsonUtil.readHashMap(str);
         map.put("currentUser", Y9LoginUserHolder.getPosition().getName());
         map.put("draftRecycle", draftRecycle);
         map.put("tenantId", tenantId);
@@ -178,40 +164,24 @@ public class DraftRestController {
      * 还原草稿
      *
      * @param id 草稿id
-     * @return Y9Result<String>
+     * @return Y9Result<Object>
      */
     @RequestMapping(value = "/reduction", method = RequestMethod.POST)
-    public Y9Result<String> reduction(@RequestParam @NotBlank String id) {
+    public Y9Result<Object> reduction(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            Map<String, Object> map = draft4PositionApi.reduction(tenantId, id);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.successMsg("还原成功");
-            }
-        } catch (Exception e) {
-            LOGGER.error("还原草稿失败", e);
-        }
-        return Y9Result.failure("还原失败");
+        return draft4PositionApi.reduction(tenantId, id);
     }
 
     /**
      * 删除草稿
      *
      * @param ids 草稿ids，逗号隔开
-     * @return Y9Result<String>
+     * @return Y9Result<Object>
      */
     @RequestMapping(value = "/removeDraft", method = RequestMethod.POST)
-    public Y9Result<String> removeDraft(@RequestParam @NotBlank String ids) {
+    public Y9Result<Object> removeDraft(@RequestParam @NotBlank String ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            Map<String, Object> map = draft4PositionApi.removeDraft(tenantId, ids);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.successMsg("删除成功");
-            }
-        } catch (Exception e) {
-            LOGGER.error("删除草稿失败", e);
-        }
-        return Y9Result.failure("删除失败");
+        return draft4PositionApi.removeDraft(tenantId, ids);
     }
 
     /**
@@ -223,10 +193,10 @@ public class DraftRestController {
      * @param number 文件编号
      * @param level 紧急程度
      * @param title 标题
-     * @return Y9Result<String>
+     * @return Y9Result<Object>
      */
     @RequestMapping(value = "/saveDraft", method = RequestMethod.POST)
-    public Y9Result<String> saveDraft(@RequestParam @NotBlank String itemId,
+    public Y9Result<Object> saveDraft(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
         @RequestParam(required = false) String number, @RequestParam(required = false) String level,
         @RequestParam(required = false) String title) {
@@ -234,16 +204,8 @@ public class DraftRestController {
         if (StringUtils.isBlank(title)) {
             title = "未定义标题";
         }
-        try {
-            Map<String, Object> map = draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber,
-                processDefinitionKey, number, level, title);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.successMsg("保存成功");
-            }
-        } catch (Exception e) {
-            LOGGER.error("保存草稿失败", e);
-        }
-        return Y9Result.failure("保存失败");
+        return draft4PositionApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey,
+            number, level, title);
     }
 
 }

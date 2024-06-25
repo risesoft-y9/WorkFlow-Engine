@@ -1,6 +1,5 @@
 package net.risesoft.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
@@ -16,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.position.Draft4PositionApi;
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.model.ChaoSongModel;
+import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.QueryListService;
@@ -53,7 +53,9 @@ public class WorkList4ddyjsRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/chuanyueList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<ChaoSongModel> chuanyueList(@RequestParam(required = false) String searchName, @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName, @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+    public Y9Page<ChaoSongModel> chuanyueList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4ddyjsService.myChaoSongList(searchName, itemId, userName, state, year, page, rows);
     }
@@ -68,7 +70,9 @@ public class WorkList4ddyjsRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/doingList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> doingList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> doingList(@RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4ddyjsService.doingList(itemId, searchItemId, searchTerm, page, rows);
     }
 
@@ -82,7 +86,9 @@ public class WorkList4ddyjsRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/doneList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> doneList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> doneList(@RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4ddyjsService.doneList(itemId, searchItemId, searchTerm, page, rows);
     }
 
@@ -93,16 +99,15 @@ public class WorkList4ddyjsRestController {
      * @param rows 条数
      * @param itemId 事项id
      * @param title 搜索词
-     * @return Y9Page<Map < String, Object>>
+     * @return Y9Page<DraftModel>
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/draftList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> draftList(@RequestParam int page, @RequestParam int rows, @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
+    public Y9Page<DraftModel> draftList(@RequestParam int page, @RequestParam int rows,
+        @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
-        Map<String, Object> map = draft4PositionApi.getDraftListBySystemName(tenantId, positionId, page, rows, title, item.getSystemName(), false);
-        List<Map<String, Object>> draftList = (List<Map<String, Object>>)map.get("rows");
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()), Integer.parseInt(map.get("total").toString()), draftList, "获取列表成功");
+        return draft4PositionApi.getDraftListBySystemName(tenantId, positionId, page, rows, title, item.getSystemName(),
+            false);
     }
 
     /**
@@ -115,7 +120,8 @@ public class WorkList4ddyjsRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/followList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> followList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> followList(@RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4ddyjsService.followList(itemId, searchTerm, page, rows);
     }
 
@@ -168,7 +174,9 @@ public class WorkList4ddyjsRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/queryList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> queryList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String state, @RequestParam(required = false) String createDate, @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
+    public Y9Page<Map<String, Object>> queryList(@RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String createDate,
+        @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
         return queryListService.queryList(itemId, state, createDate, tableName, searchMapStr, page, rows);
     }
@@ -183,7 +191,9 @@ public class WorkList4ddyjsRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @RequestMapping(value = "/todoList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> todoList(@RequestParam @NotBlank String itemId, @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
+    public Y9Page<Map<String, Object>> todoList(@RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String searchItemId, @RequestParam(required = false) String searchTerm,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4ddyjsService.todoList(itemId, searchItemId, searchTerm, page, rows);
     }
 

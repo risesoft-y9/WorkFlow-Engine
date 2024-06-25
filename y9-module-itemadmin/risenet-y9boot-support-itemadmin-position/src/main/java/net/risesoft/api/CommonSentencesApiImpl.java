@@ -1,20 +1,25 @@
 package net.risesoft.api;
 
-import lombok.RequiredArgsConstructor;
-import net.risesoft.api.itemadmin.CommonSentencesApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.model.platform.Person;
-import net.risesoft.service.CommonSentencesService;
-import net.risesoft.util.CommentUtil;
-import net.risesoft.y9.Y9LoginUserHolder;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+
+import net.risesoft.api.itemadmin.CommonSentencesApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.entity.CommonSentences;
+import net.risesoft.model.itemadmin.CommonSentencesModel;
+import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.CommonSentencesService;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 常用语接口
@@ -37,31 +42,14 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
      *
      * @param tenantId 租户id
      * @param id 常用语id
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void delete(String tenantId, String id) {
+    public Y9Result<Object> delete(String tenantId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         commonSentencesService.deleteById(id);
-    }
-
-    /**
-     * 获取常用语字符串
-     *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @return String
-     */
-    @Override
-    @GetMapping(value = "/getCommonSentencesStr", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getCommonSentencesStr(String tenantId, String userId) {
-        String[] comment = CommentUtil.getComment();
-        StringBuilder commentStr = new StringBuilder();
-        int length = comment.length;
-        for (int i = 0; i < length - 1; i++) {
-            commentStr.append("<option value=\"").append(comment[length - 1 - i]).append("\">").append(comment[length - 1 - i]).append("</option>");
-        }
-        return commentStr.toString();
+        return Y9Result.success();
     }
 
     /**
@@ -69,15 +57,22 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<CommonSentencesModel>>
      */
     @Override
     @GetMapping(value = "/listSentencesService", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> listSentencesService(String tenantId, String userId) {
+    public Y9Result<List<CommonSentencesModel>> listSentencesService(String tenantId, String userId) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-        return commonSentencesService.listSentencesService();
+        List<CommonSentences> list = commonSentencesService.listSentencesService();
+        List<CommonSentencesModel> res_list = new ArrayList<>();
+        for (CommonSentences item : list) {
+            CommonSentencesModel model = new CommonSentencesModel();
+            Y9BeanUtil.copyProperties(item, model);
+            res_list.add(model);
+        }
+        return Y9Result.success(res_list);
     }
 
     /**
@@ -86,28 +81,32 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param tabIndex 排序号
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/removeCommonSentences", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void removeCommonSentences(String tenantId, String userId, int tabIndex) {
+    public Y9Result<Object> removeCommonSentences(String tenantId, String userId, int tabIndex) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         commonSentencesService.removeCommonSentences(tabIndex);
+        return Y9Result.success();
     }
-
 
     /**
      * 清空常用语使用次数
+     *
      * @param tenantId 租户id
      * @param userId 人员id
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/removeUseNumber", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void removeUseNumber(String tenantId, String userId) {
+    public Y9Result<Object> removeUseNumber(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPersonId(userId);
         commonSentencesService.removeUseNumber();
+        return Y9Result.success();
     }
 
     /**
@@ -117,14 +116,16 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
      * @param userId 人员id
      * @param id 常用语的唯一标识
      * @param content 内容
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void save(String tenantId, String userId, String id, String content) {
+    public Y9Result<Object> save(String tenantId, String userId, String id, String content) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         commonSentencesService.save(id, content);
+        return Y9Result.success();
     }
 
     /**
@@ -134,27 +135,31 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
      * @param userId 人员id
      * @param content 常用语内容
      * @param tabIndex 排序号
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/saveCommonSentences", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void saveCommonSentences(String tenantId, String userId, String content, int tabIndex) {
+    public Y9Result<Object> saveCommonSentences(String tenantId, String userId, String content, int tabIndex) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         commonSentencesService.saveCommonSentences(userId, content, tabIndex);
+        return Y9Result.success();
     }
 
     /**
      * 更新常用语使用次数
+     *
      * @param tenantId 租户id
      * @param id 常用语id
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/updateUseNumber", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void updateUseNumber(String tenantId, String id) {
+    public Y9Result<Object> updateUseNumber(String tenantId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         commonSentencesService.updateUseNumber(id);
-
+        return Y9Result.success();
     }
 
 }

@@ -1,11 +1,12 @@
 package net.risesoft.model.itemadmin;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 草稿模型类
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
@@ -71,5 +72,15 @@ public class DraftModel implements Serializable {
      * 起草时间
      */
     private String draftTime;
+
+    /**
+     * 排序号
+     */
+    private Integer serialNumber;
+
+    /**
+     * 类型
+     */
+    private String type;
 
 }

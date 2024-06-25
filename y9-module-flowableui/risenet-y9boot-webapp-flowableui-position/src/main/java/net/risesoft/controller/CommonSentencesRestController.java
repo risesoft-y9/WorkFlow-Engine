@@ -1,7 +1,6 @@
 package net.risesoft.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
@@ -15,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.CommonSentencesApi;
+import net.risesoft.model.itemadmin.CommonSentencesModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -37,20 +37,13 @@ public class CommonSentencesRestController {
     /**
      * 获取个人常用语
      *
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List<CommonSentencesModel>>
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> listSentencesService() {
-        List<Map<String, Object>> resList;
-        try {
-            UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String userId = person.getPersonId(), tenantId = person.getTenantId();
-            resList = commonSentencesApi.listSentencesService(tenantId, userId);
-            return Y9Result.success(resList, "获取成功");
-        } catch (Exception e) {
-            LOGGER.error("获取常用语失败", e);
-        }
-        return Y9Result.failure("获取失败");
+    public Y9Result<List<CommonSentencesModel>> listSentencesService() {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = person.getPersonId(), tenantId = person.getTenantId();
+        return commonSentencesApi.listSentencesService(tenantId, userId);
     }
 
     /**
@@ -119,7 +112,8 @@ public class CommonSentencesRestController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         try {
-            commonSentencesApi.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content, Integer.parseInt(tabIndex));
+            commonSentencesApi.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content,
+                Integer.parseInt(tabIndex));
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             LOGGER.error("修改常用语失败", e);
