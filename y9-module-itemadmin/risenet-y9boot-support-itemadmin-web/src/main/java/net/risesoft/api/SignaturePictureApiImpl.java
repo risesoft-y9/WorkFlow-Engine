@@ -3,7 +3,6 @@ package net.risesoft.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +16,7 @@ import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.entity.SignaturePicture;
 import net.risesoft.model.itemadmin.SignaturePictureModel;
 import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SignaturePictureService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -27,7 +27,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @date 2022/12/22
  */
 @RestController
-@RequestMapping(value = "/services/rest/signaturePicture")
+@RequestMapping(value = "/services/rest/signaturePicture", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SignaturePictureApiImpl implements SignaturePictureApi {
 
     @Autowired
@@ -37,27 +37,26 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
     private PersonApi personManager;
 
     @Override
-    @PostMapping(value = "/deleteById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteById(String tenantId, String id) {
+    public Y9Result<Object> deleteById(String tenantId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         signaturePictureService.deleteById(id);
+        return Y9Result.success();
     }
 
     @Override
-    @GetMapping(value = "/findById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SignaturePictureModel findById(String tenantId, String id) {
+    public Y9Result<SignaturePictureModel> findById(String tenantId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         SignaturePicture sp = signaturePictureService.findById(id);
         SignaturePictureModel spModel = new SignaturePictureModel();
         if (null != sp) {
             Y9BeanUtil.copyProperties(sp, spModel);
         }
-        return spModel;
+        return Y9Result.success(spModel);
     }
 
     @Override
-    @GetMapping(value = "/findByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SignaturePictureModel findByUserId(String tenantId, String userId) {
+    @GetMapping(value = "/findByUserId")
+    public Y9Result<SignaturePictureModel> findByUserId(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
 
         SignaturePictureModel spModel = new SignaturePictureModel();
@@ -65,12 +64,11 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
         if (null != sp) {
             Y9BeanUtil.copyProperties(sp, spModel);
         }
-        return spModel;
+        return Y9Result.success(spModel);
     }
 
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SignaturePictureModel saveOrUpdate(String tenantId, String userId, String spJson) {
+    public Y9Result<SignaturePictureModel> saveOrUpdate(String tenantId, String userId, String spJson) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
@@ -85,10 +83,10 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
             if (null != newsp) {
                 Y9BeanUtil.copyProperties(newsp, spModel);
             }
-            return spModel;
+            return Y9Result.success(spModel);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            return null;
+            return Y9Result.failure("保存或更新签名图片失败");
         }
     }
 }

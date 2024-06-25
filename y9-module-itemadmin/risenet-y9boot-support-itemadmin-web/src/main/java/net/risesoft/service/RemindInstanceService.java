@@ -1,9 +1,9 @@
 package net.risesoft.service;
 
 import java.util.List;
-import java.util.Map;
 
 import net.risesoft.entity.RemindInstance;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -14,7 +14,7 @@ public interface RemindInstanceService {
 
     /**
      * 根据流程实例id获取消息提醒设置
-     * 
+     *
      * @param processInstanceId
      * @return
      */
@@ -22,7 +22,7 @@ public interface RemindInstanceService {
 
     /**
      * 根据流程实例id和任务key获取消息提醒设置
-     * 
+     *
      * @param processInstanceId
      * @param taskKey
      * @return
@@ -32,7 +32,7 @@ public interface RemindInstanceService {
 
     /**
      * 根据流程实例id和任务key获取消息提醒设置
-     * 
+     *
      * @param processInstanceId
      * @param taskKey
      * @return
@@ -42,7 +42,7 @@ public interface RemindInstanceService {
 
     /**
      * 根据流程实例id和提醒类型获取消息提醒设置
-     * 
+     *
      * @param processInstanceId
      * @param remindType
      * @return
@@ -52,7 +52,7 @@ public interface RemindInstanceService {
 
     /**
      * 根据流程实例id和任务id获取消息提醒设置
-     * 
+     *
      * @param processInstanceId
      * @param taskId
      * @return
@@ -61,7 +61,7 @@ public interface RemindInstanceService {
 
     /**
      * 根据流程实例id获取个人消息提醒设置
-     * 
+     *
      * @param processInstanceId
      * @return
      */
@@ -69,7 +69,7 @@ public interface RemindInstanceService {
 
     /**
      * 保存流程实例消息提醒
-     * 
+     *
      * @param processInstanceId
      * @param taskIds
      * @param process
@@ -77,7 +77,7 @@ public interface RemindInstanceService {
      * @param completeTaskKey
      * @return
      */
-    Map<String, Object> saveRemindInstance(String processInstanceId, String taskIds, Boolean process,
-        String arriveTaskKey, String completeTaskKey);
+    Y9Result<String> saveRemindInstance(String processInstanceId, String taskIds, Boolean process, String arriveTaskKey,
+        String completeTaskKey);
 
 }

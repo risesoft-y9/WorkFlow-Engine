@@ -300,8 +300,8 @@ public class TodoServiceImpl implements TodoService {
                         .getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId).getData();
                     mapTemp.put("speakInfoNum", speakInfoNum);
                     mapTemp.put("remindSetting", false);
-                    RemindInstanceModel remindInstanceModel = remindInstanceApi.getRemindInstance(tenantId,
-                        Y9LoginUserHolder.getPersonId(), processInstanceId);
+                    RemindInstanceModel remindInstanceModel = remindInstanceApi
+                        .getRemindInstance(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId).getData();
                     if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
                         mapTemp.put("remindSetting", true);
                     }
@@ -445,8 +445,8 @@ public class TodoServiceImpl implements TodoService {
                         .getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId).getData();
                     mapTemp.put("speakInfoNum", speakInfoNum);
                     mapTemp.put("remindSetting", false);
-                    RemindInstanceModel remindInstanceModel = remindInstanceApi.getRemindInstance(tenantId,
-                        Y9LoginUserHolder.getPersonId(), processInstanceId);
+                    RemindInstanceModel remindInstanceModel = remindInstanceApi
+                        .getRemindInstance(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId).getData();
                     if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
                         mapTemp.put("remindSetting", true);
                     }
