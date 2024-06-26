@@ -1,14 +1,12 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,10 +23,12 @@ import net.risesoft.entity.Reminder;
 import net.risesoft.enums.ItemUrgeTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.ReminderModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.repository.jpa.ReminderRepository;
 import net.risesoft.service.ReminderService;
 import net.risesoft.util.SysVariables;
@@ -45,6 +45,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 public class ReminderServiceImpl implements ReminderService {
 
+    private static final FastDateFormat DATE_TIME_FORMAT = FastDateFormat.getInstance("yy/MM/dd HH:mm");
+
     private final ReminderRepository reminderRepository;
 
     private final PositionApi positionApi;
@@ -58,15 +60,15 @@ public class ReminderServiceImpl implements ReminderService {
     public void deleteList(String[] ids) {
         Reminder r = null;
         for (String id : ids) {
-            r = reminderRepository.findById(id).orElse(null);
+            r = this.findById(id);
             reminderRepository.delete(r);
         }
     }
 
     @Override
     public List<Reminder> findAllByTaskId(Collection<String> taskIds) {
-        List<Reminder> list = new ArrayList<Reminder>();
-        if (!taskIds.isEmpty()) {
+        List<Reminder> list = new ArrayList<>();
+        if (taskIds != null && !taskIds.isEmpty()) {
             list = reminderRepository.findAllByTastId(taskIds);
         }
         return list;
@@ -83,59 +85,51 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    public Map<String, Object> findByProcessInstanceId(String processInstanceId, int page, int rows) {
+    public Y9Page<ReminderModel> findByProcessInstanceId(String processInstanceId, int page, int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<>(16);
-        List<Reminder> reminderList = new ArrayList<Reminder>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<Reminder> pageList = reminderRepository.findByprocInstId(processInstanceId, pageable);
-        reminderList = pageList.getContent();
+        List<Reminder> reminderList = pageList.getContent();
         int num = (page - 1) * rows;
-        SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<ReminderModel> listMap = new ArrayList<>();
         HistoricTaskInstanceModel historicTaskTemp = null;
         Position pTemp = null;
         for (Reminder reminder : reminderList) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", reminder.getId());
-            map.put("msgContent", reminder.getMsgContent());
-            map.put("createTime", sdf.format(reminder.getCreateTime()));
+            ReminderModel model = new ReminderModel();
+            model.setId(reminder.getId());
+            model.setMsgContent(reminder.getMsgContent());
+            model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
             if (null == reminder.getReadTime()) {
-                map.put("readTime", "");
+                model.setReadTime("");
             } else {
-                map.put("readTime", sdf.format(reminder.getReadTime()));
+                model.setReadTime(DATE_TIME_FORMAT.format(reminder.getReadTime()));
             }
-            map.put("senderName", reminder.getSenderName());
-            map.put("userName", "无");
-            map.put("taskName", "无");
+            model.setSenderName(reminder.getSenderName());
+            model.setUserName("无");
+            model.setTaskName("无");
+
             historicTaskTemp = historicTaskManager.getById(tenantId, reminder.getTaskId());
             if (null != historicTaskTemp) {
-                map.put("taskName", historicTaskTemp.getName());
+                model.setTaskName(historicTaskTemp.getName());
                 if (StringUtils.isNotBlank(historicTaskTemp.getAssignee())) {
                     pTemp = positionApi.get(tenantId, historicTaskTemp.getAssignee()).getData();
                     if (null != pTemp) {
-                        map.put("userName", pTemp.getName());
+                        model.setUserName(pTemp.getName() + (Boolean.TRUE.equals(pTemp.getDisabled()) ? "(已禁用)" : ""));
                     }
                 }
             }
-            map.put("serialNumber", num + 1);
+            model.setSerialNumber(num + 1);
             num += 1;
-            listMap.add(map);
+            listMap.add(model);
         }
-        retMap.put("currpage", page);
-        retMap.put("totalpages", pageList.getTotalPages());
-        retMap.put("total", pageList.getTotalElements());
-        retMap.put("rows", listMap);
-        return retMap;
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
     }
 
     @Override
-    public Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId,
+    public Y9Page<ReminderModel> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId,
         int page, int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<>(16);
-        List<Reminder> reminderList = new ArrayList<Reminder>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
@@ -144,44 +138,40 @@ public class ReminderServiceImpl implements ReminderService {
             taskIds.add(task.getId());
         }
         Page<Reminder> pageList = reminderRepository.findBySenderIdAndTaskIdIn(senderId, taskIds, pageable);
-        reminderList = pageList.getContent();
+        List<Reminder> reminderList = pageList.getContent();
         int num = (page - 1) * rows;
-        SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<ReminderModel> listMap = new ArrayList<>();
         TaskModel taskTemp = null;
         Position pTemp = null;
         for (Reminder reminder : reminderList) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", reminder.getId());
-            map.put("msgContent", reminder.getMsgContent());
-            map.put("createTime", sdf.format(reminder.getCreateTime()));
+            ReminderModel model = new ReminderModel();
+            model.setId(reminder.getId());
+            model.setMsgContent(reminder.getMsgContent());
+            model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
             if (null == reminder.getReadTime()) {
-                map.put("readTime", "");
+                model.setReadTime("");
             } else {
-                map.put("readTime", sdf.format(reminder.getReadTime()));
+                model.setReadTime(DATE_TIME_FORMAT.format(reminder.getReadTime()));
             }
-            map.put("senderName", reminder.getSenderName());
-            map.put("userName", "无");
-            map.put("taskName", "无");
+            model.setSenderName(reminder.getSenderName());
+            model.setUserName("无");
+            model.setTaskName("无");
             taskTemp = taskManager.findById(tenantId, reminder.getTaskId());
             if (null != taskTemp) {
-                map.put("taskName", taskTemp.getName());
+                model.setTaskName(taskTemp.getName());
                 if (StringUtils.isNotBlank(taskTemp.getAssignee())) {
                     pTemp = positionApi.get(tenantId, taskTemp.getAssignee()).getData();
                     if (null != pTemp) {
-                        map.put("userName", pTemp.getName());
+                        model.setUserName(pTemp.getName() + (Boolean.TRUE.equals(pTemp.getDisabled()) ? "(已禁用)" : ""));
                     }
                 }
             }
-            map.put("serialNumber", num + 1);
+            model.setSerialNumber(num + 1);
+
             num += 1;
-            listMap.add(map);
+            listMap.add(model);
         }
-        retMap.put("currpage", page);
-        retMap.put("totalpages", pageList.getTotalPages());
-        retMap.put("total", pageList.getTotalElements());
-        retMap.put("rows", listMap);
-        return retMap;
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
     }
 
     @Override
@@ -190,41 +180,34 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    public Map<String, Object> findByTaskId(String taskId, int page, int rows) {
+    public Y9Page<ReminderModel> findByTaskId(String taskId, int page, int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap = new HashMap<>(16);
-        List<Reminder> reminderList = new ArrayList<Reminder>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<Reminder> pageList = reminderRepository.findByTaskId(taskId, pageable);
-        reminderList = pageList.getContent();
+        List<Reminder> reminderList = pageList.getContent();
         int num = (page - 1) * rows;
-        SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");
-        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<ReminderModel> listMap = new ArrayList<>();
         TaskModel taskTemp = taskManager.findById(tenantId, taskId);
         Position pTemp = positionApi.get(tenantId, taskTemp.getAssignee()).getData();
         for (Reminder reminder : reminderList) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", reminder.getId());
-            map.put("msgContent", reminder.getMsgContent());
-            map.put("createTime", sdf.format(reminder.getCreateTime()));
+            ReminderModel model = new ReminderModel();
+            model.setId(reminder.getId());
+            model.setMsgContent(reminder.getMsgContent());
+            model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
             if (null == reminder.getReadTime()) {
-                map.put("readTime", "");
+                model.setReadTime("");
             } else {
-                map.put("readTime", sdf.format(reminder.getReadTime()));
+                model.setReadTime(DATE_TIME_FORMAT.format(reminder.getReadTime()));
             }
-            map.put("senderName", reminder.getSenderName());
-            map.put("userName", pTemp.getName());
-            map.put("taskName", taskTemp.getName());
-            map.put("serialNumber", num + 1);
+            model.setSenderName(reminder.getSenderName());
+            model.setUserName(pTemp.getName());
+            model.setTaskName(taskTemp.getName());
+            model.setSerialNumber(num + 1);
             num += 1;
-            listMap.add(map);
+            listMap.add(model);
         }
-        retMap.put("currpage", page);
-        retMap.put("totalpages", pageList.getTotalPages());
-        retMap.put("total", pageList.getTotalElements());
-        retMap.put("rows", listMap);
-        return retMap;
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
     }
 
     @Override
@@ -247,7 +230,7 @@ public class ReminderServiceImpl implements ReminderService {
         String[] procInstIds = procInstId.split(SysVariables.COMMA);
         String[] taskIds = taskId.split(SysVariables.COMMA);
         // String[] taskAssigneeIds = taskAssigneeId.split(SysVariables.COMMA);
-        List<Reminder> list = new ArrayList<Reminder>();
+        List<Reminder> list = new ArrayList<>();
         for (int i = 0; i < procInstIds.length; i++) {
             Reminder reminder = new Reminder();
             reminder.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -291,7 +274,7 @@ public class ReminderServiceImpl implements ReminderService {
     public Reminder saveOrUpdate(Reminder reminder) {
         String id = reminder.getId();
         if (StringUtils.isNotBlank(id)) {
-            Reminder r = reminderRepository.findById(id).orElse(null);
+            Reminder r = this.findById(id);
             r.setMsgContent(reminder.getMsgContent());
             r.setModifyTime(new Date());
             r.setReadTime(null);
