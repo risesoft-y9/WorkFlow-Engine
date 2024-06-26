@@ -2,7 +2,11 @@ package net.risesoft.api.itemadmin;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import net.risesoft.model.itemadmin.EntrustHistoryModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -18,9 +22,12 @@ public interface EntrustHistoryApi {
      * @param userId 人员滴
      * @param ownerId 委托人id
      * @param itemId 事项粒度
-     * @return List&lt;EntrustHistoryModel&gt;
+     * @return Y9Result<List<EntrustHistoryModel>>
      */
-    List<EntrustHistoryModel> findByOwnerIdAndItemId(String tenantId, String userId, String ownerId, String itemId);
+    @GetMapping("/findByOwnerIdAndItemId")
+    Y9Result<List<EntrustHistoryModel>> findByOwnerIdAndItemId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("ownerId") String ownerId,
+        @RequestParam("itemId") String itemId);
 
     /**
      * 获取某个用户的委托历史对象集合
@@ -28,7 +35,10 @@ public interface EntrustHistoryApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param ownerId 委托人id
-     * @return List&lt;EntrustHistoryModel&gt;
+     * @return Y9Result<List<EntrustHistoryModel>>
      */
-    List<EntrustHistoryModel> findOneByOwnerId(String tenantId, String userId, String ownerId);
+    @GetMapping("/findOneByOwnerId")
+    Y9Result<List<EntrustHistoryModel>> findOneByOwnerId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("ownerId") String ownerId);
+
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.EntrustModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -22,10 +23,12 @@ public interface Entrust4PositionApi {
      *
      * @param tenantId 租户id
      * @param id 委托id
+     * @return
      * @throws Exception Exception
      */
     @PostMapping(value = "/deleteEntrust")
-    void deleteEntrust(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id) throws Exception;
+    Y9Result<Object> deleteEntrust(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id)
+        throws Exception;
 
     /**
      * 获取委托设置列表
@@ -36,8 +39,8 @@ public interface Entrust4PositionApi {
      * @throws Exception Exception
      */
     @GetMapping(value = "/getEntrustList")
-    List<EntrustModel> getEntrustList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId) throws Exception;
+    Y9Result<List<EntrustModel>> getEntrustList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId);
 
     /**
      * 获取当前岗被委托记录
@@ -47,7 +50,7 @@ public interface Entrust4PositionApi {
      * @return List&lt;EntrustModel&gt;
      */
     @GetMapping(value = "/getMyEntrustList")
-    List<EntrustModel> getMyEntrustList(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<EntrustModel>> getMyEntrustList(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId);
 
     /**
@@ -56,9 +59,10 @@ public interface Entrust4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param entrustModel 实体类（EntrustModel）
+     * @return
      * @throws Exception Exception
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void saveOrUpdate(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,
-        @RequestBody EntrustModel entrustModel) throws Exception;
+    Y9Result<Object> saveOrUpdate(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestBody EntrustModel entrustModel);
 }

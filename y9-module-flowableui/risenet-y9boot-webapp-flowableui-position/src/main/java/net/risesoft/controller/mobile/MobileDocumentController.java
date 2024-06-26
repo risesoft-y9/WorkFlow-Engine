@@ -44,6 +44,7 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
+import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -460,9 +461,9 @@ public class MobileDocumentController {
         @RequestParam(required = false) String taskDefKey, @RequestParam @NotBlank String formId,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> list =
+        Y9Result<List<FieldPermModel>> y9Result =
             formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
-        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(list));
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(y9Result.getData()));
     }
 
     /**

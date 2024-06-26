@@ -135,5 +135,5 @@ public interface EntrustService {
      * @return
      * @throws ParseException
      */
-    Entrust saveOrUpdate(Entrust entrust) throws ParseException;
+    Entrust saveOrUpdate(Entrust entrust);
 }

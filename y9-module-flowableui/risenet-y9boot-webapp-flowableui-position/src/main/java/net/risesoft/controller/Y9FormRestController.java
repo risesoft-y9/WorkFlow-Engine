@@ -26,6 +26,8 @@ import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
+import net.risesoft.model.itemadmin.BindFormModel;
+import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
@@ -76,8 +78,8 @@ public class Y9FormRestController {
         @RequestParam @NotBlank String tableId, @RequestParam @NotBlank String guid) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            Map<String, Object> map = formDataApi.delChildTableRow(tenantId, formId, tableId, guid);
-            if ((boolean)map.get(UtilConsts.SUCCESS)) {
+            Y9Result<Object> y9Result = formDataApi.delChildTableRow(tenantId, formId, tableId, guid);
+            if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
@@ -91,20 +93,13 @@ public class Y9FormRestController {
      *
      * @param formId 表单id
      * @param guid 主键id
-     * @return Y9Result<String>
+     * @return Y9Result<Object>
      */
     @RequestMapping(value = "/delPreFormData", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> delPreFormData(@RequestParam @NotBlank String formId, @RequestParam @NotBlank String guid) {
+    public Y9Result<Object> delPreFormData(@RequestParam @NotBlank String formId, @RequestParam @NotBlank String guid) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            Map<String, Object> map = formDataApi.delPreFormData(tenantId, formId, guid);
-            if ((boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.successMsg("删除成功");
-            }
-        } catch (Exception e) {
-            LOGGER.error("删除前置表单数据失败", e);
-        }
-        return Y9Result.failure("删除失败");
+        return formDataApi.delPreFormData(tenantId, formId, guid);
+
     }
 
     /**
@@ -113,29 +108,26 @@ public class Y9FormRestController {
      * @param formId 表单id
      * @param taskDefKey 任务key
      * @param processDefinitionId 流程实例id
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List < FieldPermModel>>
      */
     @RequestMapping(value = "/getAllFieldPerm", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getAllFieldPerm(@RequestParam @NotBlank String formId,
+    public Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam @NotBlank String formId,
         @RequestParam(required = false) String taskDefKey, @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        List<Map<String, Object>> list =
-            formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
-        return Y9Result.success(list, "获取成功");
+        return formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
     }
 
     /**
      * 获取事项绑定前置表单
      *
      * @param itemId 事项id
-     * @return Y9Result<Map < String, Object>>
+     * @return Y9Result<BindFormModel>
      */
     @RequestMapping(value = "/getBindPreFormByItemId", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getBindPreFormByItemId(@RequestParam @NotBlank String itemId) {
+    public Y9Result<BindFormModel> getBindPreFormByItemId(@RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> map = formDataApi.getBindPreFormByItemId(tenantId, itemId);
-        return Y9Result.success(map, "获取成功");
+        return formDataApi.getBindPreFormByItemId(tenantId, itemId);
     }
 
     /**
@@ -167,17 +159,15 @@ public class Y9FormRestController {
      * @param fieldName 表单字段
      * @param taskDefKey 任务key
      * @param processDefinitionId 流程实例id
-     * @return Y9Result<Map < String, Object>>
+     * @return Y9Result<FieldPermModel>
      */
     @RequestMapping(value = "/getFieldPerm", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<Map<String, Object>> getFieldPerm(@RequestParam @NotBlank String formId,
+    public Y9Result<FieldPermModel> getFieldPerm(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String fieldName, @RequestParam(required = false) String taskDefKey,
         @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        Map<String, Object> map =
-            formDataApi.getFieldPerm(tenantId, userId, formId, fieldName, taskDefKey, processDefinitionId);
-        return Y9Result.success(map, "获取成功");
+        return formDataApi.getFieldPerm(tenantId, userId, formId, fieldName, taskDefKey, processDefinitionId);
     }
 
     /**

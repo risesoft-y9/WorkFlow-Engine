@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.model.itemadmin.ErrorLogModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -29,11 +30,12 @@ public class ErrorLogApiImpl implements ErrorLogApi {
     @Override
     @PostMapping(value = "/saveErrorLog", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void saveErrorLog(String tenantId, @RequestBody ErrorLogModel errorLogModel) {
+    public Y9Result<Object> saveErrorLog(String tenantId, @RequestBody ErrorLogModel errorLogModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ErrorLog errorLog = new ErrorLog();
         Y9BeanUtil.copyProperties(errorLogModel, errorLog);
         errorLogService.saveErrorLog(errorLog);
+        return null;
     }
 
 }

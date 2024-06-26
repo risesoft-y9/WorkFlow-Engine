@@ -1,7 +1,6 @@
 package net.risesoft.api;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,12 +15,17 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Y9FormItemBind;
+import net.risesoft.model.itemadmin.BindFormModel;
+import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.FormDataService;
 import net.risesoft.service.Y9FormItemBindService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * 表单接口
@@ -48,13 +52,17 @@ public class FormDataApiImpl implements FormDataApi {
      * @param formId 表单id
      * @param tableId 表id
      * @param guid 数据id
-     * @return Map<String, Object>
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/delChildTableRow", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> delChildTableRow(String tenantId, String formId, String tableId, String guid) {
+    public Y9Result<Object> delChildTableRow(String tenantId, String formId, String tableId, String guid) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.delChildTableRow(formId, tableId, guid);
+        Map<String, Object> map = formDataService.delChildTableRow(formId, tableId, guid);
+        if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg("删除成功");
+        }
+        return Y9Result.failure("删除失败");
     }
 
     /**
@@ -63,13 +71,17 @@ public class FormDataApiImpl implements FormDataApi {
      * @param tenantId 租户id
      * @param formId 表单id
      * @param guid 主键id
-     * @return Map<String, Object>
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/delPreFormData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> delPreFormData(String tenantId, String formId, String guid) {
+    public Y9Result<Object> delPreFormData(String tenantId, String formId, String guid) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.delPreFormData(formId, guid);
+        Map<String, Object> map = formDataService.delPreFormData(formId, guid);
+        if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.successMsg("删除成功");
+        }
+        return Y9Result.failure("删除失败");
     }
 
     /**
@@ -79,23 +91,22 @@ public class FormDataApiImpl implements FormDataApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefinitionKey 任务key
-     * @return List<Map < String, Object>>
+     * @return Y9Result<List<BindFormModel>>
      */
     @Override
     @GetMapping(value = "/findFormItemBind", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findFormItemBind(String tenantId, String itemId, String processDefinitionId,
+    public Y9Result<List<BindFormModel>> findFormItemBind(String tenantId, String itemId, String processDefinitionId,
         String taskDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> res_list = new ArrayList<>();
+        List<BindFormModel> res_list = new ArrayList<>();
         List<Y9FormItemBind> list =
             y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
         for (Y9FormItemBind item : list) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("formId", item.getFormId());
-            map.put("formName", item.getFormName());
-            res_list.add(map);
+            BindFormModel model = new BindFormModel();
+            Y9BeanUtil.copyProperties(item, model);
+            res_list.add(model);
         }
-        return res_list;
+        return Y9Result.success(res_list);
     }
 
     /**
@@ -110,12 +121,13 @@ public class FormDataApiImpl implements FormDataApi {
      */
     @Override
     @GetMapping(value = "/getAllFieldPerm", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getAllFieldPerm(String tenantId, String userId, String formId, String taskDefKey,
-        String processDefinitionId) {
+    public Y9Result<List<FieldPermModel>> getAllFieldPerm(String tenantId, String userId, String formId,
+        String taskDefKey, String processDefinitionId) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-        return formDataService.getAllFieldPerm(formId, taskDefKey, processDefinitionId);
+        List<FieldPermModel> list = formDataService.getAllFieldPerm(formId, taskDefKey, processDefinitionId);
+        return Y9Result.success(list);
     }
 
     /**
@@ -123,13 +135,17 @@ public class FormDataApiImpl implements FormDataApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return Map<String, Object>
+     * @return Y9Result<BindFormModel>
      */
     @Override
     @GetMapping(value = "/getBindPreFormByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getBindPreFormByItemId(String tenantId, String itemId) {
+    public Y9Result<BindFormModel> getBindPreFormByItemId(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.getBindPreFormByItemId(itemId);
+        Map<String, Object> map = formDataService.getBindPreFormByItemId(itemId);
+        BindFormModel bindFormModel = new BindFormModel();
+        bindFormModel.setFormId((String)map.get("formId"));
+        bindFormModel.setFormName((String)map.get("formName"));
+        return Y9Result.success(bindFormModel);
     }
 
     /**
@@ -174,16 +190,17 @@ public class FormDataApiImpl implements FormDataApi {
      * @param fieldName 字段名
      * @param taskDefKey 任务key
      * @param processDefinitionId 流程定义id
-     * @return Map<String, Object>
+     * @return Y9Result<FieldPermModel>
      */
     @Override
     @GetMapping(value = "/getFieldPerm", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getFieldPerm(String tenantId, String userId, String formId, String fieldName,
+    public Y9Result<FieldPermModel> getFieldPerm(String tenantId, String userId, String formId, String fieldName,
         String taskDefKey, String processDefinitionId) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-        return formDataService.getFieldPerm(formId, fieldName, taskDefKey, processDefinitionId);
+        FieldPermModel model = formDataService.getFieldPerm(formId, fieldName, taskDefKey, processDefinitionId);
+        return Y9Result.success(model);
     }
 
     /**

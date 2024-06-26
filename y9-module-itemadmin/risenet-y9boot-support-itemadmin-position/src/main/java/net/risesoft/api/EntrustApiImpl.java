@@ -1,6 +1,5 @@
 package net.risesoft.api;
 
-import java.text.ParseException;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -16,6 +15,7 @@ import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.Entrust;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.platform.Position;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.EntrustService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -41,11 +41,13 @@ public class EntrustApiImpl implements Entrust4PositionApi {
      *
      * @param tenantId 租户id
      * @param id 委托id
+     * @return Y9Result<Object>
      */
     @Override
-    public void deleteEntrust(String tenantId, String id) {
+    public Y9Result<Object> deleteEntrust(String tenantId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         entrustService.destroyEntrust(id);
+        return Y9Result.success();
     }
 
     /**
@@ -53,12 +55,13 @@ public class EntrustApiImpl implements Entrust4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return List<EntrustModel>
+     * @return Y9Result<List<EntrustModel>>
      */
     @Override
-    public List<EntrustModel> getEntrustList(String tenantId, String positionId) {
+    public Y9Result<List<EntrustModel>> getEntrustList(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return entrustService.getEntrustList(positionId);
+        List<EntrustModel> list = entrustService.getEntrustList(positionId);
+        return Y9Result.success(list);
     }
 
     /**
@@ -66,12 +69,13 @@ public class EntrustApiImpl implements Entrust4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return List<EntrustModel>
+     * @return Y9Result<List < EntrustModel>>
      */
     @Override
-    public List<EntrustModel> getMyEntrustList(String tenantId, String positionId) {
+    public Y9Result<List<EntrustModel>> getMyEntrustList(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return entrustService.getMyEntrustList(positionId);
+        List<EntrustModel> list = entrustService.getMyEntrustList(positionId);
+        return Y9Result.success(list);
     }
 
     /**
@@ -80,18 +84,18 @@ public class EntrustApiImpl implements Entrust4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param entrustModel 实体类（EntrustModel）
-     * @throws ParseException 抛出异常
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void saveOrUpdate(String tenantId, String positionId, @RequestBody EntrustModel entrustModel)
-        throws ParseException {
+    public Y9Result<Object> saveOrUpdate(String tenantId, String positionId, @RequestBody EntrustModel entrustModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Entrust entrust = new Entrust();
         Y9BeanUtil.copyProperties(entrustModel, entrust);
         entrustService.saveOrUpdate(entrust);
+        return Y9Result.success();
     }
 }

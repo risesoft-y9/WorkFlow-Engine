@@ -39,6 +39,7 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
+import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -411,16 +412,14 @@ public class MobileV1DocumentController {
      * @param formId 表单Id
      * @param taskDefKey 任务key
      * @param processDefinitionId 流程定义id
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List < FieldPermModel>>
      */
     @RequestMapping("/getAllFieldPerm")
-    public Y9Result<List<Map<String, Object>>> getAllFieldPerm(@RequestParam @NotBlank String processDefinitionId,
+    public Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam @NotBlank String processDefinitionId,
         @RequestParam(required = false) String taskDefKey, @RequestParam @NotBlank String formId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        List<Map<String, Object>> list =
-            formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
-        return Y9Result.success(list, "获取成功");
+        return formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
     }
 
     /**

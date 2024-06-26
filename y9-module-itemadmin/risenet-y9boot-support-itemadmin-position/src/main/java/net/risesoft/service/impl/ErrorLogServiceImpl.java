@@ -27,14 +27,10 @@ public class ErrorLogServiceImpl implements ErrorLogService {
     @Override
     @Transactional
     public void saveErrorLog(ErrorLog errorLog) {
-        try {
-            if (StringUtils.isBlank(errorLog.getId())) {
-                errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            }
-            errorLogRepository.save(errorLog);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (StringUtils.isBlank(errorLog.getId())) {
+            errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         }
+        errorLogRepository.save(errorLog);
     }
 
 }

@@ -21,6 +21,7 @@ import net.risesoft.entity.form.Y9FieldPerm;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.entity.form.Y9Table;
+import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.user.UserInfo;
@@ -83,13 +84,13 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
-    public List<Map<String, Object>> getAllFieldPerm(String formId, String taskDefKey, String processDefinitionId) {
+    public List<FieldPermModel> getAllFieldPerm(String formId, String taskDefKey, String processDefinitionId) {
         List<String> list = y9FieldPermRepository.findByFormId(formId);
-        List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+        List<FieldPermModel> listMap = new ArrayList<>();
         for (String fieldName : list) {
-            Map<String, Object> map = this.getFieldPerm(formId, fieldName, taskDefKey, processDefinitionId);
-            if (map != null) {
-                listMap.add(map);
+            FieldPermModel model = this.getFieldPerm(formId, fieldName, taskDefKey, processDefinitionId);
+            if (model != null) {
+                listMap.add(model);
             }
         }
         return listMap;
@@ -134,28 +135,22 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
-    public Map<String, Object> getFieldPerm(String formId, String fieldName, String taskDefKey,
-        String processDefinitionId) {
+    public FieldPermModel getFieldPerm(String formId, String fieldName, String taskDefKey, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
-        resMap.put("writePerm", false);
-        resMap.put("fieldName", fieldName);
-        try {
-            Y9FieldPerm y9FieldPerm =
-                y9FieldPermRepository.findByFormIdAndFieldNameAndTaskDefKey(formId, fieldName, taskDefKey);
-            if (y9FieldPerm != null) {
-                resMap.putAll(getFieldPerm(y9FieldPerm));
-            } else {
-                resMap = null;
-                return resMap;
-            }
-            resMap.put(UtilConsts.SUCCESS, true);
-        } catch (Exception e) {
-            resMap.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+        FieldPermModel model = new FieldPermModel();
+        model.setFieldName(fieldName);
+        model.setWritePerm(false);
+        Y9FieldPerm y9FieldPerm =
+            y9FieldPermRepository.findByFormIdAndFieldNameAndTaskDefKey(formId, fieldName, taskDefKey);
+        if (y9FieldPerm != null) {
+            model = getFieldPerm(y9FieldPerm);
+        } else {
+            model = null;
+            return model;
         }
-        return resMap;
+
+        return model;
     }
 
     /**
@@ -164,25 +159,27 @@ public class FormDataServiceImpl implements FormDataService {
      * @param y9FieldPerm
      * @return
      */
-    public Map<String, Object> getFieldPerm(Y9FieldPerm y9FieldPerm) {
+    public FieldPermModel getFieldPerm(Y9FieldPerm y9FieldPerm) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         Map<String, Object> resMap = new HashMap<String, Object>(16);
+        FieldPermModel model = new FieldPermModel();
+        model.setFieldName(y9FieldPerm.getFieldName());
         if (StringUtils.isNotBlank(y9FieldPerm.getWriteRoleId())) {
-            resMap.put("writePerm", false);
+            model.setWritePerm(false);
             String roleId = y9FieldPerm.getWriteRoleId();
             String[] roleIds = roleId.split(",");
             for (String id : roleIds) {
                 boolean b = personRoleApi.hasRole(tenantId, id, userInfo.getPersonId()).getData();
                 if (b) {
-                    resMap.put("writePerm", true);
+                    model.setWritePerm(true);
                     break;
                 }
             }
         } else {// 未绑定角色，默认该节点所有人都有写权限
-            resMap.put("writePerm", true);
+            model.setWritePerm(true);
         }
-        return resMap;
+        return model;
     }
 
     @Override
