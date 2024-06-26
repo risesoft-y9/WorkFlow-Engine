@@ -239,7 +239,7 @@ vue -- 前端工程
 
 ### 事项管理
 
-演示地址：<a href="https://test.youshengyun.com/itemAdmin/" target="_blank">https://test.youshengyun.com/itemAdmin/</a>
+演示地址：<a href="https://test.youshengyun.com/itemAdmin-open/" target="_blank">https://test.youshengyun.com/itemAdmin-open/</a>
 
 > 演示账号：systemManager  密码：Risesoft@2024
 >
