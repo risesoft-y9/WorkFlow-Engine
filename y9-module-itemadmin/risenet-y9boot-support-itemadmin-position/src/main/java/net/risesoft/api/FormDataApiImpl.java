@@ -19,6 +19,7 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Y9FormItemBind;
 import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
+import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
@@ -208,13 +209,14 @@ public class FormDataApiImpl implements FormDataApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return List<Y9FormFieldModel>
+     * @return Y9Result<List<Y9FormFieldModel>>
      */
     @Override
     @GetMapping(value = "/getFormField", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Y9FormFieldModel> getFormField(String tenantId, String itemId) {
+    public Y9Result<List<Y9FormFieldModel>> getFormField(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.getFormField(itemId);
+        List<Y9FormFieldModel> list = formDataService.getFormField(itemId);
+        return Y9Result.success(list);
     }
 
     /**
@@ -222,13 +224,14 @@ public class FormDataApiImpl implements FormDataApi {
      *
      * @param tenantId 租户id
      * @param formId 表单id
-     * @return List<Map < String, String>>
+     * @return Y9Result<List<FormFieldDefineModel>>
      */
     @Override
     @GetMapping(value = "/getFormFieldDefine", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getFormFieldDefine(String tenantId, String formId) {
+    public Y9Result<List<FormFieldDefineModel>> getFormFieldDefine(String tenantId, String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.getFormFieldDefine(formId);
+        List<FormFieldDefineModel> list = formDataService.getFormFieldDefine(formId);
+        return Y9Result.success(list);
     }
 
     /**
@@ -236,13 +239,14 @@ public class FormDataApiImpl implements FormDataApi {
      *
      * @param tenantId 租户id
      * @param formId 表单id
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     @GetMapping(value = "/getFormJson", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getFormJson(String tenantId, String formId) {
+    public Y9Result<String> getFormJson(String tenantId, String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.getFormJson(formId);
+        String json = formDataService.getFormJson(formId);
+        return Y9Result.success(json);
     }
 
     /**
@@ -251,13 +255,17 @@ public class FormDataApiImpl implements FormDataApi {
      * @param tenantId 租户id
      * @param formId 表单id
      * @param processSerialNumber 流程编号
-     * @return Map<String, Object>
+     * @return Y9Result<Map<String, Object>>
      */
     @Override
     @GetMapping(value = "/getFromData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getFromData(String tenantId, String formId, String processSerialNumber) {
+    public Y9Result<Map<String, Object>> getFromData(String tenantId, String formId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.getFromData(formId, processSerialNumber);
+        Map<String, Object> map = formDataService.getFromData(formId, processSerialNumber);
+        if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.success((Map<String, Object>)map.get("formData"));
+        }
+        return Y9Result.failure("获取失败");
     }
 
     /**
@@ -265,13 +273,14 @@ public class FormDataApiImpl implements FormDataApi {
      *
      * @param tenantId 租户id
      * @param formId 表单id
-     * @return List<Map < String, Object>>
+     * @return Y9Result<List<Map<String, Object>>>
      */
     @Override
     @GetMapping(value = "/getPreFormDataByFormId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getPreFormDataByFormId(String tenantId, String formId) {
+    public Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(String tenantId, String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.getPreFormDataByFormId(formId);
+        List<Map<String, Object>> list = formDataService.getPreFormDataByFormId(formId);
+        return Y9Result.success(list);
     }
 
     /**
@@ -282,14 +291,15 @@ public class FormDataApiImpl implements FormDataApi {
      * @param tableId 表id
      * @param processSerialNumber 流程编号
      * @param jsonData json表数据
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/saveChildTableData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void saveChildTableData(String tenantId, String formId, String tableId, String processSerialNumber,
-        @RequestBody String jsonData) throws Exception {
+    public Y9Result<Object> saveChildTableData(String tenantId, String formId, String tableId,
+        String processSerialNumber, @RequestBody String jsonData) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         formDataService.saveChildTableData(formId, tableId, processSerialNumber, jsonData);
-
+        return Y9Result.success();
     }
 
     /**
@@ -298,13 +308,16 @@ public class FormDataApiImpl implements FormDataApi {
      * @param tenantId 租户id
      * @param formId 表单id
      * @param formJsonData json表数据
+     * @return Y9Result<Object>
      * @throws Exception 抛出异常
      */
     @Override
     @PostMapping(value = "/saveFormData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void saveFormData(String tenantId, String formId, @RequestBody String formJsonData) throws Exception {
+    public Y9Result<Object> saveFormData(String tenantId, String formId, @RequestBody String formJsonData)
+        throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         formDataService.saveFormData(formJsonData, formId);
+        return Y9Result.success();
     }
 
     /**
@@ -314,14 +327,16 @@ public class FormDataApiImpl implements FormDataApi {
      * @param itemId 事项id
      * @param formId 表单id
      * @param formJsonData json表数据
+     * @return Y9Result<String>
      * @throws Exception 抛出异常
      */
     @Override
     @PostMapping(value = "/savePreFormData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String savePreFormData(String tenantId, String itemId, String formId, @RequestBody String formJsonData)
-        throws Exception {
+    public Y9Result<String> savePreFormData(String tenantId, String itemId, String formId,
+        @RequestBody String formJsonData) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         System.out.println("***********************savePreFormData   formJsonData****************" + formJsonData);
-        return formDataService.saveAFormData(itemId, formJsonData, formId);
+        String processSerialNumber = formDataService.saveAFormData(itemId, formJsonData, formId);
+        return Y9Result.success(processSerialNumber);
     }
 }

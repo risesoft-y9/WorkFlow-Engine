@@ -14,6 +14,7 @@ import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
+import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Result;
@@ -100,56 +101,59 @@ public class FormDataApiImpl implements FormDataApi {
     }
 
     @Override
-    public List<Y9FormFieldModel> getFormField(String tenantId, String itemId) {
+    public Y9Result<List<Y9FormFieldModel>> getFormField(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return formDataService.getFormField(itemId);
     }
 
     @Override
     @GetMapping(value = "/getFormFieldDefine", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getFormFieldDefine(String tenantId, String formId) {
+    public Y9Result<List<FormFieldDefineModel>> getFormFieldDefine(String tenantId, String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return formDataService.getFormFieldDefine(formId);
     }
 
     @Override
     @GetMapping(value = "/getFormJson", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getFormJson(String tenantId, String formId) {
+    public Y9Result<String> getFormJson(String tenantId, String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return formDataService.getFormJson(formId);
     }
 
     @Override
     @GetMapping(value = "/getFromData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getFromData(String tenantId, String formId, String processSerialNumber) {
+    public Y9Result<Map<String, Object>> getFromData(String tenantId, String formId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return formDataService.getFromData(formId, processSerialNumber);
     }
 
     @Override
-    public List<Map<String, Object>> getPreFormDataByFormId(String tenantId, String formId) {
+    public Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(String tenantId, String formId) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     @PostMapping(value = "/saveChildTableData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void saveChildTableData(String tenantId, String formId, String tableId, String processSerialNumber,
-        String jsonData) throws Exception {
+    public Y9Result<Object> saveChildTableData(String tenantId, String formId, String tableId,
+        String processSerialNumber, String jsonData) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         formDataService.saveChildTableData(formId, tableId, processSerialNumber, jsonData);
 
+        return null;
     }
 
     @Override
     @PostMapping(value = "/saveFormData", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void saveFormData(String tenantId, String formId, String formJsonData) throws Exception {
+    public Y9Result<Object> saveFormData(String tenantId, String formId, String formJsonData) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         formDataService.saveFormData(formJsonData, formId);
+        return null;
     }
 
     @Override
-    public String savePreFormData(String tenantId, String itemId, String formId, String formJsonData) throws Exception {
+    public Y9Result<String> savePreFormData(String tenantId, String itemId, String formId, String formJsonData)
+        throws Exception {
         // TODO Auto-generated method stub
         return "";
     }

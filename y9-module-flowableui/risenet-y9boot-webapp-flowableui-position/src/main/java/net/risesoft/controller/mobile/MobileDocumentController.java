@@ -45,6 +45,7 @@ import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
+import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
@@ -157,8 +158,8 @@ public class MobileDocumentController {
             }
             for (String s : formId) {// 获取表单定义字段
                 Map<String, Object> fieldDefineMap = new HashMap<>(16);
-                List<Map<String, String>> listMap;
-                listMap = formDataApi.getFormFieldDefine(tenantId, s);
+                List<FormFieldDefineModel> listMap;
+                listMap = formDataApi.getFormFieldDefine(tenantId, s).getData();
                 fieldDefineMap.put(s, listMap);
                 fieldDefineList.add(fieldDefineMap);
             }

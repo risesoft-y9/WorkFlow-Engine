@@ -16,7 +16,6 @@ import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.itemadmin.OptionClassApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.tenant.TenantApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Tenant;
@@ -135,15 +134,8 @@ public class Y9FormRestController {
     public Y9Result<Map<String, Object>> getFormData(@RequestParam(required = true) String formId,
         @RequestParam(required = true) String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            Map<String, Object> map = formDataManager.getFromData(tenantId, formId, processSerialNumber);
-            if ((boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.success((Map<String, Object>)map.get("formData"), "获取成功");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Y9Result.failure("获取失败");
+        return formDataManager.getFromData(tenantId, formId, processSerialNumber);
+
     }
 
     /**
@@ -155,8 +147,7 @@ public class Y9FormRestController {
     @RequestMapping(value = "/getFormJson", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<String> getFormJson(@RequestParam(required = true) String formId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String formJson = formDataManager.getFormJson(tenantId, formId);
-        return Y9Result.success(formJson, "获取成功");
+        return formDataManager.getFormJson(tenantId, formId);
     }
 
     /**
