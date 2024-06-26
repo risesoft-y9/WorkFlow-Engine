@@ -247,7 +247,7 @@ vue -- 前端工程
 
 ### 工作台
 
-演示地址：<a href="https://test.youshengyun.com/flowableUI-open/workIndex/" target="_blank">https://vue.youshengyun.com/flowableUI-open/workIndex/</a>
+演示地址：<a href="https://test.youshengyun.com/flowableUI-open/workIndex/" target="_blank">https://test.youshengyun.com/flowableUI-open/workIndex/</a>
 
 > 演示账号：
 >
