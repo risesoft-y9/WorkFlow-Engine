@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.itemadmin.AddItemListModel;
+import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -49,7 +49,7 @@ public class MobileItemController {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            List<AddItemListModel> listMap = item4PositionApi.getItemList(tenantId, positionId).getData();
+            List<ItemListModel> listMap = item4PositionApi.getItemList(tenantId, positionId).getData();
             resMap.put(UtilConsts.SUCCESS, true);
             resMap.put("msg", "获取数据成功");
             resMap.put("itemList", listMap);

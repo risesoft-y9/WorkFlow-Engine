@@ -1,14 +1,14 @@
 package net.risesoft.api.itemadmin.position;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import net.risesoft.model.itemadmin.AddItemListModel;
+import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -96,10 +96,10 @@ public interface Item4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return Y9Result<List<AddItemListModel>>
+     * @return Y9Result<List<ItemListModel>>
      */
     @GetMapping("/getItemList")
-    Y9Result<List<AddItemListModel>> getItemList(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<ItemListModel>> getItemList(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId);
 
     /**
@@ -118,20 +118,20 @@ public interface Item4PositionApi {
      * 获取事项系统
      *
      * @param tenantId 租户id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<ItemSystemListModel>>
      */
     @GetMapping("/getItemSystem")
-    List<Map<String, Object>> getItemSystem(@RequestParam("tenantId") String tenantId);
+    Y9Result<List<ItemSystemListModel>> getItemSystem(@RequestParam("tenantId") String tenantId);
 
     /**
      * 获取个人有权限事项列表
      *
      * @param tenantId 租户Id
      * @param positionId 岗位id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<ItemListModel>>
      */
     @GetMapping("/getMyItemList")
-    List<Map<String, Object>> getMyItemList(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<ItemListModel>> getMyItemList(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId);
 
     /**

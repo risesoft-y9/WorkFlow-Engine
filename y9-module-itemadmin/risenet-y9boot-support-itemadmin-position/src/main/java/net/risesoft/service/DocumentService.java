@@ -3,8 +3,8 @@ package net.risesoft.service;
 import java.util.List;
 import java.util.Map;
 
-import net.risesoft.model.itemadmin.AddItemListModel;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
+import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
@@ -109,14 +109,14 @@ public interface DocumentService {
      *
      * @return
      */
-    List<AddItemListModel> getItemList();
+    List<ItemListModel> getItemList();
 
     /**
      * 获取个人有权限列表
      *
      * @return
      */
-    List<Map<String, Object>> getMyItemList();
+    List<ItemListModel> getMyItemList();
 
     /**
      * Description: 获取菜单
@@ -125,7 +125,7 @@ public interface DocumentService {
      * @param processDefinitionId 流程定义id
      * @param taskDefKey
      * @param taskId 任务id
-     * @param map
+     * @param model
      * @param itembox
      * @return
      */
