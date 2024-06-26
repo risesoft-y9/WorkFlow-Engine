@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.FormFieldDefineModel;
@@ -103,28 +104,36 @@ public class FormDataApiImpl implements FormDataApi {
     @Override
     public Y9Result<List<Y9FormFieldModel>> getFormField(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.getFormField(itemId);
+        List<Y9FormFieldModel> list = formDataService.getFormField(itemId);
+        return Y9Result.success(list);
     }
 
     @Override
     @GetMapping(value = "/getFormFieldDefine", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<FormFieldDefineModel>> getFormFieldDefine(String tenantId, String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.getFormFieldDefine(formId);
+        List<FormFieldDefineModel> list = formDataService.getFormFieldDefine(formId);
+        return Y9Result.success(list);
     }
 
     @Override
     @GetMapping(value = "/getFormJson", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getFormJson(String tenantId, String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.getFormJson(formId);
+        String json = formDataService.getFormJson(formId);
+        return Y9Result.success(json);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     @GetMapping(value = "/getFromData", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Map<String, Object>> getFromData(String tenantId, String formId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.getFromData(formId, processSerialNumber);
+        Map<String, Object> map = formDataService.getFromData(formId, processSerialNumber);
+        if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+            return Y9Result.success((Map<String, Object>)map.get("formData"));
+        }
+        return Y9Result.failure("获取失败");
     }
 
     @Override
@@ -155,6 +164,6 @@ public class FormDataApiImpl implements FormDataApi {
     public Y9Result<String> savePreFormData(String tenantId, String itemId, String formId, String formJsonData)
         throws Exception {
         // TODO Auto-generated method stub
-        return "";
+        return Y9Result.success("");
     }
 }

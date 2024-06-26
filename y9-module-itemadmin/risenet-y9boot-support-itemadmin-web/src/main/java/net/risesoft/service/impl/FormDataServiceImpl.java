@@ -22,6 +22,7 @@ import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.model.itemadmin.FieldPermModel;
+import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.user.UserInfo;
@@ -162,7 +163,6 @@ public class FormDataServiceImpl implements FormDataService {
     public FieldPermModel getFieldPerm(Y9FieldPerm y9FieldPerm) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        Map<String, Object> resMap = new HashMap<String, Object>(16);
         FieldPermModel model = new FieldPermModel();
         model.setFieldName(y9FieldPerm.getFieldName());
         if (StringUtils.isNotBlank(y9FieldPerm.getWriteRoleId())) {
@@ -211,22 +211,18 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
-    public List<Map<String, String>> getFormFieldDefine(String formId) {
-        List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
+    public List<FormFieldDefineModel> getFormFieldDefine(String formId) {
+        List<FormFieldDefineModel> listMap = new ArrayList<>();
         try {
             List<Y9FormField> formElementList = y9FormFieldService.findByFormId(formId);
             for (Y9FormField formElement : formElementList) {
-                Map<String, String> map = new HashMap<String, String>(16);
-                String formCtrltype = formElement.getFieldType();
-                String disChinaName = formElement.getFieldCnName();
-                String formCtrlName = formElement.getFieldName();
-                String columnName = formElement.getFieldName();
-                map.put("formCtrltype", formCtrltype);
-                map.put("disChinaName", disChinaName);
-                map.put("formCtrlName", formCtrlName);
-                map.put("columnName", columnName);
-                if (!listMap.contains(map)) {
-                    listMap.add(map);
+                FormFieldDefineModel model = new FormFieldDefineModel();
+                model.setColumnName(formElement.getFieldName());
+                model.setDisChinaName(formElement.getFieldCnName());
+                model.setFormCtrlName(formElement.getFieldName());
+                model.setFormCtrltype(formElement.getFieldType());
+                if (!listMap.contains(model)) {
+                    listMap.add(model);
                 }
             }
         } catch (Exception e) {

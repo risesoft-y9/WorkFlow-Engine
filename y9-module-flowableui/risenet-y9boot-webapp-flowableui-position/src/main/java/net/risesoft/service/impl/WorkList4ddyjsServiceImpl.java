@@ -86,11 +86,9 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     private final TaskVariableApi taskvariableApi;
 
     private final FormDataApi formDataApi;
-
+    private final ChaoSong4PositionApi chaoSong4PositionApi;
     @Value("${y9.common.flowableBaseUrl}")
     private String flowableBaseUrl;
-
-    private final ChaoSong4PositionApi chaoSong4PositionApi;
 
     @SuppressWarnings({"unchecked"})
     @Override
@@ -101,10 +99,10 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             List<Map<String, Object>> items = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             if (StringUtils.isBlank(searchTerm)) {
                 if (StringUtils.isNotBlank(searchItemId)) {
-                    ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId);
+                    ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
                     retMap = doingApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                         item1.getWorkflowGuid(), page, rows);
                 } else {
@@ -176,7 +174,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 }
             } else {
                 if (StringUtils.isNotBlank(searchItemId)) {
-                    ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId);
+                    ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
                     retMap = doingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                         item1.getWorkflowGuid(), searchTerm, page, rows);
                 } else {
@@ -256,7 +254,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         Integer rows) {
         Map<String, Object> retMap;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
         if (StringUtils.isNotBlank(searchItemId)) {
             retMap = officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, searchItemId, "", "",
                 page, rows);
@@ -319,7 +317,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     public Y9Page<Map<String, Object>> followList(String itemId, String searchTerm, Integer page, Integer rows) {
         Map<String, Object> map;
         String tenantId = Y9LoginUserHolder.getTenantId();
-        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
         map = officeFollow4PositionApi.getFollowListBySystemName(tenantId, Y9LoginUserHolder.getPositionId(),
             item.getSystemName(), searchTerm, page, rows);
         return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()),
@@ -744,10 +742,10 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             if (StringUtils.isBlank(searchTerm)) {
                 if (StringUtils.isNotBlank(searchItemId)) {
-                    ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId);
+                    ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
                     retMap = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                         item1.getWorkflowGuid(), page, rows);
                 } else {
@@ -756,7 +754,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 }
             } else {
                 if (StringUtils.isNotBlank(searchItemId)) {
-                    ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId);
+                    ItemModel item1 = item4PositionApi.getByItemId(tenantId, searchItemId).getData();
                     retMap = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                         item1.getWorkflowGuid(), searchTerm, page, rows);
                 } else {

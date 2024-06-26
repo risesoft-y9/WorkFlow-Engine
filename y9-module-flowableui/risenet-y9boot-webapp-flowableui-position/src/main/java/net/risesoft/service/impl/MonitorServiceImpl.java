@@ -372,7 +372,7 @@ public class MonitorServiceImpl implements MonitorService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             // if (StringUtils.isBlank(searchTerm)) {
             // retMap = monitorApi.getDoingListByProcessDefinitionKey(tenantId, processDefinitionKey, page, rows);
@@ -450,7 +450,7 @@ public class MonitorServiceImpl implements MonitorService {
         Map<String, Object> retMap;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             retMap = officeDoneInfo4PositionApi.searchByItemId(tenantId, searchTerm, itemId,
                 ItemBoxTypeEnum.DONE.getValue(), "", "", page, rows);
@@ -509,7 +509,7 @@ public class MonitorServiceImpl implements MonitorService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchTerm)) {
                 retMap = monitorApi.getRecycleListByProcessDefinitionKey(tenantId, processDefinitionKey, page, rows);

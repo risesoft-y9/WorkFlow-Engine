@@ -86,7 +86,7 @@ public class MainRestController {
     public Y9Result<Map<String, Object>> geAllItemList() {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemModel> list = item4PositionApi.getAllItemList(tenantId);
+        List<ItemModel> list = item4PositionApi.getAllItemList(tenantId).getData();
         boolean b = positionRoleApi
             .hasRole(tenantId, "Y9OrgHierarchyManagement", null, "监控管理员角色", Y9LoginUserHolder.getPositionId())
             .getData();
@@ -127,7 +127,7 @@ public class MainRestController {
         map.put("monitorDone", monitorDone);
         map.put("monitorRecycle", recycleCount);
         try {
-            ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = itemModel.getWorkflowGuid();
             if (itemModel.getId() != null) {
                 map.put("processDefinitionKey", processDefinitionKey);
@@ -233,7 +233,7 @@ public class MainRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>(16);
         map.put("tenantManager", person.isGlobalManager());
-        ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId);
+        ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId).getData();
         map.put("itemModel", itemModel);
         map.put("tenantId", tenantId);
         boolean b = positionRoleApi
@@ -256,7 +256,7 @@ public class MainRestController {
     @RequestMapping(value = "/getItemBySystemName", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getItemBySystemName(@RequestParam @NotBlank String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemModel> itemList = item4PositionApi.findAll(tenantId, systemName);
+        List<ItemModel> itemList = item4PositionApi.findAll(tenantId, systemName).getData();
         Map<String, Object> map = new HashMap<>(16);
         boolean b = positionRoleApi
             .hasRole(tenantId, "Y9OrgHierarchyManagement", "", "监控管理员角色", Y9LoginUserHolder.getPositionId()).getData();
@@ -326,7 +326,7 @@ public class MainRestController {
             long todoCount = 0;
             if (StringUtils.isNotBlank(count)) {// 是否统计待办数量
                 if (StringUtils.isNotBlank(itemId)) {// 单个事项获取待办数量
-                    ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId);
+                    ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId).getData();
                     todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, p.getId(),
                         itemModel.getWorkflowGuid());
                     allCount = allCount + todoCount;
@@ -358,7 +358,7 @@ public class MainRestController {
                         long todoCount1 = 0;
                         if (StringUtils.isNotBlank(count)) {// 是否统计待办数量
                             if (StringUtils.isNotBlank(itemId)) {// 单个事项获取待办数量
-                                ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId);
+                                ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId).getData();
                                 todoCount1 = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId,
                                     position.getId(), itemModel.getWorkflowGuid());
                                 allCount = allCount + todoCount1;
@@ -454,7 +454,7 @@ public class MainRestController {
                         ProcessParamModel processParamModel =
                             processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                         String itemId = processParamModel.getItemId();
-                        ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId);
+                        ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId).getData();
                         map.put("itemModel", itemModel);
                         processSerialNumber = processParamModel.getProcessSerialNumber();
                     } catch (Exception e) {
@@ -469,7 +469,7 @@ public class MainRestController {
                         processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                     processSerialNumber = processParamModel.getProcessSerialNumber();
                     String itemId = processParamModel.getItemId();
-                    ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId);
+                    ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId).getData();
                     map.put("itemModel", itemModel);
                     if (hisProcess == null || hisProcess.getId() == null) {// 办结件
                         // todotaskApi.deleteTodoTaskByTaskId(tenantId, taskId);
@@ -510,7 +510,8 @@ public class MainRestController {
                     }
                     ProcessParamModel processParamModel =
                         processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
-                    ItemModel itemModel = item4PositionApi.getByItemId(tenantId, processParamModel.getItemId());
+                    ItemModel itemModel =
+                        item4PositionApi.getByItemId(tenantId, processParamModel.getItemId()).getData();
                     map.put("itemModel", itemModel);
                     break;
                 }

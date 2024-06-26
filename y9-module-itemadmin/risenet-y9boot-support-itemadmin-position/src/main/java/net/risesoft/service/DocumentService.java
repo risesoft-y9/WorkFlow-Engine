@@ -3,6 +3,7 @@ package net.risesoft.service;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.model.itemadmin.AddItemListModel;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
@@ -108,7 +109,7 @@ public interface DocumentService {
      *
      * @return
      */
-    List<Map<String, Object>> getItemList();
+    List<AddItemListModel> getItemList();
 
     /**
      * 获取个人有权限列表

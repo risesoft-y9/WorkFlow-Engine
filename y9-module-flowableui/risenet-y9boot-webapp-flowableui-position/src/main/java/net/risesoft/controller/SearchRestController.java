@@ -58,7 +58,7 @@ public class SearchRestController {
     @RequestMapping(value = "/getMyItemSystemList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getMyItemSystemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemModel> listMap = item4PositionApi.getAllItemList(tenantId);
+        List<ItemModel> listMap = item4PositionApi.getAllItemList(tenantId).getData();
         List<Map<String, Object>> list = new ArrayList<>();
         for (ItemModel itemModel : listMap) {
             Map<String, Object> newmap = new HashMap<>(16);
