@@ -137,7 +137,7 @@ public class QueryListServiceImpl implements QueryListService {
         ItemPage<ActRuDetailModel> itemPage;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             itemPage = queryListApi.getQueryList(tenantId, userId, item.getSystemName(), state, createDate, tableName,
                 searchMapStr, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();

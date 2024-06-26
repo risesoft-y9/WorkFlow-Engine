@@ -59,7 +59,7 @@ public class DoneServiceImpl implements DoneService {
     public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
         Map<String, Object> retMap;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
         String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
         retMap =
             officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
@@ -112,7 +112,7 @@ public class DoneServiceImpl implements DoneService {
     public Y9Page<Map<String, Object>> listNew(String itemId, String searchTerm, Integer page, Integer rows) {
         Map<String, Object> retMap;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+        ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
         String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
         retMap =
             officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
@@ -185,7 +185,7 @@ public class DoneServiceImpl implements DoneService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage = itemDoneApi.findByUserIdAndSystemName(tenantId, userId, item.getSystemName(), page, rows);

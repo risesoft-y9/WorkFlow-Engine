@@ -58,7 +58,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             }
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
             actRuDetailModel.setCreateTime(new Date());
             actRuDetailModel.setEnded(false);

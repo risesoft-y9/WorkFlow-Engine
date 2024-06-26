@@ -169,7 +169,7 @@ public class MobileWorkListController {
                         continue;
                     }
                     String itemId = url.split("itemId=")[1];
-                    ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+                    ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
                     String processDefinitionKey = item.getWorkflowGuid();
                     long todoCount = processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(tenantId, positionId,
                         processDefinitionKey);
@@ -258,7 +258,7 @@ public class MobileWorkListController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             Map<String, Object> countMap =
                 processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey);

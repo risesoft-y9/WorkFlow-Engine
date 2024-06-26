@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.consts.UtilConsts;
-import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.AddItemListModel;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -50,14 +49,7 @@ public class MobileItemController {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            List<Map<String, Object>> listMap = item4PositionApi.getItemList(tenantId, positionId);
-            for (Map<String, Object> app : listMap) {
-                app.put("itemId", app.get("url"));
-                app.put("itemName", app.get("name"));
-                ItemModel itemModel = item4PositionApi.getByItemId(tenantId, (String)app.get("url"));
-                app.put("appIcon", StringUtils.isBlank(itemModel.getIconData()) ? "" : itemModel.getIconData());
-                app.put("processDefinitionKey", itemModel.getWorkflowGuid());
-            }
+            List<AddItemListModel> listMap = item4PositionApi.getItemList(tenantId, positionId).getData();
             resMap.put(UtilConsts.SUCCESS, true);
             resMap.put("msg", "获取数据成功");
             resMap.put("itemList", listMap);

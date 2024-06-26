@@ -33,7 +33,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         String documentTitle, String number, String level, Boolean customItem) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
             if (StringUtils.isNotBlank(processInstanceId)) {

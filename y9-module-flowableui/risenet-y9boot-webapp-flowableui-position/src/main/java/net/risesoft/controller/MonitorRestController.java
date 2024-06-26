@@ -83,8 +83,7 @@ public class MonitorRestController {
     @RequestMapping(value = "/getAllItemList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemModel>> getAllItemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemModel> listMap = item4PositionApi.getAllItemList(tenantId);
-        return Y9Result.success(listMap, "获取成功");
+        return item4PositionApi.getAllItemList(tenantId);
     }
 
     /**

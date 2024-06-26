@@ -93,7 +93,8 @@ public class MobileV1SystemDockingController {
               1保存表单数据和流转参数数据
              */
             Map<String, Object> mapFormData = Y9JsonUtil.readValue(formJsonData, Map.class);
-            List<ItemMappingConfModel> list = item4PositionApi.getItemMappingConf(tenantId, itemId, mappingId);
+            List<ItemMappingConfModel> list =
+                item4PositionApi.getItemMappingConf(tenantId, itemId, mappingId).getData();
             Map<String, Object> bindFormDataMap = new CaseInsensitiveMap();
             for (ItemMappingConfModel mapping : list) {
                 if (mapFormData != null && null != mapFormData.get(mapping.getMappingName())) {
@@ -125,9 +126,9 @@ public class MobileV1SystemDockingController {
             if (!map1.isSuccess()) {
                 return Y9Result.failure("发生异常");
             }
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String bindFormJsonData = Y9JsonUtil.writeValueAsString(bindFormDataMap);
-            String tempIds = item4PositionApi.getFormIdByItemId(tenantId, itemId, item.getWorkflowGuid());
+            String tempIds = item4PositionApi.getFormIdByItemId(tenantId, itemId, item.getWorkflowGuid()).getData();
             if (StringUtils.isNotBlank(tempIds)) {
                 List<String> tempIdList = Y9Util.stringToList(tempIds, SysVariables.COMMA);
                 LOGGER.debug("****************表单数据：{}*******************", bindFormJsonData);
@@ -170,7 +171,8 @@ public class MobileV1SystemDockingController {
             String positionId = Y9LoginUserHolder.getPositionId();
             String userId = Y9LoginUserHolder.getPersonId();
             Map<String, Object> mapFormData = Y9JsonUtil.readValue(formJsonData, Map.class);
-            List<ItemMappingConfModel> list = item4PositionApi.getItemMappingConf(tenantId, itemId, mappingId);
+            List<ItemMappingConfModel> list =
+                item4PositionApi.getItemMappingConf(tenantId, itemId, mappingId).getData();
             Map<String, Object> bindFormDataMap = new CaseInsensitiveMap();
             for (ItemMappingConfModel mapping : list) {
                 if (mapFormData != null && null != mapFormData.get(mapping.getMappingName())) {
@@ -192,9 +194,9 @@ public class MobileV1SystemDockingController {
             if (!map1.isSuccess()) {
                 return Y9Result.failure("发生异常");
             }
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String bindFormJsonData = Y9JsonUtil.writeValueAsString(bindFormDataMap);
-            String tempIds = item4PositionApi.getFormIdByItemId(tenantId, itemId, item.getWorkflowGuid());
+            String tempIds = item4PositionApi.getFormIdByItemId(tenantId, itemId, item.getWorkflowGuid()).getData();
             if (StringUtils.isNotBlank(tempIds)) {
                 List<String> tempIdList = Y9Util.stringToList(tempIds, SysVariables.COMMA);
                 LOGGER.debug("****************表单数据：{}*******************", bindFormJsonData);

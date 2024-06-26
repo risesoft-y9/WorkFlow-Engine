@@ -57,6 +57,7 @@ import net.risesoft.enums.platform.AuthorityEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.AddItemListModel;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
@@ -612,8 +613,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<Map<String, Object>> getItemList() {
-        List<Map<String, Object>> listMap = new ArrayList<>();
+    public List<AddItemListModel> getItemList() {
+        List<AddItemListModel> listMap = new ArrayList<>();
         try {
             String positionId = Y9LoginUserHolder.getPositionId();
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -621,11 +622,11 @@ public class DocumentServiceImpl implements DocumentService {
             //////////////////////////////////
             List<Resource> list =
                 positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
-            Map<String, Object> map;
+            AddItemListModel model;
             String url;
             long todoCount;
             for (Resource r : list) {
-                map = new HashMap<>(16);
+                model = new AddItemListModel();
                 url = r.getUrl();
                 if (StringUtils.isBlank(url)) {
                     continue;
@@ -634,20 +635,24 @@ public class DocumentServiceImpl implements DocumentService {
                     continue;
                 }
                 String itemId = url.split("itemId=")[1];
-                map.put("id", r.getId());
-                map.put("url", itemId);
-                map.put("iconData", "");
-                map.put("todoCount", 0);
+                model.setId(r.getId());
+                model.setUrl(itemId);
+                model.setItemId(itemId);
+                model.setAppIcon("");
+                model.setTodoCount(0);
                 SpmApproveItem spmApproveitem = spmApproveitemRepository.findById(itemId).orElse(null);
-                map.put("name", r.getName());
+                model.setName(r.getName());
+                model.setItemName(r.getName());
                 if (spmApproveitem != null && spmApproveitem.getId() != null) {
-                    map.put("name", spmApproveitem.getName());
+                    model.setName(spmApproveitem.getName());
+                    model.setItemName(spmApproveitem.getName());
                     todoCount = todoManager.getTodoCountByPositionIdAndProcessDefinitionKey(tenantId, positionId,
                         spmApproveitem.getWorkflowGuid());
-                    map.put("todoCount", todoCount);
-                    map.put("iconData",
+                    model.setTodoCount((int)todoCount);
+                    model.setAppIcon(
                         StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
-                    listMap.add(map);
+                    model.setProcessDefinitionKey(spmApproveitem.getWorkflowGuid());
+                    listMap.add(model);
                 }
             }
         } catch (Exception e) {
@@ -949,6 +954,45 @@ public class DocumentServiceImpl implements DocumentService {
         return model;
     }
 
+    @Override
+    public List<String> parseUserChoice(String userChoice) {
+        String users = "";
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        if (StringUtils.isNotBlank(userChoice)) {
+            String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
+            for (String s : userChoices) {
+                String[] s2 = s.split(SysVariables.COLON);
+                int principalType = Integer.parseInt(s2[0]);
+                String userIdTemp = s2[1];
+                if (principalType == ItemPermissionEnum.POSITION.getValue()) {
+                    Position position = positionManager.get(tenantId, s2[1]).getData();
+                    if (null == position) {
+                        continue;
+                    }
+                    users = this.addUserId(users, userIdTemp);
+                } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {
+                    List<Position> employeeList = new ArrayList<>();
+                    this.getAllPosition(employeeList, s2[1]);
+                    for (Position pTemp : employeeList) {
+                        users = this.addUserId(users, pTemp.getId());
+                    }
+                } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
+                    List<CustomGroupMember> list = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
+                        Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION).getData();
+                    for (CustomGroupMember pTemp : list) {
+                        Position position = positionManager.get(tenantId, pTemp.getMemberId()).getData();
+                        if (position != null && StringUtils.isNotBlank(position.getId())) {
+                            users = this.addUserId(users, position.getId());
+                        }
+                    }
+                }
+            }
+        }
+        List<String> result = Y9Util.stringToList(users, SysVariables.SEMICOLON);
+        ListUtil.removeDuplicateWithOrder(result);
+        return result;
+    }
+
     public Y9Result<Map<String, String>> parserRouteToTaskId(String itemId, String processSerialNumber,
         String processDefinitionId, String taskDefKey, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -1037,45 +1081,6 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<String> parseUserChoice(String userChoice) {
-        String users = "";
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        if (StringUtils.isNotBlank(userChoice)) {
-            String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
-            for (String s : userChoices) {
-                String[] s2 = s.split(SysVariables.COLON);
-                int principalType = Integer.parseInt(s2[0]);
-                String userIdTemp = s2[1];
-                if (principalType == ItemPermissionEnum.POSITION.getValue()) {
-                    Position position = positionManager.get(tenantId, s2[1]).getData();
-                    if (null == position) {
-                        continue;
-                    }
-                    users = this.addUserId(users, userIdTemp);
-                } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {
-                    List<Position> employeeList = new ArrayList<>();
-                    this.getAllPosition(employeeList, s2[1]);
-                    for (Position pTemp : employeeList) {
-                        users = this.addUserId(users, pTemp.getId());
-                    }
-                } else if (principalType == ItemPermissionEnum.CUSTOMGROUP.getValue()) {
-                    List<CustomGroupMember> list = customGroupApi.listCustomGroupMemberByGroupIdAndMemberType(tenantId,
-                        Y9LoginUserHolder.getPersonId(), s2[1], OrgTypeEnum.POSITION).getData();
-                    for (CustomGroupMember pTemp : list) {
-                        Position position = positionManager.get(tenantId, pTemp.getMemberId()).getData();
-                        if (position != null && StringUtils.isNotBlank(position.getId())) {
-                            users = this.addUserId(users, position.getId());
-                        }
-                    }
-                }
-            }
-        }
-        List<String> result = Y9Util.stringToList(users, SysVariables.SEMICOLON);
-        ListUtil.removeDuplicateWithOrder(result);
-        return result;
-    }
-
-    @Override
     public Map<String, Object> reposition(String taskId, String userChoice) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -1085,7 +1090,7 @@ public class DocumentServiceImpl implements DocumentService {
             TaskModel task = taskManager.findById(tenantId, taskId);
             String processInstanceId = task.getProcessInstanceId();
             List<String> userAndDeptIdList = new ArrayList<>();
-            userChoice = userChoice.substring(2, userChoice.length());
+            userChoice = userChoice.substring(2);
             userAndDeptIdList.add(userChoice);
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
             String multiInstance = processDefinitionManager.getNodeType(tenantId, task.getProcessDefinitionId(),

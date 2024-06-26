@@ -3,8 +3,13 @@ package net.risesoft.api.itemadmin.position;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import net.risesoft.model.itemadmin.AddItemListModel;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -18,52 +23,61 @@ public interface Item4PositionApi {
      *
      * @param tenantId 租户id
      * @param systemName 系统名称
-     * @return List&lt;ItemModel&gt;
+     * @return Y9Result<List<ItemModel>>
      */
-    List<ItemModel> findAll(String tenantId, String systemName);
+    @GetMapping("/findAll")
+    Y9Result<List<ItemModel>> findAll(@RequestParam("tenantId") String tenantId,
+        @RequestParam("systemName") String systemName);
 
     /**
      * 根据流程的定义Key查找对应的事项
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return ItemModel
+     * @return Y9Result<ItemModel>
      */
-    ItemModel findByProcessDefinitionKey(String tenantId, String processDefinitionKey);
+    @GetMapping("/findByProcessDefinitionKey")
+    Y9Result<ItemModel> findByProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
      * 获取所有事项列表
      *
      * @param tenantId 租户id
-     * @return Listt&lt;ItemModel&gt;
+     * @return Y9Result<List<ItemModel>>
      */
-    List<ItemModel> getAllItem(String tenantId);
+    @GetMapping("/getAllItem")
+    Y9Result<List<ItemModel>> getAllItem(@RequestParam("tenantId") String tenantId);
 
     /**
      * 获取所有事项
      *
      * @param tenantId 租户id
-     * @return Listt&lt;ItemModel&gt;
+     * @return Y9Result<List<ItemModel>>
      */
-    List<ItemModel> getAllItemList(String tenantId);
+    @GetMapping("/getAllItemList")
+    Y9Result<List<ItemModel>> getAllItemList(@RequestParam("tenantId") String tenantId);
 
     /**
      * 根据事项id获取事项
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return ItemModel
+     * @return Y9Result<ItemModel>
      */
-    ItemModel getByItemId(String tenantId, String itemId);
+    @GetMapping("/getByItemId")
+    Y9Result<ItemModel> getByItemId(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId);
 
     /**
      * 获取有权限的首个事项id
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return String
+     * @return Y9Result<String>
      */
-    String getFirstItem(String tenantId, String positionId);
+    @GetMapping("/getFirstItem")
+    Y9Result<String> getFirstItem(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId);
 
     /**
      * 根据事项id获取绑定的表单id
@@ -71,18 +85,22 @@ public interface Item4PositionApi {
      * @param tenantId 租户Id
      * @param itemId 事项id
      * @param processDefinitionKey 流程定义Key
-     * @return String
+     * @return Y9Result<String>
      */
-    String getFormIdByItemId(String tenantId, String itemId, String processDefinitionKey);
+    @GetMapping("/getFormIdByItemId")
+    Y9Result<String> getFormIdByItemId(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
      * 获取新建事项列表
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<AddItemListModel>>
      */
-    List<Map<String, Object>> getItemList(String tenantId, String positionId);
+    @GetMapping("/getItemList")
+    Y9Result<List<AddItemListModel>> getItemList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId);
 
     /**
      * 获取事项系统字段映射配置
@@ -90,9 +108,11 @@ public interface Item4PositionApi {
      * @param tenantId 租户Id
      * @param itemId 事项id
      * @param mappingId 系统标识
-     * @return Listt&lt;ItemMappingConfModel&gt;
+     * @return Y9Result<List<ItemMappingConfModel>>
      */
-    List<ItemMappingConfModel> getItemMappingConf(String tenantId, String itemId, String mappingId);
+    @GetMapping("/getItemMappingConf")
+    Y9Result<List<ItemMappingConfModel>> getItemMappingConf(@RequestParam("tenantId") String tenantId,
+        @RequestParam("itemId") String itemId, @RequestParam("mappingId") String mappingId);
 
     /**
      * 获取事项系统
@@ -100,7 +120,8 @@ public interface Item4PositionApi {
      * @param tenantId 租户id
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> getItemSystem(String tenantId);
+    @GetMapping("/getItemSystem")
+    List<Map<String, Object>> getItemSystem(@RequestParam("tenantId") String tenantId);
 
     /**
      * 获取个人有权限事项列表
@@ -109,7 +130,9 @@ public interface Item4PositionApi {
      * @param positionId 岗位id
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    List<Map<String, Object>> getMyItemList(String tenantId, String positionId);
+    @GetMapping("/getMyItemList")
+    List<Map<String, Object>> getMyItemList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId);
 
     /**
      * 判断该租户是否有流程定义
@@ -118,6 +141,8 @@ public interface Item4PositionApi {
      * @param processDefinitionKey 流程定义Key
      * @return Boolean
      */
-    Boolean hasProcessDefinitionByKey(String tenantId, String processDefinitionKey);
+    @GetMapping("/hasProcessDefinitionByKey")
+    Y9Result<Boolean> hasProcessDefinitionByKey(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
 
 }

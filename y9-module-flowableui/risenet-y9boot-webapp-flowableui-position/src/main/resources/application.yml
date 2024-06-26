@@ -5,7 +5,7 @@ management:
                 include: '*'
 server:
     intranet:
-        ip: 192.168.x.x,10.161.x.x,10.x.x.x,172.20.x.x
+        ip: 192.168.x.x,10.0.x.x
     port: 8080
     servlet:
         encoding:
@@ -25,15 +25,17 @@ spring:
             - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
     cloud:
         nacos:
+            server-addr: nacos:8848
+            username: nacos
+            password: Risesoft@2024
             config:
                 enabled: false
                 group: DEFAULT_GROUP
-                namespace: vue
-                server-addr: https://vue.youshengyun.com:443
-                username: nacos
-                password: nacos@2022
+                namespace: test
             discovery:
                 enabled: false
+                group: DEFAULT_GROUP
+                namespace: test
     config:
         import:
             - optional:nacos:flowableUI.yml
@@ -77,9 +79,9 @@ spring:
                 #username: Y9_PUBLIC
                 #password: '111111'
                 driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                url: jdbc:mysql://192.168.3.31:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false
                 username: root
-                password: '111111'
+                password: 'Y9i-83204585'
                 initialSize: 1
                 maxActive: 20
                 maxPoolPreparedStatementPerConnectionSize: 100
@@ -110,7 +112,7 @@ spring:
                     auto: none
                 jdbc:
                     batch_size: 100
-                show_sql: true
+                show_sql: false
     kafka:
         bootstrap-servers: localhost:9092
         consumer:
@@ -124,8 +126,8 @@ spring:
             prefix: /WEB-INF/jsp/
             suffix: .jsp
     redis:
-        database: 8
-        host: localhost
+        database: 9
+        host: 192.168.3.31
         lettuce:
             pool:
                 max-active: 8
@@ -133,7 +135,7 @@ spring:
                 max-wait: -1
                 min-idle: 0
             shutdown-timeout: 100ms
-        password: y9i-83204585
+        password: Y9i-83204585
         port: 6379
         ssl: false
         timeout: 10000
@@ -148,29 +150,27 @@ y9:
     systemName: flowableUI
     app:
         flowable:
-            systemCnName: 办件
+            systemCnName: 办件3.0
             systemName: flowableUI
     service:
         itemAdmin:
-            directUrl: http://localhost:7057
+            directUrl: http://localhost:7056
         processAdmin:
             directUrl: http://localhost:7056
-        todo:
-            directUrl: http://localhost:7056
         org:
-            directUrl: http://localhost:7055
+            directUrl: https://test-api.youshengyun.com
+        todo:
+            directUrl: https://test-api.youshengyun.com
     common:
         cacheEnabled: true
         kafkaEnabled: true
-        flowableBaseUrl: http://localhost:7058/flowableUI
-        itemAdminBaseUrl: http://localhost:7057/itemAdmin
-        orgBaseUrl: http://localhost:7055/platform
-        processAdminBaseUrl: http://localhost:7056/processAdmin
-        todoBaseUrl: http://localhost:7058/todo
-        todoTaskUrlPrefix: http://localhost:8080/flowableUI/todoIndex
-        jodconverterBaseUrl: http://localhost:7058/jodconverter/onlinePreview?url=
-        logBaseUrl: http://localhost:7056/log
-        userOnlineBaseUrl: http://localhost:7056/userOnline
+        flowableBaseUrl: https://test-api.youshengyun.com/flowableUI
+        itemAdminBaseUrl: https://test-api.youshengyun.com/itemAdmin
+        orgBaseUrl: https://test-api.youshengyun.com/platform
+        processAdminBaseUrl: https://test-api.youshengyun.com/processAdmin
+        todoBaseUrl: https://test.youshengyun.com/todo
+        todoTaskUrlPrefix: https://test.youshengyun.com/flowableUI/todoIndex
+        jodconverterBaseUrl: https://test-api.youshengyun.com/jodconverter/onlinePreview?url=
     feature:
         apisix:
             enabled: false
@@ -185,9 +185,9 @@ y9:
             #privateKey:
             #publicKey:
             rest:
-                fileManagerUrl: http://localhost:8080/fileManager
+                fileManagerUrl: http://test-api.youshengyun.com/fileManager
             ftp:
-                host: localhost
+                host: ftp
                 port: 21
                 username: y9admin
                 password: '83204585'
@@ -220,32 +220,40 @@ y9:
             productEdition: test
             productVersion: 9.4.0
             licenseFileOnDisk: https://vue.youshengyun.com/license/y9license.lic
-            licenseString: '7e78efc812dada5c29668827783dbee481319d160e7d231bb84f4ad0752ed1e6f794fb15c741021f6a6a42a4ab49541511a775647223a7dadab6126c6e50acc2e4c3a01904a1df2cda6b61cc04a21c4b5af8efc7ac764ec8747d9a237899702a180addda08d49b407fe57d5d2a00011591c8bc8f145bea0947027282513209348eadcbd3718a8c8ddb1b0195f44131bd534fefd105fe5ca246ef9eeb530613ef16f4e00e3d560baead3ed7f141492d586b8b50eb371799ed746d493442a0589fd8e57eadb4a56c451db7c050501a54642d667a9c8d965f6d9469e1f5241e55eb8e0a7834dcf14a304ee3c244d939a8e6fbc8b7a640062dd7e044824978898339979191708409b4d5d43bddfa4dedeacf68437a9f29a4914f4939752fbed2fbfedee9e25c0b57bb04fc9618e88bd18824a2ce7db94bb5999a87b3bda495a3e7bfc03caf1f23798cf68bf6a36dd8a00103897bf6eebc9daf7b87899f1fb04d8961aa02accce671dc9140a11e6f3d8bb45a3b910ebc2e106690b242dfc669ff7bca1be4284c644fba62c1f1a5b7f4043de429e377dbf46b807cb4cda1df32252d8abd55c7b4cab9548e4b868e6ee80ca1e3ad8c61e42afab56730d6a8eff890fadca2e22e9f4a637537ed4c2dc9576948e98228606413ab74c60f0f5d4b9200eb7696e00c2d9c662ea40832ff435b66cb96da68ce2e4ad278e47d895e52e0383e082b926e1aa88545a66fe7440e7d2215b40b35562aa5eea757dc494a436a3e01b80d153543f2cb26da0ab749665e2b7f38fda186faa50f496070e04561a5e459829c69741a75f458789d17709906f541d3280c0dfd42375b86d20f38a46278dd0a0b78828cf941d8485faaca8a1aae9148d273485c8c67087447b450be72952cb9f76905c03684c5f6a39d3d7cd970d5c347241455160b50c7941f9ee1d7c92b406018b3a635c97e699381651784054f26'
+            licenseString: '7e78efc812dada5c29668827783dbee481319d160e7d231bb84f4ad0752ed1e6f794fb15c741021f6a6a42a4ab49541511a775647223a7daf0a5f3b113d38eb2f6972b9b35fe5eace335ace6bdf3729bb63eb672898afd7f5c95f283d6e4eb864b3134fdeafdac826f429482d7d8d190542c55eb245f9e706f996c97d0e825745807aa5c432b1ba7426f1a28086df098ed782cc52204bb92d4290bbaf883f26e774eb2e7b355a1eab6ffadc0b2cac2db3d4ace0c04257a9af51534a6009b7512e12fa27c01b48473a10bcd3d38a992d5c4b5c17e5903695cb742204a716544c69a7ad12614e92d0560fff3c2a8e7004083df92e19b78ff2d5a917f16cabe24f448c765b597901ec65dba2dfea36214b971c7f69b11ecdbb37814c8b0ab92b4c3b7f98c197198b35aa8e5eca1dffebbdae134997ff892dfca010447846d9ca7969c483627f6f3f0436564678b59a01b867f1357479588f22296bcb3c14b8f707d5188b3e90b334ecdb04c250108a56ac35f0578a652dd31786dd066dd8fa35c2ca4fc1602765d68cd7e8c8a1818391479ba549dd9241c4b47482f6b6c3066061908aa20114ba87c0db9291703b608d0cf297a2b711f6ec47b4ac79cc54cb5bb6fb62c8fc9309a2f48cf9f1fe84ff6c4402556e0374786e557ab65602b40e3f8531f4fa5fe960b7d62bd2c2a6bb9ca59eefe19c22f2d852e52cb74ada38faa2d024c360df3d65810d6d6ea346da0c2f676e261d294e9b833d971a14954f062c996609e1b5cd374824854690fb22e1254e97c48c5641647345988b11f22fe6ce128572413c0a5e1080168c7b6524c26b83953981b02065a21ae877186890c0791d6e1cc20bd6e081429e2c9a106c383c4fe44bb3b9037a29cf8178c24959bc4be523250829d9eed870439470da0949d3ac7d52d9a1653595cb0fa2f53a894da7fc08831487d75174c53b41d284652859333'
         log:
             enabled: true
-            # kafka, api
-            logSaveTarget: kafka
         session:
             redis:
                 enabled: true
                 maxInactiveIntervalInSeconds: 3600
         security:
             enabled: true
+            csrf:
+                accepted-referer:
+                    - localhost
+                    - 127.0.0.1
+                    - youshengyun.com
+                    - 192.168.3.148
             cors:
                 allowCredentials: true
                 allowed-headers: '*'
                 allowedOriginPatterns:
                     - https://*.youshengyun.com
                     - http://*.youshengyun.com
+                    - http://localhost:7070
                     - http://localhost:7055
+                    - http://localhost:7056
                     - http://localhost:8080
                     - http://localhost:8081
                     - http://localhost:8082
                     - http://localhost:8083
                     - http://127.0.0.1:7055
                     - http://127.0.0.1:7056
+                    - http://127.0.0.1:7070
                     - http://localhost:17061
                     - http://127.0.0.1:17061
+                    - http://192.168.3.148:8080
             xss:
                 ignoreParam:
                     - jsonData
@@ -269,6 +277,5 @@ y9:
                 opaque:
                     client-id: clientid
                     client-secret: secret
-                    introspection-uri: http://localhost:7055/sso/oauth2.0/introspect
-                    profile-uri: http://localhost:7055/sso/oauth2.0/profile
-
+                    introspection-uri: http://test-api-internal.youshengyun.com/sso/oauth2.0/introspect
+                    profile-uri: http://test-api-internal.youshengyun.com/sso/oauth2.0/profile

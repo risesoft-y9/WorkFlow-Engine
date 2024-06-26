@@ -64,7 +64,7 @@ public class MobileV1MonitorController {
     public Y9Result<Long> monitorDoingCount(@RequestParam @NotBlank String itemId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             long monitorDoingCount = monitorApi.getDoingCountByProcessDefinitionKey(tenantId, processDefinitionKey);
             return Y9Result.success(monitorDoingCount, "获取数据成功");
@@ -99,7 +99,7 @@ public class MobileV1MonitorController {
     public Y9Result<Long> monitorDoneCount(@RequestParam @NotBlank String itemId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId);
+            ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             long monitorDoneCount = monitorApi.getDoneCountByProcessDefinitionKey(tenantId, processDefinitionKey);
             return Y9Result.success(monitorDoneCount, "获取数据成功");

@@ -257,6 +257,7 @@ public class FormDataApiImpl implements FormDataApi {
      * @param processSerialNumber 流程编号
      * @return Y9Result<Map<String, Object>>
      */
+    @SuppressWarnings("unchecked")
     @Override
     @GetMapping(value = "/getFromData", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Map<String, Object>> getFromData(String tenantId, String formId, String processSerialNumber) {

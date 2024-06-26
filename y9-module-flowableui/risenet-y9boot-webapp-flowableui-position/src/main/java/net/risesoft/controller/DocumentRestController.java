@@ -32,6 +32,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.model.itemadmin.AddItemListModel;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
@@ -258,8 +259,8 @@ public class DocumentRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>(16);
         try {
-            List<Map<String, Object>> listMap;
-            listMap = item4PositionApi.getItemList(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId());
+            List<AddItemListModel> listMap = item4PositionApi
+                .getItemList(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
             map.put("itemMap", listMap);
             map.put("notReadCount", chaoSong4PositionApi
                 .getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
@@ -294,7 +295,7 @@ public class DocumentRestController {
         try {
             String positionId = Y9LoginUserHolder.getPositionId();
             List<Map<String, Object>> list = new ArrayList<>();
-            List<ItemModel> listMap = item4PositionApi.getAllItem(Y9LoginUserHolder.getTenantId());
+            List<ItemModel> listMap = item4PositionApi.getAllItem(Y9LoginUserHolder.getTenantId()).getData();
             for (ItemModel itemModel : listMap) {
                 Map<String, Object> newmap = new HashMap<>(16);
                 newmap.put("systemName", itemModel.getSystemName());
