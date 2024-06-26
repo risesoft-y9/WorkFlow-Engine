@@ -7,8 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import net.risesoft.pojo.Y9Result;
+
 /**
- *
+ * 快捷发送
+ * 
  * @author zhangchongjie
  * @date 2023/09/07
  */
@@ -22,10 +25,10 @@ public interface QuickSendApi {
      * @param positionId 岗位id
      * @param itemId 事项id
      * @param taskKey 任务key
-     * @return String
+     * @return {@code Y9Result<String>} 通用请求返回对象 - data 是快捷发送人
      */
     @GetMapping("/getAssignee")
-    String getAssignee(@RequestParam("tenantId") @NotBlank String tenantId,
+    Y9Result<String> getAssignee(@RequestParam("tenantId") @NotBlank String tenantId,
         @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId,
         @RequestParam("taskKey") @NotBlank String taskKey);
 
@@ -37,9 +40,10 @@ public interface QuickSendApi {
      * @param itemId 事项id
      * @param taskKey 任务key
      * @param assignee 发送人
+     * @return {@code Y9Result<String>} 通用请求返回对象
      */
     @PostMapping("/saveOrUpdate")
-    void saveOrUpdate(@RequestParam("tenantId") @NotBlank String tenantId,
+    Y9Result<String> saveOrUpdate(@RequestParam("tenantId") @NotBlank String tenantId,
         @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId,
         @RequestParam("taskKey") @NotBlank String taskKey, @RequestParam("assignee") String assignee);
 

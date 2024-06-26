@@ -59,7 +59,8 @@ public class QuickSendRestController {
         @RequestParam @NotBlank String taskKey) {
         List<Map<String, Object>> list = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String assignee = quickSendApi.getAssignee(tenantId, Y9LoginUserHolder.getPositionId(), itemId, taskKey);
+        String assignee =
+            quickSendApi.getAssignee(tenantId, Y9LoginUserHolder.getPositionId(), itemId, taskKey).getData();
         if (StringUtils.isNotBlank(assignee)) {
             String[] ids = assignee.split(",");
             for (String id : ids) {

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.QuickSendApi;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.QuickSendService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -26,19 +27,20 @@ public class QuickSendApiImpl implements QuickSendApi {
     private QuickSendService quickSendService;
 
     @Override
-    public String getAssignee(@NotBlank String tenantId, @NotBlank String positionId, @NotBlank String itemId,
+    public Y9Result<String> getAssignee(@NotBlank String tenantId, @NotBlank String positionId, @NotBlank String itemId,
         @NotBlank String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        return quickSendService.getAssignee(itemId, taskKey);
+        return Y9Result.success(quickSendService.getAssignee(itemId, taskKey));
     }
 
     @Override
-    public void saveOrUpdate(@NotBlank String tenantId, @NotBlank String positionId, @NotBlank String itemId,
-        @NotBlank String taskKey, String assignee) {
+    public Y9Result<String> saveOrUpdate(@NotBlank String tenantId, @NotBlank String positionId,
+        @NotBlank String itemId, @NotBlank String taskKey, String assignee) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         quickSendService.saveOrUpdate(itemId, taskKey, assignee);
+        return Y9Result.success();
     }
 
 }
