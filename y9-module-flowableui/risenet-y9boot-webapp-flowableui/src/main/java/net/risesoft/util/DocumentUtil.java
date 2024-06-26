@@ -13,6 +13,7 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
@@ -38,9 +39,9 @@ public class DocumentUtil {
             Map<String, Object> formMap = new HashMap<>(16);
             formMap.put("formId", formIdList.get(i));
             formMap.put("formName", formNameList.get(i));
-            Map<String, Object> dataMap =
+            Y9Result<Map<String, Object>> y9Result =
                 Y9Context.getBean(FormDataApi.class).getFromData(tenantId, formIdList.get(i), processSerialNumber);
-            formMap.putAll(dataMap);
+            formMap.putAll(y9Result.isSuccess() ? y9Result.getData() : new HashMap<>(16));
             formListMap.add(formMap);
         }
         map.put("formDataListMap", formListMap);

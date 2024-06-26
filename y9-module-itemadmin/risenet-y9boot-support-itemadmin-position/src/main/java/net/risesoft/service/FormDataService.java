@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.risesoft.model.itemadmin.FieldPermModel;
+import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 
 /**
@@ -97,7 +98,7 @@ public interface FormDataService {
      * @param formId
      * @return
      */
-    List<Map<String, String>> getFormFieldDefine(String formId);
+    List<FormFieldDefineModel> getFormFieldDefine(String formId);
 
     /**
      * 获取表单json数据
@@ -128,7 +129,7 @@ public interface FormDataService {
      * 保存前置表单数据
      *
      * @param itemId
-     * @param formJsonData
+     * @param formdata
      * @param formId
      */
     String saveAFormData(String itemId, String formdata, String formId) throws Exception;

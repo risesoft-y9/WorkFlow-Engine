@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
+import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -137,7 +138,7 @@ public interface FormDataApi {
      * @return List&lt;Y9FormFieldModel&gt;
      */
     @GetMapping("/getFormField")
-    List<Y9FormFieldModel> getFormField(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<Y9FormFieldModel>> getFormField(@RequestParam("tenantId") String tenantId,
         @RequestParam("itemId") String itemId);
 
     /**
@@ -148,7 +149,7 @@ public interface FormDataApi {
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
     @GetMapping("/getFormFieldDefine")
-    List<Map<String, String>> getFormFieldDefine(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<FormFieldDefineModel>> getFormFieldDefine(@RequestParam("tenantId") String tenantId,
         @RequestParam("formId") String formId);
 
     /**
@@ -159,7 +160,7 @@ public interface FormDataApi {
      * @return String
      */
     @GetMapping("/getFormJson")
-    String getFormJson(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId);
+    Y9Result<String> getFormJson(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId);
 
     /**
      * 根据表单id获取表单数据
@@ -170,8 +171,8 @@ public interface FormDataApi {
      * @return Map&lt;String, Object&gt;
      */
     @GetMapping("/getFromData")
-    Map<String, Object> getFromData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Map<String, Object>> getFromData(@RequestParam("tenantId") String tenantId,
+        @RequestParam("formId") String formId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 根据表单id获取前置表单数据
@@ -181,11 +182,10 @@ public interface FormDataApi {
      * @return
      */
     @GetMapping("/getPreFormDataByFormId")
-    List<Map<String, Object>> getPreFormDataByFormId(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(@RequestParam("tenantId") String tenantId,
         @RequestParam("formId") String formId);
 
     /**
-     *
      * Description: 保存子表数据
      *
      * @param tenantId 租户id
@@ -193,12 +193,13 @@ public interface FormDataApi {
      * @param tableId 对应的表id
      * @param processSerialNumber 流程序列号
      * @param jsonData 数据
+     * @return Y9Result<Object>
      * @throws Exception Exception
      */
     @PostMapping("/saveChildTableData")
-    void saveChildTableData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId,
-        @RequestParam("tableId") String tableId, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestBody String jsonData) throws Exception;
+    Y9Result<Object> saveChildTableData(@RequestParam("tenantId") String tenantId,
+        @RequestParam("formId") String formId, @RequestParam("tableId") String tableId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestBody String jsonData) throws Exception;
 
     /**
      * 保存表单数据
@@ -206,10 +207,11 @@ public interface FormDataApi {
      * @param tenantId 租户id
      * @param formId 表单Id
      * @param formJsonData 表单数据
+     * @return
      * @throws Exception Exception
      */
     @PostMapping(value = "/saveFormData")
-    void saveFormData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId,
+    Y9Result<Object> saveFormData(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId,
         @RequestBody String formJsonData) throws Exception;
 
     /**
@@ -219,10 +221,11 @@ public interface FormDataApi {
      * @param itemId 事项id
      * @param formId 表单id
      * @param formJsonData json表数据
+     * @return Y9Result<String>
      * @throws Exception
      */
     @PostMapping(value = "/savePreFormData")
-    String savePreFormData(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId,
+    Y9Result<String> savePreFormData(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId,
         @RequestParam("formId") String formId, @RequestBody String formJsonData) throws Exception;
 
 }

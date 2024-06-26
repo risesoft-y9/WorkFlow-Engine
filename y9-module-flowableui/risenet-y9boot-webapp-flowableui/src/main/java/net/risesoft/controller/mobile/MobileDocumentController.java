@@ -36,6 +36,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.Person;
@@ -150,8 +151,8 @@ public class MobileDocumentController {
             }
             for (int i = 0; i < formId.length; i++) {
                 Map<String, Object> fieldDefineMap = new HashMap<String, Object>(16);
-                List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
-                listMap = formDataManager.getFormFieldDefine(tenantId, formId[i]);
+                List<FormFieldDefineModel> listMap = new ArrayList<>();
+                listMap = formDataManager.getFormFieldDefine(tenantId, formId[i]).getData();
                 fieldDefineMap.put(formId[i], listMap);
                 fieldDefineList.add(fieldDefineMap);
             }
@@ -165,7 +166,6 @@ public class MobileDocumentController {
             map.put(UtilConsts.SUCCESS, false);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -190,7 +190,6 @@ public class MobileDocumentController {
             associatedFileManager.deleteAssociatedFile(tenantId, userId, processSerialNumber, processInstanceId);
         map.put(UtilConsts.SUCCESS, b);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -236,7 +235,6 @@ public class MobileDocumentController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -291,7 +289,6 @@ public class MobileDocumentController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -320,12 +317,10 @@ public class MobileDocumentController {
         List<Map<String, Object>> item = new ArrayList<Map<String, Object>>();
         if (StringUtils.isBlank(processDefinitionId) || StringUtils.isBlank(itemId)) {
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
-            return;
         } else {
             item = itemRoleManager.findPermUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
                 itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
-            return;
         }
     }
 
@@ -410,7 +405,6 @@ public class MobileDocumentController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -432,7 +426,6 @@ public class MobileDocumentController {
         Map<String, Object> map = new HashMap<>(16);
         map = associatedFileManager.getAssociatedFileList(tenantId, userId, processSerialNumber);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -489,7 +482,6 @@ public class MobileDocumentController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -526,7 +518,6 @@ public class MobileDocumentController {
             map.put("msg", "获取数据失败");
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -550,7 +541,6 @@ public class MobileDocumentController {
         boolean b = associatedFileManager.saveAssociatedFile(tenantId, userId, processSerialNumber, processInstanceIds);
         map.put(UtilConsts.SUCCESS, b);
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -615,6 +605,5 @@ public class MobileDocumentController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 }

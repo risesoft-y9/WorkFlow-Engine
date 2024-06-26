@@ -24,7 +24,6 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.tenant.TenantApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
@@ -182,15 +181,7 @@ public class Y9FormRestController {
     public Y9Result<Map<String, Object>> getFormData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            Map<String, Object> map = formDataApi.getFromData(tenantId, formId, processSerialNumber);
-            if ((boolean)map.get(UtilConsts.SUCCESS)) {
-                return Y9Result.success((Map<String, Object>)map.get("formData"), "获取成功");
-            }
-        } catch (Exception e) {
-            LOGGER.error("获取表单数据失败", e);
-        }
-        return Y9Result.failure("获取失败");
+        return formDataApi.getFromData(tenantId, formId, processSerialNumber);
     }
 
     /**
@@ -202,13 +193,8 @@ public class Y9FormRestController {
     @RequestMapping(value = "/getFormField", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Y9FormFieldModel>> getFormField(@RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            List<Y9FormFieldModel> list = formDataApi.getFormField(tenantId, itemId);
-            return Y9Result.success(list, "获取成功");
-        } catch (Exception e) {
-            LOGGER.error("获取表单字段失败", e);
-        }
-        return Y9Result.failure("获取失败");
+        return formDataApi.getFormField(tenantId, itemId);
+
     }
 
     /**
@@ -220,8 +206,7 @@ public class Y9FormRestController {
     @RequestMapping(value = "/getFormJson", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<String> getFormJson(@RequestParam @NotBlank String formId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String formJson = formDataApi.getFormJson(tenantId, formId);
-        return Y9Result.success(formJson, "获取成功");
+        return formDataApi.getFormJson(tenantId, formId);
     }
 
     /**
@@ -297,13 +282,8 @@ public class Y9FormRestController {
     @RequestMapping(value = "/getPreFormDataByFormId", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(@RequestParam @NotBlank String formId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            List<Map<String, Object>> list = formDataApi.getPreFormDataByFormId(tenantId, formId);
-            return Y9Result.success(list, "获取成功");
-        } catch (Exception e) {
-            LOGGER.error("获取前置表单数据失败", e);
-        }
-        return Y9Result.failure("获取失败");
+        return formDataApi.getPreFormDataByFormId(tenantId, formId);
+
     }
 
     /**
@@ -362,7 +342,7 @@ public class Y9FormRestController {
         @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String jsonData) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            String processSerialNumber = formDataApi.savePreFormData(tenantId, itemId, formId, jsonData);
+            String processSerialNumber = formDataApi.savePreFormData(tenantId, itemId, formId, jsonData).getData();
             return Y9Result.success(processSerialNumber, "保存成功");
         } catch (Exception e) {
             LOGGER.error("保存前置表单数据失败", e);
