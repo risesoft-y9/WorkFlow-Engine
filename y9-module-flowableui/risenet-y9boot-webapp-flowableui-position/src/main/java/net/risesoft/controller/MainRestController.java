@@ -346,7 +346,7 @@ public class MainRestController {
             resList.add(map);
 
             // 获取当前岗被委托记录
-            List<EntrustModel> list1 = entrust4PositionApi.getMyEntrustList(tenantId, p.getId());
+            List<EntrustModel> list1 = entrust4PositionApi.getMyEntrustList(tenantId, p.getId()).getData();
             for (EntrustModel model : list1) {
                 if (model.getUsed().equals(1)) {// 使用中的委托，将委托岗位加入岗位列表
                     Map<String, Object> map1 = new HashMap<>(16);

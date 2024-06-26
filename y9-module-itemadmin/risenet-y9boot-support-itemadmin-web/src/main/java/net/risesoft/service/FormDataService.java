@@ -3,6 +3,7 @@ package net.risesoft.service;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 
 /**
@@ -20,7 +21,7 @@ public interface FormDataService {
      * @param guid
      * @return
      */
-    public Map<String, Object> delChildTableRow(String formId, String tableId, String guid);
+    Map<String, Object> delChildTableRow(String formId, String tableId, String guid);
 
     /**
      * 获取表单所有字段权限
@@ -30,7 +31,7 @@ public interface FormDataService {
      * @param processDefinitionId
      * @return
      */
-    public List<Map<String, Object>> getAllFieldPerm(String formId, String taskDefKey, String processDefinitionId);
+    List<FieldPermModel> getAllFieldPerm(String formId, String taskDefKey, String processDefinitionId);
 
     /**
      * Description: 获取子表数据
@@ -41,7 +42,7 @@ public interface FormDataService {
      * @return
      * @throws Exception
      */
-    public List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber)
+    List<Map<String, Object>> getChildTableData(String formId, String tableId, String processSerialNumber)
         throws Exception;
 
     /**
@@ -52,7 +53,7 @@ public interface FormDataService {
      * @param processSerialNumber
      * @return
      */
-    public Map<String, Object> getData(String tenantId, String itemId, String processSerialNumber);
+    Map<String, Object> getData(String tenantId, String itemId, String processSerialNumber);
 
     /**
      * 获取字段权限
@@ -63,8 +64,7 @@ public interface FormDataService {
      * @param processDefinitionId
      * @return
      */
-    public Map<String, Object> getFieldPerm(String formId, String fieldName, String taskDefKey,
-        String processDefinitionId);
+    FieldPermModel getFieldPerm(String formId, String fieldName, String taskDefKey, String processDefinitionId);
 
     /**
      * 根据表单id获取绑定字段信息
@@ -72,7 +72,7 @@ public interface FormDataService {
      * @param itemId
      * @return
      */
-    public List<Y9FormFieldModel> getFormField(String itemId);
+    List<Y9FormFieldModel> getFormField(String itemId);
 
     /**
      * 根据表单id获取绑定字段信息
@@ -88,7 +88,7 @@ public interface FormDataService {
      * @param formId
      * @return
      */
-    public String getFormJson(String formId);
+    String getFormJson(String formId);
 
     /**
      * 根据表单id获取表单数据
@@ -97,7 +97,7 @@ public interface FormDataService {
      * @param processSerialNumber
      * @return
      */
-    public Map<String, Object> getFromData(String formId, String processSerialNumber);
+    Map<String, Object> getFromData(String formId, String processSerialNumber);
 
     /**
      * Description: 保存子表数据
@@ -108,7 +108,7 @@ public interface FormDataService {
      * @param jsonData
      * @throws Exception
      */
-    public void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData)
+    void saveChildTableData(String formId, String tableId, String processSerialNumber, String jsonData)
         throws Exception;
 
     /**

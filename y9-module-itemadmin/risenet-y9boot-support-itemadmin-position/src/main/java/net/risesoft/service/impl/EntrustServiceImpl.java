@@ -405,7 +405,7 @@ public class EntrustServiceImpl implements EntrustService {
         eim.setItemName(Entrust.ITEMNAME4ALL);
         eim.setOwnerId(userId);
         count = this.getCountByOwnerIdAndItemId(userId, Entrust.ITEMID4ALL);
-        isEntrust = 0 == count ? false : true;
+        isEntrust = 0 != count;
         eim.setIsEntrust(isEntrust);
         eimList.add(eim);
 
@@ -415,7 +415,7 @@ public class EntrustServiceImpl implements EntrustService {
             eim.setItemName(item.getName());
             eim.setOwnerId(userId);
             count = this.getCountByOwnerIdAndItemId(userId, item.getId());
-            isEntrust = 0 == count ? false : true;
+            isEntrust = 0 != count;
             eim.setIsEntrust(isEntrust);
 
             eimList.add(eim);
@@ -485,7 +485,7 @@ public class EntrustServiceImpl implements EntrustService {
 
     @Override
     @Transactional
-    public Entrust saveOrUpdate(Entrust entrust) throws ParseException {
+    public Entrust saveOrUpdate(Entrust entrust) {
         String id = entrust.getId();
         if (StringUtils.isNotEmpty(id)) {
             Entrust old = this.findOne(id);

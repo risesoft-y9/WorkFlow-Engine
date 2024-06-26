@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.FormDataApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.model.itemadmin.BindFormModel;
+import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
 import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.FormDataService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -34,19 +37,20 @@ public class FormDataApiImpl implements FormDataApi {
 
     @Override
     @PostMapping(value = "/delChildTableRow", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> delChildTableRow(String tenantId, String formId, String tableId, String guid) {
+    public Y9Result<Object> delChildTableRow(String tenantId, String formId, String tableId, String guid) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.delChildTableRow(formId, tableId, guid);
+        formDataService.delChildTableRow(formId, tableId, guid);
+        return Y9Result.successMsg("删除成功");
     }
 
     @Override
-    public Map<String, Object> delPreFormData(String tenantId, String formId, String guid) {
+    public Y9Result<Object> delPreFormData(String tenantId, String formId, String guid) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public List<Map<String, Object>> findFormItemBind(String tenantId, String itemId, String processDefinitionId,
+    public Y9Result<List<BindFormModel>> findFormItemBind(String tenantId, String itemId, String processDefinitionId,
         String taskDefinitionKey) {
         // TODO Auto-generated method stub
         return null;
@@ -54,16 +58,17 @@ public class FormDataApiImpl implements FormDataApi {
 
     @Override
     @GetMapping(value = "/getAllFieldPerm", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getAllFieldPerm(String tenantId, String userId, String formId, String taskDefKey,
-        String processDefinitionId) {
+    public Y9Result<List<FieldPermModel>> getAllFieldPerm(String tenantId, String userId, String formId,
+        String taskDefKey, String processDefinitionId) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-        return formDataService.getAllFieldPerm(formId, taskDefKey, processDefinitionId);
+        List<FieldPermModel> list = formDataService.getAllFieldPerm(formId, taskDefKey, processDefinitionId);
+        return Y9Result.success(list);
     }
 
     @Override
-    public Map<String, Object> getBindPreFormByItemId(String tenantId, String itemId) {
+    public Y9Result<BindFormModel> getBindPreFormByItemId(String tenantId, String itemId) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -85,12 +90,13 @@ public class FormDataApiImpl implements FormDataApi {
 
     @Override
     @GetMapping(value = "/getFieldPerm", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getFieldPerm(String tenantId, String userId, String formId, String fieldName,
+    public Y9Result<FieldPermModel> getFieldPerm(String tenantId, String userId, String formId, String fieldName,
         String taskDefKey, String processDefinitionId) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-        return formDataService.getFieldPerm(formId, fieldName, taskDefKey, processDefinitionId);
+        FieldPermModel model = formDataService.getFieldPerm(formId, fieldName, taskDefKey, processDefinitionId);
+        return Y9Result.success(model);
     }
 
     @Override

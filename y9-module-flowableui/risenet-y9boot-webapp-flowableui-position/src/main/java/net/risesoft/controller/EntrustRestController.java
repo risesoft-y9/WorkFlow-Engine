@@ -66,14 +66,8 @@ public class EntrustRestController {
      */
     @RequestMapping(value = "/getEntrustList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<EntrustModel>> getEntrustList() {
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            List<EntrustModel> list = entrust4PositionApi.getEntrustList(tenantId, Y9LoginUserHolder.getPositionId());
-            return Y9Result.success(list, "获取成功");
-        } catch (Exception e) {
-            LOGGER.error("获取委托列表出错", e);
-        }
-        return Y9Result.failure("获取失败");
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        return entrust4PositionApi.getEntrustList(tenantId, Y9LoginUserHolder.getPositionId());
     }
 
     /**
