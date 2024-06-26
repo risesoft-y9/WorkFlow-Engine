@@ -104,7 +104,7 @@ public interface RemindInstanceApi {
      * @param process process
      * @param arriveTaskKey arriveTaskKey
      * @param completeTaskKey completeTaskKey
-     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @return {@code Y9Result<String>} 通用请求返回对象
      */
     @PostMapping("/saveRemindInstance")
     Y9Result<String> saveRemindInstance(@RequestParam("tenantId") String tenantId,

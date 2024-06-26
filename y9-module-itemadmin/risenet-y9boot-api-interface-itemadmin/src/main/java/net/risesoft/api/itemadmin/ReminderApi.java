@@ -1,8 +1,18 @@
 package net.risesoft.api.itemadmin;
 
-import java.util.Map;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import net.risesoft.model.itemadmin.ReminderModel;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 
 /**
+ * 催办
+ *
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -14,18 +24,21 @@ public interface ReminderApi {
      *
      * @param tenantId 租户id
      * @param ids ids
+     * @return {@code Y9Page<Object>} 通用分页请求返回对象
      */
-    void deleteList(String tenantId, String[] ids);
+    @PostMapping(value = "/deleteList", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Y9Result<Object> deleteList(@RequestParam("tenantId") String tenantId, @RequestBody String[] ids);
 
     /**
      *
      * Description: 查找催办
      *
      * @param tenantId 租户id
-     * @param id id
-     * @return Map&lt;String, Object&gt;
+     * @param id 唯一标识
+     * @return {@code Y9Page<ReminderModel>} 通用分页请求返回对象 - rows 是待办的催办信息
      */
-    Map<String, Object> findById(String tenantId, String id);
+    @GetMapping("/findById")
+    Y9Result<ReminderModel> findById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
 
     /**
      * 获取当前催办人的在办任务的催办信息
@@ -34,9 +47,12 @@ public interface ReminderApi {
      * @param processInstanceId 流程实例id
      * @param page page
      * @param rows rows
-     * @return Map&lt;String, Object&gt;
+     * @@return {@code Y9Page<ReminderModel>} 通用分页请求返回对象 - rows 是催办信息
      */
-    Map<String, Object> findByProcessInstanceId(String tenantId, String processInstanceId, int page, int rows);
+    @GetMapping("/findByProcessInstanceId")
+    Y9Page<ReminderModel> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("page") int page,
+        @RequestParam("rows") int rows);
 
     /**
      * 获取当前催办人的在办任务的催办信息
@@ -46,10 +62,12 @@ public interface ReminderApi {
      * @param processInstanceId 流程实例id
      * @param page page
      * @param rows rows
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Y9Page<ReminderModel>} 通用分页请求返回对象 - rows 是催办信息
      */
-    Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String tenantId, String senderId,
-        String processInstanceId, int page, int rows);
+    @GetMapping("/findBySenderIdAndProcessInstanceIdAndActive")
+    Y9Page<ReminderModel> findBySenderIdAndProcessInstanceIdAndActive(@RequestParam("tenantId") String tenantId,
+        @RequestParam("senderId") String senderId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("page") int page, @RequestParam("rows") int rows);
 
     /**
      *
@@ -59,9 +77,11 @@ public interface ReminderApi {
      * @param taskId 任务id
      * @param page page
      * @param rows rows
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Y9Page<ReminderModel>} 通用分页请求返回对象 - rows 是待办的催办信息
      */
-    Map<String, Object> findByTaskId(String tenantId, String taskId, int page, int rows);
+    @GetMapping("/findByTaskId")
+    Y9Page<ReminderModel> findByTaskId(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+        @RequestParam("page") int page, @RequestParam("rows") int rows);
 
     /**
      * 查看催办信息
@@ -70,9 +90,12 @@ public interface ReminderApi {
      * @param userId 人员id
      * @param taskId 任务id
      * @param type 类型，todo（待办），doing（在办），done（办结）
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Y9Result<ReminderModel>} 通用请求返回对象 -data 是催办信息
      */
-    Map<String, Object> getReminder(String tenantId, String userId, String taskId, String type);
+    @GetMapping("/getReminder")
+    Y9Result<ReminderModel> getReminder(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("taskId") String taskId,
+        @RequestParam("type") String type);
 
     /**
      *
@@ -83,10 +106,12 @@ public interface ReminderApi {
      * @param processInstanceId 流程实例id
      * @param taskIds taskIds
      * @param msgContent 催办信息
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Y9Result<String>} 通用请求返回对象
      */
-    Map<String, Object> saveReminder(String tenantId, String userId, String processInstanceId, String[] taskIds,
-        String msgContent);
+    @PostMapping(value = "/saveReminder", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Y9Result<String> saveReminder(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestBody String[] taskIds,
+        @RequestParam("msgContent") String msgContent);
 
     /**
      * 发送催办信息
@@ -100,27 +125,35 @@ public interface ReminderApi {
      * @param taskId 任务id
      * @param taskAssigneeId taskAssigneeId
      * @param msgContent 催办信息
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Y9Result<String>} 通用请求返回对象
      */
-    Map<String, Object> sendReminderMessage(String tenantId, String userId, String remType, String procInstId,
-        String processInstanceId, String documentTitle, String taskId, String taskAssigneeId, String msgContent);
+    @PostMapping("/sendReminderMessage")
+    Y9Result<String> sendReminderMessage(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("remType") String remType,
+        @RequestParam("procInstId") String procInstId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("documentTitle") String documentTitle, @RequestParam("taskId") String taskId,
+        @RequestParam("taskAssigneeId") String taskAssigneeId, @RequestParam("msgContent") String msgContent);
 
     /**
      * 设置为查看状态
      *
      * @param tenantId 租户id
      * @param ids ids
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
-    void setReadTime(String tenantId, String[] ids);
+    @PostMapping(value = "/setReadTime", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Y9Result<Object> setReadTime(@RequestParam("tenantId") String tenantId, @RequestBody String[] ids);
 
     /**
      * 更新催办信息
      *
-     * @param tenantId 租户滴
+     * @param tenantId 租户id
      * @param id 催办id
      * @param msgContent 催办信息
-     * @return Map&lt;String, Object&gt;
+     * @return {@code Y9Result<String>} 通用请求返回对象
      */
-    Map<String, Object> updateReminder(String tenantId, String id, String msgContent);
+    @PostMapping("/updateReminder")
+    Y9Result<String> updateReminder(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id,
+        @RequestParam("msgContent") String msgContent);
 
 }

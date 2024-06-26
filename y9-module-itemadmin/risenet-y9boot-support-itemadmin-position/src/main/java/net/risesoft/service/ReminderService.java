@@ -3,9 +3,10 @@ package net.risesoft.service;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import net.risesoft.entity.Reminder;
+import net.risesoft.model.itemadmin.ReminderModel;
+import net.risesoft.pojo.Y9Page;
 
 /**
  * @author qinman
@@ -18,7 +19,6 @@ public interface ReminderService {
      * 根据传进来的id数组删除催办信息
      *
      * @param ids
-     * @param status
      */
     void deleteList(String[] ids);
 
@@ -41,7 +41,7 @@ public interface ReminderService {
 
     /**
      * Description:
-     * 
+     *
      * @param id
      * @return
      */
@@ -49,25 +49,25 @@ public interface ReminderService {
 
     /**
      * Description:
-     * 
+     *
      * @param processInstanceId
      * @param page
      * @param rows
      * @return
      */
-    Map<String, Object> findByProcessInstanceId(String processInstanceId, int page, int rows);
+    Y9Page<ReminderModel> findByProcessInstanceId(String processInstanceId, int page, int rows);
 
     /**
      * Description:
-     * 
+     *
      * @param senderId
      * @param processInstanceId
      * @param page
      * @param rows
      * @return
      */
-    Map<String, Object> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId, int page,
-        int rows);
+    Y9Page<ReminderModel> findBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId,
+        int page, int rows);
 
     /**
      * 根据taskId查找是否存在催办
@@ -79,13 +79,13 @@ public interface ReminderService {
 
     /**
      * Description:
-     * 
+     *
      * @param taskId
      * @param page
      * @param rows
      * @return
      */
-    Map<String, Object> findByTaskId(String taskId, int page, int rows);
+    Y9Page<ReminderModel> findByTaskId(String taskId, int page, int rows);
 
     /**
      * 根据TaskId和催办人查找催办
@@ -98,7 +98,7 @@ public interface ReminderService {
 
     /**
      * Description:
-     * 
+     *
      * @param taskId
      * @param reminderSendType
      * @return
@@ -107,7 +107,7 @@ public interface ReminderService {
 
     /**
      * Description:
-     * 
+     *
      * @param msgContent
      * @param procInstId
      * @param reminderAutomatic
@@ -144,7 +144,7 @@ public interface ReminderService {
 
     /**
      * Description:
-     * 
+     *
      * @param readTime
      * @param taskId
      * @param type
@@ -153,7 +153,7 @@ public interface ReminderService {
 
     /**
      * Description:
-     * 
+     *
      * @param ids
      */
     void setReadTime(String[] ids);
