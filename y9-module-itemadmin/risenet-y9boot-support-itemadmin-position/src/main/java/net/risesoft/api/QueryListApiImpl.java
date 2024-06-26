@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.QueryListApi;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.ItemPageService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -35,7 +36,7 @@ public class QueryListApiImpl implements QueryListApi {
 
     /**
      * 综合搜索
-     * 
+     *
      * @param tenantId 租户id
      * @param userId 岗位id
      * @param systemName 系统名称
@@ -45,10 +46,10 @@ public class QueryListApiImpl implements QueryListApi {
      * @param searchMapStr 搜索条件
      * @param page 页面
      * @param rows 条数
-     * @return ItemPage<ActRuDetailModel>
+     * @return Y9Page<ActRuDetailModel>
      */
     @Override
-    public ItemPage<ActRuDetailModel> getQueryList(String tenantId, String userId, String systemName, String state,
+    public Y9Page<ActRuDetailModel> getQueryList(String tenantId, String userId, String systemName, String state,
         String createDate, String tableName, String searchMapStr, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
@@ -144,8 +145,9 @@ public class QueryListApiImpl implements QueryListApi {
             Object[] args = new Object[2];
             args[0] = systemName;
             args[1] = userId;
-            return itemPageService.page(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args,
-                page, rows);
+            ItemPage<ActRuDetailModel> pageList = itemPageService.page(sql, args,
+                new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+            return Y9Page.success(page, pageList.getTotalpages(), pageList.getTotal(), pageList.getRows());
         } catch (Exception e) {
             LOGGER.error("查询列表失败", e);
         }

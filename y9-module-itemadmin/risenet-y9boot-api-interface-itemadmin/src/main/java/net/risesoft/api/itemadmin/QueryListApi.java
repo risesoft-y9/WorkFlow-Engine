@@ -7,10 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.ActRuDetailModel;
-import net.risesoft.model.itemadmin.ItemPage;
+import net.risesoft.pojo.Y9Page;
 
 /**
- *
+ * 综合查询
+ * 
  * @author zhangchongjie
  * @date 2023/09/07
  */
@@ -29,10 +30,10 @@ public interface QueryListApi {
      * @param searchMapStr 搜索条件
      * @param page 页面
      * @param rows 条数
-     * @return ItemPage&lt;ActRuDetailModel&gt;
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - data 是综合查询列表
      */
     @GetMapping("/getQueryList")
-    ItemPage<ActRuDetailModel> getQueryList(@RequestParam("tenantId") @NotBlank String tenantId,
+    Y9Page<ActRuDetailModel> getQueryList(@RequestParam("tenantId") @NotBlank String tenantId,
         @RequestParam("userId") @NotBlank String userId, @RequestParam("systemName") @NotBlank String systemName,
         @RequestParam("state") String state, @RequestParam("createDate") String createDate,
         @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr,

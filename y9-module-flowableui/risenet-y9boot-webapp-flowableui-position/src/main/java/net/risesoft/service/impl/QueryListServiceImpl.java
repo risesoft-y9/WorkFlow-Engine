@@ -26,7 +26,6 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
-import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.IdentityLinkModel;
@@ -134,7 +133,7 @@ public class QueryListServiceImpl implements QueryListService {
     @Override
     public Y9Page<Map<String, Object>> queryList(String itemId, String state, String createDate, String tableName,
         String searchMapStr, Integer page, Integer rows) {
-        ItemPage<ActRuDetailModel> itemPage;
+        Y9Page<ActRuDetailModel> itemPage;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
@@ -196,7 +195,7 @@ public class QueryListServiceImpl implements QueryListService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalpages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }
