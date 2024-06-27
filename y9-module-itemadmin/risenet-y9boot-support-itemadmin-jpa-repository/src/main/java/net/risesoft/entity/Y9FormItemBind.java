@@ -79,7 +79,7 @@ public class Y9FormItemBind implements Serializable {
     private boolean showDocumentTab = true;
 
     @Type(type = "numeric_boolean")
-    @Comment("是否显示关联文件")
+    @Comment("是否显示关联流程")
     @Column(name = "SHOWHISTORYTAB")
     private boolean showHistoryTab = true;
 

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import net.risesoft.api.itemadmin.AssociatedFileApi;
 
 /**
- * 关联文件接口
+ * 关联流程接口
  * 
  * @author qinman
  * @author zhangchongjie
@@ -22,7 +22,7 @@ import net.risesoft.api.itemadmin.AssociatedFileApi;
 public interface AssociatedFileApiClient extends AssociatedFileApi {
 
     /**
-     * 关联文件计数
+     * 关联流程计数
      *
      * @param tenantId
      * @param processSerialNumber
@@ -34,7 +34,7 @@ public interface AssociatedFileApiClient extends AssociatedFileApi {
         @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
-     * 删除关联文件
+     * 删除关联流程
      *
      * @param tenantId 租户id
      * @param userId 用户id
@@ -49,7 +49,7 @@ public interface AssociatedFileApiClient extends AssociatedFileApi {
         @RequestParam("delIds") String delIds);
 
     /**
-     * 删除关联文件
+     * 删除关联流程
      *
      * @param tenantId 租户id
      * @param userId 用户id
@@ -64,7 +64,7 @@ public interface AssociatedFileApiClient extends AssociatedFileApi {
         @RequestParam("delId") String delId);
 
     /**
-     * 获取关联文件列表,包括未办结件
+     * 获取关联流程列表,包括未办结件
      *
      * @param tenantId 租户id
      * @param userId 用户id
@@ -77,7 +77,7 @@ public interface AssociatedFileApiClient extends AssociatedFileApi {
         @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
-     * 获取关联文件列表
+     * 获取关联流程列表
      *
      * @param tenantId 租户id
      * @param userId 用户id
@@ -90,7 +90,7 @@ public interface AssociatedFileApiClient extends AssociatedFileApi {
         @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
-     * 保存关联文件
+     * 保存关联流程
      *
      * @param tenantId 租户id
      * @param userId 用户id

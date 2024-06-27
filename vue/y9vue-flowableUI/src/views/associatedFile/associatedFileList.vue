@@ -139,7 +139,7 @@ import { computed } from 'vue';
         Object.assign(dialogConfig.value, {
             show: true,
             width: '65%',
-            title: computed(() => t('添加关联文件')),
+            title: computed(() => t('添加关联流程')),
             type: 'addFile',
             showFooter: false,
         });
@@ -147,13 +147,13 @@ import { computed } from 'vue';
 
     function delAssociated() {
         if (multipleSelection.value.length === 0) {
-            ElMessage({ type: 'error', message: t('请选择关联文件'), offset: 65, appendTo: '.associat-file' });
+            ElMessage({ type: 'error', message: t('请选择关联流程'), offset: 65, appendTo: '.associat-file' });
         } else {
             let ids = [];
             for (let i = 0; i < multipleSelection.value.length; i++) {
                 ids.push(multipleSelection.value[i].processInstanceId);
             }
-            ElMessageBox.confirm(t('是否删除关联文件?'), t('提示'), {
+            ElMessageBox.confirm(t('是否删除关联流程?'), t('提示'), {
                 confirmButtonText: t('确定'),
                 cancelButtonText: t('取消'),
                 type: 'info',

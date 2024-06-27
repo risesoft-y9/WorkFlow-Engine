@@ -60,7 +60,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
 
 /**
- * 新建，发送，详情，关联文件接口
+ * 新建，发送，详情，关联流程接口
  *
  * @author zhangchongjie
  * @date 2024/01/17
@@ -161,7 +161,7 @@ public class MobileV1DocumentController {
     }
 
     /**
-     * 删除关联文件
+     * 删除关联流程
      *
      * @param processSerialNumber 流程编号
      * @param processInstanceId 删除的流程实例id
@@ -424,7 +424,7 @@ public class MobileV1DocumentController {
     }
 
     /**
-     * 获取关联文件
+     * 获取关联流程
      *
      * @param processSerialNumber 流程编号
      * @return Y9Result<List<AssociatedFileModel>>
@@ -573,7 +573,7 @@ public class MobileV1DocumentController {
     }
 
     /**
-     * 保存关联文件
+     * 保存关联流程
      *
      * @param processSerialNumber 流程实例编号
      * @param processInstanceIds 关联的流程实例ids

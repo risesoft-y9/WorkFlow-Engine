@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import net.risesoft.api.itemadmin.position.AssociatedFile4PositionApi;
 
 /**
- * 关联文件接口
+ * 关联流程接口
  *
  * @author qinman
  * @author zhangchongjie

@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_AssociatedFile")
-@org.hibernate.annotations.Table(comment = "关联文件表", appliesTo = "FF_AssociatedFile")
+@org.hibernate.annotations.Table(comment = "关联流程表", appliesTo = "FF_AssociatedFile")
 public class AssociatedFile implements Serializable {
 
     /**

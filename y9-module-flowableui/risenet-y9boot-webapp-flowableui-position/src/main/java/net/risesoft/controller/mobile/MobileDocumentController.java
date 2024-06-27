@@ -65,7 +65,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
 
 /**
- * 新建，发送，详情，关联文件接口
+ * 新建，发送，详情，关联流程接口
  *
  * @author 10858
  */
@@ -176,7 +176,7 @@ public class MobileDocumentController {
     }
 
     /**
-     * 删除关联文件
+     * 删除关联流程
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -468,7 +468,7 @@ public class MobileDocumentController {
     }
 
     /**
-     * 获取关联文件
+     * 获取关联流程
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -636,7 +636,7 @@ public class MobileDocumentController {
     }
 
     /**
-     * 保存关联文件
+     * 保存关联流程
      *
      * @param tenantId 租户id
      * @param positionId 岗位id

@@ -22,7 +22,7 @@ import net.risesoft.service.SearchService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
- * 关联文件
+ * 关联流程
  *
  * @author zhangchongjie
  * @date 2024/06/05
@@ -39,7 +39,7 @@ public class AssociatedFileRestController {
     private final AssociatedFile4PositionApi associatedFile4PositionApi;
 
     /**
-     * 删除关联文件
+     * 删除关联流程
      *
      * @param processSerialNumber 流程编号
      * @param processInstanceIds 要删除的流程实例ids，逗号隔开
@@ -56,13 +56,13 @@ public class AssociatedFileRestController {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
-            LOGGER.error("删除关联文件失败", e);
+            LOGGER.error("删除关联流程失败", e);
         }
         return Y9Result.failure("删除失败");
     }
 
     /**
-     * 获取关联文件列表
+     * 获取关联流程列表
      *
      * @param processSerialNumber 流程编号
      * @return Y9Result<List<AssociatedFileModel>>
@@ -91,7 +91,7 @@ public class AssociatedFileRestController {
     }
 
     /**
-     * 保存关联文件
+     * 保存关联流程
      *
      * @param processSerialNumber 流程编号
      * @param processInstanceIds 流程实例ids，逗号隔开
@@ -108,7 +108,7 @@ public class AssociatedFileRestController {
                 return Y9Result.successMsg("保存成功");
             }
         } catch (Exception e) {
-            LOGGER.error("保存关联文件失败", e);
+            LOGGER.error("保存关联流程失败", e);
         }
         return Y9Result.failure("保存失败");
     }
