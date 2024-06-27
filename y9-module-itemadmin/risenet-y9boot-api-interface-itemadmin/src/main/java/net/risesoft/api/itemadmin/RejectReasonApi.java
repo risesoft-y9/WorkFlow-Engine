@@ -22,7 +22,7 @@ public interface RejectReasonApi {
      * @param action action
      * @param taskId 任务id
      * @param reason 理由
-     * @return {@code Y9Page<Object>} 通用分页请求返回对象
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/save")
     Y9Result<Object> save(@RequestParam("userId") String tenantId, @RequestParam("userId") String userId,

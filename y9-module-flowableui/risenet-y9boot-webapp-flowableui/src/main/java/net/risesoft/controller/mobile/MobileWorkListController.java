@@ -1,5 +1,6 @@
 package net.risesoft.controller.mobile;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ import net.risesoft.api.platform.resource.ResourceApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.platform.AuthorityEnum;
+import net.risesoft.model.itemadmin.HistoryProcessModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Resource;
@@ -102,7 +104,7 @@ public class MobileWorkListController {
     public void doingList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
         @RequestParam String itemId, @RequestParam(required = false) String title, @RequestParam Integer page,
         @RequestParam Integer rows, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setPerson(personApi.get(tenantId, userId).getData());
@@ -118,7 +120,6 @@ public class MobileWorkListController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -136,7 +137,7 @@ public class MobileWorkListController {
     public void doneList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
         @RequestParam String itemId, @RequestParam(required = false) String title, @RequestParam Integer page,
         @RequestParam Integer rows, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             map.put(UtilConsts.SUCCESS, true);
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -153,7 +154,6 @@ public class MobileWorkListController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -167,7 +167,7 @@ public class MobileWorkListController {
     @RequestMapping(value = "/getAppCount")
     public void getAppCount(@RequestHeader("auth-tenantId") String tenantId,
         @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
@@ -181,7 +181,7 @@ public class MobileWorkListController {
                     personResourceApi.listSubResources(tenantId, userId, AuthorityEnum.BROWSE, resourceId).getData();
                 String url = "";
                 for (Resource r : list0) {
-                    map = new HashMap<String, Object>(16);
+                    map = new HashMap<>(16);
                     url = r.getUrl();
                     if (StringUtils.isBlank(url)) {
                         continue;
@@ -194,7 +194,7 @@ public class MobileWorkListController {
                     String processDefinitionKey = item.getWorkflowGuid();
                     long todoCount = processTodoManager.getTodoCountByUserIdAndProcessDefinitionKey(
                         Y9LoginUserHolder.getTenantId(), person.getId(), processDefinitionKey);
-                    Map<String, Object> m = new HashMap<String, Object>(16);
+                    Map<String, Object> m = new HashMap<>(16);
                     Map<String, Object> resMap = todoService.list(item.getId(), "", 1, 1);
                     List<Map<String, Object>> todoList = (List<Map<String, Object>>)resMap.get("rows");
                     if (todoList != null && todoList.size() > 0) {
@@ -222,7 +222,6 @@ public class MobileWorkListController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -234,7 +233,7 @@ public class MobileWorkListController {
      */
     public Map<String, Object> getCalendar(String tenantId, String userId) {
 
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         HttpClient client = new HttpClient();
         client.getParams().setParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1024 * 1024 * 10);
         client.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
@@ -250,7 +249,8 @@ public class MobileWorkListController {
             method.addRequestHeader("auth-userId", userId);
             int code = client.executeMethod(method);
             if (code == HttpStatus.SC_OK) {
-                String msg = new String(method.getResponseBodyAsString().getBytes("UTF-8"), "UTF-8");
+                String msg = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8),
+                    StandardCharsets.UTF_8);
                 map = Y9JsonUtil.readHashMap(msg);
             }
         } catch (Exception e) {
@@ -268,7 +268,7 @@ public class MobileWorkListController {
      */
     public Map<String, Object> getMessage(String tenantId, String userId) {
         // 获取日程应用
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         HttpClient client = new HttpClient();
         client.getParams().setParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1024 * 1024 * 10);
         client.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
@@ -284,7 +284,8 @@ public class MobileWorkListController {
             method.addRequestHeader("auth-userId", userId);
             int code = client.executeMethod(method);
             if (code == HttpStatus.SC_OK) {
-                String msg = new String(method.getResponseBodyAsString().getBytes("UTF-8"), "UTF-8");
+                String msg = new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8),
+                    StandardCharsets.UTF_8);
                 map = Y9JsonUtil.readHashMap(msg);
             }
         } catch (Exception e) {
@@ -304,7 +305,7 @@ public class MobileWorkListController {
     @RequestMapping(value = "/getCount")
     public void getTodoCount(@RequestHeader("auth-tenantId") String tenantId,
         @RequestHeader("auth-userId") String userId, @RequestParam String itemId, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
@@ -325,7 +326,6 @@ public class MobileWorkListController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 
     /**
@@ -339,18 +339,19 @@ public class MobileWorkListController {
     @RequestMapping(value = "/history")
     public void history(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
         @RequestParam String processInstanceId, HttpServletResponse response) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(personApi.get(tenantId, userId).getData());
         try {
-            retMap = processTrackManager.processTrackList(tenantId, userId, processInstanceId);
+            List<HistoryProcessModel> items =
+                processTrackManager.processTrackList(tenantId, userId, processInstanceId).getData();
             retMap.put(UtilConsts.SUCCESS, true);
+            retMap.put("rows", items);
         } catch (Exception e) {
             retMap.put(UtilConsts.SUCCESS, false);
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(retMap));
-        return;
     }
 
     /**
@@ -369,7 +370,7 @@ public class MobileWorkListController {
     public void todoList(@RequestHeader("auth-tenantId") String tenantId, @RequestHeader("auth-userId") String userId,
         @RequestParam String itemId, @RequestParam(required = false) String title, @RequestParam Integer page,
         @RequestParam Integer rows, HttpServletResponse response) {
-        Map<String, Object> map = new HashMap<String, Object>(16);
+        Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setPerson(personApi.get(tenantId, userId).getData());
@@ -385,6 +386,5 @@ public class MobileWorkListController {
             e.printStackTrace();
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
-        return;
     }
 }
