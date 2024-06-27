@@ -475,7 +475,8 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     listMap.add(map);
                 }
 
-                List<ProcessTrackModel> ptList = processTrackManager.findByTaskIdAsc(tenantId, userId, taskId);
+                List<ProcessTrackModel> ptList =
+                    processTrackManager.findByTaskIdAsc(tenantId, userId, taskId).getData();
                 String parentId0 = taskId;
                 for (int j = 0; j < ptList.size(); j++) {
                     num += 1;

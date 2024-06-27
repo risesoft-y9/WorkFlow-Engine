@@ -33,6 +33,7 @@ import net.risesoft.model.datacenter.AttachmentInfo;
 import net.risesoft.model.datacenter.EformInfo;
 import net.risesoft.model.datacenter.HistoryInfo;
 import net.risesoft.model.datacenter.OfficeInfo;
+import net.risesoft.model.itemadmin.HistoryProcessModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
@@ -114,7 +115,7 @@ public class DataCenterService {
     public List<EformInfo> getEformInfo(String processInstanceId, String processDefinitionKey,
         String processDefinitionId) {
         Connection connection = null;
-        List<EformInfo> elist = new ArrayList<EformInfo>();
+        List<EformInfo> elist = new ArrayList<>();
         try {
             LOGGER.info(
                 "************************************itemAdmin保存表单数据到数据中心***********************************************");
@@ -133,19 +134,19 @@ public class DataCenterService {
                 // 获取表单绑定的表,可能多个
                 List<String> list = y9FormRepository.findBindTableName(y9Form.getFormId());
                 for (String tableName : list) {
-                    StringBuffer sqlStr = new StringBuffer();
+                    StringBuilder sqlStr = new StringBuilder();
                     if ("oracle".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
                     } else if ("dm".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
                     } else if ("kingbase".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
                     } else if ("mysql".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM " + tableName + " where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where guid =?");
                     }
                     List<Map<String, Object>> datamap =
                         jdbcTemplate4Tenant.queryForList(sqlStr.toString(), processSerialNumber);
-                    if (datamap.size() > 0) {
+                    if (!datamap.isEmpty()) {
                         List<Y9FormField> elementList =
                             y9FormFieldRepository.findByFormIdAndTableName(y9Form.getFormId(), tableName);
                         for (Y9FormField element : elementList) {
@@ -185,31 +186,29 @@ public class DataCenterService {
      * @return
      */
     public Map<String, Object> historyExcel(String processSerialNumber, String processInstanceId) {
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
+        Map<String, Object> retMap = new HashMap<>(16);
         String undertaker = "";
         String userIds = "";
         retMap.put("undertaker", undertaker);
         retMap.put("userId", userIds);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            List<Map<String, Object>> listMap = processTrackService.getListMap(processInstanceId);
-            List<HistoryInfo> list = new ArrayList<HistoryInfo>();
+            List<HistoryProcessModel> listMap = processTrackService.getListMap(processInstanceId);
+            List<HistoryInfo> list = new ArrayList<>();
             for (int i = 0; i < listMap.size(); i++) {
-                Map<String, Object> map = listMap.get(i);
-                String assignee = map.get("assignee") != null ? (String)map.get("assignee") : "";
+                HistoryProcessModel map = listMap.get(i);
+                String assignee = map.getAssignee();
                 if (!undertaker.contains(assignee)) {
                     undertaker = Y9Util.genCustomStr(undertaker, assignee);
                 }
-                String userId = map.get("undertakerId") != null ? (String)map.get("undertakerId") : "";
-                if (StringUtils.isNotBlank(userId)) {
-                    if (!userIds.contains(userId)) {
-                        userIds = Y9Util.genCustomStr(userIds, userId);
-                    }
+                String userId = map.getUndertakerId() != null ? map.getUndertakerId() : "";
+                if (StringUtils.isNotBlank(userId) && !userIds.contains(userId)) {
+                    userIds = Y9Util.genCustomStr(userIds, userId);
                 }
-                String opinion = map.get("opinion") != null ? (String)map.get("opinion") : "";
-                String startTime = map.get("startTime") != null ? (String)map.get("startTime") : "";
-                String endTime = map.get("endTime") != null ? (String)map.get("endTime") : "";
-                String actionName = map.get("name") != null ? (String)map.get("name") : "";
+                String opinion = map.getOpinion();
+                String startTime = map.getStartTime();
+                String endTime = map.getEndTime();
+                String actionName = map.getName();
                 HistoryInfo historyInfo = new HistoryInfo();
                 historyInfo.setAssignee(assignee);
                 historyInfo.setActionName(actionName);
@@ -242,7 +241,7 @@ public class DataCenterService {
         UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
         HistoricProcessInstanceModel processInstance =
             historicProcessManagerClient.getById(Y9LoginUserHolder.getTenantId(), processInstanceId);
-        Collection<String> keys = new ArrayList<String>();
+        Collection<String> keys = new ArrayList<>();
         keys.add("infoOvert");
         Map<String, Object> vmap = historicVariableManagerClient.getVariables(tenantId, processInstanceId, keys);
 
@@ -277,7 +276,7 @@ public class DataCenterService {
 
         // 获取附件
         List<TransactionFile> fileList = transactionFileService.getListByProcessSerialNumber(processSerialNumber);
-        List<AttachmentInfo> aList = new ArrayList<AttachmentInfo>();
+        List<AttachmentInfo> aList = new ArrayList<>();
         for (TransactionFile file : fileList) {
             AttachmentInfo info = new AttachmentInfo();
             info.setFileContent(null);

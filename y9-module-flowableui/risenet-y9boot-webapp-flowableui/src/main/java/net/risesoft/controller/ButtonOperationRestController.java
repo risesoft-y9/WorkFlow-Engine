@@ -747,7 +747,7 @@ public class ButtonOperationRestController {
             }
             // 更新自定义历程结束时间
             List<ProcessTrackModel> ptModelList =
-                processTrackManager.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId);
+                processTrackManager.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId).getData();
             for (ProcessTrackModel ptModel : ptModelList) {
                 if (StringUtils.isBlank(ptModel.getEndTime())) {
                     try {
@@ -929,7 +929,7 @@ public class ButtonOperationRestController {
             buttonOperationManager.specialComplete(tenantId, userId, taskId, reason);
             // 更新自定义历程结束时间
             List<ProcessTrackModel> ptModelList =
-                processTrackManager.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId);
+                processTrackManager.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId).getData();
             for (ProcessTrackModel ptModel : ptModelList) {
                 if (StringUtils.isBlank(ptModel.getEndTime())) {
                     try {
