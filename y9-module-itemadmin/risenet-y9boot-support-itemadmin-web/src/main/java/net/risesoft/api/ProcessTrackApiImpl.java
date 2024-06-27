@@ -1,12 +1,9 @@
 package net.risesoft.api;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,15 +11,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ProcessTrack;
+import net.risesoft.model.itemadmin.HistoryProcessModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessTrackService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.exception.Y9BusinessException;
 
 /**
  * @author qinman
@@ -30,111 +31,106 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/22
  */
 @RestController
-@RequestMapping(value = "/services/rest/processTrack")
+@RequiredArgsConstructor
+@RequestMapping(value = "/services/rest/processTrack", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProcessTrackApiImpl implements ProcessTrackApi {
 
-    @Autowired
-    private ProcessTrackService processTrackService;
+    private final ProcessTrackService processTrackService;
 
-    @Autowired
-    private PersonApi personManager;
+    private final PersonApi personManager;
 
     @Override
-    @PostMapping(value = "/deleteById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteById(String tenantId, String userId, String id) throws Exception {
+    @PostMapping(value = "/deleteById")
+    public Y9Result<Object> deleteById(String tenantId, String userId, String id) throws Exception {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         processTrackService.deleteById(id);
+        return Y9Result.success();
     }
 
     @Override
-    @GetMapping(value = "/findByTaskId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ProcessTrackModel> findByTaskId(String tenantId, String taskId) {
+    public Y9Result<List<ProcessTrackModel>> findByTaskId(String tenantId, String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<ProcessTrackModel> items = new ArrayList<ProcessTrackModel>();
+        List<ProcessTrackModel> items = new ArrayList<>();
         try {
             if (StringUtils.isNotBlank(taskId)) {
                 List<ProcessTrack> list = processTrackService.findByTaskId(taskId);
                 items = ItemAdminModelConvertUtil.processTrackList2ModelList(list);
             }
+            return Y9Result.success(items);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new Y9BusinessException(500, "获取自定义历程,错误信息为：" + e.getMessage());
         }
-        return items;
+
     }
 
     @Override
-    @GetMapping(value = "/findByTaskIdAsc", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ProcessTrackModel> findByTaskIdAsc(String tenantId, String userId, String taskId) {
+    public Y9Result<List<ProcessTrackModel>> findByTaskIdAsc(String tenantId, String userId, String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<ProcessTrackModel> items = new ArrayList<ProcessTrackModel>();
+        List<ProcessTrackModel> items = new ArrayList<>();
         try {
             if (StringUtils.isNotBlank(taskId)) {
                 List<ProcessTrack> list = processTrackService.findByTaskIdAsc(taskId);
                 items = ItemAdminModelConvertUtil.processTrackList2ModelList(list);
             }
+            return Y9Result.success(items);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new Y9BusinessException(500, "获取自定义历程,错误信息为：" + e.getMessage());
         }
-        return items;
+
     }
 
     @Override
-    @GetMapping(value = "/processTrackList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> processTrackList(String tenantId, String userId, String processInstanceId) {
+    public Y9Result<List<HistoryProcessModel>> processTrackList(String tenantId, String userId,
+        String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
-        retMap.put(UtilConsts.SUCCESS, false);
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<HistoryProcessModel> items = new ArrayList<>();
         try {
             if (StringUtils.isNotBlank(processInstanceId)) {
                 items = processTrackService.getListMap(processInstanceId);
-                retMap.put(UtilConsts.SUCCESS, true);
-                retMap.put("rows", items);
             }
+            return Y9Result.success(items);
         } catch (Exception e) {
-            retMap.put(UtilConsts.SUCCESS, false);
             e.printStackTrace();
+            throw new Y9BusinessException(500, "获取历程列表,错误信息为：" + e.getMessage());
         }
-        return retMap;
+
     }
 
     @Override
-    @GetMapping(value = "/processTrackList4Simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> processTrackList4Simple(String tenantId, String userId, String processInstanceId) {
+    @GetMapping(value = "/processTrackList4Simple")
+    public Y9Result<List<HistoryProcessModel>> processTrackList4Simple(String tenantId, String userId,
+        String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> retMap = new HashMap<String, Object>(16);
-        retMap.put(UtilConsts.SUCCESS, false);
-        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        List<HistoryProcessModel> items = new ArrayList<>();
         try {
             if (StringUtils.isNotBlank(processInstanceId)) {
                 items = processTrackService.getListMap4Simple(processInstanceId);
-                retMap.put(UtilConsts.SUCCESS, true);
-                retMap.put("rows", items);
             }
+            return Y9Result.success(items);
         } catch (Exception e) {
-            retMap.put(UtilConsts.SUCCESS, false);
             e.printStackTrace();
+            throw new Y9BusinessException(500, "获取历程列表,错误信息为：" + e.getMessage());
         }
-        return retMap;
+
     }
 
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ProcessTrackModel saveOrUpdate(String tenantId, @RequestBody ProcessTrackModel processTrackModel)
+    public Y9Result<ProcessTrackModel> saveOrUpdate(String tenantId, @RequestBody ProcessTrackModel processTrackModel)
         throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         ProcessTrack processTrack = ItemAdminModelConvertUtil.processTrackModel2ProcessTrack(processTrackModel);
         ProcessTrack ptTemp = processTrackService.saveOrUpdate(processTrack);
         ProcessTrackModel ptModelTemp = ItemAdminModelConvertUtil.processTrack2Model(ptTemp);
-        return ptModelTemp;
+        return Y9Result.success(ptModelTemp);
     }
 }

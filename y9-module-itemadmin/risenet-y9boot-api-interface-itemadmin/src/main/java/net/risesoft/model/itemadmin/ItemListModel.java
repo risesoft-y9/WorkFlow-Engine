@@ -12,7 +12,7 @@ import lombok.Data;
  * @date 2022/12/20
  */
 @Data
-public class AddItemListModel implements Serializable {
+public class ItemListModel implements Serializable {
 
     private static final long serialVersionUID = 2889028913656422110L;
     /**

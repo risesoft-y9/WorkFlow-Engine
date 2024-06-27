@@ -80,7 +80,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         /**
          * 2更新自定义历程结束时间
          */
-        List<ProcessTrackModel> ptModelList = processTrackManager.findByTaskId(tenantId, taskId);
+        List<ProcessTrackModel> ptModelList = processTrackManager.findByTaskId(tenantId, taskId).getData();
         for (ProcessTrackModel ptModel : ptModelList) {
             if (StringUtils.isBlank(ptModel.getEndTime())) {
                 ptModel.setEndTime(sdf.format(new Date()));
@@ -160,7 +160,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setTaskDefName("恢复待办");
             ptm.setTaskId(hisTaskModelTemp.getId());
 
-            ptm = processTrackManager.saveOrUpdate(tenantId, ptm);
+            ptm = processTrackManager.saveOrUpdate(tenantId, ptm).getData();
 
             /**
              * 2、添加流程的历程
@@ -174,7 +174,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setEndTime("");
             ptm.setTaskDefName(hisTaskModelTemp.getName());
             ptm.setTaskId(hisTaskModelTemp.getId());
-            ptm = processTrackManager.saveOrUpdate(tenantId, ptm);
+            ptm = processTrackManager.saveOrUpdate(tenantId, ptm).getData();
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("RuntimeManager resumeToDo error");

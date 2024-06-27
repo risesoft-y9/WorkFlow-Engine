@@ -32,7 +32,6 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
-import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.platform.Position;
@@ -447,7 +446,7 @@ public class DoingServiceImpl implements DoingService {
     @Override
     public Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page,
         Integer rows) {
-        ItemPage<ActRuDetailModel> itemPage;
+        Y9Page<ActRuDetailModel> itemPage;
         try {
             List<Map<String, Object>> items = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -528,7 +527,7 @@ public class DoingServiceImpl implements DoingService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalpages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取待办列表失败", e);
         }
