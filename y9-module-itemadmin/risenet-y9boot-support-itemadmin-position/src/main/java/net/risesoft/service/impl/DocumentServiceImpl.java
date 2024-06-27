@@ -57,9 +57,9 @@ import net.risesoft.enums.platform.AuthorityEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.itemadmin.AddItemListModel;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.ErrorLogModel;
+import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
@@ -613,8 +613,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<AddItemListModel> getItemList() {
-        List<AddItemListModel> listMap = new ArrayList<>();
+    public List<ItemListModel> getItemList() {
+        List<ItemListModel> listMap = new ArrayList<>();
         try {
             String positionId = Y9LoginUserHolder.getPositionId();
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -622,11 +622,11 @@ public class DocumentServiceImpl implements DocumentService {
             //////////////////////////////////
             List<Resource> list =
                 positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
-            AddItemListModel model;
+            ItemListModel model;
             String url;
             long todoCount;
             for (Resource r : list) {
-                model = new AddItemListModel();
+                model = new ItemListModel();
                 url = r.getUrl();
                 if (StringUtils.isBlank(url)) {
                     continue;
@@ -662,17 +662,17 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<Map<String, Object>> getMyItemList() {
-        List<Map<String, Object>> listMap = new ArrayList<>();
+    public List<ItemListModel> getMyItemList() {
+        List<ItemListModel> listMap = new ArrayList<>();
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             String resourceId = "";
             List<Resource> list =
                 positionResourceApi.listSubResources(tenantId, positionId, AuthorityEnum.BROWSE, resourceId).getData();
-            Map<String, Object> map;
+            ItemListModel model;
             String url;
             for (Resource r : list) {
-                map = new HashMap<>(16);
+                model = new ItemListModel();
                 url = r.getUrl();
                 if (StringUtils.isBlank(url)) {
                     continue;
@@ -681,16 +681,19 @@ public class DocumentServiceImpl implements DocumentService {
                     continue;
                 }
                 String itemId = url.split("itemId=")[1];
-                map.put("id", r.getId());
-                map.put("itemId", itemId);
-                map.put("iconData", "");
+                model.setId(r.getId());
+                model.setItemId(itemId);
+                model.setAppIcon("");
                 SpmApproveItem spmApproveitem = spmApproveitemRepository.findById(itemId).orElse(null);
-                map.put("name", r.getName());
+                model.setName(r.getName());
+                model.setItemName(r.getName());
                 if (spmApproveitem != null && spmApproveitem.getId() != null) {
-                    map.put("name", spmApproveitem.getName());
-                    map.put("iconData",
+                    model.setName(spmApproveitem.getName());
+                    model.setItemName(spmApproveitem.getName());
+                    model.setAppIcon(
                         StringUtils.isBlank(spmApproveitem.getIconData()) ? "" : spmApproveitem.getIconData());
-                    listMap.add(map);
+                    model.setProcessDefinitionKey(spmApproveitem.getWorkflowGuid());
+                    listMap.add(model);
                 }
             }
         } catch (Exception e) {

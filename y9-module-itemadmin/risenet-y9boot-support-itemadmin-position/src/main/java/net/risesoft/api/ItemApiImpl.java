@@ -15,9 +15,10 @@ import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.entity.SpmApproveItem;
-import net.risesoft.model.itemadmin.AddItemListModel;
+import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.model.platform.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
@@ -184,15 +185,15 @@ public class ItemApiImpl implements Item4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return Y9Result<List<AddItemListModel>>
+     * @return Y9Result<List<ItemListModel>>
      */
     @Override
     @GetMapping(value = "/getItemList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<List<AddItemListModel>> getItemList(String tenantId, String positionId) {
+    public Y9Result<List<ItemListModel>> getItemList(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        List<AddItemListModel> list = documentService.getItemList();
+        List<ItemListModel> list = documentService.getItemList();
         return Y9Result.success(list);
     }
 
@@ -223,13 +224,21 @@ public class ItemApiImpl implements Item4PositionApi {
      * 获取事项系统
      *
      * @param tenantId 租户id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<ItemSystemListModel>>
      */
     @Override
     @GetMapping(value = "/getItemSystem", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getItemSystem(String tenantId) {
+    public Y9Result<List<ItemSystemListModel>> getItemSystem(String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return spmApproveItemRepository.getItemSystem();
+        List<Map<String, Object>> list = spmApproveItemRepository.getItemSystem();
+        List<ItemSystemListModel> res_list = new ArrayList<>();
+        for (Map<String, Object> map : list) {
+            ItemSystemListModel itemSystemListModel = new ItemSystemListModel();
+            itemSystemListModel.setSystemName(map.get("systemName").toString());
+            itemSystemListModel.setSysLevel(map.get("sysLevel").toString());
+            res_list.add(itemSystemListModel);
+        }
+        return Y9Result.success(res_list);
     }
 
     /**
@@ -237,15 +246,16 @@ public class ItemApiImpl implements Item4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return List<Map < String, Object>>
+     * @return Y9Result<List<ItemListModel>>
      */
     @Override
     @GetMapping(value = "/getMyItemList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getMyItemList(String tenantId, String positionId) {
+    public Y9Result<List<ItemListModel>> getMyItemList(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        return documentService.getMyItemList();
+        List<ItemListModel> list = documentService.getMyItemList();
+        return Y9Result.success(list);
     }
 
     /**

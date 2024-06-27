@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
-import net.risesoft.model.itemadmin.AddItemListModel;
+import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -32,10 +32,10 @@ public class MobileV1ItemController {
     /**
      * 获取事项列表
      *
-     * @return Y9Result<List < AddItemListModel>>
+     * @return Y9Result<List < ItemListModel>>
      */
     @RequestMapping(value = "/getItemList")
-    public Y9Result<List<AddItemListModel>> getItemList() {
+    public Y9Result<List<ItemListModel>> getItemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
         return item4PositionApi.getItemList(tenantId, positionId);

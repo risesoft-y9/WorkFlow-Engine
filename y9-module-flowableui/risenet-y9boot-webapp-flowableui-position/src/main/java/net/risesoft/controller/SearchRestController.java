@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.model.itemadmin.ChaoSongModel;
+import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -43,11 +44,10 @@ public class SearchRestController {
      * @return Y9Result<List < Map < String, Object>>>
      */
     @RequestMapping(value = "/getMyItemList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getMyItemList() {
+    public Y9Result<List<ItemListModel>> getMyItemList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        List<Map<String, Object>> listMap = item4PositionApi.getMyItemList(tenantId, userId);
-        return Y9Result.success(listMap, "获取成功");
+        return item4PositionApi.getMyItemList(tenantId, userId);
     }
 
     /**
