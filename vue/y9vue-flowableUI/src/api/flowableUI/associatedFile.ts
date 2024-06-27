@@ -1,7 +1,7 @@
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
-//获取关联文件
+//获取关联流程
 export function getAssociatedFileList(processSerialNumber){
   const params = {
     processSerialNumber:processSerialNumber
@@ -13,7 +13,7 @@ export function getAssociatedFileList(processSerialNumber){
   });
 }
 
-//删除关联文件
+//删除关联流程
 export function delAssociatedFile(processSerialNumber,processInstanceIds){
   const params = {
     processSerialNumber:processSerialNumber,
@@ -41,7 +41,7 @@ export function getAssociatedDoneList(itemId,title,page,rows){
   });
 }
 
-//保存关联文件
+//保存关联流程
 export function saveAssociatedFile(processSerialNumber,processInstanceIds){
   const params = {
     processSerialNumber:processSerialNumber,

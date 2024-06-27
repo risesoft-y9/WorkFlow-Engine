@@ -134,7 +134,7 @@
                 <tableExists tableName="ff_associatedfile"/>
             </not>
         </preConditions>
-        <createTable remarks="关联文件表" tableName="ff_associatedfile">
+        <createTable remarks="关联流程表" tableName="ff_associatedfile">
             <column name="ID" remarks="主键" type="VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -813,7 +813,7 @@
             </column>
             <column name="SHOWDOCUMENTTAB" remarks="是否显示正文" type="INT"/>
             <column name="SHOWFILETAB" remarks="是否显示意见附件" type="INT"/>
-            <column name="SHOWHISTORYTAB" remarks="是否显示关联文件" type="INT"/>
+            <column name="SHOWHISTORYTAB" remarks="是否显示关联流程" type="INT"/>
             <column name="TABINDEX" remarks="排序号" type="INT"/>
             <column name="TASKDEFKEY" remarks="任务key" type="VARCHAR(255)"/>
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
@@ -1169,7 +1169,7 @@
             </column>
             <column name="SHOWDOCUMENTTAB" remarks="是否显示正文" type="INT"/>
             <column name="SHOWFILETAB" remarks="是否显示意见附件" type="INT"/>
-            <column name="SHOWHISTORYTAB" remarks="是否显示关联文件" type="INT"/>
+            <column name="SHOWHISTORYTAB" remarks="是否显示关联流程" type="INT"/>
             <column name="TABINDEX" remarks="排序号" type="INT"/>
             <column name="TASKDEFKEY" remarks="任务key" type="VARCHAR(255)"/>
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">

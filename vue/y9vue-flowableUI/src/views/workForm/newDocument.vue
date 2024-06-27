@@ -31,7 +31,7 @@
         <myFormRef v-show="activeName.indexOf('y9form') > -1" ref="myForm" :basicData="basicData" :processInstanceId="processInstanceId" @refreshCount="updateLeftListCount"/>
         <!-- 附件 -->
         <fileList v-if="activeName == 'attach'" ref="fileListRef" :basicData="basicData" :processSerialNumber="processSerialNumber"/>
-        <!-- 关联文件 -->
+        <!-- 关联流程 -->
         <associatedFileList v-if="activeName == 'associatedFile'" ref="associatedFileListRef" :basicData="basicData" :processSerialNumber="processSerialNumber"/>
         <!-- 沟通交流 -->
         <speakInfo v-if="activeName == 'speakInfo'" ref="speakInfoRef" :clickCount="clickCount" :processInstanceId="processInstanceId"/>
@@ -186,13 +186,13 @@ const data = reactive({
   printUrl: '',//打印url
   printFormType: '',//打印配置
   formId: '',//表单id
-  showOtherFlag: '',//是否显示关联文件，正文，沟通交流页签
+  showOtherFlag: '',//是否显示关联流程，正文，沟通交流页签
   listType: '',//列表类型，判断从哪个列表跳转过来，用于返回列表
   follow: false,//是否关注该件
   fileLabel: '附件',//是否有附件
   docNum: 0,//是否有正文
   speakInfoLabel: '沟通交流',//是否沟通交流新消息
-  associatedFileLabel: '关联文件',//是否有关联文件
+  associatedFileLabel: '关联流程',//是否有关联流程
   fileListShow: false,//点击对应的页签才加载对应组件
   processListShow: false,
   speakInfoShow: false,
@@ -535,7 +535,7 @@ async function getOpenDraftData() {//获取草稿数据
     fileLabel.value = '';
     fileLabel.value = draftData.fileNum == 0 ? "附件" : "附件(" + draftData.fileNum + ")";
     docNum.value = draftData.docNum;
-    associatedFileLabel.value = draftData.associatedFileNum == 0 ? "关联文件" : "关联文件(" + draftData.associatedFileNum + ")";
+    associatedFileLabel.value = draftData.associatedFileNum == 0 ? "关联流程" : "关联流程(" + draftData.associatedFileNum + ")";
     setBasicData(draftData);
     printFormType.value = draftData.printFormType;
     // myForm.value.show(formId.value);
@@ -569,7 +569,7 @@ async function getOpenTodoData() {//获取办件数据
     fileLabel.value = '';
     fileLabel.value = todoData.fileNum == 0 ? "附件" : "附件(" + todoData.fileNum + ")";
     docNum.value = todoData.docNum;
-    associatedFileLabel.value = todoData.associatedFileNum == 0 ? "关联文件" : "关联文件(" + todoData.associatedFileNum + ")";
+    associatedFileLabel.value = todoData.associatedFileNum == 0 ? "关联流程" : "关联流程(" + todoData.associatedFileNum + ")";
     speakInfoLabel.value = todoData.speakInfoNum == 0 ? "沟通交流" : "沟通交流(" + todoData.speakInfoNum + ")";
     printFormType.value = todoData.printFormType;
     repositionMap.value = todoData.repositionMap;

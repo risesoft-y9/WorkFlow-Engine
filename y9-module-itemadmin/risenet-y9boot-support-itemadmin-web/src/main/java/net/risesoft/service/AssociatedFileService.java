@@ -10,7 +10,7 @@ import java.util.Map;
 public interface AssociatedFileService {
 
     /**
-     * 关联文件计数
+     * 关联流程计数
      * 
      * @param processSerialNumber
      * @return
@@ -18,7 +18,7 @@ public interface AssociatedFileService {
     int countAssociatedFile(String processSerialNumber);
 
     /**
-     * 删除多个关联文件
+     * 删除多个关联流程
      * 
      * @param processSerialNumber
      * @param delIds
@@ -27,7 +27,7 @@ public interface AssociatedFileService {
     boolean deleteAllAssociatedFile(String processSerialNumber, String delIds);
 
     /**
-     * 删除关联文件
+     * 删除关联流程
      * 
      * @param processSerialNumber
      * @param delId
@@ -36,7 +36,7 @@ public interface AssociatedFileService {
     boolean deleteAssociatedFile(String processSerialNumber, String delId);
 
     /**
-     * 获取关联文件列表，包括未办结件
+     * 获取关联流程列表，包括未办结件
      * 
      * @param processSerialNumber
      * @return
@@ -44,7 +44,7 @@ public interface AssociatedFileService {
     Map<String, Object> getAssociatedFileAllList(String processSerialNumber);
 
     /**
-     * 获取关联文件列表
+     * 获取关联流程列表
      * 
      * @param processSerialNumber
      * @return
@@ -52,7 +52,7 @@ public interface AssociatedFileService {
     Map<String, Object> getAssociatedFileList(String processSerialNumber);
 
     /**
-     * 保存关联文件
+     * 保存关联流程
      * 
      * @param processSerialNumber
      * @param processInstanceIds

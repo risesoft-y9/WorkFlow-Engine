@@ -20,7 +20,7 @@ import net.risesoft.service.AssociatedFileService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
- * 关联文件接口
+ * 关联流程接口
  *
  * @author qinman
  * @author zhangchongjie
@@ -36,7 +36,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     private final PositionApi positionManager;
 
     /**
-     * 关联文件计数
+     * 关联流程计数
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -52,7 +52,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     }
 
     /**
-     * 批量删除关联文件
+     * 批量删除关联流程
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -69,7 +69,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     }
 
     /**
-     * 删除关联文件
+     * 删除关联流程
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
@@ -86,7 +86,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     }
 
     /**
-     * 获取关联文件列表(包括未办结件)
+     * 获取关联流程列表(包括未办结件)
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
@@ -105,7 +105,7 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
     }
 
     /**
-     * 保存关联文件
+     * 保存关联流程
      *
      * @param tenantId 租户id
      * @param positionId 岗位id

@@ -5,7 +5,7 @@ import java.io.Serializable;
 import lombok.Data;
 
 /**
- * 关联文件模型类
+ * 关联流程模型类
  *
  * @author zhangchongjie
  * @date 2024/06/20

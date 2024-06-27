@@ -30,7 +30,7 @@
         <newForm v-show="activeName == 'y9form'" ref="myForm" :basicData="basicData" :processInstanceId="processInstanceId"/>
         <!-- 附件 -->
         <fileList v-if="activeName == 'attach'" ref="fileListRef" :processSerialNumber="processSerialNumber" :basicData="basicData"/>
-        <!-- 关联文件 -->
+        <!-- 关联流程 -->
         <associatedFileList v-if="activeName == 'associatedFile'" ref="associatedFileListRef" :processSerialNumber="processSerialNumber" :basicData="basicData"/>
         <!-- 沟通交流 -->
         <speakInfo v-if="activeName == 'speakInfo'" ref="speakInfoRef" :processInstanceId="processInstanceId"/>
@@ -126,13 +126,13 @@ const data = reactive({
       printFormType:'',//打印配置
       formId:'',
       formUrl:'',//表单url
-      showOtherFlag:'',//是否显示关联文件，正文，沟通交流页签
+      showOtherFlag:'',//是否显示关联流程，正文，沟通交流页签
       listType:'',//列表类型，判断从哪个列表跳转过来，用于返回列表
       follow:false,//是否关注该件
       fileLabel:'附件',//是否有附件
       docNum:0,//是否有正文
       speakInfoLabel:'沟通交流',//是否沟通交流新消息
-      associatedFileLabel:'关联文件',//是否有关联文件
+      associatedFileLabel:'关联流程',//是否有关联流程
       fileListShow:false,//点击对应的页签才加载对应组件
       processListShow:false,
       speakInfoShow:false,
@@ -236,7 +236,7 @@ const data = reactive({
 
         fileLabel.value = csData.fileNum == 0 ? "附件":"附件("+csData.fileNum+")";
         docNum.value = csData.docNum;
-        associatedFileLabel.value = csData.associatedFileNum == 0 ? "关联文件":"关联文件("+csData.associatedFileNum+")";
+        associatedFileLabel.value = csData.associatedFileNum == 0 ? "关联流程":"关联流程("+csData.associatedFileNum+")";
         speakInfoLabel.value = csData.speakInfoNum == 0 ? "沟通交流":"沟通交流("+csData.speakInfoNum+")";
 
         myForm.value.show(formId.value);

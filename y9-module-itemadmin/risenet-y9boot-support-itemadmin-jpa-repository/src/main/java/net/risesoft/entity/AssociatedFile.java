@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_AssociatedFile")
-@Comment("关联文件表")
+@Comment("关联流程表")
 public class AssociatedFile implements Serializable {
 
     /**

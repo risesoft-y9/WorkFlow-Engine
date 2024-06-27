@@ -35,7 +35,7 @@ public class AssociatedFileRestController {
     private AssociatedFileApi associatedFileManager;
 
     /**
-     * 删除关联文件
+     * 删除关联流程
      *
      * @param processSerialNumber 流程编号
      * @param processInstanceIds 要删除的流程实例ids，逗号隔开
@@ -60,7 +60,7 @@ public class AssociatedFileRestController {
     }
 
     /**
-     * 获取关联文件列表
+     * 获取关联流程列表
      *
      * @param processSerialNumber 流程编号
      * @return
@@ -102,7 +102,7 @@ public class AssociatedFileRestController {
     }
 
     /**
-     * 保存关联文件
+     * 保存关联流程
      *
      * @param processSerialNumber 流程编号
      * @param processInstanceIds 流程实例ids，逗号隔开

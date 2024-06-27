@@ -99,7 +99,7 @@
 							<td class="lefttd" >选择其它</td>
 							<td class="rigthtd"  >
 								<el-checkbox style="margin-left:8px;" v-model="bindForm.showFileTab">附件</el-checkbox>
-								<el-checkbox v-model="bindForm.showHistoryTab" >关联文件</el-checkbox>
+								<el-checkbox v-model="bindForm.showHistoryTab" >关联流程</el-checkbox>
 							</td>
 							</tr>
 						</table>

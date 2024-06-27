@@ -220,7 +220,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             }
             map.put("rows", items);
             map.put(UtilConsts.SUCCESS, true);
-            map.put("msg", "关联文件列表获取成功");
+            map.put("msg", "关联流程列表获取成功");
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "获取失败");

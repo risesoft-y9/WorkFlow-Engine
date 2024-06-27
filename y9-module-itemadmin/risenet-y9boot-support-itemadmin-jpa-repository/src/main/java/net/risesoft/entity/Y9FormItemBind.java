@@ -79,7 +79,7 @@ public class Y9FormItemBind implements Serializable {
     private boolean showDocumentTab = true;
 
     @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
-    @Comment("是否显示关联文件")
+    @Comment("是否显示关联流程")
     @Column(name = "SHOWHISTORYTAB")
     private boolean showHistoryTab = true;
 
