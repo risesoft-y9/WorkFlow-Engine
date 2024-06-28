@@ -6,9 +6,7 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +17,8 @@ import net.risesoft.api.itemadmin.ItemDoneApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.ItemPageService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -47,14 +47,14 @@ public class ItemDoneApiImpl implements ItemDoneApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
-     * @return int
+     * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/countByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public int countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
+    public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return actRuDetailService.countBySystemNameAndAssignee(systemName, userId);
+        int count = actRuDetailService.countBySystemNameAndAssignee(systemName, userId);
+        return Y9Result.success(count);
     }
 
     /**
@@ -64,11 +64,10 @@ public class ItemDoneApiImpl implements ItemDoneApi {
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
-     * @return ItemPage<ActRuDetailModel>
+     * @return Y9Page<ActRuDetailModel>
      */
     @Override
-    @GetMapping(value = "/findBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ItemPage<ActRuDetailModel> findBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
+    public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String sql =
@@ -77,8 +76,10 @@ public class ItemDoneApiImpl implements ItemDoneApi {
             "SELECT COUNT(DISTINCT T.PROCESSSERIALNUMBER) FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME= ? AND T.ENDED = TRUE AND T.DELETED = FALSE AND T.PLACEONFILE = FALSE";
         Object[] args = new Object[1];
         args[0] = systemName;
-        return itemPageService.page(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args,
-            page, rows);
+        ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
+            itemPage.getRows());
     }
 
     /**
@@ -89,11 +90,10 @@ public class ItemDoneApiImpl implements ItemDoneApi {
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
-     * @return ItemPage<ActRuDetailModel>
+     * @return Y9Page<ActRuDetailModel>
      */
     @Override
-    @GetMapping(value = "/findByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ItemPage<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
+    public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page,
         @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -108,8 +108,10 @@ public class ItemDoneApiImpl implements ItemDoneApi {
             Y9BeanUtil.copyProperties(actRuDetail, actRuDetailModel);
             modelList.add(actRuDetailModel);
         }
-        return ItemPage.<ActRuDetailModel>builder().rows(modelList).currpage(page).size(rows)
-            .totalpages(ardPage.getTotalPages()).total(ardPage.getTotalElements()).build();
+        ItemPage<ActRuDetailModel> itemPage = ItemPage.<ActRuDetailModel>builder().rows(modelList).currpage(page)
+            .size(rows).totalpages(ardPage.getTotalPages()).total(ardPage.getTotalElements()).build();
+        return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
+            itemPage.getRows());
     }
 
     /**
@@ -121,11 +123,10 @@ public class ItemDoneApiImpl implements ItemDoneApi {
      * @param searchMapStr 搜索内容
      * @param page page
      * @param rows rows
-     * @return ItemPage<ActRuDetailModel>
+     * @return Y9Page<ActRuDetailModel>
      */
     @Override
-    @GetMapping(value = "/searchBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ItemPage<ActRuDetailModel> searchBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
+    public Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
         String tableName, String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String sql0 = "LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
@@ -147,8 +148,10 @@ public class ItemDoneApiImpl implements ItemDoneApi {
             + " WHERE T.SYSTEMNAME= ? AND T.ENDED = TRUE AND T.DELETED = FALSE AND T.PLACEONFILE = FALSE " + sql1;
         Object[] args = new Object[1];
         args[0] = systemName;
-        return itemPageService.page(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args,
-            page, rows);
+        ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
+            itemPage.getRows());
     }
 
     /**
@@ -161,11 +164,10 @@ public class ItemDoneApiImpl implements ItemDoneApi {
      * @param searchMapStr 搜索内容
      * @param page page
      * @param rows rows
-     * @return ItemPage<ActRuDetailModel>
+     * @return Y9Page<ActRuDetailModel>
      */
     @Override
-    @GetMapping(value = "/searchByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
+    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestParam String tableName,
         @RequestParam String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -188,7 +190,9 @@ public class ItemDoneApiImpl implements ItemDoneApi {
         Object[] args = new Object[2];
         args[0] = systemName;
         args[1] = userId;
-        return itemPageService.page(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args,
-            page, rows);
+        ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
+            itemPage.getRows());
     }
 }

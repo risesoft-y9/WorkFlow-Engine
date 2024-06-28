@@ -26,7 +26,6 @@ import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
-import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.pojo.Y9Page;
@@ -181,7 +180,7 @@ public class DoneServiceImpl implements DoneService {
     @Override
     public Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page,
         Integer rows) {
-        ItemPage<ActRuDetailModel> itemPage;
+        Y9Page<ActRuDetailModel> itemPage;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -247,7 +246,7 @@ public class DoneServiceImpl implements DoneService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalpages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }

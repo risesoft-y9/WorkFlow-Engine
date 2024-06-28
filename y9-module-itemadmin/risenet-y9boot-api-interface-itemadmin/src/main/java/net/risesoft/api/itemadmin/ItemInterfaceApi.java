@@ -29,7 +29,7 @@ public interface ItemInterfaceApi {
      * @param taskKey 任务key
      * @param processDefinitionId 流程定义id
      * @param condition 执行条件
-     * @return
+     * @return Y9Result<List<InterfaceModel>>
      */
     @GetMapping("/getInterface")
     Y9Result<List<InterfaceModel>> getInterface(@RequestParam("tenantId") @NotBlank String tenantId,
@@ -42,7 +42,7 @@ public interface ItemInterfaceApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param interfaceId 接口id
-     * @return
+     * @return Y9Result<List<InterfaceParamsModel>>
      */
     @GetMapping("/getInterfaceParams")
     Y9Result<List<InterfaceParamsModel>> getInterfaceParams(@RequestParam("tenantId") @NotBlank String tenantId,
