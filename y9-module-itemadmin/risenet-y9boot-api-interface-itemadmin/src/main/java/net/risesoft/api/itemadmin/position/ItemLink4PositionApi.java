@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.LinkInfoModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -24,10 +25,10 @@ public interface ItemLink4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @return
+     * @return Y9Result<List<LinkInfoModel>>
      */
     @GetMapping("/getItemLinkList")
-    List<LinkInfoModel> getItemLinkList(@RequestParam("tenantId") @NotBlank String tenantId,
+    Y9Result<List<LinkInfoModel>> getItemLinkList(@RequestParam("tenantId") @NotBlank String tenantId,
         @RequestParam("positionId") @NotBlank String positionId, @RequestParam("itemId") @NotBlank String itemId);
 
 }
