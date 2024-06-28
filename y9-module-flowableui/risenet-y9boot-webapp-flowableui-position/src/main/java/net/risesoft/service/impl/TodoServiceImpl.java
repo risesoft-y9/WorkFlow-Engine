@@ -36,7 +36,6 @@ import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemModel;
-import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.itemadmin.TaskVariableModel;
@@ -344,7 +343,7 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public Y9Page<Map<String, Object>> searchList(String itemId, String tableName, String searchMapStr, Integer page,
         Integer rows) {
-        ItemPage<ActRuDetailModel> itemPage;
+        Y9Page<ActRuDetailModel> itemPage;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
@@ -466,7 +465,7 @@ public class TodoServiceImpl implements TodoService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalpages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取待办列表失败", e);
         }
