@@ -1,9 +1,17 @@
 package net.risesoft.api.itemadmin;
 
 import java.util.List;
-import java.util.Map;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import net.risesoft.model.itemadmin.OrganWordModel;
+import net.risesoft.model.itemadmin.OrganWordPropertyModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
+ * 编号
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/19
@@ -22,11 +30,14 @@ public interface OrganWordApi {
      * @param itemId 事项id
      * @param common common
      * @param processSerialNumber 流程编号
-     * @return Integer
-     * @throws Exception Exception
+     * @return @return {@code Y9Result<Integer>} 通用请求返回对象
      */
-    Integer checkNumberStr(String tenantId, String userId, String characterValue, String custom, Integer year,
-        Integer numberTemp, String itemId, Integer common, String processSerialNumber) throws Exception;
+    @GetMapping("/checkNumberStr")
+    Y9Result<Integer> checkNumberStr(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("characterValue") String characterValue, @RequestParam("custom") String custom,
+        @RequestParam("year") Integer year, @RequestParam("numberTemp") Integer numberTemp,
+        @RequestParam("itemId") String itemId, @RequestParam("common") Integer common,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 判断机构代字custom在某个流程实例中是否已经编号,没有编号的话就查找有权限的编号的机关代字
@@ -37,11 +48,12 @@ public interface OrganWordApi {
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id
      * @param itembox 办件状态:todo(待办),doing(在办),done(办结)
-     * @return Map&lt;String, Object&gt;
-     * @throws Exception Exception
+     * @return {@code Y9Result<OrganWordModel>} 通用请求返回对象 -data是数据字典列表
      */
-    Map<String, Object> exist(String tenantId, String userId, String custom, String processSerialNumber,
-        String processInstanceId, String itembox) throws Exception;
+    @GetMapping("/exist")
+    Y9Result<OrganWordModel> exist(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("custom") String custom, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("itembox") String itembox);
 
     /**
      *
@@ -53,11 +65,13 @@ public interface OrganWordApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务定义key
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
-     * @throws Exception Exception
+     * @return {@code Y9Result<List<OrganWordPropertyModel>>} 通用请求返回对象 -data是数据字典列表
      */
-    List<Map<String, Object>> findByCustom(String tenantId, String userId, String custom, String itemId,
-        String processDefinitionId, String taskDefKey) throws Exception;
+    @GetMapping("/findByCustom")
+    Y9Result<List<OrganWordPropertyModel>> findByCustom(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("custom") String custom,
+        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
+        @RequestParam("taskDefKey") String taskDefKey);
 
     /**
      * 获取编号
@@ -69,11 +83,13 @@ public interface OrganWordApi {
      * @param year 文号年份
      * @param common common
      * @param itemId 事项id
-     * @return Map&lt;String, Object&gt;
-     * @throws Exception Exception
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data是数据字典列表
      */
-    Map<String, Object> getNumber(String tenantId, String userId, String custom, String characterValue, Integer year,
-        Integer common, String itemId) throws Exception;
+    @GetMapping("/getNumber")
+    Y9Result<Integer> getNumber(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("custom") String custom, @RequestParam("characterValue") String characterValue,
+        @RequestParam("year") Integer year, @RequestParam("common") Integer common,
+        @RequestParam("itemId") String itemId);
 
     /**
      * 获取编号的数字
@@ -85,10 +101,13 @@ public interface OrganWordApi {
      * @param year 文号年份
      * @param common common
      * @param itemId 事项id
-     * @return Integer
-     * @throws Exception Exception
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data是编号的数字
+     * 
      */
-    Integer getNumberOnly(String tenantId, String userId, String custom, String characterValue, Integer year,
-        Integer common, String itemId) throws Exception;
+    @GetMapping("/getNumberOnly")
+    Y9Result<Integer> getNumberOnly(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("custom") String custom, @RequestParam("characterValue") String characterValue,
+        @RequestParam("year") Integer year, @RequestParam("common") Integer common,
+        @RequestParam("itemId") String itemId);
 
 }

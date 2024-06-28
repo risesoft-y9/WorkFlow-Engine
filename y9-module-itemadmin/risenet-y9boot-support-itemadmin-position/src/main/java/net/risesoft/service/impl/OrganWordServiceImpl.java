@@ -2,6 +2,7 @@ package net.risesoft.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,8 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.OrganWordModel;
+import net.risesoft.model.itemadmin.OrganWordPropertyModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
@@ -78,10 +81,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         if (StringUtils.isNotEmpty(id)) {
             OrganWord optional = organWordRepository.findById(id).orElse(null);
             OrganWord organWord = organWordRepository.findByCustom(custom);
-            if (organWord != null && !optional.getId().equals(organWord.getId())) {
-                return false;
-            }
-            return true;
+            return organWord == null || optional.getId().equals(organWord.getId());
         }
         OrganWord organWord = organWordRepository.findByCustom(custom);
         return null == organWord;
@@ -291,32 +291,33 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    public Map<String, Object> exist(String custom, String processSerialNumber, String processInstanceId,
-        String itembox) {
-        Map<String, Object> retMap = new HashMap<>(16);
-        List<Map<String, Object>> listMap = new ArrayList<>();
+    public OrganWordModel exist(String custom, String processSerialNumber, String processInstanceId, String itembox) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
         OrganWordUseHistory owuh =
             organWordUseHistoryService.findByProcessSerialNumberAndCustom(processSerialNumber, custom);
+        OrganWordModel word = new OrganWordModel();
+        word.setExist(false);
+
         if (null != owuh) {
-            retMap.put("exist", true);
-            retMap.put("numberString", owuh.getNumberString());
-            return retMap;
+            word.setExist(true);
+            word.setNumberString(owuh.getNumberString());
+            return word;
         }
-
-        retMap.put("exist", false);
         if (!itembox.equals(ItemBoxTypeEnum.TODO.getValue())) {
-            return retMap;
+            return word;
         }
-
-        String taskDefKey = "", itemId = "", processDefinitionId = "";
+        word.setHasPermission(false);
+        String taskDefKey = "";
+        String itemId = "";
+        String processDefinitionId = "";
         List<TaskModel> taskList = taskManager.findByProcessInstanceId(tenantId, processInstanceId);
         taskDefKey = taskList.get(0).getTaskDefinitionKey();
         processDefinitionId = taskList.get(0).getProcessDefinitionId();
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         itemId = processParam.getItemId();
         OrganWord organWord = this.findByCustom(custom);
+        List<OrganWordPropertyModel> listMap = new ArrayList<>();
         if (organWord != null) {
             boolean hasPermission = false;
             ItemOrganWordBind bind =
@@ -328,26 +329,20 @@ public class OrganWordServiceImpl implements OrganWordService {
                     hasPermission = personRoleApi.hasRole(tenantId, roleId, person.getPersonId()).getData();
                 }
             }
-            if (!hasPermission) {
-                Map<String, Object> editMap = new HashMap<>(16);
-                editMap.put("hasPermission", false);
-                listMap.add(editMap);
-            } else {
+            if (hasPermission) {
+                word.setHasPermission(true);
                 List<OrganWordProperty> propertyList = organWordPropertyService.findByOrganWordId(organWord.getId());
                 for (OrganWordProperty op : propertyList) {
-                    Map<String, Object> editMap = new HashMap<>(16);
-                    editMap.put("hasPermission", true);
-                    editMap.put("name", op.getName());
-                    listMap.add(editMap);
+                    OrganWordPropertyModel proper = new OrganWordPropertyModel();
+                    proper.setHasPermission(true);
+                    proper.setName(op.getName());
+                    proper.setInitNumber(op.getInitNumber());
+                    listMap.add(proper);
                 }
+                word.setList(listMap);
             }
-        } else {
-            Map<String, Object> editMap = new HashMap<>(16);
-            editMap.put("hasPermission", false);
-            listMap.add(editMap);
         }
-        retMap.put("list", listMap);
-        return retMap;
+        return word;
     }
 
     @Override
@@ -361,9 +356,8 @@ public class OrganWordServiceImpl implements OrganWordService {
     }
 
     @Override
-    public List<Map<String, Object>> findByCustom(String itemId, String processDefinitionId, String taskDefKey,
+    public List<OrganWordPropertyModel> findByCustom(String itemId, String processDefinitionId, String taskDefKey,
         String custom) {
-        List<Map<String, Object>> retList = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         OrganWord organWord = this.findByCustom(custom);
         if (organWord != null) {
@@ -386,24 +380,21 @@ public class OrganWordServiceImpl implements OrganWordService {
                 }
             }
             if (!hasPermission) {
-                Map<String, Object> editMap = new HashMap<>(16);
-                editMap.put("hasPermission", false);
-                retList.add(editMap);
+                return Collections.emptyList();
             } else {
                 List<OrganWordProperty> propertyList = organWordPropertyService.findByOrganWordId(organWord.getId());
+                List<OrganWordPropertyModel> retList = new ArrayList<>();
                 for (OrganWordProperty op : propertyList) {
-                    Map<String, Object> editMap = new HashMap<>(16);
-                    editMap.put("hasPermission", true);
-                    editMap.put("name", op.getName());
+                    OrganWordPropertyModel editMap = new OrganWordPropertyModel();
+                    editMap.setHasPermission(true);
+                    editMap.setName(op.getName());
+                    editMap.setInitNumber(op.getInitNumber());
                     retList.add(editMap);
                 }
+                return retList;
             }
-        } else {
-            Map<String, Object> editMap = new HashMap<>(16);
-            editMap.put("hasPermission", false);
-            retList.add(editMap);
         }
-        return retList;
+        return Collections.emptyList();
     }
 
     @Override
@@ -413,9 +404,7 @@ public class OrganWordServiceImpl implements OrganWordService {
 
     @Override
     @Transactional
-    public Map<String, Object> getNumber(String custom, String characterValue, Integer year, Integer common,
-        String itemId) {
-        Map<String, Object> map = new HashMap<>(16);
+    public Integer getNumber(String custom, String characterValue, Integer year, Integer common, String itemId) {
         Integer number = 0;
         OrganWordDetail owd = null;
         try {
@@ -491,8 +480,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        map.put("numberTemp", number);
-        return map;
+        return number;
     }
 
     @Override

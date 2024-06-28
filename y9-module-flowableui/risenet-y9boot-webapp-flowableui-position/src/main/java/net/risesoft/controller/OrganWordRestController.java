@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.OrganWordApi;
+import net.risesoft.model.itemadmin.OrganWordPropertyModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -53,17 +54,18 @@ public class OrganWordRestController {
         @RequestParam(required = false) Integer number, @RequestParam @NotBlank String itemId,
         @RequestParam(required = false) Integer common, @RequestParam @NotBlank String processSerialNumber) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = person.getPersonId();
         Map<String, Object> map = new HashMap<>(16);
         try {
             Integer status = organWordApi.checkNumberStr(tenantId, userId, characterValue, custom, year, number, itemId,
-                common, processSerialNumber);
+                common, processSerialNumber).getData();
             if (status == 0) {
                 /*
                   当前编号已被使用，获取最新的可以用的编号
                  */
                 Integer numberTemp =
-                    organWordApi.getNumberOnly(tenantId, userId, custom, characterValue, year, 0, itemId);
+                    organWordApi.getNumberOnly(tenantId, userId, custom, characterValue, year, 0, itemId).getData();
                 map.put("newNumber", numberTemp);
             }
             map.put("status", status);
@@ -81,21 +83,15 @@ public class OrganWordRestController {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务节点
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List < OrganWordPropertyModel>>
      */
     @RequestMapping(value = "/findByCustom", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> findByCustom(@RequestParam @NotBlank String custom,
+    public Y9Result<List<OrganWordPropertyModel>> findByCustom(@RequestParam @NotBlank String custom,
         @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processDefinitionId,
         @RequestParam(required = false) String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            List<Map<String, Object>> listMap = organWordApi.findByCustom(tenantId, Y9LoginUserHolder.getPositionId(),
-                custom, itemId, processDefinitionId, taskDefKey);
-            return Y9Result.success(listMap, "获取成功");
-        } catch (Exception e) {
-            LOGGER.error("获取失败", e);
-        }
-        return Y9Result.failure("获取失败");
+        return organWordApi.findByCustom(tenantId, Y9LoginUserHolder.getPositionId(), custom, itemId,
+            processDefinitionId, taskDefKey);
     }
 
     /**
@@ -115,8 +111,10 @@ public class OrganWordRestController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
         try {
-            Map<String, Object> map =
-                organWordApi.getNumber(tenantId, userId, custom, characterValue, year, common, itemId);
+            Map<String, Object> map = new HashMap<>();
+            Integer number =
+                organWordApi.getNumber(tenantId, userId, custom, characterValue, year, common, itemId).getData();
+            map.put("numberTemp", number);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取失败", e);

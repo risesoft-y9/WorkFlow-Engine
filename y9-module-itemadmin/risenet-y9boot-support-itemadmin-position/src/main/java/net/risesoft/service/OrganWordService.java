@@ -6,6 +6,8 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 
 import net.risesoft.entity.OrganWord;
+import net.risesoft.model.itemadmin.OrganWordModel;
+import net.risesoft.model.itemadmin.OrganWordPropertyModel;
 
 /**
  * @author qinman
@@ -21,7 +23,7 @@ public interface OrganWordService {
      * @param custom
      * @return
      */
-    public boolean checkCustom(String id, String custom);
+    boolean checkCustom(String id, String custom);
 
     /**
      * 0:当前编号已被使用.1.当前编号没有被使用。2:当前编号不存在 3:发生异常
@@ -61,15 +63,14 @@ public interface OrganWordService {
      * @param itembox
      * @return
      */
-    Map<String, Object> exist(String custom, String processSerialNumber, String processInstanceId, String itembox);
+    OrganWordModel exist(String custom, String processSerialNumber, String processInstanceId, String itembox);
 
     /**
      * 根据租户Id获取机关文字列表并按照tabIndex 升序
-     *
-     * @param tenantId
+     * 
      * @return
      */
-    public List<OrganWord> findAll();
+    List<OrganWord> findAll();
 
     /**
      * 根据标识查找未删除的机关代字列表
@@ -81,22 +82,23 @@ public interface OrganWordService {
 
     /**
      * Description: 查找有权限的机构代字
-     * 
+     *
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
      * @param custom
      * @return
      */
-    List<Map<String, Object>> findByCustom(String itemId, String processDefinitionId, String taskDefKey, String custom);
+    List<OrganWordPropertyModel> findByCustom(String itemId, String processDefinitionId, String taskDefKey,
+        String custom);
 
     /**
      * 根据Id查找机关代字
-     * 
+     *
      * @param id
      * @return
      */
-    public OrganWord findOne(String id);
+    OrganWord findOne(String id);
 
     /**
      * 一般的自动编号
@@ -108,7 +110,7 @@ public interface OrganWordService {
      * @param itemId
      * @return
      */
-    Map<String, Object> getNumber(String custom, String characterValue, Integer year, Integer common, String itemId);
+    Integer getNumber(String custom, String characterValue, Integer year, Integer common, String itemId);
 
     /**
      * 当前部门的自动编号
@@ -135,8 +137,7 @@ public interface OrganWordService {
 
     /**
      * 获取所有的编号列表
-     *
-     * @param tenantId
+     * 
      * @param rows
      * @param page
      * @return
@@ -145,10 +146,10 @@ public interface OrganWordService {
 
     /**
      * Description: 根据传进来的机关代字Id的数组逻辑删除
-     * 
+     *
      * @param organWordIds
      */
-    public void removeOrganWords(String[] organWordIds);
+    void removeOrganWords(String[] organWordIds);
 
     /**
      * 保存机关代字
@@ -156,5 +157,5 @@ public interface OrganWordService {
      * @param organWord
      * @return
      */
-    public Map<String, Object> save(OrganWord organWord);
+    Map<String, Object> save(OrganWord organWord);
 }

@@ -28,6 +28,7 @@ import net.risesoft.enums.platform.DepartmentPropCategoryEnum;
 import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
+import net.risesoft.model.itemadmin.Y9FormOptionValueModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.PersonExt;
@@ -264,13 +265,12 @@ public class Y9FormRestController {
      * 获取数据字典值
      *
      * @param type 字典类型
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List<Y9FormOptionValueModel>>
      */
     @RequestMapping(value = "/getOptionValueList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getOptionValueList(@RequestParam @NotBlank String type) {
+    public Y9Result<List<Y9FormOptionValueModel>> getOptionValueList(@RequestParam @NotBlank String type) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> list = optionClassApi.getOptionValueList(tenantId, type);
-        return Y9Result.success(list, "获取成功");
+        return optionClassApi.getOptionValueList(tenantId, type);
     }
 
     /**
