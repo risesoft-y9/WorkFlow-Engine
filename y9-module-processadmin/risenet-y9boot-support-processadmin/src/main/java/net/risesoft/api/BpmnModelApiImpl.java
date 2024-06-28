@@ -1,19 +1,27 @@
 package net.risesoft.api;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
+import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.ProcessTrackApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.processadmin.BpmnModelApi;
+import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
+import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.ProcessTrackModel;
+import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.CustomHistoricActivityService;
+import net.risesoft.service.CustomHistoricProcessService;
+import net.risesoft.service.CustomHistoricTaskService;
+import net.risesoft.service.CustomHistoricVariableService;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.util.SysVariables;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9Util;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.BpmnAutoLayout;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
@@ -58,30 +66,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.ProcessTrackApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.processadmin.BpmnModelApi;
-import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
-import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.model.itemadmin.ProcessTrackModel;
-import net.risesoft.model.platform.Person;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.CustomHistoricActivityService;
-import net.risesoft.service.CustomHistoricProcessService;
-import net.risesoft.service.CustomHistoricTaskService;
-import net.risesoft.service.CustomHistoricVariableService;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.util.SysVariables;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9Util;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 流程图接口
@@ -180,8 +176,8 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         InputStream in;
         ProcessEngine processEngine = Y9Context.getBean(ProcessEngine.class);
         BpmnModel bpmnModel = repositoryService.getBpmnModel(pi.getProcessDefinitionId());
-        ProcessEngineConfiguration engconf = processEngine.getProcessEngineConfiguration();
-        ProcessDiagramGenerator diagramGenerator = engconf.getProcessDiagramGenerator();
+        ProcessEngineConfiguration engConf = processEngine.getProcessEngineConfiguration();
+        ProcessDiagramGenerator diagramGenerator = engConf.getProcessDiagramGenerator();
         if (pi.getEndTime() == null) {
             Task task = taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult();
             // 使用流程实例ID，查询正在执行的执行对象表，返回流程实例对象
@@ -196,20 +192,20 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 activityIds.addAll(ids);
             }
             // 获取流程图
-            in = diagramGenerator.generateDiagram(bpmnModel, "png", activityIds, flows, engconf.getActivityFontName(),
-                engconf.getLabelFontName(), engconf.getAnnotationFontName(), engconf.getClassLoader(), 1.0, false);
+            in = diagramGenerator.generateDiagram(bpmnModel, "png", activityIds, flows, engConf.getActivityFontName(),
+                    engConf.getLabelFontName(), engConf.getAnnotationFontName(), engConf.getClassLoader(), 1.0, false);
         } else {
             // 获取流程图
-            in = diagramGenerator.generateDiagram(bpmnModel, "png", engconf.getActivityFontName(),
-                engconf.getLabelFontName(), engconf.getAnnotationFontName(), engconf.getClassLoader(), false);
+            in = diagramGenerator.generateDiagram(bpmnModel, "png", engConf.getActivityFontName(),
+                    engConf.getLabelFontName(), engConf.getAnnotationFontName(), engConf.getClassLoader(), false);
         }
 
         byte[] buf = new byte[1024];
-        int legth;
+        int length;
         try {
             ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
-            while ((legth = in.read(buf)) != -1) {
-                swapStream.write(buf, 0, legth);
+            while ((length = in.read(buf)) != -1) {
+                swapStream.write(buf, 0, length);
             }
             return swapStream.toByteArray();
         } finally {
@@ -499,23 +495,23 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     }
                 }
             }
-            int oldnum = 0;
-            int newnum = 0;
+            int oldNum = 0;
+            int newNum = 0;
             for (int i = 0; i < listMap.size(); i++) {
                 Map<String, Object> map = listMap.get(i);
-                int currnum = (int)map.get("num");
-                if (currnum == 0) {
+                int currNum = (int)map.get("num");
+                if (currNum == 0) {
                     parentId = (String)map.get("id");
                     map.put("parentId", "");
                 }
-                if (currnum != oldnum) {
+                if (currNum != oldNum) {
                     map.put("parentId", parentId);
-                    if (newnum == 0) {
-                        newnum = currnum;
+                    if (newNum == 0) {
+                        newNum = currNum;
                     }
-                    if (newnum != currnum) {
-                        oldnum = newnum;
-                        newnum = currnum;
+                    if (newNum != currNum) {
+                        oldNum = newNum;
+                        newNum = currNum;
                         parentId = (String)listMap.get(i - 1).get("id");
                         map.put("parentId", parentId);
                     }
