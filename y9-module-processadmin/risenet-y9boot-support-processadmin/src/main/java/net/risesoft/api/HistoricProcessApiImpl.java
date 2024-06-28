@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.ChaoSongInfoApi;
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
+import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
@@ -45,7 +45,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
 
     private final ProcessInstanceApi processInstance4PositionApi;
 
-    private final ChaoSongInfoApi chaoSongInfoManager;
+    private final ChaoSong4PositionApi chaoSongInfoManager;
 
     /**
      * 删除流程实例，在办件设为暂停，办结件加删除标识
@@ -73,7 +73,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
                 }
             }
             try {
-                boolean msg3 = chaoSongInfoManager.deleteByProcessInstanceId(tenantId, processInstanceId);
+                boolean msg3 = chaoSongInfoManager.deleteByProcessInstanceId(tenantId, processInstanceId).isSuccess();
                 LOGGER.error("##############################抄送件删除：{}#################################", msg3);
             } catch (Exception e) {
                 LOGGER.error("##########抄送件删除失败：{}#", e.getMessage());

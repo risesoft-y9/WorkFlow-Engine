@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.datacenter.OfficeInfoApi;
 import net.risesoft.api.itemadmin.ActRuDetailApi;
-import net.risesoft.api.itemadmin.ChaoSongInfoApi;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
@@ -42,8 +41,6 @@ public class DeleteProcessUtilService {
 
     private final ProcessInstanceApi processInstanceApi;
 
-    private final ChaoSongInfoApi chaoSongInfoApi;
-
     private final ChaoSong4PositionApi chaoSong4PositionApi;
 
     private final OfficeInfoApi officeInfoApi;
@@ -62,12 +59,11 @@ public class DeleteProcessUtilService {
     private JdbcTemplate jdbcTemplate;
 
     public DeleteProcessUtilService(TodoTaskApi rpcTodoTaskManager, ProcessInstanceApi processInstanceApi,
-        ChaoSongInfoApi chaoSongInfoApi, ChaoSong4PositionApi chaoSong4PositionApi, OfficeInfoApi officeInfoApi,
-        ProcessParamApi processParamManager, OfficeFollow4PositionApi officeFollow4PositionApi,
-        ErrorLogApi errorLogManager, MsgRemindInfoApi msgRemindInfoManager, ActRuDetailApi actRuDetailApi) {
+        ChaoSong4PositionApi chaoSong4PositionApi, OfficeInfoApi officeInfoApi, ProcessParamApi processParamManager,
+        OfficeFollow4PositionApi officeFollow4PositionApi, ErrorLogApi errorLogManager,
+        MsgRemindInfoApi msgRemindInfoManager, ActRuDetailApi actRuDetailApi) {
         this.rpcTodoTaskManager = rpcTodoTaskManager;
         this.processInstanceApi = processInstanceApi;
-        this.chaoSongInfoApi = chaoSongInfoApi;
         this.chaoSong4PositionApi = chaoSong4PositionApi;
         this.officeInfoApi = officeInfoApi;
         this.processParamManager = processParamManager;
@@ -118,11 +114,6 @@ public class DeleteProcessUtilService {
             processInstanceApi.deleteProcessInstance(tenantId, processInstanceId);
         } catch (Exception e1) {
             LOGGER.warn("************************************删除协作状态数据失败", e1);
-        }
-        try {
-            chaoSongInfoApi.deleteByProcessInstanceId(tenantId, processInstanceId);
-        } catch (Exception e1) {
-            LOGGER.warn("************************************删除抄送数据失败", e1);
         }
         try {
             officeInfoApi.deleteOfficeInfo(tenantId, processInstanceId);

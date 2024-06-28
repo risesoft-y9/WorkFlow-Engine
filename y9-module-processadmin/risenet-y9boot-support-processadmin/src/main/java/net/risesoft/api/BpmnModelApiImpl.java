@@ -64,8 +64,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
+import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.BpmnModelApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -116,7 +116,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
 
     private final ProcessParamApi processParamManager;
 
-    private final ProcessTrackApi processTrackManager;
+    private final ProcessTrack4PositionApi processTrackManager;
 
     private final ModelService modelService;
 
@@ -475,8 +475,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     listMap.add(map);
                 }
 
-                List<ProcessTrackModel> ptList =
-                    processTrackManager.findByTaskIdAsc(tenantId, userId, taskId).getData();
+                List<ProcessTrackModel> ptList = processTrackManager.findByTaskIdAsc(tenantId, taskId).getData();
                 String parentId0 = taskId;
                 for (int j = 0; j < ptList.size(); j++) {
                     num += 1;
