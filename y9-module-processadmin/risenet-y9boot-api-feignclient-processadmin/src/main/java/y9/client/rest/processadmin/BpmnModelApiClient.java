@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import net.risesoft.api.processadmin.BpmnModelApi;
+import net.risesoft.model.processadmin.Y9BpmnModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -30,8 +31,7 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @PostMapping(value = "/deleteModel")
-    public Y9Result<String> deleteModel(@RequestParam("tenantId") String tenantId,
-        @RequestParam("modelId") String modelId);
+    Y9Result<Object> deleteModel(@RequestParam("tenantId") String tenantId, @RequestParam("modelId") String modelId);
 
     /**
      * 根据Model部署流程
@@ -41,8 +41,7 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @PostMapping(value = "/deployModel")
-    public Y9Result<String> deployModel(@RequestParam("tenantId") String tenantId,
-        @RequestParam("modelId") String modelId);
+    Y9Result<Object> deployModel(@RequestParam("tenantId") String tenantId, @RequestParam("modelId") String modelId);
 
     /**
      * 生成流程图
@@ -54,8 +53,8 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @PostMapping("/genProcessDiagram")
-    byte[] genProcessDiagram(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+    Y9Result<String> genProcessDiagram(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取流程图模型
@@ -67,8 +66,8 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @GetMapping("/getBpmnModel")
-    Map<String, Object> getBpmnModel(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+    Y9Result<Y9BpmnModel> getBpmnModel(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取流程图数据
