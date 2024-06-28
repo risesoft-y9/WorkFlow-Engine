@@ -1,8 +1,19 @@
 package net.risesoft.api.itemadmin;
 
-import net.risesoft.model.itemadmin.ActRuDetailModel;
-import net.risesoft.model.itemadmin.ItemPage;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import net.risesoft.model.itemadmin.ActRuDetailModel;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
+
+/**
+ * 待办任务
+ *
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/19
+ */
 public interface ItemTodoApi {
 
     /**
@@ -11,10 +22,12 @@ public interface ItemTodoApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
-     * @return int
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data 是待办任务数量
      * @throws Exception Exception
      */
-    int countByUserIdAndSystemName(String tenantId, String userId, String systemName) throws Exception;
+    @GetMapping("/countByUserIdAndSystemName")
+    Y9Result<Integer> countByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName) throws Exception;
 
     /**
      * 查询待办任务，以发送时间排序
@@ -24,11 +37,13 @@ public interface ItemTodoApi {
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
-     * @return ItemPage&lt;ActRuDetailModel&gt;
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
      * @throws Exception Exception
      */
-    ItemPage<ActRuDetailModel> findByUserIdAndSystemName(String tenantId, String userId, String systemName,
-        Integer page, Integer rows) throws Exception;
+    @GetMapping("/findByUserIdAndSystemName")
+    Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
     /**
      * 查询待办任务，以发送时间排序
@@ -40,10 +55,13 @@ public interface ItemTodoApi {
      * @param searchMapStr 搜索集合
      * @param page page
      * @param rows rows
-     * @return ItemPage&lt;ActRuDetailModel&gt;
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
      * @throws Exception Exception
      */
-    ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(String tenantId, String userId, String systemName,
-        String tableName, String searchMapStr, Integer page, Integer rows) throws Exception;
+    @GetMapping("/searchByUserIdAndSystemName")
+    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
 }

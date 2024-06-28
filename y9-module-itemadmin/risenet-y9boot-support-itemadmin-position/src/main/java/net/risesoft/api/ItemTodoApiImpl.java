@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +18,8 @@ import net.risesoft.api.itemadmin.ItemTodoApi;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.model.itemadmin.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ActRuDetailService;
 import net.risesoft.service.ItemPageService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -34,7 +35,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/itemTodo")
+@RequestMapping(value = "/services/rest/itemTodo", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemTodoApiImpl implements ItemTodoApi {
 
     private final ItemPageService itemPageService;
@@ -50,11 +51,10 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      * @return int
      */
     @Override
-    @GetMapping(value = "/countByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public int countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
+    public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName, userId, 0);
+        return Y9Result.success(actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName, userId, 0));
     }
 
     /**
@@ -68,8 +68,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      * @return ItemPage<ActRuDetailModel>
      */
     @Override
-    @GetMapping(value = "/findByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ItemPage<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
+    public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page,
         @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -84,8 +83,8 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             Y9BeanUtil.copyProperties(actRuDetail, actRuDetailModel);
             modelList.add(actRuDetailModel);
         }
-        return ItemPage.<ActRuDetailModel>builder().rows(modelList).currpage(page).size(rows)
-            .totalpages(ardPage.getTotalPages()).total(ardPage.getTotalElements()).build();
+
+        return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
     }
 
     /**
@@ -101,8 +100,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      * @return ItemPage<ActRuDetailModel>
      */
     @Override
-    @GetMapping(value = "/searchByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ItemPage<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
+    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestParam String tableName,
         @RequestParam String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -122,8 +120,9 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         Object[] args = new Object[2];
         args[0] = systemName;
         args[1] = userId;
-        return itemPageService.page(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args,
-            page, rows);
+        ItemPage<ActRuDetailModel> ardPage = itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
     }
 
 }
