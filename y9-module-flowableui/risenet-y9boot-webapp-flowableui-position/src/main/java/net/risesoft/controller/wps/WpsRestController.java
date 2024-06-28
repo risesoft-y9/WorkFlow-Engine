@@ -67,7 +67,8 @@ public class WpsRestController {
         HttpServletResponse response, HttpServletRequest request) {
         try {
             String documentTitle;
-            ProcessParamModel processModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processModel =
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             documentTitle = processModel.getTitle();
             String title = documentTitle != null ? documentTitle : "正文";
             String y9FileStoreId =
@@ -153,7 +154,8 @@ public class WpsRestController {
         @RequestParam String processSerialNumber, HttpServletResponse response, HttpServletRequest request) {
         try {
             String documentTitle;
-            ProcessParamModel processModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+            ProcessParamModel processModel =
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             documentTitle = processModel.getTitle();
             String title = documentTitle != null ? documentTitle : "正文";
             transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "1");
@@ -262,7 +264,8 @@ public class WpsRestController {
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
-                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";

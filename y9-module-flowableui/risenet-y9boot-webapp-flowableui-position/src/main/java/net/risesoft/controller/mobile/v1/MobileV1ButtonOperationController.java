@@ -454,7 +454,8 @@ public class MobileV1ButtonOperationController {
             String routeToTaskId = taskModel.getTaskDefinitionKey();
             String processInstanceId = taskModel.getProcessInstanceId();
             String processDefinitionKey = taskModel.getProcessDefinitionId().split(":")[0];
-            ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+            ProcessParamModel processParamModel =
+                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             String itemId = processParamModel.getItemId();
             String processSerialNumber = processParamModel.getProcessSerialNumber();
             Map<String, Object> variables = new HashMap<>(16);

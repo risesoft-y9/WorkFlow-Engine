@@ -123,6 +123,12 @@ public class DocumentWpsController {
      * 云文档路径
      */
     private static final String yunWpsBasePath4Graph = "http://yun.test.cn/graph";
+    private final Draft4PositionApi draft4PositionApi;
+    private final OrgUnitApi orgUnitApi;
+    private final ProcessParamApi processParamApi;
+    private final DocumentWpsApi documentWpsApi;
+    private final Y9FileStoreService y9FileStoreService;
+    private final TransactionWordApi transactionWordApi;
 
     public static void main(String[] args) throws Exception {
         String destDocx = "C:\\Users\\10858\\Desktop\\套红.docx";
@@ -130,14 +136,6 @@ public class DocumentWpsController {
         TaoHongService taoHongService = new TaoHongService();
         taoHongService.word2RedDocument(content, destDocx);
     }
-
-    private final Draft4PositionApi draft4PositionApi;
-    private final OrgUnitApi orgUnitApi;
-    private final ProcessParamApi processParamApi;
-    private final DocumentWpsApi documentWpsApi;
-    private final Y9FileStoreService y9FileStoreService;
-
-    private final TransactionWordApi transactionWordApi;
 
     /**
      * 下载正文
@@ -344,7 +342,7 @@ public class DocumentWpsController {
                     documentTitle = model1.getTitle();
                 } else {
                     ProcessParamModel processModel =
-                        processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+                        processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     documentTitle = processModel.getTitle();
                     processInstanceId = processModel.getProcessInstanceId();
                 }
@@ -456,7 +454,7 @@ public class DocumentWpsController {
                 documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel =
-                    processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+                    processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = processModel.getTitle();
                 processInstanceId = processModel.getProcessInstanceId();
             }

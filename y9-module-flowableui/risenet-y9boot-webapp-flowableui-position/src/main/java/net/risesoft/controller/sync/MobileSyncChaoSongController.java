@@ -63,6 +63,62 @@ public class MobileSyncChaoSongController {
     }
 
     /**
+     * @param tenantId 租户id
+     */
+    @ResponseBody
+    @RequestMapping(value = "/tongbubianliang")
+    public void tongbubianliang(String tenantId, HttpServletResponse response) {
+        Map<String, Object> resMap = new HashMap<>(16);
+        List<String> list0 = jdbcTemplate.queryForList("SELECT PROC_INST_ID_ from act_hi_procinst", String.class);
+        for (String PROC_INST_ID_ : list0) {
+            try {
+                Y9LoginUserHolder.setTenantId(tenantId);
+                ProcessParamModel processParamModel =
+                    processParamApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
+                String searchTerm = processParamModel.getTitle() + "|" + processParamModel.getCustomNumber() + "|"
+                    + processParamModel.getCustomLevel() + "|" + processParamModel.getItemName();
+                Date date = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String sql = "SELECT count(ID_) from act_hi_varinst where PROC_INST_ID_ = '" + PROC_INST_ID_
+                    + "' and NAME_ = 'searchTerm'";
+
+                int num = jdbcTemplate.queryForObject(sql, Integer.class);
+
+                sql = "INSERT INTO act_hi_varinst (" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	EXECUTION_ID_,"
+                    + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_,"
+                    + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_," + "	CREATE_TIME_,"
+                    + "	LAST_UPDATED_TIME_ " + " )" + " VALUES" + "	(" + "		'" + PROC_INST_ID_ + "'," + "		0,"
+                    + "		'" + PROC_INST_ID_ + "'," + "		'" + PROC_INST_ID_ + "'," + "		NULL,"
+                    + "		'searchTerm'," + "		'string'," + "		NULL," + "		NULL," + "		NULL,"
+                    + "		NULL," + "		NULL," + "		NULL," + "		'" + searchTerm + "'," + "		NULL,"
+                    + "		'" + sdf.format(date) + "'," + "		'" + sdf.format(date) + "'" + "	)";
+                if (num == 0) {
+                    jdbcTemplate.execute(sql);
+                }
+
+                sql = "SELECT count(ID_) from act_ru_variable where PROC_INST_ID_ = '" + PROC_INST_ID_
+                    + "' and NAME_ = 'searchTerm'";
+
+                num = jdbcTemplate.queryForObject(sql, Integer.class);
+
+                sql = "INSERT INTO act_ru_variable (" + "	ID_," + "	REV_," + "	TYPE_," + "	NAME_,"
+                    + "	EXECUTION_ID_," + "	PROC_INST_ID_," + "	TASK_ID_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_,"
+                    + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_ " + " )"
+                    + " VALUES" + "	(" + "		'" + PROC_INST_ID_ + "'," + "		1," + "		'string',"
+                    + "		'searchTerm'," + "		'" + PROC_INST_ID_ + "'," + "		'" + PROC_INST_ID_ + "',"
+                    + "		NULL," + "		NULL," + "		NULL," + "		NULL," + "		NULL," + "		NULL,"
+                    + "		NULL," + "		'" + searchTerm + "'," + "		NULL " + "	)";
+                if (num == 0) {
+                    jdbcTemplate.execute(sql);
+                }
+            } catch (Exception e) {
+                LOGGER.warn("********************同步失败{}***************************", tenantId, e);
+            }
+        }
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
+    }
+
+    /**
      * 同步
      */
     @ResponseBody
@@ -111,61 +167,6 @@ public class MobileSyncChaoSongController {
                 }
                 LOGGER.info("********************同步成功{},{}条数据***************************", tenantId, list.size() - i);
                 LOGGER.info("********************同步失败{}条数据***************************", i);
-            } catch (Exception e) {
-                LOGGER.warn("********************同步失败{}***************************", tenantId, e);
-            }
-        }
-        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
-    }
-
-    /**
-     * @param tenantId 租户id
-     */
-    @ResponseBody
-    @RequestMapping(value = "/tongbubianliang")
-    public void tongbubianliang(String tenantId, HttpServletResponse response) {
-        Map<String, Object> resMap = new HashMap<>(16);
-        List<String> list0 = jdbcTemplate.queryForList("SELECT PROC_INST_ID_ from act_hi_procinst", String.class);
-        for (String PROC_INST_ID_ : list0) {
-            try {
-                Y9LoginUserHolder.setTenantId(tenantId);
-                ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, PROC_INST_ID_);
-                String searchTerm = processParamModel.getTitle() + "|" + processParamModel.getCustomNumber() + "|"
-                    + processParamModel.getCustomLevel() + "|" + processParamModel.getItemName();
-                Date date = new Date();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String sql = "SELECT count(ID_) from act_hi_varinst where PROC_INST_ID_ = '" + PROC_INST_ID_
-                    + "' and NAME_ = 'searchTerm'";
-
-                int num = jdbcTemplate.queryForObject(sql, Integer.class);
-
-                sql = "INSERT INTO act_hi_varinst (" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	EXECUTION_ID_,"
-                    + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_,"
-                    + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_," + "	CREATE_TIME_,"
-                    + "	LAST_UPDATED_TIME_ " + " )" + " VALUES" + "	(" + "		'" + PROC_INST_ID_ + "'," + "		0,"
-                    + "		'" + PROC_INST_ID_ + "'," + "		'" + PROC_INST_ID_ + "'," + "		NULL,"
-                    + "		'searchTerm'," + "		'string'," + "		NULL," + "		NULL," + "		NULL,"
-                    + "		NULL," + "		NULL," + "		NULL," + "		'" + searchTerm + "'," + "		NULL,"
-                    + "		'" + sdf.format(date) + "'," + "		'" + sdf.format(date) + "'" + "	)";
-                if (num == 0) {
-                    jdbcTemplate.execute(sql);
-                }
-
-                sql = "SELECT count(ID_) from act_ru_variable where PROC_INST_ID_ = '" + PROC_INST_ID_
-                    + "' and NAME_ = 'searchTerm'";
-
-                num = jdbcTemplate.queryForObject(sql, Integer.class);
-
-                sql = "INSERT INTO act_ru_variable (" + "	ID_," + "	REV_," + "	TYPE_," + "	NAME_,"
-                    + "	EXECUTION_ID_," + "	PROC_INST_ID_," + "	TASK_ID_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_,"
-                    + "	SCOPE_TYPE_," + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_ " + " )"
-                    + " VALUES" + "	(" + "		'" + PROC_INST_ID_ + "'," + "		1," + "		'string',"
-                    + "		'searchTerm'," + "		'" + PROC_INST_ID_ + "'," + "		'" + PROC_INST_ID_ + "',"
-                    + "		NULL," + "		NULL," + "		NULL," + "		NULL," + "		NULL," + "		NULL,"
-                    + "		NULL," + "		'" + searchTerm + "'," + "		NULL " + "	)";
-                if (num == 0) {
-                    jdbcTemplate.execute(sql);
-                }
             } catch (Exception e) {
                 LOGGER.warn("********************同步失败{}***************************", tenantId, e);
             }

@@ -124,7 +124,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
             } else {
                 ProcessParamModel processParamModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
             }
 

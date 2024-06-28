@@ -79,7 +79,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
                 LOGGER.error("##########抄送件删除失败：{}#", e.getMessage());
             }
             try {
-                boolean msg2 = processInstance4PositionApi.deleteProcessInstance(tenantId, processInstanceId);
+                boolean msg2 = processInstance4PositionApi.deleteProcessInstance(tenantId, processInstanceId).getData();
                 LOGGER.error("##############################协作状态删除：{}#################################", msg2);
             } catch (Exception e) {
                 LOGGER.error("##########协作状态删除失败：{}#", e.getMessage());

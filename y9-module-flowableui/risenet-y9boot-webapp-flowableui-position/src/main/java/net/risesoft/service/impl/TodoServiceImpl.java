@@ -125,7 +125,7 @@ public class TodoServiceImpl implements TodoService {
                     String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
-                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     String processSerialNumber = processParam.getProcessSerialNumber();
                     String documentTitle =
                         StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
@@ -236,7 +236,7 @@ public class TodoServiceImpl implements TodoService {
                     String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
-                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     String processSerialNumber = processParam.getProcessSerialNumber();
                     String level = processParam.getCustomLevel();
                     String number = processParam.getCustomNumber();
@@ -391,7 +391,7 @@ public class TodoServiceImpl implements TodoService {
                     String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
-                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("processDefinitionKey", processDefinitionId.split(":")[0]);
                     mapTemp.put("processDefinitionId", processDefinitionId);
                     mapTemp.put("description", "");

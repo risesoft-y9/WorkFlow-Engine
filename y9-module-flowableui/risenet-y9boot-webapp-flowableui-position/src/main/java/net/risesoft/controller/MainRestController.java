@@ -452,7 +452,7 @@ public class MainRestController {
                             processInstanceId = taskModel.getProcessInstanceId();
                         }
                         ProcessParamModel processParamModel =
-                            processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         String itemId = processParamModel.getItemId();
                         ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId).getData();
                         map.put("itemModel", itemModel);
@@ -466,7 +466,7 @@ public class MainRestController {
 
                     HistoricProcessInstanceModel hisProcess = historicProcessApi.getById(tenantId, processInstanceId);
                     ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     processSerialNumber = processParamModel.getProcessSerialNumber();
                     String itemId = processParamModel.getItemId();
                     ItemModel itemModel = item4PositionApi.getByItemId(tenantId, itemId).getData();
@@ -509,7 +509,7 @@ public class MainRestController {
                         }
                     }
                     ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     ItemModel itemModel =
                         item4PositionApi.getByItemId(tenantId, processParamModel.getItemId()).getData();
                     map.put("itemModel", itemModel);

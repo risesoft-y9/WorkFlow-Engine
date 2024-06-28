@@ -77,7 +77,8 @@ public class FormNTKOPrintController {
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
-                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? documentTitle : "正文";
@@ -183,7 +184,7 @@ public class FormNTKOPrintController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId = printApi.openDocument(tenantId, userId, itemId);
+        String y9FileStoreId = printApi.openDocument(tenantId, userId, itemId).getData();
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();

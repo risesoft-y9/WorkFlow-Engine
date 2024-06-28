@@ -2,9 +2,10 @@ package net.risesoft.controller;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,7 +23,7 @@ import net.risesoft.service.ProcessParamService;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/vue/processParam")
+@RequestMapping(value = "/vue/processParam", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProcessParamRestController {
 
     private final ProcessParamService processParamService;
@@ -39,7 +40,7 @@ public class ProcessParamRestController {
      * @param customItem 是否定制流程
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String processInstanceId,
         @RequestParam @NotBlank String documentTitle, @RequestParam(required = false) String number,

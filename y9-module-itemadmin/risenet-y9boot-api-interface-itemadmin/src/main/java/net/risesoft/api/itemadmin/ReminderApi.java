@@ -24,7 +24,7 @@ public interface ReminderApi {
      *
      * @param tenantId 租户id
      * @param ids ids
-     * @return {@code Y9Page<Object>} 通用分页请求返回对象
+     * @return {@code Y9Result<Object>} 通用分页请求返回对象
      */
     @PostMapping(value = "/deleteList", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> deleteList(@RequestParam("tenantId") String tenantId, @RequestBody String[] ids);
@@ -32,10 +32,10 @@ public interface ReminderApi {
     /**
      *
      * Description: 查找催办
-     *
+     * 
      * @param tenantId 租户id
      * @param id 唯一标识
-     * @return {@code Y9Page<ReminderModel>} 通用分页请求返回对象 - rows 是待办的催办信息
+     * @return {@code Y9Result<ReminderModel>} 通用分页请求返回对象 - rows 是待办的催办信息
      */
     @GetMapping("/findById")
     Y9Result<ReminderModel> findById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);

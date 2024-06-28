@@ -1,11 +1,8 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
@@ -23,7 +20,9 @@ import net.risesoft.entity.ProcessInstanceDetails;
 import net.risesoft.entity.SpmApproveItem;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.ProcessCooperationModel;
 import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.repository.jpa.ProcessInstanceDetailsRepository;
 import net.risesoft.repository.jpa.ProcessInstanceRepository;
 import net.risesoft.service.OpinionService;
@@ -64,64 +63,54 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
     }
 
     @Override
-    public Map<String, Object> processInstanceList(String userId, String title, int page, int rows) {
-        Map<String, Object> ret_map = new HashMap<String, Object>();
-        ret_map.put("success", true);
-        try {
-            List<Map<String, Object>> listMap = new ArrayList<>();
-            Sort sort = Sort.by(Sort.Direction.DESC, "startTime");
-            PageRequest pageable = PageRequest.of(page - 1, rows, sort);
-            Page<ProcessInstance> pageList = null;
-            if (StringUtils.isNotBlank(title)) {
-                pageList =
-                    processInstanceRepository.findByUserIdAndTitle("%" + userId + "%", "%" + title + "%", pageable);
-            } else {
-                pageList = processInstanceRepository.findByUserId("%" + userId + "%", pageable);
-            }
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            for (ProcessInstance obj : pageList.getContent()) {
-                Map<String, Object> mapData = new HashMap<String, Object>();
-                List<Map<String, Object>> listData = new ArrayList<>();
-                List<ProcessInstanceDetails> list =
-                    processInstanceDetailsRepository.findByProcessInstanceId(obj.getProcessInstanceId());
-                mapData.put("itembox", "done");
-                mapData.put("endTime", obj.getEndTime() != null ? sdf.format(obj.getEndTime()) : "");
-                for (ProcessInstanceDetails details : list) {
-                    Map<String, Object> map = new HashMap<String, Object>();
-                    map.put("id", details.getId());
-                    map.put("assigneeName", details.getAssigneeName());
-                    map.put("senderName", details.getSenderName());
-                    map.put("opinionContent", details.getOpinionContent());
-                    map.put("taskName", details.getTaskName());
-                    map.put("title", details.getTitle());
-                    map.put("url", details.getUrl());
-                    map.put("startTime", sdf.format(details.getStartTime()));
-                    map.put("endTime", details.getEndTime() != null ? sdf.format(details.getEndTime()) : "");
-                    map.put("itembox", details.getItembox());
-                    if (details.getEndTime() == null) {
-                        mapData.put("itembox", "doing");
-                        mapData.put("endTime", "");
-                    }
-                    listData.add(map);
-                }
-                mapData.put("processInstanceId", obj.getProcessInstanceId());
-                mapData.put("itemName", obj.getAppCnName());
-                mapData.put("title", obj.getTitle());
-                mapData.put("number", obj.getSerialNumber());
-                mapData.put("startTime", sdf.format(obj.getStartTime()));
-                mapData.put("url", obj.getUrl());
-                mapData.put("itemInfo", listData);
-                listMap.add(mapData);
-            }
-            ret_map.put("rows", listMap);
-            ret_map.put("currpage", page);
-            ret_map.put("totalpages", pageList != null ? pageList.getTotalPages() : 1);
-            ret_map.put("total", pageList != null ? pageList.getTotalElements() : 0);
-        } catch (Exception e) {
-            ret_map.put("success", false);
-            e.printStackTrace();
+    public Y9Page<ProcessCooperationModel> processInstanceList(String userId, String title, int page, int rows) {
+        List<ProcessCooperationModel> listMap = new ArrayList<>();
+        Sort sort = Sort.by(Sort.Direction.DESC, "startTime");
+        PageRequest pageable = PageRequest.of(page - 1, rows, sort);
+        Page<ProcessInstance> pageList = null;
+        if (StringUtils.isNotBlank(title)) {
+            pageList = processInstanceRepository.findByUserIdAndTitle("%" + userId + "%", "%" + title + "%", pageable);
+        } else {
+            pageList = processInstanceRepository.findByUserId("%" + userId + "%", pageable);
         }
-        return ret_map;
+        for (ProcessInstance obj : pageList.getContent()) {
+            List<ProcessInstanceDetailsModel> listData = new ArrayList<>();
+            List<ProcessInstanceDetails> list =
+                processInstanceDetailsRepository.findByProcessInstanceId(obj.getProcessInstanceId());
+
+            ProcessCooperationModel process = new ProcessCooperationModel();
+            process.setItembox("done");
+            process.setProcessInstanceId(obj.getProcessInstanceId());
+            process.setItemName(obj.getAppCnName());
+            process.setTitle(obj.getTitle());
+            process.setUrl(obj.getUrl());
+            process.setNumber(obj.getSerialNumber());
+            process.setStartTime(obj.getStartTime());
+            process.setEndTime(obj.getEndTime());
+
+            for (ProcessInstanceDetails details : list) {
+
+                ProcessInstanceDetailsModel detail = new ProcessInstanceDetailsModel();
+                detail.setId(details.getId());
+                detail.setAssigneeName(details.getAssigneeName());
+                detail.setSenderName(details.getSenderName());
+                detail.setOpinionContent(details.getOpinionContent());
+                detail.setTaskName(details.getTaskName());
+                detail.setTitle(details.getTitle());
+                detail.setUrl(details.getUrl());
+                detail.setStartTime(details.getStartTime());
+                detail.setEndTime(details.getEndTime());
+                detail.setItembox(details.getItembox());
+                if (details.getEndTime() == null) {
+                    detail.setItembox("doing");
+                    detail.setEndTime(null);
+                }
+                listData.add(detail);
+            }
+            process.setItemInfo(listData);
+            listMap.add(process);
+        }
+        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
     }
 
     @Override
@@ -156,12 +145,12 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             processInstance.setUrl(details.getUrl());
             processInstance.setUserName(details.getUserName());
             String assignee = processInstance.getAssignee();
-            String ASSIGNEE_1 = details.getAssigneeId();
+            String assigneeNowId = details.getAssigneeId();
             if (assignee == null) {
-                assignee = ASSIGNEE_1;
+                assignee = assigneeNowId;
             } else {
-                if (ASSIGNEE_1 != null && !assignee.contains(ASSIGNEE_1)) {
-                    assignee = Y9Util.genCustomStr(assignee, ASSIGNEE_1);
+                if (assigneeNowId != null && !assignee.contains(assigneeNowId)) {
+                    assignee = Y9Util.genCustomStr(assignee, assigneeNowId);
                 }
             }
             processInstance.setAssignee(assignee);
@@ -186,7 +175,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             if (details != null && details.getId() != null) {
                 List<Opinion> opinion = opinionService.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(taskId,
                     Y9LoginUserHolder.getPositionId());
-                String opinionStr = opinion.size() > 0 ? opinion.get(0).getContent() : "";
+                String opinionStr = !opinion.isEmpty() ? opinion.get(0).getContent() : "";
                 details.setEndTime(endTime);
                 details.setItembox(itembox);
                 details.setOpinionContent(opinionStr);

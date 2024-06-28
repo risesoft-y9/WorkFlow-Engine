@@ -57,7 +57,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                 return Y9Result.successMsg("已设置办理人信息");
             }
             ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
             actRuDetailModel.setCreateTime(new Date());

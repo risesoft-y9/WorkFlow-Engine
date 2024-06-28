@@ -281,7 +281,7 @@ public class MobileSyncController {
                     String START_TIME_ = (String)map.get("START_TIME_");
                     String END_TIME_ = (String)map.get("END_TIME_");
                     ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, PROC_INST_ID_);
+                        processParamApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
                     OfficeDoneInfoModel officeDoneInfo = new OfficeDoneInfoModel();
                     officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     if (processParamModel != null) {
@@ -395,7 +395,7 @@ public class MobileSyncController {
                     String START_TIME_ = (String)map.get("START_TIME_");
                     String END_TIME_ = (String)map.get("END_TIME_");
                     ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, PROC_INST_ID_);
+                        processParamApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
                     OfficeDoneInfoModel officeDoneInfo = new OfficeDoneInfoModel();
                     officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     officeDoneInfo = officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, PROC_INST_ID_);

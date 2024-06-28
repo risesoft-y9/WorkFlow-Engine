@@ -123,7 +123,7 @@ public class Process4MsgRemindService {
                 return;
             }
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String assignee = task.getAssignee();
             String taskKey = task.getTaskDefinitionKey();
             String taskName = task.getName();
@@ -192,7 +192,7 @@ public class Process4MsgRemindService {
                 return;
             }
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String assignee = task.getAssignee();
             String taskId = task.getId();
             String taskKey = task.getTaskDefinitionKey();

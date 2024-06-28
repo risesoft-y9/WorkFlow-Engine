@@ -244,7 +244,7 @@ public class MobileV1DocumentController {
                 TaskModel taskModel = taskApi.findById(tenantId, taskId);
                 if (taskModel != null && taskModel.getId() != null) {
                     ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId());
+                        processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId()).getData();
                     String itemId = processParamModel.getItemId();
                     model = document4PositionApi
                         .edit(tenantId, positionId, itembox, taskId, taskModel.getProcessInstanceId(), itemId, true)
@@ -452,7 +452,8 @@ public class MobileV1DocumentController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             if (StringUtils.isNotBlank(taskId)) {
                 TaskModel taskModel = taskApi.findById(tenantId, taskId);
-                ProcessParamModel processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processParam =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 if (taskModel != null && taskModel.getId() != null) {
                     map.put("itembox", ItemBoxTypeEnum.TODO.getValue());
                     map.put("processSerialNumber", processParam.getProcessSerialNumber());

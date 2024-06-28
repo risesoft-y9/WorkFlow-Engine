@@ -117,7 +117,8 @@ public class FormNTKOController {
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
-                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";
@@ -179,7 +180,8 @@ public class FormNTKOController {
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
-                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";
@@ -249,7 +251,8 @@ public class FormNTKOController {
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
-                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
             title = documentTitle != null ? (String)documentTitle : "正文";
@@ -308,7 +311,8 @@ public class FormNTKOController {
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
-                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? documentTitle : "正文";
@@ -753,7 +757,8 @@ public class FormNTKOController {
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
-                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
             title = documentTitle != null ? (String)documentTitle : "正文";
@@ -817,7 +822,8 @@ public class FormNTKOController {
             documentTitle = model1.getTitle();
         } else {
             String[] pInstanceId = processInstanceId.split(",");
-            ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, pInstanceId[0]);
+            ProcessParamModel processModel =
+                processParamApi.findByProcessInstanceId(tenantId, pInstanceId[0]).getData();
             documentTitle = processModel.getTitle();
             processInstanceId = pInstanceId[0];
         }
@@ -914,7 +920,8 @@ public class FormNTKOController {
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
-                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
             String title = documentTitle != null ? (String)documentTitle : "正文";
@@ -966,7 +973,8 @@ public class FormNTKOController {
                     draft4PositionApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
-                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                ProcessParamModel processModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
 

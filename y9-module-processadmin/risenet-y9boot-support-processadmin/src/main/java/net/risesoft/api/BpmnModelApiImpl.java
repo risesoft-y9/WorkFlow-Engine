@@ -1,27 +1,19 @@
 package net.risesoft.api;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
-import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.ProcessTrackApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.processadmin.BpmnModelApi;
-import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
-import net.risesoft.model.itemadmin.ProcessParamModel;
-import net.risesoft.model.itemadmin.ProcessTrackModel;
-import net.risesoft.model.platform.Person;
-import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.CustomHistoricActivityService;
-import net.risesoft.service.CustomHistoricProcessService;
-import net.risesoft.service.CustomHistoricTaskService;
-import net.risesoft.service.CustomHistoricVariableService;
-import net.risesoft.service.FlowableTenantInfoHolder;
-import net.risesoft.util.SysVariables;
-import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9Util;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.BpmnAutoLayout;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
@@ -66,18 +58,30 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
+import net.risesoft.api.itemadmin.ProcessParamApi;
+import net.risesoft.api.itemadmin.ProcessTrackApi;
+import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.processadmin.BpmnModelApi;
+import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
+import net.risesoft.model.itemadmin.ProcessParamModel;
+import net.risesoft.model.itemadmin.ProcessTrackModel;
+import net.risesoft.model.platform.Person;
+import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.CustomHistoricActivityService;
+import net.risesoft.service.CustomHistoricProcessService;
+import net.risesoft.service.CustomHistoricTaskService;
+import net.risesoft.service.CustomHistoricVariableService;
+import net.risesoft.service.FlowableTenantInfoHolder;
+import net.risesoft.util.SysVariables;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9Util;
 
 /**
  * 流程图接口
@@ -193,11 +197,11 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             }
             // 获取流程图
             in = diagramGenerator.generateDiagram(bpmnModel, "png", activityIds, flows, engConf.getActivityFontName(),
-                    engConf.getLabelFontName(), engConf.getAnnotationFontName(), engConf.getClassLoader(), 1.0, false);
+                engConf.getLabelFontName(), engConf.getAnnotationFontName(), engConf.getClassLoader(), 1.0, false);
         } else {
             // 获取流程图
             in = diagramGenerator.generateDiagram(bpmnModel, "png", engConf.getActivityFontName(),
-                    engConf.getLabelFontName(), engConf.getAnnotationFontName(), engConf.getClassLoader(), false);
+                engConf.getLabelFontName(), engConf.getAnnotationFontName(), engConf.getClassLoader(), false);
         }
 
         byte[] buf = new byte[1024];
@@ -388,7 +392,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
                 if (officeDoneInfo == null) {
                     ProcessParamModel processParam =
-                        processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParamManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     year = processParam.getCreateTime().substring(0, 4);
                 } else {
                     year = officeDoneInfo.getStartTime().substring(0, 4);

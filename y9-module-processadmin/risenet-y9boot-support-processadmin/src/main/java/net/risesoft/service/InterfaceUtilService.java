@@ -377,7 +377,7 @@ public class InterfaceUtilService {
             tenantId = (String)variables.get("tenantId");
             processSerialNumber = (String)variables.get("processSerialNumber");
             ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             itemId = processParamModel.getItemId();
             y9Result =
                 itemInterfaceApi.getInterface(tenantId, itemId, taskDefinitionKey, processDefinitionId, condition);
@@ -422,7 +422,8 @@ public class InterfaceUtilService {
         try {
             tenantId = FlowableTenantInfoHolder.getTenantId();
             processInstanceId = flow.getProcessInstanceId();
-            ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+            ProcessParamModel processParamModel =
+                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             itemId = processParamModel.getItemId();
             processSerialNumber = processParamModel.getProcessSerialNumber();
             y9Result =
@@ -471,7 +472,7 @@ public class InterfaceUtilService {
             tenantId = (String)variables.get("tenantId");
             processSerialNumber = (String)variables.get("processSerialNumber");
             ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             itemId = processParamModel.getItemId();
             y9Result =
                 itemInterfaceApi.getInterface(tenantId, itemId, taskDefinitionKey, processDefinitionId, condition);
