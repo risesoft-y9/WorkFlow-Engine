@@ -15,6 +15,7 @@ import net.risesoft.entity.ItemLinkBind;
 import net.risesoft.entity.ItemLinkRole;
 import net.risesoft.entity.LinkInfo;
 import net.risesoft.model.itemadmin.LinkInfoModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemLinkBindRepository;
 import net.risesoft.repository.jpa.ItemLinkRoleRepository;
 import net.risesoft.repository.jpa.LinkInfoRepository;
@@ -46,10 +47,10 @@ public class ItemLinkApiImpl implements ItemLink4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @return List<LinkInfoModel>
+     * @return Y9Result<List < LinkInfoModel>>
      */
     @Override
-    public List<LinkInfoModel> getItemLinkList(String tenantId, String positionId, String itemId) {
+    public Y9Result<List<LinkInfoModel>> getItemLinkList(String tenantId, String positionId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<LinkInfoModel> res_list = new ArrayList<>();
         List<ItemLinkBind> list = itemLinkBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
@@ -69,7 +70,7 @@ public class ItemLinkApiImpl implements ItemLink4PositionApi {
                 }
             }
         }
-        return res_list;
+        return Y9Result.success(res_list);
     }
 
 }
