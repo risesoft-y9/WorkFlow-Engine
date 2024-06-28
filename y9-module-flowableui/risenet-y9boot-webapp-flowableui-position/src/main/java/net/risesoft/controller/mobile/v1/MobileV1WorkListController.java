@@ -23,6 +23,7 @@ import net.risesoft.api.platform.permission.PositionResourceApi;
 import net.risesoft.api.platform.resource.ResourceApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.enums.platform.AuthorityEnum;
+import net.risesoft.model.itemadmin.HistoryProcessModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.platform.Resource;
 import net.risesoft.pojo.Y9Page;
@@ -196,21 +197,11 @@ public class MobileV1WorkListController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/history")
-    public Y9Result<List<Map<String, Object>>> history(@RequestParam @NotBlank String processInstanceId) {
-        Map<String, Object> retMap;
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9LoginUserHolder.getPositionId();
-            retMap = processTrack4PositionApi.processTrackList(tenantId, positionId, processInstanceId);
-            if ((boolean)retMap.get("success")) {
-                return Y9Result.success((List<Map<String, Object>>)retMap.get("rows"), "获取成功");
-            }
-        } catch (Exception e) {
-            LOGGER.error("获取历程异常：", e);
-        }
-        return Y9Result.failure("获取失败");
+    public Y9Result<List<HistoryProcessModel>> history(@RequestParam @NotBlank String processInstanceId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId();
+        return processTrack4PositionApi.processTrackList(tenantId, positionId, processInstanceId);
     }
 
     /**

@@ -17,7 +17,6 @@ import net.risesoft.api.datacenter.OfficeInfoApi;
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ChaoSongInfoApi;
 import net.risesoft.api.itemadmin.ErrorLogApi;
-import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.ProcessInstanceApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
@@ -39,9 +38,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Service(value = "deleteProcessUtilService")
 public class DeleteProcessUtilService {
 
-    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
-
     private final TodoTaskApi rpcTodoTaskManager;
 
     private final ProcessInstanceApi processInstanceApi;
@@ -54,8 +50,6 @@ public class DeleteProcessUtilService {
 
     private final ProcessParamApi processParamManager;
 
-    private final OfficeFollowApi officeFollowApi;
-
     private final OfficeFollow4PositionApi officeFollow4PositionApi;
 
     private final ErrorLogApi errorLogManager;
@@ -64,18 +58,19 @@ public class DeleteProcessUtilService {
 
     private final ActRuDetailApi actRuDetailApi;
 
+    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
+
     public DeleteProcessUtilService(TodoTaskApi rpcTodoTaskManager, ProcessInstanceApi processInstanceApi,
         ChaoSongInfoApi chaoSongInfoApi, ChaoSong4PositionApi chaoSong4PositionApi, OfficeInfoApi officeInfoApi,
-        ProcessParamApi processParamManager, OfficeFollowApi officeFollowApi,
-        OfficeFollow4PositionApi officeFollow4PositionApi, ErrorLogApi errorLogManager,
-        MsgRemindInfoApi msgRemindInfoManager, ActRuDetailApi actRuDetailApi) {
+        ProcessParamApi processParamManager, OfficeFollow4PositionApi officeFollow4PositionApi,
+        ErrorLogApi errorLogManager, MsgRemindInfoApi msgRemindInfoManager, ActRuDetailApi actRuDetailApi) {
         this.rpcTodoTaskManager = rpcTodoTaskManager;
         this.processInstanceApi = processInstanceApi;
         this.chaoSongInfoApi = chaoSongInfoApi;
         this.chaoSong4PositionApi = chaoSong4PositionApi;
         this.officeInfoApi = officeInfoApi;
         this.processParamManager = processParamManager;
-        this.officeFollowApi = officeFollowApi;
         this.officeFollow4PositionApi = officeFollow4PositionApi;
         this.errorLogManager = errorLogManager;
         this.msgRemindInfoManager = msgRemindInfoManager;
@@ -128,11 +123,6 @@ public class DeleteProcessUtilService {
             chaoSongInfoApi.deleteByProcessInstanceId(tenantId, processInstanceId);
         } catch (Exception e1) {
             LOGGER.warn("************************************删除抄送数据失败", e1);
-        }
-        try {
-            officeFollowApi.deleteByProcessInstanceId(tenantId, processInstanceId);
-        } catch (Exception e1) {
-            LOGGER.warn("************************************删除关注数据失败", e1);
         }
         try {
             officeInfoApi.deleteOfficeInfo(tenantId, processInstanceId);
@@ -231,7 +221,7 @@ public class DeleteProcessUtilService {
             String sql3 = "DELETE from ACT_HI_TASKINST_" + year + " where PROC_INST_ID_ = '" + processInstanceId + "'";
             jdbcTemplate.execute(sql3);
 
-            sql3 = "DELETE" + " FROM" + "	ACT_GE_BYTEARRAY_" + year + "" + " WHERE" + "	ID_ IN (" + "		SELECT"
+            sql3 = "DELETE" + " FROM" + "	ACT_GE_BYTEARRAY_" + year + " WHERE" + "	ID_ IN (" + "		SELECT"
                 + "			*" + "		FROM ( " + "         SELECT" + "			b.ID_" + "		  FROM"
                 + "			 ACT_GE_BYTEARRAY_" + year + " b" + "		  LEFT JOIN ACT_HI_VARINST_" + year
                 + " v ON v.BYTEARRAY_ID_ = b.ID_" + "		  WHERE" + "			 v.PROC_INST_ID_ = '"

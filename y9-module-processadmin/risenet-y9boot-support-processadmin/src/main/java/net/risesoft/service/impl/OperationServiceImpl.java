@@ -148,7 +148,7 @@ public class OperationServiceImpl implements OperationService {
             customProcessDefinitionService.getNodeType(currentTask.getProcessDefinitionId(), targetTaskDefineKey);
         // 更新自定义历程结束时间
         List<ProcessTrackModel> ptModelList =
-            processTrack4PositionApi.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId);
+            processTrack4PositionApi.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId).getData();
         for (ProcessTrackModel ptModel : ptModelList) {
             if (StringUtils.isBlank(ptModel.getEndTime())) {
                 try {

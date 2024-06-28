@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.service.CustomHistoricProcessService;
@@ -36,8 +35,6 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
     private final RuntimeService runtimeService;
 
     private final HistoryService historyService;
-
-    private final OfficeDoneInfoApi officeDoneInfoApi;
 
     private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
@@ -186,23 +183,11 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             } else {
                 // 数据中心办结件
                 if (his == null) {
-                    OfficeDoneInfoModel officeDoneInfoModel =
-                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId);
-                    if (officeDoneInfoModel != null) {
-                        year = officeDoneInfoModel.getStartTime().substring(0, 4);
-                        // 删除年度数据
-                        deleteProcessUtilService.deleteYearData(tenantId, year, processInstanceId);
-                    }
                 } else {
                     // 办结件
                     year = sdf.format(his.getStartTime());
                     historyService.deleteHistoricProcessInstance(his.getId());
                 }
-            }
-            try {
-                officeDoneInfoApi.deleteOfficeDoneInfo(tenantId, processInstanceId);
-            } catch (Exception e1) {
-                LOGGER.warn("************************************删除ES办件数据失败", e1);
             }
             deleteProcessUtilService.deleteProcess(tenantId, processInstanceId);
             return true;
