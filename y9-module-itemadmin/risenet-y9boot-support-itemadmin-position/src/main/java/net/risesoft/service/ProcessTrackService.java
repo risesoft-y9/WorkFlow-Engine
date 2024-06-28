@@ -1,10 +1,10 @@
 package net.risesoft.service;
 
 import java.util.List;
-import java.util.Map;
 
 import net.risesoft.entity.ProcessTrack;
 import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
+import net.risesoft.model.itemadmin.HistoryProcessModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -59,7 +59,7 @@ public interface ProcessTrackService {
      * @param processInstanceId
      * @return
      */
-    List<Map<String, Object>> getListMap(String processInstanceId);
+    List<HistoryProcessModel> getListMap(String processInstanceId);
 
     /**
      * 获取历程列表(带自定义历程信息)
@@ -67,7 +67,7 @@ public interface ProcessTrackService {
      * @param processInstanceId
      * @return
      */
-    List<Map<String, Object>> getListMap4Simple(String processInstanceId);
+    List<HistoryProcessModel> getListMap4Simple(String processInstanceId);
 
     /**
      * 获取流程图任务节点信息

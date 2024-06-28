@@ -496,7 +496,7 @@ public class MobileV1ButtonOperationController {
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
             buttonOperation4PositionApi.specialComplete(tenantId, positionId, taskId, reason);
             // 更新自定义历程结束时间
-            List<ProcessTrackModel> ptModelList = processTrack4PositionApi.findByTaskId(tenantId, taskId);
+            List<ProcessTrackModel> ptModelList = processTrack4PositionApi.findByTaskId(tenantId, taskId).getData();
             for (ProcessTrackModel ptModel : ptModelList) {
                 if (StringUtils.isBlank(ptModel.getEndTime())) {
                     try {

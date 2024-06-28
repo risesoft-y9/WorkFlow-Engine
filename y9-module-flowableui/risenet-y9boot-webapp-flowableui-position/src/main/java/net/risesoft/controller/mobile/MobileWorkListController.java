@@ -34,6 +34,7 @@ import net.risesoft.api.platform.resource.ResourceApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.platform.AuthorityEnum;
+import net.risesoft.model.itemadmin.HistoryProcessModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.platform.Resource;
 import net.risesoft.pojo.Y9Page;
@@ -290,7 +291,9 @@ public class MobileWorkListController {
         Map<String, Object> retMap = new HashMap<>(16);
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            retMap = processTrack4PositionApi.processTrackList(tenantId, positionId, processInstanceId);
+            List<HistoryProcessModel> items =
+                processTrack4PositionApi.processTrackList(tenantId, positionId, processInstanceId).getData();
+            retMap.put("rows", items);
             retMap.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
             retMap.put(UtilConsts.SUCCESS, false);

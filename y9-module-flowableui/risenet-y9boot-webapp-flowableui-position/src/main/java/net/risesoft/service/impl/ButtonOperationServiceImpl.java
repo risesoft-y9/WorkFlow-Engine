@@ -52,8 +52,9 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId(),
-            userName = Y9LoginUserHolder.getPosition().getName();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId();
+        String userName = Y9LoginUserHolder.getPosition().getName();
         Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotBlank(infoOvert)) {
             map.put("infoOvert", infoOvert);
@@ -70,7 +71,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         /*
           2更新自定义历程结束时间
          */
-        List<ProcessTrackModel> ptModelList = processTrack4PositionApi.findByTaskId(tenantId, taskId);
+        List<ProcessTrackModel> ptModelList = processTrack4PositionApi.findByTaskId(tenantId, taskId).getData();
         for (ProcessTrackModel ptModel : ptModelList) {
             if (StringUtils.isBlank(ptModel.getEndTime())) {
                 ptModel.setEndTime(sdf.format(new Date()));
@@ -109,8 +110,9 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public void resumeToDo(String processInstanceId, String desc) throws Exception {
-        String positionId = Y9LoginUserHolder.getPositionId(), userName = Y9LoginUserHolder.getPosition().getName(),
-            tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId();
+        String userName = Y9LoginUserHolder.getPosition().getName();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         String newDate = sdf.format(new Date());
         try {
             /*
