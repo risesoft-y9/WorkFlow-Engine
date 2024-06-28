@@ -128,7 +128,7 @@ public class MobileV1DocumentController {
             List<Map<String, Object>> opinionFrameList = new ArrayList<>();
             List<ItemOpinionFrameBindModel> bindList =
                 itemOpinionFrameBindApi.findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(tenantId, positionId,
-                    itemId, processDefinitionId, taskDefKey);
+                    itemId, processDefinitionId, taskDefKey).getData();
             for (ItemOpinionFrameBindModel bind : bindList) {
                 Map<String, Object> opinionFrameMap = new HashMap<>(16);
                 opinionFrameMap.put("hasRole", false);
