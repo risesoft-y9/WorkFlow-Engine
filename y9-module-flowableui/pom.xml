@@ -16,7 +16,6 @@
     </parent>
 
     <modules>
-        <module>risenet-y9boot-webapp-flowableui</module>
         <module>risenet-y9boot-webapp-flowableui-position</module>
     </modules>
 
