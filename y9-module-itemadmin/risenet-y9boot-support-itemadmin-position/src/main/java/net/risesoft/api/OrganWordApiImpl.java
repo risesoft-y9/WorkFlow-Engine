@@ -1,7 +1,6 @@
 package net.risesoft.api;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,8 +12,11 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.OrganWordApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.model.itemadmin.OrganWordModel;
+import net.risesoft.model.itemadmin.OrganWordPropertyModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OrganWordService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -27,7 +29,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/organWord")
+@RequestMapping(value = "/services/rest/organWord", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrganWordApiImpl implements OrganWordApi {
 
     private final OrganWordService organWordService;
@@ -51,14 +53,13 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @return Integer
      */
     @Override
-    @GetMapping(value = "/checkNumberStr", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Integer checkNumberStr(String tenantId, String userId, String characterValue, String custom, Integer year,
-        Integer numberTemp, String itemId, Integer common, String processSerialNumber) {
+    public Y9Result<Integer> checkNumberStr(String tenantId, String userId, String characterValue, String custom,
+        Integer year, Integer numberTemp, String itemId, Integer common, String processSerialNumber) {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
-        return organWordService.checkNumberStr(characterValue, custom, year, numberTemp, itemId, common,
-            processSerialNumber);
+        return Y9Result.success(organWordService.checkNumberStr(characterValue, custom, year, numberTemp, itemId,
+            common, processSerialNumber));
     }
 
     /**
@@ -74,12 +75,12 @@ public class OrganWordApiImpl implements OrganWordApi {
      */
     @Override
     @GetMapping(value = "/exist", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> exist(String tenantId, String userId, String custom, String processSerialNumber,
+    public Y9Result<OrganWordModel> exist(String tenantId, String userId, String custom, String processSerialNumber,
         String processInstanceId, String itembox) {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
-        return organWordService.exist(custom, processSerialNumber, processInstanceId, itembox);
+        return Y9Result.success(organWordService.exist(custom, processSerialNumber, processInstanceId, itembox));
     }
 
     /**
@@ -94,13 +95,12 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
     @Override
-    @GetMapping(value = "/findByCustom", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findByCustom(String tenantId, String userId, String custom, String itemId,
-        String processDefinitionId, String taskDefKey) {
+    public Y9Result<List<OrganWordPropertyModel>> findByCustom(String tenantId, String userId, String custom,
+        String itemId, String processDefinitionId, String taskDefKey) {
         Position position = positionApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPosition(position);
         Y9LoginUserHolder.setTenantId(tenantId);
-        return organWordService.findByCustom(itemId, processDefinitionId, taskDefKey, custom);
+        return Y9Result.success(organWordService.findByCustom(itemId, processDefinitionId, taskDefKey, custom));
     }
 
     /**
@@ -116,13 +116,12 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @return Map&lt;String, Object&gt;
      */
     @Override
-    @GetMapping(value = "/getNumber", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getNumber(String tenantId, String userId, String custom, String characterValue,
+    public Y9Result<Integer> getNumber(String tenantId, String userId, String custom, String characterValue,
         Integer year, Integer common, String itemId) {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
-        return organWordService.getNumber(custom, characterValue, year, common, itemId);
+        return Y9Result.success(organWordService.getNumber(custom, characterValue, year, common, itemId));
     }
 
     /**
@@ -138,12 +137,11 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @return Integer
      */
     @Override
-    @GetMapping(value = "/getNumberOnly", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Integer getNumberOnly(String tenantId, String userId, String custom, String characterValue, Integer year,
-        Integer common, String itemId) {
+    public Y9Result<Integer> getNumberOnly(String tenantId, String userId, String custom, String characterValue,
+        Integer year, Integer common, String itemId) {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         Y9LoginUserHolder.setTenantId(tenantId);
-        return organWordService.getNumberOnly(custom, characterValue, year, common, itemId);
+        return Y9Result.success(organWordService.getNumberOnly(custom, characterValue, year, common, itemId));
     }
 }
