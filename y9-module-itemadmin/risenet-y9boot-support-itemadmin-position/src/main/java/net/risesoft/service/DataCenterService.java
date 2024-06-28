@@ -34,6 +34,7 @@ import net.risesoft.model.datacenter.AttachmentInfo;
 import net.risesoft.model.datacenter.EformInfo;
 import net.risesoft.model.datacenter.HistoryInfo;
 import net.risesoft.model.datacenter.OfficeInfo;
+import net.risesoft.model.itemadmin.HistoryProcessModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
@@ -89,8 +90,7 @@ public class DataCenterService {
         TransactionFileService transactionFileService, ProcessTrackService processTrackService,
         Y9FormItemBindService y9FormItemBindService, AssociatedFileRepository associatedFileRepository,
         ProcessParamService processParamService, Y9FormRepository y9FormRepository, PositionApi positionApi,
-        OrgUnitApi orgUnitApi, Y9FormFieldRepository y9FormFieldRepository,
-        OfficeInfoApi officeInfoManager,
+        OrgUnitApi orgUnitApi, Y9FormFieldRepository y9FormFieldRepository, OfficeInfoApi officeInfoManager,
         HistoricProcessApi historicProcessManager, HistoricVariableApi historicVariableManager) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.spmApproveitemService = spmApproveitemService;
@@ -119,7 +119,7 @@ public class DataCenterService {
     public List<EformInfo> getEformInfo(String processInstanceId, String processDefinitionKey,
         String processDefinitionId) {
         Connection connection = null;
-        List<EformInfo> elist = new ArrayList<EformInfo>();
+        List<EformInfo> elist = new ArrayList<>();
         try {
             LOGGER.info(
                 "************************************itemAdmin保存表单数据到数据中心***********************************************");
@@ -137,19 +137,19 @@ public class DataCenterService {
                 String dialect = dbMetaDataUtil.getDatabaseDialectName(connection);
                 List<String> list = y9FormRepository.findBindTableName(y9Form.getFormId());
                 for (String tableName : list) {
-                    StringBuffer sqlStr = new StringBuffer();
+                    StringBuilder sqlStr = new StringBuilder();
                     if ("oracle".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
                     } else if ("dm".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
                     } else if ("kingbase".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM \"" + tableName + "\" where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
                     } else if ("mysql".equals(dialect)) {
-                        sqlStr = new StringBuffer("SELECT * FROM " + tableName + " where guid =?");
+                        sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where guid =?");
                     }
                     List<Map<String, Object>> datamap =
                         jdbcTemplate4Tenant.queryForList(sqlStr.toString(), processSerialNumber);
-                    if (datamap.size() > 0) {
+                    if (datamap != null && !datamap.isEmpty()) {
                         List<Y9FormField> elementList =
                             y9FormFieldRepository.findByFormIdAndTableName(y9Form.getFormId(), tableName);
                         for (Y9FormField element : elementList) {
@@ -197,24 +197,24 @@ public class DataCenterService {
         retMap.put("userId", userIds);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            List<Map<String, Object>> listMap = processTrackService.getListMap(processInstanceId);
-            List<HistoryInfo> list = new ArrayList<HistoryInfo>();
+            List<HistoryProcessModel> listMap = processTrackService.getListMap(processInstanceId);
+            List<HistoryInfo> list = new ArrayList<>();
             for (int i = 0; i < listMap.size(); i++) {
-                Map<String, Object> map = listMap.get(i);
-                String assignee = map.get("assignee") != null ? (String)map.get("assignee") : "";
+                HistoryProcessModel map = listMap.get(i);
+                String assignee = map.getAssignee();
                 if (!undertaker.contains(assignee)) {
                     undertaker = Y9Util.genCustomStr(undertaker, assignee);
                 }
-                String userId = map.get("undertakerId") != null ? (String)map.get("undertakerId") : "";
+                String userId = map.getUndertakerId();
                 if (StringUtils.isNotBlank(userId)) {
                     if (!userIds.contains(userId)) {
                         userIds = Y9Util.genCustomStr(userIds, userId);
                     }
                 }
-                String opinion = map.get("opinion") != null ? (String)map.get("opinion") : "";
-                String startTime = map.get("startTime") != null ? (String)map.get("startTime") : "";
-                String endTime = map.get("endTime") != null ? (String)map.get("endTime") : "";
-                String actionName = map.get("name") != null ? (String)map.get("name") : "";
+                String opinion = map.getOpinion();
+                String startTime = map.getStartTime();
+                String endTime = map.getEndTime();
+                String actionName = map.getName();
                 HistoryInfo historyInfo = new HistoryInfo();
                 historyInfo.setAssignee(assignee);
                 historyInfo.setActionName(actionName);
@@ -280,7 +280,7 @@ public class DataCenterService {
 
         // 获取附件
         List<TransactionFile> fileList = transactionFileService.getListByProcessSerialNumber(processSerialNumber);
-        List<AttachmentInfo> aList = new ArrayList<AttachmentInfo>();
+        List<AttachmentInfo> aList = new ArrayList<>();
         for (TransactionFile file : fileList) {
             AttachmentInfo info = new AttachmentInfo();
             info.setFileContent(null);

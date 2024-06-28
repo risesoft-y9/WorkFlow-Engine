@@ -3,7 +3,6 @@ package net.risesoft.api;
 import java.util.List;
 
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,7 +58,6 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * @return {@code Y9Result<SpeakInfoModel>} 通用请求返回对象 - data 是发言信息
      */
     @Override
-    @GetMapping(value = "/findById")
     public Y9Result<SpeakInfoModel> findById(String tenantId, String userId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         SpeakInfo speakInfo = speakInfoService.findById(id);

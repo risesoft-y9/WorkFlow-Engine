@@ -32,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ActRuDetailApi;
 import net.risesoft.api.itemadmin.ErrorLogApi;
-import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.command.RecoveryTodoCommand;
 import net.risesoft.command.RecoveryTodoCommand4Position;
@@ -71,8 +70,6 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final OfficeDoneInfoApi officeDoneInfoApi;
-
     private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
     private final ErrorLogApi errorLogManager;
@@ -84,15 +81,14 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     public CustomRuntimeServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
         RuntimeService runtimeService, HistoryService historyService, IdentityService identityService,
         ManagementService managementService, CustomProcessDefinitionService customProcessDefinitionService,
-        OfficeDoneInfoApi officeDoneInfoApi, OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi,
-        ErrorLogApi errorLogManager, DeleteProcessUtilService deleteProcessUtilService, ActRuDetailApi actRuDetailApi) {
+        OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi, ErrorLogApi errorLogManager,
+        DeleteProcessUtilService deleteProcessUtilService, ActRuDetailApi actRuDetailApi) {
         this.jdbcTemplate = jdbcTemplate;
         this.runtimeService = runtimeService;
         this.historyService = historyService;
         this.identityService = identityService;
         this.managementService = managementService;
         this.customProcessDefinitionService = customProcessDefinitionService;
-        this.officeDoneInfoApi = officeDoneInfoApi;
         this.officeDoneInfo4PositionApi = officeDoneInfo4PositionApi;
         this.errorLogManager = errorLogManager;
         this.deleteProcessUtilService = deleteProcessUtilService;
@@ -355,16 +351,6 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             /*
              * 5-恢复成功后删除备份的数据
              */
-            try {
-                // 删除数据中心办结数据
-                OfficeDoneInfoModel officeDoneInfo =
-                    officeDoneInfoApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
-                officeDoneInfo.setUserComplete("");
-                officeDoneInfo.setEndTime(null);
-                officeDoneInfoApi.saveOfficeDone(Y9LoginUserHolder.getTenantId(), officeDoneInfo);
-            } catch (Exception e) {
-                LOGGER.error("删除数据中心办结数据失败", e);
-            }
             /*
              * 恢复整个流程的办件详情,恢复为未办结
              */

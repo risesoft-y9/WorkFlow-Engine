@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DataCenterApi;
 import net.risesoft.api.itemadmin.ErrorLogApi;
-import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -52,8 +51,6 @@ public class Process4CompleteUtilService {
 
     private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
 
-    private final OfficeDoneInfoApi officeDoneInfoApi;
-
     private final JdbcTemplate jdbcTemplate;
 
     private final DataCenterApi dataCenterManager;
@@ -69,11 +66,10 @@ public class Process4CompleteUtilService {
     private final Process4MsgRemindService process4MsgRemindService;
 
     public Process4CompleteUtilService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
-        OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi, OfficeDoneInfoApi officeDoneInfoApi,
-        DataCenterApi dataCenterManager, OrgUnitApi orgUnitApi, ProcessParamApi processParamManager,
-        ErrorLogApi errorLogManager, Y9Properties y9Conf, Process4MsgRemindService process4MsgRemindService) {
+        OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi, DataCenterApi dataCenterManager, OrgUnitApi orgUnitApi,
+        ProcessParamApi processParamManager, ErrorLogApi errorLogManager, Y9Properties y9Conf,
+        Process4MsgRemindService process4MsgRemindService) {
         this.officeDoneInfo4PositionApi = officeDoneInfo4PositionApi;
-        this.officeDoneInfoApi = officeDoneInfoApi;
         this.jdbcTemplate = jdbcTemplate;
         this.dataCenterManager = dataCenterManager;
         this.orgUnitApi = orgUnitApi;
@@ -304,8 +300,6 @@ public class Process4CompleteUtilService {
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
             if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                 officeDoneInfo4PositionApi.saveOfficeDone(tenantId, officeDoneInfo);
-            } else {
-                officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
             }
             this.saveYearData(year, processInstanceId);
             this.deleteDoneData(processInstanceId);
