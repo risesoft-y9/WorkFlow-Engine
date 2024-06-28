@@ -1,13 +1,19 @@
 package net.risesoft.api;
 
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.EndEvent;
@@ -42,15 +48,18 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
-import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
+import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.BpmnModelApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.platform.Person;
+import net.risesoft.model.processadmin.FlowNodeModel;
+import net.risesoft.model.processadmin.LinkNodeModel;
+import net.risesoft.model.processadmin.Y9BpmnModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricActivityService;
 import net.risesoft.service.CustomHistoricProcessService;
@@ -91,11 +100,11 @@ public class BpmnModelApiImpl implements BpmnModelApi {
 
     private final PersonApi personManager;
 
-    private final OfficeDoneInfo4PositionApi officeDoneInfoManager;
+    private final OfficeDoneInfoApi officeDoneInfoManager;
 
     private final ProcessParamApi processParamManager;
 
-    private final ProcessTrack4PositionApi processTrackManager;
+    private final ProcessTrackApi processTrackManager;
 
     /**
      * 删除模型
@@ -106,9 +115,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      */
     @Override
     @RequestMapping(value = "/deleteModel", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deleteModel(@RequestParam String tenantId, @RequestParam String modelId) {
+    public Y9Result<Object> deleteModel(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return Y9Result.successMsg("删除成功");
+        return Y9Result.success();
     }
 
     /**
@@ -120,9 +129,9 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      */
     @Override
     @RequestMapping(value = "/deployModel", method = RequestMethod.POST, produces = "application/json")
-    public Y9Result<String> deployModel(@RequestParam String tenantId, @RequestParam String modelId) {
+    public Y9Result<Object> deployModel(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return Y9Result.successMsg("部署成功");
+        return Y9Result.success();
     }
 
     /**
@@ -135,8 +144,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      */
     @Override
     @PostMapping(value = "/genProcessDiagram", produces = MediaType.APPLICATION_JSON_VALUE)
-    public byte[] genProcessDiagram(@RequestParam String tenantId, @RequestParam String processInstanceId)
-        throws Exception {
+    public Y9Result<String> genProcessDiagram(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricProcessInstance pi = customHistoricProcessService.getById(processInstanceId);
         // 流程走完的不显示图
@@ -169,20 +177,13 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             in = diagramGenerator.generateDiagram(bpmnModel, "png", engConf.getActivityFontName(),
                 engConf.getLabelFontName(), engConf.getAnnotationFontName(), engConf.getClassLoader(), false);
         }
-
-        byte[] buf = new byte[1024];
-        int length;
+        byte[] buf;
         try {
-            ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
-            while ((length = in.read(buf)) != -1) {
-                swapStream.write(buf, 0, length);
-            }
-            return swapStream.toByteArray();
-        } finally {
-            if (in != null) {
-                in.close();
-            }
+            buf = IOUtils.toByteArray(in);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        return Y9Result.success(Base64.getEncoder().encodeToString(buf));
     }
 
     /**
@@ -194,53 +195,39 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      */
     @Override
     @GetMapping(value = "/getBpmnModel", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getBpmnModel(@RequestParam String tenantId, @RequestParam String processInstanceId) {
+    public Y9Result<Y9BpmnModel> getBpmnModel(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         Map<String, Object> map = new HashMap<>(16);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricProcessInstance pi = customHistoricProcessService.getById(processInstanceId);
         // 流程走完的不显示图
         if (pi == null) {
-            map.put("success", false);
-            return map;
+            return Y9Result.failure("流程已办结");
         }
         String txtFlowPath = "";
-        List<Map<String, Object>> nodeDataArray = new ArrayList<>();
-        List<Map<String, Object>> linkDataArray = new ArrayList<>();
+        List<FlowNodeModel> nodeDataArray = new ArrayList<>();
+        List<LinkNodeModel> linkDataArray = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(pi.getProcessDefinitionId());
         Map<String, GraphicInfo> infoMap = bpmnModel.getLocationMap();
         org.flowable.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
         for (FlowElement flowElement : flowElements) {
-            Map<String, Object> nodeMap = new HashMap<>(16);
             if (flowElement instanceof StartEvent startEvent) {
                 GraphicInfo graphicInfo = infoMap.get(startEvent.getId());
                 txtFlowPath = startEvent.getId();
-                nodeMap.put("key", startEvent.getId());
-                nodeMap.put("text", "开始");
-                nodeMap.put("figure", "Circle");
-                nodeMap.put("fill", "#4fba4f");
-                nodeMap.put("category", "Start");
-                nodeMap.put("stepType", "1");
-                nodeMap.put("loc", graphicInfo.getX() - 100 + " " + graphicInfo.getY());
-                nodeDataArray.add(nodeMap);
+                nodeDataArray.add(new FlowNodeModel(startEvent.getId(), "Start", "开始", "Circle", "#4fba4f", "1",
+                    graphicInfo.getX() - 100 + " " + graphicInfo.getY(), ""));
                 // 获取开始节点输出路线
                 List<SequenceFlow> list = startEvent.getOutgoingFlows();
                 for (SequenceFlow tr : list) {
                     FlowElement fe = tr.getTargetFlowElement();
                     if ((fe instanceof UserTask u)) {
-                        Map<String, Object> linkMap = new HashMap<>(16);
-                        linkMap.put("from", startEvent.getId());
-                        linkMap.put("to", u.getId());
-                        linkDataArray.add(linkMap);
+                        linkDataArray.add(new LinkNodeModel(startEvent.getId(), u.getId()));
                     }
                 }
             } else if (flowElement instanceof UserTask userTask) {
                 GraphicInfo graphicInfo = infoMap.get(userTask.getId());
-                nodeMap.put("key", userTask.getId());
-                nodeMap.put("text", userTask.getName());
-                nodeMap.put("remark", "111111111");
-                nodeMap.put("loc", graphicInfo.getX() + " " + graphicInfo.getY());
-                nodeDataArray.add(nodeMap);
+                nodeDataArray.add(new FlowNodeModel(userTask.getId(), "", userTask.getName(), "", "", "",
+                    graphicInfo.getX() + " " + graphicInfo.getY(), "111111111"));
                 List<SequenceFlow> list = userTask.getOutgoingFlows();
                 for (SequenceFlow tr : list) {
                     FlowElement fe = tr.getTargetFlowElement();
@@ -251,61 +238,37 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                         for (SequenceFlow sf : outgoingFlows) {
                             FlowElement element = sf.getTargetFlowElement();
                             if (element instanceof UserTask task) {
-                                Map<String, Object> linkMap = new HashMap<>(16);
-                                linkMap.put("from", userTask.getId());
-                                linkMap.put("to", task.getId());
-                                linkDataArray.add(linkMap);
+                                linkDataArray.add(new LinkNodeModel(userTask.getId(), task.getId()));
                             } else if (element instanceof EndEvent endEvent) {
-                                Map<String, Object> linkMap = new HashMap<>(16);
-                                linkMap.put("from", userTask.getId());
-                                linkMap.put("to", endEvent.getId());
-                                linkDataArray.add(linkMap);
+                                linkDataArray.add(new LinkNodeModel(userTask.getId(), endEvent.getId()));
                             } else if (element instanceof ParallelGateway parallelgateway) {
                                 List<SequenceFlow> outgoingFlows1 = parallelgateway.getOutgoingFlows();
                                 for (SequenceFlow sf1 : outgoingFlows1) {
                                     FlowElement element1 = sf1.getTargetFlowElement();
                                     if (element1 instanceof UserTask task1) {
-                                        Map<String, Object> linkMap = new HashMap<>(16);
-                                        linkMap.put("from", userTask.getId());
-                                        linkMap.put("to", task1.getId());
-                                        linkDataArray.add(linkMap);
+                                        linkDataArray.add(new LinkNodeModel(userTask.getId(), task1.getId()));
                                     }
                                 }
                             }
                         }
                     } else if ((fe instanceof UserTask u)) {
-                        Map<String, Object> linkMap = new HashMap<>(16);
-                        linkMap.put("from", userTask.getId());
-                        linkMap.put("to", u.getId());
-                        linkDataArray.add(linkMap);
+                        linkDataArray.add(new LinkNodeModel(userTask.getId(), u.getId()));
                     } else if (fe instanceof EndEvent endEvent) {
-                        Map<String, Object> linkMap = new HashMap<>(16);
-                        linkMap.put("from", userTask.getId());
-                        linkMap.put("to", endEvent.getId());
-                        linkDataArray.add(linkMap);
+                        linkDataArray.add(new LinkNodeModel(userTask.getId(), endEvent.getId()));
                     } else if (fe instanceof ParallelGateway gateway) {
                         List<SequenceFlow> outgoingFlows = gateway.getOutgoingFlows();
                         for (SequenceFlow sf : outgoingFlows) {
                             FlowElement element = sf.getTargetFlowElement();
                             if (element instanceof UserTask task) {
-                                Map<String, Object> linkMap = new HashMap<>(16);
-                                linkMap.put("from", userTask.getId());
-                                linkMap.put("to", task.getId());
-                                linkDataArray.add(linkMap);
+                                linkDataArray.add(new LinkNodeModel(userTask.getId(), task.getId()));
                             }
                         }
                     }
                 }
             } else if (flowElement instanceof EndEvent endEvent) {
                 GraphicInfo graphicInfo = infoMap.get(endEvent.getId());
-                nodeMap.put("key", endEvent.getId());
-                nodeMap.put("category", "End");
-                nodeMap.put("text", "结束");
-                nodeMap.put("figure", "Circle");
-                nodeMap.put("fill", "#CE0620");
-                nodeMap.put("stepType", "4");
-                nodeMap.put("loc", graphicInfo.getX() + " " + graphicInfo.getY());
-                nodeDataArray.add(nodeMap);
+                nodeDataArray.add(new FlowNodeModel(endEvent.getId(), "End", "结束", "Circle", "#CE0620", "4",
+                    graphicInfo.getX() + " " + graphicInfo.getY(), ""));
             }
         }
 
@@ -313,12 +276,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         for (HistoricTaskInstance task : list) {
             txtFlowPath = Y9Util.genCustomStr(txtFlowPath, task.getTaskDefinitionKey());
         }
-        map.put("nodeDataArray", nodeDataArray);
-        map.put("linkDataArray", linkDataArray);
-        map.put("txtFlowPath", txtFlowPath);
-        map.put("isCompleted", pi.getEndTime() != null);
-        map.put("success", true);
-        return map;
+        return Y9Result.success(new Y9BpmnModel(nodeDataArray, linkDataArray, txtFlowPath, pi.getEndTime() != null));
     }
 
     /**
@@ -429,7 +387,8 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     listMap.add(map);
                 }
 
-                List<ProcessTrackModel> ptList = processTrackManager.findByTaskIdAsc(tenantId, taskId).getData();
+                List<ProcessTrackModel> ptList =
+                    processTrackManager.findByTaskIdAsc(tenantId, userId, taskId).getData();
                 String parentId0 = taskId;
                 for (int j = 0; j < ptList.size(); j++) {
                     num += 1;

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import net.risesoft.model.processadmin.Y9BpmnModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -19,9 +20,9 @@ public interface BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param modelId 模型id
-     * @return
+     * @return {@code Y9Result<Boolean>}
      */
-    Y9Result<String> deleteModel(String tenantId, String modelId);
+    Y9Result<Object> deleteModel(String tenantId, String modelId);
 
     /**
      * 根据Model部署流程
@@ -30,27 +31,26 @@ public interface BpmnModelApi {
      * @param modelId 模型id
      * @return
      */
-    Y9Result<String> deployModel(String tenantId, String modelId);
+    Y9Result<Object> deployModel(String tenantId, String modelId);
 
     /**
      * 生成流程图
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return byte[]
+     * @return Y9Result<String>
      * @throws Exception Exception
      */
-    byte[] genProcessDiagram(String tenantId, String processInstanceId) throws Exception;
+    Y9Result<String> genProcessDiagram(String tenantId, String processInstanceId);
 
     /**
      * 获取流程图模型
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return Map
-     * @throws Exception Exception
+     * @return Y9Result<Y9BpmnModel>
      */
-    Map<String, Object> getBpmnModel(String tenantId, String processInstanceId) throws Exception;
+    Y9Result<Y9BpmnModel> getBpmnModel(String tenantId, String processInstanceId);
 
     /**
      * 获取流程图数据
