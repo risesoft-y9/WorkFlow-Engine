@@ -123,8 +123,8 @@ public class OperationServiceImpl implements OperationService {
                 // if (StringUtils.isBlank(ownerId)) {
                 if (task.getAssignee().equals(sponsorGuid)) {
                     vars.put(SysVariables.PARALLELSPONSOR, sponsorGuid);
-                    ProcessParamModel processParam =
-                        processParamManager.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
+                    ProcessParamModel processParam = processParamManager
+                        .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
                     processParam.setSponsorGuid(sponsorGuid);
                     processParamManager.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParam);
                 }
@@ -168,8 +168,8 @@ public class OperationServiceImpl implements OperationService {
                 // if (StringUtils.isBlank(ownerId)) {
                 if (task.getAssignee().equals(sponsorGuid)) {
                     vars.put(SysVariables.PARALLELSPONSOR, sponsorGuid);
-                    ProcessParamModel processParam =
-                        processParamManager.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
+                    ProcessParamModel processParam = processParamManager
+                        .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
                     processParam.setSponsorGuid(sponsorGuid);
                     processParamManager.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParam);
                 }

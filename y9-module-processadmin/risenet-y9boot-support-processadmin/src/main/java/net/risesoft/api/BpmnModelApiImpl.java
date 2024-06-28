@@ -163,11 +163,11 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             }
             // 获取流程图
             in = diagramGenerator.generateDiagram(bpmnModel, "png", activityIds, flows, engConf.getActivityFontName(),
-                    engConf.getLabelFontName(), engConf.getAnnotationFontName(), engConf.getClassLoader(), 1.0, false);
+                engConf.getLabelFontName(), engConf.getAnnotationFontName(), engConf.getClassLoader(), 1.0, false);
         } else {
             // 获取流程图
             in = diagramGenerator.generateDiagram(bpmnModel, "png", engConf.getActivityFontName(),
-                    engConf.getLabelFontName(), engConf.getAnnotationFontName(), engConf.getClassLoader(), false);
+                engConf.getLabelFontName(), engConf.getAnnotationFontName(), engConf.getClassLoader(), false);
         }
 
         byte[] buf = new byte[1024];
@@ -346,7 +346,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
                 if (officeDoneInfo == null) {
                     ProcessParamModel processParam =
-                        processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParamManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     year = processParam.getCreateTime().substring(0, 4);
                 } else {
                     year = officeDoneInfo.getStartTime().substring(0, 4);

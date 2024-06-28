@@ -1,9 +1,10 @@
 package net.risesoft.service;
 
 import java.util.Date;
-import java.util.Map;
 
+import net.risesoft.model.itemadmin.ProcessCooperationModel;
 import net.risesoft.model.itemadmin.ProcessInstanceDetailsModel;
+import net.risesoft.pojo.Y9Page;
 
 /**
  * @author qinman
@@ -29,7 +30,7 @@ public interface ProcessInstanceDetailsService {
      * @param rows
      * @return
      */
-    Map<String, Object> processInstanceList(String userId, String title, int page, int rows);
+    Y9Page<ProcessCooperationModel> processInstanceList(String userId, String title, int page, int rows);
 
     /**
      * 保存协作状态

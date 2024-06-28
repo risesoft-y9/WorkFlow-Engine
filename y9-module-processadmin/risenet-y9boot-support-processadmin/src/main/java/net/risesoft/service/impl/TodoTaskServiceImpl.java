@@ -155,7 +155,7 @@ public class TodoTaskServiceImpl implements TodoTaskService {
             Y9LoginUserHolder.setTenantId(tenantId);
             String processSerialNumber = (String)map.get("processSerialNumber");
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String itemId = processParamModel.getItemId();
             String itemName = processParamModel.getItemName();
             if (StringUtils.isNotBlank(tenantId)) {

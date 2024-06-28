@@ -64,7 +64,7 @@ public class WeiXinRemindServiceImpl implements WeiXinRemindService {
             String tenantId = (String)map.get("tenantId");
             String processSerialNumber = (String)map.get(SysVariables.PROCESSSERIALNUMBER);
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String documentTitle = processParamModel.getTitle();
             String itemId = processParamModel.getItemId();
             String itemName = processParamModel.getItemName();

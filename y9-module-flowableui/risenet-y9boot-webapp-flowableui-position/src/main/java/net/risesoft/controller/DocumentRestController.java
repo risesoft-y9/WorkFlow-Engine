@@ -227,8 +227,8 @@ public class DocumentRestController {
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> variables = new HashMap<>(16);
         try {
-            ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber);
+            ProcessParamModel processParamModel = processParamApi
+                .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
             processParamModel.setIsSendSms(isSendSms);
             processParamModel.setIsShuMing(isShuMing);
             processParamModel.setSmsContent(smsContent);

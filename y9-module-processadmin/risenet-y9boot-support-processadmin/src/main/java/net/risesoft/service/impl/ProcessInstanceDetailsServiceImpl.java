@@ -57,7 +57,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             String processSerialNumber = (String)map.get("processSerialNumber");
 
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+                processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
 
             String itemId = processParamModel.getItemId();
             String number = processParamModel.getCustomNumber();
@@ -105,7 +105,7 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
             processInstanceDetails.setTitle(documentTitle);
             processInstanceDetails.setUrl(url);
             processInstanceDetails.setUserName(processParamModel.getStartorName());
-            boolean b = processInstanceApi.saveProcessInstanceDetails(tenantId, processInstanceDetails);
+            boolean b = processInstanceApi.saveProcessInstanceDetails(tenantId, processInstanceDetails).getData();
             if (b) {
                 LOGGER.info("#################协作状态保存成功-TASK_ASSIGNED####任务id:{}{}#################", task.getAssignee(),
                     task.getId());
@@ -130,9 +130,10 @@ public class ProcessInstanceDetailsServiceImpl implements ProcessInstanceDetails
         try {
             String assigneeId = taskEntityHti.getAssignee() != null ? taskEntityHti.getAssignee() : "";
             String tenantId = (String)map.get("tenantId");
-            boolean b = processInstanceApi.updateProcessInstanceDetails(tenantId, assigneeId,
-                taskEntityHti.getProcessInstanceId(), taskEntityHti.getId(), ItemBoxTypeEnum.DONE.getValue(),
-                new Date());
+            boolean b = processInstanceApi
+                .updateProcessInstanceDetails(tenantId, assigneeId, taskEntityHti.getProcessInstanceId(),
+                    taskEntityHti.getId(), ItemBoxTypeEnum.DONE.getValue(), new Date())
+                .getData();
             if (b) {
                 LOGGER.info("#################更新协作状态成功-TASK_COMPLETED####任务id:{}{}################",
                     taskEntityHti.getName(), taskEntityHti.getId());

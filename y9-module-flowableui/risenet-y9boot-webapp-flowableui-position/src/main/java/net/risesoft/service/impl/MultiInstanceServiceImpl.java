@@ -53,7 +53,8 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         TaskModel task = taskApi.findById(tenantId, taskId);
         String activityId = task.getTaskDefinitionKey();
         String[] users = userChoice.split(";");
-        ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+        ProcessParamModel processParamModel =
+            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         try {
             if (processParamModel != null && processParamModel.getId() != null) {
                 processParamModel.setSmsContent(smsContent);
@@ -123,7 +124,8 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         Map<String, Object> mapTemp;
         Position personTemp;
         int num = 0;
-        ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+        ProcessParamModel processParamModel =
+            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         String parallelSponsor = processParamModel == null ? "" : processParamModel.getSponsorGuid();
         for (TaskModel tm : taskList) {
             mapTemp = new HashMap<>(16);

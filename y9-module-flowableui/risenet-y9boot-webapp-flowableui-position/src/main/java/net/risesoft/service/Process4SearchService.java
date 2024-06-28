@@ -44,15 +44,11 @@ import net.risesoft.y9.util.Y9Util;
 public class Process4SearchService {
 
     private final OfficeDoneInfo4PositionApi officeDoneInfo4PositionApi;
-
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
-
     private final PositionApi positionApi;
-
     private final ErrorLogApi errorLogApi;
-
     private final ProcessParamApi processParamApi;
+    @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
+    private JdbcTemplate jdbcTemplate;
 
     /**
      * 重定位，串行送下一人，修改办件信息
@@ -66,7 +62,8 @@ public class Process4SearchService {
         Y9LoginUserHolder.setTenantId(tenantId);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            ProcessParamModel processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+            ProcessParamModel processParam =
+                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             OfficeDoneInfoModel officeDoneInfo =
                 officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
             if (officeDoneInfo != null) {

@@ -185,7 +185,7 @@ public class DoingServiceImpl implements DoingService {
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         String processSerialNumber = processParam.getProcessSerialNumber();
                         String documentTitle =
                             StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
@@ -236,7 +236,7 @@ public class DoingServiceImpl implements DoingService {
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         String processSerialNumber = processParam.getProcessSerialNumber();
                         String documentTitle =
                             StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
@@ -314,7 +314,7 @@ public class DoingServiceImpl implements DoingService {
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         String processSerialNumber = processParam.getProcessSerialNumber();
                         String documentTitle =
                             StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
@@ -394,7 +394,7 @@ public class DoingServiceImpl implements DoingService {
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         String processSerialNumber = processParam.getProcessSerialNumber();
                         String documentTitle =
                             StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();

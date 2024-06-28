@@ -219,7 +219,7 @@ public class DoneServiceImpl implements DoneService {
                     mapTemp.put("taskDefinitionKey", "");
 
                     ProcessParamModel processParam =
-                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
 
                     mapTemp.put("user4Complete", processParam.getCompleter());
                     int chaosongNum = chaoSong4PositionApi

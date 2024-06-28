@@ -127,7 +127,7 @@ public class OfficeFollowRestController {
             OfficeFollowModel officeFollow = new OfficeFollowModel();
             if (StringUtils.isNotBlank(processInstanceId)) {
                 ProcessParamModel processParamModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 officeFollow.setGuid(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, position.getParentId()).getData();
                 officeFollow.setBureauId(orgUnit != null ? orgUnit.getId() : "");

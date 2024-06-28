@@ -63,7 +63,7 @@ public class SetDeptIdUtilService {
                     orgUnit = orgUnitManager.getOrgUnit(tenantId, person.getParentId()).getData();
                 }
                 ProcessParamModel processParamModel =
-                    processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber);
+                    processParamManager.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                 String oldDeptId =
                     StringUtils.isBlank(processParamModel.getDeptIds()) ? "" : processParamModel.getDeptIds();
                 String oldDeptId1 =

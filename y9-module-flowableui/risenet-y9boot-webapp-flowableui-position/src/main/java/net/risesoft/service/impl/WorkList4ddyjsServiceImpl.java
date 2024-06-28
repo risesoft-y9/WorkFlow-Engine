@@ -127,7 +127,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         String processSerialNumber = processParam.getProcessSerialNumber();
                         String documentTitle =
                             StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
@@ -198,7 +198,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
                             assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         String processSerialNumber = processParam.getProcessSerialNumber();
                         String documentTitle =
                             StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
@@ -578,7 +578,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                     String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
                     Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     String processSerialNumber = processParam.getProcessSerialNumber();
                     String documentTitle =
                         StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
@@ -790,7 +790,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
-                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     String processSerialNumber = processParam.getProcessSerialNumber();
                     String level = processParam.getCustomLevel();
                     String number = processParam.getCustomNumber();

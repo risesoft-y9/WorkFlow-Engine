@@ -35,7 +35,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             if (StringUtils.isNotBlank(processInstanceId)) {
                 if (StringUtils.isNotBlank(documentTitle) && (StringUtils.isBlank(processParamModel.getTitle())
                     || !processParamModel.getTitle().equals(documentTitle))) {

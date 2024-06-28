@@ -136,7 +136,7 @@ public class MobileV1MonitorController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ProcessParamModel processParamModel;
             List<String> list = new ArrayList<>();
-            processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+            processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (processParamModel != null) {
                 list.add(processParamModel.getProcessSerialNumber());
             }

@@ -55,9 +55,9 @@ import net.risesoft.y9.util.Y9Util;
 @RequestMapping(value = "/vue/processInstance")
 public class ProcessInstanceVueController {
 
-    private final RuntimeService runtimeService;
-
     protected final HistoryService historyService;
+
+    private final RuntimeService runtimeService;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -89,7 +89,7 @@ public class ProcessInstanceVueController {
         ProcessParamModel processParamModel;
         List<String> list = new ArrayList<>();
         try {
-            processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+            processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (processParamModel != null) {
                 list.add(processParamModel.getProcessSerialNumber());
             }

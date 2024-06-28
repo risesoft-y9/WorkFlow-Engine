@@ -58,7 +58,7 @@ public class SmsRemindServiceImpl implements SmsRemindService {
             String tenantId = (String)map.get("tenantId");
             String processInstanceId = task.getProcessInstanceId();
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                processParamManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
             String isSendSms = processParamModel.getIsSendSms();
             String isShuMing = processParamModel.getIsShuMing();
             String smsContent = processParamModel.getSmsContent();

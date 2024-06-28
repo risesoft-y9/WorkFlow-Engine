@@ -27,7 +27,7 @@ public interface ProcessTrackApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param id 唯一标识
-     * @return {@code Y9Page<Object>} 通用请求返回对象
+     * @return {@code Y9Result<Object>} 通用请求返回对象
      * @throws Exception Exception
      */
     @PostMapping("/deleteById")
@@ -86,7 +86,7 @@ public interface ProcessTrackApi {
      *
      * @param tenantId 租户id
      * @param processTrack 实体类对象（ProcessTrackModel）
-     * @return {@code Y9Page<ProcessTrackModel>} 通用请求返回对象 - data 历程对象
+     * @return {@code Y9Result<ProcessTrackModel>} 通用请求返回对象 - data 历程对象
      * @throws Exception Exception
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)

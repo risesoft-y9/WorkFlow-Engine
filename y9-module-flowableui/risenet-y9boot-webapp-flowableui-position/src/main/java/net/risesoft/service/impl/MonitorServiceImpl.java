@@ -526,7 +526,7 @@ public class MonitorServiceImpl implements MonitorService {
             for (HistoricProcessInstanceModel hpim : hpiModelList) {
                 mapTemp = new HashMap<>(16);
                 processInstanceId = hpim.getId();
-                processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
+                processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 String documentTitle = StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
                 String level = processParam.getCustomLevel();
                 String number = processParam.getCustomNumber();

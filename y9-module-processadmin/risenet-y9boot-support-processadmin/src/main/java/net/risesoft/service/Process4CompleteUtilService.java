@@ -203,7 +203,7 @@ public class Process4CompleteUtilService {
         Connection connection = null;
         try {
             ProcessParamModel processParamModel =
-                processParamManager.findByProcessInstanceId(tenantId, processInstanceId);
+                processParamManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
             try {
                 String sql0 = "UPDATE ff_process_param f set f.COMPLETER = '" + personName
                     + "' where f.PROCESSINSTANCEID = '" + processInstanceId + "'";
@@ -310,7 +310,6 @@ public class Process4CompleteUtilService {
             this.saveYearData(year, processInstanceId);
             this.deleteDoneData(processInstanceId);
             LOGGER.info("#################保存办结件数据到数据中心成功#################");
-            return;
         } catch (Exception e) {
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
@@ -342,7 +341,6 @@ public class Process4CompleteUtilService {
                 e.printStackTrace();
             }
         }
-        return;
     }
 
     /**
