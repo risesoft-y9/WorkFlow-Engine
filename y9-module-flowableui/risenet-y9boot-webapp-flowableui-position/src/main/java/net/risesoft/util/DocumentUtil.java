@@ -46,7 +46,7 @@ public class DocumentUtil {
         // 意见框
         List<Map<String, Object>> opinioListMap = new ArrayList<>();
         List<ItemOpinionFrameBindModel> opinionFrameList = Y9Context.getBean(ItemOpinionFrameBindApi.class)
-            .findByItemIdAndProcessDefinitionId(tenantId, itemId, processDefinitionId);
+            .findByItemIdAndProcessDefinitionId(tenantId, itemId, processDefinitionId).getData();
         for (ItemOpinionFrameBindModel opinionFrame : opinionFrameList) {
             Map<String, Object> opinionMap = new HashMap<>(16);
             String opinionFrameMark = opinionFrame.getOpinionFrameMark();

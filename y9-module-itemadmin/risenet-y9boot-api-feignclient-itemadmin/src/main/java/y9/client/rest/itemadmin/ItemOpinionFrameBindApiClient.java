@@ -1,13 +1,8 @@
 package y9.client.rest.itemadmin;
 
-import java.util.List;
-
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
-import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 
 /**
  * @author qinman
@@ -19,54 +14,4 @@ import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
     path = "/${y9.service.itemAdmin.name:itemAdmin}/services/rest/itemOpinionFrameBind")
 public interface ItemOpinionFrameBindApiClient extends ItemOpinionFrameBindApi {
 
-    /**
-     * 根据事项id获取所有绑定意见框
-     *
-     * @param tenantId 租户id
-     * @param itemId 事项id
-     * @return List&lt;OpinionFrameTaskRoleBindModel&gt;
-     */
-    @Override
-    @GetMapping("/findByItemId")
-    public List<ItemOpinionFrameBindModel> findByItemId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("itemId") String itemId);
-
-    @Override
-    @GetMapping("/findByItemIdAndProcessDefinitionId")
-    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId);
-
-    /**
-     * 根据事项id和任务id获取绑定意见框
-     *
-     * @param tenantId
-     * @param userId
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @return
-     */
-    @Override
-    @GetMapping("/findByItemIdAndProcessDefinitionIdAndTaskDefKey")
-    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKey(
-        @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey);
-
-    /**
-     * 根据事项id和任务id获取绑定意见框（包含角色信息）
-     *
-     * @param tenantId
-     * @param userId
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @return
-     */
-    @Override
-    @GetMapping("/findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole")
-    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(
-        @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey);
 }

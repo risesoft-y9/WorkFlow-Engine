@@ -14,6 +14,7 @@ import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
 import net.risesoft.entity.ItemOpinionFrameBind;
 import net.risesoft.entity.OpinionFrame;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.OpinionFrameService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -40,11 +41,11 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return List<ItemOpinionFrameBindModel>
+     * @return Y9Result<List<ItemOpinionFrameBindModel>>
      */
     @Override
     @GetMapping(value = "/findByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ItemOpinionFrameBindModel> findByItemId(String tenantId, String itemId) {
+    public Y9Result<List<ItemOpinionFrameBindModel>> findByItemId(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindService.findByItemId(itemId);
         List<ItemOpinionFrameBindModel> modelList = new ArrayList<>();
@@ -55,20 +56,20 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
             model.setOpinionFrameName(opinionFrame == null ? "意见框不存在" : opinionFrame.getName());
             modelList.add(model);
         }
-        return modelList;
+        return Y9Result.success(modelList);
     }
 
     /**
      * 根据事项id和流程定义id获取所有绑定意见框
-     * 
+     *
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
-     * @return List<ItemOpinionFrameBindModel>
+     * @return Y9Result<List<ItemOpinionFrameBindModel>>
      */
     @Override
     @GetMapping(value = "/findByItemIdAndProcessDefinitionId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionId(String tenantId, String itemId,
+    public Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionId(String tenantId, String itemId,
         String processDefinitionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list =
@@ -81,7 +82,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
             model.setOpinionFrameName(opinionFrame == null ? "意见框不存在" : opinionFrame.getName());
             modelList.add(model);
         }
-        return modelList;
+        return Y9Result.success(modelList);
     }
 
     /**
@@ -92,11 +93,11 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return List<ItemOpinionFrameBindModel>
+     * @return Y9Result<< ItemOpinionFrameBindModel>>
      */
     @Override
     @GetMapping(value = "/findByItemIdAndProcessDefinitionIdAndTaskDefKey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String tenantId,
+    public Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String tenantId,
         String userId, String itemId, String processDefinitionId, String taskDefKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindService
@@ -109,7 +110,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
             model.setOpinionFrameName(opinionFrame == null ? "意见框不存在" : opinionFrame.getName());
             modelList.add(model);
         }
-        return modelList;
+        return Y9Result.success(modelList);
     }
 
     /**
@@ -120,13 +121,13 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
-     * @return List<ItemOpinionFrameBindModel>
+     * @return Y9Result<List<ItemOpinionFrameBindModel>>
      */
     @Override
     @GetMapping(value = "/findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole",
         produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String tenantId,
-        String userId, String itemId, String processDefinitionId, String taskDefKey) {
+    public Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(
+        String tenantId, String userId, String itemId, String processDefinitionId, String taskDefKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindService
             .findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(itemId, processDefinitionId, taskDefKey);
@@ -138,6 +139,6 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
             model.setOpinionFrameName(opinionFrame == null ? "意见框不存在" : opinionFrame.getName());
             modelList.add(model);
         }
-        return modelList;
+        return Y9Result.success(modelList);
     }
 }

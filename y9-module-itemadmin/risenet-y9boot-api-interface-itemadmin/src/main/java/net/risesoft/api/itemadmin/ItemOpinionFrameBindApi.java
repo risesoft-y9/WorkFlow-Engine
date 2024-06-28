@@ -2,7 +2,11 @@ package net.risesoft.api.itemadmin;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -16,9 +20,11 @@ public interface ItemOpinionFrameBindApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return List&lt;ItemOpinionFrameBindModel&gt;
+     * @return Y9Result<List<ItemOpinionFrameBindModel>>
      */
-    List<ItemOpinionFrameBindModel> findByItemId(String tenantId, String itemId);
+    @GetMapping("/findByItemId")
+    Y9Result<List<ItemOpinionFrameBindModel>> findByItemId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("itemId") String itemId);
 
     /**
      * 根据流程定义id，事项id获取绑定意见框
@@ -26,10 +32,12 @@ public interface ItemOpinionFrameBindApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
-     * @return
+     * @return Y9Result<List<ItemOpinionFrameBindModel>>
      */
-    List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionId(String tenantId, String itemId,
-        String processDefinitionId);
+    @GetMapping("/findByItemIdAndProcessDefinitionId")
+    Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionId(
+        @RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId,
+        @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 根据事项id和任务id获取绑定意见框
@@ -39,10 +47,13 @@ public interface ItemOpinionFrameBindApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey taskDefKey
-     * @return List&lt;ItemOpinionFrameBindModel&gt;
+     * @return Y9Result<<ItemOpinionFrameBindModel>>
      */
-    List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String tenantId, String userId,
-        String itemId, String processDefinitionId, String taskDefKey);
+    @GetMapping("/findByItemIdAndProcessDefinitionIdAndTaskDefKey")
+    Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKey(
+        @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
+        @RequestParam("taskDefKey") String taskDefKey);
 
     /**
      * 根据事项id和任务id获取绑定意见框（包含角色信息）
@@ -52,8 +63,12 @@ public interface ItemOpinionFrameBindApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey taskDefKey
-     * @return List&lt;ItemOpinionFrameBindModel&gt;
+     * @return Y9Result<List<ItemOpinionFrameBindModel>>
      */
-    List<ItemOpinionFrameBindModel> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(String tenantId,
-        String userId, String itemId, String processDefinitionId, String taskDefKey);
+    @GetMapping("/findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole")
+    Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(
+        @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
+        @RequestParam("taskDefKey") String taskDefKey);
+
 }
