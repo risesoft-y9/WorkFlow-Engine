@@ -19,7 +19,7 @@ public class HistoricActivityInstanceModel implements Serializable {
     /**
      * 主键
      */
-    private String Id;
+    private String id;
     /**
      * 节点id
      */

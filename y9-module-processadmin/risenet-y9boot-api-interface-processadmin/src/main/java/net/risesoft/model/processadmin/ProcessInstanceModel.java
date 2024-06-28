@@ -20,7 +20,7 @@ public class ProcessInstanceModel implements Serializable {
     /**
      * 主键
      */
-    private String Id;
+    private String id;
     /**
      * 是否挂起
      */

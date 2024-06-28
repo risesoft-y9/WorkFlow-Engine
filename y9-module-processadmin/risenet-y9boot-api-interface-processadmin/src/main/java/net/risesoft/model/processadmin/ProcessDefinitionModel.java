@@ -18,7 +18,7 @@ public class ProcessDefinitionModel implements Serializable {
     /**
      * 主键
      */
-    private String Id;
+    private String id;
     /**
      * 类别
      */

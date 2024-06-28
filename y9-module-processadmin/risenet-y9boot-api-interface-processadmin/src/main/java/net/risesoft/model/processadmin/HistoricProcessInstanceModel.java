@@ -20,7 +20,7 @@ public class HistoricProcessInstanceModel implements Serializable {
     /**
      * 主键
      */
-    private String Id;
+    private String id;
     /**
      * 流程定义id
      */

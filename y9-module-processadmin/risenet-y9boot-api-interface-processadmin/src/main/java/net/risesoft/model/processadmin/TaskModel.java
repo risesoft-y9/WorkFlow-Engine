@@ -8,6 +8,13 @@ import org.flowable.task.api.DelegationState;
 
 import lombok.Data;
 
+/**
+ * 流程实例模型类
+ *
+ * @author qinman
+ * @author zhangchongjie
+ * @date 2022/12/20
+ */
 @Data
 public class TaskModel implements Serializable {
 
@@ -15,15 +22,15 @@ public class TaskModel implements Serializable {
     /**
      * 主键
      */
-    private String Id;
+    private String id;
     /**
      * 名称
      */
-    private String Name;
+    private String name;
     /**
      * 描述
      */
-    private String Description;
+    private String description;
     /**
      * 优先级
      */
@@ -31,31 +38,31 @@ public class TaskModel implements Serializable {
     /**
      * 拥有者
      */
-    private String Owner;
+    private String owner;
     /**
      * 办理人
      */
-    private String Assignee;
+    private String assignee;
     /**
      * 流程实例ID
      */
-    private String ProcessInstanceId;
+    private String processInstanceId;
     /**
      * 执行实例ID
      */
-    private String ExecutionId;
+    private String executionId;
     /**
      * 流程定义ID
      */
-    private String ProcessDefinitionId;
+    private String processDefinitionId;
     /**
      * 创建时间
      */
-    private Date CreateTime;
+    private Date createTime;
     /**
      * 任务定义key
      */
-    private String TaskDefinitionKey;
+    private String taskDefinitionKey;
     /**
      * 表单key(用于存放待办件已阅，未阅状态)
      */
@@ -63,11 +70,11 @@ public class TaskModel implements Serializable {
     /**
      * 过期时间
      */
-    private Date DueDate;
+    private Date dueDate;
     /**
      * 签收时间
      */
-    private Date ClaimTime;
+    private Date claimTime;
     /**
      * 委派状态
      */
