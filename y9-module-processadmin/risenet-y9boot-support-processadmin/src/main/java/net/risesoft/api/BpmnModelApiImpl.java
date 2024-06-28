@@ -146,8 +146,8 @@ public class BpmnModelApiImpl implements BpmnModelApi {
         InputStream in;
         ProcessEngine processEngine = Y9Context.getBean(ProcessEngine.class);
         BpmnModel bpmnModel = repositoryService.getBpmnModel(pi.getProcessDefinitionId());
-        ProcessEngineConfiguration engconf = processEngine.getProcessEngineConfiguration();
-        ProcessDiagramGenerator diagramGenerator = engconf.getProcessDiagramGenerator();
+        ProcessEngineConfiguration engConf = processEngine.getProcessEngineConfiguration();
+        ProcessDiagramGenerator diagramGenerator = engConf.getProcessDiagramGenerator();
         if (pi.getEndTime() == null) {
             Task task = taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult();
             // 使用流程实例ID，查询正在执行的执行对象表，返回流程实例对象
@@ -162,20 +162,20 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 activityIds.addAll(ids);
             }
             // 获取流程图
-            in = diagramGenerator.generateDiagram(bpmnModel, "png", activityIds, flows, engconf.getActivityFontName(),
-                engconf.getLabelFontName(), engconf.getAnnotationFontName(), engconf.getClassLoader(), 1.0, false);
+            in = diagramGenerator.generateDiagram(bpmnModel, "png", activityIds, flows, engConf.getActivityFontName(),
+                    engConf.getLabelFontName(), engConf.getAnnotationFontName(), engConf.getClassLoader(), 1.0, false);
         } else {
             // 获取流程图
-            in = diagramGenerator.generateDiagram(bpmnModel, "png", engconf.getActivityFontName(),
-                engconf.getLabelFontName(), engconf.getAnnotationFontName(), engconf.getClassLoader(), false);
+            in = diagramGenerator.generateDiagram(bpmnModel, "png", engConf.getActivityFontName(),
+                    engConf.getLabelFontName(), engConf.getAnnotationFontName(), engConf.getClassLoader(), false);
         }
 
         byte[] buf = new byte[1024];
-        int legth;
+        int length;
         try {
             ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
-            while ((legth = in.read(buf)) != -1) {
-                swapStream.write(buf, 0, legth);
+            while ((length = in.read(buf)) != -1) {
+                swapStream.write(buf, 0, length);
             }
             return swapStream.toByteArray();
         } finally {
@@ -453,23 +453,23 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     }
                 }
             }
-            int oldnum = 0;
-            int newnum = 0;
+            int oldNum = 0;
+            int newNum = 0;
             for (int i = 0; i < listMap.size(); i++) {
                 Map<String, Object> map = listMap.get(i);
-                int currnum = (int)map.get("num");
-                if (currnum == 0) {
+                int currNum = (int)map.get("num");
+                if (currNum == 0) {
                     parentId = (String)map.get("id");
                     map.put("parentId", "");
                 }
-                if (currnum != oldnum) {
+                if (currNum != oldNum) {
                     map.put("parentId", parentId);
-                    if (newnum == 0) {
-                        newnum = currnum;
+                    if (newNum == 0) {
+                        newNum = currNum;
                     }
-                    if (newnum != currnum) {
-                        oldnum = newnum;
-                        newnum = currnum;
+                    if (newNum != currNum) {
+                        oldNum = newNum;
+                        newNum = currNum;
                         parentId = (String)listMap.get(i - 1).get("id");
                         map.put("parentId", parentId);
                     }
