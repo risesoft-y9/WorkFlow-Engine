@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 import net.risesoft.command.JumpCommand;
 import net.risesoft.command.JumpCommand4Position;
@@ -84,8 +83,6 @@ public class OperationServiceImpl implements OperationService {
 
     private final ProcessParamApi processParamManager;
 
-    private final ProcessTrackApi processTrackManager;
-
     private final ProcessTrack4PositionApi processTrack4PositionApi;
 
     @Override
@@ -103,18 +100,6 @@ public class OperationServiceImpl implements OperationService {
         String multiInstance =
             customProcessDefinitionService.getNodeType(currentTask.getProcessDefinitionId(), targetTaskDefineKey);
         // 更新自定义历程结束时间
-        List<ProcessTrackModel> ptModelList =
-            processTrackManager.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId).getData();
-        for (ProcessTrackModel ptModel : ptModelList) {
-            if (StringUtils.isBlank(ptModel.getEndTime())) {
-                try {
-                    ptModel.setDescribed(reason0);
-                    processTrackManager.saveOrUpdate(Y9LoginUserHolder.getTenantId(), ptModel);
-                } catch (Exception e) {
-                    LOGGER.error("更新自定义历程结束时间失败", e);
-                }
-            }
-        }
         for (Task task : taskList) {
             Map<String, Object> vars = new HashMap<>(16);
             vars.put(SysVariables.REPOSITION, true);
