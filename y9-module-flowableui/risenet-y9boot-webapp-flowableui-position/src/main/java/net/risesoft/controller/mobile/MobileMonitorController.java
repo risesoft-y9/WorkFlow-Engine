@@ -53,7 +53,7 @@ public class MobileMonitorController {
         @RequestParam @NotBlank String processInstanceId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
-            boolean b = historicProcessApi.deleteProcessInstance(tenantId, processInstanceId);
+            boolean b = historicProcessApi.deleteProcessInstance(tenantId, processInstanceId).isSuccess();
             map.put(UtilConsts.SUCCESS, b);
         } catch (Exception e) {
             map.put("msg", "发生异常");
@@ -181,7 +181,7 @@ public class MobileMonitorController {
         @RequestParam @NotBlank String processInstanceId, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
-            boolean b = historicProcessApi.removeProcess4Position(tenantId, processInstanceId);
+            boolean b = historicProcessApi.removeProcess4Position(tenantId, processInstanceId).isSuccess();
             map.put(UtilConsts.SUCCESS, b);
         } catch (Exception e) {
             map.put("msg", "发生异常");

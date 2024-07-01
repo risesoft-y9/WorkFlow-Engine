@@ -18,6 +18,7 @@ import net.risesoft.api.itemadmin.position.ChaoSong4PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.todo.TodoTaskApi;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.FlowableTenantInfoHolder;
@@ -56,7 +57,8 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      */
     @Override
     @PostMapping(value = "/deleteProcessInstance", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean deleteProcessInstance(@RequestParam String tenantId, @RequestParam String processInstanceId) {
+    public Y9Result<Object> deleteProcessInstance(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         List<org.flowable.task.api.Task> list = customTaskService.findByProcessInstanceId(processInstanceId);
@@ -85,7 +87,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
                 LOGGER.error("##########协作状态删除失败：{}#", e.getMessage());
             }
         }
-        return b;
+        return Y9Result.success();
     }
 
     /**
@@ -97,11 +99,12 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      */
     @Override
     @GetMapping(value = "/getById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HistoricProcessInstanceModel getById(@RequestParam String tenantId, @RequestParam String processInstanceId) {
+    public Y9Result<HistoricProcessInstanceModel> getById(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         HistoricProcessInstance hpi = customHistoricProcessService.getById(processInstanceId);
-        return FlowableModelConvertUtil.historicProcessInstance2Model(hpi);
+        return Y9Result.success(FlowableModelConvertUtil.historicProcessInstance2Model(hpi));
     }
 
     /**
@@ -114,7 +117,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      */
     @Override
     @GetMapping(value = "/getByIdAndYear", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HistoricProcessInstanceModel getByIdAndYear(@RequestParam String tenantId,
+    public Y9Result<HistoricProcessInstanceModel> getByIdAndYear(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -123,7 +126,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         if (hpi != null) {
             hpiModel = FlowableModelConvertUtil.historicProcessInstance2Model(hpi);
         }
-        return hpiModel;
+        return Y9Result.success(hpiModel);
     }
 
     /**
@@ -135,13 +138,13 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      */
     @Override
     @GetMapping(value = "/getBySuperProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoricProcessInstanceModel> getBySuperProcessInstanceId(@RequestParam String tenantId,
+    public Y9Result<List<HistoricProcessInstanceModel>> getBySuperProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String superProcessInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         List<HistoricProcessInstance> hpiList =
             customHistoricProcessService.getBySuperProcessInstanceId(superProcessInstanceId);
-        return FlowableModelConvertUtil.historicProcessInstanceList2ModelList(hpiList);
+        return Y9Result.success(FlowableModelConvertUtil.historicProcessInstanceList2ModelList(hpiList));
     }
 
     /**
@@ -153,12 +156,12 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      */
     @Override
     @GetMapping(value = "/getSuperProcessInstanceById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HistoricProcessInstanceModel getSuperProcessInstanceById(@RequestParam String tenantId,
+    public Y9Result<HistoricProcessInstanceModel> getSuperProcessInstanceById(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         HistoricProcessInstance hpi = customHistoricProcessService.getSuperProcessInstanceById(processInstanceId);
-        return FlowableModelConvertUtil.historicProcessInstance2Model(hpi);
+        return Y9Result.success(FlowableModelConvertUtil.historicProcessInstance2Model(hpi));
     }
 
     /**
@@ -171,7 +174,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      */
     @Override
     @PostMapping(value = "/recoveryProcess", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean recoveryProcess(@RequestParam String tenantId, @RequestParam String userId,
+    public Y9Result<Object> recoveryProcess(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -189,7 +192,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
                 }
             }
         }
-        return b;
+        return Y9Result.success();
     }
 
     /**
@@ -201,10 +204,10 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      */
     @Override
     @PostMapping(value = "/removeProcess", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean removeProcess(@RequestParam String tenantId, @RequestParam String processInstanceId) {
+    public Y9Result<Object> removeProcess(@RequestParam String tenantId, @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        return customHistoricProcessService.removeProcess(processInstanceId);
+        return Y9Result.success(customHistoricProcessService.removeProcess(processInstanceId));
     }
 
     /**
@@ -216,10 +219,11 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      */
     @Override
     @PostMapping(value = "/removeProcess4Position", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean removeProcess4Position(@RequestParam String tenantId, @RequestParam String processInstanceId) {
+    public Y9Result<Object> removeProcess4Position(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        return customHistoricProcessService.removeProcess4Position(processInstanceId);
+        return Y9Result.success(customHistoricProcessService.removeProcess4Position(processInstanceId));
     }
 
     /**
@@ -232,9 +236,10 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
      */
     @Override
     @PostMapping(value = "/setPriority", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void setPriority(@RequestParam String tenantId, @RequestParam String processInstanceId,
+    public Y9Result<Object> setPriority(@RequestParam String tenantId, @RequestParam String processInstanceId,
         @RequestParam String priority) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         customHistoricProcessService.setPriority(processInstanceId, priority);
+        return Y9Result.success();
     }
 }
