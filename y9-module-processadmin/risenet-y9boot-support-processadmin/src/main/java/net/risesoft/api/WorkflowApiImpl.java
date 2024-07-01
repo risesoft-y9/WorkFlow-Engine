@@ -1,7 +1,6 @@
 package net.risesoft.api;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.WorkflowApi;
+import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.service.WorkflowProcessInstanceService;
 
@@ -39,8 +40,8 @@ public class WorkflowApiImpl implements WorkflowApi {
      */
     @Override
     @GetMapping(value = "/getCurrentTaskTargets", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, String>> getCurrentTaskTargets(@RequestParam String tenantId,
-        @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
+    public Y9Result<List<TargetModel>> getCurrentTaskTargets(@RequestParam String tenantId,
+                                                             @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         return workflowProcessInstanceService.getCurrentTaskTargets(processDefinitionId, taskDefKey);
     }

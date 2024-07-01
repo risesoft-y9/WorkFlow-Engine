@@ -1,13 +1,14 @@
 package y9.client.rest.processadmin;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.processadmin.WorkflowApi;
+import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -29,6 +30,6 @@ public interface WorkflowApiClient extends WorkflowApi {
      */
     @Override
     @GetMapping("/getCurrentTaskTargets")
-    public List<Map<String, String>> getCurrentTaskTargets(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<TargetModel>> getCurrentTaskTargets(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
 }
