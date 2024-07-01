@@ -2,8 +2,6 @@ package net.risesoft.api;
 
 import java.util.List;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,7 +39,6 @@ public class EntrustHistoryApiImpl implements EntrustHistoryApi {
      * @return Y9Result<List<EntrustHistoryModel>>
      */
     @Override
-    @GetMapping(value = "/findByOwnerIdAndItemId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<EntrustHistoryModel>> findByOwnerIdAndItemId(String tenantId, String userId, String ownerId,
         String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -59,7 +56,6 @@ public class EntrustHistoryApiImpl implements EntrustHistoryApi {
      * @return List<EntrustHistoryModel>
      */
     @Override
-    @GetMapping(value = "/findOneByOwnerId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<EntrustHistoryModel>> findOneByOwnerId(String tenantId, String userId, String ownerId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<EntrustHistory> ehList = entrustHistoryService.list(ownerId);

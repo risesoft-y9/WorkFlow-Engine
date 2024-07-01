@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,7 +53,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/delChildTableRow", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> delChildTableRow(String tenantId, String formId, String tableId, String guid) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = formDataService.delChildTableRow(formId, tableId, guid);
@@ -75,7 +71,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/delPreFormData", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> delPreFormData(String tenantId, String formId, String guid) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = formDataService.delPreFormData(formId, guid);
@@ -95,7 +90,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @return Y9Result<List<BindFormModel>>
      */
     @Override
-    @GetMapping(value = "/findFormItemBind", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<BindFormModel>> findFormItemBind(String tenantId, String itemId, String processDefinitionId,
         String taskDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -121,7 +115,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @return List<Map < String, Object>>
      */
     @Override
-    @GetMapping(value = "/getAllFieldPerm", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<FieldPermModel>> getAllFieldPerm(String tenantId, String userId, String formId,
         String taskDefKey, String processDefinitionId) {
         Person person = personManager.get(tenantId, userId).getData();
@@ -139,7 +132,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @return Y9Result<BindFormModel>
      */
     @Override
-    @GetMapping(value = "/getBindPreFormByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<BindFormModel> getBindPreFormByItemId(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = formDataService.getBindPreFormByItemId(itemId);
@@ -160,7 +152,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @throws Exception 抛出异常
      */
     @Override
-    @GetMapping(value = "/getChildTableData", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getChildTableData(String tenantId, String formId, String tableId,
         String processSerialNumber) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -176,7 +167,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @return Map<String, Object>
      */
     @Override
-    @GetMapping(value = "/getData", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getData(String tenantId, String itemId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return formDataService.getData(tenantId, itemId, processSerialNumber);
@@ -194,7 +184,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @return Y9Result<FieldPermModel>
      */
     @Override
-    @GetMapping(value = "/getFieldPerm", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<FieldPermModel> getFieldPerm(String tenantId, String userId, String formId, String fieldName,
         String taskDefKey, String processDefinitionId) {
         Person person = personManager.get(tenantId, userId).getData();
@@ -212,7 +201,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @return Y9Result<List<Y9FormFieldModel>>
      */
     @Override
-    @GetMapping(value = "/getFormField", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<Y9FormFieldModel>> getFormField(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Y9FormFieldModel> list = formDataService.getFormField(itemId);
@@ -227,7 +215,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @return Y9Result<List<FormFieldDefineModel>>
      */
     @Override
-    @GetMapping(value = "/getFormFieldDefine", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<FormFieldDefineModel>> getFormFieldDefine(String tenantId, String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<FormFieldDefineModel> list = formDataService.getFormFieldDefine(formId);
@@ -242,7 +229,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @return Y9Result<String>
      */
     @Override
-    @GetMapping(value = "/getFormJson", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getFormJson(String tenantId, String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String json = formDataService.getFormJson(formId);
@@ -259,7 +245,6 @@ public class FormDataApiImpl implements FormDataApi {
      */
     @SuppressWarnings("unchecked")
     @Override
-    @GetMapping(value = "/getFromData", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Map<String, Object>> getFromData(String tenantId, String formId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = formDataService.getFromData(formId, processSerialNumber);
@@ -277,7 +262,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @return Y9Result<List<Map<String, Object>>>
      */
     @Override
-    @GetMapping(value = "/getPreFormDataByFormId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(String tenantId, String formId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Map<String, Object>> list = formDataService.getPreFormDataByFormId(formId);
@@ -295,7 +279,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/saveChildTableData", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveChildTableData(String tenantId, String formId, String tableId,
         String processSerialNumber, @RequestBody String jsonData) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -313,7 +296,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @throws Exception 抛出异常
      */
     @Override
-    @PostMapping(value = "/saveFormData", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveFormData(String tenantId, String formId, @RequestBody String formJsonData)
         throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -332,7 +314,6 @@ public class FormDataApiImpl implements FormDataApi {
      * @throws Exception 抛出异常
      */
     @Override
-    @PostMapping(value = "/savePreFormData", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> savePreFormData(String tenantId, String itemId, String formId,
         @RequestBody String formJsonData) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);

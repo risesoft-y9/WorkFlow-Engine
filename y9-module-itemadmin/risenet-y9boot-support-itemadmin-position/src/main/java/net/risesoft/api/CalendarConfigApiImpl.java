@@ -1,7 +1,5 @@
 package net.risesoft.api;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,7 +35,6 @@ public class CalendarConfigApiImpl implements CalendarConfigApi {
      * @return Y9Result<CalendarConfigModel>
      */
     @Override
-    @GetMapping(value = "/findByYear", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<CalendarConfigModel> findByYear(String tenantId, String year) {
         Y9LoginUserHolder.setTenantId(tenantId);
         CalendarConfig calendarConfig = calendarConfigService.findByYear(year);

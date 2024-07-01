@@ -3,7 +3,6 @@ package net.risesoft.api;
 import java.util.List;
 
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -87,8 +86,6 @@ public class EntrustApiImpl implements Entrust4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveOrUpdate(String tenantId, String positionId, @RequestBody EntrustModel entrustModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.get(tenantId, positionId).getData();

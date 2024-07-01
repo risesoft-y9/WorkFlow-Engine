@@ -1,8 +1,5 @@
 package net.risesoft.api;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,7 +36,6 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
      * @return Y9Result<DocumentWpsModel>
      */
     @Override
-    @GetMapping(value = "/findById", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<DocumentWpsModel> findById(String tenantId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         DocumentWps documentWps = documentWpsService.findById(id);
@@ -59,7 +55,6 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
      * @return Y9Result<DocumentWpsModel>
      */
     @Override
-    @GetMapping(value = "/findByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<DocumentWpsModel> findByProcessSerialNumber(String tenantId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         DocumentWps documentWps = documentWpsService.findByProcessSerialNumber(processSerialNumber);
@@ -79,8 +74,6 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/saveDocumentWps", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveDocumentWps(String tenantId, @RequestBody DocumentWpsModel documentWpsModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         DocumentWps documentWps = new DocumentWps();
@@ -98,7 +91,6 @@ public class DocumentWpsApiImpl implements DocumentWpsApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/saveWpsContent", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveWpsContent(String tenantId, String processSerialNumber, String hasContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
         documentWpsService.saveWpsContent(processSerialNumber, hasContent);

@@ -1,7 +1,5 @@
 package net.risesoft.api;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,8 +36,6 @@ public class ErrorLogApiImpl implements ErrorLogApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/saveErrorLog", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveErrorLog(String tenantId, @RequestBody ErrorLogModel errorLogModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ErrorLog errorLog = new ErrorLog();

@@ -6,10 +6,8 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,7 +52,6 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/countByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -72,7 +69,6 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      * @return Y9Page<ActRuDetailModel>
      */
     @Override
-    @GetMapping(value = "/findBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -99,7 +95,6 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      * @return Y9Page<ActRuDetailModel>
      */
     @Override
-    @GetMapping(value = "/findByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page,
         @RequestParam Integer rows) {
@@ -130,7 +125,6 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      * @return Y9Page<ActRuDetailModel>
      */
     @Override
-    @GetMapping(value = "/searchBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
         String tableName, String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -170,7 +164,6 @@ public class ItemDoingApiImpl implements ItemDoingApi {
      * @return Y9Page<ActRuDetailModel>
      */
     @Override
-    @GetMapping(value = "/searchByUserIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestParam String tableName,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {

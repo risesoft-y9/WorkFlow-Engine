@@ -1,8 +1,5 @@
 package net.risesoft.api;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +37,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/cancelMeeting", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> cancelMeeting(String tenantId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         officeDoneInfoService.cancelMeeting(processInstanceId);
@@ -55,7 +51,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/countByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> countByItemId(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int count = officeDoneInfoService.countByItemId(itemId);
@@ -71,7 +66,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/countByPositionId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> countByPositionId(String tenantId, String positionId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int count = officeDoneInfoService.countByUserId(positionId, itemId);
@@ -87,7 +81,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/countByPositionIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> countByPositionIdAndSystemName(String tenantId, String positionId, String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int count = officeDoneInfoService.countByPositionIdAndSystemName(positionId, systemName);
@@ -100,7 +93,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Result<Long>
      */
     @Override
-    @GetMapping(value = "/countDoingByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Long> countDoingByItemId(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         long count = officeDoneInfoService.countDoingByItemId(itemId);
@@ -115,7 +107,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/deleteOfficeDoneInfo", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deleteOfficeDoneInfo(String tenantId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         officeDoneInfoService.deleteOfficeDoneInfo(processInstanceId);
@@ -130,7 +121,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Result<OfficeDoneInfoModel>
      */
     @Override
-    @GetMapping(value = "/findByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<OfficeDoneInfoModel> findByProcessInstanceId(String tenantId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
@@ -155,7 +145,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
-    @GetMapping(value = "/getMeetingList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<OfficeDoneInfoModel> getMeetingList(String tenantId, String userName, String deptName, String title,
         String meetingType, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -171,8 +160,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @throws Exception 异常
      */
     @Override
-    @PostMapping(value = "/saveOfficeDone", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveOfficeDone(String tenantId, @RequestBody OfficeDoneInfoModel info) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         OfficeDoneInfo officeInfo = new OfficeDoneInfo();
@@ -196,7 +183,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
-    @GetMapping(value = "/searchAllByDeptId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<OfficeDoneInfoModel> searchAllByDeptId(String tenantId, String deptId, String title, String itemId,
         String userName, String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -220,7 +206,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
-    @GetMapping(value = "/searchAllByPositionId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<OfficeDoneInfoModel> searchAllByPositionId(String tenantId, String positionId, String title,
         String itemId, String userName, String state, String year, String startDate, String endDate, Integer page,
         Integer rows) {
@@ -243,7 +228,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
-    @GetMapping(value = "/searchAllList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<OfficeDoneInfoModel> searchAllList(String tenantId, String searchName, String itemId, String userName,
         String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -264,7 +248,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
-    @GetMapping(value = "/searchByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<OfficeDoneInfoModel> searchByItemId(String tenantId, String title, String itemId, String state,
         String startdate, String enddate, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -285,7 +268,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
-    @GetMapping(value = "/searchByPositionId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<OfficeDoneInfoModel> searchByPositionId(String tenantId, String positionId, String title,
         String itemId, String startdate, String enddate, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -306,7 +288,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
-    @GetMapping(value = "/searchByPositionIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(String tenantId, String positionId, String title,
         String systemName, String startdate, String enddate, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -323,7 +304,6 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/setMeeting", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> setMeeting(String tenantId, String processInstanceId, String meetingType) {
         Y9LoginUserHolder.setTenantId(tenantId);
         officeDoneInfoService.setMeeting(processInstanceId, meetingType);

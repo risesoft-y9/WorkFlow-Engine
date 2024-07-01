@@ -2,6 +2,9 @@ package net.risesoft.api.itemadmin;
 
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -21,5 +24,8 @@ public interface BookMarkBindApi {
      * @param processSerialNumber 流程编号
      * @return Y9Result<Map < String, Object>>
      */
-    Y9Result<Map<String, Object>> getBookMarkData(String tenantId, String wordTemplateId, String processSerialNumber);
+    @GetMapping("/getBookMarkData")
+    Y9Result<Map<String, Object>> getBookMarkData(@RequestParam("tenantId") String tenantId,
+        @RequestParam("wordTemplateId") String wordTemplateId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 }

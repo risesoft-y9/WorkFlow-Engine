@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -76,7 +74,6 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @throws Exception exception
      */
     @Override
-    @PostMapping(value = "/addMultiInstanceExecution", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> addMultiInstanceExecution(String tenantId, String activityId, String parentExecutionId,
         String taskId, String elementUser) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -95,7 +92,6 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @throws Exception exception
      */
     @Override
-    @PostMapping(value = "/deleteMultiInstanceExecution", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deleteMultiInstanceExecution(String tenantId, String executionId, String taskId,
         String elementUser) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -114,7 +110,6 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/directSend", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> directSend(String tenantId, String positionId, String taskId, String routeToTask,
         String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -138,7 +133,6 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/refuseClaimRollback", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> refuseClaimRollback(String tenantId, String positionId, String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
@@ -194,8 +188,6 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @throws Exception exception
      */
     @Override
-    @PostMapping(value = "/reposition", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> reposition(String tenantId, String positionId, String taskId, String repositionToTaskId,
         @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -215,7 +207,6 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @throws Exception exception
      */
     @Override
-    @PostMapping(value = "/rollBack", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> rollBack(String tenantId, String positionId, String taskId, String reason)
         throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -233,7 +224,6 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @throws Exception exception
      */
     @Override
-    @PostMapping(value = "/rollbackToSender", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> rollbackToSender(String tenantId, String positionId, String taskId) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         specialOperationManager.rollbackToSender4Position(tenantId, positionId, taskId);
@@ -251,7 +241,6 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @throws Exception exception
      */
     @Override
-    @PostMapping(value = "/rollbackToStartor", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> rollbackToStartor(String tenantId, String positionId, String taskId, String reason)
         throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -270,7 +259,6 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @throws Exception exception
      */
     @Override
-    @PostMapping(value = "/specialComplete", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> specialComplete(String tenantId, String positionId, String taskId, String reason)
         throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -289,7 +277,6 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
      * @throws Exception exception
      */
     @Override
-    @PostMapping(value = "/takeback", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> takeback(String tenantId, String positionId, String taskId, String reason)
         throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);

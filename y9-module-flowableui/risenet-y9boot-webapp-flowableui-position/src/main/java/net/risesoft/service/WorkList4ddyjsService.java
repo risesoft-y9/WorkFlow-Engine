@@ -3,6 +3,7 @@ package net.risesoft.service;
 import java.util.Map;
 
 import net.risesoft.model.ChaoSongModel;
+import net.risesoft.model.itemadmin.OfficeFollowModel;
 import net.risesoft.pojo.Y9Page;
 
 public interface WorkList4ddyjsService {
@@ -40,7 +41,7 @@ public interface WorkList4ddyjsService {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    Y9Page<Map<String, Object>> followList(String itemId, String searchTerm, Integer page, Integer rows);
+    Y9Page<OfficeFollowModel> followList(String itemId, String searchTerm, Integer page, Integer rows);
 
     /**
      * 获取上会台账列表

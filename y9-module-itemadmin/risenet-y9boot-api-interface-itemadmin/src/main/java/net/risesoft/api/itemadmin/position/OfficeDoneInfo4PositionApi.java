@@ -1,5 +1,11 @@
 package net.risesoft.api.itemadmin.position;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -20,7 +26,9 @@ public interface OfficeDoneInfo4PositionApi {
      * @param processInstanceId 流程实例id
      * @return 9Result<Object>
      */
-    Y9Result<Object> cancelMeeting(String tenantId, String processInstanceId);
+    @PostMapping("/cancelMeeting")
+    Y9Result<Object> cancelMeeting(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 监控办结统计
@@ -29,7 +37,8 @@ public interface OfficeDoneInfo4PositionApi {
      * @param itemId 事项id
      * @return Y9Result<Integer>
      */
-    Y9Result<Integer> countByItemId(String tenantId, String itemId);
+    @GetMapping("/countByItemId")
+    Y9Result<Integer> countByItemId(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId);
 
     /**
      * 统计个人办结件
@@ -39,7 +48,9 @@ public interface OfficeDoneInfo4PositionApi {
      * @param itemId 事项id
      * @return Y9Result<Integer>
      */
-    Y9Result<Integer> countByPositionId(String tenantId, String positionId, String itemId);
+    @GetMapping("/countByPositionId")
+    Y9Result<Integer> countByPositionId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId);
 
     /**
      * 根据系统名称统计个人办结件
@@ -49,7 +60,9 @@ public interface OfficeDoneInfo4PositionApi {
      * @param systemName 系统名称
      * @return Y9Result<Integer>
      */
-    Y9Result<Integer> countByPositionIdAndSystemName(String tenantId, String positionId, String systemName);
+    @GetMapping("/countByPositionIdAndSystemName")
+    Y9Result<Integer> countByPositionIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("systemName") String systemName);
 
     /**
      * 监控在办统计
@@ -58,7 +71,8 @@ public interface OfficeDoneInfo4PositionApi {
      * @param itemId 事项id
      * @return Y9Result<Long>
      */
-    Y9Result<Long> countDoingByItemId(String tenantId, String itemId);
+    @GetMapping("/countDoingByItemId")
+    Y9Result<Long> countDoingByItemId(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId);
 
     /**
      * 根据流程实例id删除办结信息
@@ -67,7 +81,9 @@ public interface OfficeDoneInfo4PositionApi {
      * @param processInstanceId 流程实例id
      * @return Y9Result<Object>
      */
-    Y9Result<Object> deleteOfficeDoneInfo(String tenantId, String processInstanceId);
+    @PostMapping("/deleteOfficeDoneInfo")
+    Y9Result<Object> deleteOfficeDoneInfo(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程实例id获取办结信息
@@ -76,7 +92,9 @@ public interface OfficeDoneInfo4PositionApi {
      * @param processInstanceId 流程实例id
      * @return Y9Result<OfficeDoneInfoModel>
      */
-    Y9Result<OfficeDoneInfoModel> findByProcessInstanceId(String tenantId, String processInstanceId);
+    @GetMapping("/findByProcessInstanceId")
+    Y9Result<OfficeDoneInfoModel> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 上会台账列表，当代研究所
@@ -90,8 +108,11 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows 条数
      * @return
      */
-    Y9Page<OfficeDoneInfoModel> getMeetingList(String tenantId, String userName, String deptName, String title,
-        String meetingType, Integer page, Integer rows);
+    @GetMapping("/getMeetingList")
+    Y9Page<OfficeDoneInfoModel> getMeetingList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userName") String userName, @RequestParam("deptName") String deptName,
+        @RequestParam("title") String title, @RequestParam("meetingType") String meetingType,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      * 保存办结信息,不经过kafka消息队列，直接保存
@@ -101,7 +122,9 @@ public interface OfficeDoneInfo4PositionApi {
      * @return
      * @throws Exception Exception
      */
-    Y9Result<Object> saveOfficeDone(String tenantId, OfficeDoneInfoModel info) throws Exception;
+    @PostMapping(value = "/saveOfficeDone", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Y9Result<Object> saveOfficeDone(@RequestParam("tenantId") String tenantId, @RequestBody OfficeDoneInfoModel info)
+        throws Exception;
 
     /**
      * 科室所有件列表
@@ -117,8 +140,12 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Y9Page<OfficeDoneInfoModel> searchAllByDeptId(String tenantId, String deptId, String title, String itemId,
-        String userName, String state, String year, Integer page, Integer rows);
+    @GetMapping("/searchAllByDeptId")
+    Y9Page<OfficeDoneInfoModel> searchAllByDeptId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("deptId") String deptId, @RequestParam("title") String title,
+        @RequestParam("itemId") String itemId, @RequestParam("userName") String userName,
+        @RequestParam("state") String state, @RequestParam("year") String year, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 
     /**
      * Description: 个人所有件搜索
@@ -136,8 +163,13 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Y9Page<OfficeDoneInfoModel> searchAllByPositionId(String tenantId, String positionId, String title, String itemId,
-        String userName, String state, String year, String startDate, String endDate, Integer page, Integer rows);
+    @GetMapping("/searchAllByPositionId")
+    Y9Page<OfficeDoneInfoModel> searchAllByPositionId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("title") String title,
+        @RequestParam("itemId") String itemId, @RequestParam("userName") String userName,
+        @RequestParam("state") String state, @RequestParam("year") String year,
+        @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      * 监控办件列表
@@ -152,8 +184,11 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Y9Page<OfficeDoneInfoModel> searchAllList(String tenantId, String searchName, String itemId, String userName,
-        String state, String year, Integer page, Integer rows);
+    @GetMapping("/searchAllList")
+    Y9Page<OfficeDoneInfoModel> searchAllList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("searchName") String searchName, @RequestParam("itemId") String itemId,
+        @RequestParam("userName") String userName, @RequestParam("state") String state,
+        @RequestParam("year") String year, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      * 获取监控在办，办结件列表
@@ -168,8 +203,11 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Y9Page<OfficeDoneInfoModel> searchByItemId(String tenantId, String title, String itemId, String state,
-        String startdate, String enddate, Integer page, Integer rows);
+    @GetMapping("/searchByItemId")
+    Y9Page<OfficeDoneInfoModel> searchByItemId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("title") String title, @RequestParam("itemId") String itemId, @RequestParam("state") String state,
+        @RequestParam("startdate") String startdate, @RequestParam("enddate") String enddate,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      * 获取个人办结件列表
@@ -184,8 +222,12 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Y9Page<OfficeDoneInfoModel> searchByPositionId(String tenantId, String positionId, String title, String itemId,
-        String startdate, String enddate, Integer page, Integer rows);
+    @GetMapping("/searchByPositionId")
+    Y9Page<OfficeDoneInfoModel> searchByPositionId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("title") String title,
+        @RequestParam("itemId") String itemId, @RequestParam("startdate") String startdate,
+        @RequestParam("enddate") String enddate, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 
     /**
      * 根据岗位id,系统名称，获取个人办结件列表
@@ -200,8 +242,12 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return
      */
-    Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(String tenantId, String positionId, String title,
-        String systemName, String startdate, String enddate, Integer page, Integer rows);
+    @GetMapping("/searchByPositionIdAndSystemName")
+    Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("title") String title,
+        @RequestParam("systemName") String systemName, @RequestParam("startdate") String startdate,
+        @RequestParam("enddate") String enddate, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 
     /**
      * 上会，当代研究所
@@ -211,6 +257,8 @@ public interface OfficeDoneInfo4PositionApi {
      * @param meetingType 会议类型
      * @return
      */
-    Y9Result<Object> setMeeting(String tenantId, String processInstanceId, String meetingType);
+    @PostMapping("/setMeeting")
+    Y9Result<Object> setMeeting(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("meetingType") String meetingType);
 
 }

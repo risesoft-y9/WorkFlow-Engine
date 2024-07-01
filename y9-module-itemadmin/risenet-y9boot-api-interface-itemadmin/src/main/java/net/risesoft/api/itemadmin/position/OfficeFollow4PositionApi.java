@@ -1,8 +1,13 @@
 package net.risesoft.api.itemadmin.position;
 
-import java.util.Map;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.OfficeFollowModel;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -20,7 +25,9 @@ public interface OfficeFollow4PositionApi {
      * @param processInstanceId 流程实例id
      * @return int
      */
-    Y9Result<Integer> countByProcessInstanceId(String tenantId, String positionId, String processInstanceId);
+    @GetMapping("/countByProcessInstanceId")
+    Y9Result<Integer> countByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 取消关注
@@ -30,7 +37,9 @@ public interface OfficeFollow4PositionApi {
      * @param processInstanceIds 流程实例ids
      * @return Map&lt;String, Object&gt;
      */
-    Y9Result<Object> delOfficeFollow(String tenantId, String positionId, String processInstanceIds);
+    @PostMapping("/delOfficeFollow")
+    Y9Result<Object> delOfficeFollow(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("processInstanceIds") String processInstanceIds);
 
     /**
      * 根据流程实例id删除关注
@@ -39,7 +48,9 @@ public interface OfficeFollow4PositionApi {
      * @param processInstanceId 流程实例id
      * @return
      */
-    Y9Result<Object> deleteByProcessInstanceId(String tenantId, String processInstanceId);
+    @PostMapping("/deleteByProcessInstanceId")
+    Y9Result<Object> deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取我的关注数量
@@ -48,7 +59,9 @@ public interface OfficeFollow4PositionApi {
      * @param positionId 岗位id
      * @return int
      */
-    Y9Result<Integer> getFollowCount(String tenantId, String positionId);
+    @GetMapping("/getFollowCount")
+    Y9Result<Integer> getFollowCount(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId);
 
     /**
      * 根据系统名获取关注列表
@@ -61,8 +74,10 @@ public interface OfficeFollow4PositionApi {
      * @param rows
      * @return
      */
-    Map<String, Object> getFollowListBySystemName(String tenantId, String positionId, String systemName,
-        String searchName, int page, int rows);
+    @GetMapping("/getFollowListBySystemName")
+    Y9Page<OfficeFollowModel> getFollowListBySystemName(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("systemName") String systemName,
+        @RequestParam("searchName") String searchName, @RequestParam("page") int page, @RequestParam("rows") int rows);
 
     /**
      * 获取关注列表
@@ -74,7 +89,10 @@ public interface OfficeFollow4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> getOfficeFollowList(String tenantId, String positionId, String searchName, int page, int rows);
+    @GetMapping("/getOfficeFollowList")
+    Y9Page<OfficeFollowModel> getOfficeFollowList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("searchName") String searchName,
+        @RequestParam("page") int page, @RequestParam("rows") int rows);
 
     /**
      * 保存办件关注信息
@@ -83,7 +101,9 @@ public interface OfficeFollow4PositionApi {
      * @param officeFollow 办件关注信息
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> saveOfficeFollow(String tenantId, OfficeFollowModel officeFollow);
+    @PostMapping(value = "/saveOfficeFollow", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Y9Result<Object> saveOfficeFollow(@RequestParam("tenantId") String tenantId,
+        @RequestBody OfficeFollowModel officeFollow);
 
     /**
      * 更新标题
@@ -91,7 +111,11 @@ public interface OfficeFollow4PositionApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param documentTitle 文档标题
+     * @return
      */
-    void updateTitle(String tenantId, String processInstanceId, String documentTitle);
+    @PostMapping("/updateTitle")
+    Y9Result<Object> updateTitle(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("documentTitle") String documentTitle);
 
 }

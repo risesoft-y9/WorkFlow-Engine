@@ -39,6 +39,7 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.ItemModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
+import net.risesoft.model.itemadmin.OfficeFollowModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.TaskVariableModel;
 import net.risesoft.model.platform.Position;
@@ -313,14 +314,12 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Y9Page<Map<String, Object>> followList(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> map;
+    public Y9Page<OfficeFollowModel> followList(String itemId, String searchTerm, Integer page, Integer rows) {
+        Y9Page<OfficeFollowModel> map;
         String tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
-        map = officeFollow4PositionApi.getFollowListBySystemName(tenantId, Y9LoginUserHolder.getPositionId(),
+        return officeFollow4PositionApi.getFollowListBySystemName(tenantId, Y9LoginUserHolder.getPositionId(),
             item.getSystemName(), searchTerm, page, rows);
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()),
-            Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
     }
 
     /**

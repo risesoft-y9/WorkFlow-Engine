@@ -1,6 +1,13 @@
 package net.risesoft.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.itemadmin.ItemOpinionFrameBindApi;
 import net.risesoft.entity.ItemOpinionFrameBind;
 import net.risesoft.entity.OpinionFrame;
@@ -10,13 +17,6 @@ import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.OpinionFrameService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 意见框绑定接口
@@ -42,7 +42,6 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
      * @return Y9Result<List<ItemOpinionFrameBindModel>>
      */
     @Override
-    @GetMapping(value = "/findByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemOpinionFrameBindModel>> findByItemId(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindService.findByItemId(itemId);
@@ -66,7 +65,6 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
      * @return Y9Result<List<ItemOpinionFrameBindModel>>
      */
     @Override
-    @GetMapping(value = "/findByItemIdAndProcessDefinitionId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionId(String tenantId, String itemId,
         String processDefinitionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -94,7 +92,6 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
      * @return Y9Result<< ItemOpinionFrameBindModel>>
      */
     @Override
-    @GetMapping(value = "/findByItemIdAndProcessDefinitionIdAndTaskDefKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKey(String tenantId,
         String userId, String itemId, String processDefinitionId, String taskDefKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -122,8 +119,6 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
      * @return Y9Result<List<ItemOpinionFrameBindModel>>
      */
     @Override
-    @GetMapping(value = "/findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole",
-        produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(
         String tenantId, String userId, String itemId, String processDefinitionId, String taskDefKey) {
         Y9LoginUserHolder.setTenantId(tenantId);

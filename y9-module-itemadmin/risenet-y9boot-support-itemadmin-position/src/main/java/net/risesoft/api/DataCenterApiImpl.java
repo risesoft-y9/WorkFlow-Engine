@@ -1,7 +1,5 @@
 package net.risesoft.api;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,7 +37,6 @@ public class DataCenterApiImpl implements DataCenterApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/saveToDateCenter", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveToDateCenter(String processInstanceId, String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionApi.get(tenantId, userId).getData();

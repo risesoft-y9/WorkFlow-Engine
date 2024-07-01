@@ -2,9 +2,6 @@ package net.risesoft.api;
 
 import java.util.List;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +40,6 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/countAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> countAssociatedFile(@RequestParam String tenantId,
         @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -60,7 +56,6 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/deleteAllAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deleteAllAssociatedFile(@RequestParam String tenantId,
         @RequestParam String processSerialNumber, @RequestParam String delIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -77,7 +72,6 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/deleteAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deleteAssociatedFile(@RequestParam String tenantId,
         @RequestParam String processSerialNumber, @RequestParam String delId) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -94,7 +88,6 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      * @return Y9Result<List<AssociatedFileModel>>
      */
     @Override
-    @GetMapping(value = "/getAssociatedFileAllList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam String tenantId,
         @RequestParam String positionId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -114,7 +107,6 @@ public class AssociatedFileApiImpl implements AssociatedFile4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/saveAssociatedFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveAssociatedFile(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String processSerialNumber, @RequestParam String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
