@@ -2,9 +2,6 @@ package net.risesoft.api;
 
 import java.util.Map;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,7 +49,6 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/changeChaoSongState", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> changeChaoSongState(String tenantId, String id, String type) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.changeChaoSongState(id, type);
@@ -67,7 +63,6 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/changeStatus", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> changeStatus(String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.changeStatus(ids);
@@ -82,7 +77,6 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/changeStatus2read", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> changeStatus2read(String tenantId, String chaoSongId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.changeStatus(chaoSongId);
@@ -98,7 +92,6 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/countByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> countByProcessInstanceId(String tenantId, String positionId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int num = chaoSongInfoService.countByProcessInstanceId(positionId, processInstanceId);
@@ -114,8 +107,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/countByUserIdAndProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Integer> countByUserIdAndProcessInstanceId(String tenantId, String positionId, String processInstanceId) {
+    public Y9Result<Integer> countByUserIdAndProcessInstanceId(String tenantId, String positionId,
+        String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int num = chaoSongInfoService.countByUserIdAndProcessInstanceId(positionId, processInstanceId);
         return Y9Result.success(num);
@@ -129,7 +122,6 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/deleteByIds", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deleteByIds(String tenantId, @RequestBody String[] ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.deleteByIds(ids);
@@ -144,7 +136,6 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/deleteByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deleteByProcessInstanceId(String tenantId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.deleteByProcessInstanceId(processInstanceId);
@@ -163,8 +154,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Result<OpenDataModeld>
      */
     @Override
-    @GetMapping(value = "/detail", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<OpenDataModel> detail(String tenantId, String positionId, String id, String processInstanceId, Integer status, boolean mobile) {
+    public Y9Result<OpenDataModel> detail(String tenantId, String positionId, String id, String processInstanceId,
+        Integer status, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         OpenDataModel model = chaoSongInfoService.detail(processInstanceId, status, mobile);
@@ -185,7 +176,6 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/getDone4OpinionCountByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> getDone4OpinionCountByUserId(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int num = chaoSongInfoService.getDone4OpinionCountByUserId(positionId);
@@ -200,7 +190,6 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/getDoneCount", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> getDoneCount(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int num = chaoSongInfoService.getDoneCountByUserId(positionId);
@@ -218,8 +207,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>
      */
     @Override
-    @GetMapping(value = "/getDoneList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Page<ChaoSongModel> getDoneList(String tenantId, String positionId, String documentTitle, int rows, int page) {
+    public Y9Page<ChaoSongModel> getDoneList(String tenantId, String positionId, String documentTitle, int rows,
+        int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongInfoService.getDoneList(positionId, documentTitle, rows, page);
     }
@@ -236,8 +225,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>
      */
     @Override
-    @GetMapping(value = "/getListByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Page<ChaoSongModel> getListByProcessInstanceId(String tenantId, String positionId, String processInstanceId, String userName, int rows, int page) {
+    public Y9Page<ChaoSongModel> getListByProcessInstanceId(String tenantId, String positionId,
+        String processInstanceId, String userName, int rows, int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         return chaoSongInfoService.getListByProcessInstanceId(processInstanceId, userName, rows, page);
@@ -255,10 +244,11 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>
      */
     @Override
-    @GetMapping(value = "/getListBySenderIdAndProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId, String processInstanceId, String userName, int rows, int page) {
+    public Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(String tenantId, String senderId,
+        String processInstanceId, String userName, int rows, int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return chaoSongInfoService.getListBySenderIdAndProcessInstanceId(senderId, processInstanceId, userName, rows, page);
+        return chaoSongInfoService.getListBySenderIdAndProcessInstanceId(senderId, processInstanceId, userName, rows,
+            page);
     }
 
     /**
@@ -272,8 +262,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Map
      */
     @Override
-    @GetMapping(value = "/getOpinionChaosongByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Page<ChaoSongModel> getOpinionChaosongByUserId(String tenantId, String positionId, String documentTitle, int rows, int page) {
+    public Y9Page<ChaoSongModel> getOpinionChaosongByUserId(String tenantId, String positionId, String documentTitle,
+        int rows, int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongInfoService.getOpinionChaosongByUserId(positionId, documentTitle, rows, page);
     }
@@ -286,7 +276,6 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/getTodoCount", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> getTodoCount(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int num = chaoSongInfoService.getTodoCountByUserId(positionId);
@@ -301,11 +290,11 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @param documentTitle 标题
      * @param rows 条数
      * @param page 页码
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<ChaoSongModel>
      */
     @Override
-    @GetMapping(value = "/getTodoList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Page<ChaoSongModel> getTodoList(String tenantId, String positionId, String documentTitle, int rows, int page) {
+    public Y9Page<ChaoSongModel> getTodoList(String tenantId, String positionId, String documentTitle, int rows,
+        int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongInfoService.getTodoList(positionId, documentTitle, rows, page);
     }
@@ -325,8 +314,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>
      */
     @Override
-    @GetMapping(value = "/myChaoSongList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Page<ChaoSongModel> myChaoSongList(String tenantId, String positionId, String searchName, String itemId, String userName, String state, String year, int page, int rows) {
+    public Y9Page<ChaoSongModel> myChaoSongList(String tenantId, String positionId, String searchName, String itemId,
+        String userName, String state, String year, int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         return chaoSongInfoService.myChaoSongList(searchName, itemId, userName, state, year, rows, page);
@@ -347,14 +336,15 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Object> save(String tenantId, String userId, String positionId, String processInstanceId, String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
+    public Y9Result<Object> save(String tenantId, String userId, String positionId, String processInstanceId,
+        String users, String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Map<String, Object> map = chaoSongInfoService.save(processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
+        Map<String, Object> map =
+            chaoSongInfoService.save(processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
         if ((boolean)map.get(UtilConsts.SUCCESS)) {
             return Y9Result.success();
         }
@@ -376,8 +366,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>
      */
     @Override
-    @GetMapping(value = "/searchAllByUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Page<ChaoSongModel> searchAllByUserId(String tenantId, String positionId, String searchName, String itemId, String userName, String state, String year, Integer page, Integer rows) {
+    public Y9Page<ChaoSongModel> searchAllByUserId(String tenantId, String positionId, String searchName, String itemId,
+        String userName, String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
         return chaoSongInfoService.searchAllByUserId(searchName, itemId, userName, state, year, page, rows);
@@ -398,8 +388,8 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>
      */
     @Override
-    @GetMapping(value = "/searchAllList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Page<ChaoSongModel> searchAllList(String tenantId, String searchName, String itemId, String senderName, String userName, String state, String year, Integer page, Integer rows) {
+    public Y9Page<ChaoSongModel> searchAllList(String tenantId, String searchName, String itemId, String senderName,
+        String userName, String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongInfoService.searchAllList(searchName, itemId, senderName, userName, state, year, page, rows);
     }
@@ -413,7 +403,6 @@ public class ChaoSongInfoApiImpl implements ChaoSong4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/updateTitle", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> updateTitle(String tenantId, String processInstanceId, String documentTitle) {
         Y9LoginUserHolder.setTenantId(tenantId);
         chaoSongInfoService.updateTitle(processInstanceId, documentTitle);

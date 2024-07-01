@@ -3,9 +3,6 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,7 +42,6 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> delete(String tenantId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         commonSentencesService.deleteById(id);
@@ -60,7 +56,6 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
      * @return Y9Result<List<CommonSentencesModel>>
      */
     @Override
-    @GetMapping(value = "/listSentencesService", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<CommonSentencesModel>> listSentencesService(String tenantId, String userId) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -84,7 +79,6 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/removeCommonSentences", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> removeCommonSentences(String tenantId, String userId, int tabIndex) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -101,7 +95,6 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/removeUseNumber", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> removeUseNumber(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPersonId(userId);
@@ -119,7 +112,6 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> save(String tenantId, String userId, String id, String content) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -138,7 +130,6 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/saveCommonSentences", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveCommonSentences(String tenantId, String userId, String content, int tabIndex) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -155,7 +146,6 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/updateUseNumber", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> updateUseNumber(String tenantId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         commonSentencesService.updateUseNumber(id);

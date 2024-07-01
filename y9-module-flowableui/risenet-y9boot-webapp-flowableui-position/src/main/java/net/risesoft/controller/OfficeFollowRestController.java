@@ -2,7 +2,6 @@ package net.risesoft.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
@@ -22,7 +21,6 @@ import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -86,18 +84,16 @@ public class OfficeFollowRestController {
      * @param page 页码
      * @param rows 条数
      * @param searchName 搜索词
-     * @return Y9Page<Map < String, Object>>
+     * @return Y9Page<OfficeFollowModel>
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/followList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> followList(@RequestParam Integer page, @RequestParam Integer rows,
+    public Y9Page<OfficeFollowModel> followList(@RequestParam Integer page, @RequestParam Integer rows,
         @RequestParam(required = false) String searchName) {
         Map<String, Object> map;
         String tenantId = Y9LoginUserHolder.getTenantId();
-        map = officeFollow4PositionApi.getOfficeFollowList(tenantId, Y9LoginUserHolder.getPositionId(), searchName,
+        return officeFollow4PositionApi.getOfficeFollowList(tenantId, Y9LoginUserHolder.getPositionId(), searchName,
             page, rows);
-        return Y9Page.success(page, Integer.parseInt(map.get("totalpage").toString()),
-            Integer.parseInt(map.get("total").toString()), (List<Map<String, Object>>)map.get("rows"), "获取列表成功");
     }
 
     /**
@@ -155,8 +151,8 @@ public class OfficeFollowRestController {
                 }
                 officeFollow.setUserId(positionId);
                 officeFollow.setUserName(position.getName());
-                Map<String, Object> map = officeFollow4PositionApi.saveOfficeFollow(tenantId, officeFollow);
-                if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+                Y9Result<Object> y9Result = officeFollow4PositionApi.saveOfficeFollow(tenantId, officeFollow);
+                if (y9Result.isSuccess()) {
                     return Y9Result.successMsg("关注成功");
                 }
             }

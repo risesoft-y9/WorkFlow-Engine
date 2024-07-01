@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -84,7 +82,6 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @return List<Map < String, Object>>
      */
     @Override
-    @GetMapping(value = "/findCsUserBureau", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemRoleOrgUnitModel>> findCsUserBureau(String tenantId, String userId, String positionId,
         Integer principalType) {
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
@@ -117,7 +114,6 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @return Y9Result<List < ItemRoleOrgUnitModel>>
      */
     @Override
-    @GetMapping(value = "/findCsUserSearch", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemRoleOrgUnitModel>> findCsUserSearch(String tenantId, String userId, String positionId,
         String name, Integer principalType, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -144,7 +140,6 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @return Y9Result<List<ItemRoleOrgUnitModel>>
      */
     @Override
-    @GetMapping(value = "/findPermUser", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemRoleOrgUnitModel>> findPermUser(String tenantId, String userId, String positionId,
         String itemId, String processDefinitionId, String taskDefKey, Integer principalType, String id,
         String processInstanceId) {
@@ -173,7 +168,6 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @return Y9Result<List < ItemRoleOrgUnitModel>>
      */
     @Override
-    @GetMapping(value = "/findPermUserByName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemRoleOrgUnitModel>> findPermUserByName(String tenantId, String userId, String positionId,
         String name, Integer principalType, String itemId, String processDefinitionId, String taskDefKey,
         String processInstanceId) {
@@ -196,7 +190,6 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @return Y9Result<List<ItemRoleOrgUnitModel>>
      */
     @Override
-    @GetMapping(value = "/findPermUserSendReceive", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemRoleOrgUnitModel>> findPermUserSendReceive(String tenantId, String positionId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -217,7 +210,6 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @return Y9Result<List < ItemRoleOrgUnitModel>>
      */
     @Override
-    @GetMapping(value = "/getOrgTree", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemRoleOrgUnitModel>> getOrgTree(String tenantId, String positionId, String id,
         OrgTreeTypeEnum treeType, String name) {
         Y9LoginUserHolder.setTenantId(tenantId);

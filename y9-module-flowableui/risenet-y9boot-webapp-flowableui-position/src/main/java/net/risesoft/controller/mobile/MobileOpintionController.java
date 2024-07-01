@@ -20,6 +20,7 @@ import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.CommonSentencesModel;
+import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -85,7 +86,7 @@ public class MobileOpintionController {
         @RequestParam @NotBlank String processSerialNumber, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>(16);
         try {
-            boolean b = opinion4PositionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId);
+            boolean b = opinion4PositionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId).getData();
             map.put("checkSignOpinion", b);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取成功");
@@ -121,24 +122,6 @@ public class MobileOpintionController {
     }
 
     /**
-     * 获取个人常用语
-     *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     */
-    @RequestMapping(value = "/personalSetup")
-    public void personalSetup(@RequestHeader("auth-tenantId") String tenantId,
-        @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        try {
-            List<CommonSentencesModel> listMap = commonSentencesApi.listSentencesService(tenantId, userId).getData();
-            Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(listMap));
-        } catch (Exception e) {
-            LOGGER.error("获取常用语失败", e);
-        }
-    }
-
-    /**
      * 获取意见
      *
      * @param tenantId 租户id
@@ -158,12 +141,12 @@ public class MobileOpintionController {
         @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser,
         @RequestParam(required = false) String orderByUser, HttpServletResponse response) {
-        List<Map<String, Object>> listMap;
+        List<OpinionListModel> listMap;
         Map<String, Object> map = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
-                opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
+                opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser).getData();
             map.put("opinionList", listMap);
             map.put(UtilConsts.SUCCESS, true);
             map.put("msg", "获取成功");
@@ -173,6 +156,24 @@ public class MobileOpintionController {
             LOGGER.error("获取意见失败", e);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(map));
+    }
+
+    /**
+     * 获取个人常用语
+     *
+     * @param tenantId 租户id
+     * @param userId 人员id
+     */
+    @RequestMapping(value = "/personalSetup")
+    public void personalSetup(@RequestHeader("auth-tenantId") String tenantId,
+        @RequestHeader("auth-userId") String userId, HttpServletResponse response) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        try {
+            List<CommonSentencesModel> listMap = commonSentencesApi.listSentencesService(tenantId, userId).getData();
+            Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(listMap));
+        } catch (Exception e) {
+            LOGGER.error("获取常用语失败", e);
+        }
     }
 
     /**

@@ -6,9 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,7 +45,6 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
      * @return Y9Result<Map < String, Object>>
      */
     @Override
-    @GetMapping(value = "/getBookMarkData", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Map<String, Object>> getBookMarkData(String tenantId, String wordTemplateId,
         String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);

@@ -17,6 +17,7 @@ import net.risesoft.api.itemadmin.position.Item4PositionApi;
 import net.risesoft.model.ChaoSongModel;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.ItemModel;
+import net.risesoft.model.itemadmin.OfficeFollowModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.QueryListService;
 import net.risesoft.service.WorkList4ddyjsService;
@@ -117,10 +118,10 @@ public class WorkList4ddyjsRestController {
      * @param searchTerm 搜索词
      * @param page 页码
      * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
+     * @return Y9Page<OfficeFollowModel>
      */
     @RequestMapping(value = "/followList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Page<Map<String, Object>> followList(@RequestParam @NotBlank String itemId,
+    public Y9Page<OfficeFollowModel> followList(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
         return workList4ddyjsService.followList(itemId, searchTerm, page, rows);
     }

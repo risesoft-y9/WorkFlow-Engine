@@ -3,9 +3,6 @@ package net.risesoft.api;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,7 +39,6 @@ public class CustomProcessInfoApiImpl implements CustomProcessInfoApi {
      * @return Y9Result<CustomProcessInfoModel>
      */
     @Override
-    @GetMapping(value = "/getCurrentTaskNextNode", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<CustomProcessInfoModel> getCurrentTaskNextNode(String tenantId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         CustomProcessInfo info = customProcessInfoService.getCurrentTaskNextNode(processSerialNumber);
@@ -64,8 +60,8 @@ public class CustomProcessInfoApiImpl implements CustomProcessInfoApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Y9Result<Object> saveOrUpdate(String tenantId, String itemId, String processSerialNumber, @RequestBody List<Map<String, Object>> taskList) {
+    public Y9Result<Object> saveOrUpdate(String tenantId, String itemId, String processSerialNumber,
+        @RequestBody List<Map<String, Object>> taskList) {
         Y9LoginUserHolder.setTenantId(tenantId);
         customProcessInfoService.saveOrUpdate(itemId, processSerialNumber, taskList);
         return Y9Result.success();
@@ -79,7 +75,6 @@ public class CustomProcessInfoApiImpl implements CustomProcessInfoApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/updateCurrentTask", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> updateCurrentTask(String tenantId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         customProcessInfoService.updateCurrentTask(processSerialNumber);

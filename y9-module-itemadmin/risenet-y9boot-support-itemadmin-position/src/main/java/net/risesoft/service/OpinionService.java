@@ -1,10 +1,10 @@
 package net.risesoft.service;
 
 import java.util.List;
-import java.util.Map;
 
 import net.risesoft.entity.Opinion;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
+import net.risesoft.model.itemadmin.OpinionListModel;
 
 /**
  * @author qinman
@@ -53,20 +53,20 @@ public interface OpinionService {
     void delete(String id);
 
     /**
-     * 根据processSerialNumber查找所有意见
-     *
-     * @param processSerialNumber
-     * @return
-     */
-    List<Opinion> findByProcessSerialNumber(String processSerialNumber);
-
-    /**
      * 根据processSerialNumber查找意见，用于未启动流程发送前的是否填写意见校验
      *
      * @param processSerialNumber
      * @return
      */
     int findByProcSerialNumber(String processSerialNumber);
+
+    /**
+     * 根据processSerialNumber查找所有意见
+     *
+     * @param processSerialNumber
+     * @return
+     */
+    List<Opinion> findByProcessSerialNumber(String processSerialNumber);
 
     /**
      * Description:
@@ -166,7 +166,7 @@ public interface OpinionService {
      * @param activitiUser
      * @return
      */
-    List<Map<String, Object>> personCommentList(String processSerialNumber, String taskId, String itembox,
+    List<OpinionListModel> personCommentList(String processSerialNumber, String taskId, String itembox,
         String opinionFrameMark, String itemId, String taskDefinitionKey, String activitiUser, String orderByUser);
 
     /**

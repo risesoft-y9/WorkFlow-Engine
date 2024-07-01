@@ -5,9 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,8 +59,6 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/delByProcessSerialNumbers", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> delBatchByProcessSerialNumbers(String tenantId,
         @RequestBody List<String> processSerialNumbers) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -79,7 +74,6 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/delFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> delFile(String tenantId, String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         transactionFileService.delFile(ids);
@@ -94,7 +88,6 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/fileCounts", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> fileCounts(String tenantId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int num = transactionFileService.fileCounts(processSerialNumber);
@@ -109,7 +102,6 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @return Y9Result<AttachmentModel>
      */
     @Override
-    @GetMapping(value = "/findById", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<AttachmentModel> findById(String tenantId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         TransactionFile file = transactionFileService.findById(id);
@@ -131,7 +123,6 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/getAttachmentCount", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> getAttachmentCount(String tenantId, String processSerialNumber, String fileSource,
         String fileType) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -151,7 +142,6 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @return Y9Page<AttachmentModel>
      */
     @Override
-    @GetMapping(value = "/getAttachmentList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<AttachmentModel> getAttachmentList(String tenantId, String processSerialNumber, String fileSource,
         int page, int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -167,7 +157,6 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @return Y9Result<List < AttachmentModel>>
      */
     @Override
-    @GetMapping(value = "/getAttachmentModelList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<AttachmentModel>> getAttachmentModelList(String tenantId, String processSerialNumber,
         String fileSource) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -185,7 +174,6 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @return Y9Result<AttachmentModel>
      */
     @Override
-    @GetMapping(value = "/getFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<AttachmentModel> getFile(String tenantId, String fileId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         TransactionFile file = transactionFileRepository.findById(fileId).orElse(null);
@@ -208,7 +196,6 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      */
     @SuppressWarnings("unchecked")
     @Override
-    @PostMapping(value = "/saveAttachment", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveAttachment(String tenantId, String positionId, String attachjson,
         String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -252,7 +239,6 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @return Y9Result<String>
      */
     @Override
-    @PostMapping(value = "/saveOrUpdateUploadInfo", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> saveOrUpdateUploadInfo(String tenantId, String positionId, String fileName, String fileType,
         String fileSizeString, String fileSource, String processInstanceId, String processSerialNumber, String taskId,
         String y9FileStoreId) {
@@ -310,7 +296,6 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @return Y9Result<String>
      */
     @Override
-    @PostMapping(value = "/updateFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> updateFile(String tenantId, String userId, String positionId, String fileId,
         String fileSizeString, String taskId, String y9FileStoreId) {
         String msg;
@@ -353,7 +338,6 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @return Y9Result<String>
      */
     @Override
-    @PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> upload(String tenantId, String userId, String positionId, String fileName, String fileSize,
         String processInstanceId, String taskId, String describes, String processSerialNumber, String fileSource,
         String y9FileStoreId) {
@@ -376,8 +360,6 @@ public class AttachmentApiImpl implements Attachment4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/uploadModel", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> uploadModel(String tenantId, String positionId,
         @RequestBody AttachmentModel attachmentModel) {
         Y9LoginUserHolder.setTenantId(tenantId);

@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.model.itemadmin.CommonSentencesModel;
+import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -75,7 +76,7 @@ public class MobileV1OpintionController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String userId = Y9LoginUserHolder.getPersonId();
-            boolean b = opinion4PositionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId);
+            boolean b = opinion4PositionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId).getData();
             return Y9Result.success(b, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取意见失败", e);
@@ -102,18 +103,6 @@ public class MobileV1OpintionController {
     }
 
     /**
-     * 获取个人常用语
-     *
-     * @return Y9Result<List < CommonSentencesModel>>
-     */
-    @RequestMapping(value = "/personalSetup")
-    public Y9Result<List<CommonSentencesModel>> personalSetup() {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPersonId();
-        return commonSentencesApi.listSentencesService(tenantId, userId);
-    }
-
-    /**
      * 获取意见
      *
      * @param processSerialNumber 流程编号
@@ -123,10 +112,10 @@ public class MobileV1OpintionController {
      * @param itemId 事项id
      * @param taskDefinitionKey 任务key
      * @param activitiUser 当前任务受让人
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List < OpinionListModel>>
      */
     @RequestMapping(value = "/personCommentList")
-    public Y9Result<List<Map<String, Object>>> personCommentList(@RequestParam @NotBlank String processSerialNumber,
+    public Y9Result<List<OpinionListModel>> personCommentList(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String itembox,
         @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser,
@@ -134,9 +123,20 @@ public class MobileV1OpintionController {
         List<Map<String, Object>> listMap;
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        listMap = opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
+        return opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,
             opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
-        return Y9Result.success(listMap, "获取成功");
+    }
+
+    /**
+     * 获取个人常用语
+     *
+     * @return Y9Result<List < CommonSentencesModel>>
+     */
+    @RequestMapping(value = "/personalSetup")
+    public Y9Result<List<CommonSentencesModel>> personalSetup() {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9LoginUserHolder.getPersonId();
+        return commonSentencesApi.listSentencesService(tenantId, userId);
     }
 
     /**

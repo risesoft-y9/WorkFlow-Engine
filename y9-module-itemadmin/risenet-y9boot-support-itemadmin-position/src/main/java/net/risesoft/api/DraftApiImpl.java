@@ -9,9 +9,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,7 +58,6 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @return int
      */
     @Override
-    @GetMapping(value = "/countBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> countBySystemName(String tenantId, String positionId, String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
@@ -77,7 +73,6 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/deleteDraft", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> deleteDraft(String tenantId, String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         draftEntityService.deleteDraft(ids);
@@ -93,7 +88,6 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/getDeleteDraftCount", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> getDeleteDraftCount(String tenantId, String positionId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int count = 0;
@@ -113,7 +107,6 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @return Y9Result<DraftModel>
      */
     @Override
-    @GetMapping(value = "/getDraftByProcessSerialNumber", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<DraftModel> getDraftByProcessSerialNumber(String tenantId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         DraftEntity draftEntity = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
@@ -134,7 +127,6 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/getDraftCount", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Integer> getDraftCount(String tenantId, String positionId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
@@ -160,7 +152,6 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @return Y9Page<Map<String, Object>>
      */
     @Override
-    @GetMapping(value = "/getDraftList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<Map<String, Object>> getDraftList(String tenantId, String positionId, int page, int rows,
         String title, String itemId, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -227,7 +218,6 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @return Y9Page<DraftModel>
      */
     @Override
-    @GetMapping(value = "/getDraftListBySystemName", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Page<DraftModel> getDraftListBySystemName(String tenantId, String positionId, int page, int rows,
         String title, String systemName, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -267,7 +257,6 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @return Y9Result<OpenDataModel>
      */
     @Override
-    @GetMapping(value = "/openDraft4Position", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<OpenDataModel> openDraft4Position(String tenantId, String positionId, String itemId,
         String processSerialNumber, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -287,7 +276,6 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/reduction", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> reduction(String tenantId, String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         draftEntityService.reduction(ids);
@@ -302,7 +290,6 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/removeDraft", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> removeDraft(String tenantId, String ids) {
         Y9LoginUserHolder.setTenantId(tenantId);
         draftEntityService.removeDraft(ids);
@@ -323,7 +310,6 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/saveDraft", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveDraft(String tenantId, String positionId, String itemId, String processSerialNumber,
         String processDefinitionKey, String number, String level, String title) {
         Y9LoginUserHolder.setTenantId(tenantId);

@@ -3,9 +3,6 @@ package net.risesoft.api;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,7 +54,6 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @return Y9Result<OpenDataModel>
      */
     @Override
-    @GetMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<OpenDataModel> add(String tenantId, String positionId, String itemId, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -76,7 +72,6 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/complete", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> complete(String tenantId, String positionId, String taskId) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -100,7 +95,6 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @return Y9Result<DocUserChoiseModel>
      */
     @Override
-    @GetMapping(value = "/docUserChoise", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<DocUserChoiseModel> docUserChoise(String tenantId, String userId, String positionId, String itemId,
         String processDefinitionKey, String processDefinitionId, String taskId, String routeToTask,
         String processInstanceId) {
@@ -127,7 +121,6 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @return Y9Result<OpenDataModel>
      */
     @Override
-    @GetMapping(value = "/edit", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<OpenDataModel> edit(String tenantId, String positionId, String itembox, String taskId,
         String processInstanceId, String itemId, boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -155,8 +148,6 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @return Y9Result<String>
      */
     @Override
-    @PostMapping(value = "/saveAndForwarding", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> saveAndForwarding(String tenantId, String positionId, String processInstanceId,
         String taskId, String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey,
         String userChoice, String sponsorGuid, String routeToTaskId, @RequestBody Map<String, Object> variables) {
@@ -191,8 +182,6 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @return Y9Result<String>
      */
     @Override
-    @PostMapping(value = "/saveAndForwardingByTaskKey", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> saveAndForwardingByTaskKey(String tenantId, String positionId, String processInstanceId,
         String taskId, String sponsorHandle, String itemId, String processSerialNumber, String processDefinitionKey,
         String userChoice, String sponsorGuid, String routeToTaskId, String startRouteToTaskId,
@@ -222,8 +211,6 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @return Y9Result<Object>
      */
     @Override
-    @PostMapping(value = "/saveAndSubmitTo", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Object> saveAndSubmitTo(String tenantId, String positionId, String taskId, String itemId,
         String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -248,7 +235,6 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @return Y9Result<SignTaskConfigModel>
      */
     @Override
-    @GetMapping(value = "/signTaskConfig", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<SignTaskConfigModel> signTaskConfig(String tenantId, String positionId, String itemId,
         String processDefinitionId, String taskDefinitionKey, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -270,7 +256,6 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @return Y9Result<StartProcessResultModel>
      */
     @Override
-    @PostMapping(value = "/startProcess", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<StartProcessResultModel> startProcess(String tenantId, String positionId, String itemId,
         String processSerialNumber, String processDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -292,7 +277,6 @@ public class DocumentApiImpl implements Document4PositionApi {
      * @return Y9Result<StartProcessResultModel>
      */
     @Override
-    @PostMapping(value = "/startProcess1", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<StartProcessResultModel> startProcess(String tenantId, String positionId, String itemId,
         String processSerialNumber, String processDefinitionKey, String positionIds) {
         Y9LoginUserHolder.setTenantId(tenantId);

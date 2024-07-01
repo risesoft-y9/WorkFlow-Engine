@@ -1,10 +1,18 @@
 package net.risesoft.api.itemadmin.position;
 
 import java.util.List;
-import java.util.Map;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
+import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -20,9 +28,11 @@ public interface Opinion4PositionApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param taskId 任务id
-     * @return Boolean
+     * @return Y9Result<Boolean>
      */
-    Boolean checkSignOpinion(String tenantId, String userId, String processSerialNumber, String taskId);
+    @GetMapping("/checkSignOpinion")
+    Y9Result<Boolean> checkSignOpinion(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("taskId") String taskId);
 
     /**
      * 获取意见框历史记录数量
@@ -32,16 +42,21 @@ public interface Opinion4PositionApi {
      * @param opinionFrameMark 意见框id
      * @return int
      */
-    int countOpinionHistory(String tenantId, String processSerialNumber, String opinionFrameMark);
+    @GetMapping("/countOpinionHistory")
+    Y9Result<Integer> countOpinionHistory(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("opinionFrameMark") String opinionFrameMark);
 
     /**
      * 删除意见
      *
      * @param tenantId 租户id
      * @param id 唯一标识
+     * @return Y9Result<Object>
      * @throws Exception Exception
      */
-    void delete(String tenantId, String id) throws Exception;
+    @PostMapping("/delete")
+    Y9Result<Object> delete(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id) throws Exception;
 
     /**
      * 获取事项绑定的意见框列表
@@ -51,16 +66,19 @@ public interface Opinion4PositionApi {
      * @param processDefinitionId 流程定义Id
      * @return List&lt;String&gt;
      */
-    List<String> getBindOpinionFrame(String tenantId, String itemId, String processDefinitionId);
+    @GetMapping("/getBindOpinionFrame")
+    Y9Result<List<ItemOpinionFrameBindModel>> getBindOpinionFrame(@RequestParam("tenantId") String tenantId,
+        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 根据id获取意见
      *
      * @param tenantId 租户id
      * @param id 唯一标识
-     * @return OpinionModel
+     * @return Y9Result<OpinionModel>
      */
-    OpinionModel getById(String tenantId, String id);
+    @GetMapping("/getById")
+    Y9Result<OpinionModel> getById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
 
     /**
      * 获取意见框历史记录
@@ -70,7 +88,10 @@ public interface Opinion4PositionApi {
      * @param opinionFrameMark 意见框Id
      * @return List&lt;OpinionHistoryModel&gt;
      */
-    List<OpinionHistoryModel> opinionHistoryList(String tenantId, String processSerialNumber, String opinionFrameMark);
+    @GetMapping("/opinionHistoryList")
+    Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("opinionFrameMark") String opinionFrameMark);
 
     /**
      * 获取个人意见列表
@@ -80,28 +101,33 @@ public interface Opinion4PositionApi {
      * @param processSerialNumber 流程编号
      * @param taskId 任务id
      * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
-     * @param opinionFrameMark 意见框Id
+     * @param opinionFrameMark opinionFrameMark
      * @param itemId 事项id
      * @param taskDefinitionKey 任务定义key
      * @param activitiUser activitiUser
-     * @param orderByUser 是否按人员排序，1为是
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<OpinionListModel>>
      */
-    List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber,
-        String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey,
-        String activitiUser, String orderByUser);
+    @GetMapping("/personCommentList")
+    Y9Result<List<OpinionListModel>> personCommentList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("taskId") String taskId, @RequestParam("itembox") String itembox,
+        @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId,
+        @RequestParam("taskDefinitionKey") String taskDefinitionKey, @RequestParam("activitiUser") String activitiUser,
+        @RequestParam("orderByUser") String orderByUser);
 
     /**
      * 保存意见
      *
      * @param tenantId 租户id
      * @param opinion OpinionModel
+     * @return
      * @throws Exception Exception
      */
-    void save(String tenantId, OpinionModel opinion) throws Exception;
+    @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Y9Result<Object> save(@RequestParam("tenantId") String tenantId, @RequestBody OpinionModel opinion)
+        throws Exception;
 
     /**
-     *
      * Description: 保存或更新意见
      *
      * @param tenantId 租户id
@@ -111,5 +137,9 @@ public interface Opinion4PositionApi {
      * @return OpinionModel
      * @throws Exception Exception
      */
-    OpinionModel saveOrUpdate(String tenantId, String userId, String positionId, OpinionModel opinion) throws Exception;
+    @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Y9Result<OpinionModel> saveOrUpdate(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("positionId") String positionId,
+        @RequestBody OpinionModel opinion) throws Exception;
+
 }

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -58,7 +56,6 @@ public class ItemApiImpl implements Item4PositionApi {
      * @return Y9Result<List<ItemModel>>
      */
     @Override
-    @GetMapping(value = "/findAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemModel>> findAll(String tenantId, String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<SpmApproveItem> list = spmApproveItemRepository.findAll(systemName);
@@ -79,7 +76,6 @@ public class ItemApiImpl implements Item4PositionApi {
      * @return Y9Result<ItemModel>
      */
     @Override
-    @GetMapping(value = "/findByProcessDefinitionKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<ItemModel> findByProcessDefinitionKey(String tenantId, String processDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         ItemModel itemModel = spmApproveItemService.findByProcessDefinitionKey(tenantId, processDefinitionKey);
@@ -93,7 +89,6 @@ public class ItemApiImpl implements Item4PositionApi {
      * @return Y9Result<List<ItemModel>>
      */
     @Override
-    @GetMapping(value = "/getAllItem", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemModel>> getAllItem(String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<SpmApproveItem> list = spmApproveItemRepository.findAll();
@@ -114,7 +109,6 @@ public class ItemApiImpl implements Item4PositionApi {
      */
     @SuppressWarnings("unchecked")
     @Override
-    @GetMapping(value = "/getAllItemList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemModel>> getAllItemList(String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> map = spmApproveItemService.list();
@@ -136,7 +130,6 @@ public class ItemApiImpl implements Item4PositionApi {
      * @return Y9Result<ItemModel>
      */
     @Override
-    @GetMapping(value = "/getByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<ItemModel> getByItemId(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         SpmApproveItem item = spmApproveItemService.findById(itemId);
@@ -155,7 +148,6 @@ public class ItemApiImpl implements Item4PositionApi {
      * @return Y9Result<String>
      */
     @Override
-    @GetMapping(value = "/getFirstItem", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getFirstItem(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -173,7 +165,6 @@ public class ItemApiImpl implements Item4PositionApi {
      * @return Y9Result<String>
      */
     @Override
-    @GetMapping(value = "/getFormIdByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<String> getFormIdByItemId(String tenantId, String itemId, String processDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String formId = documentService.getFormIdByItemId(itemId, processDefinitionKey);
@@ -188,7 +179,6 @@ public class ItemApiImpl implements Item4PositionApi {
      * @return Y9Result<List<ItemListModel>>
      */
     @Override
-    @GetMapping(value = "/getItemList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemListModel>> getItemList(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -206,7 +196,6 @@ public class ItemApiImpl implements Item4PositionApi {
      * @return Y9Result<List<ItemMappingConfModel>>
      */
     @Override
-    @GetMapping(value = "/getItemMappingConf", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemMappingConfModel>> getItemMappingConf(String tenantId, String itemId, String mappingId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemMappingConf> list =
@@ -227,7 +216,6 @@ public class ItemApiImpl implements Item4PositionApi {
      * @return Y9Result<List<ItemSystemListModel>>
      */
     @Override
-    @GetMapping(value = "/getItemSystem", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemSystemListModel>> getItemSystem(String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Map<String, Object>> list = spmApproveItemRepository.getItemSystem();
@@ -249,7 +237,6 @@ public class ItemApiImpl implements Item4PositionApi {
      * @return Y9Result<List<ItemListModel>>
      */
     @Override
-    @GetMapping(value = "/getMyItemList", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<List<ItemListModel>> getMyItemList(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
@@ -266,7 +253,6 @@ public class ItemApiImpl implements Item4PositionApi {
      * @return Y9Result<Boolean>
      */
     @Override
-    @GetMapping(value = "/hasProcessDefinitionByKey", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Boolean> hasProcessDefinitionByKey(String tenantId, String processDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Boolean hasProcessDefinition = spmApproveItemService.hasProcessDefinitionByKey(processDefinitionKey);

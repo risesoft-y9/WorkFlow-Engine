@@ -1035,8 +1035,8 @@ public class DocumentServiceImpl implements DocumentService {
                 }
                 System.out.println("*************************Y9JsonUtil:" + Y9JsonUtil.writeValueAsString(variables));
 
-                boolean b =
-                    conditionParserApi.parser(tenantId, targetNode.get(SysVariables.CONDITIONEXPRESSION), variables);
+                boolean b = conditionParserApi
+                    .parser(tenantId, targetNode.get(SysVariables.CONDITIONEXPRESSION), variables).getData();
                 if (b) {
                     targetNodesTemp.add(targetNode);
                 }

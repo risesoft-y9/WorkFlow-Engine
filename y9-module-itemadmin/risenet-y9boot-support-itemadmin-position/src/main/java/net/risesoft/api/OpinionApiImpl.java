@@ -1,11 +1,8 @@
 package net.risesoft.api;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,10 +13,13 @@ import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.Opinion;
+import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
+import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemOpinionFrameBindService;
 import net.risesoft.service.OpinionService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
@@ -53,13 +53,14 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param taskId 任务id
-     * @return Boolean
+     * @return Y9Result<Boolean>
      */
     @Override
-    @GetMapping(value = "/checkSignOpinion", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Boolean checkSignOpinion(String tenantId, String userId, String processSerialNumber, String taskId) {
+    public Y9Result<Boolean> checkSignOpinion(String tenantId, String userId, String processSerialNumber,
+        String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return opinionService.checkSignOpinion(processSerialNumber, taskId);
+        Boolean result = opinionService.checkSignOpinion(processSerialNumber, taskId);
+        return Y9Result.success(result);
     }
 
     /**
@@ -68,13 +69,13 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param opinionFrameMark 意见框标识
-     * @return int
+     * @return Y9Result<Integer>
      */
     @Override
-    @GetMapping(value = "/countOpinionHistory", produces = MediaType.APPLICATION_JSON_VALUE)
-    public int countOpinionHistory(String tenantId, String processSerialNumber, String opinionFrameMark) {
+    public Y9Result<Integer> countOpinionHistory(String tenantId, String processSerialNumber, String opinionFrameMark) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return opinionService.countOpinionHistory(processSerialNumber, opinionFrameMark);
+        int count = opinionService.countOpinionHistory(processSerialNumber, opinionFrameMark);
+        return Y9Result.success(count);
     }
 
     /**
@@ -82,13 +83,14 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      *
      * @param tenantId 租户id
      * @param id 唯一标识
+     * @return Y9Result<Object>
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void delete(String tenantId, String id) throws Exception {
+    public Y9Result<Object> delete(String tenantId, String id) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         opinionService.delete(id);
+        return Y9Result.successMsg("删除成功");
     }
 
     /**
@@ -97,13 +99,20 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
-     * @return List<String>
+     * @return Y9Result<List<ItemOpinionFrameBindModel>>
      */
     @Override
-    @GetMapping(value = "/getBindOpinionFrame", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<String> getBindOpinionFrame(String tenantId, String itemId, String processDefinitionId) {
+    public Y9Result<List<ItemOpinionFrameBindModel>> getBindOpinionFrame(String tenantId, String itemId,
+        String processDefinitionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return itemOpinionFrameBindService.getBindOpinionFrame(itemId, processDefinitionId);
+        List<ItemOpinionFrameBindModel> list = new ArrayList<>();
+        List<String> opinionFrameList = itemOpinionFrameBindService.getBindOpinionFrame(itemId, processDefinitionId);
+        for (String opinionFrame : opinionFrameList) {
+            ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
+            model.setOpinionFrameMark(opinionFrame);
+            list.add(model);
+        }
+        return Y9Result.success(list);
     }
 
     /**
@@ -111,18 +120,17 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      *
      * @param tenantId 租户id
      * @param id 唯一标识
-     * @return OpinionModel
+     * @return Y9Result<OpinionModel>
      */
     @Override
-    @GetMapping(value = "/getById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public OpinionModel getById(String tenantId, String id) {
+    public Y9Result<OpinionModel> getById(String tenantId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Opinion opinion = opinionService.findOne(id);
         OpinionModel opinionModel = new OpinionModel();
         if (opinion != null) {
             Y9BeanUtil.copyProperties(opinion, opinionModel);
         }
-        return opinionModel;
+        return Y9Result.success(opinionModel);
     }
 
     /**
@@ -131,14 +139,15 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param opinionFrameMark 意见框标识
-     * @return List<OpinionHistoryModel>
+     * @return Y9Result<List<OpinionHistoryModel>>
      */
     @Override
-    @GetMapping(value = "/opinionHistoryList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<OpinionHistoryModel> opinionHistoryList(String tenantId, String processSerialNumber,
+    public Y9Result<List<OpinionHistoryModel>> opinionHistoryList(String tenantId, String processSerialNumber,
         String opinionFrameMark) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return opinionService.opinionHistoryList(processSerialNumber, opinionFrameMark);
+        List<OpinionHistoryModel> opinionHistoryModelList =
+            opinionService.opinionHistoryList(processSerialNumber, opinionFrameMark);
+        return Y9Result.success(opinionHistoryModelList);
     }
 
     /**
@@ -153,18 +162,18 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      * @param itemId 事项id
      * @param taskDefinitionKey 任务定义key
      * @param activitiUser 人员id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<OpinionListModel>>
      */
     @Override
-    @GetMapping(value = "/personCommentList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> personCommentList(String tenantId, String userId, String processSerialNumber,
-        String taskId, String itembox, String opinionFrameMark, String itemId, String taskDefinitionKey,
-        String activitiUser, String orderByUser) {
+    public Y9Result<List<OpinionListModel>> personCommentList(String tenantId, String userId,
+        String processSerialNumber, String taskId, String itembox, String opinionFrameMark, String itemId,
+        String taskDefinitionKey, String activitiUser, String orderByUser) {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
-        return opinionService.personCommentList(processSerialNumber, taskId, itembox, opinionFrameMark, itemId,
-            taskDefinitionKey, activitiUser, orderByUser);
+        List<OpinionListModel> opinionList = opinionService.personCommentList(processSerialNumber, taskId, itembox,
+            opinionFrameMark, itemId, taskDefinitionKey, activitiUser, orderByUser);
+        return Y9Result.success(opinionList);
     }
 
     /**
@@ -172,15 +181,15 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      *
      * @param tenantId 租户id
      * @param opinionModel 意见信息
+     * @return
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void save(String tenantId, @RequestBody OpinionModel opinionModel) throws Exception {
+    public Y9Result<Object> save(String tenantId, @RequestBody OpinionModel opinionModel) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         Opinion opinion = ItemAdminModelConvertUtil.opinionModel2Opinion(opinionModel);
         opinionService.save(opinion);
+        return Y9Result.successMsg("保存成功");
     }
 
     /**
@@ -190,13 +199,11 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      * @param userId 人员id
      * @param positionId 岗位id
      * @param opinionModel 意见信息
-     * @return OpinionModel
+     * @return Y9Result<OpinionModel>
      * @throws Exception Exception
      */
     @Override
-    @PostMapping(value = "/saveOrUpdate", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
-    public OpinionModel saveOrUpdate(String tenantId, String userId, String positionId,
+    public Y9Result<OpinionModel> saveOrUpdate(String tenantId, String userId, String positionId,
         @RequestBody OpinionModel opinionModel) throws Exception {
         Person person = personManager.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -207,7 +214,6 @@ public class OpinionApiImpl implements Opinion4PositionApi {
         Y9BeanUtil.copyProperties(opinionModel, opinion);
         opinion = opinionService.saveOrUpdate(opinion);
         Y9BeanUtil.copyProperties(opinion, opinionModel);
-        return opinionModel;
+        return Y9Result.success(opinionModel);
     }
-
 }

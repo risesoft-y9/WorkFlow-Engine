@@ -12,6 +12,7 @@ import net.risesoft.api.itemadmin.position.Attachment4PositionApi;
 import net.risesoft.api.itemadmin.position.Opinion4PositionApi;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
+import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.TransactionWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
@@ -50,9 +51,9 @@ public class DocumentUtil {
         for (ItemOpinionFrameBindModel opinionFrame : opinionFrameList) {
             Map<String, Object> opinionMap = new HashMap<>(16);
             String opinionFrameMark = opinionFrame.getOpinionFrameMark();
-            List<Map<String, Object>> listMap =
+            List<OpinionListModel> listMap =
                 Y9Context.getBean(Opinion4PositionApi.class).personCommentList(tenantId, userId, processSerialNumber,
-                    taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser, "");
+                    taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser, "").getData();
             opinionMap.put("opinionFrameMark", opinionFrameMark);
             opinionMap.put("opinionFrameName", opinionFrame.getOpinionFrameName());
             opinionMap.put("opinionList", listMap);

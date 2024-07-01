@@ -1,8 +1,8 @@
 package net.risesoft.service;
 
-import java.util.Map;
-
 import net.risesoft.entity.OfficeFollow;
+import net.risesoft.model.itemadmin.OfficeFollowModel;
+import net.risesoft.pojo.Y9Page;
 
 /**
  * @author qinman
@@ -49,7 +49,7 @@ public interface OfficeFollowService {
      * @param rows
      * @return
      */
-    Map<String, Object> getFollowListBySystemName(String systemName, String searchName, int page, int rows);
+    Y9Page<OfficeFollowModel> getFollowListBySystemName(String systemName, String searchName, int page, int rows);
 
     /**
      * 获取关注列表
@@ -59,15 +59,14 @@ public interface OfficeFollowService {
      * @param rows
      * @return
      */
-    Map<String, Object> getOfficeFollowList(String searchName, int page, int rows);
+    Y9Page<OfficeFollowModel> getOfficeFollowList(String searchName, int page, int rows);
 
     /**
      * 保存办件关注信息
      *
      * @param officeFollow
-     * @return
      */
-    Map<String, Object> saveOfficeFollow(OfficeFollow officeFollow);
+    void saveOfficeFollow(OfficeFollow officeFollow);
 
     /**
      * 更新标题
