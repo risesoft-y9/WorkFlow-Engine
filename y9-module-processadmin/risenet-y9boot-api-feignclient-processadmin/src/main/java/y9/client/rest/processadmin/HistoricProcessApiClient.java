@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -29,7 +30,7 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @PostMapping("/deleteProcessInstance")
-    boolean deleteProcessInstance(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> deleteProcessInstance(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
@@ -41,7 +42,7 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @GetMapping("/getById")
-    HistoricProcessInstanceModel getById(@RequestParam("tenantId") String tenantId,
+    Y9Result<HistoricProcessInstanceModel> getById(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
@@ -54,7 +55,7 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @GetMapping("/getByIdAndYear")
-    HistoricProcessInstanceModel getByIdAndYear(@RequestParam("tenantId") String tenantId,
+    Y9Result<HistoricProcessInstanceModel> getByIdAndYear(@RequestParam("tenantId") String tenantId,
         @RequestParam("id") String id, @RequestParam("year") String year);
 
     /**
@@ -66,7 +67,7 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @GetMapping("/getBySuperProcessInstanceId")
-    List<HistoricProcessInstanceModel> getBySuperProcessInstanceId(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<HistoricProcessInstanceModel>> getBySuperProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("superProcessInstanceId") String superProcessInstanceId);
 
     /**
@@ -78,7 +79,7 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @GetMapping("/getSuperProcessInstanceById")
-    HistoricProcessInstanceModel getSuperProcessInstanceById(@RequestParam("tenantId") String tenantId,
+    Y9Result<HistoricProcessInstanceModel> getSuperProcessInstanceById(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
@@ -91,7 +92,7 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @PostMapping("/recoveryProcess")
-    boolean recoveryProcess(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+    Y9Result<Object> recoveryProcess(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
@@ -103,7 +104,7 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @PostMapping("/removeProcess")
-    boolean removeProcess(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> removeProcess(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
@@ -115,7 +116,7 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @PostMapping("/removeProcess4Position")
-    boolean removeProcess4Position(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> removeProcess4Position(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
@@ -128,7 +129,7 @@ public interface HistoricProcessApiClient extends HistoricProcessApi {
      */
     @Override
     @PostMapping("/setPriority")
-    void setPriority(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> setPriority(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId, @RequestParam("priority") String priority)
         throws Exception;
 }

@@ -329,12 +329,12 @@ public class DocumentServiceImpl implements DocumentService {
             model.setMeeting(officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"));
         } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
             || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())) {
-            HistoricProcessInstanceModel hpi = historicProcessManager.getById(tenantId, processInstanceId);
+            HistoricProcessInstanceModel hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (hpi == null) {
                 if (officeDoneInfo == null) {
                     String year = processParam.getCreateTime().substring(0, 4);
-                    hpi = historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year);
+                    hpi = historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year).getData();
                     processDefinitionId = hpi.getProcessDefinitionId();
                     processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
                 } else {
