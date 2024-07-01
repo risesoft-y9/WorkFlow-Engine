@@ -777,7 +777,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     int priority = task.getPriority();
                     keys = new ArrayList<>();
                     keys.add(SysVariables.TASKSENDER);
-                    vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys);
+                    vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys).getData();
                     String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASKSENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
@@ -813,7 +813,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                             }
                         }
                         String obj = variableApi.getVariableByProcessInstanceId(tenantId, task.getExecutionId(),
-                            SysVariables.NROFACTIVEINSTANCES);
+                            SysVariables.NROFACTIVEINSTANCES).getData();
                         int nrOfActiveInstances = obj != null ? Integer.parseInt(obj) : 0;
                         if (nrOfActiveInstances == 1) {
                             mapTemp.put("isZhuBan", "true");
