@@ -42,6 +42,7 @@ import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
+import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -284,22 +285,21 @@ public class MobileV1DocumentController {
      * @param processInstanceId 流程实例id
      * @param id 父节点id
      * @param itemId 事项id
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List < ItemRoleOrgUnitModel>>
      */
     @RequestMapping("/findPermUser")
-    public Y9Result<List<Map<String, Object>>> findPermUser(@RequestParam String processDefinitionId,
+    public Y9Result<List<ItemRoleOrgUnitModel>> findPermUser(@RequestParam String processDefinitionId,
         @RequestParam(required = false) String taskDefKey, @RequestParam Integer principalType,
         @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String id,
         @RequestParam String itemId) {
         String positionId = Y9LoginUserHolder.getPositionId();
         String userId = Y9LoginUserHolder.getPersonId();
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         if (StringUtils.isBlank(processDefinitionId) || StringUtils.isBlank(itemId)) {
             return Y9Result.success(item, "获取数据异常");
         } else {
-            item = itemRole4PositionApi.findPermUser(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId,
+            return itemRole4PositionApi.findPermUser(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId,
                 processDefinitionId, taskDefKey, principalType, id, processInstanceId);
-            return Y9Result.success(item, "获取数据成功");
         }
     }
 
@@ -312,22 +312,21 @@ public class MobileV1DocumentController {
      * @param processInstanceId 流程实例id
      * @param itemId 事项id
      * @param name 搜索内容
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List<ItemRoleOrgUnitModel>>
      */
     @RequestMapping("/findPermUserByName")
-    public Y9Result<List<Map<String, Object>>> findPermUserByName(@RequestParam String processDefinitionId,
+    public Y9Result<List<ItemRoleOrgUnitModel>> findPermUserByName(@RequestParam String processDefinitionId,
         @RequestParam(required = false) String taskDefKey, @RequestParam Integer principalType,
         @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String name,
         @RequestParam String itemId) {
         String positionId = Y9LoginUserHolder.getPositionId();
         String userId = Y9LoginUserHolder.getPersonId();
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         if (StringUtils.isBlank(processDefinitionId) || StringUtils.isBlank(itemId)) {
             return Y9Result.success(item, "获取数据异常");
         } else {
-            item = itemRole4PositionApi.findPermUserByName(Y9LoginUserHolder.getTenantId(), userId, positionId, name,
+            return itemRole4PositionApi.findPermUserByName(Y9LoginUserHolder.getTenantId(), userId, positionId, name,
                 principalType, itemId, processDefinitionId, taskDefKey, processInstanceId);
-            return Y9Result.success(item, "获取数据成功");
         }
     }
 

@@ -128,7 +128,7 @@
             <column name="WORKFLOWGUID" remarks="工作流GUID" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-4" author="mengjuhua">
+    <changeSet id="1704700547152-4" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_associatedfile"/>
@@ -787,7 +787,7 @@
             <column name="USERNAME" remarks="创建人名称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-28" author="mengjuhua">
+    <changeSet id="1704700547152-28" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_eformbind"/>
@@ -1145,7 +1145,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1704700547152-41" author="mengjuhua">
+    <changeSet id="1704700547152-41" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ff_item_y9formbind"/>

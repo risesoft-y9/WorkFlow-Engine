@@ -47,6 +47,7 @@ import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
+import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.platform.OrgUnit;
@@ -325,12 +326,12 @@ public class MobileDocumentController {
         @RequestParam Integer principalType, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String id, @RequestParam String itemId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         if (StringUtils.isBlank(processDefinitionId) || StringUtils.isBlank(itemId)) {
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
         } else {
             item = itemRole4PositionApi.findPermUser(Y9LoginUserHolder.getTenantId(), userId, positionId, itemId,
-                processDefinitionId, taskDefKey, principalType, id, processInstanceId);
+                processDefinitionId, taskDefKey, principalType, id, processInstanceId).getData();
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
         }
     }
@@ -356,12 +357,12 @@ public class MobileDocumentController {
         @RequestParam Integer principalType, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String name, @RequestParam String itemId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         if (StringUtils.isBlank(processDefinitionId) || StringUtils.isBlank(itemId)) {
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
         } else {
             item = itemRole4PositionApi.findPermUserByName(Y9LoginUserHolder.getTenantId(), userId, positionId, name,
-                principalType, itemId, processDefinitionId, taskDefKey, processInstanceId);
+                principalType, itemId, processDefinitionId, taskDefKey, processInstanceId).getData();
             Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(item));
         }
     }

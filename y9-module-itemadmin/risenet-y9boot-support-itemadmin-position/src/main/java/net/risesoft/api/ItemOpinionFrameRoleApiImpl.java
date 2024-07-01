@@ -3,8 +3,6 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ItemOpinionFrameRoleApi;
 import net.risesoft.entity.ItemOpinionFrameRole;
 import net.risesoft.model.itemadmin.ItemOpinionFrameRoleModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemOpinionFrameRoleService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -36,11 +35,11 @@ public class ItemOpinionFrameRoleApiImpl implements ItemOpinionFrameRoleApi {
      *
      * @param tenantId 租户id
      * @param itemOpinionFrameId 意见框绑定id
-     * @return List<ItemOpinionFrameRoleModel>
+     * @return Y9Result<List < ItemOpinionFrameRoleModel>>
      */
     @Override
-    @GetMapping(value = "/findByItemOpinionFrameId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ItemOpinionFrameRoleModel> findByItemOpinionFrameId(String tenantId, String itemOpinionFrameId) {
+    public Y9Result<List<ItemOpinionFrameRoleModel>> findByItemOpinionFrameId(String tenantId,
+        String itemOpinionFrameId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemOpinionFrameRoleModel> modelList = new ArrayList<>();
         List<ItemOpinionFrameRole> list = itemOpinionFrameRoleService.findByItemOpinionFrameId(itemOpinionFrameId);
@@ -49,7 +48,7 @@ public class ItemOpinionFrameRoleApiImpl implements ItemOpinionFrameRoleApi {
             Y9BeanUtil.copyProperties(role, model);
             modelList.add(model);
         }
-        return modelList;
+        return Y9Result.success(modelList);
     }
 
 }
