@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.model.processadmin.IdentityLinkModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomIdentityService;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
@@ -40,9 +41,10 @@ public class IdentityApiImpl implements IdentityApi {
      */
     @Override
     @GetMapping(value = "/getIdentityLinksForTask", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<IdentityLinkModel> getIdentityLinksForTask(@RequestParam String tenantId, @RequestParam String taskId) {
+    public Y9Result<List<IdentityLinkModel>> getIdentityLinksForTask(@RequestParam String tenantId,
+        @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<IdentityLink> list = customIdentityService.getIdentityLinksForTask(taskId);
-        return FlowableModelConvertUtil.identityLinkList2ModelList(list);
+        return Y9Result.success(FlowableModelConvertUtil.identityLinkList2ModelList(list));
     }
 }
