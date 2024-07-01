@@ -1,7 +1,9 @@
 package net.risesoft.api.processadmin;
 
 import java.util.List;
-import java.util.Map;
+
+import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -18,6 +20,6 @@ public interface WorkflowApi {
      * @param taskDefKey 任务key
      * @return List&lt;Map&lt;String, Object&gt;&gt;
      */
-    public List<Map<String, String>> getCurrentTaskTargets(String tenantId, String processDefinitionId,
-        String taskDefKey);
+    Y9Result<List<TargetModel>> getCurrentTaskTargets(String tenantId, String processDefinitionId,
+                                                     String taskDefKey);
 }

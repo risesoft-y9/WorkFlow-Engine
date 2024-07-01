@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.MapUtil;
 import net.risesoft.util.SysVariables;
 
@@ -131,8 +133,8 @@ public class WorkflowProcessInstanceService {
      * @param taskDefKey
      * @return
      */
-    public List<Map<String, String>> getCurrentTaskTargets(String processDefinitionId, String taskDefKey) {
-        List<Map<String, String>> targetTasks = new ArrayList<Map<String, String>>();
+    public Y9Result<List<TargetModel>> getCurrentTaskTargets(String processDefinitionId, String taskDefKey) {
+        List<TargetModel> targetTasks = new ArrayList<>();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         Process process = bpmnModel.getProcesses().get(0);
         List<FlowElement> flowElements = (List<FlowElement>)process.getFlowElements();
@@ -154,17 +156,17 @@ public class WorkflowProcessInstanceService {
                 }
                 if (!isGateway) {
                     for (SequenceFlow tr : list) {
-                        Map<String, String> map = new HashMap<String, String>(16);
+                        TargetModel targetModel = new TargetModel();
                         FlowElement fe = tr.getTargetFlowElement();
                         if (!(fe instanceof EndEvent)) {
-                            map.put(SysVariables.TASKDEFKEY, tr.getTargetFlowElement().getId());
+                            targetModel.setTaskDefKey(tr.getTargetFlowElement().getId());
                             String name = tr.getName();
                             if (StringUtils.isNotBlank(name)) {
                                 // 如果输出线上有名称，则使用线上的名称作为路由名称
-                                map.put(SysVariables.TASKDEFNAME, name);
+                                targetModel.setTaskDefName(name);
                             } else {
                                 // 如果输出线上没有名称，则使用目标节点名称作为路由名称
-                                map.put(SysVariables.TASKDEFNAME, tr.getTargetFlowElement().getName());
+                                targetModel.setTaskDefName(tr.getTargetFlowElement().getName());
                             }
                         }
                         if (tr.getTargetFlowElement() instanceof ExclusiveGateway) {
@@ -174,30 +176,30 @@ public class WorkflowProcessInstanceService {
                             isGateway = true;
                             break;
                         }
-                        targetTasks.add(map);
+                        targetTasks.add(targetModel);
                     }
                 } else {
                     for (SequenceFlow tr : list) {
-                        Map<String, String> map = new HashMap<String, String>(16);
+                        TargetModel targetModel = new TargetModel();
                         String conditionText = tr.getConditionExpression();
                         FlowElement fe = tr.getTargetFlowElement();
                         if (StringUtils.isNotBlank(conditionText) && !(fe instanceof EndEvent)) {
-                            map.put(SysVariables.TASKDEFKEY, tr.getTargetFlowElement().getId());
-                            map.put(SysVariables.TASKDEFNAME, tr.getName());
+                            targetModel.setTaskDefKey(tr.getTargetFlowElement().getId());
+                            targetModel.setTaskDefName(tr.getName());
                             UserTask userTask = (UserTask)fe;
                             if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                                map.put(SysVariables.MULTIINSTANCE, SysVariables.SEQUENTIAL);
+                                targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
                             } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                                map.put(SysVariables.MULTIINSTANCE, SysVariables.PARALLEL);
+                                targetModel.setMultiInstance(SysVariables.PARALLEL);
                             }
-                            targetTasks.add(map);
+                            targetTasks.add(targetModel);
                         }
 
                     }
                 }
             }
         }
-        return targetTasks;
+        return Y9Result.success(targetTasks);
     }
 
     /**
