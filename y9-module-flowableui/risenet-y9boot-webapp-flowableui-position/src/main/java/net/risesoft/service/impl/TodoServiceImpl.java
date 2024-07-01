@@ -305,8 +305,8 @@ public class TodoServiceImpl implements TodoService {
                         mapTemp.put("remindSetting", true);
                     }
 
-                    int countFollow =
-                        officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
+                    int countFollow = officeFollow4PositionApi
+                        .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
 
                     String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK);
@@ -450,8 +450,8 @@ public class TodoServiceImpl implements TodoService {
                         mapTemp.put("remindSetting", true);
                     }
 
-                    int countFollow =
-                        officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
+                    int countFollow = officeFollow4PositionApi
+                        .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
 
                     String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK);

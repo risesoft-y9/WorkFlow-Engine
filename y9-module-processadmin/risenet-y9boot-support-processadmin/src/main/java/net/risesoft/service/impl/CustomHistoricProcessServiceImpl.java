@@ -41,6 +41,12 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
     private final DeleteProcessUtilService deleteProcessUtilService;
 
     @Override
+    public List<HistoricProcessInstance> deleteProList(String itemId, Integer page, Integer rows) {
+        return historyService.createHistoricProcessInstanceQuery().variableValueEquals("itemId", itemId).deleted()
+            .orderByProcessInstanceStartTime().desc().listPage((page - 1) * rows, rows);
+    }
+
+    @Override
     public boolean deleteProcessInstance(String processInstanceId) {
         try {
             HistoricProcessInstance his =
@@ -66,12 +72,6 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             LOGGER.error("删除流程实例失败", e);
         }
         return false;
-    }
-
-    @Override
-    public List<HistoricProcessInstance> deleteProList(String itemId, Integer page, Integer rows) {
-        return historyService.createHistoricProcessInstanceQuery().variableValueEquals("itemId", itemId).deleted()
-            .orderByProcessInstanceStartTime().desc().listPage((page - 1) * rows, rows);
     }
 
     @Override
@@ -214,7 +214,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
                 if (his == null) {
                     // 数据中心办结件
                     OfficeDoneInfoModel officeDoneInfoModel =
-                        officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     if (officeDoneInfoModel != null) {
                         year = officeDoneInfoModel.getStartTime().substring(0, 4);
                         // 删除年度数据

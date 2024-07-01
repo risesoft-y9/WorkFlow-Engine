@@ -37,6 +37,7 @@ import net.risesoft.model.platform.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -138,7 +139,7 @@ public class MainRestController {
                 todoCount = countMap != null ? Long.parseLong(countMap.get("todoCount").toString()) : 0;
                 doingCount = countMap != null ? Long.parseLong(countMap.get("doingCount").toString()) : 0;
                 try {
-                    doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, itemId);
+                    doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, itemId).getData();
                 } catch (Exception e) {
                     LOGGER.error("获取事项统计失败", e);
                 }
@@ -151,8 +152,8 @@ public class MainRestController {
 
             if (person.isGlobalManager()) {
                 try {
-                    monitorDoing = officeDoneInfo4PositionApi.countDoingByItemId(tenantId, itemId);
-                    monitorDone = officeDoneInfo4PositionApi.countByItemId(tenantId, itemId);
+                    monitorDoing = officeDoneInfo4PositionApi.countDoingByItemId(tenantId, itemId).getData();
+                    monitorDone = officeDoneInfo4PositionApi.countByItemId(tenantId, itemId).getData();
                 } catch (Exception e) {
                     LOGGER.error("获取事项统计失败", e);
                 }
@@ -205,7 +206,8 @@ public class MainRestController {
             todoCount = countMap != null ? Long.parseLong(countMap.get("todoCount").toString()) : 0;
             doingCount = countMap != null ? Long.parseLong(countMap.get("doingCount").toString()) : 0;
             try {
-                doneCount = officeDoneInfo4PositionApi.countByPositionIdAndSystemName(tenantId, positionId, systemName);
+                doneCount = officeDoneInfo4PositionApi.countByPositionIdAndSystemName(tenantId, positionId, systemName)
+                    .getData();
             } catch (Exception e) {
                 LOGGER.error("获取事项统计失败", e);
             }
@@ -291,11 +293,11 @@ public class MainRestController {
             // 统计统一待办
             todoCount = todotaskApi.countByReceiverId(tenantId, positionId);
             // 统计流程在办件
-            Map<String, Object> m = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, "", "", "",
-                "todo", "", "", "", 1, 1);
-            doingCount = Long.parseLong(m.get("total").toString());
+            Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId,
+                "", "", "", "todo", "", "", "", 1, 1);
+            doingCount = y9Page.getTotal();
             // 统计历史办结件
-            doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, "");
+            doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, "").getData();
             map.put("todoCount", todoCount);
             map.put("doingCount", doingCount);
             map.put("doneCount", doneCount);
@@ -501,7 +503,7 @@ public class MainRestController {
                     HistoricProcessInstanceModel processModel = historicProcessApi.getById(tenantId, processInstanceId);
                     if (processModel == null || processModel.getId() == null) {
                         OfficeDoneInfoModel officeDoneInfoModel =
-                            officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+                            officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         if (officeDoneInfoModel == null) {
                             processInstanceId = "";
                         } else {

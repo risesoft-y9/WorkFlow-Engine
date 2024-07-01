@@ -67,11 +67,11 @@ public class OfficeFollowRestController {
     @RequestMapping(value = "/delOfficeFollow", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> delOfficeFollow(@RequestParam String processInstanceIds) {
         try {
-            Map<String, Object> map;
+            Y9Result<Object> y9Result;
             String tenantId = Y9LoginUserHolder.getTenantId();
-            map = officeFollow4PositionApi.delOfficeFollow(tenantId, Y9LoginUserHolder.getPositionId(),
+            y9Result = officeFollow4PositionApi.delOfficeFollow(tenantId, Y9LoginUserHolder.getPositionId(),
                 processInstanceIds);
-            if ((Boolean)map.get(UtilConsts.SUCCESS)) {
+            if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("取消关注成功");
             }
         } catch (Exception e) {
@@ -108,7 +108,8 @@ public class OfficeFollowRestController {
     @RequestMapping(value = "/getFollowCount", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Integer> getFollowCount() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        int followCount = officeFollow4PositionApi.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId());
+        int followCount =
+            officeFollow4PositionApi.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId()).getData();
         return Y9Result.success(followCount, "获取成功");
     }
 
@@ -147,7 +148,7 @@ public class OfficeFollowRestController {
                     historicProcessApi.getById(tenantId, processInstanceId);
                 if (historicProcessInstanceModel == null) {
                     OfficeDoneInfoModel officeDoneInfoModel =
-                        officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     officeFollow.setStartTime(officeDoneInfoModel != null ? officeDoneInfoModel.getStartTime() : "");
                 } else {
                     officeFollow.setStartTime(sdf.format(historicProcessInstanceModel.getStartTime()));

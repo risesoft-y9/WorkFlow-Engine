@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.api.todo.TodoTaskApi;
+import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SearchService;
@@ -86,11 +87,11 @@ public class MobileV1SearchListController {
             // 统计统一待办
             todoCount = todotaskApi.countByReceiverId(tenantId, positionId);
             // 统计流程在办件
-            Map<String, Object> m = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, "", "", "",
-                "todo", "", "", "", 1, 1);
-            doingCount = Long.parseLong(m.get("total").toString());
+            Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId,
+                "", "", "", "todo", "", "", "", 1, 1);
+            doingCount = y9Page.getTotal();
             // 统计历史办结件
-            doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, "");
+            doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, "").getData();
             map.put("todoCount", todoCount);
             map.put("doingCount", doingCount);
             map.put("doneCount", doneCount);

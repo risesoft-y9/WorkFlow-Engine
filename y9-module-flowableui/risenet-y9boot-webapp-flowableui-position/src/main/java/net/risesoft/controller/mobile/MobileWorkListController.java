@@ -266,7 +266,7 @@ public class MobileWorkListController {
             int todoCount = countMap != null ? (int)countMap.get("todoCount") : 0;
             int doingCount = countMap != null ? (int)countMap.get("doingCount") : 0;
             // int doneCount = countMap != null ? (int) countMap.get("doneCount") : 0;
-            int doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, itemId);
+            int doneCount = officeDoneInfo4PositionApi.countByPositionId(tenantId, positionId, itemId).getData();
             map.put("todoCount", todoCount);
             map.put("doingCount", doingCount);
             map.put("doneCount", doneCount);

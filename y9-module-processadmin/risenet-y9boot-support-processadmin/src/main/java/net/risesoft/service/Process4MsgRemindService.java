@@ -249,7 +249,7 @@ public class Process4MsgRemindService {
                     String newPersonIds = "";
                     String[] ids = personIds.split(",");
                     OfficeDoneInfoModel officeDoneInfoModel =
-                        officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+                        officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     for (String id : ids) {
                         if (officeDoneInfoModel != null && officeDoneInfoModel.getAllUserId().contains(id)) {
                             newPersonIds = Y9Util.genCustomStr(newPersonIds, id);

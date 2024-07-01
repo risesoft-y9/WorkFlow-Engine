@@ -20,19 +20,18 @@ public interface OfficeFollowService {
     int countByProcessInstanceId(String processInstanceId);
 
     /**
+     * 取消关注
+     *
+     * @param processInstanceIds
+     */
+    void delOfficeFollow(String processInstanceIds);
+
+    /**
      * 根据流程实例id删除关注
      *
      * @param processInstanceId
      */
     void deleteByProcessInstanceId(String processInstanceId);
-
-    /**
-     * 取消关注
-     *
-     * @param processInstanceIds
-     * @return
-     */
-    Map<String, Object> delOfficeFollow(String processInstanceIds);
 
     /**
      * 获取我的关注数量

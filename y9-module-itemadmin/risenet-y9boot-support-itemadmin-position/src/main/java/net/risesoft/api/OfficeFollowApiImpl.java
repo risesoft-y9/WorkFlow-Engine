@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.entity.OfficeFollow;
 import net.risesoft.model.itemadmin.OfficeFollowModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OfficeFollowService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -38,27 +39,15 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
-     * @return int
+     * @return Y9Result<Integer>
      */
     @Override
     @GetMapping(value = "/countByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public int countByProcessInstanceId(String tenantId, String positionId, String processInstanceId) {
+    public Y9Result<Integer> countByProcessInstanceId(String tenantId, String positionId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        return officeFollowService.countByProcessInstanceId(processInstanceId);
-    }
-
-    /**
-     * 根据流程实例id删除关注
-     *
-     * @param tenantId 租户id
-     * @param processInstanceId 流程实例id
-     */
-    @Override
-    @PostMapping(value = "/deleteByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteByProcessInstanceId(String tenantId, String processInstanceId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        officeFollowService.deleteByProcessInstanceId(processInstanceId);
+        int count = officeFollowService.countByProcessInstanceId(processInstanceId);
+        return Y9Result.success(count);
     }
 
     /**
@@ -67,14 +56,30 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceIds 流程实例id列表
-     * @return Map<String, Object>
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/delOfficeFollow", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> delOfficeFollow(String tenantId, String positionId, String processInstanceIds) {
+    public Y9Result<Object> delOfficeFollow(String tenantId, String positionId, String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        return officeFollowService.delOfficeFollow(processInstanceIds);
+        officeFollowService.delOfficeFollow(processInstanceIds);
+        return Y9Result.successMsg("取消关注成功");
+    }
+
+    /**
+     * 根据流程实例id删除关注
+     *
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<Object>
+     */
+    @Override
+    @PostMapping(value = "/deleteByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Y9Result<Object> deleteByProcessInstanceId(String tenantId, String processInstanceId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        officeFollowService.deleteByProcessInstanceId(processInstanceId);
+        return Y9Result.successMsg("删除关注成功");
     }
 
     /**
@@ -82,14 +87,15 @@ public class OfficeFollowApiImpl implements OfficeFollow4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return int
+     * @return Y9Result<Integer>
      */
     @Override
     @GetMapping(value = "/getFollowCount", produces = MediaType.APPLICATION_JSON_VALUE)
-    public int getFollowCount(String tenantId, String positionId) {
+    public Y9Result<Integer> getFollowCount(String tenantId, String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPositionId(positionId);
-        return officeFollowService.getFollowCount();
+        int count = officeFollowService.getFollowCount();
+        return Y9Result.success(count);
     }
 
     /**

@@ -162,7 +162,8 @@ public class ChaoSongRestController {
             map.put("fileNum", fileNum);
             map.put("tenantId", tenantId);
             map.put("userId", person.getPersonId());
-            int follow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
+            int follow =
+                officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
             map.put("follow", follow > 0);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {

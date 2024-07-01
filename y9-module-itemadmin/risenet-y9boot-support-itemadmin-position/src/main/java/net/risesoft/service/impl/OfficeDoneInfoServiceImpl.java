@@ -5,9 +5,7 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
@@ -40,6 +37,7 @@ import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.nosql.elastic.repository.OfficeDoneInfoRepository;
+import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.util.Y9EsIndexConst;
@@ -168,56 +166,45 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> getMeetingList(String userName, String deptName, String title, String meetingType,
-        Integer page, Integer rows) {
-        Map<String, Object> dataMap = new HashMap<>(16);
-        dataMap.put(UtilConsts.SUCCESS, true);
+    public Y9Page<OfficeDoneInfoModel> getMeetingList(String userName, String deptName, String title,
+        String meetingType, Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
         int totalPages = 1;
         long total = 0;
-        try {
-            if (page < 1) {
-                page = 1;
-            }
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("meeting").is("1");
-            if (StringUtils.isNotBlank(title)) {
-                criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
-            }
-            if (StringUtils.isNotBlank(deptName)) {
-                criteria.subCriteria(new Criteria("deptName").contains(deptName));
-            }
-            if (StringUtils.isNotBlank(userName)) {
-                criteria.subCriteria(new Criteria("creatUserName").contains(userName));
-            }
-            if (StringUtils.isNotBlank(meetingType)) {
-                criteria.subCriteria(new Criteria("meetingType").is(meetingType).and("meetingType").exists());
-            }
-
-            Query query = new CriteriaQuery(criteria).setPageable(pageable);
-            query.setTrackTotalHits(true);
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
-            SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
-            List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-            Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
-            List<OfficeDoneInfo> list = pageList.getContent();
-            OfficeDoneInfoModel officeDoneInfoModel;
-            for (OfficeDoneInfo officeDoneInfo : list) {
-                officeDoneInfoModel = new OfficeDoneInfoModel();
-                Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
-                list1.add(officeDoneInfoModel);
-            }
-            totalPages = pageList.getTotalPages();
-            total = pageList.getTotalElements();
-        } catch (Exception e) {
-            dataMap.put(UtilConsts.SUCCESS, false);
-            LOGGER.warn("异常", e);
+        if (page < 1) {
+            page = 1;
         }
-        dataMap.put("currpage", page);
-        dataMap.put("totalpages", totalPages);
-        dataMap.put("total", total);
-        dataMap.put("rows", list1);
-        return dataMap;
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("meeting").is("1");
+        if (StringUtils.isNotBlank(title)) {
+            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
+        }
+        if (StringUtils.isNotBlank(deptName)) {
+            criteria.subCriteria(new Criteria("deptName").contains(deptName));
+        }
+        if (StringUtils.isNotBlank(userName)) {
+            criteria.subCriteria(new Criteria("creatUserName").contains(userName));
+        }
+        if (StringUtils.isNotBlank(meetingType)) {
+            criteria.subCriteria(new Criteria("meetingType").is(meetingType).and("meetingType").exists());
+        }
+
+        Query query = new CriteriaQuery(criteria).setPageable(pageable);
+        query.setTrackTotalHits(true);
+        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
+        List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+        Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        List<OfficeDoneInfo> list = pageList.getContent();
+        OfficeDoneInfoModel officeDoneInfoModel;
+        for (OfficeDoneInfo officeDoneInfo : list) {
+            officeDoneInfoModel = new OfficeDoneInfoModel();
+            Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+            list1.add(officeDoneInfoModel);
+        }
+        totalPages = pageList.getTotalPages();
+        total = pageList.getTotalElements();
+        return Y9Page.success(page, totalPages, total, list1);
     }
 
     @Override
@@ -265,361 +252,297 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     }
 
     @Override
-    public Map<String, Object> searchAllByDeptId(String deptId, String title, String itemId, String userName,
+    public Y9Page<OfficeDoneInfoModel> searchAllByDeptId(String deptId, String title, String itemId, String userName,
         String state, String year, Integer page, Integer rows) {
-        Map<String, Object> dataMap = new HashMap<>(16);
-        dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
         int totalPages = 1;
         long total = 0;
-        try {
-            if (page < 1) {
-                page = 1;
-            }
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
-            Criteria criteria =
-                new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("deptId").contains(deptId);
-            if (StringUtils.isNotBlank(title)) {
-                criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
-            }
-            if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").is(itemId));
-            }
-            if (StringUtils.isNotBlank(userName)) {
-                criteria.subCriteria(new Criteria("creatUserName").contains(userName));
-            }
-            if (StringUtils.isNotBlank(year)) {
-                criteria.subCriteria(new Criteria("startTime").startsWith(year));
-            }
-            if (StringUtils.isNotBlank(state)) {
-                if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    criteria.subCriteria(new Criteria("endTime").not().exists());
-                } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    criteria.subCriteria(new Criteria("endTime").exists());
-                }
-            }
-
-            Query query = new CriteriaQuery(criteria).setPageable(pageable);
-            query.setTrackTotalHits(true);
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
-            SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
-            List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-            Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
-            List<OfficeDoneInfo> list = pageList.getContent();
-            OfficeDoneInfoModel officeDoneInfoModel;
-            for (OfficeDoneInfo officeDoneInfo : list) {
-                officeDoneInfoModel = new OfficeDoneInfoModel();
-                Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
-                list1.add(officeDoneInfoModel);
-            }
-            totalPages = pageList.getTotalPages();
-            total = pageList.getTotalElements();
-        } catch (Exception e) {
-            dataMap.put(UtilConsts.SUCCESS, false);
-            LOGGER.warn("异常", e);
+        if (page < 1) {
+            page = 1;
         }
-        dataMap.put("currpage", page);
-        dataMap.put("totalpages", totalPages);
-        dataMap.put("total", total);
-        dataMap.put("rows", list1);
-        return dataMap;
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("deptId").contains(deptId);
+        if (StringUtils.isNotBlank(title)) {
+            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
+        }
+        if (StringUtils.isNotBlank(itemId)) {
+            criteria.subCriteria(new Criteria("itemId").is(itemId));
+        }
+        if (StringUtils.isNotBlank(userName)) {
+            criteria.subCriteria(new Criteria("creatUserName").contains(userName));
+        }
+        if (StringUtils.isNotBlank(year)) {
+            criteria.subCriteria(new Criteria("startTime").startsWith(year));
+        }
+        if (StringUtils.isNotBlank(state)) {
+            if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
+                criteria.subCriteria(new Criteria("endTime").not().exists());
+            } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
+                criteria.subCriteria(new Criteria("endTime").exists());
+            }
+        }
+
+        Query query = new CriteriaQuery(criteria).setPageable(pageable);
+        query.setTrackTotalHits(true);
+        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
+        List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+        Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        List<OfficeDoneInfo> list = pageList.getContent();
+        OfficeDoneInfoModel officeDoneInfoModel;
+        for (OfficeDoneInfo officeDoneInfo : list) {
+            officeDoneInfoModel = new OfficeDoneInfoModel();
+            Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+            list1.add(officeDoneInfoModel);
+        }
+        totalPages = pageList.getTotalPages();
+        total = pageList.getTotalElements();
+        return Y9Page.success(page, totalPages, total, list1);
     }
 
     @Override
-    public Map<String, Object> searchAllByUserId(String userId, String title, String itemId, String userName,
+    public Y9Page<OfficeDoneInfoModel> searchAllByUserId(String userId, String title, String itemId, String userName,
         String state, String year, String startDate, String endDate, Integer page, Integer rows) {
-        Map<String, Object> dataMap = new HashMap<>(16);
-        dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
         int totalPages = 1;
         long total = 0;
-        try {
-            if (page < 1) {
-                page = 1;
-            }
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
-
-            Criteria criteria =
-                new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(userId);
-            if (StringUtils.isNotBlank(title)) {
-                criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
-            }
-            if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").is(itemId));
-            }
-            if (StringUtils.isNotBlank(userName)) {
-                criteria.subCriteria(new Criteria("creatUserName").contains(userName));
-            }
-            if (StringUtils.isNotBlank(year)) {
-                criteria.subCriteria(new Criteria("startTime").startsWith(year));
-            }
-            if (StringUtils.isNotBlank(startDate)) {
-                criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startDate + " 00:00:00"));
-            }
-            if (StringUtils.isNotBlank(endDate)) {
-                criteria.subCriteria(new Criteria("startTime").lessThanEqual(endDate + " 23:59:59"));
-            }
-            if (StringUtils.isNotBlank(state)) {
-                if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    criteria.subCriteria(new Criteria("endTime").not().exists());
-                } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    criteria.subCriteria(new Criteria("endTime").exists());
-                }
-            }
-            Query query = new CriteriaQuery(criteria).setPageable(pageable);
-            query.setTrackTotalHits(true);
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
-            SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
-            List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-            Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
-            List<OfficeDoneInfo> list = pageList.getContent();
-            OfficeDoneInfoModel officeDoneInfoModel;
-            for (OfficeDoneInfo officeDoneInfo : list) {
-                officeDoneInfoModel = new OfficeDoneInfoModel();
-                Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
-                list1.add(officeDoneInfoModel);
-            }
-            totalPages = pageList.getTotalPages();
-            total = pageList.getTotalElements();
-        } catch (Exception e) {
-            dataMap.put(UtilConsts.SUCCESS, false);
-            LOGGER.warn("异常", e);
+        if (page < 1) {
+            page = 1;
         }
-        dataMap.put("currpage", page);
-        dataMap.put("totalpages", totalPages);
-        dataMap.put("total", total);
-        dataMap.put("rows", list1);
-        return dataMap;
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+
+        Criteria criteria =
+            new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(userId);
+        if (StringUtils.isNotBlank(title)) {
+            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
+        }
+        if (StringUtils.isNotBlank(itemId)) {
+            criteria.subCriteria(new Criteria("itemId").is(itemId));
+        }
+        if (StringUtils.isNotBlank(userName)) {
+            criteria.subCriteria(new Criteria("creatUserName").contains(userName));
+        }
+        if (StringUtils.isNotBlank(year)) {
+            criteria.subCriteria(new Criteria("startTime").startsWith(year));
+        }
+        if (StringUtils.isNotBlank(startDate)) {
+            criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startDate + " 00:00:00"));
+        }
+        if (StringUtils.isNotBlank(endDate)) {
+            criteria.subCriteria(new Criteria("startTime").lessThanEqual(endDate + " 23:59:59"));
+        }
+        if (StringUtils.isNotBlank(state)) {
+            if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
+                criteria.subCriteria(new Criteria("endTime").not().exists());
+            } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
+                criteria.subCriteria(new Criteria("endTime").exists());
+            }
+        }
+        Query query = new CriteriaQuery(criteria).setPageable(pageable);
+        query.setTrackTotalHits(true);
+        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
+        List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+        Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        List<OfficeDoneInfo> list = pageList.getContent();
+        OfficeDoneInfoModel officeDoneInfoModel;
+        for (OfficeDoneInfo officeDoneInfo : list) {
+            officeDoneInfoModel = new OfficeDoneInfoModel();
+            Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+            list1.add(officeDoneInfoModel);
+        }
+        totalPages = pageList.getTotalPages();
+        total = pageList.getTotalElements();
+        return Y9Page.success(page, totalPages, total, list1);
     }
 
     @Override
-    public Map<String, Object> searchAllList(String searchName, String itemId, String userName, String state,
+    public Y9Page<OfficeDoneInfoModel> searchAllList(String searchName, String itemId, String userName, String state,
         String year, Integer page, Integer rows) {
-        Map<String, Object> dataMap = new HashMap<>(16);
-        dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
         int totalPages = 1;
         long total = 0;
-        try {
-            if (page < 1) {
-                page = 1;
-            }
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
-
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
-            if (StringUtils.isNotBlank(searchName)) {
-                criteria.subCriteria(new Criteria("title").contains(searchName).or("docNumber").contains(searchName));
-            }
-            if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").is(itemId));
-            }
-            if (StringUtils.isNotBlank(userName)) {
-                criteria.subCriteria(new Criteria("creatUserName").contains(userName));
-            }
-            if (StringUtils.isNotBlank(year)) {
-                criteria.subCriteria(new Criteria("startTime").startsWith(year));
-            }
-            if (StringUtils.isNotBlank(state)) {
-                if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    criteria.subCriteria(new Criteria("endTime").not().exists());
-                } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    criteria.subCriteria(new Criteria("endTime").exists());
-                }
-            }
-            Query query = new CriteriaQuery(criteria).setPageable(pageable);
-            query.setTrackTotalHits(true);
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
-            SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
-            List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-            Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
-            List<OfficeDoneInfo> list = pageList.getContent();
-            OfficeDoneInfoModel officeDoneInfoModel;
-            for (OfficeDoneInfo officeDoneInfo : list) {
-                officeDoneInfoModel = new OfficeDoneInfoModel();
-                Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
-                list1.add(officeDoneInfoModel);
-            }
-            totalPages = pageList.getTotalPages();
-            total = pageList.getTotalElements();
-        } catch (Exception e) {
-            dataMap.put(UtilConsts.SUCCESS, false);
-            LOGGER.warn("异常", e);
+        if (page < 1) {
+            page = 1;
         }
-        dataMap.put("currpage", page);
-        dataMap.put("totalpages", totalPages);
-        dataMap.put("total", total);
-        dataMap.put("rows", list1);
-        return dataMap;
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
+        if (StringUtils.isNotBlank(searchName)) {
+            criteria.subCriteria(new Criteria("title").contains(searchName).or("docNumber").contains(searchName));
+        }
+        if (StringUtils.isNotBlank(itemId)) {
+            criteria.subCriteria(new Criteria("itemId").is(itemId));
+        }
+        if (StringUtils.isNotBlank(userName)) {
+            criteria.subCriteria(new Criteria("creatUserName").contains(userName));
+        }
+        if (StringUtils.isNotBlank(year)) {
+            criteria.subCriteria(new Criteria("startTime").startsWith(year));
+        }
+        if (StringUtils.isNotBlank(state)) {
+            if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
+                criteria.subCriteria(new Criteria("endTime").not().exists());
+            } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
+                criteria.subCriteria(new Criteria("endTime").exists());
+            }
+        }
+        Query query = new CriteriaQuery(criteria).setPageable(pageable);
+        query.setTrackTotalHits(true);
+        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
+        List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+        Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        List<OfficeDoneInfo> list = pageList.getContent();
+        OfficeDoneInfoModel officeDoneInfoModel;
+        for (OfficeDoneInfo officeDoneInfo : list) {
+            officeDoneInfoModel = new OfficeDoneInfoModel();
+            Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+            list1.add(officeDoneInfoModel);
+        }
+        totalPages = pageList.getTotalPages();
+        total = pageList.getTotalElements();
+        return Y9Page.success(page, totalPages, total, list1);
     }
 
     @Override
-    public Map<String, Object> searchByItemId(String title, String itemId, String state, String startdate,
+    public Y9Page<OfficeDoneInfoModel> searchByItemId(String title, String itemId, String state, String startdate,
         String enddate, Integer page, Integer rows) {
-        Map<String, Object> dataMap = new HashMap<>(16);
-        dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
         int totalPages = 1;
         long total = 0;
-        try {
-            if (page < 1) {
-                page = 1;
-            }
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
-
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
-            if (StringUtils.isNotBlank(title)) {
-                criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title)
-                    .or("creatUserName").contains(title));
-            }
-            if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").is(itemId));
-            }
-            if (StringUtils.isNotBlank(startdate)) {
-                criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
-            }
-            if (StringUtils.isNotBlank(enddate)) {
-                criteria.subCriteria(new Criteria("startTime").lessThanEqual(enddate + " 23:59:59"));
-            }
-            if (StringUtils.isNotBlank(state)) {
-                if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                    criteria.subCriteria(new Criteria("endTime").not().exists());
-                } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                    criteria.subCriteria(new Criteria("endTime").exists());
-                }
-            }
-            Query query = new CriteriaQuery(criteria).setPageable(pageable);
-            query.setTrackTotalHits(true);
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
-            SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
-            List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-            Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
-            List<OfficeDoneInfo> list = pageList.getContent();
-            OfficeDoneInfoModel officeDoneInfoModel;
-            for (OfficeDoneInfo officeDoneInfo : list) {
-                officeDoneInfoModel = new OfficeDoneInfoModel();
-                Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
-                list1.add(officeDoneInfoModel);
-            }
-            totalPages = pageList.getTotalPages();
-            total = pageList.getTotalElements();
-        } catch (Exception e) {
-            dataMap.put(UtilConsts.SUCCESS, false);
-            LOGGER.warn("异常", e);
+        if (page < 1) {
+            page = 1;
         }
-        dataMap.put("currpage", page);
-        dataMap.put("totalpages", totalPages);
-        dataMap.put("total", total);
-        dataMap.put("rows", list1);
-        return dataMap;
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
+        if (StringUtils.isNotBlank(title)) {
+            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title)
+                .or("creatUserName").contains(title));
+        }
+        if (StringUtils.isNotBlank(itemId)) {
+            criteria.subCriteria(new Criteria("itemId").is(itemId));
+        }
+        if (StringUtils.isNotBlank(startdate)) {
+            criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
+        }
+        if (StringUtils.isNotBlank(enddate)) {
+            criteria.subCriteria(new Criteria("startTime").lessThanEqual(enddate + " 23:59:59"));
+        }
+        if (StringUtils.isNotBlank(state)) {
+            if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
+                criteria.subCriteria(new Criteria("endTime").not().exists());
+            } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
+                criteria.subCriteria(new Criteria("endTime").exists());
+            }
+        }
+        Query query = new CriteriaQuery(criteria).setPageable(pageable);
+        query.setTrackTotalHits(true);
+        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
+        List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+        Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        List<OfficeDoneInfo> list = pageList.getContent();
+        OfficeDoneInfoModel officeDoneInfoModel;
+        for (OfficeDoneInfo officeDoneInfo : list) {
+            officeDoneInfoModel = new OfficeDoneInfoModel();
+            Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+            list1.add(officeDoneInfoModel);
+        }
+        totalPages = pageList.getTotalPages();
+        total = pageList.getTotalElements();
+
+        return Y9Page.success(page, totalPages, total, list1);
     }
 
     @Override
-    public Map<String, Object> searchByPositionIdAndSystemName(String positionId, String title, String systemName,
-        String startdate, String enddate, Integer page, Integer rows) {
-        Map<String, Object> dataMap = new HashMap<>(16);
-        dataMap.put(UtilConsts.SUCCESS, true);
+    public Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(String positionId, String title,
+        String systemName, String startdate, String enddate, Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
         int totalPages = 1;
         long total = 0;
-        try {
-            if (page < 1) {
-                page = 1;
-            }
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
-
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
-                .contains(positionId).and("endTime").exists();
-            if (StringUtils.isNotBlank(title)) {
-                criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
-            }
-            if (StringUtils.isNotBlank(systemName)) {
-                criteria.subCriteria(new Criteria("systemName").is(systemName));
-            }
-
-            if (StringUtils.isNotBlank(startdate)) {
-                criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
-            }
-            if (StringUtils.isNotBlank(enddate)) {
-                criteria.subCriteria(new Criteria("startTime").lessThanEqual(enddate + " 23:59:59"));
-            }
-            Query query = new CriteriaQuery(criteria).setPageable(pageable);
-            query.setTrackTotalHits(true);
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
-            SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
-            List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-            Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
-            List<OfficeDoneInfo> list = pageList.getContent();
-            OfficeDoneInfoModel officeDoneInfoModel;
-            for (OfficeDoneInfo officeDoneInfo : list) {
-                officeDoneInfoModel = new OfficeDoneInfoModel();
-                Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
-                list1.add(officeDoneInfoModel);
-            }
-            totalPages = pageList.getTotalPages();
-            total = pageList.getTotalElements();
-        } catch (Exception e) {
-            dataMap.put(UtilConsts.SUCCESS, false);
-            LOGGER.warn("异常", e);
+        if (page < 1) {
+            page = 1;
         }
-        dataMap.put("currpage", page);
-        dataMap.put("totalpages", totalPages);
-        dataMap.put("total", total);
-        dataMap.put("rows", list1);
-        return dataMap;
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
+            .contains(positionId).and("endTime").exists();
+        if (StringUtils.isNotBlank(title)) {
+            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
+        }
+        if (StringUtils.isNotBlank(systemName)) {
+            criteria.subCriteria(new Criteria("systemName").is(systemName));
+        }
+
+        if (StringUtils.isNotBlank(startdate)) {
+            criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
+        }
+        if (StringUtils.isNotBlank(enddate)) {
+            criteria.subCriteria(new Criteria("startTime").lessThanEqual(enddate + " 23:59:59"));
+        }
+        Query query = new CriteriaQuery(criteria).setPageable(pageable);
+        query.setTrackTotalHits(true);
+        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
+        List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+        Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        List<OfficeDoneInfo> list = pageList.getContent();
+        OfficeDoneInfoModel officeDoneInfoModel;
+        for (OfficeDoneInfo officeDoneInfo : list) {
+            officeDoneInfoModel = new OfficeDoneInfoModel();
+            Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+            list1.add(officeDoneInfoModel);
+        }
+        totalPages = pageList.getTotalPages();
+        total = pageList.getTotalElements();
+
+        return Y9Page.success(page, totalPages, total, list1);
     }
 
     @Override
-    public Map<String, Object> searchByUserId(String userId, String title, String itemId, String startdate,
+    public Y9Page<OfficeDoneInfoModel> searchByUserId(String userId, String title, String itemId, String startdate,
         String enddate, Integer page, Integer rows) {
-        Map<String, Object> dataMap = new HashMap<>(16);
-        dataMap.put(UtilConsts.SUCCESS, true);
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
         int totalPages = 1;
         long total = 0;
-        try {
-            if (page < 1) {
-                page = 1;
-            }
-            Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
-
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
-                .contains(userId).and("endTime").exists();
-            if (StringUtils.isNotBlank(title)) {
-                criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
-            }
-            if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").is(itemId));
-            }
-            if (StringUtils.isNotBlank(startdate)) {
-                criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
-            }
-            if (StringUtils.isNotBlank(enddate)) {
-                criteria.subCriteria(new Criteria("startTime").lessThanEqual(enddate + " 23:59:59"));
-            }
-            Query query = new CriteriaQuery(criteria).setPageable(pageable);
-            query.setTrackTotalHits(true);
-            IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
-            SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
-            List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-            Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
-            List<OfficeDoneInfo> list = pageList.getContent();
-            OfficeDoneInfoModel officeDoneInfoModel;
-            for (OfficeDoneInfo officeDoneInfo : list) {
-                officeDoneInfoModel = new OfficeDoneInfoModel();
-                Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
-                list1.add(officeDoneInfoModel);
-            }
-            totalPages = pageList.getTotalPages();
-            total = pageList.getTotalElements();
-        } catch (Exception e) {
-            dataMap.put(UtilConsts.SUCCESS, false);
-            LOGGER.warn("异常", e);
+        if (page < 1) {
+            page = 1;
         }
-        dataMap.put("currpage", page);
-        dataMap.put("totalpages", totalPages);
-        dataMap.put("total", total);
-        dataMap.put("rows", list1);
-        return dataMap;
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
+            .contains(userId).and("endTime").exists();
+        if (StringUtils.isNotBlank(title)) {
+            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
+        }
+        if (StringUtils.isNotBlank(itemId)) {
+            criteria.subCriteria(new Criteria("itemId").is(itemId));
+        }
+        if (StringUtils.isNotBlank(startdate)) {
+            criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
+        }
+        if (StringUtils.isNotBlank(enddate)) {
+            criteria.subCriteria(new Criteria("startTime").lessThanEqual(enddate + " 23:59:59"));
+        }
+        Query query = new CriteriaQuery(criteria).setPageable(pageable);
+        query.setTrackTotalHits(true);
+        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        SearchHits<OfficeDoneInfo> searchHits = elasticsearchTemplate.search(query, OfficeDoneInfo.class, index);
+        List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
+        Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
+        List<OfficeDoneInfo> list = pageList.getContent();
+        OfficeDoneInfoModel officeDoneInfoModel;
+        for (OfficeDoneInfo officeDoneInfo : list) {
+            officeDoneInfoModel = new OfficeDoneInfoModel();
+            Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
+            list1.add(officeDoneInfoModel);
+        }
+        totalPages = pageList.getTotalPages();
+        total = pageList.getTotalElements();
+
+        return Y9Page.success(page, totalPages, total, list1);
     }
 
     @Override

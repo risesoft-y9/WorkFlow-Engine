@@ -1,10 +1,10 @@
 package net.risesoft.service;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Service;
 
+import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
+import net.risesoft.pojo.Y9Page;
 
 /**
  * @author qinman
@@ -80,10 +80,10 @@ public interface OfficeDoneInfoService {
      * @param meetingType
      * @param page
      * @param rows
-     * @return
+     * @return Y9Page<OfficeDoneInfoModel>
      */
-    Map<String, Object> getMeetingList(String userName, String deptName, String title, String meetingType, Integer page,
-        Integer rows);
+    Y9Page<OfficeDoneInfoModel> getMeetingList(String userName, String deptName, String title, String meetingType,
+        Integer page, Integer rows);
 
     /**
      * 保存办件信息,不经过kafka消息队列，直接保存
@@ -106,8 +106,8 @@ public interface OfficeDoneInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllByDeptId(String deptId, String title, String itemId, String userName, String state,
-        String year, Integer page, Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchAllByDeptId(String deptId, String title, String itemId, String userName,
+        String state, String year, Integer page, Integer rows);
 
     /**
      * 个人所有件搜索
@@ -124,8 +124,8 @@ public interface OfficeDoneInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllByUserId(String userId, String title, String itemId, String userName, String state,
-        String year, String startDate, String endDate, Integer page, Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchAllByUserId(String userId, String title, String itemId, String userName,
+        String state, String year, String startDate, String endDate, Integer page, Integer rows);
 
     /**
      * 监控办件列表
@@ -139,8 +139,8 @@ public interface OfficeDoneInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchAllList(String searchName, String itemId, String userName, String state, String year,
-        Integer page, Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchAllList(String searchName, String itemId, String userName, String state,
+        String year, Integer page, Integer rows);
 
     /**
      * 获取监控在办，办结件列表
@@ -154,8 +154,8 @@ public interface OfficeDoneInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchByItemId(String title, String itemId, String state, String startdate, String enddate,
-        Integer page, Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchByItemId(String title, String itemId, String state, String startdate,
+        String enddate, Integer page, Integer rows);
 
     /**
      * 根据岗位id,系统名称，获取个人办结件列表
@@ -169,7 +169,7 @@ public interface OfficeDoneInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchByPositionIdAndSystemName(String positionId, String title, String systemName,
+    Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(String positionId, String title, String systemName,
         String startdate, String enddate, Integer page, Integer rows);
 
     /**
@@ -184,8 +184,8 @@ public interface OfficeDoneInfoService {
      * @param rows
      * @return
      */
-    Map<String, Object> searchByUserId(String userId, String title, String itemId, String startdate, String enddate,
-        Integer page, Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchByUserId(String userId, String title, String itemId, String startdate,
+        String enddate, Integer page, Integer rows);
 
     /**
      * 上会，当代研究所

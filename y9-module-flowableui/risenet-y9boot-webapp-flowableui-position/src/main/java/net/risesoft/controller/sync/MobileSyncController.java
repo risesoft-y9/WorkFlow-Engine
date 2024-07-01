@@ -398,7 +398,8 @@ public class MobileSyncController {
                         processParamApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
                     OfficeDoneInfoModel officeDoneInfo = new OfficeDoneInfoModel();
                     officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    officeDoneInfo = officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, PROC_INST_ID_);
+                    officeDoneInfo =
+                        officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
                     if (officeDoneInfo == null) {
                         officeDoneInfo = new OfficeDoneInfoModel();
                         officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -513,7 +514,7 @@ public class MobileSyncController {
                     PROC_INST_ID_ = (String)map.get("PROC_INST_ID_");
                     String START_TIME_ = (String)map.get("START_TIME_");
                     String year = START_TIME_.substring(0, 4);
-                    officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, PROC_INST_ID_);
+                    officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
 
                     String sql3 =
                         "SELECT * FROM ACT_HI_TASKINST_" + year + " where PROC_INST_ID_ = '" + PROC_INST_ID_ + "'";

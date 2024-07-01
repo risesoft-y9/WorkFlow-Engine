@@ -577,7 +577,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             try {
                 // 修改ES办件信息数据
                 OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi
-                    .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
+                    .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
                 officeDoneInfo.setUserComplete("");
                 officeDoneInfo.setEndTime(null);
                 officeDoneInfo4PositionApi.saveOfficeDone(Y9LoginUserHolder.getTenantId(), officeDoneInfo);

@@ -56,14 +56,14 @@ public class DoneServiceImpl implements DoneService {
     @SuppressWarnings({"unchecked"})
     @Override
     public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> retMap;
+        Y9Page<OfficeDoneInfoModel> y9Page;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
         String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
-        retMap =
+        y9Page =
             officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();
-        List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
+        List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
         ObjectMapper objectMapper = new ObjectMapper();
         List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
         int serialNumber = (page - 1) * rows;
@@ -102,21 +102,20 @@ public class DoneServiceImpl implements DoneService {
             serialNumber += 1;
             items.add(mapTemp);
         }
-        return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-            Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+        return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
     }
 
     @SuppressWarnings({"unchecked"})
     @Override
     public Y9Page<Map<String, Object>> listNew(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> retMap;
+        Y9Page<OfficeDoneInfoModel> y9Page;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
         String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
-        retMap =
+        y9Page =
             officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();
-        List<OfficeDoneInfoModel> list = (List<OfficeDoneInfoModel>)retMap.get("rows");
+        List<OfficeDoneInfoModel> list = y9Page.getRows();
         ObjectMapper objectMapper = new ObjectMapper();
         List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
         int serialNumber = (page - 1) * rows;
@@ -164,7 +163,7 @@ public class DoneServiceImpl implements DoneService {
                 mapTemp.put("processInstanceId", processInstanceId);
 
                 int countFollow =
-                    officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId, processInstanceId);
+                    officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
                 mapTemp.put("follow", countFollow > 0);
             } catch (Exception e) {
                 LOGGER.error("获取列表失败" + processInstanceId, e);
@@ -173,8 +172,7 @@ public class DoneServiceImpl implements DoneService {
             serialNumber += 1;
             items.add(mapTemp);
         }
-        return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-            Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+        return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
     }
 
     @Override
@@ -236,8 +234,8 @@ public class DoneServiceImpl implements DoneService {
                     }*/
                     mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
-                    int countFollow =
-                        officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId, processInstanceId);
+                    int countFollow = officeFollow4PositionApi
+                        .countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
                     LOGGER.error("获取列表失败" + processInstanceId, e);

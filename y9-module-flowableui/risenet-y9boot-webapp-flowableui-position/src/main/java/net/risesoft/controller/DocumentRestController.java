@@ -189,8 +189,8 @@ public class DocumentRestController {
             map.put("itemAdminBaseURL", y9Config.getCommon().getItemAdminBaseUrl());
             map.put("jodconverterURL", y9Config.getCommon().getJodconverterBaseUrl());
             map.put("flowableUIBaseURL", y9Config.getCommon().getFlowableBaseUrl());
-            int follow = officeFollow4PositionApi.countByProcessInstanceId(tenantId, Y9LoginUserHolder.getPositionId(),
-                processInstanceId);
+            int follow = officeFollow4PositionApi
+                .countByProcessInstanceId(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId).getData();
             map.put("follow", follow > 0);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {

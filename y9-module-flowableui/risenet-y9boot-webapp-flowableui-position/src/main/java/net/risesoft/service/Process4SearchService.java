@@ -63,7 +63,7 @@ public class Process4SearchService {
             ProcessParamModel processParam =
                 processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             OfficeDoneInfoModel officeDoneInfo =
-                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (officeDoneInfo != null) {
                 officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
                 officeDoneInfo.setUrgency(
@@ -151,7 +151,7 @@ public class Process4SearchService {
         String processInstanceId = processParam.getProcessInstanceId();
         try {
             OfficeDoneInfoModel officeDoneInfo =
-                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (officeDoneInfo != null) {
                 officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
                 officeDoneInfo.setUrgency(

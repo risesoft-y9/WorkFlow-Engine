@@ -153,7 +153,7 @@ public class QueryListServiceImpl implements QueryListService {
                 String processSerialNumber = hpim.getProcessSerialNumber();
                 try {
                     OfficeDoneInfoModel officeDoneInfo =
-                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     String startTime = officeDoneInfo.getStartTime().substring(0, 16);
                     mapTemp.put(SysVariables.PROCESSSERIALNUMBER, processSerialNumber);
                     mapTemp.put("processInstanceId", processInstanceId);
@@ -185,8 +185,8 @@ public class QueryListServiceImpl implements QueryListService {
                     formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
                     mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
-                    int countFollow =
-                        officeFollow4PositionApi.countByProcessInstanceId(tenantId, userId, processInstanceId);
+                    int countFollow = officeFollow4PositionApi
+                        .countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
                     LOGGER.error("获取流程实例信息失败" + processInstanceId, e);
