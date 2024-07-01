@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.model.processadmin.IdentityLinkModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -28,6 +29,6 @@ public interface IdentityApiClient extends IdentityApi {
      */
     @Override
     @GetMapping("/getIdentityLinksForTask")
-    List<IdentityLinkModel> getIdentityLinksForTask(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<IdentityLinkModel>> getIdentityLinksForTask(@RequestParam("tenantId") String tenantId,
         @RequestParam("taskId") String taskId);
 }

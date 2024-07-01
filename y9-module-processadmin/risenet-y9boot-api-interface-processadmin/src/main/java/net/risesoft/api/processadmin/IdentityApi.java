@@ -3,6 +3,7 @@ package net.risesoft.api.processadmin;
 import java.util.List;
 
 import net.risesoft.model.processadmin.IdentityLinkModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -18,5 +19,5 @@ public interface IdentityApi {
      * @param taskId 任务id
      * @return List&lt;IdentityLinkModel&gt;
      */
-    List<IdentityLinkModel> getIdentityLinksForTask(String tenantId, String taskId);
+    Y9Result<List<IdentityLinkModel>> getIdentityLinksForTask(String tenantId, String taskId);
 }
