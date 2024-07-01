@@ -34,7 +34,8 @@ public interface CommonSentencesApi {
      * @return Y9Result<List<CommonSentencesModel>>
      */
     @GetMapping("/listSentencesService")
-    Y9Result<List<CommonSentencesModel>> listSentencesService(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
+    Y9Result<List<CommonSentencesModel>> listSentencesService(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId);
 
     /**
      * 根据排序号tabIndex删除常用语
@@ -45,7 +46,8 @@ public interface CommonSentencesApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/removeCommonSentences")
-    Y9Result<Object> removeCommonSentences(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("tabIndex") int tabIndex);
+    Y9Result<Object> removeCommonSentences(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("tabIndex") int tabIndex);
 
     /**
      * 清除常用语使用次数
@@ -67,7 +69,8 @@ public interface CommonSentencesApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/save")
-    Y9Result<Object> save(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("id") String id, @RequestParam("content") String content);
+    Y9Result<Object> save(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("id") String id, @RequestParam("content") String content);
 
     /**
      * 根据排序号tabIndex保存更新常用语
@@ -79,7 +82,9 @@ public interface CommonSentencesApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/saveCommonSentences")
-    Y9Result<Object> saveCommonSentences(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("content") String content, @RequestParam("tabIndex") int tabIndex);
+    Y9Result<Object> saveCommonSentences(@RequestParam("tenantId") String tenantId,
+        @RequestParam("userId") String userId, @RequestParam("content") String content,
+        @RequestParam("tabIndex") int tabIndex);
 
     /**
      * 更新常用语使用次数

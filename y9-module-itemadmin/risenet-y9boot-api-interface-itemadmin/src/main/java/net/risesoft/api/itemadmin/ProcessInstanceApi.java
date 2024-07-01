@@ -44,8 +44,8 @@ public interface ProcessInstanceApi {
      */
     @GetMapping("/processInstanceList")
     Y9Page<ProcessCooperationModel> processInstanceList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("title") String title, @RequestParam("page") int page,
-        @RequestParam("rows") int rows);
+        @RequestParam("userId") String userId, @RequestParam(value = "title", required = false) String title,
+        @RequestParam("page") int page, @RequestParam("rows") int rows);
 
     /**
      * 保存协作状态详情

@@ -186,9 +186,11 @@ public interface OfficeDoneInfo4PositionApi {
      */
     @GetMapping("/searchAllList")
     Y9Page<OfficeDoneInfoModel> searchAllList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("searchName") String searchName, @RequestParam("itemId") String itemId,
-        @RequestParam("userName") String userName, @RequestParam("state") String state,
-        @RequestParam("year") String year, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+        @RequestParam(value = "searchName", required = false) String searchName, @RequestParam("itemId") String itemId,
+        @RequestParam(value = "userName", required = false) String userName,
+        @RequestParam(value = "state", required = false) String state,
+        @RequestParam(value = "year", required = false) String year, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 
     /**
      * 获取监控在办，办结件列表
@@ -205,9 +207,11 @@ public interface OfficeDoneInfo4PositionApi {
      */
     @GetMapping("/searchByItemId")
     Y9Page<OfficeDoneInfoModel> searchByItemId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("title") String title, @RequestParam("itemId") String itemId, @RequestParam("state") String state,
-        @RequestParam("startdate") String startdate, @RequestParam("enddate") String enddate,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+        @RequestParam(value = "title", required = false) String title, @RequestParam("itemId") String itemId,
+        @RequestParam(value = "state", required = false) String state,
+        @RequestParam(value = "startdate", required = false) String startdate,
+        @RequestParam(value = "enddate", required = false) String enddate, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 
     /**
      * 获取个人办结件列表
@@ -224,9 +228,9 @@ public interface OfficeDoneInfo4PositionApi {
      */
     @GetMapping("/searchByPositionId")
     Y9Page<OfficeDoneInfoModel> searchByPositionId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("title") String title,
-        @RequestParam("itemId") String itemId, @RequestParam("startdate") String startdate,
-        @RequestParam("enddate") String enddate, @RequestParam("page") Integer page,
+        @RequestParam("positionId") String positionId, @RequestParam(value = "title", required = false) String title,
+        @RequestParam("itemId") String itemId, @RequestParam(value = "startdate", required = false) String startdate,
+        @RequestParam(value = "enddate", required = false) String enddate, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows);
 
     /**
@@ -245,8 +249,9 @@ public interface OfficeDoneInfo4PositionApi {
     @GetMapping("/searchByPositionIdAndSystemName")
     Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("title") String title,
-        @RequestParam("systemName") String systemName, @RequestParam("startdate") String startdate,
-        @RequestParam("enddate") String enddate, @RequestParam("page") Integer page,
+        @RequestParam("systemName") String systemName,
+        @RequestParam(value = "startdate", required = false) String startdate,
+        @RequestParam(value = "enddate", required = false) String enddate, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows);
 
     /**

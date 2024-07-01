@@ -27,7 +27,7 @@ public interface Item4PositionApi {
      */
     @GetMapping("/findAll")
     Y9Result<List<ItemModel>> findAll(@RequestParam("tenantId") String tenantId,
-        @RequestParam("systemName") String systemName);
+        @RequestParam(value = "systemName", required = false) String systemName);
 
     /**
      * 根据流程的定义Key查找对应的事项
