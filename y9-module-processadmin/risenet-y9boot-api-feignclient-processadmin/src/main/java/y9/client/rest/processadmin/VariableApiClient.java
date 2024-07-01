@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -32,7 +33,7 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping("/deleteVariable")
-    void deleteVariable(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+    Y9Result<Object> deleteVariable(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
         @RequestParam("key") String key);
 
     /***
@@ -44,8 +45,8 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping("/deleteVariableLocal")
-    void deleteVariableLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
-        @RequestParam("key") String key);
+    Y9Result<Object> deleteVariableLocal(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId, @RequestParam("key") String key);
 
     /**
      * 获取流程变量
@@ -57,7 +58,7 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @GetMapping("/getVariable")
-    String getVariable(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+    Y9Result<String> getVariable(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
         @RequestParam("key") String key);
 
     /**
@@ -70,7 +71,7 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @GetMapping("/getVariableByProcessInstanceId")
-    String getVariableByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+    Y9Result<String> getVariableByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId, @RequestParam("key") String key);
 
     /**
@@ -83,7 +84,7 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @GetMapping("/getVariableLocal")
-    String getVariableLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+    Y9Result<String> getVariableLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
         @RequestParam("key") String key);
 
     /**
@@ -95,7 +96,8 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @GetMapping("/getVariables")
-    Map<String, Object> getVariables(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+    Y9Result<Map<String, Object>> getVariables(@RequestParam("tenantId") String tenantId,
+        @RequestParam("taskId") String taskId);
 
     /**
      *
@@ -108,7 +110,7 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @RequestMapping(value = "/getVariablesByProcessInstanceId", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Map<String, Object> getVariablesByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+    Y9Result<Map<String, Object>> getVariablesByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId, @RequestBody Collection<String> keys);
 
     /**
@@ -120,7 +122,7 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @GetMapping("/getVariablesLocal")
-    Map<String, Object> getVariablesLocal(@RequestParam("tenantId") String tenantId,
+    Y9Result<Map<String, Object>> getVariablesLocal(@RequestParam("tenantId") String tenantId,
         @RequestParam("taskId") String taskId);
 
     /**
@@ -133,7 +135,7 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping(value = "/setVariable", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariable(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+    Y9Result<Object> setVariable(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
         @RequestParam("key") String key, @RequestBody Map<String, Object> map);
 
     /**
@@ -147,7 +149,7 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping(value = "/setVariableByProcessInstanceId", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariableByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> setVariableByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId, @RequestParam("key") String key,
         @RequestBody Map<String, Object> map);
 
@@ -161,7 +163,7 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping(value = "/setVariableLocal", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariableLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+    Y9Result<Object> setVariableLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
         @RequestParam("key") String key, @RequestBody Map<String, Object> map);
 
     /**
@@ -173,7 +175,7 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping(value = "/setVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariables(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+    Y9Result<Object> setVariables(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
         @RequestBody Map<String, Object> map);
 
     /**
@@ -185,6 +187,6 @@ public interface VariableApiClient extends VariableApi {
      */
     @Override
     @PostMapping(value = "/setVariablesLocal", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void setVariablesLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
+    Y9Result<Object> setVariablesLocal(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
         @RequestBody Map<String, Object> map);
 }

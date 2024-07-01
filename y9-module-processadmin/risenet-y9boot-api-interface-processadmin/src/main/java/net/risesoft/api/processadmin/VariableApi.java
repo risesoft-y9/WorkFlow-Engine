@@ -1,5 +1,7 @@
 package net.risesoft.api.processadmin;
 
+import net.risesoft.pojo.Y9Result;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -17,7 +19,7 @@ public interface VariableApi {
      * @param taskId 任务id
      * @param key 变量key
      */
-    void deleteVariable(String tenantId, String taskId, String key);
+    Y9Result<Object> deleteVariable(String tenantId, String taskId, String key);
 
     /***
      * 删除任务变量
@@ -26,7 +28,7 @@ public interface VariableApi {
      * @param taskId 任务id
      * @param key 变量key
      */
-    void deleteVariableLocal(String tenantId, String taskId, String key);
+    Y9Result<Object> deleteVariableLocal(String tenantId, String taskId, String key);
 
     /**
      * 获取流程变量
@@ -36,7 +38,7 @@ public interface VariableApi {
      * @param key 变量key
      * @return Object
      */
-    String getVariable(String tenantId, String taskId, String key);
+    Y9Result<String> getVariable(String tenantId, String taskId, String key);
 
     /**
      * 获取流程变量
@@ -46,7 +48,7 @@ public interface VariableApi {
      * @param key 变量key
      * @return Object
      */
-    String getVariableByProcessInstanceId(String tenantId, String processInstanceId, String key);
+    Y9Result<String> getVariableByProcessInstanceId(String tenantId, String processInstanceId, String key);
 
     /**
      * 获取任务变量
@@ -56,7 +58,7 @@ public interface VariableApi {
      * @param key 变量key
      * @return Object
      */
-    String getVariableLocal(String tenantId, String taskId, String key);
+    Y9Result<String> getVariableLocal(String tenantId, String taskId, String key);
 
     /**
      * 获取多个流程变量
@@ -65,7 +67,7 @@ public interface VariableApi {
      * @param taskId 任务id
      * @return Map
      */
-    Map<String, Object> getVariables(String tenantId, String taskId);
+    Y9Result<Map<String, Object>> getVariables(String tenantId, String taskId);
 
     /**
      * 获取指定的流程变量
@@ -75,7 +77,7 @@ public interface VariableApi {
      * @param keys 变量keys
      * @return Map
      */
-    Map<String, Object> getVariablesByProcessInstanceId(String tenantId, String processInstanceId,
+    Y9Result<Map<String, Object>> getVariablesByProcessInstanceId(String tenantId, String processInstanceId,
         Collection<String> keys);
 
     /**
@@ -85,7 +87,7 @@ public interface VariableApi {
      * @param taskId 任务id
      * @return Map
      */
-    Map<String, Object> getVariablesLocal(String tenantId, String taskId);
+    Y9Result<Map<String, Object>> getVariablesLocal(String tenantId, String taskId);
 
     /**
      * 设置流程变量
@@ -95,7 +97,7 @@ public interface VariableApi {
      * @param key 变量key
      * @param map 变量值
      */
-    void setVariable(String tenantId, String taskId, String key, Map<String, Object> map);
+    Y9Result<Object> setVariable(String tenantId, String taskId, String key, Map<String, Object> map);
 
     /**
      * 设置流程变量
@@ -105,7 +107,7 @@ public interface VariableApi {
      * @param key 变量key
      * @param map 变量值
      */
-    void setVariableByProcessInstanceId(String tenantId, String processInstanceId, String key, Map<String, Object> map);
+    Y9Result<Object> setVariableByProcessInstanceId(String tenantId, String processInstanceId, String key, Map<String, Object> map);
 
     /**
      * 设置任务变量
@@ -115,7 +117,7 @@ public interface VariableApi {
      * @param key 变量key
      * @param map 变量值
      */
-    void setVariableLocal(String tenantId, String taskId, String key, Map<String, Object> map);
+    Y9Result<Object> setVariableLocal(String tenantId, String taskId, String key, Map<String, Object> map);
 
     /**
      * 这只多个流程变量
@@ -124,7 +126,7 @@ public interface VariableApi {
      * @param taskId 任务id
      * @param map 变量map
      */
-    void setVariables(String tenantId, String taskId, Map<String, Object> map);
+    Y9Result<Object> setVariables(String tenantId, String taskId, Map<String, Object> map);
 
     /**
      * 设置多个任务变量
@@ -133,5 +135,5 @@ public interface VariableApi {
      * @param taskId 任务id
      * @param map 变量map
      */
-    void setVariablesLocal(String tenantId, String taskId, Map<String, Object> map);
+    Y9Result<Object> setVariablesLocal(String tenantId, String taskId, Map<String, Object> map);
 }

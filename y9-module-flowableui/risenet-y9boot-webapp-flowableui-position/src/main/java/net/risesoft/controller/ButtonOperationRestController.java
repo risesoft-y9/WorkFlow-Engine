@@ -300,7 +300,7 @@ public class ButtonOperationRestController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
             String str = variableApi.getVariableByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(),
-                SysVariables.USERS);
+                SysVariables.USERS).getData();
             List<String> users = Y9JsonUtil.readValue(str, List.class);
             StringBuilder userNames = new StringBuilder();
             if (users != null) {
