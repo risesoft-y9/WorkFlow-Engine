@@ -557,7 +557,7 @@ public class OpinionServiceImpl implements OpinionService {
                     // 办结件，阅件不可填写意见
                     if (processParam != null) {
                         HistoricProcessInstanceModel historicProcessInstanceModel =
-                            historicProcessManager.getById(tenantId, processParam.getProcessInstanceId());
+                            historicProcessManager.getById(tenantId, processParam.getProcessInstanceId()).getData();
                         boolean b = historicProcessInstanceModel == null || (historicProcessInstanceModel != null
                             && historicProcessInstanceModel.getEndTime() != null);
                         if (b) {

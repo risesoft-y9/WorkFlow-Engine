@@ -79,7 +79,7 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param userId 人员id
      * @param positionId 岗位id
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
-     * @return List<Map < String, Object>>
+     * @return Y9Result<List<ItemRoleOrgUnitModel>>
      */
     @Override
     public Y9Result<List<ItemRoleOrgUnitModel>> findCsUserBureau(String tenantId, String userId, String positionId,
@@ -239,7 +239,6 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
                 model.setIsParent(true);
             } else if (OrgTypeEnum.POSITION.equals(orgUnit.getOrgType())) {
                 model.setPerson("6:" + orgUnit.getId());
-
             }
             item.add(model);
         }

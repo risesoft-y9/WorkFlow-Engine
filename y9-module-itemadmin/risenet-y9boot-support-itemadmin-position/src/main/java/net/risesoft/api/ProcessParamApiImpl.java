@@ -34,6 +34,7 @@ public class ProcessParamApiImpl implements ProcessParamApi {
      *
      * @param tenantId 租户Id
      * @param processInstanceId 流程实例Id
+     * @return Y9Result<Object>
      */
     @Override
     public Y9Result<Object> deleteByPprocessInstanceId(String tenantId, String processInstanceId) {
@@ -47,6 +48,7 @@ public class ProcessParamApiImpl implements ProcessParamApi {
      *
      * @param tenantId 租户Id
      * @param processInstanceId 流程实例Id
+     * @return Y9Result<ProcessParamModel>
      */
     @Override
     public Y9Result<ProcessParamModel> findByProcessInstanceId(String tenantId, String processInstanceId) {
@@ -65,6 +67,7 @@ public class ProcessParamApiImpl implements ProcessParamApi {
      *
      * @param tenantId 租户Id
      * @param processSerialNumber 流程编号
+     * @return Y9Result<ProcessParamModel>
      */
     @Override
     public Y9Result<ProcessParamModel> findByProcessSerialNumber(String tenantId, String processSerialNumber) {
@@ -83,6 +86,7 @@ public class ProcessParamApiImpl implements ProcessParamApi {
      *
      * @param tenantId 租户ID
      * @param processParam 流程数据对象
+     * @return Y9Result<Object>
      */
     @Override
     public Y9Result<Object> saveOrUpdate(String tenantId, @RequestBody ProcessParamModel processParam) {
@@ -100,6 +104,7 @@ public class ProcessParamApiImpl implements ProcessParamApi {
      * @param processSerialNumber 流程编号
      * @param isCustomItem 是否定制流程
      * @since 9.6.6
+     * @return Y9Result<Object>
      */
     @Override
     public Y9Result<Object> updateCustomItem(String tenantId, String processSerialNumber, boolean isCustomItem) {

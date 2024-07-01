@@ -34,7 +34,7 @@ public class TaskVariableApiImpl implements TaskVariableApi {
      * @param tenantId 租户id
      * @param taskId 任务id
      * @param keyName keyName
-     * @return TaskVariableModel
+     * @return Y9Result<TaskVariableModel>
      */
     @Override
     public Y9Result<TaskVariableModel> findByTaskIdAndKeyName(String tenantId, String taskId, String keyName) {

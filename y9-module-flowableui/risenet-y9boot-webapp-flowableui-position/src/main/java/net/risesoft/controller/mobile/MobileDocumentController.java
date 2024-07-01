@@ -509,7 +509,8 @@ public class MobileDocumentController {
                     map.put("processSerialNumber", processParam.getProcessSerialNumber());
                     map.put("itemId", processParam.getItemId());
                 } else {
-                    HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId);
+                    HistoricProcessInstanceModel hpi =
+                        historicProcessApi.getById(tenantId, processInstanceId).getData();
                     if (hpi == null) {
                         map.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     } else {

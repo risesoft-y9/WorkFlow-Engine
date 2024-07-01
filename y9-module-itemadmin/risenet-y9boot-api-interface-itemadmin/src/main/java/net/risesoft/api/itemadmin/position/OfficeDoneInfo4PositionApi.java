@@ -24,7 +24,7 @@ public interface OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return 9Result<Object>
+     * @return Y9Result<Object>
      */
     @PostMapping("/cancelMeeting")
     Y9Result<Object> cancelMeeting(@RequestParam("tenantId") String tenantId,
@@ -106,7 +106,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param meetingType 会议类型
      * @param page 页码
      * @param rows 条数
-     * @return
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @GetMapping("/getMeetingList")
     Y9Page<OfficeDoneInfoModel> getMeetingList(@RequestParam("tenantId") String tenantId,
@@ -119,7 +119,7 @@ public interface OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param info 办结信息
-     * @return
+     * @return Y9Result<Object>
      * @throws Exception Exception
      */
     @PostMapping(value = "/saveOfficeDone", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -138,7 +138,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param year 年份
      * @param page page
      * @param rows rows
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @GetMapping("/searchAllByDeptId")
     Y9Page<OfficeDoneInfoModel> searchAllByDeptId(@RequestParam("tenantId") String tenantId,
@@ -161,7 +161,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param endDate 查询结束日期
      * @param page page
      * @param rows rows
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @GetMapping("/searchAllByPositionId")
     Y9Page<OfficeDoneInfoModel> searchAllByPositionId(@RequestParam("tenantId") String tenantId,
@@ -182,7 +182,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param year 年份
      * @param page page
      * @param rows rows
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @GetMapping("/searchAllList")
     Y9Page<OfficeDoneInfoModel> searchAllList(@RequestParam("tenantId") String tenantId,
@@ -201,7 +201,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param enddate 结束日期
      * @param page page
      * @param rows rows
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @GetMapping("/searchByItemId")
     Y9Page<OfficeDoneInfoModel> searchByItemId(@RequestParam("tenantId") String tenantId,
@@ -220,7 +220,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param enddate 结束日期
      * @param page page
      * @param rows rows
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @GetMapping("/searchByPositionId")
     Y9Page<OfficeDoneInfoModel> searchByPositionId(@RequestParam("tenantId") String tenantId,
@@ -240,7 +240,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param enddate 结束日期
      * @param page page
      * @param rows rows
-     * @return
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @GetMapping("/searchByPositionIdAndSystemName")
     Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(@RequestParam("tenantId") String tenantId,
@@ -255,7 +255,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param meetingType 会议类型
-     * @return
+     * @return Y9Result<Object>
      */
     @PostMapping("/setMeeting")
     Y9Result<Object> setMeeting(@RequestParam("tenantId") String tenantId,

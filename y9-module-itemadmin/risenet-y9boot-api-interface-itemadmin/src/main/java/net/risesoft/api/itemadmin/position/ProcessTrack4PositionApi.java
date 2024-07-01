@@ -84,7 +84,7 @@ public interface ProcessTrack4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<List<HistoryProcessModel>>
      */
     @GetMapping("/processTrackList4Simple")
     Y9Result<List<HistoryProcessModel>> processTrackList4Simple(@RequestParam("tenantId") String tenantId,
@@ -95,7 +95,7 @@ public interface ProcessTrack4PositionApi {
      *
      * @param tenantId 租户id
      * @param processTrack 实体类对象（ProcessTrackModel）
-     * @return ProcessTrackModel
+     * @return Y9Result<ProcessTrackModel>
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<ProcessTrackModel> saveOrUpdate(@RequestParam("tenantId") String tenantId,

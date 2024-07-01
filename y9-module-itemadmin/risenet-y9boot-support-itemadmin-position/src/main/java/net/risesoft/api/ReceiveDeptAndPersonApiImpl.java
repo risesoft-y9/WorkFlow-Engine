@@ -53,7 +53,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      *
      * @param tenantId 租户id
      * @param name 搜索名称
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<List<ReceiveOrgUnit>>
      */
     @Override
     public Y9Result<List<ReceiveOrgUnit>> findByDeptNameLike(String tenantId, String name) {
@@ -88,7 +88,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      * 获取所有收发单位
      *
      * @param tenantId 租户id
-     * @return List<Map < String, Object>>
+     * @return Y9Result<List<ReceiveOrgUnit>>
      */
     @Override
     public Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTree(String tenantId) {
@@ -121,7 +121,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      * @param tenantId 租户id
      * @param orgUnitId 单位Id
      * @param name 名称
-     * @return List<Map < String, Object>>
+     * @return Y9Result<List<ReceiveOrgUnit>>
      */
     @Override
     public Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTreeById(String tenantId, String orgUnitId, String name) {
@@ -203,7 +203,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      *
      * @param tenantId 租户id
      * @param deptId 部门id
-     * @return List<Person>
+     * @return Y9Result<List<Person>>
      */
     @Override
     public Y9Result<List<Person>> getSendReceiveByDeptId(String tenantId, String deptId) {
@@ -225,7 +225,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @return List<Map < String, Object>>
+     * @return Y9Result<List<ReceiveOrgUnit>>
      */
     @Override
     @GetMapping(value = "/getSendReceiveByUserId")

@@ -33,7 +33,7 @@ public class QuickSendApiImpl implements QuickSendApi {
      * @param positionId 岗位id
      * @param itemId 事项id
      * @param taskKey 任务key
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> getAssignee(String tenantId, String positionId, String itemId, String taskKey) {
@@ -50,6 +50,7 @@ public class QuickSendApiImpl implements QuickSendApi {
      * @param itemId 事项id
      * @param taskKey 任务key
      * @param assignee 快速发送人
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> saveOrUpdate(String tenantId, String positionId, String itemId, String taskKey,

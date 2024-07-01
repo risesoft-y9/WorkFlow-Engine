@@ -95,6 +95,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumbers 流程编号
+     * @return Y9Result<Object>
      */
     @Override
     public Y9Result<Object> delBatchByProcessSerialNumbers(String tenantId,
@@ -112,6 +113,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param isTaoHong 是否套红
+     * @return Y9Result<Object>
      */
     @Override
     public Y9Result<Object> deleteByIsTaoHong(String tenantId, String userId, String processSerialNumber,
@@ -140,7 +142,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processSerialNumber 流程编号
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<TransactionWordModel>
      */
     @Override
     public Y9Result<TransactionWordModel> exchangeFindWordByProcessSerialNumber(String tenantId, String userId,
@@ -171,7 +173,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param taskId 任务id
-     * @return Map<String, Object>
+     * @return Y9Result<TransactionHistoryWordModel>
      */
     @Override
     public Y9Result<TransactionHistoryWordModel> findHistoryVersionDoc(String tenantId, String userId, String taskId) {
@@ -216,7 +218,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<TransactionWordModel>
      */
     @Override
     public Y9Result<TransactionWordModel> findWordByProcessSerialNumber(String tenantId, String processSerialNumber) {
@@ -261,7 +263,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processSerialNumber 流程编号
-     * @return List&lt;Map&lt;String, Object&gt; &gt;
+     * @return Y9Result<List<TransactionWordModel>>
      */
     @Override
     public Y9Result<List<TransactionWordModel>> getWordList(String tenantId, String userId,
@@ -290,7 +292,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param itemId 事项id
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> openDocument(String tenantId, String userId, String processSerialNumber, String itemId) {
@@ -334,7 +336,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> openDocumentByProcessSerialNumber(String tenantId, String processSerialNumber) {
@@ -369,7 +371,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人id
      * @param templateGuid 模板id
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> openDocumentTemplate(String tenantId, String userId, String templateGuid) {
@@ -402,6 +404,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param taskId 任务id
+     * @return Y9Result<Object>
      */
     @Override
     public Y9Result<Object> openHistoryVersionDoc(String tenantId, String userId, String taskId) {
@@ -430,7 +433,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processSerialNumber 流程编号
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> openPdf(String tenantId, String userId, String processSerialNumber) {
@@ -461,7 +464,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param isTaoHong 是否套红
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> openRevokePdfAfterDocument(String tenantId, String userId, String processSerialNumber,
@@ -492,7 +495,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param activitiUser activitiUser
-     * @return Map<String, Object>
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> openTaoHong(String tenantId, String userId, String activitiUser) {
@@ -512,7 +515,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param userId 人员Id
      * @param docjson 正文json信息
      * @param processSerialNumber 流程序列号
-     * @return Boolean
+     * @return Y9Result<Boolean>
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -557,7 +560,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param itemId 事项id
      * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
      * @param taskId 任务id
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<Y9WordInfo>
      */
     @Override
     public Y9Result<Y9WordInfo> showWord(String tenantId, String userId, String processSerialNumber, String itemId,
@@ -648,7 +651,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param currentBureauGuid 委办局id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<TaoHongTemplateModel>>
      */
     @Override
     public Y9Result<List<TaoHongTemplateModel>> taoHongTemplateList(String tenantId, String userId,
@@ -688,7 +691,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param taskId 任务id
      * @param fileSizeString 文件大小
      * @param fileStoreId 文件id
-     * @return String
+     * @return Y9Result<Boolean>
      */
     @Override
     @PostMapping(value = "/uploadWord")
@@ -751,7 +754,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      *
      * @param tenantId 租户Id
      * @param id 正文id
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<TransactionWordModel>
      */
     @Override
     public Y9Result<TransactionWordModel> wordDownload(String tenantId, String id) {

@@ -35,6 +35,7 @@ public class OptionClassApiImpl implements OptionClassApi {
      *
      * @param tenantId 租户id
      * @param type 字典标识
+     * @return Y9Result<List<Y9FormOptionValueModel>>
      */
     @Override
     public Y9Result<List<Y9FormOptionValueModel>> getOptionValueList(String tenantId, String type) {

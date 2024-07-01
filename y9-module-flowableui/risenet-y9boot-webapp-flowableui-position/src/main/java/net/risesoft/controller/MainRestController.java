@@ -466,7 +466,8 @@ public class MainRestController {
                 case "fromCplane": {
                     taskId = "";// 等于空为办结件
 
-                    HistoricProcessInstanceModel hisProcess = historicProcessApi.getById(tenantId, processInstanceId);
+                    HistoricProcessInstanceModel hisProcess =
+                        historicProcessApi.getById(tenantId, processInstanceId).getData();
                     ProcessParamModel processParamModel =
                         processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     processSerialNumber = processParamModel.getProcessSerialNumber();
@@ -500,7 +501,8 @@ public class MainRestController {
                     break;
                 }
                 case "fromHistory": {
-                    HistoricProcessInstanceModel processModel = historicProcessApi.getById(tenantId, processInstanceId);
+                    HistoricProcessInstanceModel processModel =
+                        historicProcessApi.getById(tenantId, processInstanceId).getData();
                     if (processModel == null || processModel.getId() == null) {
                         OfficeDoneInfoModel officeDoneInfoModel =
                             officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();

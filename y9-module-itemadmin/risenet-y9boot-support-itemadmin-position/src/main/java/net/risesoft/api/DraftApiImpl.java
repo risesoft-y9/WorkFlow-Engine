@@ -55,7 +55,7 @@ public class DraftApiImpl implements Draft4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param systemName 系统id
-     * @return int
+     * @return Y9Result<Integer>
      */
     @Override
     public Y9Result<Integer> countBySystemName(String tenantId, String positionId, String systemName) {

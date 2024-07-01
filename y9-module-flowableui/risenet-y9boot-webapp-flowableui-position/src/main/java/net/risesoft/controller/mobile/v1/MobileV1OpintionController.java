@@ -1,7 +1,6 @@
 package net.risesoft.controller.mobile.v1;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
@@ -120,7 +119,6 @@ public class MobileV1OpintionController {
         @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser,
         @RequestParam(required = false) String orderByUser) {
-        List<Map<String, Object>> listMap;
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
         return opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,

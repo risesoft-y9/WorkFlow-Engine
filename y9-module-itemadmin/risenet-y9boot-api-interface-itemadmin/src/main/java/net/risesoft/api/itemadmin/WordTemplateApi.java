@@ -18,7 +18,7 @@ public interface WordTemplateApi {
      * Description: 根据唯一标示获取模板辣眼睛
      *
      * @param id 模板id
-     * @return String
+     * @return Y9Result<String>
      */
     @GetMapping(value = "/getFilePathById")
     Y9Result<String> getFilePathById(@RequestParam("id") String id);

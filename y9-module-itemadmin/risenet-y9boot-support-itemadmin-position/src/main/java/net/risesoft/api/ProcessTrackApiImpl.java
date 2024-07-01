@@ -46,6 +46,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      *
      * @param tenantId 租户id
      * @param id 唯一标识
+     * @return Y9Result<Object>
      * @throws Exception Exception
      */
     @Override
@@ -60,7 +61,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return List<ProcessTrackModel>
+     * @return Y9Result<List<ProcessTrackModel>>
      */
     @Override
     public Y9Result<List<ProcessTrackModel>> findByTaskId(String tenantId, String taskId) {
@@ -82,7 +83,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return List<ProcessTrackModel>
+     * @return Y9Result<List<ProcessTrackModel>>
      */
     @Override
     public Y9Result<List<ProcessTrackModel>> findByTaskIdAsc(String tenantId, String taskId) {
@@ -118,7 +119,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<List<HistoryProcessModel>>
      */
     @Override
     public Y9Result<List<HistoryProcessModel>> processTrackList(String tenantId, String positionId,
@@ -144,7 +145,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<List<HistoryProcessModel>>
      */
     @Override
     public Y9Result<List<HistoryProcessModel>> processTrackList4Simple(String tenantId, String positionId,
@@ -171,6 +172,7 @@ public class ProcessTrackApiImpl implements ProcessTrack4PositionApi {
      *
      * @param tenantId 租户id
      * @return processTrackModel 实体类对象
+     * @return Y9Result<ProcessTrackModel>
      * @throws Exception Exception
      */
     @Override

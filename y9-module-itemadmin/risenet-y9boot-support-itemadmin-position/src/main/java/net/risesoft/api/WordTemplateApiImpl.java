@@ -28,7 +28,7 @@ public class WordTemplateApiImpl implements WordTemplateApi {
      * 根据id获取正文模板文件路径
      *
      * @param id 正文模板id
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> getFilePathById(String id) {

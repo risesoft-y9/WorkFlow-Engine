@@ -37,6 +37,7 @@ public class RejectReasonApiImpl implements RejectReasonApi {
      * @param action action
      * @param taskId 任务id
      * @param reason 理由
+     * @return Y9Result<Object>
      */
     @Override
     public Y9Result<Object> save(String tenantId, String userId, Integer action, String taskId, String reason) {

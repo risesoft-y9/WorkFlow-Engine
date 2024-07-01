@@ -139,7 +139,7 @@ public interface Item4PositionApi {
      *
      * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
-     * @return Boolean
+     * @return Y9Result<Boolean>
      */
     @GetMapping("/hasProcessDefinitionByKey")
     Y9Result<Boolean> hasProcessDefinitionByKey(@RequestParam("tenantId") String tenantId,

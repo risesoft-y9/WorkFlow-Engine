@@ -2,7 +2,6 @@ package net.risesoft.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
@@ -61,7 +60,6 @@ public class RoleRestController {
     @RequestMapping(value = "/getOrgTree", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<ItemRoleOrgUnitModel>> findAll(@RequestParam(required = false) String id,
         @RequestParam OrgTreeTypeEnum treeType, @RequestParam(required = false) String name) {
-        List<Map<String, Object>> item;
         return itemRole4PositionApi.getOrgTree(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), id,
             treeType, name);
     }
@@ -112,7 +110,6 @@ public class RoleRestController {
         @RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefKey,
         @RequestParam Integer principalType, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String id) {
-        List<Map<String, Object>> item;
         if (StringUtils.isBlank(id)) {
             id = "";
         }

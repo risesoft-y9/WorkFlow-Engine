@@ -2,7 +2,6 @@ package net.risesoft.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
@@ -86,11 +85,9 @@ public class OfficeFollowRestController {
      * @param searchName 搜索词
      * @return Y9Page<OfficeFollowModel>
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/followList", method = RequestMethod.GET, produces = "application/json")
     public Y9Page<OfficeFollowModel> followList(@RequestParam Integer page, @RequestParam Integer rows,
         @RequestParam(required = false) String searchName) {
-        Map<String, Object> map;
         String tenantId = Y9LoginUserHolder.getTenantId();
         return officeFollow4PositionApi.getOfficeFollowList(tenantId, Y9LoginUserHolder.getPositionId(), searchName,
             page, rows);
@@ -141,7 +138,7 @@ public class OfficeFollowRestController {
                 officeFollow.setSendDept("");
                 officeFollow.setSystemName(processParamModel.getSystemName());
                 HistoricProcessInstanceModel historicProcessInstanceModel =
-                    historicProcessApi.getById(tenantId, processInstanceId);
+                    historicProcessApi.getById(tenantId, processInstanceId).getData();
                 if (historicProcessInstanceModel == null) {
                     OfficeDoneInfoModel officeDoneInfoModel =
                         officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();

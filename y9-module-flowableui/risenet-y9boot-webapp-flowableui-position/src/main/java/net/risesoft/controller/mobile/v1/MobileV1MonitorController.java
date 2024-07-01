@@ -140,7 +140,7 @@ public class MobileV1MonitorController {
             if (processParamModel != null) {
                 list.add(processParamModel.getProcessSerialNumber());
             }
-            boolean b = historicProcessApi.removeProcess4Position(tenantId, processInstanceId);
+            boolean b = historicProcessApi.removeProcess4Position(tenantId, processInstanceId).isSuccess();
             if (b) {
                 // 批量删除附件表
                 attachment4PositionApi.delBatchByProcessSerialNumbers(tenantId, list);

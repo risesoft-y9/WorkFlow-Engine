@@ -27,7 +27,8 @@ public interface ChaoSong4PositionApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/changeChaoSongState")
-    Y9Result<Object> changeChaoSongState(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id, @RequestParam("type") String type);
+    Y9Result<Object> changeChaoSongState(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id,
+        @RequestParam("type") String type);
 
     /**
      * 抄送件状态设为已阅
@@ -47,7 +48,8 @@ public interface ChaoSong4PositionApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/changeStatus2read")
-    Y9Result<Object> changeStatus2read(@RequestParam("tenantId") String tenantId, @RequestParam("chaoSongId") String chaoSongId);
+    Y9Result<Object> changeStatus2read(@RequestParam("tenantId") String tenantId,
+        @RequestParam("chaoSongId") String chaoSongId);
 
     /**
      * Description: 根据流程实例id统计除当前人外是否有抄送件
@@ -58,7 +60,8 @@ public interface ChaoSong4PositionApi {
      * @return Y9Result<Integer>
      */
     @GetMapping("/countByProcessInstanceId")
-    Y9Result<Integer> countByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Integer> countByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程实例id统计当前人是否有抄送件
@@ -69,7 +72,8 @@ public interface ChaoSong4PositionApi {
      * @return Y9Result<Integer>
      */
     @GetMapping("/countByUserIdAndProcessInstanceId")
-    Y9Result<Integer> countByUserIdAndProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Integer> countByUserIdAndProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 删除抄送件
@@ -89,7 +93,8 @@ public interface ChaoSong4PositionApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/deleteByProcessInstanceId")
-    Y9Result<Object> deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * Description: 展开抄送件
@@ -103,7 +108,10 @@ public interface ChaoSong4PositionApi {
      * @return Y9Result<OpenDataModel>
      */
     @GetMapping("/detail")
-    Y9Result<OpenDataModel> detail(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("id") String id, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("status") Integer status, @RequestParam("mobile") boolean mobile);
+    Y9Result<OpenDataModel> detail(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("id") String id,
+        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("status") Integer status,
+        @RequestParam("mobile") boolean mobile);
 
     /**
      * 获取批阅件计数
@@ -113,17 +121,19 @@ public interface ChaoSong4PositionApi {
      * @return Y9Result<Integer>
      */
     @GetMapping("/getDone4OpinionCountByUserId")
-    Y9Result<Integer> getDone4OpinionCountByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId);
+    Y9Result<Integer> getDone4OpinionCountByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId);
 
     /**
      * 根据人员id获取抄送未阅件统计
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return int
+     * @return Y9Result<Integer>
      */
     @GetMapping("/getDoneCount")
-    Y9Result<Integer> getDoneCount(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId);
+    Y9Result<Integer> getDoneCount(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId);
 
     /**
      * Description: 获取抄送已阅件列表
@@ -136,7 +146,9 @@ public interface ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>
      */
     @GetMapping("/getDoneList")
-    Y9Page<ChaoSongModel> getDoneList(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("documentTitle") String documentTitle, @RequestParam("rows") int rows, @RequestParam("page") int page);
+    Y9Page<ChaoSongModel> getDoneList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("documentTitle") String documentTitle,
+        @RequestParam("rows") int rows, @RequestParam("page") int page);
 
     /**
      * Description: 根据流程实例获取除当前人外的其他抄送件
@@ -150,8 +162,9 @@ public interface ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>;
      */
     @GetMapping("/getListByProcessInstanceId")
-    Y9Page<ChaoSongModel> getListByProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("userName") String userName, @RequestParam("rows") int rows,
-        @RequestParam("page") int page);
+    Y9Page<ChaoSongModel> getListByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("userName") String userName, @RequestParam("rows") int rows, @RequestParam("page") int page);
 
     /**
      * Description: 根据流程实例获取当前人的抄送件
@@ -165,8 +178,9 @@ public interface ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>
      */
     @GetMapping("/getListBySenderIdAndProcessInstanceId")
-    Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(@RequestParam("tenantId") String tenantId, @RequestParam("senderId") String senderId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("userName") String userName, @RequestParam("rows") int rows,
-        @RequestParam("page") int page);
+    Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("senderId") String senderId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("userName") String userName, @RequestParam("rows") int rows, @RequestParam("page") int page);
 
     /**
      * 批阅件
@@ -179,17 +193,20 @@ public interface ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>
      */
     @GetMapping("/getOpinionChaosongByUserId")
-    Y9Page<ChaoSongModel> getOpinionChaosongByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("documentTitle") String documentTitle, @RequestParam("rows") int rows, @RequestParam("page") int page);
+    Y9Page<ChaoSongModel> getOpinionChaosongByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("documentTitle") String documentTitle,
+        @RequestParam("rows") int rows, @RequestParam("page") int page);
 
     /**
      * 根据人员id获取抄送已阅件统计
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return int
+     * @return Y9Result<Integer>
      */
     @GetMapping("/getTodoCount")
-    Y9Result<Integer> getTodoCount(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId);
+    Y9Result<Integer> getTodoCount(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId);
 
     /**
      * Description: 获取抄送未阅件列表
@@ -202,7 +219,9 @@ public interface ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>
      */
     @GetMapping("/getTodoList")
-    Y9Page<ChaoSongModel> getTodoList(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("documentTitle") String documentTitle, @RequestParam("rows") int rows, @RequestParam("page") int page);
+    Y9Page<ChaoSongModel> getTodoList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("documentTitle") String documentTitle,
+        @RequestParam("rows") int rows, @RequestParam("page") int page);
 
     /**
      * 我的抄送列表
@@ -219,8 +238,11 @@ public interface ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>
      */
     @GetMapping("/myChaoSongList")
-    Y9Page<ChaoSongModel> myChaoSongList(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("searchName") String searchName, @RequestParam("itemId") String itemId, @RequestParam("userName") String userName, @RequestParam("state") String state,
-        @RequestParam("year") String year, @RequestParam("page") int page, @RequestParam("rows") int rows);
+    Y9Page<ChaoSongModel> myChaoSongList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("searchName") String searchName,
+        @RequestParam("itemId") String itemId, @RequestParam("userName") String userName,
+        @RequestParam("state") String state, @RequestParam("year") String year, @RequestParam("page") int page,
+        @RequestParam("rows") int rows);
 
     /**
      * Description: 点击抄送按钮之后保存
@@ -237,8 +259,11 @@ public interface ChaoSong4PositionApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/save")
-    Y9Result<Object> save(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId, @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("users") String users, @RequestParam("isSendSms") String isSendSms,
-        @RequestParam("isShuMing") String isShuMing, @RequestParam("smsContent") String smsContent, @RequestParam("smsPersonId") String smsPersonId);
+    Y9Result<Object> save(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("users") String users, @RequestParam("isSendSms") String isSendSms,
+        @RequestParam("isShuMing") String isShuMing, @RequestParam("smsContent") String smsContent,
+        @RequestParam("smsPersonId") String smsPersonId);
 
     /**
      * Description: 个人阅件搜索
@@ -255,8 +280,11 @@ public interface ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>
      */
     @GetMapping("/searchAllByUserId")
-    Y9Page<ChaoSongModel> searchAllByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("searchName") String searchName, @RequestParam("itemId") String itemId, @RequestParam("userName") String userName, @RequestParam("state") String state,
-        @RequestParam("year") String year, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ChaoSongModel> searchAllByUserId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("searchName") String searchName,
+        @RequestParam("itemId") String itemId, @RequestParam("userName") String userName,
+        @RequestParam("state") String state, @RequestParam("year") String year, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 
     /**
      * 监控阅件列表
@@ -273,8 +301,11 @@ public interface ChaoSong4PositionApi {
      * @return Y9Page<ChaoSongModel>
      */
     @GetMapping("/searchAllList")
-    Y9Page<ChaoSongModel> searchAllList(@RequestParam("tenantId") String tenantId, @RequestParam("searchName") String searchName, @RequestParam("itemId") String itemId, @RequestParam("senderName") String senderName, @RequestParam("userName") String userName, @RequestParam("state") String state,
-        @RequestParam("year") String year, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ChaoSongModel> searchAllList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("searchName") String searchName, @RequestParam("itemId") String itemId,
+        @RequestParam("senderName") String senderName, @RequestParam("userName") String userName,
+        @RequestParam("state") String state, @RequestParam("year") String year, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 
     /**
      * 更新抄送件标题
@@ -282,8 +313,11 @@ public interface ChaoSong4PositionApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param documentTitle 文档标题
+     * @return Y9Result<Object>
      */
     @PostMapping("/updateTitle")
-    Y9Result<Object> updateTitle(@RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId, @RequestParam("documentTitle") String documentTitle);
+    Y9Result<Object> updateTitle(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("documentTitle") String documentTitle);
 
 }

@@ -340,7 +340,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
-                        formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
+                        formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                         if (formDataMap.get("leaveType") != null) {
                             String leaveType = (String)formDataMap.get("leaveType");
                             for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
@@ -421,7 +421,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
-                        formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
+                        formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                         mapTemp.putAll(formDataMap);
                         mapTemp.put("processInstanceId", processInstanceId);
                         int speakInfoNum = speakInfoApi
@@ -496,7 +496,7 @@ public class DoingServiceImpl implements DoingService {
                     mapTemp.put("chaosongNum", chaosongNum);
                     mapTemp.put("status", 1);
                     mapTemp.put("taskDueDate", "");
-                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
+                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     /*if (formDataMap.get("leaveType") != null) {
                         String leaveType = (String)formDataMap.get("leaveType");
                         for (ItemLeaveTypeEnum leaveTypeEnum : arr) {

@@ -61,12 +61,12 @@ public class BpmnViewerRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricActivityInstanceModel> list = new ArrayList<>();
         try {
-            list = historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, "");
+            list = historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, "").getData();
             String year = "";
             if (list == null || list.isEmpty()) {
                 OfficeDoneInfo info = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
                 year = info.getStartTime().substring(0, 4);
-                list = historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, year);
+                list = historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, year).getData();
             }
             for (HistoricActivityInstanceModel task : list) {
                 String assignee = task.getAssignee();

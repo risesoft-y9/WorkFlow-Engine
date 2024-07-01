@@ -179,7 +179,7 @@ public class MonitorRestController {
                     }
                 }
             }
-            boolean b = historicProcessApi.removeProcess4Position(tenantId, processInstanceIds);
+            boolean b = historicProcessApi.removeProcess4Position(tenantId, processInstanceIds).isSuccess();
             if (b) {
                 // 批量删除附件表
                 attachment4PositionApi.delBatchByProcessSerialNumbers(tenantId, list);

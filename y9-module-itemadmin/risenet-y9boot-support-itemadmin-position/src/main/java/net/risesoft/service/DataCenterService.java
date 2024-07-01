@@ -246,7 +246,7 @@ public class DataCenterService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Position position = Y9LoginUserHolder.getPosition();
         HistoricProcessInstanceModel processInstance =
-            historicProcessManager.getById(Y9LoginUserHolder.getTenantId(), processInstanceId);
+            historicProcessManager.getById(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
         HistoricVariableInstanceModel vmap =
             historicVariableManager.getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, "infoOvert", "");
 

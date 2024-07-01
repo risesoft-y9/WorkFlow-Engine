@@ -103,7 +103,7 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param speakInfoModel 发言信息
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> saveOrUpdate(String tenantId, String userId, @RequestBody SpeakInfoModel speakInfoModel) {

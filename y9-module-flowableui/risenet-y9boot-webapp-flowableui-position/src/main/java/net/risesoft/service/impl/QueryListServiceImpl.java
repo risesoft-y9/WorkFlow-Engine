@@ -182,7 +182,7 @@ public class QueryListServiceImpl implements QueryListService {
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("itembox", listTemp.get(3));
                     }
-                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
+                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
                     int countFollow = officeFollow4PositionApi

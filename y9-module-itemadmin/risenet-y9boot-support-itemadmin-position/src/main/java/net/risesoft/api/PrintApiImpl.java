@@ -36,7 +36,7 @@ public class PrintApiImpl implements PrintApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param itemId 事项id
-     * @return String
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> openDocument(String tenantId, String userId, String itemId) {

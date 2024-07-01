@@ -52,6 +52,7 @@ public class ReminderApiImpl implements ReminderApi {
      *
      * @param tenantId 租户id
      * @param ids 催办ids
+     * @return Y9Result<Object>
      */
     @Override
     public Y9Result<Object> deleteList(String tenantId, @RequestBody String[] ids) {
@@ -65,6 +66,7 @@ public class ReminderApiImpl implements ReminderApi {
      *
      * @param tenantId 租户id
      * @param id 催办id
+     * @return Y9Result<ReminderModel>
      */
     @Override
     public Y9Result<ReminderModel> findById(String tenantId, String id) {
@@ -92,6 +94,7 @@ public class ReminderApiImpl implements ReminderApi {
      * @param processInstanceId 流程实例id
      * @param page 页码
      * @param rows 条数
+     * @return Y9Page<ReminderModel>
      */
     @Override
     public Y9Page<ReminderModel> findByProcessInstanceId(String tenantId, String processInstanceId, int page,
@@ -108,6 +111,7 @@ public class ReminderApiImpl implements ReminderApi {
      * @param processInstanceId 流程实例id
      * @param page 页码
      * @param rows 条数
+     * @return Y9Page<ReminderModel>
      */
     @Override
     public Y9Page<ReminderModel> findBySenderIdAndProcessInstanceIdAndActive(String tenantId, String senderId,
@@ -123,6 +127,7 @@ public class ReminderApiImpl implements ReminderApi {
      * @param taskId 任务id
      * @param page 页码
      * @param rows 条数
+     * @return Y9Page<ReminderModel>
      */
     @Override
     public Y9Page<ReminderModel> findByTaskId(String tenantId, String taskId, int page, int rows) {
@@ -137,6 +142,7 @@ public class ReminderApiImpl implements ReminderApi {
      * @param userId 人员id
      * @param taskId 任务id
      * @param type 类型，todo（待办），doing（在办），done（办结）
+     * @return Y9Result<ReminderModel>
      */
     @Override
     public Y9Result<ReminderModel> getReminder(String tenantId, String userId, String taskId, String type) {
@@ -176,6 +182,7 @@ public class ReminderApiImpl implements ReminderApi {
      * @param processInstanceId 流程实例id
      * @param taskIds taskIds
      * @param msgContent 催办信息
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> saveReminder(String tenantId, String userId, String processInstanceId,
@@ -216,6 +223,7 @@ public class ReminderApiImpl implements ReminderApi {
      * @param taskId 任务id
      * @param taskAssigneeId 任务受让人Id
      * @param msgContent 催办信息
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> sendReminderMessage(String tenantId, String userId, String remType, String procInstId,
@@ -259,6 +267,7 @@ public class ReminderApiImpl implements ReminderApi {
      *
      * @param tenantId 租户id
      * @param ids 催办ids
+     * @return Y9Result<Object>
      */
     @Override
     public Y9Result<Object> setReadTime(String tenantId, @RequestBody String[] ids) {
@@ -273,6 +282,7 @@ public class ReminderApiImpl implements ReminderApi {
      * @param tenantId 租户id
      * @param id 催办id
      * @param msgContent 催办信息
+     * @return Y9Result<String>
      */
     @Override
     public Y9Result<String> updateReminder(String tenantId, String id, String msgContent) {
