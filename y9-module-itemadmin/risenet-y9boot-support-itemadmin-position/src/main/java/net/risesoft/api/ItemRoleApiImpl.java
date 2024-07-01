@@ -1,9 +1,7 @@
 package net.risesoft.api;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,10 +20,12 @@ import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
+import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
 import net.risesoft.model.platform.OrgUnit;
 import net.risesoft.model.platform.Organization;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.platform.Position;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.RoleService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -60,18 +60,18 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param id 唯一标识
      * @param principalType 类型
      * @param processInstanceId 流程实例id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List < ItemRoleOrgUnitModel>>>
      */
     @Override
-    @GetMapping(value = "/findCsUser", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findCsUser(String tenantId, String userId, String positionId, String id,
+    public Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(String tenantId, String userId, String positionId, String id,
         Integer principalType, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        return roleService.findCsUser(id, principalType, processInstanceId);
+        List<ItemRoleOrgUnitModel> list = roleService.findCsUser(id, principalType, processInstanceId);
+        return Y9Result.success(list);
     }
 
     /**
@@ -85,9 +85,9 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      */
     @Override
     @GetMapping(value = "/findCsUserBureau", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findCsUserBureau(String tenantId, String userId, String positionId,
+    public Y9Result<List<ItemRoleOrgUnitModel>> findCsUserBureau(String tenantId, String userId, String positionId,
         Integer principalType) {
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
@@ -95,15 +95,14 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
         Y9LoginUserHolder.setPerson(person);
         if (Objects.equals(principalType, ItemPrincipalTypeEnum.DEPT.getValue())) {
             OrgUnit orgunit = orgUnitManager.getBureau(tenantId, position.getParentId()).getData();
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", orgunit.getId());
-            map.put("name", orgunit.getName());
-            map.put("isPerm", true);
-            map.put("orgType", orgunit.getOrgType());
-            map.put("isParent", OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType()));
-            item.add(map);
+            ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+            model.setId(orgunit.getId());
+            model.setName(orgunit.getName());
+            model.setOrgType(orgunit.getOrgType().getValue());
+            model.setIsParent(OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType()));
+            item.add(model);
         }
-        return item;
+        return Y9Result.success(item);
     }
 
     /**
@@ -115,18 +114,19 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param name 人员名称
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param processInstanceId 流程实例Id
-     * @return List<Map < String, Object>>
+     * @return Y9Result<List < ItemRoleOrgUnitModel>>
      */
     @Override
     @GetMapping(value = "/findCsUserSearch", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findCsUserSearch(String tenantId, String userId, String positionId, String name,
-        Integer principalType, String processInstanceId) {
+    public Y9Result<List<ItemRoleOrgUnitModel>> findCsUserSearch(String tenantId, String userId, String positionId,
+        String name, Integer principalType, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        return roleService.findCsUserSearch(name, principalType, processInstanceId);
+        List<ItemRoleOrgUnitModel> list = roleService.findCsUserSearch(name, principalType, processInstanceId);
+        return Y9Result.success(list);
     }
 
     /**
@@ -141,18 +141,21 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param id 唯一标识
      * @param processInstanceId 流程实例Id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<ItemRoleOrgUnitModel>>
      */
     @Override
     @GetMapping(value = "/findPermUser", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findPermUser(String tenantId, String userId, String positionId, String itemId,
-        String processDefinitionId, String taskDefKey, Integer principalType, String id, String processInstanceId) {
+    public Y9Result<List<ItemRoleOrgUnitModel>> findPermUser(String tenantId, String userId, String positionId,
+        String itemId, String processDefinitionId, String taskDefKey, Integer principalType, String id,
+        String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        return roleService.findPermUser(itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
+        List<ItemRoleOrgUnitModel> list =
+            roleService.findPermUser(itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
+        return Y9Result.success(list);
     }
 
     /**
@@ -167,19 +170,21 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 流程定义中节点Id
      * @param processInstanceId 流程实例Id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List < ItemRoleOrgUnitModel>>
      */
     @Override
     @GetMapping(value = "/findPermUserByName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findPermUserByName(String tenantId, String userId, String positionId, String name,
-        Integer principalType, String itemId, String processDefinitionId, String taskDefKey, String processInstanceId) {
+    public Y9Result<List<ItemRoleOrgUnitModel>> findPermUserByName(String tenantId, String userId, String positionId,
+        String name, Integer principalType, String itemId, String processDefinitionId, String taskDefKey,
+        String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        return roleService.findPermUserByName(name, itemId, processDefinitionId, taskDefKey, principalType,
-            processInstanceId);
+        List<ItemRoleOrgUnitModel> list = roleService.findPermUserByName(name, itemId, processDefinitionId, taskDefKey,
+            principalType, processInstanceId);
+        return Y9Result.success(list);
     }
 
     /**
@@ -188,15 +193,16 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param id 父节点id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<ItemRoleOrgUnitModel>>
      */
     @Override
     @GetMapping(value = "/findPermUserSendReceive", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> findPermUserSendReceive(String tenantId, String positionId, String id) {
+    public Y9Result<List<ItemRoleOrgUnitModel>> findPermUserSendReceive(String tenantId, String positionId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        return roleService.findPermUserSendReceive(id);
+        List<ItemRoleOrgUnitModel> list = roleService.findPermUserSendReceive(id);
+        return Y9Result.success(list);
     }
 
     /**
@@ -208,16 +214,16 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
      * @param treeType 树的类型:tree_type_org(组织机构)，tree_type_dept（部门） tree_type_group（用户组）, tree_type_position（岗位）
      *            tree_type_person（人员）, tree_type_bureau（委办局）
      * @param name 人员名称
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List < ItemRoleOrgUnitModel>>
      */
     @Override
     @GetMapping(value = "/getOrgTree", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getOrgTree(String tenantId, String positionId, String id, OrgTreeTypeEnum treeType,
-        String name) {
+    public Y9Result<List<ItemRoleOrgUnitModel>> getOrgTree(String tenantId, String positionId, String id,
+        OrgTreeTypeEnum treeType, String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Position position = positionManager.get(tenantId, positionId).getData();
         Y9LoginUserHolder.setPosition(position);
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         if (StringUtils.isBlank(id)) {
             List<Organization> org = organizationManager.list(tenantId).getData();
             if (org != null && !org.isEmpty()) {
@@ -231,23 +237,20 @@ public class ItemRoleApiImpl implements ItemRole4PositionApi {
             orgUnitList = orgUnitManager.getSubTree(tenantId, id, treeType).getData();
         }
         for (OrgUnit orgUnit : orgUnitList) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", orgUnit.getId());
-            map.put("customID", orgUnit.getCustomId());
-            map.put("name", orgUnit.getName());
-            map.put("orgType", orgUnit.getOrgType());
-            map.put("parentID", orgUnit.getParentId());
-            map.put("DN", orgUnit.getDn());
+            ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+            model.setId(orgUnit.getId());
+            model.setName(orgUnit.getName());
+            model.setParentId(orgUnit.getParentId());
+            model.setIsParent(false);
+            model.setOrgType(orgUnit.getOrgType().getValue());
             if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
-                map.put("isParent", true);
+                model.setIsParent(true);
             } else if (OrgTypeEnum.POSITION.equals(orgUnit.getOrgType())) {
-                Position person = positionManager.get(tenantId, orgUnit.getId()).getData();
-                map.put("person", "6:" + person.getId());
-                map.put("name", person.getName());
-                map.put("duty", person.getJobName());
+                model.setPerson("6:" + orgUnit.getId());
+
             }
-            item.add(map);
+            item.add(model);
         }
-        return item;
+        return Y9Result.success(item);
     }
 }

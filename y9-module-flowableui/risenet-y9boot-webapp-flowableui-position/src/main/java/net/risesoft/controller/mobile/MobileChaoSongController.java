@@ -25,6 +25,7 @@ import net.risesoft.api.itemadmin.position.ItemRole4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.ChaoSongModel;
+import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.pojo.Y9Page;
@@ -140,10 +141,11 @@ public class MobileChaoSongController {
         @RequestParam(required = false) Integer principalType, @RequestParam(required = false) String processInstanceId,
         HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         try {
-            item = itemRole4PositionApi.findCsUser(Y9LoginUserHolder.getTenantId(), userId, positionId, id,
-                principalType, processInstanceId);
+            item = itemRole4PositionApi
+                .findCsUser(Y9LoginUserHolder.getTenantId(), userId, positionId, id, principalType, processInstanceId)
+                .getData();
         } catch (Exception e) {
             LOGGER.error("获取抄送选人失败", e);
         }
@@ -167,10 +169,10 @@ public class MobileChaoSongController {
         @RequestParam(required = false) String name, @RequestParam(required = false) Integer principalType,
         @RequestParam(required = false) String processInstanceId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         try {
-            item = itemRole4PositionApi.findCsUserSearch(tenantId, userId, positionId, name, principalType,
-                processInstanceId);
+            item = itemRole4PositionApi
+                .findCsUserSearch(tenantId, userId, positionId, name, principalType, processInstanceId).getData();
         } catch (Exception e) {
             LOGGER.error("获取抄送选人失败", e);
         }

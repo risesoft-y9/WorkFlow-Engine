@@ -1,9 +1,7 @@
 package net.risesoft.service.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -22,6 +20,7 @@ import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.enums.platform.OrgTreeTypeEnum;
 import net.risesoft.enums.platform.OrgTypeEnum;
+import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
 import net.risesoft.model.platform.CustomGroup;
 import net.risesoft.model.platform.CustomGroupMember;
 import net.risesoft.model.platform.Department;
@@ -62,8 +61,8 @@ public class RoleServiceImpl implements RoleService {
     private final CustomGroupApi customGroupApi;
 
     @Override
-    public List<Map<String, Object>> findCsUser(String id, Integer principalType, String processInstanceId) {
-        List<Map<String, Object>> item = new ArrayList<>();
+    public List<ItemRoleOrgUnitModel> findCsUser(String id, Integer principalType, String processInstanceId) {
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
         try {
@@ -73,33 +72,33 @@ public class RoleServiceImpl implements RoleService {
                     List<OrgUnit> orgUnitList = orgUnitManager
                         .getSubTree(tenantId, organization.getId(), OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
                     for (OrgUnit orgUnit : orgUnitList) {
-                        Map<String, Object> map = new HashMap<>(16);
-                        map.put("id", orgUnit.getId());
-                        map.put("parentId", id);
-                        map.put("name", orgUnit.getName());
-                        map.put("isParent", orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT) ? true : false);
-                        map.put("orgType", orgUnit.getOrgType());
-                        map.put("principalType", orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+                        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                        model.setId(orgUnit.getId());
+                        model.setParentId(id);
+                        model.setName(orgUnit.getName());
+                        model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
+                        model.setOrgType(orgUnit.getOrgType().getValue());
+                        model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
                             ? ItemPermissionEnum.DEPARTMENT.getValue() : ItemPermissionEnum.POSITION.getValue());
                         if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                            map.put("person", "6:" + orgUnit.getId());
+                            model.setPerson("6:" + orgUnit.getId());
                         }
-                        item.add(map);
+                        item.add(model);
                     }
                 } else {
                     List<CustomGroup> grouplist = customGroupApi.listCustomGroupByPersonId(tenantId, userId).getData();
                     for (CustomGroup customGroup : grouplist) {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("id", customGroup.getId());
-                        map.put("parentId", "");
-                        map.put("name", customGroup.getGroupName());
-                        map.put("isParent", true);
-                        map.put("orgType", "customGroup");
-                        map.put("principalType", ItemPermissionEnum.CUSTOMGROUP.getValue());
-                        if (item.contains(map)) {
+                        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                        model.setId(customGroup.getId());
+                        model.setParentId("");
+                        model.setName(customGroup.getGroupName());
+                        model.setIsParent(true);
+                        model.setOrgType("customGroup");
+                        model.setPrincipalType(ItemPermissionEnum.CUSTOMGROUP.getValue());
+                        if (item.contains(model)) {
                             continue;// 去重
                         }
-                        item.add(map);
+                        item.add(model);
                     }
                 }
             } else {
@@ -107,23 +106,23 @@ public class RoleServiceImpl implements RoleService {
                     List<OrgUnit> orgList =
                         orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
                     for (OrgUnit orgunit : orgList) {
-                        Map<String, Object> map = new HashMap<>(16);
+                        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                         String orgunitId = orgunit.getId();
-                        map.put("id", orgunitId);
-                        map.put("parentId", id);
-                        map.put("name", orgunit.getName());
-                        map.put("orgType", orgunit.getOrgType());
-                        map.put("isParent", OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType()));
+                        model.setId(orgunitId);
+                        model.setParentId(id);
+                        model.setName(orgunit.getName());
+                        model.setOrgType(orgunit.getOrgType().getValue());
+                        model.setIsParent(orgunit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
                         if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
-                            map.put("principalType", ItemPermissionEnum.DEPARTMENT.getValue());
+                            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
                         } else if (OrgTypeEnum.POSITION.equals(orgunit.getOrgType())) {
-                            map.put("person", "6:" + orgunit.getId());
-                            map.put("principalType", ItemPermissionEnum.POSITION.getValue());
+                            model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                            model.setPerson("6:" + orgunit.getId());
                         }
-                        if (item.contains(map)) {
+                        if (item.contains(model)) {
                             continue;// 去重
                         }
-                        item.add(map);
+                        item.add(model);
                     }
                 } else {
                     List<CustomGroupMember> customGroupMemberList = customGroupApi
@@ -133,18 +132,18 @@ public class RoleServiceImpl implements RoleService {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
                             Position position =
                                 positionManager.get(tenantId, customGroupMember.getMemberId()).getData();
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("id", customGroupMember.getMemberId());
-                            map.put("parentId", id);
-                            map.put("name", position.getName());
-                            map.put("isParent", false);
-                            map.put("orgType", position.getOrgType());
-                            map.put("person", "6:" + position.getId() + ":" + position.getParentId());
-                            map.put("principalType", ItemPermissionEnum.POSITION.getValue());
-                            if (item.contains(map)) {
+                            ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                            model.setId(customGroupMember.getMemberId());
+                            model.setParentId(id);
+                            model.setName(position.getName());
+                            model.setIsParent(false);
+                            model.setOrgType(position.getOrgType().getValue());
+                            model.setPerson("6:" + position.getId() + ":" + position.getParentId());
+                            model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                            if (item.contains(model)) {
                                 continue;// 去重
                             }
-                            item.add(map);
+                            item.add(model);
                         }
                     }
                 }
@@ -172,10 +171,10 @@ public class RoleServiceImpl implements RoleService {
      * @return
      */
     @Override
-    public List<Map<String, Object>> findCsUserSearch(String name, Integer principalType, String processInstanceId) {
+    public List<ItemRoleOrgUnitModel> findCsUserSearch(String name, Integer principalType, String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
             Organization organization = orgUnitManager.getOrganization(tenantId, userId).getData();
             List<Department> deptList = departmentManager.listByParentId(tenantId, organization.getId()).getData();
@@ -186,41 +185,41 @@ public class RoleServiceImpl implements RoleService {
                     .getData());
             }
             for (OrgUnit orgUnitTemp : orgUnitListTemp) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", orgUnitTemp.getId());
-                map.put("name", orgUnitTemp.getName());
-                map.put("parentId", orgUnitTemp.getParentId());
-                map.put("orgType", orgUnitTemp.getOrgType());
+                ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                model.setId(orgUnitTemp.getId());
+                model.setParentId(orgUnitTemp.getParentId());
+                model.setName(orgUnitTemp.getName());
+                model.setOrgType(orgUnitTemp.getOrgType().getValue());
                 if (orgUnitTemp.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
-                    map.put("isParent", true);
+                    model.setIsParent(true);
                 } else if (orgUnitTemp.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
-                    map.put("isParent", true);
+                    model.setIsParent(true);
                     continue;
                 } else if (orgUnitTemp.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                    map.put("person", "6:" + orgUnitTemp.getId());
-                    map.put("isParent", false);
+                    model.setPerson("6:" + orgUnitTemp.getId());
+                    model.setIsParent(true);
                 } else if (orgUnitTemp.getOrgType().equals(OrgTypeEnum.PERSON)) {
                     continue;
                 } else if (orgUnitTemp.getOrgType().equals(OrgTypeEnum.GROUP)) {
                     continue;
                 }
-                boolean b = item.contains(map);
+                boolean b = item.contains(model);
                 if (!b) {
-                    item.add(map);
+                    item.add(model);
                 }
             }
         } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue().equals(principalType)) {
             try {
                 List<CustomGroup> grouplist = customGroupApi.listCustomGroupByPersonId(tenantId, userId).getData();
                 for (CustomGroup customGroup : grouplist) {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("id", customGroup.getId());
-                    map.put("parentId", "");
-                    map.put("name", customGroup.getGroupName());
-                    map.put("isParent", true);
-                    map.put("orgType", "customGroup");
-                    map.put("principalType", ItemPermissionEnum.CUSTOMGROUP.getValue());
-                    if (item.contains(map)) {
+                    ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                    model.setId(customGroup.getId());
+                    model.setParentId("");
+                    model.setName(customGroup.getGroupName());
+                    model.setOrgType("customGroup");
+                    model.setPrincipalType(ItemPermissionEnum.CUSTOMGROUP.getValue());
+                    model.setIsParent(true);
+                    if (item.contains(model)) {
                         continue;// 去重
                     }
                     boolean b = false;
@@ -232,23 +231,23 @@ public class RoleServiceImpl implements RoleService {
                             Position position =
                                 positionManager.get(tenantId, customGroupMember.getMemberId()).getData();
                             if (position != null && position.getName().contains(name)) {
-                                Map<String, Object> map0 = new HashMap<>();
-                                map0.put("id", customGroupMember.getMemberId());
-                                map0.put("parentId", customGroup.getId());
-                                map0.put("isParent", false);
-                                map0.put("orgType", position.getOrgType());
-                                map0.put("person", "6:" + position.getId() + ":" + position.getParentId());
-                                map0.put("principalType", ItemPermissionEnum.POSITION.getValue());
-                                map0.put("name", position.getName());
-                                if (item.contains(map0)) {
+                                ItemRoleOrgUnitModel model0 = new ItemRoleOrgUnitModel();
+                                model0.setIsParent(false);
+                                model0.setPerson("6:" + position.getId() + ":" + position.getParentId());
+                                model0.setId(customGroupMember.getMemberId());
+                                model0.setOrgType(position.getOrgType().getValue());
+                                model0.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                                model0.setName(position.getName());
+                                model0.setParentId(customGroup.getId());
+                                if (item.contains(model0)) {
                                     continue;// 去重
                                 }
-                                item.add(map0);
+                                item.add(model0);
                                 b = true;
                             }
                         }
-                        if (b && !item.contains(map)) {
-                            item.add(map);
+                        if (b && !item.contains(model)) {
+                            item.add(model);
                         }
                     }
                 }
@@ -256,15 +255,13 @@ public class RoleServiceImpl implements RoleService {
                 e.printStackTrace();
             }
         }
-
         return item;
-
     }
 
     @Override
-    public List<Map<String, Object>> findPermUser(String itemId, String processDefinitionId, String taskDefKey,
+    public List<ItemRoleOrgUnitModel> findPermUser(String itemId, String processDefinitionId, String taskDefKey,
         Integer principalType, String id, String processInstanceId) {
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             List<ItemPermission> list = itemPermissionService
@@ -298,37 +295,36 @@ public class RoleServiceImpl implements RoleService {
                             List<OrgUnit> orgList = orgUnitManager
                                 .getSubTree(tenantId, org.getId(), OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
                             for (OrgUnit orgUnit : orgList) {
-                                Map<String, Object> map = new HashMap<>(16);
-                                map.put("id", orgUnit.getId());
-                                map.put("parentId", id);
-                                map.put("name", orgUnit.getName());
-                                map.put("isParent", orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT) ? true : false);
-                                map.put("orgType", orgUnit.getOrgType());
-                                map.put("principalType",
-                                    orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
-                                        ? ItemPermissionEnum.DEPARTMENT.getValue()
-                                        : ItemPermissionEnum.POSITION.getValue());
+                                ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                                model.setId(orgUnit.getId());
+                                model.setParentId(id);
+                                model.setName(orgUnit.getName());
+                                model.setIsParent(org.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
+                                model.setOrgType(orgUnit.getOrgType().getValue());
+                                model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+                                    ? ItemPermissionEnum.DEPARTMENT.getValue()
+                                    : ItemPermissionEnum.POSITION.getValue());
                                 if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                                    map.put("person", "6:" + orgUnit.getId());
+                                    model.setPerson("6:" + orgUnit.getId());
                                 }
-                                if (item.contains(map)) {
+                                if (item.contains(model)) {
                                     continue;// 去重
                                 }
-                                item.add(map);
+                                item.add(model);
                             }
                         } else {
-                            Map<String, Object> map = new HashMap<>(16);
-                            map.put("id", org.getId());
-                            map.put("parentId", id);
-                            map.put("name", org.getName());
-                            map.put("isParent", true);
-                            map.put("orgType",
-                                org.getOrgType() == null ? OrgTypeEnum.ORGANIZATION.getEnName() : org.getOrgType());
-                            map.put("principalType", ItemPermissionEnum.DEPARTMENT.getValue());
-                            if (item.contains(map)) {
+                            ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                            model.setId(org.getId());
+                            model.setParentId(id);
+                            model.setName(org.getName());
+                            model.setIsParent(true);
+                            model.setOrgType(org.getOrgType() == null ? OrgTypeEnum.ORGANIZATION.getEnName()
+                                : org.getOrgType().getValue());
+                            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
+                            if (item.contains(model)) {
                                 continue;// 去重
                             }
-                            item.add(map);
+                            item.add(model);
                         }
                     }
                 } else {
@@ -336,24 +332,24 @@ public class RoleServiceImpl implements RoleService {
                     List<OrgUnit> orgList =
                         orgUnitManager.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
                     for (OrgUnit orgunit : orgList) {
-                        Map<String, Object> map = new HashMap<>(16);
+                        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                         String orgunitId = orgunit.getId();
-                        map.put("id", orgunitId);
-                        map.put("parentId", id);
-                        map.put("name", orgunit.getName());
-                        map.put("orgType", orgunit.getOrgType());
-                        map.put("isParent", orgunit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
+                        model.setId(orgunitId);
+                        model.setParentId(id);
+                        model.setName(orgunit.getName());
+                        model.setIsParent(orgunit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
+                        model.setOrgType(orgunit.getOrgType().getValue());
                         if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
-                            map.put("principalType", ItemPermissionEnum.DEPARTMENT.getValue());
+                            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
                         } else if (OrgTypeEnum.POSITION.equals(orgunit.getOrgType())) {
-                            map.put("person", "6:" + orgunit.getId());
-                            map.put("principalType", ItemPermissionEnum.POSITION.getValue());
+                            model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                            model.setPerson("6:" + orgunit.getId());
                         }
-                        if (item.contains(map)) {
+                        if (item.contains(model)) {
                             // 去重
                             continue;
                         }
-                        item.add(map);
+                        item.add(model);
                     }
                 }
             } else if (ItemPrincipalTypeEnum.POSITION.getValue().equals(principalType)) {
@@ -378,35 +374,35 @@ public class RoleServiceImpl implements RoleService {
                     }
                 }
                 for (OrgUnit orgUnit : orgList) {
-                    Map<String, Object> map = new HashMap<>(16);
-                    map.put("id", orgUnit.getId());
-                    map.put("parentId", orgUnit.getParentId());
-                    map.put("person", "6:" + orgUnit.getId());
-                    map.put("name", orgUnit.getName());
-                    map.put("isParent", false);
-                    map.put("orgType", orgUnit.getOrgType());
-                    map.put("principalType", ItemPermissionEnum.POSITION.getValue());
-                    if (item.contains(map)) {
+                    ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                    model.setId(orgUnit.getId());
+                    model.setParentId(orgUnit.getParentId());
+                    model.setName(orgUnit.getName());
+                    model.setIsParent(false);
+                    model.setOrgType(orgUnit.getOrgType().getValue());
+                    model.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                    model.setPerson("6:" + orgUnit.getId());
+                    if (item.contains(model)) {
                         continue;// 去重
                     }
-                    item.add(map);
+                    item.add(model);
                 }
             } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue().equals(principalType)) {
                 List<CustomGroup> customGrouplist =
                     customGroupApi.listCustomGroupByPersonId(tenantId, Y9LoginUserHolder.getPersonId()).getData();
                 if (StringUtils.isBlank(id)) {
                     for (CustomGroup customGroup : customGrouplist) {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("id", customGroup.getId());
-                        map.put("parentId", "");
-                        map.put("name", customGroup.getGroupName());
-                        map.put("isParent", true);
-                        map.put("orgType", "customGroup");
-                        map.put("principalType", ItemPermissionEnum.CUSTOMGROUP.getValue());
-                        if (item.contains(map)) {
+                        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                        model.setId(customGroup.getId());
+                        model.setParentId("");
+                        model.setName(customGroup.getGroupName());
+                        model.setIsParent(true);
+                        model.setOrgType("customGroup");
+                        model.setPrincipalType(ItemPermissionEnum.CUSTOMGROUP.getValue());
+                        if (item.contains(model)) {
                             continue;// 去重
                         }
-                        item.add(map);
+                        item.add(model);
                     }
                 } else {
                     List<CustomGroupMember> customGroupMemberList =
@@ -416,18 +412,18 @@ public class RoleServiceImpl implements RoleService {
                         for (CustomGroupMember customGroupMember : customGroupMemberList) {
                             Position position =
                                 positionManager.get(tenantId, customGroupMember.getMemberId()).getData();
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("id", customGroupMember.getMemberId());
-                            map.put("parentId", id);
-                            map.put("name", position.getName());
-                            map.put("isParent", false);
-                            map.put("orgType", position.getOrgType());
-                            map.put("person", "6:" + position.getId());
-                            map.put("principalType", ItemPermissionEnum.CUSTOMGROUP.getValue());
-                            if (item.contains(map)) {
+                            ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                            model.setId(customGroupMember.getMemberId());
+                            model.setParentId(id);
+                            model.setName(position.getName());
+                            model.setIsParent(false);
+                            model.setOrgType(position.getOrgType().getValue());
+                            model.setPerson("6:" + position.getId());
+                            model.setPrincipalType(ItemPermissionEnum.CUSTOMGROUP.getValue());
+                            if (item.contains(model)) {
                                 continue;// 去重
                             }
-                            item.add(map);
+                            item.add(model);
                         }
                     }
                 }
@@ -492,12 +488,12 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Map<String, Object>> findPermUserByName(String name, String itemId, String processDefinitionId,
+    public List<ItemRoleOrgUnitModel> findPermUserByName(String name, String itemId, String processDefinitionId,
         String taskDefKey, Integer principalType, String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemPermission> list = itemPermissionService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId,
             processDefinitionId, taskDefKey);
-        List<Map<String, Object>> item = new ArrayList<>();
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         if (ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType)) {
             List<OrgUnit> deptList = new ArrayList<>();
             for (ItemPermission o : list) {
@@ -533,21 +529,21 @@ public class RoleServiceImpl implements RoleService {
                             .getData());
                     }
                     for (OrgUnit orgUnitTemp : orgUnitList) {
-                        Map<String, Object> map = new HashMap<>(16);
-                        map.put("id", orgUnitTemp.getId());
-                        map.put("name", orgUnitTemp.getName());
-                        map.put("orgType", orgUnitTemp.getOrgType());
-                        map.put("parentId", orgUnitTemp.getParentId());
+                        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                        model.setId(orgUnitTemp.getId());
+                        model.setName(orgUnitTemp.getName());
+                        model.setOrgType(orgUnitTemp.getOrgType().getValue());
+                        model.setParentId(orgUnitTemp.getParentId());
                         if (orgUnitTemp.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
-                            map.put("isParent", true);
-                            if (!item.contains(map)) {
-                                item.add(map);
+                            model.setIsParent(true);
+                            if (!item.contains(model)) {
+                                item.add(model);
                             }
                         } else if (orgUnitTemp.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                            map.put("person", "6:" + orgUnitTemp.getId());
-                            map.put("isParent", false);
-                            if (!item.contains(map)) {
-                                item.add(map);
+                            model.setIsParent(false);
+                            model.setPerson("6:" + orgUnitTemp.getId());
+                            if (!item.contains(model)) {
+                                item.add(model);
                             }
                         }
                     }
@@ -555,26 +551,26 @@ public class RoleServiceImpl implements RoleService {
                     // 租户组织机构树查询，会查询多个组织机构
                     List<OrgUnit> orgUnitList =
                         orgUnitManager.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION).getData();
-                    for (int i = 0; i < orgUnitList.size(); i++) {
-                        if (OrgTypeEnum.ORGANIZATION.equals(orgUnitList.get(i).getOrgType())) {
+                    for (OrgUnit orgUnit : orgUnitList) {
+                        if (OrgTypeEnum.ORGANIZATION.equals(orgUnit.getOrgType())) {
                             continue;// 不显示组织机构
                         }
                         // 一个租户下有多个组织架构，如果不是在当前组织机构下的都排除
-                        if (!orgUnitList.get(i).getGuidPath().contains(org.getId())) {
+                        if (!orgUnit.getGuidPath().contains(org.getId())) {
                             continue;
                         }
-                        Map<String, Object> map = new HashMap<>(16);
-                        map.put("id", orgUnitList.get(i).getId());
-                        map.put("name", orgUnitList.get(i).getName());
-                        map.put("orgType", orgUnitList.get(i).getOrgType());
-                        map.put("parentId", orgUnitList.get(i).getParentId());
-                        if (OrgTypeEnum.POSITION.equals(orgUnitList.get(i).getOrgType())) {
-                            map.put("person", "6:" + orgUnitList.get(i).getId());
+                        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                        model.setId(orgUnit.getId());
+                        model.setName(orgUnit.getName());
+                        model.setOrgType(orgUnit.getOrgType().getValue());
+                        model.setParentId(orgUnit.getParentId());
+                        if (OrgTypeEnum.POSITION.equals(orgUnit.getOrgType())) {
+                            model.setPerson("6:" + orgUnit.getId());
                         }
-                        if (item.contains(map)) {
+                        if (item.contains(model)) {
                             continue;// 去重
                         }
-                        item.add(map);
+                        item.add(model);
                     }
                 }
             }
@@ -601,18 +597,18 @@ public class RoleServiceImpl implements RoleService {
             }
             for (OrgUnit orgUnit : orgList) {
                 if (orgUnit.getName().contains(name)) {
-                    Map<String, Object> map = new HashMap<>(16);
-                    map.put("id", orgUnit.getId());
-                    map.put("name", orgUnit.getName());
-                    map.put("orgType", orgUnit.getOrgType());
-                    map.put("parentId", orgUnit.getParentId());
+                    ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                    model.setId(orgUnit.getId());
+                    model.setName(orgUnit.getName());
+                    model.setOrgType(orgUnit.getOrgType().getValue());
+                    model.setParentId(orgUnit.getParentId());
                     if (OrgTypeEnum.POSITION.equals(orgUnit.getOrgType())) {
-                        map.put("person", "6:" + orgUnit.getId());
+                        model.setPerson("6:" + orgUnit.getId());
                     }
-                    if (item.contains(map)) {
+                    if (item.contains(model)) {
                         continue;// 去重
                     }
-                    item.add(map);
+                    item.add(model);
                 }
             }
         } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue().equals(principalType)) {
@@ -620,14 +616,14 @@ public class RoleServiceImpl implements RoleService {
                 List<CustomGroup> grouplist =
                     customGroupApi.listCustomGroupByPersonId(tenantId, Y9LoginUserHolder.getPersonId()).getData();
                 for (CustomGroup customGroup : grouplist) {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("id", customGroup.getId());
-                    map.put("parentId", "");
-                    map.put("name", customGroup.getGroupName());
-                    map.put("isParent", true);
-                    map.put("orgType", "customGroup");
-                    map.put("principalType", ItemPermissionEnum.CUSTOMGROUP.getValue());
-                    if (item.contains(map)) {
+                    ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                    model.setId(customGroup.getId());
+                    model.setName(customGroup.getGroupName());
+                    model.setOrgType("customGroup");
+                    model.setParentId("");
+                    model.setPrincipalType(ItemPermissionEnum.CUSTOMGROUP.getValue());
+                    model.setIsParent(true);
+                    if (item.contains(model)) {
                         continue;// 去重
                     }
                     boolean b = false;
@@ -639,23 +635,23 @@ public class RoleServiceImpl implements RoleService {
                             Position position =
                                 positionManager.get(tenantId, customGroupMember.getMemberId()).getData();
                             if (position != null && position.getName().contains(name)) {
-                                Map<String, Object> map0 = new HashMap<>();
-                                map0.put("id", customGroupMember.getMemberId());
-                                map0.put("parentId", customGroup.getId());
-                                map0.put("isParent", false);
-                                map0.put("orgType", position.getOrgType());
-                                map0.put("person", "6:" + position.getId() + ":" + position.getParentId());
-                                map0.put("principalType", ItemPermissionEnum.POSITION.getValue());
-                                map0.put("name", position.getName());
-                                if (item.contains(map0)) {
+                                ItemRoleOrgUnitModel model1 = new ItemRoleOrgUnitModel();
+                                model1.setId(customGroupMember.getMemberId());
+                                model1.setName(position.getName());
+                                model1.setOrgType(position.getOrgType().getValue());
+                                model1.setParentId(customGroup.getId());
+                                model1.setPerson("6:" + position.getId() + ":" + position.getParentId());
+                                model1.setPrincipalType(ItemPermissionEnum.POSITION.getValue());
+                                model1.setIsParent(false);
+                                if (item.contains(model1)) {
                                     continue;// 去重
                                 }
-                                item.add(map0);
+                                item.add(model1);
                                 b = true;
                             }
                         }
-                        if (b && !item.contains(map)) {
-                            item.add(map);
+                        if (b && !item.contains(model)) {
+                            item.add(model);
                         }
                     }
                 }
@@ -667,8 +663,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Map<String, Object>> findPermUserSendReceive(String id) {
-        List<Map<String, Object>> item = new ArrayList<>();
+    public List<ItemRoleOrgUnitModel> findPermUserSendReceive(String id) {
+        List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             if (StringUtils.isBlank(id)) {
@@ -678,16 +674,15 @@ public class RoleServiceImpl implements RoleService {
                     if (department == null || department.getId() == null) {
                         continue;
                     }
-                    Map<String, Object> map = new HashMap<>(16);
-                    map.put("id", receiveDepartment.getDeptId());
-                    map.put("parentId", receiveDepartment.getParentId());
-                    map.put("name", department.getName());
-                    map.put("isPerm", true);
+                    ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                    model.setId(receiveDepartment.getDeptId());
+                    model.setName(department.getName());
+                    model.setOrgType(OrgTypeEnum.DEPARTMENT.getEnName());
+                    model.setParentId(receiveDepartment.getParentId());
+                    model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
                     Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
-                    map.put("isParent", count > 0);
-                    map.put("orgType", OrgTypeEnum.DEPARTMENT.getEnName());
-                    map.put("principalType", ItemPermissionEnum.DEPARTMENT.getValue());
-                    item.add(map);
+                    model.setIsParent(count > 0);
+                    item.add(model);
                 }
             } else {
                 List<ReceiveDepartment> list = receiveDepartmentRepository.findByParentIdOrderByTabIndex(id);
@@ -696,16 +691,15 @@ public class RoleServiceImpl implements RoleService {
                     if (department == null || department.getId() == null) {
                         continue;
                     }
-                    Map<String, Object> map = new HashMap<>(16);
-                    map.put("id", receiveDepartment.getDeptId());
-                    map.put("parentId", receiveDepartment.getParentId());
-                    map.put("name", department.getName());
-                    map.put("isPerm", true);
+                    ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+                    model.setId(receiveDepartment.getDeptId());
+                    model.setName(department.getName());
+                    model.setOrgType(OrgTypeEnum.DEPARTMENT.getEnName());
+                    model.setParentId(receiveDepartment.getParentId());
+                    model.setPrincipalType(ItemPermissionEnum.DEPARTMENT.getValue());
                     Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
-                    map.put("isParent", count > 0);
-                    map.put("orgType", OrgTypeEnum.DEPARTMENT.getEnName());
-                    map.put("principalType", ItemPermissionEnum.DEPARTMENT.getValue());
-                    item.add(map);
+                    model.setIsParent(count > 0);
+                    item.add(model);
                 }
             }
         } catch (Exception e) {

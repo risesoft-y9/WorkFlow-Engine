@@ -2,7 +2,11 @@ package net.risesoft.api.itemadmin;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import net.risesoft.model.itemadmin.ItemOpinionFrameRoleModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -16,7 +20,9 @@ public interface ItemOpinionFrameRoleApi {
      *
      * @param tenantId 租户id
      * @param itemOpinionFrameId 意见框绑定id
-     * @return List&lt;ItemOpinionFrameRoleModel&gt;
+     * @return Y9Result<List<ItemOpinionFrameRoleModel>>
      */
-    List<ItemOpinionFrameRoleModel> findByItemOpinionFrameId(String tenantId, String itemOpinionFrameId);
+    @GetMapping("/findByItemOpinionFrameId")
+    Y9Result<List<ItemOpinionFrameRoleModel>> findByItemOpinionFrameId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("itemOpinionFrameId") String itemOpinionFrameId);
 }
