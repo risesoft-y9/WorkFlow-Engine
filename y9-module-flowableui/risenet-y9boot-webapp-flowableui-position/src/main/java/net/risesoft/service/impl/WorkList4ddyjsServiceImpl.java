@@ -841,7 +841,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                         String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK);
                         if (Boolean.parseBoolean(takeBack)) {// 收回件
                             List<HistoricTaskInstanceModel> hlist = historicTaskApi
-                                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "");
+                                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "").getData();
                             if (hlist.get(0).getTaskDefinitionKey().equals(task.getTaskDefinitionKey())) {// 起草收回件，可删除
                                 mapTemp.put("takeBack", true);
                             }

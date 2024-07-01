@@ -374,7 +374,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         String systemName = processParam.getSystemName(), tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricTaskInstanceModel> htiList =
-            historicTaskManager.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, "");
+            historicTaskManager.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, "").getData();
         ActRuDetail actRuDetail;
         String assignee, owner;
         TaskModel taskTemp;

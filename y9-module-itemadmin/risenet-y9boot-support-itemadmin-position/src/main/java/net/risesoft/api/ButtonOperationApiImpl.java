@@ -140,7 +140,7 @@ public class ButtonOperationApiImpl implements ButtonOperation4PositionApi {
             TaskModel currentTask = taskManager.findById(tenantId, taskId);
             List<String> userAndDeptIdList = new ArrayList<>();
             // 获取当前任务的前一个任务
-            HistoricTaskInstanceModel hti = historicTaskManager.getThePreviousTask(tenantId, taskId);
+            HistoricTaskInstanceModel hti = historicTaskManager.getThePreviousTask(tenantId, taskId).getData();
             // 前一任务的受让人，标题
             String assignee = hti.getAssignee();
             userAndDeptIdList.add(assignee);

@@ -1,9 +1,7 @@
 package net.risesoft.api;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
@@ -41,20 +40,17 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return List<HistoricTaskInstanceModel>
+     * @return Y9Result<List<HistoricTaskInstanceModel>>
      */
     @Override
     @GetMapping(value = "/findTaskByProcessInstanceIdOrByEndTimeAsc", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrByEndTimeAsc(@RequestParam String tenantId,
-        @RequestParam String processInstanceId, @RequestParam String year) {
+    public Y9Result<List<HistoricTaskInstanceModel>> findTaskByProcessInstanceIdOrByEndTimeAsc(
+        @RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        if (StringUtils.isBlank(processInstanceId)) {
-            return new ArrayList<>();
-        }
         List<HistoricTaskInstance> list =
             customHistoricTaskService.getByProcessInstanceIdOrderByEndTimeAsc(processInstanceId, year);
-        return FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list);
+        return Y9Result.success(FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list));
     }
 
     /**
@@ -63,20 +59,17 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return List<HistoricTaskInstanceModel>
+     * @return Y9Result<List<HistoricTaskInstanceModel>>
      */
     @Override
     @GetMapping(value = "/findTaskByProcessInstanceIdOrderByStartTimeAsc", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoricTaskInstanceModel> findTaskByProcessInstanceIdOrderByStartTimeAsc(@RequestParam String tenantId,
-        @RequestParam String processInstanceId, @RequestParam String year) {
+    public Y9Result<List<HistoricTaskInstanceModel>> findTaskByProcessInstanceIdOrderByStartTimeAsc(
+        @RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        if (StringUtils.isBlank(processInstanceId)) {
-            return new ArrayList<>();
-        }
         List<HistoricTaskInstance> list =
             customHistoricTaskService.getByProcessInstanceIdOrderByStartTimeAsc(processInstanceId, year);
-        return FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list);
+        return Y9Result.success(FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list));
     }
 
     /**
@@ -88,10 +81,10 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      */
     @Override
     @GetMapping(value = "/getById", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HistoricTaskInstanceModel getById(@RequestParam String tenantId, @RequestParam String taskId) {
+    public Y9Result<HistoricTaskInstanceModel> getById(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricTaskInstance hti = customHistoricTaskService.getById(taskId);
-        return FlowableModelConvertUtil.historicTaskInstance2Model(hti);
+        return Y9Result.success(FlowableModelConvertUtil.historicTaskInstance2Model(hti));
     }
 
     /**
@@ -100,15 +93,15 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return List<HistoricTaskInstanceModel>
+     * @return Y9Result<List<HistoricTaskInstanceModel>>
      */
     @Override
     @GetMapping(value = "/getByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoricTaskInstanceModel> getByProcessInstanceId(@RequestParam String tenantId,
+    public Y9Result<List<HistoricTaskInstanceModel>> getByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricTaskInstance> list = customHistoricTaskService.getByProcessInstanceId(processInstanceId, year);
-        return FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list);
+        return Y9Result.success(FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list));
     }
 
     /**
@@ -117,16 +110,16 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年份
-     * @return List<HistoricTaskInstanceModel>
+     * @return Y9Result<List<HistoricTaskInstanceModel>>
      */
     @Override
     @GetMapping(value = "/getByProcessInstanceIdOrderByEndTimeDesc", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoricTaskInstanceModel> getByProcessInstanceIdOrderByEndTimeDesc(@RequestParam String tenantId,
-        @RequestParam String processInstanceId, @RequestParam String year) {
+    public Y9Result<List<HistoricTaskInstanceModel>> getByProcessInstanceIdOrderByEndTimeDesc(
+        @RequestParam String tenantId, @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricTaskInstance> list =
             customHistoricTaskService.getByProcessInstanceIdOrderByEndTimeDesc(processInstanceId, year);
-        return FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list);
+        return Y9Result.success(FlowableModelConvertUtil.historicTaskInstanceList2ModelList(list));
     }
 
     /**
@@ -138,10 +131,11 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      */
     @Override
     @GetMapping(value = "/getFinishedCountByExecutionId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public long getFinishedCountByExecutionId(@RequestParam String tenantId, @RequestParam String executionId) {
+    public Y9Result<Long> getFinishedCountByExecutionId(@RequestParam String tenantId,
+        @RequestParam String executionId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        return customHistoricTaskService.getFinishedCountByExecutionId(executionId);
+        return Y9Result.success(customHistoricTaskService.getFinishedCountByExecutionId(executionId));
     }
 
     /**
@@ -153,10 +147,11 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      */
     @Override
     @GetMapping(value = "/getThePreviousTask", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HistoricTaskInstanceModel getThePreviousTask(@RequestParam String tenantId, @RequestParam String taskId) {
+    public Y9Result<HistoricTaskInstanceModel> getThePreviousTask(@RequestParam String tenantId,
+        @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricTaskInstance hti = customHistoricTaskService.getThePreviousTask(taskId);
-        return FlowableModelConvertUtil.historicTaskInstance2Model(hti);
+        return Y9Result.success(FlowableModelConvertUtil.historicTaskInstance2Model(hti));
     }
 
     /**
@@ -164,15 +159,15 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      *
      * @param tenantId 租户id
      * @param taskId 任务id
-     * @return List<HistoricTaskInstanceModel>
+     * @return Y9Result<List<HistoricTaskInstanceModel>>
      */
     @Override
     @GetMapping(value = "/getThePreviousTasks", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoricTaskInstanceModel> getThePreviousTasks(@RequestParam String tenantId,
+    public Y9Result<List<HistoricTaskInstanceModel>> getThePreviousTasks(@RequestParam String tenantId,
         @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricTaskInstance> htiList = customHistoricTaskService.getThePreviousTasks(taskId);
-        return FlowableModelConvertUtil.historicTaskInstanceList2ModelList(htiList);
+        return Y9Result.success(FlowableModelConvertUtil.historicTaskInstanceList2ModelList(htiList));
     }
 
     /**
@@ -183,9 +178,10 @@ public class HistoricTaskApiImpl implements HistoricTaskApi {
      */
     @Override
     @PostMapping(value = "/setTenantId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void setTenantId(@RequestParam String tenantId, @RequestParam String taskId) {
+    public Y9Result<Object> setTenantId(@RequestParam String tenantId, @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         customHistoricTaskService.setTenantId(taskId);
+        return Y9Result.success();
     }
 }
