@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ConditionParserApi;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomConditionParser;
 import net.risesoft.service.FlowableTenantInfoHolder;
 
@@ -38,9 +39,9 @@ public class ConditionParserApiImpl implements ConditionParserApi {
      */
     @Override
     @PostMapping(value = "/parser", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Boolean parser(@RequestParam String tenantId, @RequestParam String conditionExpression,
-        @RequestBody Map<String, Object> variables) {
+    public Y9Result<Boolean> parser(@RequestParam String tenantId, @RequestParam String conditionExpression,
+                                    @RequestBody Map<String, Object> variables) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customConditionParser.parser(conditionExpression, variables);
+        return Y9Result.success(customConditionParser.parser(conditionExpression, variables));
     }
 }
