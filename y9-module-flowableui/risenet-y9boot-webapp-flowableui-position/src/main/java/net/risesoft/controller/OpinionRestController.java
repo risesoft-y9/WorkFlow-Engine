@@ -241,7 +241,6 @@ public class OpinionRestController {
         @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String activitiUser,
         @RequestParam(required = false) String orderByUser) {
-        List<Map<String, Object>> listMap;
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
         return opinion4PositionApi.personCommentList(tenantId, userId, processSerialNumber, taskId, itembox,

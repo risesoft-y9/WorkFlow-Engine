@@ -143,9 +143,7 @@ public class Y9FormRestController {
         @RequestParam @NotBlank String tableId, @RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            List<Map<String, Object>> list =
-                formDataApi.getChildTableData(tenantId, formId, tableId, processSerialNumber);
-            return Y9Result.success(list, "获取成功");
+            return formDataApi.getChildTableData(tenantId, formId, tableId, processSerialNumber);
         } catch (Exception e) {
             LOGGER.error("获取子表单数据失败", e);
         }
@@ -177,7 +175,6 @@ public class Y9FormRestController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<Map < String, Object>>
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getFormData", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getFormData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String processSerialNumber) {

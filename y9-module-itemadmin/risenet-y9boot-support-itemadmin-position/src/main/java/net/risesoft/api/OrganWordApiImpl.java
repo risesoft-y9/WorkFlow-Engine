@@ -49,7 +49,7 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param itemId 事项id
      * @param common common
      * @param processSerialNumber 流程编号
-     * @return Integer
+     * @return Y9Result<Integer>
      */
     @Override
     public Y9Result<Integer> checkNumberStr(String tenantId, String userId, String characterValue, String custom,
@@ -70,7 +70,7 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id
      * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<OrganWordModel>
      */
     @Override
     public Y9Result<OrganWordModel> exist(String tenantId, String userId, String custom, String processSerialNumber,
@@ -90,7 +90,7 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务定义key
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<OrganWordPropertyModel>>
      */
     @Override
     public Y9Result<List<OrganWordPropertyModel>> findByCustom(String tenantId, String userId, String custom,
@@ -111,7 +111,7 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param year 文号年份
      * @param common common
      * @param itemId 事项id
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<Integer>
      */
     @Override
     public Y9Result<Integer> getNumber(String tenantId, String userId, String custom, String characterValue,
@@ -132,7 +132,7 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @param year 文号年份
      * @param common common
      * @param itemId 事项id
-     * @return Integer
+     * @return Y9Result<Integer>
      */
     @Override
     public Y9Result<Integer> getNumberOnly(String tenantId, String userId, String custom, String characterValue,

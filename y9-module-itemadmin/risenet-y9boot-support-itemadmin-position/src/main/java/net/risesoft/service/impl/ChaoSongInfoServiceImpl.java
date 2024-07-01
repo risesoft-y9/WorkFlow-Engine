@@ -215,12 +215,12 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
             activitiUser = "", startor;
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-        HistoricProcessInstanceModel hpi = historicProcessManager.getById(tenantId, processInstanceId);
+        HistoricProcessInstanceModel hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
         if (hpi == null) {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfo == null) {
                 String year = processParam.getCreateTime().substring(0, 4);
-                hpi = historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year);
+                hpi = historicProcessManager.getByIdAndYear(tenantId, processInstanceId, year).getData();
                 processDefinitionId = hpi.getProcessDefinitionId();
                 processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
             } else {
@@ -254,7 +254,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         model.setActivitiUser(activitiUser);
 
         model = documentService.genDocumentModel(processParam.getItemId(), processDefinitionKey,
-            processDefinitionId, taskDefinitionKey, mobile, model);
+            processDefinitionId,
+            taskDefinitionKey, mobile, model);
         String menuName = "打印,抄送,关注,返回";
         String menuKey = "17,18,follow,03";
         if (status == 1) {
@@ -328,7 +329,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 int chaosongNum =
                     chaoSongInfoRepository.countBySenderIdAndProcessInstanceId(positionId, processInstanceId);
                 map.put("chaosongNum", chaosongNum);
-                hpi = historicProcessManager.getById(tenantId, processInstanceId);
+                hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
                     map.put("banjie", true);
@@ -401,7 +402,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             try {
                 model.setReadTime(sdf.format(sdf.parse(cs.getReadTime())));
                 model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
-                hpi = historicProcessManager.getById(tenantId, processInstanceId);
+                hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
                     model.setBanjie(true);
@@ -572,7 +573,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             try {
                 model.setReadTime(sdf.format(sdf.parse(cs.getReadTime())));
                 model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
-                hpi = historicProcessManager.getById(tenantId, processInstanceId);
+                hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
                     model.setBanjie(true);
@@ -643,7 +644,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setBanjie(false);
             try {
                 model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
-                hpi = historicProcessManager.getById(tenantId, processInstanceId);
+                hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
                     model.setBanjie(true);
@@ -930,7 +931,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
                 model.setProcessSerialNumber(processParam.getProcessSerialNumber());
-                hpi = historicProcessManager.getById(tenantId, processInstanceId);
+                hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
                     model.setBanjie(true);
@@ -1012,7 +1013,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
                 model.setProcessSerialNumber(processParam.getProcessSerialNumber());
-                hpi = historicProcessManager.getById(tenantId, processInstanceId);
+                hpi = historicProcessManager.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
                     model.setBanjie(true);

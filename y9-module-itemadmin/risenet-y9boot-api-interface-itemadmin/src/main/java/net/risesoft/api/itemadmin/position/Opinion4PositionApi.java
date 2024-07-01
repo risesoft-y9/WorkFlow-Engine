@@ -40,7 +40,7 @@ public interface Opinion4PositionApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param opinionFrameMark 意见框id
-     * @return int
+     * @return Y9Result<Integer>
      */
     @GetMapping("/countOpinionHistory")
     Y9Result<Integer> countOpinionHistory(@RequestParam("tenantId") String tenantId,
@@ -64,7 +64,7 @@ public interface Opinion4PositionApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义Id
-     * @return List&lt;String&gt;
+     * @return Y9Result<List<ItemOpinionFrameBindModel>>
      */
     @GetMapping("/getBindOpinionFrame")
     Y9Result<List<ItemOpinionFrameBindModel>> getBindOpinionFrame(@RequestParam("tenantId") String tenantId,
@@ -86,7 +86,7 @@ public interface Opinion4PositionApi {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param opinionFrameMark 意见框Id
-     * @return List&lt;OpinionHistoryModel&gt;
+     * @return Y9Result<List<OpinionHistoryModel>>
      */
     @GetMapping("/opinionHistoryList")
     Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam("tenantId") String tenantId,
@@ -120,7 +120,7 @@ public interface Opinion4PositionApi {
      *
      * @param tenantId 租户id
      * @param opinion OpinionModel
-     * @return
+     * @return Y9Result<Object>
      * @throws Exception Exception
      */
     @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -134,7 +134,7 @@ public interface Opinion4PositionApi {
      * @param userId 人员id
      * @param positionId 岗位id
      * @param opinion 意见实体
-     * @return OpinionModel
+     * @return Y9Result<OpinionModel>
      * @throws Exception Exception
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)

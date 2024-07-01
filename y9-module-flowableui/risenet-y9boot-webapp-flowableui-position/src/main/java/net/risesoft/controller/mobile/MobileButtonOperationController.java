@@ -165,7 +165,7 @@ public class MobileButtonOperationController {
         map.put("itembox", itembox);
         try {
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
-            HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId);
+            HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
             if (taskModel != null && taskModel.getId() != null) {
                 itembox = ItemBoxTypeEnum.TODO.getValue();
             } else {

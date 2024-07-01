@@ -44,6 +44,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
      *
      * @param tenantId 租户id
      * @param id id
+     * @return Y9Result<Object>
      */
     @Override
     public Y9Result<Object> deleteById(String tenantId, String id) {
@@ -57,7 +58,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
      *
      * @param tenantId 租户id
      * @param id id
-     * @return SignaturePictureModel
+     * @return Y9Result<SignaturePictureModel>
      */
     @Override
     public Y9Result<SignaturePictureModel> findById(String tenantId, String id) {
@@ -75,7 +76,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
      *
      * @param tenantId 租户id
      * @param userId 人员id
-     * @return SignaturePictureModel
+     * @return Y9Result<SignaturePictureModel>
      */
     @Override
     public Y9Result<SignaturePictureModel> findByUserId(String tenantId, String userId) {
@@ -95,7 +96,7 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param spJson spJson
-     * @return SignaturePictureModel
+     * @return Y9Result<SignaturePictureModel>
      */
     @Override
     public Y9Result<SignaturePictureModel> saveOrUpdate(String tenantId, String userId, String spJson) {

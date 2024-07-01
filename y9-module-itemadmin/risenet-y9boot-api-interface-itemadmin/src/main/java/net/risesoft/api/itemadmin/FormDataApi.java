@@ -68,7 +68,7 @@ public interface FormDataApi {
      * @param formId 表单Id
      * @param taskDefKey taskDefKey
      * @param processDefinitionId 流程定义id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<FieldPermModel>>
      */
     @GetMapping("/getAllFieldPerm")
     Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam("tenantId") String tenantId,
@@ -80,7 +80,7 @@ public interface FormDataApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return
+     * @return Y9Result<BindFormModel>
      */
     @GetMapping("/getBindPreFormByItemId")
     Y9Result<BindFormModel> getBindPreFormByItemId(@RequestParam("tenantId") String tenantId,
@@ -93,11 +93,11 @@ public interface FormDataApi {
      * @param formId 表单Id
      * @param tableId 对应的表id
      * @param processSerialNumber 流程序列号
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<Map<String, Object>>>
      * @throws Exception Exception
      */
     @GetMapping("/getChildTableData")
-    List<Map<String, Object>> getChildTableData(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<Map<String, Object>>> getChildTableData(@RequestParam("tenantId") String tenantId,
         @RequestParam("formId") String formId, @RequestParam("tableId") String tableId,
         @RequestParam("processSerialNumber") String processSerialNumber) throws Exception;
 
@@ -107,11 +107,11 @@ public interface FormDataApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processSerialNumber 流程序列号
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<Map<String, Object>>
      */
     @GetMapping("/getData")
-    Map<String, Object> getData(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Map<String, Object>> getData(@RequestParam("tenantId") String tenantId,
+        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 获取字段权限
@@ -122,7 +122,7 @@ public interface FormDataApi {
      * @param fieldName 字段名称
      * @param taskDefKey 任务定义key
      * @param processDefinitionId 流程定义id
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<FieldPermModel>
      */
     @GetMapping("/getFieldPerm")
     Y9Result<FieldPermModel> getFieldPerm(@RequestParam("tenantId") String tenantId,
@@ -135,7 +135,7 @@ public interface FormDataApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return List&lt;Y9FormFieldModel&gt;
+     * @return Y9Result<List<Y9FormFieldModel>>
      */
     @GetMapping("/getFormField")
     Y9Result<List<Y9FormFieldModel>> getFormField(@RequestParam("tenantId") String tenantId,
@@ -146,7 +146,7 @@ public interface FormDataApi {
      *
      * @param tenantId 租户id
      * @param formId 表单Id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<FormFieldDefineModel>>
      */
     @GetMapping("/getFormFieldDefine")
     Y9Result<List<FormFieldDefineModel>> getFormFieldDefine(@RequestParam("tenantId") String tenantId,
@@ -157,7 +157,7 @@ public interface FormDataApi {
      *
      * @param tenantId 租户id
      * @param formId 表单Id
-     * @return String
+     * @return Y9Result<String>
      */
     @GetMapping("/getFormJson")
     Y9Result<String> getFormJson(@RequestParam("tenantId") String tenantId, @RequestParam("formId") String formId);
@@ -168,7 +168,7 @@ public interface FormDataApi {
      * @param tenantId 租户id
      * @param formId 表单Id
      * @param processSerialNumber 流程序列号
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<Map<String, Object>>
      */
     @GetMapping("/getFromData")
     Y9Result<Map<String, Object>> getFromData(@RequestParam("tenantId") String tenantId,
@@ -179,7 +179,7 @@ public interface FormDataApi {
      *
      * @param tenantId 租户id
      * @param formId 表单id
-     * @return
+     * @return Y9Result<List<Map<String, Object>>>
      */
     @GetMapping("/getPreFormDataByFormId")
     Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(@RequestParam("tenantId") String tenantId,
@@ -207,7 +207,7 @@ public interface FormDataApi {
      * @param tenantId 租户id
      * @param formId 表单Id
      * @param formJsonData 表单数据
-     * @return
+     * @return Y9Result<Object>
      * @throws Exception Exception
      */
     @PostMapping(value = "/saveFormData")
@@ -222,7 +222,7 @@ public interface FormDataApi {
      * @param formId 表单id
      * @param formJsonData json表数据
      * @return Y9Result<String>
-     * @throws Exception
+     * @throws Exception Exception
      */
     @PostMapping(value = "/savePreFormData")
     Y9Result<String> savePreFormData(@RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId,

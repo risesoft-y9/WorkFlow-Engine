@@ -61,7 +61,6 @@ public class MonitorServiceImpl implements MonitorService {
 
     private final IdentityApi identityApi;
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> deptList(String itemId, String searchName, String userName, String state,
         String year, Integer page, Integer rows) {
@@ -281,7 +280,6 @@ public class MonitorServiceImpl implements MonitorService {
         return list;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> monitorBanjianList(String searchName, String itemId, String userName,
         String state, String year, Integer page, Integer rows) {
@@ -363,7 +361,6 @@ public class MonitorServiceImpl implements MonitorService {
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> monitorDoingList(String itemId, String searchTerm, Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
@@ -441,7 +438,6 @@ public class MonitorServiceImpl implements MonitorService {
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> monitorDoneList(String itemId, String searchTerm, Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;

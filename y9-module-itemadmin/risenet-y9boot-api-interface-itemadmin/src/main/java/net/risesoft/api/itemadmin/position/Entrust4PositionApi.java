@@ -23,7 +23,7 @@ public interface Entrust4PositionApi {
      *
      * @param tenantId 租户id
      * @param id 委托id
-     * @return
+     * @return Y9Result<Object>
      * @throws Exception Exception
      */
     @PostMapping(value = "/deleteEntrust")
@@ -35,8 +35,7 @@ public interface Entrust4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return List&lt;EntrustModel&gt;
-     * @throws Exception Exception
+     * @return Y9Result<List<EntrustModel>>
      */
     @GetMapping(value = "/getEntrustList")
     Y9Result<List<EntrustModel>> getEntrustList(@RequestParam("tenantId") String tenantId,
@@ -47,7 +46,7 @@ public interface Entrust4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return List&lt;EntrustModel&gt;
+     * @return Y9Result<List<EntrustModel>>
      */
     @GetMapping(value = "/getMyEntrustList")
     Y9Result<List<EntrustModel>> getMyEntrustList(@RequestParam("tenantId") String tenantId,
@@ -59,8 +58,7 @@ public interface Entrust4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param entrustModel 实体类（EntrustModel）
-     * @return
-     * @throws Exception Exception
+     * @return Y9Result<Object>
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveOrUpdate(@RequestParam("tenantId") String tenantId,

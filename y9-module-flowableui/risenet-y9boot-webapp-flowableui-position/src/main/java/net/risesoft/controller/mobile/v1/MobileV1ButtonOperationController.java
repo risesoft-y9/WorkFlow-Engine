@@ -142,7 +142,7 @@ public class MobileV1ButtonOperationController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel taskModel = taskApi.findById(tenantId, taskId);
-            HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId);
+            HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
             if (taskModel != null && taskModel.getId() != null) {
                 itembox = ItemBoxTypeEnum.TODO.getValue();
             } else {

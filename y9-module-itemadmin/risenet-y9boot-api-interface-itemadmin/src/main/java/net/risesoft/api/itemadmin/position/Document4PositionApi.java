@@ -186,7 +186,7 @@ public interface Document4PositionApi {
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<StartProcessResultModel>
      * @throws Exception Exception
      */
     @PostMapping("/startProcess")

@@ -281,7 +281,7 @@ public class TodoServiceImpl implements TodoService {
                     if (taskVariableModel != null) {// 是否正在发送标识
                         mapTemp.put("isForwarding", taskVariableModel.getText().contains("true"));
                     }
-                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
+                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     if (formDataMap.get("leaveType") != null) {
                         String leaveType = (String)formDataMap.get("leaveType");
                         ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
@@ -427,7 +427,7 @@ public class TodoServiceImpl implements TodoService {
                     if (taskVariableModel != null) {// 是否正在发送标识
                         mapTemp.put("isForwarding", taskVariableModel.getText().contains("true"));
                     }
-                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
+                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     /*if (formDataMap.get("leaveType") != null) {
                         String leaveType = (String)formDataMap.get("leaveType");
                         ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();

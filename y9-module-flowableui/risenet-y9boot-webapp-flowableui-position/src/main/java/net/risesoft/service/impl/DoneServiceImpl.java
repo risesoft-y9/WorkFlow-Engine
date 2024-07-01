@@ -53,7 +53,6 @@ public class DoneServiceImpl implements DoneService {
 
     private final ProcessParamApi processParamApi;
 
-    @SuppressWarnings({"unchecked"})
     @Override
     public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
@@ -105,7 +104,6 @@ public class DoneServiceImpl implements DoneService {
         return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
     }
 
-    @SuppressWarnings({"unchecked"})
     @Override
     public Y9Page<Map<String, Object>> listNew(String itemId, String searchTerm, Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
@@ -149,7 +147,7 @@ public class DoneServiceImpl implements DoneService {
                 int chaosongNum = chaoSong4PositionApi
                     .countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
                 mapTemp.put("chaosongNum", chaosongNum);
-                formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
+                formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                 if (formDataMap.get("leaveType") != null) {
                     String leaveType = (String)formDataMap.get("leaveType");
                     for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
@@ -222,7 +220,7 @@ public class DoneServiceImpl implements DoneService {
                     int chaosongNum = chaoSong4PositionApi
                         .countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
                     mapTemp.put("chaosongNum", chaosongNum);
-                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber);
+                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     /*if (formDataMap.get("leaveType") != null) {
                         String leaveType = (String)formDataMap.get("leaveType");
                         for (ItemLeaveTypeEnum leaveTypeEnum : arr) {

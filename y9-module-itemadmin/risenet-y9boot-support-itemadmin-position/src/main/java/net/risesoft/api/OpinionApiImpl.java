@@ -181,7 +181,7 @@ public class OpinionApiImpl implements Opinion4PositionApi {
      *
      * @param tenantId 租户id
      * @param opinionModel 意见信息
-     * @return
+     * @return Y9Result<Object>
      * @throws Exception Exception
      */
     @Override

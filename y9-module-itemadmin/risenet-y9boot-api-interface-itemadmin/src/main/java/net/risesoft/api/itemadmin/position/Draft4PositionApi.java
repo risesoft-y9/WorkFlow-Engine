@@ -27,7 +27,7 @@ public interface Draft4PositionApi {
      * @return Y9Result<Integer>
      */
     @GetMapping("/countBySystemName")
-    public Y9Result<Integer> countBySystemName(@RequestParam("tenantId") String tenantId,
+    Y9Result<Integer> countBySystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("systemName") String systemName);
 
     /**
@@ -38,7 +38,7 @@ public interface Draft4PositionApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/deleteDraft")
-    public Y9Result<Object> deleteDraft(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String ids);
+    Y9Result<Object> deleteDraft(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String ids);
 
     /**
      * 根据岗位id和事项id获取删除草稿统计
@@ -49,7 +49,7 @@ public interface Draft4PositionApi {
      * @return Y9Result<Integer>
      */
     @GetMapping("/getDeleteDraftCount")
-    public Y9Result<Integer> getDeleteDraftCount(@RequestParam("tenantId") String tenantId,
+    Y9Result<Integer> getDeleteDraftCount(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId);
 
     /**
@@ -60,7 +60,7 @@ public interface Draft4PositionApi {
      * @return Y9Result<DraftModel>
      */
     @GetMapping("/getDraftByProcessSerialNumber")
-    public Y9Result<DraftModel> getDraftByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+    Y9Result<DraftModel> getDraftByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
         @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
@@ -72,7 +72,7 @@ public interface Draft4PositionApi {
      * @return Y9Result<Integer>
      */
     @GetMapping("/getDraftCount")
-    public Y9Result<Integer> getDraftCount(@RequestParam("tenantId") String tenantId,
+    Y9Result<Integer> getDraftCount(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId);
 
     /**
@@ -88,7 +88,7 @@ public interface Draft4PositionApi {
      * @return Y9Page<Map<String, Object>>
      */
     @GetMapping("/getDraftList")
-    public Y9Page<Map<String, Object>> getDraftList(@RequestParam("tenantId") String tenantId,
+    Y9Page<Map<String, Object>> getDraftList(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("page") int page, @RequestParam("rows") int rows,
         @RequestParam("title") String title, @RequestParam("itemId") String itemId,
         @RequestParam("delFlag") boolean delFlag);
@@ -106,7 +106,7 @@ public interface Draft4PositionApi {
      * @return Y9Page<DraftModel>
      */
     @GetMapping("/getDraftListBySystemName")
-    public Y9Page<DraftModel> getDraftListBySystemName(@RequestParam("tenantId") String tenantId,
+    Y9Page<DraftModel> getDraftListBySystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("page") int page, @RequestParam("rows") int rows,
         @RequestParam("title") String title, @RequestParam("systemName") String systemName,
         @RequestParam("delFlag") boolean delFlag);
@@ -122,7 +122,7 @@ public interface Draft4PositionApi {
      * @return Y9Result<OpenDataModel>
      */
     @GetMapping("/openDraft4Position")
-    public Y9Result<OpenDataModel> openDraft4Position(@RequestParam("tenantId") String tenantId,
+    Y9Result<OpenDataModel> openDraft4Position(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
         @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("mobile") boolean mobile);
 
@@ -134,7 +134,7 @@ public interface Draft4PositionApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/reduction")
-    public Y9Result<Object> reduction(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String ids);
+    Y9Result<Object> reduction(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String ids);
 
     /**
      * 删除草稿
@@ -144,7 +144,7 @@ public interface Draft4PositionApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/removeDraft")
-    public Y9Result<Object> removeDraft(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String ids);
+    Y9Result<Object> removeDraft(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String ids);
 
     /**
      * 保存草稿
@@ -160,9 +160,8 @@ public interface Draft4PositionApi {
      * @return Y9Result<Object>
      */
     @PostMapping("/saveDraft")
-    public Y9Result<Object> saveDraft(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("itemId") String itemId,
-        @RequestParam("processSerialNumber") String processSerialNumber,
+    Y9Result<Object> saveDraft(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,
+        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("number") String number,
         @RequestParam("level") String level, @RequestParam("title") String title);
 

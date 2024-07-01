@@ -112,7 +112,7 @@ public class FormDataApiImpl implements FormDataApi {
      * @param formId 表单id
      * @param taskDefKey 任务key
      * @param processDefinitionId 流程定义id
-     * @return List<Map < String, Object>>
+     * @return Y9Result<List<FieldPermModel>>
      */
     @Override
     public Y9Result<List<FieldPermModel>> getAllFieldPerm(String tenantId, String userId, String formId,
@@ -148,14 +148,15 @@ public class FormDataApiImpl implements FormDataApi {
      * @param formId 表单id
      * @param tableId 表id
      * @param processSerialNumber 流程编号
-     * @return List<Map < String, Object>>
+     * @return Y9Result<List < Map < String, Object>>>
      * @throws Exception 抛出异常
      */
     @Override
-    public List<Map<String, Object>> getChildTableData(String tenantId, String formId, String tableId,
+    public Y9Result<List<Map<String, Object>>> getChildTableData(String tenantId, String formId, String tableId,
         String processSerialNumber) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.getChildTableData(formId, tableId, processSerialNumber);
+        List<Map<String, Object>> list = formDataService.getChildTableData(formId, tableId, processSerialNumber);
+        return Y9Result.success(list);
     }
 
     /**
@@ -164,12 +165,13 @@ public class FormDataApiImpl implements FormDataApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
-     * @return Map<String, Object>
+     * @return Y9Result<Map < String, Object>>
      */
     @Override
-    public Map<String, Object> getData(String tenantId, String itemId, String processSerialNumber) {
+    public Y9Result<Map<String, Object>> getData(String tenantId, String itemId, String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return formDataService.getData(tenantId, itemId, processSerialNumber);
+        Map<String, Object> map = formDataService.getData(tenantId, itemId, processSerialNumber);
+        return Y9Result.success(map);
     }
 
     /**

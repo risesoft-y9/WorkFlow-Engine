@@ -23,7 +23,7 @@ public interface OfficeFollow4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceId 流程实例id
-     * @return int
+     * @return Y9Result<Integer>
      */
     @GetMapping("/countByProcessInstanceId")
     Y9Result<Integer> countByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -35,7 +35,7 @@ public interface OfficeFollow4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param processInstanceIds 流程实例ids
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<Object>
      */
     @PostMapping("/delOfficeFollow")
     Y9Result<Object> delOfficeFollow(@RequestParam("tenantId") String tenantId,
@@ -46,7 +46,7 @@ public interface OfficeFollow4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return
+     * @return Y9Result<Object>
      */
     @PostMapping("/deleteByProcessInstanceId")
     Y9Result<Object> deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId,
@@ -57,7 +57,7 @@ public interface OfficeFollow4PositionApi {
      *
      * @param tenantId 租户id
      * @param positionId 岗位id
-     * @return int
+     * @return Y9Result<Integer>
      */
     @GetMapping("/getFollowCount")
     Y9Result<Integer> getFollowCount(@RequestParam("tenantId") String tenantId,
@@ -70,9 +70,9 @@ public interface OfficeFollow4PositionApi {
      * @param positionId 岗位id
      * @param systemName 系统名称
      * @param searchName 搜索内容
-     * @param page
-     * @param rows
-     * @return
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<OfficeFollowModel>
      */
     @GetMapping("/getFollowListBySystemName")
     Y9Page<OfficeFollowModel> getFollowListBySystemName(@RequestParam("tenantId") String tenantId,
@@ -85,9 +85,9 @@ public interface OfficeFollow4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param searchName 搜索内容
-     * @param page page
-     * @param rows rows
-     * @return Map&lt;String, Object&gt;
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<OfficeFollowModel>
      */
     @GetMapping("/getOfficeFollowList")
     Y9Page<OfficeFollowModel> getOfficeFollowList(@RequestParam("tenantId") String tenantId,
@@ -99,7 +99,7 @@ public interface OfficeFollow4PositionApi {
      *
      * @param tenantId 租户id
      * @param officeFollow 办件关注信息
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<Object>
      */
     @PostMapping(value = "/saveOfficeFollow", consumes = MediaType.APPLICATION_JSON_VALUE)
     Y9Result<Object> saveOfficeFollow(@RequestParam("tenantId") String tenantId,
@@ -111,7 +111,7 @@ public interface OfficeFollow4PositionApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param documentTitle 文档标题
-     * @return
+     * @return Y9Result<Object>
      */
     @PostMapping("/updateTitle")
     Y9Result<Object> updateTitle(@RequestParam("tenantId") String tenantId,

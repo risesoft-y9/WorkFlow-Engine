@@ -1,7 +1,6 @@
 package net.risesoft.controller.mobile.v1;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +73,7 @@ public class MobileV1ChaoSongController {
     @RequestMapping(value = "/detail")
     public Y9Result<Map<String, Object>> detail(@RequestParam @NotBlank String id,
         @RequestParam @NotBlank String processInstanceId, @RequestParam(required = false) Integer status) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
@@ -115,7 +114,6 @@ public class MobileV1ChaoSongController {
     public Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam(required = false) String id,
         @RequestParam(required = false) Integer principalType,
         @RequestParam(required = false) String processInstanceId) {
-        List<Map<String, Object>> item;
         try {
             String positionId = Y9LoginUserHolder.getPositionId();
             String userId = Y9LoginUserHolder.getPersonId();
@@ -139,7 +137,6 @@ public class MobileV1ChaoSongController {
     public Y9Result<List<ItemRoleOrgUnitModel>> findCsUserSearch(@RequestParam(required = false) String name,
         @RequestParam(required = false) Integer principalType,
         @RequestParam(required = false) String processInstanceId) {
-        List<Map<String, Object>> item;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();

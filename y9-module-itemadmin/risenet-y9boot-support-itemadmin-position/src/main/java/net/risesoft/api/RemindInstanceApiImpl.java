@@ -36,6 +36,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
+     * @return Y9Result<List<RemindInstanceModel>>
      */
     @Override
     public Y9Result<List<RemindInstanceModel>> findRemindInstance(String tenantId, String processInstanceId) {
@@ -56,6 +57,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param taskKey 任务ley
+     * @return Y9Result<List<RemindInstanceModel>>
      */
     @Override
     public Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(String tenantId,
@@ -78,6 +80,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param taskKey 任务ley
+     * @return Y9Result<List<RemindInstanceModel>>
      */
     @Override
     public Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(String tenantId,

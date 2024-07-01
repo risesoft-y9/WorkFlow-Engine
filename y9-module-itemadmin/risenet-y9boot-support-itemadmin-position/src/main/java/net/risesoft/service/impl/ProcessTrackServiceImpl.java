@@ -517,12 +517,12 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         List<HistoricActivityInstanceModel> list = new ArrayList<>();
         try {
             List<net.risesoft.model.processadmin.HistoricActivityInstanceModel> list1 =
-                historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, "");
+                historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, "").getData();
             String year = "";
             if (list1 == null || list1.isEmpty()) {
                 OfficeDoneInfo info = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
                 year = info.getStartTime().substring(0, 4);
-                list1 = historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, year);
+                list1 = historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, year).getData();
             }
             for (net.risesoft.model.processadmin.HistoricActivityInstanceModel task : list1) {
                 String assignee = task.getAssignee();

@@ -249,7 +249,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> doneList(String itemId, String searchItemId, String searchTerm, Integer page,
         Integer rows) {
@@ -312,10 +311,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<OfficeFollowModel> followList(String itemId, String searchTerm, Integer page, Integer rows) {
-        Y9Page<OfficeFollowModel> map;
         String tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
         return officeFollow4PositionApi.getFollowListBySystemName(tenantId, Y9LoginUserHolder.getPositionId(),
@@ -470,7 +467,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         return list;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> getMeetingList(String userName, String deptName, String title,
         String meetingType, Integer page, Integer rows) {
@@ -531,7 +527,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     }
                     mapTemp.put("beizhu", "");
                     Map<String, Object> formDataMap =
-                        formDataApi.getData(tenantId, hpim.getItemId(), processSerialNumber);
+                        formDataApi.getData(tenantId, hpim.getItemId(), processSerialNumber).getData();
                     if (formDataMap.get("beizhu") != null) {
                         mapTemp.put("beizhu", formDataMap.get("beizhu"));
                     }
@@ -628,7 +624,6 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> homeDoneList(Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;

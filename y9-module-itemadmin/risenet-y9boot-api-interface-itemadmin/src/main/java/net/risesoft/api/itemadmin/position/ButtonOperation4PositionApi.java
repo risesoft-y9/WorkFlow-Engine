@@ -23,6 +23,7 @@ public interface ButtonOperation4PositionApi {
      * @param parentExecutionId parentExecutionId
      * @param taskId 任务id
      * @param elementUser elementUser
+     * @return Y9Result<Object>
      * @throws Exception exception
      */
     @PostMapping("/addMultiInstanceExecution")
@@ -37,6 +38,7 @@ public interface ButtonOperation4PositionApi {
      * @param executionId executionId
      * @param taskId 任务id
      * @param elementUser elementUser
+     * @return Y9Result<Object>
      * @throws Exception exception
      */
     @PostMapping("/deleteMultiInstanceExecution")
@@ -51,10 +53,12 @@ public interface ButtonOperation4PositionApi {
      * @param taskId 任务id
      * @param routeToTask routeToTask
      * @param processInstanceId 流程实例ID
-     * @return boolean
+     * @return Y9Result<Object>
      */
     @PostMapping("/directSend")
-    Y9Result<Object> directSend(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId, @RequestParam("routeToTask")String routeToTask,
+    Y9Result<Object> directSend(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId,
+        @RequestParam("routeToTask")String routeToTask,
        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
@@ -63,10 +67,11 @@ public interface ButtonOperation4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param taskId 任务id
-     * @return Map
+     * @return Y9Result<Object>
      */
     @PostMapping("/refuseClaimRollback")
-    Y9Result<Object> refuseClaimRollback(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId);
+    Y9Result<Object> refuseClaimRollback(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId);
 
     /**
      * 重定位
@@ -78,6 +83,7 @@ public interface ButtonOperation4PositionApi {
      * @param userChoice userChoice
      * @param reason reason
      * @param sponsorGuid sponsorGuid
+     * @return Y9Result<Object>
      * @throws Exception exception
      */
     @PostMapping(value = "/reposition", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -92,10 +98,12 @@ public interface ButtonOperation4PositionApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
+     * @return Y9Result<Object>
      * @throws Exception exception
      */
     @PostMapping("/rollBack")
-    Y9Result<Object> rollBack(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId, @RequestParam("reason") String reason) throws Exception;
+    Y9Result<Object> rollBack(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,
+        @RequestParam("taskId") String taskId, @RequestParam("reason") String reason) throws Exception;
 
     /**
      * 发回给上一步的发送人
@@ -103,10 +111,12 @@ public interface ButtonOperation4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param taskId 任务id
+     * @return Y9Result<Object>
      * @throws Exception exception
      */
     @PostMapping("/rollbackToSender")
-    Y9Result<Object> rollbackToSender(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId) throws Exception;
+    Y9Result<Object> rollbackToSender(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId) throws Exception;
 
     /**
      * 退回操作，直接退回到办件登记人
@@ -115,10 +125,13 @@ public interface ButtonOperation4PositionApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param resson 原因
+     * @return Y9Result<Object>
      * @throws Exception exception
      */
     @PostMapping("/rollbackToStartor")
-    Y9Result<Object> rollbackToStartor(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId, @RequestParam("resson") String resson)
+    Y9Result<Object> rollbackToStartor(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId,
+        @RequestParam("resson") String resson)
         throws Exception;
 
     /**
@@ -128,10 +141,13 @@ public interface ButtonOperation4PositionApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
+     * @return Y9Result<Object>
      * @throws Exception exception
      */
     @PostMapping("/specialComplete")
-    Y9Result<Object> specialComplete(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId, @RequestParam("reason") String reason) throws Exception;
+    Y9Result<Object> specialComplete(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId,
+        @RequestParam("reason") String reason) throws Exception;
 
     /**
      * 收回操作
@@ -140,9 +156,11 @@ public interface ButtonOperation4PositionApi {
      * @param positionId 岗位id
      * @param taskId 任务id
      * @param reason 原因
+     * @return Y9Result<Object>
      * @throws Exception exception
      */
     @PostMapping("/takeback")
-    Y9Result<Object> takeback(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId, @RequestParam("taskId") String taskId, @RequestParam("reason") String reason) throws Exception;
+    Y9Result<Object> takeback(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId,
+        @RequestParam("taskId") String taskId, @RequestParam("reason") String reason) throws Exception;
 
 }

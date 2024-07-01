@@ -48,7 +48,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      * @param tenantId 租户id
      * @param userId 用户id
      * @param systemName 系统名称
-     * @return int
+     * @return Y9Result<Integer>
      */
     @Override
     public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
@@ -65,7 +65,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
-     * @return ItemPage<ActRuDetailModel>
+     * @return Y9Page<ActRuDetailModel>
      */
     @Override
     public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
@@ -97,7 +97,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      * @param searchMapStr 搜索集合
      * @param page page
      * @param rows rows
-     * @return ItemPage<ActRuDetailModel>
+     * @return Y9Page<ActRuDetailModel>
      */
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,

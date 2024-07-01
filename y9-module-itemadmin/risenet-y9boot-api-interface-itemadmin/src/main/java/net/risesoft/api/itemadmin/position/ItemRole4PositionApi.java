@@ -76,7 +76,7 @@ public interface ItemRole4PositionApi {
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param id 唯一标识
      * @param processInstanceId 流程实例Id
-     * @return List&lt;Map&lt;String, Object&gt;&gt;
+     * @return Y9Result<List<ItemRoleOrgUnitModel>>
      */
     @GetMapping("/findPermUser")
     Y9Result<List<ItemRoleOrgUnitModel>> findPermUser(@RequestParam("tenantId") String tenantId,

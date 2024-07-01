@@ -37,7 +37,7 @@ public class ItemViewConfApiImpl implements ItemViewConfApi {
      * @param tenantId 租户id
      * @param itemId 事项id
      * @param viewType 视图类型
-     * @return List<ItemViewConfModel>
+     * @return Y9Result<List<ItemViewConfModel>>
      */
     @Override
     public Y9Result<List<ItemViewConfModel>> findByItemIdAndViewType(String tenantId, String itemId, String viewType) {

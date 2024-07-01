@@ -53,7 +53,7 @@ public class EntrustHistoryApiImpl implements EntrustHistoryApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param ownerId 委托人id
-     * @return List<EntrustHistoryModel>
+     * @return Y9Result<List<EntrustHistoryModel>>
      */
     @Override
     public Y9Result<List<EntrustHistoryModel>> findOneByOwnerId(String tenantId, String userId, String ownerId) {

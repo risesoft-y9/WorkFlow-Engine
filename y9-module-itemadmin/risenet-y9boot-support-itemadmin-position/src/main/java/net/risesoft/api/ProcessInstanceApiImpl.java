@@ -39,6 +39,7 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
+     * @return Y9Result<Boolean>
      */
     @Override
     public Y9Result<Boolean> deleteProcessInstance(String tenantId, String processInstanceId) {
@@ -54,6 +55,7 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
      * @param title 标题或文号
      * @param page 页码
      * @param rows 条数
+     * @return Y9Page<ProcessCooperationModel>
      */
     @Override
     public Y9Page<ProcessCooperationModel> processInstanceList(String tenantId, String userId, String title, int page,
@@ -67,6 +69,7 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
      *
      * @param tenantId 租户id
      * @param model 状态详情
+     * @return Y9Result<Boolean>
      */
     @Override
     public Y9Result<Boolean> saveProcessInstanceDetails(String tenantId,
@@ -84,6 +87,7 @@ public class ProcessInstanceApiImpl implements ProcessInstanceApi {
      * @param taskId 任务id
      * @param itembox 办件状态，todo（待办）,doing（在办）,done（办结）
      * @param endTime 结束时间
+     * @return Y9Result<Boolean>
      */
     @Override
     public Y9Result<Boolean> updateProcessInstanceDetails(String tenantId, String assigneeId, String processInstanceId,

@@ -126,7 +126,6 @@ public class SearchServiceImpl implements SearchService {
         return list;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> getSearchList(String searchTerm, String itemId, String userName, String state,
         String year, String startDate, String endDate, Integer page, Integer rows) {
