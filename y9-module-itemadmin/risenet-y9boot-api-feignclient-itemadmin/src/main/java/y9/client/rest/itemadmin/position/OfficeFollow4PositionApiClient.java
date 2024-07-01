@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.itemadmin.position.OfficeFollow4PositionApi;
 import net.risesoft.model.itemadmin.OfficeFollowModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -32,22 +33,10 @@ public interface OfficeFollow4PositionApiClient extends OfficeFollow4PositionApi
      */
     @Override
     @GetMapping("/countByProcessInstanceId")
-    public int countByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+    Y9Result<Integer> countByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId);
 
     /**
-     * 根据流程实例id删除关注
-     *
-     * @param tenantId
-     * @param processInstanceId
-     */
-    @Override
-    @PostMapping("/deleteByProcessInstanceId")
-    public void deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId);
-
-    /**
-     *
      * Description: 取消关注
      *
      * @param tenantId
@@ -57,8 +46,20 @@ public interface OfficeFollow4PositionApiClient extends OfficeFollow4PositionApi
      */
     @Override
     @PostMapping("/delOfficeFollow")
-    public Map<String, Object> delOfficeFollow(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> delOfficeFollow(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("processInstanceIds") String processInstanceIds);
+
+    /**
+     * 根据流程实例id删除关注
+     *
+     * @param tenantId
+     * @param processInstanceId
+     * @return
+     */
+    @Override
+    @PostMapping("/deleteByProcessInstanceId")
+    Y9Result<Object> deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取我的关注数量
@@ -69,11 +70,12 @@ public interface OfficeFollow4PositionApiClient extends OfficeFollow4PositionApi
      */
     @Override
     @GetMapping("/getFollowCount")
-    public int getFollowCount(@RequestParam("tenantId") String tenantId, @RequestParam("positionId") String positionId);
+    Y9Result<Integer> getFollowCount(@RequestParam("tenantId") String tenantId,
+        @RequestParam("positionId") String positionId);
 
     @Override
     @GetMapping("/getFollowListBySystemName")
-    public Map<String, Object> getFollowListBySystemName(@RequestParam("tenantId") String tenantId,
+    Map<String, Object> getFollowListBySystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("systemName") String systemName,
         @RequestParam("searchName") String searchName, @RequestParam("page") int page, @RequestParam("rows") int rows);
 
@@ -89,7 +91,7 @@ public interface OfficeFollow4PositionApiClient extends OfficeFollow4PositionApi
      */
     @Override
     @GetMapping("/getOfficeFollowList")
-    public Map<String, Object> getOfficeFollowList(@RequestParam("tenantId") String tenantId,
+    Map<String, Object> getOfficeFollowList(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("searchName") String searchName,
         @RequestParam("page") int page, @RequestParam("rows") int rows);
 
@@ -102,7 +104,7 @@ public interface OfficeFollow4PositionApiClient extends OfficeFollow4PositionApi
      */
     @Override
     @PostMapping(value = "/saveOfficeFollow", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> saveOfficeFollow(@RequestParam("tenantId") String tenantId,
+    Map<String, Object> saveOfficeFollow(@RequestParam("tenantId") String tenantId,
         @RequestBody OfficeFollowModel officeFollow);
 
     /**
@@ -114,7 +116,7 @@ public interface OfficeFollow4PositionApiClient extends OfficeFollow4PositionApi
      */
     @Override
     @PostMapping("/updateTitle")
-    public void updateTitle(@RequestParam("tenantId") String tenantId,
+    void updateTitle(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId,
         @RequestParam("documentTitle") String documentTitle);
 

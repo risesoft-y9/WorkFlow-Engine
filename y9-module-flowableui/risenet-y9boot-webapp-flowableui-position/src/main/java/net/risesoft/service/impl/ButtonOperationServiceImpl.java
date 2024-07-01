@@ -121,7 +121,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
             String year;
             OfficeDoneInfoModel officeDoneInfoModel =
-                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (officeDoneInfoModel != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
             } else {

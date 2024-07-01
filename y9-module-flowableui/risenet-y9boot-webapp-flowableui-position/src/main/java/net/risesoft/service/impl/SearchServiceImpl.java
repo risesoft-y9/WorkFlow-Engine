@@ -130,13 +130,13 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public Y9Page<Map<String, Object>> getSearchList(String searchTerm, String itemId, String userName, String state,
         String year, String startDate, String endDate, Integer page, Integer rows) {
-        Map<String, Object> retMap;
+        Y9Page<OfficeDoneInfoModel> y9Page;
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            retMap = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, searchTerm, itemId,
+            y9Page = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, searchTerm, itemId,
                 userName, state, year, startDate, endDate, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
@@ -181,8 +181,8 @@ public class SearchServiceImpl implements SearchService {
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("itembox", listTemp.get(3));
                     }
-                    int countFollow =
-                        officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
+                    int countFollow = officeFollow4PositionApi
+                        .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                     // ddyjs上会功能
                     mapTemp.put("meeting", hpim.getMeeting() != null && hpim.getMeeting().equals("1"));
@@ -193,8 +193,7 @@ public class SearchServiceImpl implements SearchService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }

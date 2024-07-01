@@ -126,12 +126,12 @@ public class ProcessInstanceVueController {
         @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam int page, @RequestParam int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Map<String, Object> retMap;
+        Y9Page<OfficeDoneInfoModel> y9Page;
         try {
-            retMap = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page,
+            y9Page = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page,
                 rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
@@ -189,8 +189,7 @@ public class ProcessInstanceVueController {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取流程实例列表失败", e);
         }

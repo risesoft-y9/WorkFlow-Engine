@@ -1,8 +1,8 @@
 package net.risesoft.api.itemadmin.position;
 
-import java.util.Map;
-
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * 工作流办件信息列表接口
@@ -18,17 +18,18 @@ public interface OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
+     * @return 9Result<Object>
      */
-    void cancelMeeting(String tenantId, String processInstanceId);
+    Y9Result<Object> cancelMeeting(String tenantId, String processInstanceId);
 
     /**
      * 监控办结统计
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return int
+     * @return Y9Result<Integer>
      */
-    int countByItemId(String tenantId, String itemId);
+    Y9Result<Integer> countByItemId(String tenantId, String itemId);
 
     /**
      * 统计个人办结件
@@ -36,9 +37,9 @@ public interface OfficeDoneInfo4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @return int
+     * @return Y9Result<Integer>
      */
-    int countByPositionId(String tenantId, String positionId, String itemId);
+    Y9Result<Integer> countByPositionId(String tenantId, String positionId, String itemId);
 
     /**
      * 根据系统名称统计个人办结件
@@ -46,36 +47,36 @@ public interface OfficeDoneInfo4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param systemName 系统名称
-     * @return int
+     * @return Y9Result<Integer>
      */
-    int countByPositionIdAndSystemName(String tenantId, String positionId, String systemName);
+    Y9Result<Integer> countByPositionIdAndSystemName(String tenantId, String positionId, String systemName);
 
     /**
      * 监控在办统计
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return long
+     * @return Y9Result<Long>
      */
-    long countDoingByItemId(String tenantId, String itemId);
+    Y9Result<Long> countDoingByItemId(String tenantId, String itemId);
 
     /**
      * 根据流程实例id删除办结信息
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return boolean
+     * @return Y9Result<Object>
      */
-    boolean deleteOfficeDoneInfo(String tenantId, String processInstanceId);
+    Y9Result<Object> deleteOfficeDoneInfo(String tenantId, String processInstanceId);
 
     /**
      * 根据流程实例id获取办结信息
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return OfficeDoneInfoModel
+     * @return Y9Result<OfficeDoneInfoModel>
      */
-    OfficeDoneInfoModel findByProcessInstanceId(String tenantId, String processInstanceId);
+    Y9Result<OfficeDoneInfoModel> findByProcessInstanceId(String tenantId, String processInstanceId);
 
     /**
      * 上会台账列表，当代研究所
@@ -89,7 +90,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows 条数
      * @return
      */
-    Map<String, Object> getMeetingList(String tenantId, String userName, String deptName, String title,
+    Y9Page<OfficeDoneInfoModel> getMeetingList(String tenantId, String userName, String deptName, String title,
         String meetingType, Integer page, Integer rows);
 
     /**
@@ -97,9 +98,10 @@ public interface OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param info 办结信息
+     * @return
      * @throws Exception Exception
      */
-    void saveOfficeDone(String tenantId, OfficeDoneInfoModel info) throws Exception;
+    Y9Result<Object> saveOfficeDone(String tenantId, OfficeDoneInfoModel info) throws Exception;
 
     /**
      * 科室所有件列表
@@ -115,11 +117,10 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchAllByDeptId(String tenantId, String deptId, String title, String itemId, String userName,
-        String state, String year, Integer page, Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchAllByDeptId(String tenantId, String deptId, String title, String itemId,
+        String userName, String state, String year, Integer page, Integer rows);
 
     /**
-     *
      * Description: 个人所有件搜索
      *
      * @param tenantId 租户id
@@ -135,7 +136,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchAllByPositionId(String tenantId, String positionId, String title, String itemId,
+    Y9Page<OfficeDoneInfoModel> searchAllByPositionId(String tenantId, String positionId, String title, String itemId,
         String userName, String state, String year, String startDate, String endDate, Integer page, Integer rows);
 
     /**
@@ -151,8 +152,8 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String userName, String state,
-        String year, Integer page, Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchAllList(String tenantId, String searchName, String itemId, String userName,
+        String state, String year, Integer page, Integer rows);
 
     /**
      * 获取监控在办，办结件列表
@@ -167,8 +168,8 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchByItemId(String tenantId, String title, String itemId, String state, String startdate,
-        String enddate, Integer page, Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchByItemId(String tenantId, String title, String itemId, String state,
+        String startdate, String enddate, Integer page, Integer rows);
 
     /**
      * 获取个人办结件列表
@@ -183,7 +184,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> searchByPositionId(String tenantId, String positionId, String title, String itemId,
+    Y9Page<OfficeDoneInfoModel> searchByPositionId(String tenantId, String positionId, String title, String itemId,
         String startdate, String enddate, Integer page, Integer rows);
 
     /**
@@ -199,7 +200,7 @@ public interface OfficeDoneInfo4PositionApi {
      * @param rows rows
      * @return
      */
-    Map<String, Object> searchByPositionIdAndSystemName(String tenantId, String positionId, String title,
+    Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(String tenantId, String positionId, String title,
         String systemName, String startdate, String enddate, Integer page, Integer rows);
 
     /**
@@ -208,7 +209,8 @@ public interface OfficeDoneInfo4PositionApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param meetingType 会议类型
+     * @return
      */
-    void setMeeting(String tenantId, String processInstanceId, String meetingType);
+    Y9Result<Object> setMeeting(String tenantId, String processInstanceId, String meetingType);
 
 }

@@ -68,27 +68,17 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
 
     @Override
     @Transactional
-    public void deleteByProcessInstanceId(String processInstanceId) {
-        officeFollowRepository.deleteByProcessInstanceId(processInstanceId);
+    public void delOfficeFollow(String processInstanceIds) {
+        String[] ids = processInstanceIds.split(",");
+        for (String processInstanceId : ids) {
+            officeFollowRepository.deleteByProcessInstanceId(processInstanceId, Y9LoginUserHolder.getPositionId());
+        }
     }
 
     @Override
     @Transactional
-    public Map<String, Object> delOfficeFollow(String processInstanceIds) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        map.put("msg", "取消关注成功");
-        try {
-            String[] ids = processInstanceIds.split(",");
-            for (String processInstanceId : ids) {
-                officeFollowRepository.deleteByProcessInstanceId(processInstanceId, Y9LoginUserHolder.getPositionId());
-            }
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            map.put("msg", "取消关注失败");
-            e.printStackTrace();
-        }
-        return map;
+    public void deleteByProcessInstanceId(String processInstanceId) {
+        officeFollowRepository.deleteByProcessInstanceId(processInstanceId);
     }
 
     /**

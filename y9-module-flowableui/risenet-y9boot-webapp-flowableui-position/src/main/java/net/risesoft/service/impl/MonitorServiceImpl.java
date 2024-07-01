@@ -65,14 +65,14 @@ public class MonitorServiceImpl implements MonitorService {
     @Override
     public Y9Page<Map<String, Object>> deptList(String itemId, String searchName, String userName, String state,
         String year, Integer page, Integer rows) {
-        Map<String, Object> retMap;
+        Y9Page<OfficeDoneInfoModel> y9Page;
         try {
             Position position = Y9LoginUserHolder.getPosition();
             String tenantId = Y9LoginUserHolder.getTenantId();
-            retMap = officeDoneInfo4PositionApi.searchAllByDeptId(tenantId, position.getParentId(), searchName, itemId,
+            y9Page = officeDoneInfo4PositionApi.searchAllByDeptId(tenantId, position.getParentId(), searchName, itemId,
                 userName, state, year, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> list = (List<OfficeDoneInfoModel>)retMap.get("rows");
+            List<OfficeDoneInfoModel> list = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
             Map<String, Object> mapTemp;
@@ -121,8 +121,7 @@ public class MonitorServiceImpl implements MonitorService {
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }
@@ -286,13 +285,13 @@ public class MonitorServiceImpl implements MonitorService {
     @Override
     public Y9Page<Map<String, Object>> monitorBanjianList(String searchName, String itemId, String userName,
         String state, String year, Integer page, Integer rows) {
-        Map<String, Object> retMap;
+        Y9Page<OfficeDoneInfoModel> y9Page;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            retMap = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page,
+            y9Page = officeDoneInfo4PositionApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page,
                 rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
@@ -344,8 +343,7 @@ public class MonitorServiceImpl implements MonitorService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }
@@ -368,7 +366,7 @@ public class MonitorServiceImpl implements MonitorService {
     @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> monitorDoingList(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> retMap;
+        Y9Page<OfficeDoneInfoModel> y9Page;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -380,10 +378,10 @@ public class MonitorServiceImpl implements MonitorService {
             // retMap = monitorApi.searchDoingListByProcessDefinitionKey(tenantId, processDefinitionKey,
             // searchTerm, page, rows);
             // }
-            retMap = officeDoneInfo4PositionApi.searchByItemId(tenantId, searchTerm, itemId,
+            y9Page = officeDoneInfo4PositionApi.searchByItemId(tenantId, searchTerm, itemId,
                 ItemBoxTypeEnum.DOING.getValue(), "", "", page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
             // List<HistoricProcessInstanceModel> list = (List<HistoricProcessInstanceModel>)retMap.get("rows");
@@ -436,8 +434,7 @@ public class MonitorServiceImpl implements MonitorService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }
@@ -447,15 +444,15 @@ public class MonitorServiceImpl implements MonitorService {
     @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> monitorDoneList(String itemId, String searchTerm, Integer page, Integer rows) {
-        Map<String, Object> retMap;
+        Y9Page<OfficeDoneInfoModel> y9Page;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
-            retMap = officeDoneInfo4PositionApi.searchByItemId(tenantId, searchTerm, itemId,
+            y9Page = officeDoneInfo4PositionApi.searchByItemId(tenantId, searchTerm, itemId,
                 ItemBoxTypeEnum.DONE.getValue(), "", "", page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
@@ -494,8 +491,7 @@ public class MonitorServiceImpl implements MonitorService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }

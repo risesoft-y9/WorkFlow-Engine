@@ -3,6 +3,7 @@ package net.risesoft.api.itemadmin.position;
 import java.util.Map;
 
 import net.risesoft.model.itemadmin.OfficeFollowModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -19,15 +20,7 @@ public interface OfficeFollow4PositionApi {
      * @param processInstanceId 流程实例id
      * @return int
      */
-    int countByProcessInstanceId(String tenantId, String positionId, String processInstanceId);
-
-    /**
-     * 根据流程实例id删除关注
-     *
-     * @param tenantId 租户id
-     * @param processInstanceId 流程实例id
-     */
-    void deleteByProcessInstanceId(String tenantId, String processInstanceId);
+    Y9Result<Integer> countByProcessInstanceId(String tenantId, String positionId, String processInstanceId);
 
     /**
      * 取消关注
@@ -37,7 +30,16 @@ public interface OfficeFollow4PositionApi {
      * @param processInstanceIds 流程实例ids
      * @return Map&lt;String, Object&gt;
      */
-    Map<String, Object> delOfficeFollow(String tenantId, String positionId, String processInstanceIds);
+    Y9Result<Object> delOfficeFollow(String tenantId, String positionId, String processInstanceIds);
+
+    /**
+     * 根据流程实例id删除关注
+     *
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @return
+     */
+    Y9Result<Object> deleteByProcessInstanceId(String tenantId, String processInstanceId);
 
     /**
      * 获取我的关注数量
@@ -46,7 +48,7 @@ public interface OfficeFollow4PositionApi {
      * @param positionId 岗位id
      * @return int
      */
-    int getFollowCount(String tenantId, String positionId);
+    Y9Result<Integer> getFollowCount(String tenantId, String positionId);
 
     /**
      * 根据系统名获取关注列表

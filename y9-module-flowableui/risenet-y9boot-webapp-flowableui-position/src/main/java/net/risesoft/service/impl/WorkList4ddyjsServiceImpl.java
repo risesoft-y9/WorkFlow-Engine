@@ -160,8 +160,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
                         mapTemp.put("meeting", false);
                         if (item.getSystemName().equals("gongwenguanli")) {
-                            OfficeDoneInfoModel officeDoneInfo =
-                                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+                            OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi
+                                .findByProcessInstanceId(tenantId, processInstanceId).getData();
                             mapTemp.put("meeting",
                                 officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"));
                         }
@@ -227,8 +227,8 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
 
                         mapTemp.put("meeting", false);
                         if (item.getSystemName().equals("gongwenguanli")) {
-                            OfficeDoneInfoModel officeDoneInfo =
-                                officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+                            OfficeDoneInfoModel officeDoneInfo = officeDoneInfo4PositionApi
+                                .findByProcessInstanceId(tenantId, processInstanceId).getData();
                             mapTemp.put("meeting",
                                 officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"));
                         }
@@ -252,18 +252,18 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     @Override
     public Y9Page<Map<String, Object>> doneList(String itemId, String searchItemId, String searchTerm, Integer page,
         Integer rows) {
-        Map<String, Object> retMap;
+        Y9Page<OfficeDoneInfoModel> y9Page;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = item4PositionApi.getByItemId(tenantId, itemId).getData();
         if (StringUtils.isNotBlank(searchItemId)) {
-            retMap = officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, searchItemId, "", "",
+            y9Page = officeDoneInfo4PositionApi.searchByPositionId(tenantId, userId, searchTerm, searchItemId, "", "",
                 page, rows);
         } else {
-            retMap = officeDoneInfo4PositionApi.searchByPositionIdAndSystemName(tenantId, userId, searchTerm,
+            y9Page = officeDoneInfo4PositionApi.searchByPositionIdAndSystemName(tenantId, userId, searchTerm,
                 item.getSystemName(), "", "", page, rows);
         }
         List<Map<String, Object>> items = new ArrayList<>();
-        List<OfficeDoneInfoModel> list = (List<OfficeDoneInfoModel>)retMap.get("rows");
+        List<OfficeDoneInfoModel> list = y9Page.getRows();
         ObjectMapper objectMapper = new ObjectMapper();
         List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
         int serialNumber = (page - 1) * rows;
@@ -308,8 +308,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
             serialNumber += 1;
             items.add(mapTemp);
         }
-        return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-            Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+        return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
     }
 
     @SuppressWarnings("unchecked")
@@ -476,13 +475,13 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     @Override
     public Y9Page<Map<String, Object>> getMeetingList(String userName, String deptName, String title,
         String meetingType, Integer page, Integer rows) {
-        Map<String, Object> retMap;
+        Y9Page<OfficeDoneInfoModel> y9Page;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            retMap =
+            y9Page =
                 officeDoneInfo4PositionApi.getMeetingList(tenantId, userName, deptName, title, meetingType, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
@@ -544,8 +543,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取会议列表失败", e);
         }
@@ -613,7 +611,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     mapTemp.put("follow", false);
                     mapTemp.put("meeting", false);
                     OfficeDoneInfoModel officeDoneInfo =
-                        officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("meeting",
                         officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"));
                 } catch (Exception e) {
@@ -634,13 +632,13 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
     @SuppressWarnings("unchecked")
     @Override
     public Y9Page<Map<String, Object>> homeDoneList(Integer page, Integer rows) {
-        Map<String, Object> retMap;
+        Y9Page<OfficeDoneInfoModel> y9Page;
         try {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            retMap = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, "", "", "", "done", "", "",
+            y9Page = officeDoneInfo4PositionApi.searchAllByPositionId(tenantId, positionId, "", "", "", "done", "", "",
                 "", page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> hpiModelList = (List<OfficeDoneInfoModel>)retMap.get("rows");
+            List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
@@ -685,8 +683,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, Integer.parseInt(retMap.get("totalpages").toString()),
-                Integer.parseInt(retMap.get("total").toString()), items, "获取列表成功");
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);
         }
@@ -860,7 +857,7 @@ public class WorkList4ddyjsServiceImpl implements WorkList4ddyjsService {
                     }
                     mapTemp.put("meeting", false);
                     OfficeDoneInfoModel officeDoneInfo =
-                        officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId);
+                        officeDoneInfo4PositionApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("meeting",
                         officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"));
                 } catch (Exception e) {

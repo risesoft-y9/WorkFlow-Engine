@@ -363,8 +363,8 @@ public class DoingServiceImpl implements DoingService {
                             mapTemp.put("remindSetting", true);
                         }
 
-                        int countFollow =
-                            officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
+                        int countFollow = officeFollow4PositionApi
+                            .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                         mapTemp.put("follow", countFollow > 0);
                     } catch (Exception e) {
                         LOGGER.error("获取待办列表失败" + processInstanceId, e);
@@ -517,8 +517,8 @@ public class DoingServiceImpl implements DoingService {
                     if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
                         mapTemp.put("remindSetting", true);
                     }
-                    int countFollow =
-                        officeFollow4PositionApi.countByProcessInstanceId(tenantId, positionId, processInstanceId);
+                    int countFollow = officeFollow4PositionApi
+                        .countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);

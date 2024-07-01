@@ -1,7 +1,5 @@
 package net.risesoft.api;
 
-import java.util.Map;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
+import net.risesoft.pojo.Y9Page;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -37,12 +37,14 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/cancelMeeting", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void cancelMeeting(String tenantId, String processInstanceId) {
+    public Y9Result<Object> cancelMeeting(String tenantId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         officeDoneInfoService.cancelMeeting(processInstanceId);
+        return Y9Result.success();
     }
 
     /**
@@ -50,13 +52,14 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return int
+     * @return Y9Result<Integer>
      */
     @Override
     @GetMapping(value = "/countByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public int countByItemId(String tenantId, String itemId) {
+    public Y9Result<Integer> countByItemId(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return officeDoneInfoService.countByItemId(itemId);
+        int count = officeDoneInfoService.countByItemId(itemId);
+        return Y9Result.success(count);
     }
 
     /**
@@ -65,13 +68,14 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param itemId 事项id
-     * @return int
+     * @return Y9Result<Integer>
      */
     @Override
     @GetMapping(value = "/countByPositionId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public int countByPositionId(String tenantId, String positionId, String itemId) {
+    public Y9Result<Integer> countByPositionId(String tenantId, String positionId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return officeDoneInfoService.countByUserId(positionId, itemId);
+        int count = officeDoneInfoService.countByUserId(positionId, itemId);
+        return Y9Result.success(count);
     }
 
     /**
@@ -80,25 +84,27 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @param tenantId 租户id
      * @param positionId 岗位id
      * @param systemName 系统名称
-     * @return int
+     * @return Y9Result<Integer>
      */
     @Override
     @GetMapping(value = "/countByPositionIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public int countByPositionIdAndSystemName(String tenantId, String positionId, String systemName) {
+    public Y9Result<Integer> countByPositionIdAndSystemName(String tenantId, String positionId, String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return officeDoneInfoService.countByPositionIdAndSystemName(positionId, systemName);
+        int count = officeDoneInfoService.countByPositionIdAndSystemName(positionId, systemName);
+        return Y9Result.success(count);
     }
 
     /**
      * @param tenantId 租户id
      * @param itemId 事项id
-     * @return long
+     * @return Y9Result<Long>
      */
     @Override
     @GetMapping(value = "/countDoingByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public long countDoingByItemId(String tenantId, String itemId) {
+    public Y9Result<Long> countDoingByItemId(String tenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return officeDoneInfoService.countDoingByItemId(itemId);
+        long count = officeDoneInfoService.countDoingByItemId(itemId);
+        return Y9Result.success(count);
     }
 
     /**
@@ -106,13 +112,14 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return boolean
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/deleteOfficeDoneInfo", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean deleteOfficeDoneInfo(String tenantId, String processInstanceId) {
+    public Y9Result<Object> deleteOfficeDoneInfo(String tenantId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        return officeDoneInfoService.deleteOfficeDoneInfo(processInstanceId);
+        officeDoneInfoService.deleteOfficeDoneInfo(processInstanceId);
+        return Y9Result.success();
     }
 
     /**
@@ -120,11 +127,11 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return OfficeDoneInfoModel
+     * @return Y9Result<OfficeDoneInfoModel>
      */
     @Override
     @GetMapping(value = "/findByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public OfficeDoneInfoModel findByProcessInstanceId(String tenantId, String processInstanceId) {
+    public Y9Result<OfficeDoneInfoModel> findByProcessInstanceId(String tenantId, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
         OfficeDoneInfoModel officeDoneInfoModel = null;
@@ -132,7 +139,7 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
             officeDoneInfoModel = new OfficeDoneInfoModel();
             Y9BeanUtil.copyProperties(officeDoneInfo, officeDoneInfoModel);
         }
-        return officeDoneInfoModel;
+        return Y9Result.success(officeDoneInfoModel);
     }
 
     /**
@@ -145,11 +152,11 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @param meetingType 会议类型
      * @param page 页码
      * @param rows 条数
-     * @return Map
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
     @GetMapping(value = "/getMeetingList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getMeetingList(String tenantId, String userName, String deptName, String title,
+    public Y9Page<OfficeDoneInfoModel> getMeetingList(String tenantId, String userName, String deptName, String title,
         String meetingType, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.getMeetingList(userName, deptName, title, meetingType, page, rows);
@@ -160,16 +167,18 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      *
      * @param tenantId 租户id
      * @param info 办结信息
+     * @return Y9Result<Object>
      * @throws Exception 异常
      */
     @Override
     @PostMapping(value = "/saveOfficeDone", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void saveOfficeDone(String tenantId, @RequestBody OfficeDoneInfoModel info) throws Exception {
+    public Y9Result<Object> saveOfficeDone(String tenantId, @RequestBody OfficeDoneInfoModel info) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         OfficeDoneInfo officeInfo = new OfficeDoneInfo();
         Y9BeanUtil.copyProperties(info, officeInfo);
         officeDoneInfoService.saveOfficeDone(officeInfo);
+        return Y9Result.success();
     }
 
     /**
@@ -184,11 +193,11 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @param year 年份
      * @param page 页码
      * @param rows 条数
-     * @return Map<String, Object>
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
     @GetMapping(value = "/searchAllByDeptId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchAllByDeptId(String tenantId, String deptId, String title, String itemId,
+    public Y9Page<OfficeDoneInfoModel> searchAllByDeptId(String tenantId, String deptId, String title, String itemId,
         String userName, String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchAllByDeptId(deptId, title, itemId, userName, state, year, page, rows);
@@ -208,12 +217,13 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @param endDate 结束日期
      * @param page 页码
      * @param rows 条数
-     * @return Map<String, Object>
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
     @GetMapping(value = "/searchAllByPositionId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchAllByPositionId(String tenantId, String positionId, String title, String itemId,
-        String userName, String state, String year, String startDate, String endDate, Integer page, Integer rows) {
+    public Y9Page<OfficeDoneInfoModel> searchAllByPositionId(String tenantId, String positionId, String title,
+        String itemId, String userName, String state, String year, String startDate, String endDate, Integer page,
+        Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchAllByUserId(positionId, title, itemId, userName, state, year, startDate,
             endDate, page, rows);
@@ -230,11 +240,11 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @param year 年份
      * @param page 页码
      * @param rows 条数
-     * @return Map<String, Object>
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
     @GetMapping(value = "/searchAllList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchAllList(String tenantId, String searchName, String itemId, String userName,
+    public Y9Page<OfficeDoneInfoModel> searchAllList(String tenantId, String searchName, String itemId, String userName,
         String state, String year, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchAllList(searchName, itemId, userName, state, year, page, rows);
@@ -251,11 +261,11 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @param enddate 结束日期
      * @param page 页码
      * @param rows 条数
-     * @return Map<String, Object
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
     @GetMapping(value = "/searchByItemId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchByItemId(String tenantId, String title, String itemId, String state,
+    public Y9Page<OfficeDoneInfoModel> searchByItemId(String tenantId, String title, String itemId, String state,
         String startdate, String enddate, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchByItemId(title, itemId, state, startdate, enddate, page, rows);
@@ -272,12 +282,12 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @param enddate 结束日期
      * @param page 页码
      * @param rows 条数
-     * @return
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
     @GetMapping(value = "/searchByPositionId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchByPositionId(String tenantId, String positionId, String title, String itemId,
-        String startdate, String enddate, Integer page, Integer rows) {
+    public Y9Page<OfficeDoneInfoModel> searchByPositionId(String tenantId, String positionId, String title,
+        String itemId, String startdate, String enddate, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchByUserId(positionId, title, itemId, startdate, enddate, page, rows);
     }
@@ -293,11 +303,11 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
      * @param enddate 结束日期
      * @param page 页码
      * @param rows 条数
-     * @return
+     * @return Y9Page<OfficeDoneInfoModel>
      */
     @Override
     @GetMapping(value = "/searchByPositionIdAndSystemName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> searchByPositionIdAndSystemName(String tenantId, String positionId, String title,
+    public Y9Page<OfficeDoneInfoModel> searchByPositionIdAndSystemName(String tenantId, String positionId, String title,
         String systemName, String startdate, String enddate, Integer page, Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return officeDoneInfoService.searchByPositionIdAndSystemName(positionId, title, systemName, startdate, enddate,
@@ -306,16 +316,18 @@ public class OfficeDoneInfoApiImpl implements OfficeDoneInfo4PositionApi {
 
     /**
      * 设置会议类型
-     * 
+     *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param meetingType 会议类型
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping(value = "/setMeeting", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void setMeeting(String tenantId, String processInstanceId, String meetingType) {
+    public Y9Result<Object> setMeeting(String tenantId, String processInstanceId, String meetingType) {
         Y9LoginUserHolder.setTenantId(tenantId);
         officeDoneInfoService.setMeeting(processInstanceId, meetingType);
+        return Y9Result.successMsg("设置成功");
     }
 
 }
