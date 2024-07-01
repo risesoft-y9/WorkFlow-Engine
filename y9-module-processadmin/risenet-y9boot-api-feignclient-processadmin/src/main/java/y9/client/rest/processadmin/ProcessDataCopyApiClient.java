@@ -1,5 +1,6 @@
 package y9.client.rest.processadmin;
 
+import net.risesoft.pojo.Y9Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,7 +27,7 @@ public interface ProcessDataCopyApiClient extends ProcessDataCopyApi {
      */
     @Override
     @PostMapping("/copyModel")
-    void copyModel(@RequestParam("sourceTenantId") String sourceTenantId,
-        @RequestParam("targetTenantId") String targetTenantId, @RequestParam("modelKey") String modelKey);
+    Y9Result<Object> copyModel(@RequestParam("sourceTenantId") String sourceTenantId,
+                               @RequestParam("targetTenantId") String targetTenantId, @RequestParam("modelKey") String modelKey);
 
 }

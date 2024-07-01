@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.processadmin.ProcessDataCopyApi;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.FlowableTenantInfoHolder;
 
 /**
@@ -46,7 +47,7 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
      */
     @Override
     @PostMapping(value = "/copyModel", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void copyModel(@RequestParam String sourceTenantId, @RequestParam String targetTenantId,
+    public Y9Result<Object> copyModel(@RequestParam String sourceTenantId, @RequestParam String targetTenantId,
         @RequestParam String modelKey) {
         try {
             /*
@@ -97,5 +98,6 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
         } catch (Exception e) {
             LOGGER.error("exception message", e);
         }
+        return Y9Result.success();
     }
 }

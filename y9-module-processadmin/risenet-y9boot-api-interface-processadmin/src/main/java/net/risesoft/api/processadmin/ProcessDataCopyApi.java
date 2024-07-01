@@ -1,5 +1,7 @@
 package net.risesoft.api.processadmin;
 
+import net.risesoft.pojo.Y9Result;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -15,6 +17,6 @@ public interface ProcessDataCopyApi {
      * @param modelKey 流程定义key
      * @throws Exception 异常
      */
-    void copyModel(String sourceTenantId, String targetTenantId, String modelKey) throws Exception;
+    Y9Result<Object> copyModel(String sourceTenantId, String targetTenantId, String modelKey) throws Exception;
 
 }
