@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.HistoricActivityApi;
 import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricActivityService;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
@@ -40,11 +41,11 @@ public class HistoricActivityApiImpl implements HistoricActivityApi {
      */
     @Override
     @GetMapping(value = "/getByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoricActivityInstanceModel> getByProcessInstanceId(@RequestParam String tenantId,
+    public Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricActivityInstance> list = customHistoricActivityService.getByProcessInstanceId(processInstanceId);
-        return FlowableModelConvertUtil.historicActivityInstanceList2Model(list);
+        return Y9Result.success(FlowableModelConvertUtil.historicActivityInstanceList2Model(list));
     }
 
     /**
@@ -53,16 +54,16 @@ public class HistoricActivityApiImpl implements HistoricActivityApi {
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param year 年度
-     * @return List<HistoricActivityInstanceModel>
+     * @return Y9Result<List<HistoricActivityInstanceModel>>
      */
     @Override
     @GetMapping(value = "/getByProcessInstanceIdAndYear", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoricActivityInstanceModel> getByProcessInstanceIdAndYear(@RequestParam String tenantId,
+    public Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceIdAndYear(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricActivityInstance> list =
             customHistoricActivityService.getByProcessInstanceIdAndYear(processInstanceId, year);
-        return FlowableModelConvertUtil.historicActivityInstanceList2Model(list);
+        return Y9Result.success(FlowableModelConvertUtil.historicActivityInstanceList2Model(list));
     }
 
 }

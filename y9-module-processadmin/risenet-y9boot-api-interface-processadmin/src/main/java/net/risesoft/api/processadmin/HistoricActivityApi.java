@@ -3,6 +3,7 @@ package net.risesoft.api.processadmin;
 import java.util.List;
 
 import net.risesoft.model.processadmin.HistoricActivityInstanceModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -18,7 +19,7 @@ public interface HistoricActivityApi {
      * @param processInstanceId 流程实例id
      * @return List&lt;HistoricActivityInstanceModel&gt;
      */
-    List<HistoricActivityInstanceModel> getByProcessInstanceId(String tenantId, String processInstanceId);
+    Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceId(String tenantId, String processInstanceId);
 
     /**
      * 根据流程实例获取历史节点实例
@@ -28,6 +29,6 @@ public interface HistoricActivityApi {
      * @param year 年度
      * @return List<HistoricActivityInstanceModel>
      */
-    List<HistoricActivityInstanceModel> getByProcessInstanceIdAndYear(String tenantId, String processInstanceId,
+    Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceIdAndYear(String tenantId, String processInstanceId,
         String year);
 }
