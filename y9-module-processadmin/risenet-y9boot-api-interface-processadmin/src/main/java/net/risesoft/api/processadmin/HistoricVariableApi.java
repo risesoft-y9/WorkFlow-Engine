@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -20,7 +21,7 @@ public interface HistoricVariableApi {
      * @param processInstanceId 流程实例id
      * @return List&lt;HistoricVariableInstanceModel&gt;
      */
-    List<HistoricVariableInstanceModel> getByProcessInstanceId(String tenantId, String processInstanceId);
+    Y9Result<List<HistoricVariableInstanceModel>> getByProcessInstanceId(String tenantId, String processInstanceId);
 
     /**
      * 根据流程实例Id和流程变量的Key,获取历史流程变量的值
@@ -31,7 +32,7 @@ public interface HistoricVariableApi {
      * @param year 年份
      * @return HistoricVariableInstanceModel
      */
-    HistoricVariableInstanceModel getByProcessInstanceIdAndVariableName(String tenantId, String processInstanceId,
+    Y9Result<HistoricVariableInstanceModel> getByProcessInstanceIdAndVariableName(String tenantId, String processInstanceId,
         String variableName, String year);
 
     /**
@@ -41,7 +42,7 @@ public interface HistoricVariableApi {
      * @param taskId 任务id
      * @return List&lt;HistoricVariableInstanceModel&gt;
      */
-    List<HistoricVariableInstanceModel> getByTaskId(String tenantId, String taskId);
+    Y9Result<List<HistoricVariableInstanceModel>> getByTaskId(String tenantId, String taskId);
 
     /**
      * 根据流程实例Id和流程变量的Key,获取历史任务变量的值
@@ -52,7 +53,7 @@ public interface HistoricVariableApi {
      * @param year 年份
      * @return HistoricVariableInstanceModel
      */
-    HistoricVariableInstanceModel getByTaskIdAndVariableName(String tenantId, String taskId, String variableName,
+    Y9Result<HistoricVariableInstanceModel> getByTaskIdAndVariableName(String tenantId, String taskId, String variableName,
         String year);
 
     /**
@@ -63,5 +64,5 @@ public interface HistoricVariableApi {
      * @param keys 变量集合
      * @return Map
      */
-    Map<String, Object> getVariables(String tenantId, String processInstanceId, Collection<String> keys);
+    Y9Result<Map<String, Object>> getVariables(String tenantId, String processInstanceId, Collection<String> keys);
 }
