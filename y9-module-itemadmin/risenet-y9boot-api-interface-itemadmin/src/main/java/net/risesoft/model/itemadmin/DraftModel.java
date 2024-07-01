@@ -1,6 +1,9 @@
 package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 
@@ -71,7 +74,8 @@ public class DraftModel implements Serializable {
     /**
      * 起草时间
      */
-    private String draftTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date draftTime;
 
     /**
      * 排序号
