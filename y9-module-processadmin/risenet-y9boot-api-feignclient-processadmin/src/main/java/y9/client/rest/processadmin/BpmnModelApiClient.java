@@ -1,7 +1,6 @@
 package y9.client.rest.processadmin;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import net.risesoft.api.processadmin.BpmnModelApi;
+import net.risesoft.model.processadmin.FlowableBpmnModel;
 import net.risesoft.model.processadmin.Y9BpmnModel;
+import net.risesoft.model.processadmin.Y9FlowChartModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -48,7 +49,7 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例
-     * @return byte[]
+     * @return Y9Result<String>
      * @throws Exception Exception
      */
     @Override
@@ -61,7 +62,7 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId processInstanceId
-     * @return Map
+     * @return Y9Result<Y9BpmnModel>
      * @throws Exception Exception
      */
     @Override
@@ -72,15 +73,14 @@ public interface BpmnModelApiClient extends BpmnModelApi {
     /**
      * 获取流程图数据
      *
-     * @param tenantId
-     * @param processInstanceId
-     * @return
-     * @throws Exception
+     * @param tenantId 租户id
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<Y9FlowChartModel>
      */
     @Override
     @GetMapping("/getFlowChart")
-    Map<String, Object> getFlowChart(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId) throws Exception;
+    Y9Result<Y9FlowChartModel> getFlowChart(@RequestParam("tenantId") String tenantId,
+                                            @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 获取模型列表
@@ -89,7 +89,7 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @GetMapping(value = "/getModelList")
-    public Y9Result<List<Map<String, Object>>> getModelList(@RequestParam("tenantId") String tenantId);
+    public Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam("tenantId") String tenantId);
 
     /**
      * 获取流程设计模型xml
@@ -99,7 +99,7 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @GetMapping(value = "/getModelXml")
-    public Y9Result<Map<String, Object>> getModelXml(@RequestParam("tenantId") String tenantId,
+    Y9Result<FlowableBpmnModel> getModelXml(@RequestParam("tenantId") String tenantId,
         @RequestParam("modelId") String modelId);
 
     /**
@@ -112,7 +112,7 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @PostMapping(value = "/import")
-    Map<String, Object> importProcessModel(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> importProcessModel(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("file") MultipartFile file);
 
     /**
@@ -124,7 +124,7 @@ public interface BpmnModelApiClient extends BpmnModelApi {
      */
     @Override
     @PostMapping(value = "/saveModelXml")
-    public Y9Result<String> saveModelXml(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> saveModelXml(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("modelId") String modelId,
         @RequestParam("file") MultipartFile file);
 

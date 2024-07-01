@@ -5,13 +5,9 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,9 +44,9 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessParamApi;
-import net.risesoft.api.itemadmin.ProcessTrackApi;
+import net.risesoft.api.itemadmin.position.OfficeDoneInfo4PositionApi;
+import net.risesoft.api.itemadmin.position.ProcessTrack4PositionApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.BpmnModelApi;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -58,8 +54,10 @@ import net.risesoft.model.itemadmin.ProcessParamModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.platform.Person;
 import net.risesoft.model.processadmin.FlowNodeModel;
+import net.risesoft.model.processadmin.FlowableBpmnModel;
 import net.risesoft.model.processadmin.LinkNodeModel;
 import net.risesoft.model.processadmin.Y9BpmnModel;
+import net.risesoft.model.processadmin.Y9FlowChartModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricActivityService;
 import net.risesoft.service.CustomHistoricProcessService;
@@ -100,11 +98,11 @@ public class BpmnModelApiImpl implements BpmnModelApi {
 
     private final PersonApi personManager;
 
-    private final OfficeDoneInfoApi officeDoneInfoManager;
+    private final OfficeDoneInfo4PositionApi officeDoneInfoManager;
 
     private final ProcessParamApi processParamManager;
 
-    private final ProcessTrackApi processTrackManager;
+    private final ProcessTrack4PositionApi processTrackManager;
 
     /**
      * 删除模型
@@ -139,8 +137,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      *
      * @param tenantId 租户id
      * @param processInstanceId 流程实例id
-     * @return byte[]
-     * @throws Exception Exception
+     * @return Y9Result<String>
      */
     @Override
     @PostMapping(value = "/genProcessDiagram", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -196,7 +193,6 @@ public class BpmnModelApiImpl implements BpmnModelApi {
     @Override
     @GetMapping(value = "/getBpmnModel", produces = MediaType.APPLICATION_JSON_VALUE)
     public Y9Result<Y9BpmnModel> getBpmnModel(@RequestParam String tenantId, @RequestParam String processInstanceId) {
-        Map<String, Object> map = new HashMap<>(16);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricProcessInstance pi = customHistoricProcessService.getById(processInstanceId);
         // 流程走完的不显示图
@@ -288,11 +284,12 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      */
     @Override
     @GetMapping(value = "/getFlowChart", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getFlowChart(@RequestParam String tenantId, @RequestParam String processInstanceId) {
-        Map<String, Object> resMap = new HashMap<>(16);
+    public Y9Result<Y9FlowChartModel> getFlowChart(@RequestParam String tenantId,
+        @RequestParam String processInstanceId) {
+        Y9FlowChartModel flowChartModel = new Y9FlowChartModel();
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<Y9FlowChartModel> listMap = new ArrayList<>();
         String activityId = "";
         String parentId = "";
         String year = "";
@@ -301,7 +298,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             HistoricProcessInstance hpi = customHistoricProcessService.getById(processInstanceId);
             if (hpi == null) {
                 OfficeDoneInfoModel officeDoneInfo =
-                    officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId);
+                    officeDoneInfoManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 if (officeDoneInfo == null) {
                     ProcessParamModel processParam =
                         processParamManager.findByProcessInstanceId(tenantId, processInstanceId).getData();
@@ -330,19 +327,19 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 }
                 if (type.contains(SysVariables.ENDEVENT)) {
                     num += 1;
-                    String completer = (String)listMap.get(listMap.size() - 1).get("title");
+                    String completer = listMap.get(listMap.size() - 1).getTitle();
                     if (completer.contains("主办")) {
                         completer = completer.substring(0, completer.length() - 4);
                     }
-                    Map<String, Object> map = new HashMap<>(16);
-                    map.put("id", id);
-                    map.put("name", "办结");
-                    map.put("title", completer);
-                    map.put("parentId", parentId);
-                    map.put("className", "specialColor");
-                    map.put("num", num);
-                    map.put("endTime", his.getEndTime() != null ? his.getEndTime().getTime() : 0);
-                    listMap.add(map);
+                    Y9FlowChartModel flowChart = new Y9FlowChartModel();
+                    flowChart.setId(id);
+                    flowChart.setName("办结");
+                    flowChart.setTitle(completer);
+                    flowChart.setParentId(parentId);
+                    flowChart.setClassName("specialColor");
+                    flowChart.setNum(num);
+                    flowChart.setEndTime(his.getEndTime() != null ? his.getEndTime().getTime() : 0);
+                    listMap.add(flowChart);
                     continue;
                 }
                 if (type.contains(SysVariables.GATEWAY)) {
@@ -352,43 +349,43 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                 String userId = his.getAssignee();
                 Person person = personManager.get(tenantId, userId).getData();
                 if ("".equals(activityId) || activityId.equals(his.getActivityId())) {
-                    Map<String, Object> map = new HashMap<>(16);
-                    map.put("id", taskId);
-                    map.put("name", his.getActivityName());
-                    map.put("title", person != null ? person.getName() : "该用户不存在");
+
                     HistoricVariableInstance historicVariableInstance = customHistoricVariableService
                         .getByTaskIdAndVariableName(taskId, SysVariables.PARALLELSPONSOR, year);
+                    Y9FlowChartModel flowChart = new Y9FlowChartModel();
+                    flowChart.setId(taskId);
+                    flowChart.setName(his.getActivityName());
+                    flowChart.setTitle(person != null ? person.getName() : "该用户不存在");
                     if (historicVariableInstance != null) {
-                        map.put("title", person != null ? person.getName() + "(主办)" : "该用户不存在");
+                        flowChart.setTitle(person != null ? person.getName() + "(主办)" : "该用户不存在");
                     }
-                    map.put("parentId", parentId);
-                    map.put("className", his.getEndTime() != null ? "serverColor" : "specialColor");
-                    map.put("endTime", his.getEndTime() != null ? his.getEndTime().getTime() : 0);
-                    map.put("num", num);
-                    listMap.add(map);
+                    flowChart.setParentId(parentId);
+                    flowChart.setClassName(his.getEndTime() != null ? "serverColor" : "specialColor");
+                    flowChart.setNum(num);
+                    flowChart.setEndTime(his.getEndTime() != null ? his.getEndTime().getTime() : 0);
+                    listMap.add(flowChart);
                     activityId = his.getActivityId();
                     parentId = taskId;
                 } else {
                     num += 1;
                     activityId = his.getActivityId();
-                    Map<String, Object> map = new HashMap<>(16);
-                    map.put("id", taskId);
-                    map.put("name", his.getActivityName());
-                    map.put("title", person != null ? person.getName() : "该用户不存在");
                     HistoricVariableInstance historicVariableInstance = customHistoricVariableService
                         .getByTaskIdAndVariableName(taskId, SysVariables.PARALLELSPONSOR, year);
+                    Y9FlowChartModel flowChart = new Y9FlowChartModel();
+                    flowChart.setId(taskId);
+                    flowChart.setName(his.getActivityName());
+                    flowChart.setTitle(person != null ? person.getName() : "该用户不存在");
                     if (historicVariableInstance != null) {
-                        map.put("title", person != null ? person.getName() + "(主办)" : "该用户不存在");
+                        flowChart.setTitle(person != null ? person.getName() + "(主办)" : "该用户不存在");
                     }
-                    map.put("parentId", parentId);
-                    map.put("className", his.getEndTime() != null ? "serverColor" : "specialColor");
-                    map.put("endTime", his.getEndTime() != null ? his.getEndTime().getTime() : 0);
-                    map.put("num", num);
-                    listMap.add(map);
+                    flowChart.setParentId(parentId);
+                    flowChart.setClassName(his.getEndTime() != null ? "serverColor" : "specialColor");
+                    flowChart.setNum(num);
+                    flowChart.setEndTime(his.getEndTime() != null ? his.getEndTime().getTime() : 0);
+                    listMap.add(flowChart);
                 }
 
-                List<ProcessTrackModel> ptList =
-                    processTrackManager.findByTaskIdAsc(tenantId, userId, taskId).getData();
+                List<ProcessTrackModel> ptList = processTrackManager.findByTaskIdAsc(tenantId, taskId).getData();
                 String parentId0 = taskId;
                 for (int j = 0; j < ptList.size(); j++) {
                     num += 1;
@@ -396,16 +393,16 @@ public class BpmnModelApiImpl implements BpmnModelApi {
                     if (j != 0) {
                         parentId0 = pt.getId();
                     }
-                    Map<String, Object> map = new HashMap<>(16);
-                    map.put("id", pt.getId());
-                    map.put("name", pt.getTaskDefName());
-                    map.put("title", pt.getSenderName());
-                    map.put("parentId", parentId0);
-                    map.put("className", StringUtils.isNotBlank(pt.getEndTime()) ? "serverColor" : "specialColor");
-                    map.put("endTime",
-                        StringUtils.isNotBlank(pt.getEndTime()) ? sdf.parse(pt.getEndTime()).getTime() : 0);
-                    map.put("num", num);
-                    listMap.add(map);
+                    Y9FlowChartModel flowChart = new Y9FlowChartModel();
+                    flowChart.setId(pt.getId());
+                    flowChart.setName(pt.getTaskDefName());
+                    flowChart.setTitle(pt.getSenderName());
+                    flowChart.setParentId(parentId0);
+                    flowChart.setClassName(StringUtils.isNotBlank(pt.getEndTime()) ? "serverColor" : "specialColor");
+                    flowChart.setNum(num);
+                    flowChart
+                        .setEndTime(StringUtils.isNotBlank(pt.getEndTime()) ? sdf.parse(pt.getEndTime()).getTime() : 0);
+                    listMap.add(flowChart);
                     if (j == ptList.size() - 1) {
                         parentId = parentId0;
                     }
@@ -414,48 +411,48 @@ public class BpmnModelApiImpl implements BpmnModelApi {
             int oldNum = 0;
             int newNum = 0;
             for (int i = 0; i < listMap.size(); i++) {
-                Map<String, Object> map = listMap.get(i);
-                int currNum = (int)map.get("num");
+                Y9FlowChartModel y9FlowChartModel = listMap.get(i);
+                int currNum = y9FlowChartModel.getNum();
                 if (currNum == 0) {
-                    parentId = (String)map.get("id");
-                    map.put("parentId", "");
+                    parentId = y9FlowChartModel.getId();
+                    y9FlowChartModel.setParentId("");
                 }
                 if (currNum != oldNum) {
-                    map.put("parentId", parentId);
+                    y9FlowChartModel.setParentId(parentId);
                     if (newNum == 0) {
                         newNum = currNum;
                     }
                     if (newNum != currNum) {
                         oldNum = newNum;
                         newNum = currNum;
-                        parentId = (String)listMap.get(i - 1).get("id");
-                        map.put("parentId", parentId);
+                        parentId = listMap.get(i - 1).getId();
+                        y9FlowChartModel.setParentId(parentId);
                     }
                 }
             }
             parentId = "0";
-            List<Map<String, Object>> childrenMap = new ArrayList<>();
+            List<Y9FlowChartModel> childrenMap = new ArrayList<>();
             for (int i = listMap.size() - 1; i >= 0; i--) {
-                Map<String, Object> map = listMap.get(i);
-                String id = (String)map.get("id");
+                Y9FlowChartModel y9FlowChartModel = listMap.get(i);
+                String id = y9FlowChartModel.getId();
                 if (StringUtils.isNotBlank(parentId) && !parentId.equals(id)) {
-                    parentId = (String)map.get("parentId");
-                    childrenMap.add(map);
+                    parentId = y9FlowChartModel.getParentId();
+                    childrenMap.add(y9FlowChartModel);
                 } else {
-                    map.put("children", childrenMap);
-                    map.put("collapsed", false);
-                    parentId = (String)map.get("parentId");
+                    y9FlowChartModel.setChildren(childrenMap);
+                    y9FlowChartModel.setCollapsed(false);
+                    parentId = y9FlowChartModel.getParentId();
                     childrenMap = new ArrayList<>();
-                    childrenMap.add(map);
+                    childrenMap.add(y9FlowChartModel);
                     if ("".equals(parentId)) {
-                        resMap = map;
+                        flowChartModel = y9FlowChartModel;
                     }
                 }
             }
         } catch (Exception e) {
             LOGGER.error("获取流程图数据失败", e);
         }
-        return resMap;
+        return Y9Result.success(flowChartModel);
     }
 
     /**
@@ -466,7 +463,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      */
     @Override
     @RequestMapping(value = "/getModelList", method = RequestMethod.GET, produces = "application/json")
-    public Y9Result<List<Map<String, Object>>> getModelList(@RequestParam String tenantId) {
+    public Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam String tenantId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<Map<String, Object>> items = new ArrayList<>();
         return Y9Result.success(items, "获取成功");
@@ -481,7 +478,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      */
     @Override
     @RequestMapping(value = "/getModelXml")
-    public Y9Result<Map<String, Object>> getModelXml(@RequestParam String tenantId, @RequestParam String modelId) {
+    public Y9Result<FlowableBpmnModel> getModelXml(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Map<String, Object> map = new HashMap<>();
         return Y9Result.success(map, "获取成功");
@@ -497,7 +494,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      */
     @Override
     @RequestMapping(value = "/import")
-    public Map<String, Object> importProcessModel(@RequestParam String tenantId, @RequestParam String userId,
+    public Y9Result<Object> importProcessModel(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam MultipartFile file) {
         Map<String, Object> map = new HashMap<>(16);
         map.put("success", false);
@@ -516,7 +513,7 @@ public class BpmnModelApiImpl implements BpmnModelApi {
      */
     @Override
     @RequestMapping(value = "/saveModelXml")
-    public Y9Result<String> saveModelXml(@RequestParam String tenantId, @RequestParam String userId,
+    public Y9Result<Object> saveModelXml(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String modelId, @RequestParam MultipartFile file) {
         return Y9Result.failure("保存失败");
     }
