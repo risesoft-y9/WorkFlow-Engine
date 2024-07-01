@@ -132,7 +132,7 @@ public class ButtonUtil {
                     if (usersSize != nrOfInstances || nrOfCompletedInstances != loopCounter
                         || 1 != nrOfActiveInstances) {
                         finishedCount =
-                            (int)historicTaskManager.getFinishedCountByExecutionId(tenantId, task.getExecutionId());
+                            (int)historicTaskManager.getFinishedCountByExecutionId(tenantId, task.getExecutionId()).getData();
                         nrOfCompletedInstances = finishedCount;
                         loopCounter = finishedCount;
                         Map<String, Object> varMapTemp = new HashMap<>(16);

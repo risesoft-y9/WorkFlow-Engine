@@ -446,7 +446,7 @@ public class OpinionServiceImpl implements OpinionService {
                         if (takeBack != null && Boolean.valueOf(takeBack)
                             && Y9LoginUserHolder.getPersonId().equals(opinion.getUserId())) {// 收回件
                             List<HistoricTaskInstanceModel> tlist = historicTaskApi
-                                .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "");
+                                .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "").getData();
                             for (int i = tlist.size() - 1; i >= 0; i--) {
                                 HistoricTaskInstanceModel htimodel = tlist.get(i);
                                 if (htimodel.getEndTime() != null && htimodel.getId().equals(opinion.getTaskId())) {// 找到收回前的上一个任务

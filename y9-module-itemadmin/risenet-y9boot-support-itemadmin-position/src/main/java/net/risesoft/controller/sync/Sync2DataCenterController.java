@@ -200,7 +200,7 @@ public class Sync2DataCenterController {
                 try {
                     processInstanceId = (String)map.get("PROC_INST_ID_");
                     List<HistoricTaskInstanceModel> htiList = historicTaskManager
-                        .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, year);
+                        .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, year).getData();
                     ActRuDetail newActRuDetail;
                     String assignee, owner;
                     for (HistoricTaskInstanceModel hti : htiList) {
@@ -342,7 +342,7 @@ public class Sync2DataCenterController {
                 try {
                     processInstanceId = (String)map.get("PROC_INST_ID_");
                     List<HistoricTaskInstanceModel> htiList = historicTaskManager
-                        .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "");
+                        .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "").getData();
                     ActRuDetail newActRuDetail;
                     String assignee, owner;
                     for (HistoricTaskInstanceModel hti : htiList) {

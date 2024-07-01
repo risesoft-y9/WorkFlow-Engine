@@ -1258,7 +1258,7 @@ public class DocumentServiceImpl implements DocumentService {
                     if (processParam != null && StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
                         List<HistoricTaskInstanceModel> hisTaskList =
                             historicTaskManager.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId,
-                                processParam.getProcessInstanceId(), "");
+                                processParam.getProcessInstanceId(), "").getData();
                         for (HistoricTaskInstanceModel hisTask : hisTaskList) {
                             // 获取相同任务
                             if (hisTask.getTaskDefinitionKey().equals(taskDefinitionKey)) {
