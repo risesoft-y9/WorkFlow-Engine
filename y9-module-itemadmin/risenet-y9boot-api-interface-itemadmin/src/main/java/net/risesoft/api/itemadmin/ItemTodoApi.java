@@ -1,5 +1,7 @@
 package net.risesoft.api.itemadmin;
 
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -27,7 +29,8 @@ public interface ItemTodoApi {
      */
     @GetMapping("/countByUserIdAndSystemName")
     Y9Result<Integer> countByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName) throws Exception;
+        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName)
+        throws Exception;
 
     /**
      * 查询待办任务，以发送时间排序
@@ -42,7 +45,7 @@ public interface ItemTodoApi {
      */
     @GetMapping("/findByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
 
     /**
@@ -60,8 +63,9 @@ public interface ItemTodoApi {
      */
     @GetMapping("/searchByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
-        @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
+        @RequestParam(value = "tableName") String tableName,
+        @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows) throws Exception;
 
 }

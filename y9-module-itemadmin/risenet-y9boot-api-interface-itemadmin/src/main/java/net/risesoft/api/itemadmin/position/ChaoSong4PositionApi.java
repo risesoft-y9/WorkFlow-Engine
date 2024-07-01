@@ -147,8 +147,9 @@ public interface ChaoSong4PositionApi {
      */
     @GetMapping("/getDoneList")
     Y9Page<ChaoSongModel> getDoneList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("documentTitle") String documentTitle,
-        @RequestParam("rows") int rows, @RequestParam("page") int page);
+        @RequestParam("positionId") String positionId,
+        @RequestParam(value = "documentTitle", required = false) String documentTitle, @RequestParam("rows") int rows,
+        @RequestParam("page") int page);
 
     /**
      * Description: 根据流程实例获取除当前人外的其他抄送件
@@ -164,7 +165,8 @@ public interface ChaoSong4PositionApi {
     @GetMapping("/getListByProcessInstanceId")
     Y9Page<ChaoSongModel> getListByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("positionId") String positionId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("userName") String userName, @RequestParam("rows") int rows, @RequestParam("page") int page);
+        @RequestParam(value = "userName", required = false) String userName, @RequestParam("rows") int rows,
+        @RequestParam("page") int page);
 
     /**
      * Description: 根据流程实例获取当前人的抄送件
@@ -180,7 +182,8 @@ public interface ChaoSong4PositionApi {
     @GetMapping("/getListBySenderIdAndProcessInstanceId")
     Y9Page<ChaoSongModel> getListBySenderIdAndProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("senderId") String senderId, @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("userName") String userName, @RequestParam("rows") int rows, @RequestParam("page") int page);
+        @RequestParam(value = "userName", required = false) String userName, @RequestParam("rows") int rows,
+        @RequestParam("page") int page);
 
     /**
      * 批阅件
@@ -194,8 +197,9 @@ public interface ChaoSong4PositionApi {
      */
     @GetMapping("/getOpinionChaosongByUserId")
     Y9Page<ChaoSongModel> getOpinionChaosongByUserId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("documentTitle") String documentTitle,
-        @RequestParam("rows") int rows, @RequestParam("page") int page);
+        @RequestParam("positionId") String positionId,
+        @RequestParam(value = "documentTitle", required = false) String documentTitle, @RequestParam("rows") int rows,
+        @RequestParam("page") int page);
 
     /**
      * 根据人员id获取抄送已阅件统计
@@ -220,8 +224,9 @@ public interface ChaoSong4PositionApi {
      */
     @GetMapping("/getTodoList")
     Y9Page<ChaoSongModel> getTodoList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("documentTitle") String documentTitle,
-        @RequestParam("rows") int rows, @RequestParam("page") int page);
+        @RequestParam("positionId") String positionId,
+        @RequestParam(value = "documentTitle", required = false) String documentTitle, @RequestParam("rows") int rows,
+        @RequestParam("page") int page);
 
     /**
      * 我的抄送列表
@@ -239,9 +244,11 @@ public interface ChaoSong4PositionApi {
      */
     @GetMapping("/myChaoSongList")
     Y9Page<ChaoSongModel> myChaoSongList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("searchName") String searchName,
-        @RequestParam("itemId") String itemId, @RequestParam("userName") String userName,
-        @RequestParam("state") String state, @RequestParam("year") String year, @RequestParam("page") int page,
+        @RequestParam("positionId") String positionId,
+        @RequestParam(value = "searchName", required = false) String searchName, @RequestParam("itemId") String itemId,
+        @RequestParam(value = "userName", required = false) String userName,
+        @RequestParam(value = "state", required = false) String state,
+        @RequestParam(value = "year", required = false) String year, @RequestParam("page") int page,
         @RequestParam("rows") int rows);
 
     /**
@@ -281,9 +288,11 @@ public interface ChaoSong4PositionApi {
      */
     @GetMapping("/searchAllByUserId")
     Y9Page<ChaoSongModel> searchAllByUserId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("searchName") String searchName,
-        @RequestParam("itemId") String itemId, @RequestParam("userName") String userName,
-        @RequestParam("state") String state, @RequestParam("year") String year, @RequestParam("page") Integer page,
+        @RequestParam("positionId") String positionId,
+        @RequestParam(value = "searchName", required = false) String searchName, @RequestParam("itemId") String itemId,
+        @RequestParam(value = "userName", required = false) String userName,
+        @RequestParam(value = "state", required = false) String state,
+        @RequestParam(value = "year", required = false) String year, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows);
 
     /**
@@ -302,9 +311,11 @@ public interface ChaoSong4PositionApi {
      */
     @GetMapping("/searchAllList")
     Y9Page<ChaoSongModel> searchAllList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("searchName") String searchName, @RequestParam("itemId") String itemId,
-        @RequestParam("senderName") String senderName, @RequestParam("userName") String userName,
-        @RequestParam("state") String state, @RequestParam("year") String year, @RequestParam("page") Integer page,
+        @RequestParam(value = "searchName", required = false) String searchName, @RequestParam("itemId") String itemId,
+        @RequestParam(value = "senderName", required = false) String senderName,
+        @RequestParam(value = "userName", required = false) String userName,
+        @RequestParam(value = "state", required = false) String state,
+        @RequestParam(value = "year", required = false) String year, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows);
 
     /**

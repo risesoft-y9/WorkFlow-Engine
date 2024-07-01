@@ -35,8 +35,10 @@ public interface QueryListApi {
     @GetMapping("/getQueryList")
     Y9Page<ActRuDetailModel> getQueryList(@RequestParam("tenantId") @NotBlank String tenantId,
         @RequestParam("userId") @NotBlank String userId, @RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam("state") String state, @RequestParam("createDate") String createDate,
-        @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+        @RequestParam(value = "state", required = false) String state,
+        @RequestParam(value = "createDate", required = false) String createDate,
+        @RequestParam(value = "tableName") String tableName,
+        @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 
 }

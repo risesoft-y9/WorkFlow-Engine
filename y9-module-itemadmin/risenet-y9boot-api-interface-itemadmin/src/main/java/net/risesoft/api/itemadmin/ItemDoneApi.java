@@ -1,5 +1,7 @@
 package net.risesoft.api.itemadmin;
 
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -20,7 +22,8 @@ public interface ItemDoneApi {
      */
     @GetMapping("/countByUserIdAndSystemName")
     Y9Result<Integer> countByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName) throws Exception;
+        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName)
+        throws Exception;
 
     /**
      * 获取监控办结列表
@@ -67,8 +70,8 @@ public interface ItemDoneApi {
      */
     @GetMapping("/searchBySystemName")
     Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("systemName") String systemName, @RequestParam("tableName") String tableName,
-        @RequestParam("searchMapStr") String searchMapStr, @RequestParam("page") Integer page,
+        @RequestParam("systemName") String systemName, @RequestParam(value = "tableName") String tableName,
+        @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows) throws Exception;
 
     /**
@@ -87,6 +90,7 @@ public interface ItemDoneApi {
     @GetMapping("/searchByUserIdAndSystemName")
     Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
-        @RequestParam("tableName") String tableName, @RequestParam("searchMapStr") String searchMapStr,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows) throws Exception;
+        @RequestParam(value = "tableName") String tableName,
+        @RequestParam(value = "searchMapStr", required = false) String searchMapStr, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows) throws Exception;
 }

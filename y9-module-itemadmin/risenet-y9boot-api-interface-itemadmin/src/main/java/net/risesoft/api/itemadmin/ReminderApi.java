@@ -26,7 +26,7 @@ public interface ReminderApi {
      * @param ids ids
      * @return {@code Y9Result<Object>} 通用分页请求返回对象
      */
-    @PostMapping(value = "/deleteList", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/deleteList")
     Y9Result<Object> deleteList(@RequestParam("tenantId") String tenantId, @RequestBody String[] ids);
 
     /**
