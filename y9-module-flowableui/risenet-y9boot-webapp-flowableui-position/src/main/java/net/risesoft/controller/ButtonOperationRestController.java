@@ -444,7 +444,7 @@ public class ButtonOperationRestController {
                             parallelSponsorObj = variableApi.getVariableLocal(tenantId, hai.getId(), "parallelSponsor");
                         } else {
                             HistoricVariableInstanceModel parallelSponsorObj1 = historicvariableApi
-                                .getByTaskIdAndVariableName(tenantId, hai.getId(), "parallelSponsor", "");
+                                .getByTaskIdAndVariableName(tenantId, hai.getId(), "parallelSponsor", "").getData();
                             parallelSponsorObj =
                                 parallelSponsorObj1 != null ? parallelSponsorObj1.getValue().toString() : "";
                         }

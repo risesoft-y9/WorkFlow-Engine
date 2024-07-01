@@ -82,7 +82,7 @@ public class BpmnViewerRestController {
                         HistoricVariableInstanceModel zhuBan = null;
                         try {
                             zhuBan = historicVariableApi.getByTaskIdAndVariableName(tenantId, task.getTaskId(),
-                                SysVariables.PARALLELSPONSOR, year);
+                                SysVariables.PARALLELSPONSOR, year).getData();
                         } catch (Exception e) {
                             LOGGER.error("获取主办人失败", e);
                         }

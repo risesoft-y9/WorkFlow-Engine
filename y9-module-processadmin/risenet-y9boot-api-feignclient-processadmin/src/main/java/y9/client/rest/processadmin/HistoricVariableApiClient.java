@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
+import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -32,7 +33,7 @@ public interface HistoricVariableApiClient extends HistoricVariableApi {
      */
     @Override
     @GetMapping("/getByProcessInstanceId")
-    List<HistoricVariableInstanceModel> getByProcessInstanceId(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<HistoricVariableInstanceModel>> getByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
@@ -47,9 +48,9 @@ public interface HistoricVariableApiClient extends HistoricVariableApi {
      */
     @Override
     @GetMapping("/getByProcessInstanceIdAndVariableName")
-    HistoricVariableInstanceModel getByProcessInstanceIdAndVariableName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("variableName") String variableName,
-        @RequestParam("year") String year);
+    Y9Result<HistoricVariableInstanceModel> getByProcessInstanceIdAndVariableName(
+        @RequestParam("tenantId") String tenantId, @RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("variableName") String variableName, @RequestParam("year") String year);
 
     /**
      * 根据流程实例Id,获取历史任务变量的值集合
@@ -60,7 +61,7 @@ public interface HistoricVariableApiClient extends HistoricVariableApi {
      */
     @Override
     @GetMapping("/getByTaskId")
-    List<HistoricVariableInstanceModel> getByTaskId(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<HistoricVariableInstanceModel>> getByTaskId(@RequestParam("tenantId") String tenantId,
         @RequestParam("taskId") String taskId);
 
     /**
@@ -75,7 +76,7 @@ public interface HistoricVariableApiClient extends HistoricVariableApi {
      */
     @Override
     @GetMapping("/getByTaskIdAndVariableName")
-    HistoricVariableInstanceModel getByTaskIdAndVariableName(@RequestParam("tenantId") String tenantId,
+    Y9Result<HistoricVariableInstanceModel> getByTaskIdAndVariableName(@RequestParam("tenantId") String tenantId,
         @RequestParam("taskId") String taskId, @RequestParam("variableName") String variableName,
         @RequestParam("year") String year);
 
@@ -89,6 +90,6 @@ public interface HistoricVariableApiClient extends HistoricVariableApi {
      */
     @Override
     @GetMapping(value = "/getVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Map<String, Object> getVariables(@RequestParam("tenantId") String tenantId,
+    Y9Result<Map<String, Object>> getVariables(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId, @RequestBody Collection<String> keys);
 }

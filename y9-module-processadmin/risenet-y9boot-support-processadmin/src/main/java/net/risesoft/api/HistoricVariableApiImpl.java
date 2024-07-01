@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricVariableService;
 import net.risesoft.service.FlowableTenantInfoHolder;
 import net.risesoft.util.FlowableModelConvertUtil;
@@ -43,12 +44,12 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
      */
     @Override
     @GetMapping(value = "/getByProcessInstanceId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoricVariableInstanceModel> getByProcessInstanceId(@RequestParam String tenantId,
+    public Y9Result<List<HistoricVariableInstanceModel>> getByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricVariableInstance> hviList =
             customHistoricVariableService.getByProcessInstanceId(processInstanceId);
-        return FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList);
+        return Y9Result.success(FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList));
     }
 
     /**
@@ -62,16 +63,15 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
      */
     @Override
     @GetMapping(value = "/getByProcessInstanceIdAndVariableName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HistoricVariableInstanceModel getByProcessInstanceIdAndVariableName(@RequestParam String tenantId,
+    public Y9Result<HistoricVariableInstanceModel> getByProcessInstanceIdAndVariableName(@RequestParam String tenantId,
         @RequestParam String processInstanceId, @RequestParam String variableName, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricVariableInstance hvi =
             customHistoricVariableService.getByProcessInstanceIdAndVariableName(processInstanceId, variableName, year);
-        HistoricVariableInstanceModel model = new HistoricVariableInstanceModel();
-        if (hvi != null) {
-            model = FlowableModelConvertUtil.historicVariableInstance2Model(hvi);
+        if (hvi == null) {
+            return Y9Result.failure("该流程实例下没有该变量");
         }
-        return model;
+        return Y9Result.success(FlowableModelConvertUtil.historicVariableInstance2Model(hvi));
     }
 
     /**
@@ -83,10 +83,11 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
      */
     @Override
     @GetMapping(value = "/getByTaskId", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoricVariableInstanceModel> getByTaskId(@RequestParam String tenantId, @RequestParam String taskId) {
+    public Y9Result<List<HistoricVariableInstanceModel>> getByTaskId(@RequestParam String tenantId,
+        @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<HistoricVariableInstance> hviList = customHistoricVariableService.getByTaskId(taskId);
-        return FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList);
+        return Y9Result.success(FlowableModelConvertUtil.historicVariableInstanceList2ModelList(hviList));
     }
 
     /**
@@ -100,17 +101,15 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
      */
     @Override
     @GetMapping(value = "/getByTaskIdAndVariableName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HistoricVariableInstanceModel getByTaskIdAndVariableName(@RequestParam String tenantId,
+    public Y9Result<HistoricVariableInstanceModel> getByTaskIdAndVariableName(@RequestParam String tenantId,
         @RequestParam String taskId, @RequestParam String variableName, @RequestParam String year) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         HistoricVariableInstance hvi =
             customHistoricVariableService.getByTaskIdAndVariableName(taskId, variableName, year);
-        HistoricVariableInstanceModel model;
-        if (hvi != null) {
-            model = FlowableModelConvertUtil.historicVariableInstance2Model(hvi);
-            return model;
+        if (hvi == null) {
+            return Y9Result.failure("流程变量不存在");
         }
-        return null;
+        return Y9Result.success(FlowableModelConvertUtil.historicVariableInstance2Model(hvi));
     }
 
     /**
@@ -124,9 +123,9 @@ public class HistoricVariableApiImpl implements HistoricVariableApi {
     @Override
     @GetMapping(value = "/getVariables", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getVariables(@RequestParam String tenantId, @RequestParam String processInstanceId,
-        @RequestBody Collection<String> keys) {
+    public Y9Result<Map<String, Object>> getVariables(@RequestParam String tenantId,
+        @RequestParam String processInstanceId, @RequestBody Collection<String> keys) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customHistoricVariableService.getVariables(tenantId, processInstanceId, keys);
+        return Y9Result.success(customHistoricVariableService.getVariables(tenantId, processInstanceId, keys));
     }
 }
