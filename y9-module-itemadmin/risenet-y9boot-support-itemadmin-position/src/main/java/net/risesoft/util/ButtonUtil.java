@@ -35,16 +35,16 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 public class ButtonUtil {
 
-    private ProcInstanceRelationshipService procInstanceRelationshipService;
-    private TaskApi taskManager;
-    private VariableApi variableManager;
-    private RuntimeApi runtimeManager;
-    private ProcessDefinitionApi processDefinitionManager;
-    private IdentityApi identityManager;
-    private HistoricTaskApi historicTaskManager;
-    private CustomProcessInfoService customProcessInfoService;
-    private SpmApproveItemService itemService;
-    private ItemTaskConfService itemTaskConfService;
+    private final ProcInstanceRelationshipService procInstanceRelationshipService;
+    private final TaskApi taskManager;
+    private final VariableApi variableManager;
+    private final RuntimeApi runtimeManager;
+    private final ProcessDefinitionApi processDefinitionManager;
+    private final IdentityApi identityManager;
+    private final HistoricTaskApi historicTaskManager;
+    private final CustomProcessInfoService customProcessInfoService;
+    private final SpmApproveItemService itemService;
+    private final ItemTaskConfService itemTaskConfService;
 
     public ButtonUtil() {
         this.procInstanceRelationshipService = Y9Context.getBean(ProcInstanceRelationshipService.class);
@@ -104,9 +104,9 @@ public class ButtonUtil {
             // 当前还没有完成的并行任务个数，对应vars中的nrOfActiveInstances变量
             int nrOfActiveInstances = -1;
             // 已经完成的并行任务个数
-            int nrOfCompletedInstances = -1;
+            long nrOfCompletedInstances = -1;
             // 已经循环的次数
-            int loopCounter = -1;
+            long loopCounter = -1;
             // 用来表示当前任务节点在串行状态下，当前用户是否显示发送按钮和送下一人按钮，当为true时，不显示发送按钮，显示的是送下一人按钮
             boolean isSequential = false;
             // 串行时是否是最后一个人员
@@ -128,11 +128,11 @@ public class ButtonUtil {
                      * 判断 1、实际的用户数和nrOfInstances是否一致 2、nrOfCompletedInstances和loopCounter 3、nrOfActiveInstances等于1
                      * 有一个不成立说明加减签有问题，调整变量，且以users中的用户为准
                      */
-                    int finishedCount = 0;
+                    long finishedCount = 0;
                     if (usersSize != nrOfInstances || nrOfCompletedInstances != loopCounter
                         || 1 != nrOfActiveInstances) {
-                        finishedCount =
-                            (int)historicTaskManager.getFinishedCountByExecutionId(tenantId, task.getExecutionId()).getData();
+                        finishedCount = historicTaskManager
+                            .getFinishedCountByExecutionId(tenantId, task.getExecutionId()).getData();
                         nrOfCompletedInstances = finishedCount;
                         loopCounter = finishedCount;
                         Map<String, Object> varMapTemp = new HashMap<>(16);
@@ -143,7 +143,7 @@ public class ButtonUtil {
                         runtimeManager.setVariables(tenantId, task.getExecutionId(), varMapTemp);
                     }
                     if (nrOfInstances == (nrOfCompletedInstances + 1)
-                        && positionId.equals(varsUsers.get(varsUsers.size() - 1).toString())) {
+                        && positionId.equals(varsUsers.get(varsUsers.size() - 1))) {
                         isLastSequential = true;
                     }
                 } else {
@@ -277,7 +277,7 @@ public class ButtonUtil {
                     // 没有发送按钮的时候，串并行显示加减签按钮
                     boolean b =
                         (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL))
-                            && isButtonShow[1] == false;
+                            && !isButtonShow[1];
                     if (b) {
                         isButtonShow[18] = true;
                     }
@@ -393,7 +393,7 @@ public class ButtonUtil {
                     isButtonShow[13] = true;
                     // 是否是最后一个拒签人员，如果是则提示是否拒签，如果拒签，则退回任务给发送人，发送人重新选择人员进行签收办理
                     List<IdentityLinkModel> identityLinkList =
-                        identityManager.getIdentityLinksForTask(tenantId, taskId);
+                        identityManager.getIdentityLinksForTask(tenantId, taskId).getData();
                     if (identityLinkList.size() <= 1) {
                         map.put("isLastPerson4RefuseClaim", true);
                     }
@@ -406,8 +406,8 @@ public class ButtonUtil {
                     // 判断当前流程实例经过的任务节点数和当前流程实例是否存在父流程实例
                     // 如果任务节点数为1且存在父流程实例，则是流程调用，此时显示拒签按钮
                     // 否则是流程中发给多人等情况，不显示拒签按钮
-                    Integer count =
-                        historicTaskManager.getByProcessInstanceId(tenantId, currentProcInstanceId, "").size();
+                    Integer count = historicTaskManager.getByProcessInstanceId(tenantId, currentProcInstanceId, "")
+                        .getData().size();
                     if (count == 1) {
                         String superProcessInstanceId =
                             procInstanceRelationshipService.getParentProcInstanceId(currentProcInstanceId);
@@ -417,7 +417,7 @@ public class ButtonUtil {
                         }
                     } else {
                         List<IdentityLinkModel> identityLinkList =
-                            identityManager.getIdentityLinksForTask(tenantId, taskId);
+                            identityManager.getIdentityLinksForTask(tenantId, taskId).getData();
                         int size = 2;
                         if (identityLinkList.size() > size) {
                             for (IdentityLinkModel i : identityLinkList) {

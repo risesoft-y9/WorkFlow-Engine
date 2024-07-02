@@ -78,7 +78,8 @@ public class SearchServiceImpl implements SearchService {
                             taskId = task.getId();
                         }
                     } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList = identityApi.getIdentityLinksForTask(tenantId, task.getId());
+                        List<IdentityLinkModel> iList =
+                            identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
                         if (!iList.isEmpty()) {
                             int j = 0;
                             for (IdentityLinkModel identityLink : iList) {
