@@ -445,7 +445,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                 }
                 List<IdentityLinkModel> identityLinkList = new ArrayList<>();
                 try {
-                    identityLinkList = identityManager.getIdentityLinksForTask(tenantId, hti.getId());
+                    identityLinkList = identityManager.getIdentityLinksForTask(tenantId, hti.getId()).getData();
                 } catch (Exception e) {
                     LOGGER.error("Get identity links for task error", e);
                 }
