@@ -60,13 +60,13 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         String tenantId = Y9LoginUserHolder.getTenantId(), userName = person.getName();
         SpmApproveItem item = spmApproveItemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latestpd = repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey);
+        ProcessDefinitionModel latestpd = repositoryManager.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();
         String previouspdId = processDefinitionId;
         if (processDefinitionId.equals(latestpdId)) {
             if (latestpd.getVersion() > 1) {
                 ProcessDefinitionModel previouspd =
-                    repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId);
+                    repositoryManager.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
                 previouspdId = previouspd.getId();
             }
         }
@@ -169,7 +169,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         SpmApproveItem item = spmApproveitemService.findById(itemId);
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd =
-            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey);
+            repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
         String processDefinitionId = latestpd.getId();
         List<ItemStartNodeRole> list = itemStartNodeRoleRepository
             .findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(itemId, processDefinitionId);

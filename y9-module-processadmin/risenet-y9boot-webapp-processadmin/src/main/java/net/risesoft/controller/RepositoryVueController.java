@@ -46,11 +46,11 @@ public class RepositoryVueController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> delete(@RequestParam @NotBlank String deploymentId) {
-        Map<String, Object> map = customRepositoryService.delete(deploymentId);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
+        Y9Result<Object> result = customRepositoryService.delete(deploymentId);
+        if (result.isSuccess()) {
+            return Y9Result.successMsg("删除成功");
         }
-        return Y9Result.failure((String)map.get("msg"));
+        return Y9Result.failure("删除失败");
     }
 
     /**
@@ -61,11 +61,11 @@ public class RepositoryVueController {
      */
     @RequestMapping(value = "/deploy", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> deploy(MultipartFile file) {
-        Map<String, Object> map = customRepositoryService.deploy(file);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
+        Y9Result<Object> result = customRepositoryService.deploy(file);
+        if (result.isSuccess()) {
+            return Y9Result.successMsg("部署成功");
         }
-        return Y9Result.failure((String)map.get("msg"));
+        return Y9Result.failure("部署失败");
     }
 
     /**
@@ -117,11 +117,11 @@ public class RepositoryVueController {
     @RequestMapping(value = "/switchSuspendOrActive", method = RequestMethod.POST, produces = "application/json")
     public Y9Result<String> switchSuspendOrActive(@RequestParam String state,
         @RequestParam String processDefinitionId) {
-        Map<String, Object> map = customRepositoryService.switchSuspendOrActive(state, processDefinitionId);
-        if ((boolean)map.get(UtilConsts.SUCCESS)) {
-            return Y9Result.successMsg((String)map.get("msg"));
+        Y9Result<Object> result = customRepositoryService.switchSuspendOrActive(state, processDefinitionId);
+        if (result.isSuccess()) {
+            return Y9Result.successMsg("操作成功");
         }
-        return Y9Result.failure((String)map.get("msg"));
+        return Y9Result.failure("操作失败");
     }
 
     /**

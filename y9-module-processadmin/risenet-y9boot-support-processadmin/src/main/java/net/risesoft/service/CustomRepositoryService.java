@@ -7,6 +7,8 @@ import java.util.Map;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.web.multipart.MultipartFile;
 
+import net.risesoft.pojo.Y9Result;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -18,9 +20,9 @@ public interface CustomRepositoryService {
      * 根据部署的Id删除部署的流程定义
      *
      * @param deploymentId
-     * @return Map
+     * @return Y9Result<Object>
      */
-    Map<String, Object> delete(String deploymentId);
+    Y9Result<Object> delete(String deploymentId);
 
     /**
      * 部署流程定义
@@ -28,7 +30,7 @@ public interface CustomRepositoryService {
      * @param file
      * @return Map
      */
-    Map<String, Object> deploy(MultipartFile file);
+    Y9Result<Object> deploy(MultipartFile file);
 
     /**
      * 根据流程定义Key获取最新部署的流程定义
@@ -94,5 +96,5 @@ public interface CustomRepositoryService {
      * @param processDefinitionId
      * @return
      */
-    Map<String, Object> switchSuspendOrActive(String state, String processDefinitionId);
+    Y9Result<Object> switchSuspendOrActive(String state, String processDefinitionId);
 }

@@ -186,8 +186,8 @@ public interface RuntimeApi {
      * @param map 变量map
      * @return ProcessInstanceModel
      */
-    ProcessInstanceModel startProcessInstanceByKey(String tenantId, String userId, String processDefinitionKey,
-        String systemName, Map<String, Object> map);
+    Y9Result<ProcessInstanceModel> startProcessInstanceByKey(String tenantId, String userId,
+        String processDefinitionKey, String systemName, Map<String, Object> map);
 
     /**
      * 判断是否是挂起实例
@@ -196,7 +196,7 @@ public interface RuntimeApi {
      * @param processInstanceId 流程实例id
      * @return Boolean
      */
-    Boolean suspendedByProcessInstanceId(String tenantId, String processInstanceId);
+    Y9Result<Boolean> suspendedByProcessInstanceId(String tenantId, String processInstanceId);
 
     /**
      * 挂起或者激活流程实例

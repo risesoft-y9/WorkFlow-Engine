@@ -150,7 +150,7 @@ public class FormDataServiceImpl implements FormDataService {
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
-                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey);
+                repositoryManager.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
             List<Y9FormItemBind> formList =
                 y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             List<Map<String, Object>> list = null;
@@ -233,7 +233,7 @@ public class FormDataServiceImpl implements FormDataService {
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
-                repositoryManager.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey);
+                repositoryManager.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();
             List<Y9FormItemBind> formList =
                 y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             for (Y9FormItemBind form : formList) {
@@ -332,7 +332,7 @@ public class FormDataServiceImpl implements FormDataService {
             SpmApproveItem item = spmApproveItemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
-                repositoryManager.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey);
+                repositoryManager.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey).getData();
             List<Y9FormItemBind> list =
                 y9FormItemBindService.findByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             String bindFormId = "";

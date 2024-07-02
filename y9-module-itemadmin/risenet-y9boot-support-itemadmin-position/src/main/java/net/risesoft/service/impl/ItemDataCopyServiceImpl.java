@@ -229,7 +229,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(targetTenantId);
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey);
+        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
 
         List<ItemButtonBind> targetBindList =
@@ -238,7 +238,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             return;
         }
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey);
+        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemButtonBind> sourceBindList =
             itemButtonBindService.findList(itemId, ItemButtonTypeEnum.COMMON.getValue(), sourcepdId);
@@ -344,7 +344,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(targetTenantId);
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey);
+        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         List<Y9FormItemBind> targetFormItemBindList =
             y9FormItemBindService.findByItemIdAndProcDefId(itemId, targetpdId);
@@ -355,7 +355,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 4、查找源租户该事项最新流程定义的绑定的表单，查找表单对应的所有元素并在第三部保存至目标租户
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey);
+        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<Y9FormItemBind> sourceFormItemBindList =
             y9FormItemBindService.findByItemIdAndProcDefId(itemId, sourcepdId);
@@ -543,7 +543,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(targetTenantId);
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey);
+        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         List<ItemOpinionFrameBind> targetBindList =
             itemOpinionFrameBindService.findByItemIdAndProcessDefinitionId(itemId, targetpdId);
@@ -554,7 +554,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 3、查找源租户该事项最新流程定义绑定的意见框及角色
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey);
+        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemOpinionFrameBind> sourceBindList =
             itemOpinionFrameBindService.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
@@ -637,7 +637,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(targetTenantId);
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey);
+        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         List<ItemOrganWordBind> targetBindList =
             itemOrganWordBindService.findByItemIdAndProcessDefinitionId(itemId, targetpdId);
@@ -645,7 +645,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             return;
         }
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey);
+        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemOrganWordBind> sourceBindList =
             itemOrganWordBindService.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
@@ -705,7 +705,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(targetTenantId);
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey);
+        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         List<ItemPermission> targetipList =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, targetpdId);
@@ -717,7 +717,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 2、查找源租户该事项最新流程定义的权限
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey);
+        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemPermission> sourceipList =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
@@ -808,7 +808,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(targetTenantId);
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey);
+        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
 
         List<ItemButtonBind> targetBindList =
@@ -817,7 +817,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             return;
         }
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey);
+        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemButtonBind> sourceBindList =
             itemButtonBindService.findList(itemId, ItemButtonTypeEnum.SEND.getValue(), sourcepdId);
@@ -891,7 +891,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey);
+        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemTabBind> tabBindList = itemTabBindService.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
         if (tabBindList.isEmpty()) {
@@ -901,7 +901,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(targetTenantId);
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String personId = person.getPersonId(), personName = person.getName();
-        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey);
+        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         List<ItemTabBind> targetTabBindList = itemTabBindService.findByItemIdAndProcessDefinitionId(itemId, targetpdId);
         if (!targetTabBindList.isEmpty()) {
@@ -958,7 +958,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey);
+        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         List<ItemPermission> sourceipList =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
@@ -1028,14 +1028,14 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         SpmApproveItem item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey);
+        ProcessDefinitionModel sourcepd = repositoryManager.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
         String sourcepdId = sourcepd.getId();
         ItemWordTemplateBind bind = itemWordTemplateBindService.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
         if (null == bind) {
             return;
         }
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey);
+        ProcessDefinitionModel targetpd = repositoryManager.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
         String targetpdId = targetpd.getId();
         ItemWordTemplateBind targetBind =
             itemWordTemplateBindService.findByItemIdAndProcessDefinitionId(itemId, targetpdId);

@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
+import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomRepositoryService;
 import net.risesoft.util.Y9SqlPaginationUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -47,25 +48,13 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
     private final ProcessEngineConfiguration processEngineConfiguration;
 
     @Override
-    public Map<String, Object> delete(String deploymentId) {
-        Map<String, Object> retMap = new HashMap<>(16);
-        retMap.put("success", false);
-        retMap.put("msg", "流程级联删除失败。");
-        try {
-            repositoryService.deleteDeployment(deploymentId, true);
-            retMap.put("success", true);
-            retMap.put("msg", "流程级联删除成功。");
-        } catch (Exception e) {
-            LOGGER.error("流程级联删除失败。", e);
-        }
-        return retMap;
+    public Y9Result<Object> delete(String deploymentId) {
+        repositoryService.deleteDeployment(deploymentId, true);
+        return Y9Result.success();
     }
 
     @Override
-    public Map<String, Object> deploy(MultipartFile file) {
-        HashMap<String, Object> retMap = new HashMap<>(16);
-        retMap.put("success", false);
-        retMap.put("msg", "流程部署失败。");
+    public Y9Result<Object> deploy(MultipartFile file) {
         try {
             String fileName = file.getOriginalFilename();
             InputStream fileInputStream = file.getInputStream();
@@ -76,12 +65,11 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
             } else {
                 repositoryService.createDeployment().addInputStream(fileName, fileInputStream).deploy();
             }
-            retMap.put("success", true);
-            retMap.put("msg", "流程部署成功。");
+            return Y9Result.success();
         } catch (Exception e) {
             LOGGER.error("流程部署失败。", e);
+            return Y9Result.failure("流程部署失败");
         }
-        return retMap;
     }
 
     @Override
@@ -199,23 +187,12 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
     }
 
     @Override
-    public Map<String, Object> switchSuspendOrActive(String state, String processDefinitionId) {
-        Map<String, Object> retMap = new HashMap<>(16);
-        retMap.put("success", false);
-        retMap.put("msg", "操作异常。");
-        try {
-            if (ItemProcessStateTypeEnum.ACTIVE.getValue().equals(state)) {
-                repositoryService.activateProcessDefinitionById(processDefinitionId, true, null);
-                retMap.put("success", true);
-                retMap.put("msg", "激活流程实例成功。");
-            } else if (ItemProcessStateTypeEnum.SUSPEND.getValue().equals(state)) {
-                repositoryService.suspendProcessDefinitionById(processDefinitionId, true, null);
-                retMap.put("success", true);
-                retMap.put("msg", "挂起流程实例成功。");
-            }
-        } catch (Exception e) {
-            LOGGER.error("操作异常。", e);
+    public Y9Result<Object> switchSuspendOrActive(String state, String processDefinitionId) {
+        if (ItemProcessStateTypeEnum.ACTIVE.getValue().equals(state)) {
+            repositoryService.activateProcessDefinitionById(processDefinitionId, true, null);
+        } else if (ItemProcessStateTypeEnum.SUSPEND.getValue().equals(state)) {
+            repositoryService.suspendProcessDefinitionById(processDefinitionId, true, null);
         }
-        return retMap;
+        return Y9Result.success();
     }
 }

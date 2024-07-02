@@ -32,7 +32,7 @@ public interface RepositoryApiClient extends RepositoryApi {
      */
     @Override
     @PostMapping("/delete")
-    Map<String, Object> delete(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> delete(@RequestParam("tenantId") String tenantId,
         @RequestParam("deploymentId") String deploymentId);
 
     /**
@@ -40,7 +40,7 @@ public interface RepositoryApiClient extends RepositoryApi {
      */
     @Override
     @PostMapping("/deploy")
-    Y9Result<String> deploy(@RequestParam("tenantId") String tenantId, MultipartFile file);
+    Y9Result<Object> deploy(@RequestParam("tenantId") String tenantId, MultipartFile file);
 
     /**
      * 根据流程定义key获取最新部署的流程定义
@@ -51,7 +51,7 @@ public interface RepositoryApiClient extends RepositoryApi {
      */
     @Override
     @GetMapping("/getLatestProcessDefinitionByKey")
-    ProcessDefinitionModel getLatestProcessDefinitionByKey(@RequestParam("tenantId") String tenantId,
+    Y9Result<ProcessDefinitionModel> getLatestProcessDefinitionByKey(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
@@ -62,7 +62,7 @@ public interface RepositoryApiClient extends RepositoryApi {
      */
     @Override
     @GetMapping("/getLatestProcessDefinitionList")
-    List<ProcessDefinitionModel> getLatestProcessDefinitionList(@RequestParam("tenantId") String tenantId);
+    Y9Result<List<ProcessDefinitionModel>> getLatestProcessDefinitionList(@RequestParam("tenantId") String tenantId);
 
     /**
      * 根据流程定义Id获取上一个版本的流程定义，如果当前版本是1，则返回自己
@@ -73,7 +73,7 @@ public interface RepositoryApiClient extends RepositoryApi {
      */
     @Override
     @GetMapping("/getPreviousProcessDefinitionById")
-    ProcessDefinitionModel getPreviousProcessDefinitionById(@RequestParam("tenantId") String tenantId,
+    Y9Result<ProcessDefinitionModel> getPreviousProcessDefinitionById(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
@@ -85,7 +85,7 @@ public interface RepositoryApiClient extends RepositoryApi {
      */
     @Override
     @GetMapping("/getProcessDefinitionById")
-    ProcessDefinitionModel getProcessDefinitionById(@RequestParam("tenantId") String tenantId,
+    Y9Result<ProcessDefinitionModel> getProcessDefinitionById(@RequestParam("tenantId") String tenantId,
         @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
@@ -122,11 +122,11 @@ public interface RepositoryApiClient extends RepositoryApi {
      * @param tenantId 租户id
      * @param state 状态
      * @param processDefinitionId processDefinitionId
-     * @return Map&lt;String, Object&gt;
+     * @return Y9Result<Object>
      */
     @Override
     @PostMapping("/switchSuspendOrActive")
-    Map<String, Object> switchSuspendOrActive(@RequestParam("tenantId") String tenantId,
+    Y9Result<Object> switchSuspendOrActive(@RequestParam("tenantId") String tenantId,
         @RequestParam("state") String state, @RequestParam("processDefinitionId") String processDefinitionId);
 
 }
